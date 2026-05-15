@@ -49,8 +49,6 @@ interface CatalystDefectFieldsProps {
   foundInBuild?: string | null;
   /** Post-mortem root cause narrative. */
   rootCause?: string | null;
-  /** Optional assessment-feature lozenge text (Jira parity: "OTHER"). */
-  assessmentFeature?: string | null;
 }
 
 /* Severity → Atlaskit Lozenge appearance.
@@ -110,12 +108,11 @@ export function CatalystDefectKeyRows({
   severity,
   foundInBuild,
   rootCause,
-  assessmentFeature,
   priorityRow,
   onUpdate,
 }: Pick<
   CatalystDefectFieldsProps,
-  'issue' | 'severity' | 'foundInBuild' | 'rootCause' | 'assessmentFeature'
+  'issue' | 'severity' | 'foundInBuild' | 'rootCause'
 > & {
   /**
    * Optional Priority row injected between Severity and the rest.
@@ -148,8 +145,6 @@ export function CatalystDefectKeyRows({
   const hasFixIn = fixVersions.length > 0;
   const hasRootCause = !!rootCause && rootCause.trim().length > 0;
   const hasResolution = !!resolution;
-  const hasAssessment = !!assessmentFeature && assessmentFeature.trim().length > 0;
-
   return (
     <>
       {/* Severity — inline-editable as of jira-compare Round 4
@@ -164,12 +159,8 @@ export function CatalystDefectKeyRows({
           to match Jira's Parent → Severity → Priority field order. */}
       {priorityRow}
 
-      {/* Catalyst-specific fields — render only when populated. */}
-      {hasAssessment && (
-        <KeyDetailsFieldRow label="Assessment" alignBlock="center">
-          <Lozenge appearance="default">{assessmentFeature}</Lozenge>
-        </KeyDetailsFieldRow>
-      )}
+      {/* Assessment Feature — BANNED 2026-05-07 per Vikram directive.
+          Permanently removed from ALL Catalyst views. Do NOT re-add. */}
 
       {hasFoundIn && (
         <KeyDetailsFieldRow label="Found in" alignBlock="center">

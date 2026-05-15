@@ -2160,6 +2160,19 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   const [bulkMoveTarget, setBulkMoveTarget] = useState<string | null>(null);
   const [bulkTransitionOpen, setBulkTransitionOpen] = useState(false);
   const [bulkTransitionTarget, setBulkTransitionTarget] = useState<string | null>(null);
+  // Bulk change wizard — 2-step modal (step 1: choose action; step 2: configure + confirm).
+  const [bulkWizardOpen, setBulkWizardOpen] = useState(false);
+  const [bulkWizardStep, setBulkWizardStep] = useState<1 | 2>(1);
+  const [bulkWizardAction, setBulkWizardAction] = useState<'edit' | 'move' | 'transition' | 'delete' | null>(null);
+  const [bulkWizardEditField, setBulkWizardEditField] = useState<'priority' | 'status' | 'assignee' | 'parent' | null>(null);
+  const [bulkWizardEditValue, setBulkWizardEditValue] = useState<string | null>(null);
+  const closeBulkWizard = () => {
+    setBulkWizardOpen(false);
+    setBulkWizardStep(1);
+    setBulkWizardAction(null);
+    setBulkWizardEditField(null);
+    setBulkWizardEditValue(null);
+  };
   const bulkUpdate = useMutation({
     mutationFn: async ({ ids, patch }: { ids: string[]; patch: Record<string, unknown> }) => {
       const editable = items.filter((it) => ids.includes(it.id) && it.source === 'catalyst');
@@ -2427,7 +2440,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           { id: 'import-csv', label: 'Import work items from CSV', icon: <AkDownloadIcon label="" size="small" />,
             onClick: () => flag.info('Import CSV', 'CSV importer scope: pending Vikram approval.') },
           { id: 'bulk-change', label: 'Bulk change work items', icon: <AkEditIcon label="" size="small" />,
-            onClick: () => flag.info('Bulk change', 'Bulk change wizard scope: pending Vikram approval (task #7).') },
+            onClick: () => setBulkWizardOpen(true) },
         ]},
         // Group 3 — navigation (Jira parity item 9)
         { items: [
@@ -3352,6 +3365,222 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
               >
                 {bulkUpdate.isPending ? 'Transitioning...' : 'Transition'}
               </Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
+
+      {/* Bulk Change Wizard — 2-step modal triggered from "Bulk change work items" menu.
+          Step 1: choose operation (Edit / Move / Transition / Delete).
+          Step 2: configure operation + confirm.
+          Reuses bulkUpdate + bulkDelete mutations. */}
+      <ModalTransition>
+        {bulkWizardOpen && (
+          <Modal onClose={closeBulkWizard} width="medium">
+            <ModalHeader>
+              <ModalTitle>
+                Bulk change {selectedIds.size} work item{selectedIds.size === 1 ? '' : 's'}
+              </ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              {/* Step indicator */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+                {[1, 2].map((s) => (
+                  <React.Fragment key={s}>
+                    <span style={{
+                      width: 24, height: 24, borderRadius: '50%',
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 12, fontWeight: 700,
+                      background: bulkWizardStep >= s ? '#0C66E4' : '#DFE1E6',
+                      color: bulkWizardStep >= s ? '#fff' : '#42526E',
+                    }}>{s}</span>
+                    <span style={{ fontSize: 12, color: bulkWizardStep >= s ? '#0C66E4' : '#7A869A', fontWeight: 500 }}>
+                      {s === 1 ? 'Choose action' : 'Configure & confirm'}
+                    </span>
+                    {s < 2 && <span style={{ flex: 1, height: 1, background: '#DFE1E6' }} />}
+                  </React.Fragment>
+                ))}
+              </div>
+
+              {/* Step 1 — choose action */}
+              {bulkWizardStep === 1 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {([
+                    { id: 'edit' as const, label: 'Edit', description: 'Change a field value on all selected items.' },
+                    { id: 'move' as const, label: 'Move', description: 'Reassign selected items to a different parent epic.' },
+                    { id: 'transition' as const, label: 'Transition', description: 'Move selected items to a new status.' },
+                    { id: 'delete' as const, label: 'Delete', description: 'Permanently remove selected items (Catalyst-owned only).' },
+                  ] as const).map((opt) => (
+                    <label
+                      key={opt.id}
+                      style={{
+                        display: 'flex', alignItems: 'flex-start', gap: 12,
+                        padding: '12px 16px', borderRadius: 6, cursor: 'pointer',
+                        border: `2px solid ${bulkWizardAction === opt.id ? '#0C66E4' : '#DFE1E6'}`,
+                        background: bulkWizardAction === opt.id ? '#E9F2FF' : '#FAFBFC',
+                        transition: 'border-color 80ms, background 80ms',
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="bulk-action"
+                        value={opt.id}
+                        checked={bulkWizardAction === opt.id}
+                        onChange={() => setBulkWizardAction(opt.id)}
+                        style={{ marginTop: 2, accentColor: '#0C66E4' }}
+                      />
+                      <div>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: '#292A2E', marginBottom: 2 }}>{opt.label}</div>
+                        <div style={{ fontSize: 13, color: '#44546F' }}>{opt.description}</div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              )}
+
+              {/* Step 2 — configure action */}
+              {bulkWizardStep === 2 && bulkWizardAction === 'edit' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div>
+                    <Label htmlFor="bulk-edit-field-select">Field to update</Label>
+                    <Select
+                      inputId="bulk-edit-field-select"
+                      options={[
+                        { value: 'priority', label: 'Priority' },
+                        { value: 'status', label: 'Status' },
+                        { value: 'parent', label: 'Parent Epic' },
+                      ]}
+                      value={bulkWizardEditField ? { value: bulkWizardEditField, label: { priority: 'Priority', status: 'Status', assignee: 'Assignee', parent: 'Parent Epic' }[bulkWizardEditField] } : null}
+                      onChange={(opt) => { setBulkWizardEditField((opt?.value as any) ?? null); setBulkWizardEditValue(null); }}
+                      placeholder="Select field"
+                    />
+                  </div>
+                  {bulkWizardEditField === 'priority' && (
+                    <div>
+                      <Label htmlFor="bulk-edit-priority-val">New priority</Label>
+                      <Select
+                        inputId="bulk-edit-priority-val"
+                        options={PRIORITY_OPTIONS.map((p) => ({ value: p, label: p[0].toUpperCase() + p.slice(1) }))}
+                        value={bulkWizardEditValue ? { value: bulkWizardEditValue, label: bulkWizardEditValue[0].toUpperCase() + bulkWizardEditValue.slice(1) } : null}
+                        onChange={(opt) => setBulkWizardEditValue(opt?.value ?? null)}
+                        placeholder="Select priority"
+                      />
+                    </div>
+                  )}
+                  {bulkWizardEditField === 'status' && (
+                    <div>
+                      <Label htmlFor="bulk-edit-status-val">New status</Label>
+                      <Select
+                        inputId="bulk-edit-status-val"
+                        options={STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label }))}
+                        value={bulkWizardEditValue ? { value: bulkWizardEditValue, label: STATUS_OPTIONS.find((s) => s.value === bulkWizardEditValue)?.label ?? bulkWizardEditValue } : null}
+                        onChange={(opt) => setBulkWizardEditValue(opt?.value ?? null)}
+                        placeholder="Select status"
+                      />
+                    </div>
+                  )}
+                  {bulkWizardEditField === 'parent' && (
+                    <div>
+                      <Label htmlFor="bulk-edit-parent-val">New parent epic</Label>
+                      <Select
+                        inputId="bulk-edit-parent-val"
+                        options={epics.map((e) => ({ value: e.issue_key, label: `${e.issue_key} — ${e.title}` }))}
+                        value={bulkWizardEditValue ? { value: bulkWizardEditValue, label: bulkWizardEditValue } : null}
+                        onChange={(opt) => setBulkWizardEditValue(opt?.value ?? null)}
+                        placeholder="Select epic"
+                        isClearable
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+              {bulkWizardStep === 2 && bulkWizardAction === 'move' && (
+                <div>
+                  <Label htmlFor="bulk-wiz-move-select">Parent Epic</Label>
+                  <Select
+                    inputId="bulk-wiz-move-select"
+                    options={epics.map((e) => ({ value: e.issue_key, label: `${e.issue_key} — ${e.title}` }))}
+                    value={bulkWizardEditValue ? { value: bulkWizardEditValue, label: bulkWizardEditValue } : null}
+                    onChange={(opt) => setBulkWizardEditValue(opt?.value ?? null)}
+                    placeholder="Select parent epic"
+                    isClearable
+                  />
+                </div>
+              )}
+              {bulkWizardStep === 2 && bulkWizardAction === 'transition' && (
+                <div>
+                  <Label htmlFor="bulk-wiz-transition-select">Target status</Label>
+                  <Select
+                    inputId="bulk-wiz-transition-select"
+                    options={STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label }))}
+                    value={bulkWizardEditValue ? { value: bulkWizardEditValue, label: STATUS_OPTIONS.find((s) => s.value === bulkWizardEditValue)?.label ?? bulkWizardEditValue } : null}
+                    onChange={(opt) => setBulkWizardEditValue(opt?.value ?? null)}
+                    placeholder="Select target status"
+                  />
+                </div>
+              )}
+              {bulkWizardStep === 2 && bulkWizardAction === 'delete' && (
+                <div style={{ padding: '12px 0' }}>
+                  <SectionMessage appearance="warning">
+                    <p>You are about to permanently delete <strong>{selectedIds.size} work item{selectedIds.size === 1 ? '' : 's'}</strong>. This cannot be undone. Jira-synced items will be skipped.</p>
+                  </SectionMessage>
+                </div>
+              )}
+            </ModalBody>
+            <ModalFooter>
+              {bulkWizardStep === 1 ? (
+                <>
+                  <Button appearance="subtle" onClick={closeBulkWizard}>Cancel</Button>
+                  <Button
+                    appearance="primary"
+                    isDisabled={!bulkWizardAction}
+                    onClick={() => setBulkWizardStep(2)}
+                  >
+                    Next
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button appearance="subtle" onClick={() => setBulkWizardStep(1)}>Back</Button>
+                  <Button appearance="subtle" onClick={closeBulkWizard}>Cancel</Button>
+                  <Button
+                    appearance={bulkWizardAction === 'delete' ? 'danger' : 'primary'}
+                    isDisabled={
+                      bulkUpdate.isPending || bulkDelete.isPending ||
+                      (bulkWizardAction === 'edit' && (!bulkWizardEditField || !bulkWizardEditValue)) ||
+                      (bulkWizardAction === 'move' && !bulkWizardEditValue) ||
+                      (bulkWizardAction === 'transition' && !bulkWizardEditValue)
+                    }
+                    onClick={() => {
+                      if (bulkWizardAction === 'delete') {
+                        bulkDelete.mutate(Array.from(selectedIds), {
+                          onSuccess: () => { closeBulkWizard(); setSelectedIds(new Set()); },
+                        });
+                      } else if (bulkWizardAction === 'move' && bulkWizardEditValue) {
+                        bulkUpdate.mutate(
+                          { ids: Array.from(selectedIds), patch: { parent_key: bulkWizardEditValue } },
+                          { onSuccess: () => { closeBulkWizard(); setSelectedIds(new Set()); } },
+                        );
+                      } else if (bulkWizardAction === 'transition' && bulkWizardEditValue) {
+                        bulkUpdate.mutate(
+                          { ids: Array.from(selectedIds), patch: { status: bulkWizardEditValue } },
+                          { onSuccess: () => { closeBulkWizard(); setSelectedIds(new Set()); } },
+                        );
+                      } else if (bulkWizardAction === 'edit' && bulkWizardEditField && bulkWizardEditValue) {
+                        const patchKey = bulkWizardEditField === 'parent' ? 'parent_key' : bulkWizardEditField;
+                        bulkUpdate.mutate(
+                          { ids: Array.from(selectedIds), patch: { [patchKey]: bulkWizardEditValue } },
+                          { onSuccess: () => { closeBulkWizard(); setSelectedIds(new Set()); } },
+                        );
+                      }
+                    }}
+                  >
+                    {(bulkUpdate.isPending || bulkDelete.isPending)
+                      ? 'Working...'
+                      : bulkWizardAction === 'delete' ? 'Delete' : 'Apply changes'}
+                  </Button>
+                </>
+              )}
             </ModalFooter>
           </Modal>
         )}
