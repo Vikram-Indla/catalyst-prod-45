@@ -110,16 +110,12 @@ ALTER TABLE public.requirements ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Members can view requirements" ON public.requirements;
 CREATE POLICY "Members can view requirements"
   ON public.requirements FOR SELECT
-  USING (project_id IN (
-    SELECT project_id FROM public.project_members WHERE user_id = auth.uid()
-  ));
+  USING (public.current_user_is_approved());
 
 DROP POLICY IF EXISTS "Members can manage requirements" ON public.requirements;
 CREATE POLICY "Members can manage requirements"
   ON public.requirements FOR ALL
-  USING (project_id IN (
-    SELECT project_id FROM public.project_members WHERE user_id = auth.uid()
-  ));
+  USING (public.current_user_is_approved());
 
 -- ══════════════════════════════════════════════════════════════════════════════
 -- Requirement Test Links Table (references tm_test_cases)
@@ -151,18 +147,14 @@ DROP POLICY IF EXISTS "Members can view links" ON public.requirement_test_links;
 CREATE POLICY "Members can view links"
   ON public.requirement_test_links FOR SELECT
   USING (requirement_id IN (
-    SELECT id FROM public.requirements WHERE project_id IN (
-      SELECT project_id FROM public.project_members WHERE user_id = auth.uid()
-    )
+    SELECT id FROM public.requirements WHERE public.current_user_is_approved()
   ));
 
 DROP POLICY IF EXISTS "Members can manage links" ON public.requirement_test_links;
 CREATE POLICY "Members can manage links"
   ON public.requirement_test_links FOR ALL
   USING (requirement_id IN (
-    SELECT id FROM public.requirements WHERE project_id IN (
-      SELECT project_id FROM public.project_members WHERE user_id = auth.uid()
-    )
+    SELECT id FROM public.requirements WHERE public.current_user_is_approved()
   ));
 
 -- ══════════════════════════════════════════════════════════════════════════════
@@ -200,9 +192,7 @@ ALTER TABLE public.jira_sync_history ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Members can view jira sync history" ON public.jira_sync_history;
 CREATE POLICY "Members can view jira sync history"
   ON public.jira_sync_history FOR SELECT
-  USING (project_id IN (
-    SELECT project_id FROM public.project_members WHERE user_id = auth.uid()
-  ));
+  USING (public.current_user_is_approved());
 
 -- Update trigger
 DROP TRIGGER IF EXISTS update_requirements_timestamp ON public.requirements;

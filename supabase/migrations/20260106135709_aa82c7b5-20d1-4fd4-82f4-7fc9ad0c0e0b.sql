@@ -16,8 +16,16 @@ CREATE TABLE IF NOT EXISTS test_folders (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_folders_project ON test_folders(project_id);
-CREATE INDEX IF NOT EXISTS idx_folders_parent ON test_folders(parent_id);
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='test_folders' AND column_name='project_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_folders_project ON test_folders(project_id)';
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='test_folders' AND column_name='parent_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_folders_parent ON test_folders(parent_id)';
+  END IF;
+END $$;
 
 ALTER TABLE test_folders ENABLE ROW LEVEL SECURITY;
 
@@ -65,17 +73,38 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS set_test_key ON test_cases;
-CREATE TRIGGER set_test_key
-  BEFORE INSERT ON test_cases
-  FOR EACH ROW
-  WHEN (NEW.test_key IS NULL)
-  EXECUTE FUNCTION generate_test_key();
+-- Trigger only if test_key column exists
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='test_cases' AND column_name='test_key') THEN
+    DROP TRIGGER IF EXISTS set_test_key ON test_cases;
+    CREATE TRIGGER set_test_key
+      BEFORE INSERT ON test_cases
+      FOR EACH ROW
+      WHEN (NEW.test_key IS NULL)
+      EXECUTE FUNCTION generate_test_key();
+  END IF;
+END $$;
 
-CREATE INDEX IF NOT EXISTS idx_test_cases_project ON test_cases(project_id);
-CREATE INDEX IF NOT EXISTS idx_test_cases_folder ON test_cases(folder_id);
-CREATE INDEX IF NOT EXISTS idx_test_cases_status ON test_cases(status);
-CREATE INDEX IF NOT EXISTS idx_test_cases_priority ON test_cases(priority);
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='test_cases' AND column_name='project_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_test_cases_project ON test_cases(project_id)';
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='test_cases' AND column_name='folder_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_test_cases_folder ON test_cases(folder_id)';
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='test_cases' AND column_name='status') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_test_cases_status ON test_cases(status)';
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='test_cases' AND column_name='priority') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_test_cases_priority ON test_cases(priority)';
+  END IF;
+END $$;
 
 ALTER TABLE test_cases ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "test_cases_select" ON test_cases;
@@ -95,7 +124,11 @@ BEGIN
   END IF;
 END $$;
 
-CREATE INDEX IF NOT EXISTS idx_steps_test_case ON test_steps(test_case_id, step_order);
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='test_steps' AND column_name='test_case_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_steps_test_case ON test_steps(test_case_id, step_order)';
+  END IF;
+END $$;
 
 ALTER TABLE test_steps ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "steps_select" ON test_steps;
@@ -136,15 +169,27 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS set_cycle_key ON test_cycles;
-CREATE TRIGGER set_cycle_key
-  BEFORE INSERT ON test_cycles
-  FOR EACH ROW
-  WHEN (NEW.cycle_key IS NULL)
-  EXECUTE FUNCTION generate_cycle_key();
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='test_cycles' AND column_name='cycle_key') THEN
+    DROP TRIGGER IF EXISTS set_cycle_key ON test_cycles;
+    CREATE TRIGGER set_cycle_key
+      BEFORE INSERT ON test_cycles
+      FOR EACH ROW
+      WHEN (NEW.cycle_key IS NULL)
+      EXECUTE FUNCTION generate_cycle_key();
+  END IF;
+END $$;
 
-CREATE INDEX IF NOT EXISTS idx_cycles_project ON test_cycles(project_id);
-CREATE INDEX IF NOT EXISTS idx_cycles_status ON test_cycles(status);
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='test_cycles' AND column_name='project_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_cycles_project ON test_cycles(project_id)';
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='test_cycles' AND column_name='status') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_cycles_status ON test_cycles(status)';
+  END IF;
+END $$;
 
 ALTER TABLE test_cycles ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "cycles_select" ON test_cycles;
@@ -168,10 +213,26 @@ CREATE TABLE IF NOT EXISTS test_runs (
   CONSTRAINT unique_test_in_cycle UNIQUE (test_cycle_id, test_case_id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_runs_cycle ON test_runs(test_cycle_id);
-CREATE INDEX IF NOT EXISTS idx_runs_test_case ON test_runs(test_case_id);
-CREATE INDEX IF NOT EXISTS idx_runs_status ON test_runs(status);
-CREATE INDEX IF NOT EXISTS idx_runs_assignee ON test_runs(assignee_id);
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='test_runs' AND column_name='test_cycle_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_runs_cycle ON test_runs(test_cycle_id)';
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='test_runs' AND column_name='test_case_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_runs_test_case ON test_runs(test_case_id)';
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='test_runs' AND column_name='status') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_runs_status ON test_runs(status)';
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='test_runs' AND column_name='assignee_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_runs_assignee ON test_runs(assignee_id)';
+  END IF;
+END $$;
 
 ALTER TABLE test_runs ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "runs_select" ON test_runs;
@@ -192,7 +253,11 @@ CREATE TABLE IF NOT EXISTS step_results (
   CONSTRAINT unique_step_result UNIQUE (test_run_id, test_step_id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_step_results_run ON step_results(test_run_id);
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='step_results' AND column_name='test_run_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_step_results_run ON step_results(test_run_id)';
+  END IF;
+END $$;
 
 ALTER TABLE step_results ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "step_results_select" ON step_results;
@@ -200,9 +265,12 @@ DROP POLICY IF EXISTS "step_results_all" ON step_results;
 CREATE POLICY "step_results_select" ON step_results FOR SELECT USING (true);
 CREATE POLICY "step_results_all" ON step_results FOR ALL USING (true);
 
--- STEP 1.7: Extend existing defects table for TM integration
+-- STEP 1.7: Extend existing defects table for TM integration (skip if table absent)
 DO $$ 
 BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='defects') THEN
+    RETURN;
+  END IF;
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'defects' AND column_name = 'defect_key') THEN
     ALTER TABLE defects ADD COLUMN defect_key VARCHAR(20);
   END IF;
@@ -245,26 +313,49 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS set_defect_key ON defects;
-CREATE TRIGGER set_defect_key
-  BEFORE INSERT ON defects
-  FOR EACH ROW
-  WHEN (NEW.defect_key IS NULL)
-  EXECUTE FUNCTION generate_defect_key();
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='defects' AND column_name='defect_key') THEN
+    DROP TRIGGER IF EXISTS set_defect_key ON defects;
+    CREATE TRIGGER set_defect_key
+      BEFORE INSERT ON defects
+      FOR EACH ROW
+      WHEN (NEW.defect_key IS NULL)
+      EXECUTE FUNCTION generate_defect_key();
+  END IF;
+END $$;
 
-CREATE INDEX IF NOT EXISTS idx_defects_project ON defects(project_id);
-CREATE INDEX IF NOT EXISTS idx_defects_status ON defects(status);
-CREATE INDEX IF NOT EXISTS idx_defects_severity ON defects(severity);
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='defects' AND column_name='project_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_defects_project ON defects(project_id)';
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='defects' AND column_name='status') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_defects_status ON defects(status)';
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='defects' AND column_name='severity') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_defects_severity ON defects(severity)';
+  END IF;
+END $$;
 
-ALTER TABLE defects ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "defects_select" ON defects;
-DROP POLICY IF EXISTS "defects_all" ON defects;
-CREATE POLICY "defects_select" ON defects FOR SELECT USING (true);
-CREATE POLICY "defects_all" ON defects FOR ALL USING (true);
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='defects') THEN
+    ALTER TABLE defects ENABLE ROW LEVEL SECURITY;
+    DROP POLICY IF EXISTS "defects_select" ON defects;
+    DROP POLICY IF EXISTS "defects_all" ON defects;
+    CREATE POLICY "defects_select" ON defects FOR SELECT USING (true);
+    CREATE POLICY "defects_all" ON defects FOR ALL USING (true);
+  END IF;
+END $$;
 
--- STEP 1.8: Extend requirements table for TM integration
+-- STEP 1.8: Extend requirements table for TM integration (skip if table absent)
 DO $$ 
 BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='requirements') THEN
+    RETURN;
+  END IF;
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'requirements' AND column_name = 'requirement_key') THEN
     ALTER TABLE requirements ADD COLUMN requirement_key VARCHAR(50);
   END IF;
@@ -279,31 +370,57 @@ BEGIN
   END IF;
 END $$;
 
-CREATE INDEX IF NOT EXISTS idx_requirements_project ON requirements(project_id);
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='requirements' AND column_name='project_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_requirements_project ON requirements(project_id)';
+  END IF;
+END $$;
 
-ALTER TABLE requirements ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "requirements_select" ON requirements;
-DROP POLICY IF EXISTS "requirements_all" ON requirements;
-CREATE POLICY "requirements_select" ON requirements FOR SELECT USING (true);
-CREATE POLICY "requirements_all" ON requirements FOR ALL USING (true);
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='requirements') THEN
+    ALTER TABLE requirements ENABLE ROW LEVEL SECURITY;
+    DROP POLICY IF EXISTS "requirements_select" ON requirements;
+    DROP POLICY IF EXISTS "requirements_all" ON requirements;
+    CREATE POLICY "requirements_select" ON requirements FOR SELECT USING (true);
+    CREATE POLICY "requirements_all" ON requirements FOR ALL USING (true);
+  END IF;
+END $$;
 
--- STEP 1.9: Create test_case_requirements junction table
-CREATE TABLE IF NOT EXISTS test_case_requirements (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  test_case_id UUID NOT NULL REFERENCES test_cases(id) ON DELETE CASCADE,
-  requirement_id UUID NOT NULL REFERENCES requirements(id) ON DELETE CASCADE,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  CONSTRAINT unique_tc_req UNIQUE (test_case_id, requirement_id)
-);
+-- STEP 1.9: Create test_case_requirements junction table (only if requirements exists)
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='requirements') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='test_case_requirements') THEN
+      CREATE TABLE test_case_requirements (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        test_case_id UUID NOT NULL REFERENCES test_cases(id) ON DELETE CASCADE,
+        requirement_id UUID NOT NULL REFERENCES requirements(id) ON DELETE CASCADE,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        CONSTRAINT unique_tc_req UNIQUE (test_case_id, requirement_id)
+      );
+    END IF;
+  END IF;
+END $$;
 
-CREATE INDEX IF NOT EXISTS idx_tc_req_test_case ON test_case_requirements(test_case_id);
-CREATE INDEX IF NOT EXISTS idx_tc_req_requirement ON test_case_requirements(requirement_id);
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='test_case_requirements' AND column_name='test_case_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_tc_req_test_case ON test_case_requirements(test_case_id)';
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='test_case_requirements' AND column_name='requirement_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_tc_req_requirement ON test_case_requirements(requirement_id)';
+  END IF;
+END $$;
 
-ALTER TABLE test_case_requirements ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "tc_req_select" ON test_case_requirements;
-DROP POLICY IF EXISTS "tc_req_all" ON test_case_requirements;
-CREATE POLICY "tc_req_select" ON test_case_requirements FOR SELECT USING (true);
-CREATE POLICY "tc_req_all" ON test_case_requirements FOR ALL USING (true);
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='test_case_requirements') THEN
+    ALTER TABLE test_case_requirements ENABLE ROW LEVEL SECURITY;
+    DROP POLICY IF EXISTS "tc_req_select" ON test_case_requirements;
+    DROP POLICY IF EXISTS "tc_req_all" ON test_case_requirements;
+    CREATE POLICY "tc_req_select" ON test_case_requirements FOR SELECT USING (true);
+    CREATE POLICY "tc_req_all" ON test_case_requirements FOR ALL USING (true);
+  END IF;
+END $$;
 
 -- STEP 1.10: Create dashboard statistics function
 CREATE OR REPLACE FUNCTION get_dashboard_stats(p_project_id UUID)

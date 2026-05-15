@@ -1,85 +1,94 @@
 
-CREATE OR REPLACE VIEW public.v_project_list AS
--- Original projects table
-SELECT p.id,
-    p.key AS project_key,
-    p.name,
-    p.department,
-    p.description,
-    COALESCE(p.display_status, p.status::text) AS status,
-    p.health_status,
-    p.status_category,
-    p.total_epics,
-    p.total_stories,
-    p.total_tasks,
-    p.work_items_todo,
-    p.work_items_in_progress,
-    p.work_items_done,
-    p.completion_percentage,
-    p.updated_at,
-    p.created_at,
-    p.owner_id,
-    p.priority,
-    p.tags,
-    COALESCE(mc.member_count, 0) AS member_count,
-    mc.member_ids
-FROM projects p
-LEFT JOIN LATERAL (
-    SELECT count(*)::integer AS member_count,
-           array_agg(pm.user_id) AS member_ids
-    FROM project_members pm
-    WHERE pm.project_id = p.id
-) mc ON true
-WHERE p.status = 'active'::program_status
+DROP VIEW IF EXISTS public.v_project_list;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='project_members') THEN
+    RAISE NOTICE 'project_members not found, skipping v_project_list';
+    RETURN;
+  END IF;
+  EXECUTE $view$
+    CREATE VIEW public.v_project_list AS
+    -- Original projects table
+    SELECT p.id,
+        p.key AS project_key,
+        p.name,
+        p.department,
+        p.description,
+        COALESCE(p.display_status, p.status::text) AS status,
+        p.health_status,
+        p.status_category,
+        p.total_epics,
+        p.total_stories,
+        p.total_tasks,
+        p.work_items_todo,
+        p.work_items_in_progress,
+        p.work_items_done,
+        p.completion_percentage,
+        p.updated_at,
+        p.created_at,
+        p.owner_id,
+        p.priority,
+        p.tags,
+        COALESCE(mc.member_count, 0) AS member_count,
+        mc.member_ids
+    FROM projects p
+    LEFT JOIN LATERAL (
+        SELECT count(*)::integer AS member_count,
+               array_agg(pm.user_id) AS member_ids
+        FROM project_members pm
+        WHERE pm.project_id = p.id
+    ) mc ON true
+    WHERE p.status::text = 'active'
 
-UNION ALL
+    UNION ALL
 
--- ph_projects (Jira-synced) that don't already exist in projects table
-SELECT ph.id,
-    ph.key AS project_key,
-    ph.name,
-    ph.department,
-    ph.description,
-    COALESCE(ph.status, 'active') AS status,
-    ph.health AS health_status,
-    NULL AS status_category,
-    COALESCE(wic.epic_count, 0) AS total_epics,
-    COALESCE(wic.story_count, 0) AS total_stories,
-    COALESCE(wic.task_count, 0) AS total_tasks,
-    COALESCE(wic.todo_count, 0) AS work_items_todo,
-    COALESCE(wic.in_progress_count, 0) AS work_items_in_progress,
-    COALESCE(wic.done_count, 0) AS work_items_done,
-    CASE WHEN COALESCE(wic.total_count, 0) > 0 
-         THEN ((COALESCE(wic.done_count, 0) * 100) / wic.total_count)::integer
-         ELSE 0 
-    END AS completion_percentage,
-    ph.updated_at,
-    ph.created_at,
-    ph.created_by AS owner_id,
-    NULL AS priority,
-    NULL AS tags,
-    COALESCE(phmc.member_count, 0) AS member_count,
-    phmc.member_ids
-FROM ph_projects ph
-LEFT JOIN LATERAL (
-    SELECT count(*)::integer AS member_count,
-           array_agg(pm.user_id) AS member_ids
-    FROM ph_project_members pm
-    WHERE pm.project_id = ph.id
-) phmc ON true
-LEFT JOIN LATERAL (
-    SELECT 
-      count(*)::integer AS total_count,
-      count(*) FILTER (WHERE wi.item_type = 'Epic')::integer AS epic_count,
-      count(*) FILTER (WHERE wi.item_type = 'Story')::integer AS story_count,
-      count(*) FILTER (WHERE wi.item_type IN ('Task','Bug','Subtask'))::integer AS task_count,
-      count(*) FILTER (WHERE wi.status = 'to_do')::integer AS todo_count,
-      count(*) FILTER (WHERE wi.status = 'in_progress')::integer AS in_progress_count,
-      count(*) FILTER (WHERE wi.status = 'in_production')::integer AS done_count
-    FROM ph_work_items wi
-    WHERE wi.project_id = ph.id
-) wic ON true
-WHERE ph.is_archived = false
-  AND NOT EXISTS (SELECT 1 FROM projects p2 WHERE p2.id = ph.id)
+    -- ph_projects (Jira-synced) that don't already exist in projects table
+    SELECT ph.id,
+        ph.key AS project_key,
+        ph.name,
+        ph.department,
+        ph.description,
+        COALESCE(ph.status, 'active') AS status,
+        ph.health AS health_status,
+        NULL AS status_category,
+        COALESCE(wic.epic_count, 0) AS total_epics,
+        COALESCE(wic.story_count, 0) AS total_stories,
+        COALESCE(wic.task_count, 0) AS total_tasks,
+        COALESCE(wic.todo_count, 0) AS work_items_todo,
+        COALESCE(wic.in_progress_count, 0) AS work_items_in_progress,
+        COALESCE(wic.done_count, 0) AS work_items_done,
+        CASE WHEN COALESCE(wic.total_count, 0) > 0
+             THEN ((COALESCE(wic.done_count, 0) * 100) / wic.total_count)::integer
+             ELSE 0
+        END AS completion_percentage,
+        ph.updated_at,
+        ph.created_at,
+        ph.created_by AS owner_id,
+        NULL AS priority,
+        NULL AS tags,
+        COALESCE(phmc.member_count, 0) AS member_count,
+        phmc.member_ids
+    FROM ph_projects ph
+    LEFT JOIN LATERAL (
+        SELECT count(*)::integer AS member_count,
+               array_agg(pm.user_id) AS member_ids
+        FROM ph_project_members pm
+        WHERE pm.project_id = ph.id
+    ) phmc ON true
+    LEFT JOIN LATERAL (
+        SELECT
+          count(*)::integer AS total_count,
+          count(*) FILTER (WHERE wi.item_type = 'Epic')::integer AS epic_count,
+          count(*) FILTER (WHERE wi.item_type = 'Story')::integer AS story_count,
+          count(*) FILTER (WHERE wi.item_type IN ('Task','Bug','Subtask'))::integer AS task_count,
+          count(*) FILTER (WHERE wi.status = 'to_do')::integer AS todo_count,
+          count(*) FILTER (WHERE wi.status = 'in_progress')::integer AS in_progress_count,
+          count(*) FILTER (WHERE wi.status = 'in_production')::integer AS done_count
+        FROM ph_work_items wi
+        WHERE wi.project_id = ph.id
+    ) wic ON true
+    WHERE ph.is_archived = false
+      AND NOT EXISTS (SELECT 1 FROM projects p2 WHERE p2.id = ph.id)
 
-ORDER BY updated_at DESC;
+    ORDER BY updated_at DESC
+  $view$;
+END $$;

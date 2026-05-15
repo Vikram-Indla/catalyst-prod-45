@@ -256,36 +256,36 @@ COMMENT ON COLUMN ph_idea_scores.is_ai_generated IS 'True when score was suggest
 -- ============================================================================
 -- INDEXES
 -- ============================================================================
-CREATE INDEX idx_ideas_status ON ph_ideas(status) WHERE is_deleted = FALSE;
-CREATE INDEX idx_ideas_type ON ph_ideas(idea_type) WHERE is_deleted = FALSE;
-CREATE INDEX idx_ideas_source ON ph_ideas(source) WHERE is_deleted = FALSE;
-CREATE INDEX idx_ideas_priority ON ph_ideas(priority) WHERE is_deleted = FALSE;
-CREATE INDEX idx_ideas_department ON ph_ideas(department) WHERE is_deleted = FALSE;
-CREATE INDEX idx_ideas_assigned_to ON ph_ideas(assigned_to) WHERE is_deleted = FALSE;
-CREATE INDEX idx_ideas_submitted_by ON ph_ideas(submitted_by) WHERE is_deleted = FALSE;
-CREATE INDEX idx_ideas_rice_score ON ph_ideas(rice_score DESC) WHERE is_deleted = FALSE;
-CREATE INDEX idx_ideas_wsjf_score ON ph_ideas(wsjf_score DESC) WHERE is_deleted = FALSE;
-CREATE INDEX idx_ideas_vote_score ON ph_ideas(vote_score DESC) WHERE is_deleted = FALSE;
-CREATE INDEX idx_ideas_linked_initiative ON ph_ideas(linked_initiative_id) WHERE linked_initiative_id IS NOT NULL;
-CREATE INDEX idx_ideas_parent ON ph_ideas(parent_idea_id) WHERE parent_idea_id IS NOT NULL;
-CREATE INDEX idx_ideas_created_at ON ph_ideas(created_at DESC);
-CREATE INDEX idx_ideas_key ON ph_ideas(idea_key);
+CREATE INDEX IF NOT EXISTS idx_ideas_status ON ph_ideas(status) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_ideas_type ON ph_ideas(idea_type) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_ideas_source ON ph_ideas(source) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_ideas_priority ON ph_ideas(priority) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_ideas_department ON ph_ideas(department) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_ideas_assigned_to ON ph_ideas(assigned_to) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_ideas_submitted_by ON ph_ideas(submitted_by) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_ideas_rice_score ON ph_ideas(rice_score DESC) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_ideas_wsjf_score ON ph_ideas(wsjf_score DESC) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_ideas_vote_score ON ph_ideas(vote_score DESC) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_ideas_linked_initiative ON ph_ideas(linked_initiative_id) WHERE linked_initiative_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_ideas_parent ON ph_ideas(parent_idea_id) WHERE parent_idea_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_ideas_created_at ON ph_ideas(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_ideas_key ON ph_ideas(idea_key);
 
-CREATE INDEX idx_idea_votes_idea ON ph_idea_votes(idea_id);
-CREATE INDEX idx_idea_votes_user ON ph_idea_votes(user_id);
+CREATE INDEX IF NOT EXISTS idx_idea_votes_idea ON ph_idea_votes(idea_id);
+CREATE INDEX IF NOT EXISTS idx_idea_votes_user ON ph_idea_votes(user_id);
 
-CREATE INDEX idx_idea_comments_idea ON ph_idea_comments(idea_id);
-CREATE INDEX idx_idea_comments_parent ON ph_idea_comments(parent_comment_id) WHERE parent_comment_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_idea_comments_idea ON ph_idea_comments(idea_id);
+CREATE INDEX IF NOT EXISTS idx_idea_comments_parent ON ph_idea_comments(parent_comment_id) WHERE parent_comment_id IS NOT NULL;
 
-CREATE INDEX idx_idea_evidence_idea ON ph_idea_evidence(idea_id);
-CREATE INDEX idx_idea_evidence_type ON ph_idea_evidence(evidence_type);
+CREATE INDEX IF NOT EXISTS idx_idea_evidence_idea ON ph_idea_evidence(idea_id);
+CREATE INDEX IF NOT EXISTS idx_idea_evidence_type ON ph_idea_evidence(evidence_type);
 
-CREATE INDEX idx_idea_scores_idea ON ph_idea_scores(idea_id);
-CREATE INDEX idx_idea_scores_framework ON ph_idea_scores(framework);
+CREATE INDEX IF NOT EXISTS idx_idea_scores_idea ON ph_idea_scores(idea_id);
+CREATE INDEX IF NOT EXISTS idx_idea_scores_framework ON ph_idea_scores(framework);
 
-CREATE INDEX idx_idea_audit_idea ON ph_idea_audit_log(idea_id);
-CREATE INDEX idx_idea_audit_action ON ph_idea_audit_log(action);
-CREATE INDEX idx_idea_audit_created ON ph_idea_audit_log(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_idea_audit_idea ON ph_idea_audit_log(idea_id);
+CREATE INDEX IF NOT EXISTS idx_idea_audit_action ON ph_idea_audit_log(action);
+CREATE INDEX IF NOT EXISTS idx_idea_audit_created ON ph_idea_audit_log(created_at DESC);
 
 -- ============================================================================
 -- ROW LEVEL SECURITY

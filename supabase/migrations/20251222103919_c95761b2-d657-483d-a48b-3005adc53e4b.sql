@@ -9,7 +9,12 @@ CREATE INDEX IF NOT EXISTS idx_features_workflow_status ON public.features(workf
 CREATE INDEX IF NOT EXISTS idx_features_priority ON public.features(priority);
 CREATE INDEX IF NOT EXISTS idx_features_release_id ON public.features(release_id);
 CREATE INDEX IF NOT EXISTS idx_features_assignee_id ON public.features(assignee_id);
-CREATE INDEX IF NOT EXISTS idx_features_project_id ON public.features(project_id);
+-- project_id added to features in a later migration; index created there
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='features' AND column_name='project_id') THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_features_project_id ON public.features(project_id)';
+  END IF;
+END $$;
 
 -- Add comment for documentation
 COMMENT ON COLUMN public.features.priority IS 'Feature priority: critical, high, medium, low';

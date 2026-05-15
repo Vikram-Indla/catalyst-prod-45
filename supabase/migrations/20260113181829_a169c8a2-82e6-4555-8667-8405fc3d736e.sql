@@ -58,12 +58,7 @@ ALTER TABLE step_result_attachments ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Users can view project attachments" ON step_result_attachments;
 CREATE POLICY "Users can view project attachments" ON step_result_attachments FOR SELECT
-USING (EXISTS (
-  SELECT 1 FROM execution_results er
-  JOIN test_cases tc ON er.test_case_id = tc.id
-  JOIN project_members pm ON tc.project_id = pm.project_id
-  WHERE er.id = step_result_attachments.execution_result_id AND pm.user_id = auth.uid()
-));
+USING (public.current_user_is_approved());
 
 DROP POLICY IF EXISTS "Users can insert to own executions" ON step_result_attachments;
 CREATE POLICY "Users can insert to own executions" ON step_result_attachments FOR INSERT
@@ -94,13 +89,7 @@ DROP POLICY IF EXISTS "Users can view project files" ON storage.objects;
 CREATE POLICY "Users can view project files" ON storage.objects FOR SELECT
 USING (bucket_id = 'evidence' AND (
   (storage.foldername(name))[1] = auth.uid()::text OR
-  EXISTS (
-    SELECT 1 FROM step_result_attachments sra
-    JOIN execution_results er ON sra.execution_result_id = er.id
-    JOIN test_cases tc ON er.test_case_id = tc.id
-    JOIN project_members pm ON tc.project_id = pm.project_id
-    WHERE sra.storage_path = name AND pm.user_id = auth.uid()
-  )
+  public.current_user_is_approved()
 ));
 
 DROP POLICY IF EXISTS "Users can delete own files" ON storage.objects;
@@ -116,14 +105,8 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 -- Defect attachments junction (exists, just ensure RLS policies)
 DROP POLICY IF EXISTS "Users can view defect attachments" ON defect_attachments;
 CREATE POLICY "Users can view defect attachments" ON defect_attachments FOR SELECT
-USING (EXISTS (
-  SELECT 1 FROM defects d JOIN project_members pm ON d.project_id = pm.project_id
-  WHERE d.id = defect_attachments.defect_id AND pm.user_id = auth.uid()
-));
+USING (public.current_user_is_approved());
 
 DROP POLICY IF EXISTS "Users can link attachments" ON defect_attachments;
 CREATE POLICY "Users can link attachments" ON defect_attachments FOR INSERT
-WITH CHECK (EXISTS (
-  SELECT 1 FROM defects d JOIN project_members pm ON d.project_id = pm.project_id
-  WHERE d.id = defect_attachments.defect_id AND pm.user_id = auth.uid() AND pm.role IN ('admin', 'tester', 'lead')
-));
+WITH CHECK (public.current_user_is_approved());

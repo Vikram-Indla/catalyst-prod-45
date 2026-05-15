@@ -106,10 +106,10 @@ Deno.serve(async (req) => {
     const authHeader = 'Basic ' + btoa(`${conn.auth_email}:${conn.auth_token_encrypted}`);
     const headers = { Authorization: authHeader, Accept: 'application/json' };
 
-    // 3. Pull ph_issues rows to backfill
+    // 3. Pull ph_issues rows to backfill (2026+ only)
     let q = supabase
       .from('ph_issues')
-      .select('issue_key, project_key')
+      .select('issue_key, project_key, jira_created_at, jira_updated_at')
       .order('issue_key', { ascending: true })
       .limit(issueLimit);
     if (projectFilter?.length) q = q.in('project_key', projectFilter);
@@ -117,7 +117,15 @@ Deno.serve(async (req) => {
 
     const { data: tickets, error: tErr } = await q;
     if (tErr) throw tErr;
-    if (!tickets || !tickets.length) {
+
+    // 3a. SUPER STRICT GUARDRAIL — filter to 2026+ issues only
+    const ticketsInWindow = (tickets || []).filter((tk: any) => {
+      const createdYear = tk.jira_created_at ? new Date(tk.jira_created_at).getFullYear() : null;
+      const updatedYear = tk.jira_updated_at ? new Date(tk.jira_updated_at).getFullYear() : null;
+      return (createdYear !== null && createdYear >= 2026) || (updatedYear !== null && updatedYear >= 2026);
+    });
+
+    if (!ticketsInWindow.length) {
       summary.has_more = false;
       await supabase
         .from('ph_sync_log')
@@ -128,13 +136,13 @@ Deno.serve(async (req) => {
         })
         .eq('id', logId);
       return new Response(
-        JSON.stringify({ success: true, summary, message: 'No tickets to process.' }),
+        JSON.stringify({ success: true, summary, message: 'No tickets to process (2026+ window).' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
     }
 
     // 4. Per-issue: page through changelog, collect status transitions
-    for (const tk of tickets) {
+    for (const tk of ticketsInWindow) {
       summary.last_issue_key_processed = tk.issue_key;
       summary.issues_processed += 1;
 

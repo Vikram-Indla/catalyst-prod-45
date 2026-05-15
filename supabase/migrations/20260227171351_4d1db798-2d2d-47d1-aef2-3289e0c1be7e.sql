@@ -26,7 +26,7 @@ on conflict (id) do nothing;
 
 -- Priorities
 create table if not exists hi_priorities (
-    id uuid default uuid_generate_v4() primary key,
+    id uuid default gen_random_uuid() primary key,
     name text not null,
     color text not null,
     color_text text not null,
@@ -46,7 +46,7 @@ where not exists (select 1 from hi_priorities limit 1);
 
 -- Statuses (project-scoped)
 create table if not exists hi_statuses (
-    id uuid default uuid_generate_v4() primary key,
+    id uuid default gen_random_uuid() primary key,
     name text not null,
     color text not null,
     color_text text not null,
@@ -58,7 +58,7 @@ create table if not exists hi_statuses (
 
 -- Project versions
 create table if not exists hi_project_versions (
-    id uuid default uuid_generate_v4() primary key,
+    id uuid default gen_random_uuid() primary key,
     project_id uuid not null references projects(id) on delete cascade,
     name text not null,
     description text,
@@ -79,7 +79,7 @@ create table if not exists hi_project_sequences (
 
 -- Work items
 create table if not exists hi_work_items (
-    id uuid default uuid_generate_v4() primary key,
+    id uuid default gen_random_uuid() primary key,
     project_id uuid not null references projects(id) on delete cascade,
     key text not null unique,
     number int not null,

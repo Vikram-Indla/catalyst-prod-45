@@ -102,13 +102,13 @@ DECLARE
   new_name TEXT;
 BEGIN
   FOR rec IN
-    SELECT polname, schemaname || '.' || tablename AS tbl
+    SELECT policyname, schemaname || '.' || tablename AS tbl
     FROM pg_policies
-    WHERE polname LIKE '%initiative%' AND schemaname = 'public'
+    WHERE policyname LIKE '%initiative%' AND schemaname = 'public'
   LOOP
-    new_name := replace(rec.polname, 'initiative', 'request');
+    new_name := replace(rec.policyname, 'initiative', 'request');
     EXECUTE format('ALTER POLICY %I ON %s RENAME TO %I',
-                   rec.polname, rec.tbl, new_name);
+                   rec.policyname, rec.tbl, new_name);
   END LOOP;
 END $$;
 

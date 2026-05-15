@@ -12,10 +12,12 @@ UPDATE tm_test_cycles
 SET environment = 'staging' 
 WHERE environment IS NULL;
 
--- Link existing seed cycles to releases
+-- Link existing seed cycles to releases (only if the seed release exists)
 UPDATE tm_test_cycles
 SET release_id = '70000000-0001-0001-0001-000000000001'
-WHERE release_id IS NULL AND status IN ('in_progress', 'planned');
+WHERE release_id IS NULL
+  AND status IN ('in_progress', 'planned')
+  AND EXISTS (SELECT 1 FROM releases WHERE id = '70000000-0001-0001-0001-000000000001');
 
 -- Fix the Sprint naming in existing seed data
 UPDATE tm_test_cycles

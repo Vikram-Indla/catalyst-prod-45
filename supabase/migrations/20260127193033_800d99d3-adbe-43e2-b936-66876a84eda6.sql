@@ -8,10 +8,13 @@ DROP VIEW IF EXISTS planner_my_tasks_summary CASCADE;
 DROP VIEW IF EXISTS planner_my_tasks CASCADE;
 
 -- Recreate planner_my_tasks view with involvement logic
+-- Note: many planner_tasks columns were pre-existing in Lovable and not in migrations;
+-- we substitute NULL for missing columns so the view compiles on a fresh install.
+-- A later migration will recreate the view once columns are added.
 CREATE VIEW planner_my_tasks WITH (security_invoker=on) AS
 SELECT DISTINCT ON (t.id)
   t.id,
-  t.task_key,
+  NULL::text AS task_key,
   t.title,
   t.description,
   t.status_id,
@@ -23,18 +26,18 @@ SELECT DISTINCT ON (t.id)
   t.reviewer_id,
   t.due_date,
   t.start_date,
-  t.time_estimate_minutes,
-  t.time_logged_minutes,
-  t.parent_task_id,
-  t.sort_order,
-  t.is_archived,
+  NULL::integer AS time_estimate_minutes,
+  NULL::integer AS time_logged_minutes,
+  NULL::uuid AS parent_task_id,
+  NULL::integer AS sort_order,
+  NULL::boolean AS is_archived,
   t.created_at,
   t.updated_at,
-  t.completed_at,
+  NULL::timestamptz AS completed_at,
   t.key,
   t.position,
   t.deleted_at,
-  t.is_starred,
+  NULL::boolean AS is_starred,
   t.blocked,
   t.blocked_reason,
   t.progress,
@@ -44,7 +47,7 @@ SELECT DISTINCT ON (t.id)
   s.name AS status_name,
   s.slug AS status_slug,
   s.color AS status_color,
-  s.is_done AS status_is_done,
+  s.is_completed_status AS status_is_done,
   
   -- Workstream info
   w.name AS workstream_name,
@@ -87,8 +90,8 @@ SELECT DISTINCT ON (t.id)
   END AS involvement_priority,
   
   -- Time section for grouping
-  CASE 
-    WHEN t.completed_at IS NOT NULL THEN 'completed'
+  CASE
+    WHEN NULL IS NOT NULL THEN 'completed'
     WHEN t.due_date < CURRENT_DATE THEN 'overdue'
     WHEN t.due_date = CURRENT_DATE THEN 'today'
     WHEN t.due_date <= CURRENT_DATE + 7 THEN 'this_week'
@@ -107,7 +110,6 @@ LEFT JOIN planner_task_watchers watcher ON watcher.task_id = t.id AND watcher.us
 LEFT JOIN planner_task_mentions mention ON mention.task_id = t.id AND mention.user_id = auth.uid()
 
 WHERE t.deleted_at IS NULL
-  AND t.is_archived IS NOT TRUE
   AND (
     t.assignee_id = auth.uid()
     OR t.created_by = auth.uid()
@@ -132,8 +134,7 @@ ORDER BY
     WHEN t.reporter_id = auth.uid() THEN 4
     ELSE 5
   END,
-  t.due_date ASC NULLS LAST,
-  t.sort_order ASC;
+  t.due_date ASC NULLS LAST;
 
 -- Recreate planner_my_tasks_summary view
 CREATE VIEW planner_my_tasks_summary WITH (security_invoker=on) AS
@@ -145,7 +146,7 @@ WITH user_tasks AS (
     t.reporter_id,
     t.reviewer_id,
     t.due_date,
-    t.completed_at,
+    NULL::timestamptz AS completed_at,
     watcher.user_id IS NOT NULL AS is_watcher,
     mention.user_id IS NOT NULL AS is_mentioned,
     CASE 
@@ -159,7 +160,6 @@ WITH user_tasks AS (
   LEFT JOIN planner_task_watchers watcher ON watcher.task_id = t.id AND watcher.user_id = auth.uid()
   LEFT JOIN planner_task_mentions mention ON mention.task_id = t.id AND mention.user_id = auth.uid()
   WHERE t.deleted_at IS NULL
-    AND t.is_archived IS NOT TRUE
     AND (
       t.assignee_id = auth.uid()
       OR t.created_by = auth.uid()

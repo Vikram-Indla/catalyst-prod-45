@@ -4,6 +4,34 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## 2026-05-16 — PRODUCTION INFRASTRUCTURE SNAPSHOT
+
+**Active Supabase Project:** `lmqwtldpfacrrlvdnmld` (Catalyst KSA org)
+- **URL:** `https://lmqwtldpfacrrlvdnmld.supabase.co`
+- **Anon Key:** `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxtcXd0bGRwZmFjcnJsdmRubWxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NTkwODEsImV4cCI6MjA5NDQzNTA4MX0.CITWnsiEJEd1B-G4RReYZdaTFbBNvw8NnM8OrRvDX8s`
+
+**Connected Repositories:**
+1. `catalyst-prod-45` (web) — owns schema, migrations, edge functions; auto-deploys via git
+2. `CatyMobile` (iOS) — client-only; connects via Supabase Swift SDK
+
+**Application Secrets (Supabase):** 7 set
+- `ANTHROPIC_API_KEY` — Claude AI for CATY features
+- `GEMINI_API_KEY` — Google Gemini for story improvement, similarity, digests
+- `JIRA_BASE_URL` — `https://digital-transformation.atlassian.net`
+- `JIRA_EMAIL` — `vikramataol@gmail.com`
+- `JIRA_API_TOKEN` — stored (rotate after migration)
+- `JIRA_WEBHOOK_SECRET` — auto-generated; guards webhook receiver
+- `LIFECYCLE_CRON_SECRET` — auto-generated; guards cron triggers
+- `RESEND_API_KEY` — OTP email delivery (rotate after migration)
+
+**Edge Functions:** 44 deployed and ACTIVE
+- AI functions (`ai-digest`, `ai-improve-story`, `ai-similar-items`, `alignment-story`) — rewired to Google Gemini direct (2026-05-16)
+- Jira sync functions — ready for data pull on trigger
+
+**Database State:** Schema complete, zero rows (fresh data from Jira only, no Lovable migration)
+
+---
+
 ## Dev Server
 
 The Catalyst local dev server always runs on **http://localhost:8080**. Never use 8081. When navigating in Chrome MCP, always use port 8080.
@@ -218,6 +246,23 @@ Suggested commit: `<imperative message>`
 ---
 Ready for next step when you confirm.
 ```
+
+---
+
+# SUPER STRICT GUARDRAIL — 2026 DATA ONLY
+
+**Jira data sync webhook and all Jira functions ONLY process issues with `created` or `updated` timestamps in year 2026.** This is non-negotiable.
+
+**Implementation:**
+- Every Jira ingest function (`wh-jira-sync`, `jira-sync-projects`, `jira-webhook-receiver`, etc.) must extract `created` and `updated` timestamps from incoming payloads
+- **Reject (do not insert/update) any issue where both `created` AND `updated` are before 2026-01-01T00:00:00Z**
+- Webhook receiver must return `{ ok: false, reason: "data outside 2026 window" }` for rejected payloads (log the issue key for audit)
+- Functions must log rejections with issue key, created date, updated date so we can track what was excluded
+- Backfill and initial sync functions must apply the same 2026 filter to `jira-sync-projects`, `wh-jira-bulk-sync`, etc.
+
+**Why:** Clean slate migration. Old Lovable data (pre-2026) is discarded intentionally. Only live 2026+ Jira data flows into the new project. This prevents stale/test data from polluting the new schema.
+
+**Severity:** P0 — data integrity gate. Missing this filter allows pre-2026 cruft to land in production.
 
 ---
 

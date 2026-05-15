@@ -48,7 +48,7 @@ LEFT JOIN LATERAL (
     FROM ph_work_items wi
     WHERE wi.project_id = php.id
 ) wic ON php.id IS NOT NULL
-WHERE p.status = 'active'::program_status
+WHERE p.status::text = 'active'
 
 UNION ALL
 
@@ -98,6 +98,6 @@ LEFT JOIN LATERAL (
     WHERE wi.project_id = ph.id
 ) wic2 ON true
 WHERE ph.is_archived = false
-  AND NOT EXISTS (SELECT 1 FROM projects p2 WHERE p2.key = ph.key AND p2.status = 'active'::program_status)
+  AND NOT EXISTS (SELECT 1 FROM projects p2 WHERE p2.key = ph.key)
 
 ORDER BY updated_at DESC;

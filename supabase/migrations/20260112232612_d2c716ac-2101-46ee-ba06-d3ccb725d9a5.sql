@@ -68,11 +68,11 @@ END $$;
 CREATE TABLE IF NOT EXISTS test_case_defects (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   test_case_id UUID REFERENCES test_cases(id) ON DELETE CASCADE NOT NULL,
-  defect_id UUID REFERENCES defects(id) ON DELETE CASCADE NOT NULL,
+  defect_id UUID NOT NULL, -- FK to defects omitted: defects table created in a later migration
   step_id UUID REFERENCES test_steps(id) ON DELETE SET NULL,
   linked_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
   linked_by UUID REFERENCES profiles(id) NOT NULL,
-  
+
   UNIQUE(test_case_id, defect_id)
 );
 
