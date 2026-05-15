@@ -855,8 +855,13 @@ export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
 // or detail panel. Matches Jira's list column display.
 export function makeFixVersionsCell(getFixVersions: (row: any) => string[] | null | undefined) {
   return function FixVersionsCell({ row }: CellProps<any>) {
-    const versions = getFixVersions(row);
-    if (!versions || versions.length === 0) {
+    const raw = getFixVersions(row);
+    // Normalise: Jira stores fix_versions as JSON array of {id,name,...} objects.
+    // Extract .name (or coerce to string) so we never pass an object to React.
+    const versions = raw
+      ? (raw as any[]).map(v => (typeof v === 'string' ? v : (v?.name ?? String(v)))).filter(Boolean)
+      : [];
+    if (versions.length === 0) {
       return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
     }
     // jira-compare 2026-05-12 (Item 9): Jira renders each fix-version value
