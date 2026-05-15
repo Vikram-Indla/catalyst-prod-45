@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useBusinessLines, useCreateBusinessLine, useUpdateBusinessLine, useDeleteBusinessLine, BusinessLine } from '@/hooks/useProductSettings';
-import Button from '@atlaskit/button/new';
+import Button, { IconButton } from '@atlaskit/button/new';
 import Toggle from '@atlaskit/toggle';
 import { Lozenge } from '@/components/ads';
 import Textfield from '@atlaskit/textfield';
@@ -190,20 +190,20 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
                         </div>
                         
                         <div className="flex items-center gap-1">
-                          <Button
+                          <IconButton
                             appearance="subtle"
                             onClick={() => handleOpenDialog(line)}
-                            iconBefore={EditIcon}
-                          />
-                          <Button
+                            icon={EditIcon}
+                          label="" />
+                          <IconButton
                             appearance="subtle"
                             onClick={() => {
                               setDeletingLine(line);
                               setIsDeleteOpen(true);
                             }}
                             isDisabled={line.is_default}
-                            iconBefore={TrashIcon}
-                          />
+                            icon={TrashIcon}
+                          label="" />
                         </div>
                       </div>
                     </div>
