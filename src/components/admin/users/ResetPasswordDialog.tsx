@@ -278,16 +278,18 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
                       type={showPassword ? 'text' : 'password'}
                     />
                   </div>
-                  <Button
+                  <IconButton
                     appearance="default"
                     onClick={() => setShowPassword(!showPassword)}
-                    iconBefore={showPassword ? EyeOpenStrikethroughIcon : EyeOpenIcon}
+                    icon={showPassword ? EyeOpenStrikethroughIcon : EyeOpenIcon}
+                    label={showPassword ? 'Hide password' : 'Show password'}
                   />
-                  <Button
+                  <IconButton
                     appearance="default"
                     onClick={handleCopyPassword}
-                    iconBefore={copied ? CheckMarkIcon : CopyIcon}
-                  >{null}</Button>
+                    icon={copied ? CheckMarkIcon : CopyIcon}
+                    label="Copy password"
+                  />
                 </div>
                 <p className="text-xs" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                   Share this password with the user securely. They will be prompted to set a new password on their first login.

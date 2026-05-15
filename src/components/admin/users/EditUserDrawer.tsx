@@ -700,7 +700,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
                 <PopoverTrigger asChild>
                   <Button
                     appearance="default"
-                    role="combobox"
+                    aria-haspopup="listbox"
                     aria-expanded={roleSearchOpen}
                     iconAfter={ChevronDownIcon}
                   >

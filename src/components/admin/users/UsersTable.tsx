@@ -1145,9 +1145,12 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                       <div className="flex items-center justify-end gap-2">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <ShowMoreHorizontalIcon label="" size="small" />
-                            </Button>
+                            <IconButton
+                              appearance="subtle"
+                              spacing="compact"
+                              icon={ShowMoreHorizontalIcon}
+                              label="More actions"
+                            />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             {user.approval_status === 'PENDING_APPROVAL' && (
