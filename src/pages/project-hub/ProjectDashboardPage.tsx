@@ -293,7 +293,7 @@ function ProjectDashboardPageInner() {
       <Button
         appearance="subtle"
         spacing="compact"
-        iconBefore={presentation ? <TvMinimal size={13} >{null}</Button> : <Tv size={13} />}
+        iconBefore={presentation ? <TvMinimal size={13} /> : <Tv size={13} />}
         onClick={() => setPresentation((p) => !p)}
         testId="dashboard-presentation-toggle"
       >
