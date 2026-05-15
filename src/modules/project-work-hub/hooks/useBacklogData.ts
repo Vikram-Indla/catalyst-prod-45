@@ -114,13 +114,13 @@ export function useEpicBacklog(projectId: string) {
       // §13 FP-012 for the forbidden columns list.
       const { data, error } = await supabase
         .from('ph_issues')
-        .select('issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, parent_summary, issue_type, jira_created_at, jira_updated_at, source, labels, fix_versions, rank_order')
+        .select('issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, parent_summary, issue_type, jira_created_at, jira_updated_at, source, labels, fix_versions, sort_order')
         .eq('project_key', projectKey)
         .eq('issue_type', 'Epic')
         .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
         .is('jira_removed_at', null)
         .is('archived_at', null)
-        .order('rank_order', { ascending: true, nullsFirst: false });
+        .order('sort_order', { ascending: true, nullsFirst: false });
       if (error) throw error;
 
       const epics: BacklogEpic[] = (data || []).map((row: any) => ({
@@ -146,9 +146,13 @@ export function useEpicBacklog(projectId: string) {
         parent_summary: row.parent_summary ?? null,
         issue_type: row.issue_type ?? 'Epic',
         comment_count: typeof row.comment_count === 'number' ? row.comment_count : null,
-        labels: Array.isArray(row.labels) ? row.labels as string[] : null,
-        fix_versions: Array.isArray(row.fix_versions) ? row.fix_versions as string[] : null,
-        rank_order: typeof row.rank_order === 'number' ? row.rank_order : null,
+        labels: Array.isArray(row.labels)
+          ? (row.labels as any[]).map(l => (typeof l === 'string' ? l : (l?.name ?? String(l))))
+          : null,
+        fix_versions: Array.isArray(row.fix_versions)
+          ? (row.fix_versions as any[]).map(v => (typeof v === 'string' ? v : (v?.name ?? String(v))))
+          : null,
+        rank_order: typeof row.sort_order === 'number' ? row.sort_order : null,
       })) as BacklogEpic[];
 
       return epics;
@@ -200,13 +204,13 @@ export function useStoryBacklog(projectId: string) {
       // Features remain in their dedicated hooks.
       const { data, error } = await supabase
         .from('ph_issues')
-        .select('issue_key, summary, status, status_category, assignee_display_name, reporter_display_name, due_date, priority, parent_key, parent_summary, jira_created_at, jira_updated_at, source, issue_type, labels, fix_versions, rank_order')
+        .select('issue_key, summary, status, status_category, assignee_display_name, reporter_display_name, due_date, priority, parent_key, parent_summary, jira_created_at, jira_updated_at, source, issue_type, labels, fix_versions, sort_order')
         .eq('project_key', projectKey)
         .in('issue_type', ['Story', 'QA Bug', 'Production Incident'])
         .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
         .is('jira_removed_at', null)
         .is('archived_at', null)
-        .order('rank_order', { ascending: true, nullsFirst: false });
+        .order('sort_order', { ascending: true, nullsFirst: false });
       if (error) throw error;
 
       const jiraRows = data || [];
@@ -308,9 +312,13 @@ export function useStoryBacklog(projectId: string) {
         // Story or Feature, not an Epic).
         parent_key: row.parent_key ?? null,
         parent_summary: row.parent_summary ?? null,
-        labels: Array.isArray(row.labels) ? row.labels as string[] : null,
-        fix_versions: Array.isArray(row.fix_versions) ? row.fix_versions as string[] : null,
-        rank_order: typeof row.rank_order === 'number' ? row.rank_order : null,
+        labels: Array.isArray(row.labels)
+          ? (row.labels as any[]).map(l => (typeof l === 'string' ? l : (l?.name ?? String(l))))
+          : null,
+        fix_versions: Array.isArray(row.fix_versions)
+          ? (row.fix_versions as any[]).map(v => (typeof v === 'string' ? v : (v?.name ?? String(v))))
+          : null,
+        rank_order: typeof row.sort_order === 'number' ? row.sort_order : null,
         feature: row.parent_key && epicMap[row.parent_key] ? {
           id: epicMap[row.parent_key].id,
           display_id: null,

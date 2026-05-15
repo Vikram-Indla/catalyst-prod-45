@@ -160,6 +160,30 @@ export default function BacklogDetailPage() {
 
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      {/* Jira-parity: plain "← Back" link above the detail view, navigates back to backlog list */}
+      <div style={{ flexShrink: 0, padding: '8px 24px', background: 'var(--ds-surface, #FFFFFF)' }}>
+        <button
+          onClick={handleClose}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            fontSize: 14,
+            fontWeight: 400,
+            color: 'var(--ds-text-subtle, #505258)',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Back
+        </button>
+      </div>
       <div style={{ flex: 1, minHeight: 0 }}>
         <Suspense fallback={null}>
           <CatalystDetailRouter

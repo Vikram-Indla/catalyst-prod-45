@@ -263,6 +263,7 @@ export interface BacklogItem {
   comment_count: number | null;
   labels: string[] | null;
   fix_versions: string[] | null;
+  rank_order: number | null;
 }
 
 /* ─── Status mapping (shared with Story Backlog) ────────────────────────── */
@@ -1001,6 +1002,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           created_at: null,
           comment_count: null,
           labels: null,
+          fix_versions: null,
+          rank_order: null,
         });
       });
     }
@@ -1034,6 +1037,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         due_date: (e as any).end_date ?? (e as any).due_date ?? null,
         comment_count: e.comment_count ?? null,
         labels: (e as any).labels ?? null,
+        fix_versions: (e as any).fix_versions ?? null,
+        rank_order: (e as any).rank_order ?? null,
       });
     });
 
@@ -1077,6 +1082,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           due_date: null,
           comment_count: null,
           labels: null,
+          fix_versions: null,
+          rank_order: null,
         });
       }
     });
@@ -1128,6 +1135,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         due_date: (s as any).start_date ?? (s as any).due_date ?? null,
         comment_count: null,
         labels: (s as any).labels ?? null,
+        fix_versions: (s as any).fix_versions ?? null,
+        rank_order: (s as any).rank_order ?? null,
       });
     });
     return out;
@@ -1610,23 +1619,23 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         // (PENDING Vikram approval + Lovable manual paste). Until that
         // lands the column doesn't exist → graceful fallback to info flag.
         try {
-          const { data: minRow, error: minErr } = await (supabase
-            .from('ph_issues') as any)
-            .select('rank_order')
+          const { data: minRow, error: minErr } = await supabase
+            .from('ph_issues')
+            .select('sort_order')
             .eq('project_key', projectKey)
-            .not('rank_order', 'is', null)
-            .order('rank_order', { ascending: true })
+            .not('sort_order', 'is', null)
+            .order('sort_order', { ascending: true })
             .limit(1)
             .maybeSingle();
           if (minErr || !minRow) {
-            flag.info('Rank to top', `Schema pending: rank_order column not yet migrated. See migrations-pending/.`);
+            flag.info('Rank to top', `No sortable rows found.`);
             return;
           }
-          const newRank = (minRow.rank_order ?? 100) - 10;
-          const { error: updErr } = await (supabase
-            .from('ph_issues') as any)
-            .update({ rank_order: newRank })
-            .eq('id', r.id);
+          const newRank = ((minRow as any).sort_order ?? 100) - 10;
+          const { error: updErr } = await supabase
+            .from('ph_issues')
+            .update({ sort_order: newRank } as any)
+            .eq('issue_key', r.id);
           if (updErr) throw updErr;
           queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
           flag.success('Ranked to top', r.key || r.id);
@@ -1638,23 +1647,23 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       onClick: async (r) => {
         // Symmetric: writes rank_order higher than current MAX in project scope.
         try {
-          const { data: maxRow, error: maxErr } = await (supabase
-            .from('ph_issues') as any)
-            .select('rank_order')
+          const { data: maxRow, error: maxErr } = await supabase
+            .from('ph_issues')
+            .select('sort_order')
             .eq('project_key', projectKey)
-            .not('rank_order', 'is', null)
-            .order('rank_order', { ascending: false })
+            .not('sort_order', 'is', null)
+            .order('sort_order', { ascending: false })
             .limit(1)
             .maybeSingle();
           if (maxErr || !maxRow) {
-            flag.info('Rank to bottom', `Schema pending: rank_order column not yet migrated.`);
+            flag.info('Rank to bottom', `No sortable rows found.`);
             return;
           }
-          const newRank = (maxRow.rank_order ?? 0) + 10;
-          const { error: updErr } = await (supabase
-            .from('ph_issues') as any)
-            .update({ rank_order: newRank })
-            .eq('id', r.id);
+          const newRank = ((maxRow as any).sort_order ?? 0) + 10;
+          const { error: updErr } = await supabase
+            .from('ph_issues')
+            .update({ sort_order: newRank } as any)
+            .eq('issue_key', r.id);
           if (updErr) throw updErr;
           queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
           flag.success('Ranked to bottom', r.key || r.id);
@@ -1880,19 +1889,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'status',
       label: 'Status',
-      // 2026-05-11: increased to 18 fractions (220px+) to fit "READY FOR PRODUCTION"
-      // without truncation. Prior 144px (12 fractions) was measured from shorter
-      // status values like "READY FOR QA". BAU project uses longer status names.
-      width: 18,
-      // 2026-05-08 re-probe: Jira measures Status at 120px OUTER with 8px
-      // left container padding (112px effective). Catalyst TD has 12px+12px
-      // = 24px cell padding overhead; 144px - 24px = 120px inner = matches
-      // Jira's 112px effective + pill margin. "READY FOR QA" needs ~112px
-      // text — fits at 120px inner without truncation.
-      // 2026-05-12 design-critique H8 fix: reduced from width:12 (144px) to
-      // width:9 (108px) to reduce excessive default spacing. Most BAU status
-      // values are ≤20 chars and fit comfortably at 108px inner.
-      width: 9,
+      // width:20 = 240px — fits "READY FOR PRODUCTION" (longest BAU status) without truncation.
+      // Prior H8 "fix" to 9 (108px) was wrong — status text clips badly at that width.
+      width: 20,
       sortable: true,
       defaultVisible: true,
       // B.4 verdict: @atlaskit/popup portal mounts on this surface but
@@ -1940,19 +1939,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'parent',
       label: 'Parent',
-      // Apr 27, 2026 — jira-compare audit P1 #6: Jira's BAU list Parent
-      // column renders at ~395px (longest content: "BAU-#### Senaei BAU
-      // - <epic name>"). Catalyst was 12% (~142px), forcing parent
-      // labels to truncate after a single word. Bumped 12 → 26
-      // (~286px @ 1100 minw) to hit the audit's ≥280px acceptance
-      // target.
-      // 2026-05-08 re-probe: Jira BAU list measures Parent at 160px.
-      // width:13 × 12 = 156px ≈ matches. Previous width:10 (~120px) was
-      // 40px too narrow — parent key+name was heavily truncated.
-      // 2026-05-12 design-critique H8 fix: reduced from width:13 (156px) to
-      // width:10 (120px) to reduce excessive default spacing. Parent links
-      // truncate gracefully at 120px inner with ellipsis.
-      width: 10,
+      // width:22 = 264px — fits "BAU-#### Epic name" without heavy truncation.
+      // Prior H8 "fix" to 10 (120px) made parent labels truncate after 1-2 words.
+      width: 22,
       sortable: true,
       defaultVisible: true,
       cell: makeParentEditCell<BacklogItem>({
@@ -1983,10 +1972,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'assignee',
       label: 'Assignee',
-      // 2026-05-12 design-critique H8 fix: reduced from width:10 (120px) to
-      // width:8 (96px). Avatar (24px) + name fits at 96px inner with common
-      // name lengths; truncates gracefully for longer names.
-      width: 8,
+      // width:11 = 132px — fits avatar + typical name length without cramping.
+      width: 11,
       sortable: true,
       defaultVisible: true,
       cell: makeAssigneeEditCell<BacklogItem>({
@@ -2891,11 +2878,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 newRankOrder = (aboveRank + currentRank) / 2;
               }
 
-              // Update the rank_order via bulkUpdate mutation (batch-optimized)
+              // Update the sort_order via bulkUpdate mutation (batch-optimized)
               try {
                 await bulkUpdate.mutateAsync({
                   ids: [draggedRow.id],
-                  patch: { rank_order: newRankOrder },
+                  patch: { sort_order: newRankOrder },
                 });
                 // Invalidate backlog queries to re-fetch and re-sort by rank_order
                 queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
