@@ -85,7 +85,7 @@ describe('EditableAssignee', () => {
     // Verify portal is rendered in document.body
     const portalDiv = document.body.querySelector('[data-testid="assignee-picker-portal"]');
     expect(portalDiv).toBeInTheDocument();
-    expect(portalDiv?.style.position).toBe('fixed');
+    expect((portalDiv as HTMLElement)?.style.position).toBe('fixed');
 
     // Fire Escape at capture phase
     const escapeEvent = new KeyboardEvent('keydown', {

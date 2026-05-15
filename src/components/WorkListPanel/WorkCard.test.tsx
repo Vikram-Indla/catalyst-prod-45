@@ -26,7 +26,7 @@ describe('WorkCard', () => {
     issueType: 'Story',
     summary: 'Add feature to support dark mode in settings',
     status: 'In Progress',
-    statusCategory: 'inprogress',
+    statusCategory: 'inprogress' as const,
     parentKey: 'BAU-100',
     parentSummary: 'UI Theme Refactor',
   };
@@ -124,7 +124,7 @@ describe('WorkCard', () => {
   });
 
   it('handles multiple status categories correctly', () => {
-    const doneItem = { ...mockItem, status: 'Done', statusCategory: 'done' };
+    const doneItem = { ...mockItem, status: 'Done', statusCategory: 'done' as const };
     renderWithQuery(
       <WorkCard item={doneItem} isSelected={false} onClick={vi.fn()} />
     );

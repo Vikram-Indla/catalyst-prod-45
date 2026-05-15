@@ -114,7 +114,7 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
         options: types.map(t => ({
           id: t, label: t,
           description: getJiraTypeLabel(t),
-          iconNode: <JiraIssueTypeIcon issueType={t} size={16} />,
+          iconNode: <JiraIssueTypeIcon type={t} size={16} />,
         })),
       },
     ].filter(c => c.options.length > 0);

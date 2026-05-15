@@ -243,7 +243,7 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
                     appearance="default"
                     onClick={handleCopyLink}
                     iconBefore={copied ? CheckMarkIcon : CopyIcon}
-                  />
+                  >{null}</Button>
                 </div>
               </div>
             </div>
@@ -287,7 +287,7 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
                     appearance="default"
                     onClick={handleCopyPassword}
                     iconBefore={copied ? CheckMarkIcon : CopyIcon}
-                  />
+                  >{null}</Button>
                 </div>
                 <p className="text-xs" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                   Share this password with the user securely. They will be prompted to set a new password on their first login.

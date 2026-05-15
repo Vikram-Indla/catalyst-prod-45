@@ -336,7 +336,7 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
                   )}
                 </td>
                 <td className="px-4 py-2 text-center">
-                  <Button appearance="subtle" iconBefore={SettingsIcon} />
+                  <Button appearance="subtle" iconBefore={SettingsIcon} >{null}</Button>
                 </td>
               </tr>
             ))}
