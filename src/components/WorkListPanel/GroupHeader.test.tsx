@@ -58,7 +58,7 @@ describe('GroupHeader', () => {
     expect(chevron).toBeInTheDocument();
     const computed = window.getComputedStyle(chevron as Element);
     // When collapsed, chevron should rotate or indicate closed state
-    expect(computed.transform || computed.rotation).toBeDefined();
+    expect(computed.transform || (computed as unknown as { rotation?: string }).rotation).toBeDefined();
   });
 
   it('shows chevron pointing up when expanded', () => {
