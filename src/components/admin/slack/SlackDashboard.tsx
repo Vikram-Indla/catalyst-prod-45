@@ -496,7 +496,7 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                         <TableCell>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button appearance="subtle" iconBefore={ShowMoreHorizontalIcon} />
+                              <Button appearance="subtle" iconBefore={ShowMoreHorizontalIcon} >{null}</Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem
@@ -594,7 +594,7 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                             <Button
                               appearance="subtle"
                               iconBefore={EyeOpenIcon}
-                            />
+                            >{null}</Button>
                           )}
                         </TableCell>
                       </TableRow>

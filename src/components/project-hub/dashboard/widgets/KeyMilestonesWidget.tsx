@@ -18,7 +18,7 @@ export default function KeyMilestonesWidget({ projectId, projectKey, collapsed, 
         header="No milestones configured"
         description="Set up status gates to track key delivery checkpoints across your project lifecycle."
         primaryAction={
-          <Button appearance="primary" iconBefore={<Settings size={14} />}>
+          <Button appearance="primary" iconBefore={<Settings size={14} >{null}</Button>}>
             Configure Gates
           </Button>
         }

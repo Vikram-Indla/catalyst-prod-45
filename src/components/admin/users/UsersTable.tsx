@@ -617,7 +617,7 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button appearance="subtle" iconBefore={ShowMoreHorizontalIcon} />
+                    <Button appearance="subtle" iconBefore={ShowMoreHorizontalIcon} >{null}</Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     {user.approval_status === 'PENDING_APPROVAL' && (

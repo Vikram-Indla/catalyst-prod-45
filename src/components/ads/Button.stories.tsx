@@ -99,9 +99,9 @@ export const AllAppearances: Story = {
 export const WithIcons: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-      <Button appearance="primary" iconBefore={<Plus size={14} />}>Create</Button>
-      <Button appearance="default" iconBefore={<Check size={14} />}>Confirm</Button>
-      <Button appearance="danger" iconBefore={<Trash2 size={14} />}>Delete</Button>
+      <Button appearance="primary" iconBefore={<Plus size={14} >{null}</Button>}>Create</Button>
+      <Button appearance="default" iconBefore={<Check size={14} >{null}</Button>}>Confirm</Button>
+      <Button appearance="danger" iconBefore={<Trash2 size={14} >{null}</Button>}>Delete</Button>
     </div>
   ),
 };
