@@ -215,7 +215,7 @@ export default function ForYouPage() {
         options: [...new Set(workItems.map(i => i.issueType).filter(Boolean))]
           .filter(t => t !== 'planner_task' && t !== 'Change Request')
           .sort()
-          .map(t => ({ id: t, label: t, iconNode: <JiraIssueTypeIcon issueType={t} size={16} /> })),
+          .map(t => ({ id: t, label: t, iconNode: <JiraIssueTypeIcon type={t} size={16} /> })),
       },
     ];
   }, [projectOptions, hubOptions, reportedByOptions, workItems, avatarsByName]);

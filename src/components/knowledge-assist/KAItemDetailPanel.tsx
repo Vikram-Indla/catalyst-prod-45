@@ -254,7 +254,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
             <div style={{ padding: '20px 24px 0' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                 <div style={{ marginTop: 3 }}>
-                  <JiraIssueTypeIcon issueType={item.issue_type} size={22} />
+                  <JiraIssueTypeIcon type={item.issue_type} size={22} />
                 </div>
                 <div style={{ flex: 1 }}>
                   <h2 style={{
@@ -282,7 +282,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
               }}>
                 <CornerDownLeft size={14} style={{ color: T.inkMuted, flexShrink: 0 }} />
                 <span style={{ fontSize: 11, fontWeight: 600, color: T.inkMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>PARENT</span>
-                <JiraIssueTypeIcon issueType="epic" size={14} />
+                <JiraIssueTypeIcon type="epic" size={14} />
                 <span style={{ fontFamily: F.mono, fontSize: 12, fontWeight: 600, color: T.primary }}>{item.parent_key}</span>
                 {item.parent_summary && (
                   <span style={{ fontSize: 13, fontWeight: 500, color: T.inkSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -297,7 +297,7 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
               <FieldRow icon={<Zap size={13} />} label="Status"><StatusLozenge status={item.status} /></FieldRow>
               <FieldRow icon={<Target size={13} />} label="Priority"><PriorityBars label={item.priority} /></FieldRow>
               <FieldRow icon={<Layers size={13} />} label="Project"><span style={{ fontWeight: 600 }}>{item.project_name || item.project_key}</span></FieldRow>
-              <FieldRow icon={<Tag size={13} />} label="Type"><JiraIssueTypeIcon issueType={item.issue_type} size={14} /><span>{item.issue_type}</span></FieldRow>
+              <FieldRow icon={<Tag size={13} />} label="Type"><JiraIssueTypeIcon type={item.issue_type} size={14} /><span>{item.issue_type}</span></FieldRow>
               {item.sprint_name && (
                 <FieldRow icon={<GitBranch size={13} />} label="Sprint"><span style={{ fontFamily: F.mono, fontSize: 12 }}>{item.sprint_name}</span></FieldRow>
               )}
