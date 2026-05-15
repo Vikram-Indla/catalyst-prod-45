@@ -1275,3 +1275,92 @@
   .clmp-arch-v2-flow svg { transform: rotate(90deg); }
   [dir="rtl"] .clmp-arch-v2-flow svg { transform: rotate(90deg); }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   OTP DUAL-AUTH COMPONENTS
+   ═══════════════════════════════════════════════════════════ */
+
+/* Secondary "Send me a sign-in code" button */
+.clmp-otp-alt-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  padding: 9px 16px;
+  border-radius: 4px;
+  border: 1px solid var(--ds-border, #DFE1E6);
+  background: var(--ds-background-neutral-subtle, #F7F8F9);
+  color: var(--ds-text, #172B4D);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--ds-font-family-body, 'Atlassian Sans', sans-serif);
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+  line-height: 1;
+}
+.clmp-otp-alt-btn:hover:not(:disabled) {
+  background: var(--ds-background-neutral-subtle-hovered, #F1F2F4);
+  border-color: var(--ds-border-bold, #626F86);
+}
+.clmp-otp-alt-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* 6-digit OTP input */
+.clmp-otp-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border-radius: 4px;
+  border: 2px solid var(--ds-border-focused, #0052CC);
+  background: var(--ds-background-input, #FAFBFC);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  text-align: center;
+  color: var(--ds-text, #172B4D);
+  font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', monospace;
+  outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.clmp-otp-input:focus {
+  box-shadow: 0 0 0 2px var(--ds-border-focused, #0052CC);
+}
+
+/* Verify form wrapper */
+.clmp-otp-verify-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Resend + Back row */
+.clmp-otp-footer-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: -4px;
+}
+
+/* Inline text-action buttons (Resend / Back to password) */
+.clmp-otp-text-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  font-family: var(--ds-font-family-body, 'Atlassian Sans', sans-serif);
+  color: var(--ds-link, #0052CC);
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: none;
+}
+.clmp-otp-text-btn:hover:not(:disabled) {
+  text-decoration: underline;
+  color: var(--ds-link-pressed, #0747A6);
+}
+.clmp-otp-text-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

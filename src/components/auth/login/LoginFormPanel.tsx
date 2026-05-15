@@ -1,12 +1,10 @@
 /**
  * Login Form Card — ADS-compliant sign-in / request-access card.
- * Enterprise login only: no self-serve signup flow.
+ * Enterprise login: password + email-code (OTP) as co-equal options.
+ * OTP delivered via send-login-otp edge function → Resend → noreply@ksa-catalyst.com
  */
 
 import { useState, useEffect, useRef, FormEvent } from 'react';
-
-const IS_LOCALHOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const DEV_EMAIL = 'vikramataol@gmail.com';
 import Textfield from '@atlaskit/textfield';
 import Textarea from '@atlaskit/textarea';
 import Button from '@atlaskit/button';
@@ -50,12 +48,30 @@ const EyeIcon = ({ off }: { off?: boolean }) => off ? (
   </svg>
 );
 
+const MailIcon = () => (
+  <svg width="15" height="15" fill="none" viewBox="0 0 16 16" aria-hidden="true" style={{ flexShrink: 0 }}>
+    <rect x="1.5" y="3.5" width="13" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3"/>
+    <path d="M1.5 5.5l6.5 4 6.5-4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+  </svg>
+);
+
 const ShieldIcon = () => (
   <svg width="14" height="14" fill="none" viewBox="0 0 16 16" aria-hidden="true">
     <path d="M8 1.5l5 1.75V7c0 3-2 5-5 6.5C5 12 3 10 3 7V3.25z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
     <path d="M5.5 8l1.75 1.75L10.5 6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
+
+// ── "or" divider ──────────────────────────────────────────────────────────────
+function OrDivider() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '4px 0' }}>
+      <div style={{ flex: 1, height: 1, background: 'var(--ds-border, #DFE1E6)' }} />
+      <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #8993A4)', fontWeight: 500, userSelect: 'none' }}>or</span>
+      <div style={{ flex: 1, height: 1, background: 'var(--ds-border, #DFE1E6)' }} />
+    </div>
+  );
+}
 
 export function LoginFormPanel({
   userType,
@@ -81,10 +97,10 @@ export function LoginFormPanel({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
-  // OTP flow state (localhost only)
-  const [otpEmail] = useState(IS_LOCALHOST ? DEV_EMAIL : '');
+  // OTP mode state — integrated into the main sign-in card
+  const [otpMode, setOtpMode] = useState(false);   // true = showing OTP flow instead of password
+  const [otpSent, setOtpSent] = useState(false);    // true = code sent, showing input
   const [otpCode, setOtpCode] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
   const [otpError, setOtpError] = useState<string | null>(null);
   const otpInputRef = useRef<HTMLInputElement>(null);
 
@@ -93,12 +109,20 @@ export function LoginFormPanel({
     if (saved) { setSigninEmail(saved); setRememberMe(true); }
   }, []);
 
-  useEffect(() => { setSubmitSuccess(false); }, [userType]);
+  useEffect(() => {
+    setSubmitSuccess(false);
+    // Reset OTP state when switching tabs
+    setOtpMode(false);
+    setOtpSent(false);
+    setOtpCode('');
+    setOtpError(null);
+  }, [userType]);
 
   const isSignIn = userType === 'existing';
   const isExternal = userType === 'external';
   const busy = isSubmitting || loading;
 
+  // ── password sign-in ──────────────────────────────────────────────────────
   const handleSignInSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -111,35 +135,47 @@ export function LoginFormPanel({
     setIsSubmitting(false);
   };
 
-  const handleExternalSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    await onExternalSubmit({ name: externalName, email: externalEmail, org: externalOrg, desc: externalDesc });
-    setSubmitSuccess(true);
-  };
-
+  // ── OTP — send code ───────────────────────────────────────────────────────
   const handleSendOtp = async () => {
+    if (!signinEmail.trim()) return;
     setOtpError(null);
     setIsSubmitting(true);
-    const result = await onSendOtp(otpEmail);
+    const result = await onSendOtp(signinEmail);
     setIsSubmitting(false);
     if (result.error) {
-      setOtpError('Could not send code. Check the email address.');
+      setOtpError('We couldn\'t send a code to that address. Check your email and try again.');
     } else {
       setOtpSent(true);
-      setTimeout(() => otpInputRef.current?.focus(), 100);
+      setTimeout(() => otpInputRef.current?.focus(), 80);
     }
   };
 
+  // ── OTP — verify code ─────────────────────────────────────────────────────
   const handleVerifyOtp = async (e: FormEvent) => {
     e.preventDefault();
     setOtpError(null);
     setIsSubmitting(true);
-    const result = await onVerifyOtp(otpEmail, otpCode.trim());
+    const result = await onVerifyOtp(signinEmail, otpCode.trim());
     setIsSubmitting(false);
     if (result.error) {
-      setOtpError('Incorrect or expired code. Try again.');
+      setOtpError('Incorrect or expired code — please try again.');
       setOtpCode('');
+      otpInputRef.current?.focus();
     }
+  };
+
+  // ── reset OTP back to password mode ──────────────────────────────────────
+  const handleBackToPassword = () => {
+    setOtpMode(false);
+    setOtpSent(false);
+    setOtpCode('');
+    setOtpError(null);
+  };
+
+  const handleExternalSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    await onExternalSubmit({ name: externalName, email: externalEmail, org: externalOrg, desc: externalDesc });
+    setSubmitSuccess(true);
   };
 
   const pwdToggle = (
@@ -157,89 +193,7 @@ export function LoginFormPanel({
   return (
     <div className="clmp-login-card" id="main-form">
 
-      {/* ── Localhost dev login (OTP, no password) ── */}
-      {IS_LOCALHOST && (
-        <div style={{
-          background: 'var(--ds-background-accent-blue-subtlest, #E9F2FF)',
-          border: '1px solid var(--ds-border-information, #0055CC)',
-          borderRadius: 6,
-          padding: '14px 16px',
-          marginBottom: 20,
-        }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-information, #0055CC)', marginBottom: 10, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-            Dev login — {DEV_EMAIL}
-          </div>
-
-          {!otpSent ? (
-            <button
-              type="button"
-              disabled={isSubmitting || loading}
-              onClick={handleSendOtp}
-              style={{
-                width: '100%', padding: '8px 0', borderRadius: 4, border: 'none',
-                background: 'var(--ds-background-brand-bold, #0052CC)',
-                color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-                opacity: (isSubmitting || loading) ? 0.6 : 1,
-              }}
-            >
-              {isSubmitting ? 'Sending…' : 'Send login code to email'}
-            </button>
-          ) : (
-            <form onSubmit={handleVerifyOtp} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>
-                Check your inbox for a 6-digit code
-              </div>
-              <input
-                ref={otpInputRef}
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                maxLength={6}
-                placeholder="000000"
-                value={otpCode}
-                onChange={e => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                style={{
-                  padding: '8px 12px', borderRadius: 4, fontSize: 22, fontWeight: 700,
-                  letterSpacing: '0.3em', textAlign: 'center', width: '100%', boxSizing: 'border-box',
-                  border: '2px solid var(--ds-border-focused, #0052CC)',
-                  outline: 'none',
-                }}
-              />
-              {otpError && (
-                <div style={{ fontSize: 12, color: 'var(--ds-text-danger, #AE2A19)' }}>{otpError}</div>
-              )}
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button
-                  type="submit"
-                  disabled={otpCode.length < 6 || isSubmitting}
-                  style={{
-                    flex: 1, padding: '8px 0', borderRadius: 4, border: 'none',
-                    background: 'var(--ds-background-brand-bold, #0052CC)',
-                    color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-                    opacity: (otpCode.length < 6 || isSubmitting) ? 0.5 : 1,
-                  }}
-                >
-                  {isSubmitting ? 'Verifying…' : 'Sign in'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setOtpSent(false); setOtpCode(''); setOtpError(null); }}
-                  style={{
-                    padding: '8px 14px', borderRadius: 4,
-                    border: '1px solid var(--ds-border, #DFE1E6)',
-                    background: 'transparent', fontSize: 13, cursor: 'pointer',
-                    color: 'var(--ds-text-subtle, #6B778C)',
-                  }}
-                >
-                  Resend
-                </button>
-              </div>
-            </form>
-          )}
-        </div>
-      )}
-
-      {/* Single tab group — Sign In | Request Access */}
+      {/* ── Tab group — Sign In | Request Access ── */}
       <div className="clmp-auth-toggle" role="tablist">
         <button
           role="tab"
@@ -261,26 +215,37 @@ export function LoginFormPanel({
         </button>
       </div>
 
-      {/* Title block */}
+      {/* ── Title block ── */}
       <div className="clmp-card-header">
         <h2 className="clmp-card-title">
-          {isSignIn ? t(lang, 'form.signin.title') : t(lang, 'form.external.title')}
+          {isSignIn
+            ? (otpMode ? (otpSent ? 'Check your email' : 'Sign in with a code') : t(lang, 'form.signin.title'))
+            : t(lang, 'form.external.title')}
         </h2>
         <p className="clmp-card-sub">
-          {isSignIn ? t(lang, 'form.signin.sub') : t(lang, 'form.external.sub')}
+          {isSignIn
+            ? (otpMode
+                ? (otpSent
+                    ? `We sent a sign-in code to ${signinEmail}`
+                    : 'Enter your work email and we\'ll send a one-time code')
+                : t(lang, 'form.signin.sub'))
+            : t(lang, 'form.external.sub')}
         </p>
       </div>
 
-      {/* Error banner */}
-      {error && (
+      {/* ── Error banner ── */}
+      {error && !otpMode && (
         <SectionMessage appearance="error">
           <p>{error}</p>
         </SectionMessage>
       )}
 
-      {/* ── Sign In ── */}
-      {isSignIn && (
+      {/* ══════════════════════════════════════════════════
+          SIGN IN — PASSWORD MODE (default)
+      ══════════════════════════════════════════════════ */}
+      {isSignIn && !otpMode && (
         <form onSubmit={handleSignInSubmit} className="clmp-form" noValidate>
+
           <div className="clmp-field">
             <label htmlFor="signin-email" className="clmp-label">
               {t(lang, 'form.label.email')}
@@ -339,78 +304,164 @@ export function LoginFormPanel({
           >
             {t(lang, 'form.btn.signin')}
           </Button>
+
+          {/* ── "or" divider + send code option ── */}
+          <OrDivider />
+
+          <button
+            type="button"
+            className="clmp-otp-alt-btn"
+            onClick={() => { setOtpMode(true); }}
+            disabled={busy}
+          >
+            <MailIcon />
+            Send me a sign-in code
+          </button>
+
         </form>
+      )}
+
+      {/* ══════════════════════════════════════════════════
+          SIGN IN — OTP MODE
+          Sub-state A: email input + "Send code" button
+          Sub-state B: OTP code input + verify
+      ══════════════════════════════════════════════════ */}
+      {isSignIn && otpMode && (
+        <div className="clmp-form">
+
+          {/* Sub-state A — email + send */}
+          {!otpSent && (
+            <>
+              <div className="clmp-field">
+                <label htmlFor="otp-email" className="clmp-label">
+                  {t(lang, 'form.label.email')}
+                </label>
+                <Textfield
+                  id="otp-email"
+                  name="email"
+                  type="email"
+                  placeholder={t(lang, 'form.placeholder.email')}
+                  value={signinEmail}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSigninEmail(e.currentTarget.value)}
+                  autoComplete="email"
+                  dir="ltr"
+                  isRequired
+                  autoFocus
+                />
+              </div>
+
+              {otpError && (
+                <SectionMessage appearance="error"><p>{otpError}</p></SectionMessage>
+              )}
+
+              <Button
+                type="button"
+                appearance="primary"
+                isLoading={busy}
+                isDisabled={busy || !signinEmail.trim()}
+                shouldFitContainer
+                onClick={handleSendOtp}
+              >
+                Send sign-in code
+              </Button>
+
+              <OrDivider />
+
+              <button
+                type="button"
+                className="clmp-otp-alt-btn"
+                onClick={handleBackToPassword}
+              >
+                Sign in with password instead
+              </button>
+            </>
+          )}
+
+          {/* Sub-state B — code input + verify */}
+          {otpSent && (
+            <form onSubmit={handleVerifyOtp} className="clmp-otp-verify-form">
+
+              <div className="clmp-field">
+                <label htmlFor="otp-code" className="clmp-label">
+                  Sign-in code
+                </label>
+                <input
+                  ref={otpInputRef}
+                  id="otp-code"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={6}
+                  placeholder="000000"
+                  value={otpCode}
+                  autoComplete="one-time-code"
+                  onChange={e => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                  className="clmp-otp-input"
+                />
+              </div>
+
+              {otpError && (
+                <SectionMessage appearance="error"><p>{otpError}</p></SectionMessage>
+              )}
+
+              <Button
+                type="submit"
+                appearance="primary"
+                isLoading={busy}
+                isDisabled={busy || otpCode.length < 6}
+                shouldFitContainer
+              >
+                Sign in
+              </Button>
+
+              <div className="clmp-otp-footer-row">
+                <button
+                  type="button"
+                  className="clmp-otp-text-btn"
+                  onClick={handleSendOtp}
+                  disabled={busy}
+                >
+                  Resend code
+                </button>
+                <button
+                  type="button"
+                  className="clmp-otp-text-btn"
+                  onClick={handleBackToPassword}
+                >
+                  Back to password
+                </button>
+              </div>
+
+            </form>
+          )}
+
+        </div>
       )}
 
       {/* ── External request ── */}
       {isExternal && !submitSuccess && (
         <form onSubmit={handleExternalSubmit} className="clmp-form" noValidate>
           <div className="clmp-field">
-            <label htmlFor="ext-name" className="clmp-label">
-              {t(lang, 'form.label.name')}
-            </label>
-            <Textfield
-              id="ext-name"
-              name="name"
-              type="text"
-              placeholder={t(lang, 'form.placeholder.name.ext')}
-              value={externalName}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setExternalName(e.currentTarget.value)}
-              isRequired
-            />
+            <label htmlFor="ext-name" className="clmp-label">{t(lang, 'form.label.name')}</label>
+            <Textfield id="ext-name" name="name" type="text" placeholder={t(lang, 'form.placeholder.name.ext')}
+              value={externalName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setExternalName(e.currentTarget.value)} isRequired />
           </div>
-
           <div className="clmp-field">
-            <label htmlFor="ext-email" className="clmp-label">
-              {t(lang, 'form.label.email')}
-            </label>
-            <Textfield
-              id="ext-email"
-              name="email"
-              type="email"
-              placeholder={t(lang, 'form.placeholder.email.org')}
-              value={externalEmail}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setExternalEmail(e.currentTarget.value)}
-              dir="ltr"
-              isRequired
-            />
+            <label htmlFor="ext-email" className="clmp-label">{t(lang, 'form.label.email')}</label>
+            <Textfield id="ext-email" name="email" type="email" placeholder={t(lang, 'form.placeholder.email.org')}
+              value={externalEmail} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setExternalEmail(e.currentTarget.value)} dir="ltr" isRequired />
           </div>
-
           <div className="clmp-field">
-            <label htmlFor="ext-org" className="clmp-label">
-              {t(lang, 'form.label.org')}
-            </label>
-            <Textfield
-              id="ext-org"
-              name="org"
-              type="text"
-              placeholder={t(lang, 'form.placeholder.org')}
-              value={externalOrg}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setExternalOrg(e.currentTarget.value)}
-            />
+            <label htmlFor="ext-org" className="clmp-label">{t(lang, 'form.label.org')}</label>
+            <Textfield id="ext-org" name="org" type="text" placeholder={t(lang, 'form.placeholder.org')}
+              value={externalOrg} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setExternalOrg(e.currentTarget.value)} />
           </div>
-
           <div className="clmp-field">
-            <label htmlFor="ext-desc" className="clmp-label">
-              {t(lang, 'form.label.desc')}
-            </label>
-            <Textarea
-              id="ext-desc"
-              name="desc"
-              placeholder={t(lang, 'form.placeholder.desc')}
-              value={externalDesc}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setExternalDesc(e.target.value)}
-              minimumRows={3}
-            />
+            <label htmlFor="ext-desc" className="clmp-label">{t(lang, 'form.label.desc')}</label>
+            <Textarea id="ext-desc" name="desc" placeholder={t(lang, 'form.placeholder.desc')}
+              value={externalDesc} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setExternalDesc(e.target.value)} minimumRows={3} />
           </div>
-
-          <Button
-            type="submit"
-            appearance="primary"
-            shouldFitContainer
-          >
-            {t(lang, 'form.btn.submit')}
-          </Button>
+          <Button type="submit" appearance="primary" shouldFitContainer>{t(lang, 'form.btn.submit')}</Button>
         </form>
       )}
 
@@ -421,7 +472,7 @@ export function LoginFormPanel({
         </SectionMessage>
       )}
 
-      {/* Footer badges — ADS-styled, muted */}
+      {/* ── Footer badges ── */}
       <div className="clmp-card-foot">
         <span className="clmp-foot-badge">
           <span className="clmp-jira-dot">J</span>
@@ -432,6 +483,7 @@ export function LoginFormPanel({
           {t(lang, 'form.security.badge')}
         </span>
       </div>
+
     </div>
   );
 }

@@ -3,9 +3,6 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
-// Accounts that must use OTP — password login is blocked for these emails.
-const OTP_ONLY_EMAILS = ['vikramataol@gmail.com'];
-
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -105,13 +102,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const sendOtp = useCallback(async (email: string) => {
     try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email: email.toLowerCase().trim(),
-        options: { shouldCreateUser: false },
+      // Delegates to send-login-otp edge function which uses admin.generateLink
+      // to get a Supabase-managed OTP, then delivers via Resend (same as invitations).
+      const { data, error } = await supabase.functions.invoke('send-login-otp', {
+        body: { email: email.toLowerCase().trim() },
       });
-      if (error) {
-        toast({ title: 'Could not send code', description: error.message, variant: 'destructive' });
-        return { error };
+      if (error || data?.ok === false) {
+        const msg = data?.error || error?.message || 'Could not send code';
+        toast({ title: 'Could not send code', description: msg, variant: 'destructive' });
+        return { error: error || new Error(msg) };
       }
       return { error: null };
     } catch (error: any) {
@@ -139,15 +138,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [toast]);
 
   const signIn = useCallback(async (email: string, password: string) => {
-    // Block password login for OTP-only accounts
-    if (OTP_ONLY_EMAILS.includes(email.toLowerCase().trim())) {
-      toast({
-        title: 'Use code login',
-        description: 'This account requires sign-in via email code, not password.',
-        variant: 'destructive',
-      });
-      return { error: { message: 'OTP_ONLY' } };
-    }
     try {
       // Use the secure login edge function with rate limiting and audit logging
       const { data, error: invokeError } = await supabase.functions.invoke('login-with-audit', {
