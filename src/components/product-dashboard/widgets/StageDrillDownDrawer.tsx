@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { BrPostMortemModal } from '../BrPostMortemModal';
 
 interface BrRow {
   id: string;
@@ -32,6 +33,7 @@ function slaColor(days: number): string {
 
 export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageDrillDownDrawerProps) {
   const { user, loading } = useAuth();
+  const [postMortem, setPostMortem] = useState<{ id: string; title: string } | null>(null);
 
   const { data: brs = [] } = useQuery({
     queryKey: ['stage-drilldown-brs', stageValue],
@@ -222,6 +224,23 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
                     >
                       {days}d
                     </span>
+                    <button
+                      type="button"
+                      onClick={e => { e.stopPropagation(); setPostMortem({ id: br.id, title: br.title }); }}
+                      style={{
+                        background: 'none',
+                        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                        borderRadius: 4,
+                        cursor: 'pointer',
+                        fontSize: 11,
+                        color: token('color.text.subtle', '#505258'),
+                        padding: '2px 6px',
+                        flexShrink: 0,
+                        lineHeight: 1.4,
+                      }}
+                    >
+                      ✦ Post-mortem
+                    </button>
                   </div>
                 );
               })
@@ -262,6 +281,12 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
           </div>
         </section>
       </div>
+
+      <BrPostMortemModal
+        brId={postMortem?.id ?? null}
+        brTitle={postMortem?.title ?? ''}
+        onClose={() => setPostMortem(null)}
+      />
 
       {/* Owner Accountability Footer */}
       <div
