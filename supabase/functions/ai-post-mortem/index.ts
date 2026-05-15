@@ -14,7 +14,13 @@ interface BrRow {
   process_step: string | null;
   created_at: string;
   updated_at: string;
-  assignee_name: string | null;
+  assignee: string | null;
+}
+
+interface AuditLogRow {
+  old_value: string | null;
+  new_value: string | null;
+  changed_at: string;
 }
 
 interface StageHistoryRow {
