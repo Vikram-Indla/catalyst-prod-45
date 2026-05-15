@@ -3,7 +3,10 @@
  * Enterprise login only: no self-serve signup flow.
  */
 
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect, useRef, FormEvent } from 'react';
+
+const IS_LOCALHOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const DEV_EMAIL = 'vikramataol@gmail.com';
 import Textfield from '@atlaskit/textfield';
 import Textarea from '@atlaskit/textarea';
 import Button from '@atlaskit/button';
@@ -29,6 +32,8 @@ interface LoginFormPanelProps {
   onSignIn: (email: string, password: string, rememberMe: boolean) => Promise<{ error?: Error | null }>;
   onSignUp: (email: string, password: string, fullName: string) => Promise<{ error?: Error | null }>;
   onExternalSubmit: (data: ExternalAccessRequest) => Promise<void>;
+  onSendOtp: (email: string) => Promise<{ error?: any }>;
+  onVerifyOtp: (email: string, token: string) => Promise<{ error?: any }>;
   loading: boolean;
   error?: string | null;
   lang: Lang;
@@ -57,6 +62,8 @@ export function LoginFormPanel({
   onUserTypeChange,
   onSignIn,
   onExternalSubmit,
+  onSendOtp,
+  onVerifyOtp,
   loading,
   error,
   lang,
@@ -73,6 +80,13 @@ export function LoginFormPanel({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  // OTP flow state (localhost only)
+  const [otpEmail] = useState(IS_LOCALHOST ? DEV_EMAIL : '');
+  const [otpCode, setOtpCode] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpError, setOtpError] = useState<string | null>(null);
+  const otpInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(REMEMBERED_EMAIL_KEY);
@@ -103,6 +117,31 @@ export function LoginFormPanel({
     setSubmitSuccess(true);
   };
 
+  const handleSendOtp = async () => {
+    setOtpError(null);
+    setIsSubmitting(true);
+    const result = await onSendOtp(otpEmail);
+    setIsSubmitting(false);
+    if (result.error) {
+      setOtpError('Could not send code. Check the email address.');
+    } else {
+      setOtpSent(true);
+      setTimeout(() => otpInputRef.current?.focus(), 100);
+    }
+  };
+
+  const handleVerifyOtp = async (e: FormEvent) => {
+    e.preventDefault();
+    setOtpError(null);
+    setIsSubmitting(true);
+    const result = await onVerifyOtp(otpEmail, otpCode.trim());
+    setIsSubmitting(false);
+    if (result.error) {
+      setOtpError('Incorrect or expired code. Try again.');
+      setOtpCode('');
+    }
+  };
+
   const pwdToggle = (
     <button
       type="button"
@@ -117,6 +156,88 @@ export function LoginFormPanel({
 
   return (
     <div className="clmp-login-card" id="main-form">
+
+      {/* ── Localhost dev login (OTP, no password) ── */}
+      {IS_LOCALHOST && (
+        <div style={{
+          background: 'var(--ds-background-accent-blue-subtlest, #E9F2FF)',
+          border: '1px solid var(--ds-border-information, #0055CC)',
+          borderRadius: 6,
+          padding: '14px 16px',
+          marginBottom: 20,
+        }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-information, #0055CC)', marginBottom: 10, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+            Dev login — {DEV_EMAIL}
+          </div>
+
+          {!otpSent ? (
+            <button
+              type="button"
+              disabled={isSubmitting || loading}
+              onClick={handleSendOtp}
+              style={{
+                width: '100%', padding: '8px 0', borderRadius: 4, border: 'none',
+                background: 'var(--ds-background-brand-bold, #0052CC)',
+                color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                opacity: (isSubmitting || loading) ? 0.6 : 1,
+              }}
+            >
+              {isSubmitting ? 'Sending…' : 'Send login code to email'}
+            </button>
+          ) : (
+            <form onSubmit={handleVerifyOtp} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>
+                Check your inbox for a 6-digit code
+              </div>
+              <input
+                ref={otpInputRef}
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={6}
+                placeholder="000000"
+                value={otpCode}
+                onChange={e => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                style={{
+                  padding: '8px 12px', borderRadius: 4, fontSize: 22, fontWeight: 700,
+                  letterSpacing: '0.3em', textAlign: 'center', width: '100%', boxSizing: 'border-box',
+                  border: '2px solid var(--ds-border-focused, #0052CC)',
+                  outline: 'none',
+                }}
+              />
+              {otpError && (
+                <div style={{ fontSize: 12, color: 'var(--ds-text-danger, #AE2A19)' }}>{otpError}</div>
+              )}
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  type="submit"
+                  disabled={otpCode.length < 6 || isSubmitting}
+                  style={{
+                    flex: 1, padding: '8px 0', borderRadius: 4, border: 'none',
+                    background: 'var(--ds-background-brand-bold, #0052CC)',
+                    color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                    opacity: (otpCode.length < 6 || isSubmitting) ? 0.5 : 1,
+                  }}
+                >
+                  {isSubmitting ? 'Verifying…' : 'Sign in'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setOtpSent(false); setOtpCode(''); setOtpError(null); }}
+                  style={{
+                    padding: '8px 14px', borderRadius: 4,
+                    border: '1px solid var(--ds-border, #DFE1E6)',
+                    background: 'transparent', fontSize: 13, cursor: 'pointer',
+                    color: 'var(--ds-text-subtle, #6B778C)',
+                  }}
+                >
+                  Resend
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      )}
 
       {/* Single tab group — Sign In | Request Access */}
       <div className="clmp-auth-toggle" role="tablist">

@@ -49,7 +49,7 @@ function CMarkSvg({ size = 40, className = '' }: { size?: number; className?: st
 
 export function CatalystLoginPage() {
   const navigate = useNavigate();
-  const { signIn, signUp, user, loading } = useAuth();
+  const { signIn, signUp, sendOtp, verifyOtp, user, loading } = useAuth();
   const { userType, authType, handleUserTypeChange, handleAuthTypeChange } = useLoginState();
   const { resolvedTheme, setTheme } = useThemeMode();
   const { lang, toggleLang } = useLanguage();
@@ -214,6 +214,28 @@ export function CatalystLoginPage() {
     navigate(lastRoute);
   };
 
+  const handleSendOtp = async (email: string): Promise<{ error?: any }> => {
+    setIsLoading(true);
+    setLoginError(null);
+    const result = await sendOtp(email);
+    setIsLoading(false);
+    return result;
+  };
+
+  const handleVerifyOtp = async (email: string, token: string): Promise<{ error?: any }> => {
+    setIsLoading(true);
+    setLoginError(null);
+    const result = await verifyOtp(email, token);
+    if (!result.error) {
+      storeCurrentLoginTime();
+      navigate(getLastRoute(), { replace: true });
+    } else {
+      setLoginError('The code is incorrect or has expired. Please try again.');
+    }
+    setIsLoading(false);
+    return result;
+  };
+
   const handleExternalSubmit = async (data: import('./LoginFormPanel').ExternalAccessRequest): Promise<void> => {
     // Store the access request in a transient localStorage queue so admins
     // can review it at /admin/access once a Supabase access_requests table
@@ -339,6 +361,8 @@ export function CatalystLoginPage() {
               onSignIn={handleSignIn}
               onSignUp={handleSignUp}
               onExternalSubmit={handleExternalSubmit}
+              onSendOtp={handleSendOtp}
+              onVerifyOtp={handleVerifyOtp}
               loading={isLoading}
               error={loginError}
               lang={lang}

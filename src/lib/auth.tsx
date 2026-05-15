@@ -3,12 +3,17 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
+// Accounts that must use OTP — password login is blocked for these emails.
+const OTP_ONLY_EMAILS = ['vikramataol@gmail.com'];
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string, fullName?: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  sendOtp: (email: string) => Promise<{ error: any }>;
+  verifyOtp: (email: string, token: string) => Promise<{ error: any }>;
   loading: boolean;
   isAuthenticated: boolean;
 }
@@ -98,7 +103,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const sendOtp = useCallback(async (email: string) => {
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email.toLowerCase().trim(),
+        options: { shouldCreateUser: false },
+      });
+      if (error) {
+        toast({ title: 'Could not send code', description: error.message, variant: 'destructive' });
+        return { error };
+      }
+      return { error: null };
+    } catch (error: any) {
+      toast({ title: 'Could not send code', description: error.message, variant: 'destructive' });
+      return { error };
+    }
+  }, [toast]);
+
+  const verifyOtp = useCallback(async (email: string, token: string) => {
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email: email.toLowerCase().trim(),
+        token,
+        type: 'email',
+      });
+      if (error) {
+        toast({ title: 'Invalid code', description: 'The code is incorrect or expired.', variant: 'destructive' });
+        return { error };
+      }
+      return { error: null };
+    } catch (error: any) {
+      toast({ title: 'Verification failed', description: error.message, variant: 'destructive' });
+      return { error };
+    }
+  }, [toast]);
+
   const signIn = useCallback(async (email: string, password: string) => {
+    // Block password login for OTP-only accounts
+    if (OTP_ONLY_EMAILS.includes(email.toLowerCase().trim())) {
+      toast({
+        title: 'Use code login',
+        description: 'This account requires sign-in via email code, not password.',
+        variant: 'destructive',
+      });
+      return { error: { message: 'OTP_ONLY' } };
+    }
     try {
       // Use the secure login edge function with rate limiting and audit logging
       const { data, error: invokeError } = await supabase.functions.invoke('login-with-audit', {
@@ -254,7 +303,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [toast]);
 
-  const value = useMemo(() => ({ user, session, signIn, signUp, signOut, loading, isAuthenticated: !!user }), [user, session, signIn, signUp, signOut, loading]);
+  const value = useMemo(() => ({ user, session, signIn, signUp, signOut, sendOtp, verifyOtp, loading, isAuthenticated: !!user }), [user, session, signIn, signUp, signOut, sendOtp, verifyOtp, loading]);
 
   return (
     <AuthContext.Provider value={value}>
