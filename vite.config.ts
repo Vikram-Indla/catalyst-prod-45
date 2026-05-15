@@ -88,30 +88,36 @@ function devDepsWatcher(): Plugin {
  */
 function atlaskitSubpathResolver(): Plugin {
   const nodeModules = path.resolve(__dirname, 'node_modules');
+
+  function tryResolveDir(dirPath: string): string | null {
+    const pkgJson = path.join(dirPath, 'package.json');
+    if (!fs.existsSync(pkgJson)) return null;
+    try {
+      const meta = JSON.parse(fs.readFileSync(pkgJson, 'utf8'));
+      const entry = meta['module'] || meta['main'];
+      if (!entry) return null;
+      return path.resolve(dirPath, entry);
+    } catch {
+      return null;
+    }
+  }
+
   return {
     name: 'atlaskit-subpath-resolver',
-    resolveId(id) {
-      // Only handle @atlaskit/<pkg>/<subpath> — skip plain @atlaskit/<pkg>
-      if (!id.startsWith('@atlaskit/')) return null;
-      const parts = id.split('/');
-      if (parts.length < 3) return null; // @atlaskit/<pkg> — handled by alias
 
-      // Reconstruct: parts[0]='@atlaskit', parts[1]=pkg, parts[2+]=subpath
-      const pkg = parts[1];
-      const subpath = parts.slice(2).join('/');
-      const subpkgDir = path.join(nodeModules, '@atlaskit', pkg, subpath);
-      const subpkgJson = path.join(subpkgDir, 'package.json');
-
-      if (!fs.existsSync(subpkgJson)) return null;
-
-      try {
-        const meta = JSON.parse(fs.readFileSync(subpkgJson, 'utf8'));
-        const entry = meta['module'] || meta['main'];
-        if (!entry) return null;
-        return path.resolve(subpkgDir, entry);
-      } catch {
-        return null;
-      }
+    // Vite's alias system does prefix matching, so an alias for
+    // @atlaskit/adf-schema also matches @atlaskit/adf-schema/schema-default.
+    // After replacement, Rollup gets an absolute path to a DIRECTORY and
+    // tries to open it as a file → ENOENT. The load hook intercepts those
+    // cases and reads the package.json `module` field to find the real file.
+    load(id) {
+      if (!path.isAbsolute(id)) return null;
+      // Only act on paths inside node_modules/@atlaskit with no file extension.
+      if (!id.includes('/node_modules/@atlaskit/')) return null;
+      if (path.extname(id) !== '') return null;
+      const file = tryResolveDir(id);
+      if (!file) return null;
+      return `export * from ${JSON.stringify(file)};\nexport { default } from ${JSON.stringify(file)};`;
     },
   };
 }
