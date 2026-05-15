@@ -26,7 +26,7 @@ import {
   useTestSlackConnection,
   useDisconnectSlackUser,
 } from '@/hooks/useSlackAdmin';
-import Button from '@atlaskit/button/new';
+import Button, { IconButton } from '@atlaskit/button/new';
 import { Avatar, Lozenge } from '@/components/ads';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -322,7 +322,7 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                     <div className="flex items-center gap-1">
                       <p className="font-mono">{config.app_id || '—'}</p>
                       {config.app_id && (
-                        <Button appearance="subtle" iconBefore={CopyIcon} onClick={() => copyToClipboard(config.app_id!)} />
+                        <IconButton appearance="subtle" icon={CopyIcon} onClick={() => copyToClipboard(config.app_id!)} label="" />
                       )}
                     </div>
                   </div>
@@ -375,7 +375,7 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                   </h3>
                   <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #626F86)', margin: '4px 0 0' }}>Latest integration events</p>
                 </div>
-                <Button appearance="subtle" iconBefore={RefreshIcon} onClick={() => refetchAudit()} />
+                <IconButton appearance="subtle" icon={RefreshIcon} onClick={() => refetchAudit()} label="" />
               </div>
               <div style={{ padding: '24px' }}>
                 <ScrollArea className="h-[280px]">

@@ -141,14 +141,14 @@ export function DesignSystemBaseline() {
                             <div className="flex items-center gap-2">
                               <code className="text-xs bg-secondary px-1.5 py-0.5 rounded">{token.value}</code>
                               <span className="opacity-0 group-hover:opacity-100">
-                                <Button
+                                <IconButton
                                   appearance="subtle"
-                                  iconBefore={copiedToken === token.cssVar ? CheckMarkIcon : CopyIcon}
+                                  icon={copiedToken === token.cssVar ? CheckMarkIcon : CopyIcon}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     copyToken(token.cssVar);
                                   }}
-                                />
+                                label="" />
                               </span>
                             </div>
                           </div>

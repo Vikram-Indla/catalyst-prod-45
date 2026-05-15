@@ -16,7 +16,7 @@ import {
   SheetFooter,
   SheetBody,
 } from '@/components/ui/sheet';
-import Button from '@atlaskit/button/new';
+import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import AdsSelect from '@atlaskit/select';
 import { Lozenge } from '@/components/ads';
@@ -757,11 +757,11 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
               {selectedJobRole && (
                 <div className="flex items-center gap-2">
                   <Lozenge appearance="inprogress">{selectedJobRole}</Lozenge>
-                  <Button
+                  <IconButton
                     appearance="subtle"
                     onClick={() => setSelectedJobRole('')}
-                    iconBefore={CrossIcon}
-                  />
+                    icon={CrossIcon}
+                  label="" />
                 </div>
               )}
             </div>

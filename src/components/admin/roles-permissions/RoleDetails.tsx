@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Lozenge } from '@/components/ads';
-import Button from '@atlaskit/button/new';
+import Button, { IconButton } from '@atlaskit/button/new';
 import Spinner from '@atlaskit/spinner';
 import EditIcon from '@atlaskit/icon/core/edit';
 import PersonAddIcon from '@atlaskit/icon/core/person-add';
@@ -97,11 +97,11 @@ export function RoleDetails({
         <div className="flex flex-row items-center justify-between" style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
           <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>Role: {role.name}</h2>
           {canManageRoles && (
-            <Button
+            <IconButton
               appearance="subtle"
               onClick={() => onEditRole(role)}
-              iconBefore={EditIcon}
-            />
+              icon={EditIcon}
+            label="" />
           )}
         </div>
         <div style={{ padding: '16px' }}>
