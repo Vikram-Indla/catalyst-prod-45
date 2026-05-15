@@ -2442,7 +2442,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           { id: 'import-csv', label: 'Import work items from CSV', icon: <AkDownloadIcon label="" size="small" />,
             onClick: () => flag.info('Import CSV', 'CSV importer scope: pending Vikram approval.') },
           { id: 'bulk-change', label: 'Bulk change work items', icon: <AkEditIcon label="" size="small" />,
-            onClick: () => setBulkWizardOpen(true) },
+            onClick: () => setBulkWizardOpen(true), opensModal: true },
         ]},
         // Group 3 — navigation (Jira parity item 9)
         { items: [
@@ -4714,6 +4714,8 @@ type ToolbarMenuItem = {
   icon?: React.ReactNode;
   isDisabled?: boolean;
   onClick?: () => void;
+  /** When true, skip focus-return to trigger so a newly-opened modal can claim focus. */
+  opensModal?: boolean;
 };
 type ToolbarMenuGroup = {
   title?: string;
@@ -4875,7 +4877,7 @@ function ToolbarMenuButton({
                       if (item.isDisabled) return;
                       item.onClick?.();
                       setIsOpen(false);
-                      triggerRef.current?.focus();
+                      if (!item.opensModal) triggerRef.current?.focus();
                     }}
                     style={{
                       display: 'flex',
