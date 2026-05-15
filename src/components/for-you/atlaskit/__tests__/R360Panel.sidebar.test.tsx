@@ -78,8 +78,9 @@ describe('R360Panel — sidebar roster (Decision B)', () => {
     // First select Alice
     const aliceRow = screen.getByText('Alice Tan').closest('button') as HTMLButtonElement;
     fireEvent.click(aliceRow);
-    // Then click Me
-    const meRow = screen.getByText('Me').closest('button') as HTMLButtonElement;
+    // Then click Me — use getAllByText to handle multiple matches
+    const meBtns = screen.getAllByText(/\bMe\b/);
+    const meRow = (meBtns[0].closest('button') ?? meBtns[0]) as HTMLButtonElement;
     fireEvent.click(meRow);
     const detail = screen.getByTestId('r360-detail');
     expect(detail.getAttribute('data-resource-id')).toBe('res-vikram');

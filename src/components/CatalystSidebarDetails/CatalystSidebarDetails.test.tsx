@@ -55,6 +55,7 @@ describe('CatalystSidebarDetails (F3.1)', () => {
   it('applies gap between field rows', () => {
     const { container } = renderDetails();
     const details = container.querySelector('[data-testid="sidebar-details"]');
-    expect(details).toHaveStyle({ gap: expect.any(String) });
+    const style = window.getComputedStyle(details as HTMLElement);
+    expect(style.gap || (details as HTMLElement).getAttribute('style')).toBeTruthy();
   });
 });

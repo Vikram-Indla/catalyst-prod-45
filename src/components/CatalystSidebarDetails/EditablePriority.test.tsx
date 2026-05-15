@@ -40,9 +40,9 @@ describe('EditablePriority (F3.4)', () => {
     render(<EditablePriority priority="High" onPriorityChange={() => {}} />);
     await user.click(screen.getByTestId('priority-button'));
     expect(screen.getByRole('option', { name: /lowest/i })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: /low/i })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: /p2 low/i })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: /medium/i })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: /high/i })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: /p4 high/i })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: /highest/i })).toBeInTheDocument();
   });
 
@@ -59,7 +59,7 @@ describe('EditablePriority (F3.4)', () => {
     const user = userEvent.setup();
     render(<EditablePriority priority="High" onPriorityChange={() => {}} />);
     await user.click(screen.getByTestId('priority-button'));
-    await user.click(screen.getByRole('option', { name: /low/i }));
+    await user.click(screen.getByRole('option', { name: /p2 low/i }));
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
 });

@@ -82,10 +82,10 @@ describe('HomeSidebar — sidebar display', () => {
   it('renders projectKey (BAU) not full projectName (Senaei BAU) in row title', () => {
     render(<HomeSidebar />, { wrapper });
 
-    // "BAU" should appear
-    expect(screen.getByText('BAU')).toBeTruthy();
+    // "BAU" should appear somewhere in the rendered text (the span renders "BAU › Backlog")
+    expect(screen.getByText(/BAU/)).toBeTruthy();
     // "Senaei BAU" (full name) must NOT appear as the primary label
-    const fullName = screen.queryByText('Senaei BAU');
+    const fullName = screen.queryByText(/Senaei BAU/);
     expect(fullName).toBeNull();
   });
 

@@ -15,6 +15,15 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+function wrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      {children}
+    </QueryClientProvider>
+  );
+}
 
 // ── Data stubs ───────────────────────────────────────────────────────────────
 vi.mock('@/hooks/useR360PanelData', () => ({
@@ -45,36 +54,41 @@ vi.mock('@/pages/R360MemberDetail', () => ({
 
 vi.mock('@atlaskit/tokens', () => ({ token: (_: string, fb: string) => fb }));
 
+vi.mock('@/lib/auth', () => ({
+  useAuth: () => ({ user: { id: 'test-user', email: 'test@test.com' }, session: null }),
+}));
+
 import R360Panel from '../R360Panel';
 
 describe('R360Panel — renders ring view not capacity chart', () => {
   it('renders R360MemberDetail for the current user resource', () => {
-    render(<MemoryRouter><R360Panel /></MemoryRouter>);
+    render(<MemoryRouter><R360Panel /></MemoryRouter>, { wrapper });
     expect(screen.getByTestId('r360-member-detail')).toBeInTheDocument();
     expect(screen.getByTestId('r360-member-detail').dataset.resourceId).toBe('res-vikram');
   });
 
   it('passes embedded=true so the Back button is suppressed inside the tab', () => {
-    render(<MemoryRouter><R360Panel /></MemoryRouter>);
+    render(<MemoryRouter><R360Panel /></MemoryRouter>, { wrapper });
     expect(screen.getByTestId('r360-member-detail').dataset.embedded).toBe('true');
   });
 
   it('shows a team-member picker when the user is a lead', () => {
-    render(<MemoryRouter><R360Panel /></MemoryRouter>);
+    render(<MemoryRouter><R360Panel /></MemoryRouter>, { wrapper });
     expect(screen.getByText('Alice Tan')).toBeInTheDocument();
     expect(screen.getByText('Bob Smith')).toBeInTheDocument();
   });
 
   it('switches the detail view to a team member when their pill is clicked', async () => {
-    render(<MemoryRouter><R360Panel /></MemoryRouter>);
+    render(<MemoryRouter><R360Panel /></MemoryRouter>, { wrapper });
     await userEvent.click(screen.getByText('Alice Tan'));
     expect(screen.getByTestId('r360-member-detail').dataset.resourceId).toBe('res-alice');
   });
 
   it('switches back to self when the "Me" pill is clicked', async () => {
-    render(<MemoryRouter><R360Panel /></MemoryRouter>);
+    render(<MemoryRouter><R360Panel /></MemoryRouter>, { wrapper });
     await userEvent.click(screen.getByText('Alice Tan'));
-    await userEvent.click(screen.getByText(/me/i));
+    const meBtns = screen.getAllByText(/\bme\b/i);
+    await userEvent.click(meBtns[0]);
     expect(screen.getByTestId('r360-member-detail').dataset.resourceId).toBe('res-vikram');
   });
 });

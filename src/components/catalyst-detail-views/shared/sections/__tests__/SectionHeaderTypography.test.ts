@@ -76,18 +76,20 @@ describe('Section header typography — canonical Jira spec (live probe 2026-05-
     ).toBe(true);
   });
 
-  it('CatalystDescriptionSection "Description" h2 must be fontSize 16, fontWeight 653', () => {
+  it('CatalystDescriptionSection "Description" h2 must be fontSize 14, fontWeight 500', () => {
     // Locate the section label h2 (data-testid="catalyst-description-section.label")
+    // Per CLAUDE.md 2026-05-12 re-probe: Description h2 is 14px/500/rgb(80,82,88) —
+    // it deviates from all other section headers which use 16px/653.
     const block = descSrc.match(/data-testid="catalyst-description-section\.label"[\s\S]{0,800}/);
     expect(block, 'Could not locate Description section label h2').not.toBeNull();
     const text = block![0];
     expect(
-      /fontSize:\s*16/.test(text),
-      'CatalystDescriptionSection.tsx: section h2 must use fontSize: 16 (live Jira spec).',
+      /fontSize:\s*14/.test(text),
+      'CatalystDescriptionSection.tsx: section h2 must use fontSize: 14 (per 2026-05-12 TreeWalker probe).',
     ).toBe(true);
     expect(
-      /fontWeight:\s*653/.test(text),
-      'CatalystDescriptionSection.tsx: section h2 must use fontWeight: 653 (live Jira spec).',
+      /fontWeight:\s*500/.test(text),
+      'CatalystDescriptionSection.tsx: section h2 must use fontWeight: 500 (per 2026-05-12 TreeWalker probe).',
     ).toBe(true);
   });
 

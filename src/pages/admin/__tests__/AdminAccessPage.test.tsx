@@ -4,12 +4,13 @@
  * Contract:
  *   - Renders 3 tabs: People, Invitations, Email Log
  *   - People tab is selected by default
- *   - Invitations tab panel contains an "Invite User" button
+ *   - People tab panel contains an "Invite User" button
  *   - Wrapped in AdminGuard
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 vi.mock('@/components/admin/AdminGuard', () => ({
   AdminGuard: ({ children }: { children: React.ReactNode }) => <>{children}</>,
@@ -37,10 +38,29 @@ vi.mock('@tanstack/react-query', async () => {
   };
 });
 
+vi.mock('@/lib/auth', () => ({
+  useAuth: () => ({
+    user: { id: 'admin-user', email: 'admin@test.com', user_metadata: { full_name: 'Admin' } },
+    session: null,
+  }),
+}));
+
+vi.mock('@atlaskit/platform-feature-flags', () => ({
+  fg: () => false,
+}));
+
 import AdminAccessPage from '@/pages/admin/AdminAccessPage';
 
+function wrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      {children}
+    </QueryClientProvider>
+  );
+}
+
 function renderPage() {
-  return render(<AdminAccessPage />);
+  return render(<AdminAccessPage />, { wrapper });
 }
 
 describe('AdminAccessPage', () => {
@@ -58,9 +78,9 @@ describe('AdminAccessPage', () => {
     expect(screen.getByRole('tab', { name: /people/i })).toHaveAttribute('aria-selected', 'true');
   });
 
-  it('switching to Invitations tab reveals the Invite User button', async () => {
+  it('People tab contains the Invite User button', async () => {
     renderPage();
-    fireEvent.click(screen.getByRole('tab', { name: /invitations/i }));
+    // Invite User is in PeopleTab (the default tab), not the Invitations tab
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /invite user/i })).toBeInTheDocument();
     });

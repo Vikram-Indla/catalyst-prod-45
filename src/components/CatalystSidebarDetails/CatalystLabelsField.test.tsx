@@ -15,7 +15,7 @@ import { CatalystLabelsField } from './CatalystLabelsField';
 describe('CatalystLabelsField (F3.7)', () => {
   it('renders labels field label', () => {
     render(<CatalystLabelsField labels={[]} onLabelsChange={() => {}} />);
-    expect(screen.getByText(/labels/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/labels/i)[0]).toBeInTheDocument();
   });
 
   it('displays labels as tags', () => {

@@ -1,14 +1,29 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ProductBacklogListTable from '../ProductBacklogListTable';
-import * as supabaseModule from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 
-// Mock Supabase client
-jest.mock('@/lib/supabase', () => ({
+vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
-    from: jest.fn(),
+    from: vi.fn(),
   },
+}));
+
+vi.mock('@/lib/auth', () => ({
+  useAuth: () => ({
+    user: { id: 'user-1', email: 'test@example.com' },
+    session: null,
+    loading: false,
+  }),
+  AuthProvider: ({ children }: any) => children,
+}));
+
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({
+    user: { id: 'user-1', email: 'test@example.com' },
+    session: null,
+  }),
+  default: () => ({ user: { id: 'user-1' } }),
 }));
 
 const createWrapper = () => {
@@ -18,7 +33,6 @@ const createWrapper = () => {
       mutations: { retry: false },
     },
   });
-
   return ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>
       {children}
@@ -53,28 +67,51 @@ const mockBusinessRequests = [
   },
 ];
 
-describe('ProductBacklogListTable', () => {
-  let mockSupabase: any;
-
-  beforeEach(() => {
-    mockSupabase = {
-      from: jest.fn().mockReturnValue({
-        select: jest.fn().mockReturnThis(),
-        order: jest.fn().mockReturnThis(),
-        data: mockBusinessRequests,
-        error: null,
+// Build a thenable chain that resolves to `resolvedData` when awaited.
+// Every chain method returns `this` so arbitrary call chains work.
+function makeChain(resolvedData: { data: any; error: null }) {
+  const chain: any = {
+    then: (onFulfilled: Function, onRejected?: Function) =>
+      Promise.resolve(resolvedData).then(onFulfilled as any, onRejected as any),
+    catch: (onRejected: Function) => Promise.resolve(resolvedData).catch(onRejected as any),
+    select: vi.fn(),
+    eq: vi.fn(),
+    order: vi.fn(),
+    insert: vi.fn().mockReturnValue({
+      then: (res: Function) => Promise.resolve({ data: [], error: null }).then(res as any),
+    }),
+    update: vi.fn().mockReturnValue({
+      eq: vi.fn().mockReturnValue({
+        then: (res: Function) => Promise.resolve({ error: null }).then(res as any),
       }),
-    };
-    (supabaseModule.supabase as any) = mockSupabase;
+    }),
+    delete: vi.fn().mockReturnValue({
+      eq: vi.fn().mockReturnValue({
+        then: (res: Function) => Promise.resolve({ error: null }).then(res as any),
+      }),
+      in: vi.fn().mockReturnValue({
+        then: (res: Function) => Promise.resolve({ error: null }).then(res as any),
+      }),
+    }),
+  };
+  chain.select.mockReturnValue(chain);
+  chain.eq.mockReturnValue(chain);
+  chain.order.mockReturnValue(chain);
+  return chain;
+}
+
+describe('ProductBacklogListTable', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (supabase.from as ReturnType<typeof vi.fn>).mockImplementation(() =>
+      makeChain({ data: mockBusinessRequests, error: null })
+    );
   });
 
   test('renders table with business requests data', async () => {
-    mockSupabase.from().select().order.mockResolvedValueOnce({
-      data: mockBusinessRequests,
-      error: null,
+    render(<ProductBacklogListTable projectId="test-project" />, {
+      wrapper: createWrapper(),
     });
-
-    render(<ProductBacklogListTable />, { wrapper: createWrapper() });
 
     await waitFor(() => {
       expect(screen.getByText('BR-1')).toBeInTheDocument();
@@ -85,101 +122,57 @@ describe('ProductBacklogListTable', () => {
   });
 
   test('handles rank update on drag (midpoint calculation)', async () => {
-    const mockData = mockBusinessRequests.map((br) => ({
-      ...br,
-      id: br.id,
-    }));
-
-    mockSupabase.from().select().order.mockResolvedValueOnce({
-      data: mockData,
-      error: null,
+    render(<ProductBacklogListTable projectId="test-project" />, {
+      wrapper: createWrapper(),
     });
 
-    mockSupabase.from().update = jest.fn().mockReturnValue({
-      eq: jest.fn().mockResolvedValue({ error: null }),
-    });
-
-    render(<ProductBacklogListTable />, { wrapper: createWrapper() });
-
-    // Verify data loaded
     await waitFor(() => {
       expect(screen.getByText('BR-1')).toBeInTheDocument();
     });
 
-    // Simulate drag operation via mutation
-    // Expected: rank update with midpoint calculation
-    expect(mockSupabase.from).toHaveBeenCalledWith('business_requests');
+    expect(supabase.from).toHaveBeenCalledWith('business_requests');
   });
 
   test('handles duplicate operation', async () => {
-    mockSupabase.from().insert = jest.fn().mockResolvedValue({
-      data: [{ id: '3', request_key: 'BR-3', ...mockBusinessRequests[0], rank: 1.5 }],
-      error: null,
+    render(<ProductBacklogListTable projectId="test-project" />, {
+      wrapper: createWrapper(),
     });
-
-    mockSupabase.from().select().order.mockResolvedValueOnce({
-      data: mockBusinessRequests,
-      error: null,
-    });
-
-    render(<ProductBacklogListTable />, { wrapper: createWrapper() });
 
     await waitFor(() => {
       expect(screen.getByText('BR-1')).toBeInTheDocument();
     });
 
-    // Duplicate button is revealed on row hover via MoreIcon trigger
-    // This test verifies the mutation path exists
-    expect(mockSupabase.from).toHaveBeenCalled();
+    expect(supabase.from).toHaveBeenCalled();
   });
 
   test('handles delete operation (single row)', async () => {
-    mockSupabase.from().delete = jest.fn().mockReturnValue({
-      eq: jest.fn().mockResolvedValue({ error: null }),
+    render(<ProductBacklogListTable projectId="test-project" />, {
+      wrapper: createWrapper(),
     });
-
-    mockSupabase.from().select().order.mockResolvedValueOnce({
-      data: mockBusinessRequests,
-      error: null,
-    });
-
-    render(<ProductBacklogListTable />, { wrapper: createWrapper() });
 
     await waitFor(() => {
       expect(screen.getByText('BR-1')).toBeInTheDocument();
     });
 
-    expect(mockSupabase.from).toHaveBeenCalledWith('business_requests');
+    expect(supabase.from).toHaveBeenCalledWith('business_requests');
   });
 
   test('handles bulk delete (multiple rows selected)', async () => {
-    mockSupabase.from().delete = jest.fn().mockReturnValue({
-      in: jest.fn().mockResolvedValue({ error: null }),
+    render(<ProductBacklogListTable projectId="test-project" />, {
+      wrapper: createWrapper(),
     });
-
-    mockSupabase.from().select().order.mockResolvedValueOnce({
-      data: mockBusinessRequests,
-      error: null,
-    });
-
-    render(<ProductBacklogListTable />, { wrapper: createWrapper() });
 
     await waitFor(() => {
       expect(screen.getByText('BR-1')).toBeInTheDocument();
     });
 
-    // Bulk footer bar should render when selectedIds.size > 0
-    // Mutation path verified
-    expect(mockSupabase.from).toHaveBeenCalledWith('business_requests');
+    expect(supabase.from).toHaveBeenCalledWith('business_requests');
   });
 
   test('multi-select state (checkbox toggle)', async () => {
-    mockSupabase.from().select().order.mockResolvedValueOnce({
-      data: mockBusinessRequests,
-      error: null,
+    render(<ProductBacklogListTable projectId="test-project" />, {
+      wrapper: createWrapper(),
     });
-
-    render(<ProductBacklogListTable />, { wrapper: createWrapper() });
 
     await waitFor(() => {
       expect(screen.getByText('BR-1')).toBeInTheDocument();

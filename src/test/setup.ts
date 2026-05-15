@@ -1,6 +1,11 @@
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
+// Stub Atlaskit platform feature flags to prevent "Client must be initialized" errors.
+// The CJS resolver checks for a global booleanResolver before calling FeatureGates.checkGate.
+// Setting it to always return false short-circuits the uninitialized client throw.
+(globalThis as any)['__PLATFORM_FEATURE_FLAGS__'] = { booleanResolver: () => false };
+
 // Mock matchMedia
 Object.defineProperty(window, "matchMedia", {
   writable: true,
@@ -17,11 +22,11 @@ Object.defineProperty(window, "matchMedia", {
 });
 
 // Mock ResizeObserver
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+global.ResizeObserver = vi.fn().mockImplementation(function() {
+  this.observe = vi.fn();
+  this.unobserve = vi.fn();
+  this.disconnect = vi.fn();
+});
 
 // Mock Supabase client
 vi.mock("@/integrations/supabase/client", () => ({

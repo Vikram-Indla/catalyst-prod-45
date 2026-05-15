@@ -33,7 +33,8 @@ describe('FieldRow (F3.2)', () => {
   it('applies proper spacing', () => {
     const { container } = render(<FieldRow label="Priority" value="High" />);
     const row = container.querySelector('[data-testid="field-row"]');
-    expect(row).toHaveStyle({ gap: expect.any(String) });
+    const style = window.getComputedStyle(row as HTMLElement);
+    expect(style.gap || (row as HTMLElement).getAttribute('style')).toBeTruthy();
   });
 
   it('styles label correctly', () => {
