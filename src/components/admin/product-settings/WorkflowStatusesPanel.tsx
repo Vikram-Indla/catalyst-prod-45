@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useProductStatusConfigs, useUpdateProductStatusConfig, useCreateProductStatusConfig, useDeleteProductStatusConfig, ProductStatusConfig } from '@/hooks/useProductSettings';
-import Button from '@atlaskit/button/new';
+import Button, { IconButton } from '@atlaskit/button/new';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import Textfield from '@atlaskit/textfield';
 import AdsSelect from '@atlaskit/select';
@@ -215,20 +215,20 @@ export function WorkflowStatusesPanel({ onChanges }: WorkflowStatusesPanelProps)
                       </Lozenge>
 
                       <div className="flex items-center gap-1">
-                        <Button
+                        <IconButton
                           appearance="subtle"
                           onClick={() => handleOpenDialog(status)}
-                          iconBefore={EditIcon}
-                        />
-                        <Button
+                          icon={EditIcon}
+                        label="" />
+                        <IconButton
                           appearance="subtle"
                           onClick={() => {
                             setDeletingStatus(status);
                             setIsDeleteOpen(true);
                           }}
                           isDisabled={status.is_default}
-                          iconBefore={TrashIcon}
-                        />
+                          icon={TrashIcon}
+                        label="" />
                       </div>
                     </div>
                   )}

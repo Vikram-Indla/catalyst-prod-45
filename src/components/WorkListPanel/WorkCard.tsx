@@ -89,7 +89,7 @@ export const WorkCard = memo(function WorkCard({
           data-testid="work-card-type-icon"
           style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}
         >
-          <JiraIssueTypeIcon issueType={item.issueType} size={14} />
+          <JiraIssueTypeIcon type={item.issueType} size={14} />
         </div>
 
         {/* Key */}

@@ -32,21 +32,21 @@ const accessConfig = {
     bg: 'bg-emerald-100 dark:bg-emerald-900/40',
     border: 'border-emerald-400 dark:border-emerald-600',
     text: 'text-emerald-700 dark:text-emerald-300',
-    icon: Check,
+    icon: CheckMarkIcon,
   },
   view: {
     label: 'View Only',
     bg: 'bg-amber-100 dark:bg-amber-900/40',
     border: 'border-amber-400 dark:border-amber-600',
     text: 'text-amber-700 dark:text-amber-300',
-    icon: Eye,
+    icon: EyeOpenIcon,
   },
   hidden: {
     label: 'Hidden',
     bg: 'bg-gray-100 dark:bg-gray-800/40',
     border: 'border-gray-300 dark:border-gray-600',
     text: 'text-gray-500 dark:text-gray-400',
-    icon: EyeOff,
+    icon: EyeOpenStrikethroughIcon,
   },
 };
 

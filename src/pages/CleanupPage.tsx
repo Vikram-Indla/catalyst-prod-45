@@ -1087,7 +1087,7 @@ export default function CleanupPage() {
                             {/* Key + Type icon */}
                             <td style={{ padding: '8px 12px', width: 120 }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                <JiraIssueTypeIcon issueType={item.issue_type} size={16} />
+                                <JiraIssueTypeIcon type={item.issue_type} size={16} />
                                 <span style={{
                                   fontFamily: 'var(--cp-font-mono)', fontSize: 12,
                                   fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)',
@@ -1110,7 +1110,7 @@ export default function CleanupPage() {
                             <td style={{ padding: '8px 12px', width: 180 }} title={parentTitle || undefined}>
                               {item.parent_key ? (
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
-                                  <JiraIssueTypeIcon issueType={parentIssueType} size={14} />
+                                  <JiraIssueTypeIcon type={parentIssueType} size={14} />
                                   <span style={{
                                     fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtle, #475569)',
                                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',

@@ -32556,6 +32556,7 @@ export type Database = {
           last_signup_attempt_at: string | null
           location: string | null
           locked_until: string | null
+          module_access: Json
           must_change_password: boolean
           rejected_at: string | null
           rejected_by: string | null
@@ -32595,6 +32596,7 @@ export type Database = {
           last_signup_attempt_at?: string | null
           location?: string | null
           locked_until?: string | null
+          module_access?: Json
           must_change_password?: boolean
           rejected_at?: string | null
           rejected_by?: string | null
@@ -32634,6 +32636,7 @@ export type Database = {
           last_signup_attempt_at?: string | null
           location?: string | null
           locked_until?: string | null
+          module_access?: Json
           must_change_password?: boolean
           rejected_at?: string | null
           rejected_by?: string | null
@@ -60697,6 +60700,7 @@ export type Database = {
           created_at: string
           email: string
           expires_at: string
+          full_name: string | null
           id: string
           invited_by: string
           module_access: Json
@@ -60711,6 +60715,7 @@ export type Database = {
           created_at?: string
           email: string
           expires_at: string
+          full_name?: string | null
           id?: string
           invited_by: string
           module_access?: Json
@@ -60725,6 +60730,7 @@ export type Database = {
           created_at?: string
           email?: string
           expires_at?: string
+          full_name?: string | null
           id?: string
           invited_by?: string
           module_access?: Json

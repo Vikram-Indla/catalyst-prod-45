@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/admin/admin-dialog';
-import Button from '@atlaskit/button/new';
+import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -243,7 +243,7 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
                     appearance="default"
                     onClick={handleCopyLink}
                     iconBefore={copied ? CheckMarkIcon : CopyIcon}
-                  />
+                  >{null}</Button>
                 </div>
               </div>
             </div>
@@ -278,15 +278,17 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
                       type={showPassword ? 'text' : 'password'}
                     />
                   </div>
-                  <Button
+                  <IconButton
                     appearance="default"
                     onClick={() => setShowPassword(!showPassword)}
-                    iconBefore={showPassword ? EyeOpenStrikethroughIcon : EyeOpenIcon}
+                    icon={showPassword ? EyeOpenStrikethroughIcon : EyeOpenIcon}
+                    label={showPassword ? 'Hide password' : 'Show password'}
                   />
-                  <Button
+                  <IconButton
                     appearance="default"
                     onClick={handleCopyPassword}
-                    iconBefore={copied ? CheckMarkIcon : CopyIcon}
+                    icon={copied ? CheckMarkIcon : CopyIcon}
+                    label="Copy password"
                   />
                 </div>
                 <p className="text-xs" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>

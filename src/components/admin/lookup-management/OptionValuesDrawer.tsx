@@ -16,7 +16,7 @@ import {
   SheetBody,
   SheetFooter,
 } from '@/components/ui/sheet';
-import Button from '@atlaskit/button/new';
+import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import Toggle from '@atlaskit/toggle';
 import { Lozenge } from '@/components/ads';
@@ -331,26 +331,26 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
                                         iconBefore={CheckMarkIcon}
                                         onClick={handleSaveEdit}
                                         isDisabled={updateMutation.isPending}
-                                      />
+                                      >{null}</Button>
                                       <Button
                                         appearance="subtle"
                                         iconBefore={CrossIcon}
                                         onClick={handleCancelEdit}
-                                      />
+                                      >{null}</Button>
                                     </>
                                   ) : (
                                     <>
-                                      <Button
+                                      <IconButton
                                         appearance="subtle"
-                                        iconBefore={EditIcon}
+                                        icon={EditIcon}
                                         onClick={() => handleStartEdit(value)}
-                                      />
-                                      <Button
+                                      label="" />
+                                      <IconButton
                                         appearance="subtle"
-                                        iconBefore={TrashIcon}
+                                        icon={TrashIcon}
                                         onClick={() => handleDelete(value)}
                                         isDisabled={deleteMutation.isPending}
-                                      />
+                                      label="" />
                                     </>
                                   )}
                                 </div>
@@ -400,11 +400,11 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
                       >
                         {createMutation.isPending ? <Spinner size="small" /> : undefined}
                       </Button>
-                      <Button
+                      <IconButton
                         appearance="subtle"
-                        iconBefore={CrossIcon}
+                        icon={CrossIcon}
                         onClick={() => setIsAddingNew(false)}
-                      />
+                      label="" />
                     </div>
                   </div>
                 )}
