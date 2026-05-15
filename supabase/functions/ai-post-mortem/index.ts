@@ -57,7 +57,7 @@ serve(async (req: Request) => {
     // Fetch BR details
     const { data: br, error: brErr } = await supabase
       .from("business_requests")
-      .select("id, title, description, process_step, created_at, updated_at, assignee_name")
+      .select("id, title, description, process_step, created_at, updated_at, assignee")
       .eq("id", brId)
       .maybeSingle();
 
@@ -71,14 +71,27 @@ serve(async (req: Request) => {
 
     const brRow = br as BrRow;
 
-    // Fetch stage history
+    // Fetch stage history from audit logs (process_step changes)
     const { data: history } = await supabase
-      .from("business_request_stage_history")
-      .select("stage_code, entered_at, exited_at")
+      .from("business_request_audit_logs")
+      .select("old_value, new_value, changed_at")
       .eq("business_request_id", brId)
-      .order("entered_at", { ascending: true });
+      .eq("field_changed", "process_step")
+      .order("changed_at", { ascending: true });
 
-    const stages = (history ?? []) as StageHistoryRow[];
+    const auditRows = (history ?? []) as AuditLogRow[];
+
+    // Reconstruct stages from audit transitions
+    const stages: StageHistoryRow[] = [];
+    for (let i = 0; i < auditRows.length; i++) {
+      const row = auditRows[i];
+      if (!row.new_value) continue;
+      stages.push({
+        stage_code: row.new_value,
+        entered_at: row.changed_at,
+        exited_at: auditRows[i + 1]?.changed_at ?? null,
+      });
+    }
 
     // Build stage timeline text
     const stageLines = stages
