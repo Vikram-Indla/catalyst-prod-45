@@ -53,36 +53,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // THEN check for existing session, but never block the UI indefinitely
     const checkSession = async () => {
       try {
-        const sessionResult = await Promise.race([
+        const { data: { session }, error } = await Promise.race([
           supabase.auth.getSession(),
           new Promise<never>((_, reject) =>
             window.setTimeout(() => reject(new Error('getSession timeout')), 6000)
           ),
         ]);
 
-        const { data: { session }, error } = sessionResult;
-
         if (error || !session) {
           safeFinalize(null, null);
           return;
         }
 
-        const userResult = await Promise.race([
-          supabase.auth.getUser(),
-          new Promise<never>((_, reject) =>
-            window.setTimeout(() => reject(new Error('getUser timeout')), 6000)
-          ),
-        ]);
+        // Session exists in localStorage — unblock the UI immediately (Jira-like).
+        // getSession() is local-only (no network). Trust it and show the app now.
+        safeFinalize(session, session.user);
 
-        const { data: { user }, error: userError } = userResult;
-        if (userError || !user) {
-          console.warn('[auth] Stale or unreachable session, clearing...');
-          await supabase.auth.signOut();
-          safeFinalize(null, null);
-          return;
+        // Background: verify the token is still accepted by the server.
+        // Only sign out on a hard auth rejection (401) — never on network failures.
+        // This means being offline or behind a slow connection never logs you out.
+        try {
+          const { data: { user }, error: userError } = await Promise.race([
+            supabase.auth.getUser(),
+            new Promise<never>((_, reject) =>
+              window.setTimeout(() => reject(new Error('getUser timeout')), 8000)
+            ),
+          ]);
+
+          const isHardAuthError = userError && (
+            (userError as any).status === 401 ||
+            userError.name === 'AuthSessionMissingError' ||
+            userError.name === 'AuthApiError'
+          );
+
+          if (isHardAuthError) {
+            console.warn('[auth] Server rejected token, signing out:', userError.message);
+            await supabase.auth.signOut();
+            if (isMounted) { setSession(null); setUser(null); }
+          } else if (user && isMounted) {
+            setUser(user);
+          }
+          // Network errors / timeouts: keep the session we already set
+        } catch {
+          // getUser timed out or threw — keep existing session, autoRefreshToken handles renewal
         }
-
-        safeFinalize(session, user);
       } catch (err) {
         console.error('Session check error:', err);
         safeFinalize(null, null);
