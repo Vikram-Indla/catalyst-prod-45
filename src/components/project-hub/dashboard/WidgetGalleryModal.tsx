@@ -108,7 +108,7 @@ export default function WidgetGalleryModal({
       <ModalFooter>
         <Button
           appearance="subtle"
-          iconBefore={<RotateCcw size={14} />}
+          iconBefore={<RotateCcw size={14} >{null}</Button>}
           onClick={onReset}
           testId="widget-gallery-reset"
         >

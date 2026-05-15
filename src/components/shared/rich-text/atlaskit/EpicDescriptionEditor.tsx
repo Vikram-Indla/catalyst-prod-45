@@ -460,7 +460,7 @@ export default function EpicDescriptionEditor({
                   uploading
                     ? (() => <Spinner size="small" />)
                     : (iconProps: React.ComponentProps<typeof ImageIcon>) => (
-                        <ImageIcon {...iconProps} label="" />
+                        <ImageIcon {...iconProps} label="" >{null}</Button>
                       )
                 }
               >

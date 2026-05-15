@@ -331,12 +331,12 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
                                         iconBefore={CheckMarkIcon}
                                         onClick={handleSaveEdit}
                                         isDisabled={updateMutation.isPending}
-                                      />
+                                      >{null}</Button>
                                       <Button
                                         appearance="subtle"
                                         iconBefore={CrossIcon}
                                         onClick={handleCancelEdit}
-                                      />
+                                      >{null}</Button>
                                     </>
                                   ) : (
                                     <>

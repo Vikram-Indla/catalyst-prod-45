@@ -256,7 +256,7 @@ function ProjectDashboardPageInner() {
       <Button
         appearance="subtle"
         spacing="compact"
-        iconBefore={<Plus size={13} />}
+        iconBefore={<Plus size={13} >{null}</Button>}
         onClick={() => setGalleryOpen(true)}
         testId="dashboard-add-widget"
       >
@@ -265,7 +265,7 @@ function ProjectDashboardPageInner() {
       <Button
         appearance="subtle"
         spacing="compact"
-        iconBefore={<RotateCcw size={13} />}
+        iconBefore={<RotateCcw size={13} >{null}</Button>}
         onClick={resetLayout}
         testId="dashboard-reset-layout"
       >
@@ -293,7 +293,7 @@ function ProjectDashboardPageInner() {
       <Button
         appearance="subtle"
         spacing="compact"
-        iconBefore={presentation ? <TvMinimal size={13} /> : <Tv size={13} />}
+        iconBefore={presentation ? <TvMinimal size={13} >{null}</Button> : <Tv size={13} />}
         onClick={() => setPresentation((p) => !p)}
         testId="dashboard-presentation-toggle"
       >
@@ -302,7 +302,7 @@ function ProjectDashboardPageInner() {
       <Button
         appearance="subtle"
         spacing="compact"
-        iconBefore={<Plus size={13} />}
+        iconBefore={<Plus size={13} >{null}</Button>}
         onClick={() => setGalleryOpen(true)}
         testId="dashboard-add-widget"
       >
@@ -311,7 +311,7 @@ function ProjectDashboardPageInner() {
       <Button
         appearance="subtle"
         spacing="compact"
-        iconBefore={<LayoutGrid size={13} />}
+        iconBefore={<LayoutGrid size={13} >{null}</Button>}
         onClick={enterEditMode}
         testId="dashboard-edit-layout"
       >
@@ -320,7 +320,7 @@ function ProjectDashboardPageInner() {
       <Button
         appearance="subtle"
         spacing="compact"
-        iconBefore={<RotateCcw size={13} />}
+        iconBefore={<RotateCcw size={13} >{null}</Button>}
         onClick={resetLayout}
         testId="dashboard-reset-layout"
       >
