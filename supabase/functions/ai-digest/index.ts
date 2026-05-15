@@ -101,9 +101,9 @@ serve(async (req) => {
     }
 
     if (body.mode === 'themes') {
-      const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
-      if (!lovableApiKey) {
-        console.error("LOVABLE_API_KEY not configured for themes mode");
+      const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
+      if (!geminiApiKey) {
+        console.error("GEMINI_API_KEY not configured for themes mode");
         return new Response(
           JSON.stringify({ error: "themes_unavailable" }),
           { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -113,7 +113,7 @@ serve(async (req) => {
         body: body as Parameters<typeof handleThemesRequest>[0]['body'],
         supabase,
         userId,
-        lovableApiKey,
+        geminiApiKey,
         corsHeaders,
       });
     }
@@ -221,9 +221,9 @@ serve(async (req) => {
       `${i+1}. [${n.notification_type}] ${n.entity_title} (${n.entity_type}, hub: ${n.hub_source}, key: ${n.entity_key ?? 'none'}, id: ${n.entity_id ?? 'null'})`
     ).join('\n') || 'None';
 
-    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
-    if (!lovableApiKey) {
-      console.error("LOVABLE_API_KEY not configured");
+    const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
+    if (!geminiApiKey) {
+      console.error("GEMINI_API_KEY not configured");
       return new Response(
         JSON.stringify({ digest: null, error: "digest_unavailable" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -296,11 +296,11 @@ Return JSON:
   ]
 }`;
 
-    const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const aiResp = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: "POST",
-      headers: { Authorization: `Bearer ${lovableApiKey}`, "Content-Type": "application/json" },
+      headers: { Authorization: `Bearer ${geminiApiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
