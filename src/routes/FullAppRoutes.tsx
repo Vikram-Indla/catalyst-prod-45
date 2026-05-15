@@ -359,6 +359,7 @@ const MiningComingSoon = lazy(() => import("../pages/enterprise/MiningComingSoon
 const IndustryPage = lazy(() => import("../pages/enterprise/DemandIntakeCatalyst"));
 const IndustryComingSoon = lazy(() => import("../pages/enterprise/IndustryComingSoon"));
 const DemandSummaryPage = lazy(() => import("../pages/enterprise/DemandSummaryPage"));
+const ProductDashboardPageV2 = lazy(() => import("../components/product-dashboard/ProductDashboardPage").then(m => ({ default: m.ProductDashboardPage })));
 const ProductRoomPage = lazy(() => import("../pages/ProductRoomPage"));
 const CapacityPlanningPage = lazy(() => import("../pages/CapacityPlanningPage"));
 // CatalystDemandKanban removed during Kanban consolidation (Phase 8); route was never wired.
@@ -483,6 +484,7 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/table" element={<MG k="producthub" t="ProductHub"><S><CatalystDemandTable /></S></MG>} />
         <Route path="/product-hub/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
         <Route path="/product-hub/dashboard" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
+        <Route path="/product-hub/product-dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
         {/* Block D Phase 2.5 (2026-05-01) — product-scoped drilldown routes.
             Mirror of /project-hub/{KEY}/* on the project side. The :code param
             resolves against public.products.code (MINI/SEN/ENT/UNA). Pages

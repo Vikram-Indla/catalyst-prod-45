@@ -1,4 +1,8 @@
-import { useState, useEffect, useRef, lazy, Suspense, ComponentType, useSyncExternalStore } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense, ComponentType, useSyncExternalStore, useCallback } from 'react';
+import AkFlag, { FlagGroup } from '@atlaskit/flag';
+import InfoIcon from '@atlaskit/icon/core/information-circle';
+import { token } from '@atlaskit/tokens';
+import { consumeLastLoginDisplay } from '@/hooks/useSessionPersistence';
 import { Menu } from '@/lib/atlaskit-icons';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
@@ -826,12 +830,60 @@ function CatalystShellContent() {
   );
 }
 
+function formatLastLogin(iso: string): string {
+  try {
+    const d = new Date(iso);
+    return d.toLocaleString(undefined, {
+      weekday: 'short', month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+    });
+  } catch {
+    return iso;
+  }
+}
+
+function LastLoginFlag() {
+  const [lastLoginAt, setLastLoginAt] = useState<string | null>(null);
+  const [visible, setVisible] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const val = consumeLastLoginDisplay();
+    if (val) {
+      setLastLoginAt(val);
+      setVisible(true);
+      timerRef.current = setTimeout(() => setVisible(false), 6000);
+    }
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, []);
+
+  const dismiss = useCallback(() => setVisible(false), []);
+
+  if (!visible || !lastLoginAt) return null;
+
+  return (
+    <div style={{ position: 'fixed', bottom: 24, left: 24, zIndex: 9999 }}>
+      <FlagGroup onDismissed={dismiss}>
+        <AkFlag
+          id="last-login-flag"
+          appearance="info"
+          icon={<InfoIcon label="" color={token('color.icon.information', '#0055CC')} />}
+          title="Welcome back"
+          description={`You last signed in on ${formatLastLogin(lastLoginAt)}`}
+          actions={[{ content: 'Dismiss', onClick: dismiss }]}
+        />
+      </FlagGroup>
+    </div>
+  );
+}
+
 export function CatalystShell() {
   const pendingItem = useGlobalSearchStore(s => s.pendingItem);
   const clearDetail = useGlobalSearchStore(s => s.clearDetail);
 
   return (
     <CatalystContextProvider>
+      <LastLoginFlag />
       <CatalystShellContent />
       {/* GlobalSearch is rendered inside CatalystHeader as the anchored search trigger */}
       {/* Global CatalystDetailRouter — opened from GlobalSearch, Notifications, ForYou, etc. */}
