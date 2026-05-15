@@ -233,7 +233,10 @@ export default defineConfig(({ mode, command }) => {
       // RangeError "Duplicate use of step JSON ID" on first page load.
       // Root packages: prosemirror-collab, editor-plugin-analytics,
       // editor-plugin-type-ahead, editor-core, editor-common, and 10 others.
-      "@atlaskit/adf-schema": path.resolve(__dirname, "./node_modules/@atlaskit/adf-schema"),
+      // @atlaskit/adf-schema is NOT hoisted to the top level by npm ci (only
+      // nested copies in the lock file). Pin to the renderer's nested copy —
+      // same version (52.6.6) and guaranteed to exist on CI via the lock file.
+      "@atlaskit/adf-schema": path.resolve(__dirname, "./node_modules/@atlaskit/renderer/node_modules/@atlaskit/adf-schema"),
       // Browser polyfill for Node's `events` — @atlaskit/editor-plugin-block-controls
       // imports { EventEmitter } from 'events'; Vite treats 'events' as a Node built-in
       // by default, so we force it to the npm `events` package.
