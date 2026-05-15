@@ -77,10 +77,10 @@ function StatPill({ icon: Icon, label, value, color = 'var(--ds-text-brand, #256
 /* ─── Stepper ─── */
 function WizardStepper({ step }: { step: number }) {
   const steps = [
-    { id: 1, label: 'Connect', icon: KeyRound },
-    { id: 2, label: 'Preview', icon: Table2 },
-    { id: 3, label: 'Map Fields', icon: ArrowLeftRight },
-    { id: 4, label: 'Import', icon: Upload },
+    { id: 1, label: 'Connect', icon: LockLockedIcon },
+    { id: 2, label: 'Preview', icon: DatabaseIconIcon },
+    { id: 3, label: 'Map Fields', icon: ArrowRightIcon },
+    { id: 4, label: 'Import', icon: UploadIcon },
   ];
   return (
     <div className="flex items-center gap-0">
@@ -317,9 +317,9 @@ export function NotionImportWizard() {
               </div>
 
               <div className="flex gap-2">
-                <StatPill icon={Table2} label="Rows" value={notionRows.length} />
-                <StatPill icon={Layers} label="Columns" value={notionProps.length} />
-                <StatPill icon={FolderKanban} label="Target" value={projectName} />
+                <StatPill icon={DatabaseIcon} label="Rows" value={notionRows.length} />
+                <StatPill icon={GridIcon} label="Columns" value={notionProps.length} />
+                <StatPill icon={BoardsIcon} label="Target" value={projectName} />
               </div>
 
               <div className="bg-white border border-[var(--ds-border,#E2E8F0)] rounded-lg overflow-hidden">
@@ -423,11 +423,11 @@ export function NotionImportWizard() {
                 <>
                   <div className="bg-white border border-[var(--ds-border,#E2E8F0)] rounded-lg overflow-hidden">
                     {[
-                      { label: 'Source', value: dbTitle, icon: Database },
-                      { label: 'Rows', value: String(notionRows.length), icon: Table2 },
-                      { label: 'Project', value: projectName, icon: FolderKanban },
-                      { label: 'Type', value: itemType, icon: Layers },
-                      { label: 'Fields', value: `${mappedCount} / ${notionProps.length}`, icon: ArrowLeftRight },
+                      { label: 'Source', value: dbTitle, icon: DatabaseIcon },
+                      { label: 'Rows', value: String(notionRows.length), icon: DatabaseIconIcon },
+                      { label: 'Project', value: projectName, icon: BoardsIcon },
+                      { label: 'Type', value: itemType, icon: GridIcon },
+                      { label: 'Fields', value: `${mappedCount} / ${notionProps.length}`, icon: ArrowRightIcon },
                     ].map((row, i) => (
                       <div key={row.label} className={`flex items-center justify-between px-4 py-2.5 ${i < 4 ? 'border-b border-[var(--ds-surface-sunken,#F1F5F9)]' : ''}`}>
                         <div className="flex items-center gap-2">
