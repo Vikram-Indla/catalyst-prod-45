@@ -256,7 +256,7 @@ function ProjectDashboardPageInner() {
       <Button
         appearance="subtle"
         spacing="compact"
-        iconBefore={<Plus size={13} >{null}</Button>}
+        iconBefore={<Plus size={13} />}
         onClick={() => setGalleryOpen(true)}
         testId="dashboard-add-widget"
       >
@@ -265,7 +265,7 @@ function ProjectDashboardPageInner() {
       <Button
         appearance="subtle"
         spacing="compact"
-        iconBefore={<RotateCcw size={13} >{null}</Button>}
+        iconBefore={<RotateCcw size={13} />}
         onClick={resetLayout}
         testId="dashboard-reset-layout"
       >
@@ -302,7 +302,7 @@ function ProjectDashboardPageInner() {
       <Button
         appearance="subtle"
         spacing="compact"
-        iconBefore={<Plus size={13} >{null}</Button>}
+        iconBefore={<Plus size={13} />}
         onClick={() => setGalleryOpen(true)}
         testId="dashboard-add-widget"
       >
@@ -311,7 +311,7 @@ function ProjectDashboardPageInner() {
       <Button
         appearance="subtle"
         spacing="compact"
-        iconBefore={<LayoutGrid size={13} >{null}</Button>}
+        iconBefore={<LayoutGrid size={13} />}
         onClick={enterEditMode}
         testId="dashboard-edit-layout"
       >
@@ -320,7 +320,7 @@ function ProjectDashboardPageInner() {
       <Button
         appearance="subtle"
         spacing="compact"
-        iconBefore={<RotateCcw size={13} >{null}</Button>}
+        iconBefore={<RotateCcw size={13} />}
         onClick={resetLayout}
         testId="dashboard-reset-layout"
       >
