@@ -957,7 +957,7 @@ async function fetchForYouRawData(
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
-export function useForYouData() {
+export function useForYouData(authLoading = false) {
   const [activeMode, setActiveMode] = useState<ModeFilter>('all');
   const [activeTab, setActiveTab] = useState<TabType>('recommended');
   const [searchQuery, setSearchQuery] = useState('');
@@ -976,7 +976,8 @@ export function useForYouData() {
   const { data: userMapping } = useQuery({
     queryKey: mappingKey,
     queryFn: () => fetchUserMapping(authUser!.id),
-    enabled: !!authUser?.id,
+    // Don't start until auth is fully loaded AND authUser is set
+    enabled: !!authUser?.id && !authLoading,
     staleTime: 60 * 60 * 1000, // 1 hour
   });
 
@@ -994,9 +995,9 @@ export function useForYouData() {
   const { data: rawData, isPending: dataPending } = useQuery({
     queryKey: rawDataKey,
     queryFn: () => fetchForYouRawData(authUser!.id, jiraAccountIds, userName),
-    // Don't fire until user mapping has resolved — prevents a wasted fetch
-    // with empty jiraAccountIds followed by a second fetch with real IDs.
-    enabled: !!authUser?.id && userMapping !== undefined,
+    // Wait until: (1) auth is fully loaded, (2) user mapping has resolved
+    // This prevents wasted fetches while auth is initializing
+    enabled: !!authUser?.id && userMapping !== undefined && !authLoading,
     staleTime: 5 * 60 * 1000, // 5 minutes — issues change more often than mapping
   });
 

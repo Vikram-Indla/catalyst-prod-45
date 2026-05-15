@@ -23,10 +23,10 @@ function useIsDarkTheme() {
     (cb) => {
       if (typeof window === 'undefined') return () => undefined;
       const obs = new MutationObserver(cb);
-      obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+      obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
       return () => obs.disconnect();
     },
-    () => typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'dark',
+    () => typeof document !== 'undefined' && document.documentElement.classList.contains('dark'),
     () => false,
   );
 }
@@ -151,14 +151,20 @@ export function CatalystHeader() {
             <Link
               to="/"
               aria-label="Catalyst home"
-              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', opacity: 1, gap: '8px' }}
+              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', opacity: 1, gap: '4px' }}
             >
               <img
                 src={isDark ? logoMarkDark : logoMarkLight}
                 alt="Catalyst"
-                style={{ height: '32px', width: '32px', flexShrink: 0 }}
+                style={{ height: '24px', width: '24px', flexShrink: 0 }}
               />
-              <span style={{ fontSize: '16px', fontWeight: 600, color: isDark ? 'white' : 'black' }}>
+              <span style={{
+                fontSize: '16px',
+                fontWeight: 500,
+                fontFamily: 'Inter, sans-serif',
+                color: isDark ? '#CECFD2' : '#101214',
+                letterSpacing: '-0.4px'
+              }}>
                 Catalyst
               </span>
             </Link>

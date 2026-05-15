@@ -38,6 +38,7 @@
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { token } from '@atlaskit/tokens';
+import { useAuth } from '@/lib/auth';
 import { useForYouData, type TabType, type WorkItem } from '@/hooks/useForYouData';
 import RecommendedProjectsStrip from '@/components/for-you/atlaskit/RecommendedProjectsStrip';
 import ForYouTabs, { FOR_YOU_TAB_KEY } from '@/components/for-you/atlaskit/ForYouTabs';
@@ -82,7 +83,10 @@ function isBusinessRequest(item: WorkItem | null | undefined): boolean {
 }
 
 export default function ForYouPageAtlaskit() {
-  const data = useForYouData();
+  const { user: authUser, loading: authLoading } = useAuth();
+
+  // Don't start data fetching until auth is fully established
+  const data = useForYouData(authLoading);
   const {
     activeTab, setActiveTab,
     tabCounts,

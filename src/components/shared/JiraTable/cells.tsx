@@ -20,6 +20,34 @@ import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import type { CellProps } from './types';
 
+// ─── Checkbox Cell ─────────────────────────────────────────────────────────
+// Multi-select checkbox. Caller provides isChecked and onChange handlers.
+export function makeCheckboxCell({
+  isChecked,
+  onChange,
+}: {
+  isChecked: (row: any) => boolean;
+  onChange: (row: any, checked: boolean) => void;
+}) {
+  return function CheckboxCell({ row }: CellProps<any>) {
+    const checked = isChecked(row);
+    return (
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(row, e.target.checked)}
+        aria-label="Select row"
+        style={{
+          cursor: 'pointer',
+          width: 16,
+          height: 16,
+          margin: 0,
+        }}
+      />
+    );
+  };
+}
+
 // ─── Type Icon Cell ────────────────────────────────────────────────────────
 // Generic type-icon column. Caller passes the icon node.
 export function makeTypeIconCell(getIcon: (row: any) => React.ReactNode) {
@@ -348,9 +376,9 @@ export type LozengeAppearance =
 // 2026-05-10 via DOM probe — bg returned rgba(0,0,0,0)). Same fix pattern
 // already applied to status dropdown dots.
 const LOZENGE_BG: Record<LozengeAppearance, string> = {
-  success:    'rgb(179, 223, 114)',
-  inprogress: 'rgb(143, 184, 246)',
-  default:    'rgb(221, 222, 225)',
+  success:    'rgb(148, 199, 72)',    // #94C748 — Jira done category
+  inprogress: 'rgb(102, 157, 241)',   // #669DF1 — Jira in-progress category
+  default:    'rgb(220, 223, 228)',   // #DCDFE4 — Jira to-do category
   moved:      'rgb(243, 214, 100)',
   removed:    'rgb(255, 143, 115)',
   new:        'rgb(184, 172, 246)',
@@ -376,11 +404,11 @@ export function StatusPill({
       maxWidth: '200px',
     }}>
       <span style={{
-        fontSize: '11px',
-        fontWeight: 653,
+        fontSize: '14px',
+        fontWeight: 400,
         lineHeight: '16px',
         color: LOZENGE_FG,
-        textTransform: 'uppercase',
+        textTransform: 'none',
         letterSpacing: '0.165px',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -831,9 +859,32 @@ export function makeFixVersionsCell(getFixVersions: (row: any) => string[] | nul
     if (!versions || versions.length === 0) {
       return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
     }
+    // jira-compare 2026-05-12 (Item 9): Jira renders each fix-version value
+    // as a rectangular pill — border 1px, border-radius 3px, padding 2px 6px,
+    // no background. Confirmed from context pack screenshot probe.
     return (
-      <span style={{ color: token('color.text', '#172B4D'), fontSize: 14, fontWeight: 400 }}>
-        {versions.join(', ')}
+      <span style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 4 }}>
+        {versions.map((v) => (
+          <span
+            key={v}
+            style={{
+              display: 'inline-block',
+              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderRadius: 3,
+              padding: '2px 6px',
+              fontSize: 12,
+              fontWeight: 400,
+              color: token('color.text', '#172B4D'),
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              maxWidth: 160,
+            }}
+            title={v}
+          >
+            {v}
+          </span>
+        ))}
       </span>
     );
   };

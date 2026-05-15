@@ -68,15 +68,18 @@ Deno.serve(async (req) => {
         .eq('user_id', userId);
     }
 
-    // Update profile: full_name + module_access + mark approved (bypasses pending-approval gate)
+    // Upsert profile: full_name + module_access + mark approved (bypasses pending-approval gate).
+    // Uses upsert instead of update so the profile is created even if handle_new_user trigger
+    // didn't fire (e.g. edge function admin API path in some Supabase environments).
     await supabaseAdmin
       .from('profiles')
-      .update({
-        full_name: full_name || invitation.full_name || email,
+      .upsert({
+        id: userId,
+        email: normalizedEmail,
+        full_name: full_name || invitation.full_name || normalizedEmail,
         module_access: invitation.module_access || {},
-        approval_status: 'APPROVED'
-      })
-      .eq('id', userId);
+        approval_status: 'APPROVED',
+      }, { onConflict: 'id' });
 
     // Mark invitation accepted
     await supabaseAdmin

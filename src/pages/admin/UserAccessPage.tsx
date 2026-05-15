@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import Textfield from '@atlaskit/textfield';
@@ -16,12 +16,8 @@ import {
 import AdsSelect from '@atlaskit/select';
 import { toast } from 'sonner';
 import SearchIcon from '@atlaskit/icon/core/search';
-import LockLockedIcon from '@atlaskit/icon/core/lock-locked';
-import RefreshIcon from '@atlaskit/icon/core/refresh';
 import PersonIcon from '@atlaskit/icon/core/person';
 import EmailIcon from '@atlaskit/icon/core/email';
-import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
-import EyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
 import PersonAddIcon from '@atlaskit/icon/core/person-add';
 import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
 import ShieldIcon from '@atlaskit/icon/core/shield';
@@ -47,19 +43,19 @@ interface ResourceUser {
   role_name: string | null;
 }
 
+interface AutoLink {
+  resourceId: string;
+  profileId: string;
+}
+
 export default function UserAccessPage() {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<ResourceUser | null>(null);
-  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
-  const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
   const [createAccountOpen, setCreateAccountOpen] = useState(false);
   const [bulkCreateOpen, setBulkCreateOpen] = useState(false);
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [bulkProgress, setBulkProgress] = useState<{ done: number; total: number; errors: string[] } | null>(null);
-  
+
   // Inline email editing state
   const [editingEmailId, setEditingEmailId] = useState<string | null>(null);
   const [editingEmailValue, setEditingEmailValue] = useState('');
@@ -101,11 +97,10 @@ export default function UserAccessPage() {
     return map;
   }, [userRoleAssignments]);
 
-  // Fetch resource inventory with profiles, auto-linking by RID when profile_id is null
-  const { data: users = [], isLoading } = useQuery({
+  // Fetch resource inventory with profiles; collect auto-link candidates without mutating inside queryFn
+  const { data: queryResult, isLoading } = useQuery<{ users: ResourceUser[]; autoLinks: AutoLink[] }>({
     queryKey: ['user-access-resources', userRoleMap],
     queryFn: async () => {
-      // First, get all resources
       const { data: resources, error: resourceError } = await supabase
         .from('resource_inventory')
         .select('id, profile_id, name, rid, is_active, email')
@@ -113,7 +108,6 @@ export default function UserAccessPage() {
 
       if (resourceError) throw resourceError;
 
-      // Collect unique profile_ids (for direct link) and rids (for fallback matching)
       const profileIds = (resources || [])
         .map(r => r.profile_id)
         .filter((id): id is string => id !== null);
@@ -122,75 +116,53 @@ export default function UserAccessPage() {
         .filter(r => r.profile_id === null && r.rid)
         .map(r => r.rid as string);
 
-      // Fetch profiles by ID (direct link)
       let profilesById: Record<string, { id: string; email: string }> = {};
       if (profileIds.length > 0) {
         const { data: profiles, error: profileError } = await supabase
           .from('profiles')
           .select('id, email')
           .in('id', profileIds);
-
         if (profileError) throw profileError;
-
         profilesById = (profiles || []).reduce((acc, p) => {
           acc[p.id] = { id: p.id, email: p.email };
           return acc;
         }, {} as Record<string, { id: string; email: string }>);
       }
 
-      // Fetch profiles by RID for auto-linking (when profile_id is null)
       let profilesByRid: Record<string, { id: string; email: string }> = {};
       if (ridsWithoutProfile.length > 0) {
         const { data: ridProfiles, error: ridProfileError } = await supabase
           .from('profiles')
           .select('id, email, rid')
           .in('rid', ridsWithoutProfile);
-
         if (ridProfileError) throw ridProfileError;
-
         profilesByRid = (ridProfiles || []).reduce((acc, p) => {
-          if (p.rid) {
-            acc[p.rid] = { id: p.id, email: p.email };
-          }
+          if (p.rid) acc[p.rid] = { id: p.id, email: p.email };
           return acc;
         }, {} as Record<string, { id: string; email: string }>);
       }
 
-      // Map resources with auto-linking
       const mappedUsers: ResourceUser[] = [];
-      const updatePromises: Promise<void>[] = [];
+      const autoLinks: AutoLink[] = [];
 
       for (const item of resources || []) {
         let linkedProfileId = item.profile_id;
         let email: string | null = null;
 
         if (item.profile_id) {
-          // Direct link exists - prefer profile email
           email = profilesById[item.profile_id]?.email || item.email || null;
         } else if (item.rid && profilesByRid[item.rid]) {
-          // Auto-link by RID
           const matchedProfile = profilesByRid[item.rid];
           linkedProfileId = matchedProfile.id;
           email = matchedProfile.email || item.email || null;
-
-          // Update resource_inventory.profile_id in the background
-          updatePromises.push(
-            (async () => {
-              const { error } = await supabase
-                .from('resource_inventory')
-                .update({ profile_id: matchedProfile.id })
-                .eq('id', item.id);
-              if (error) console.error(`Failed to auto-link RID ${item.rid}:`, error);
-            })()
-          );
+          // Collect for post-query update rather than mutating inside queryFn
+          autoLinks.push({ resourceId: item.id, profileId: matchedProfile.id });
         } else {
-          // No profile link - use inventory email directly
           email = item.email || null;
         }
 
-        // Get role info for this user - check by profile_id first, then by resource id
-        const roleId = linkedProfileId 
-          ? userRoleMap[linkedProfileId] 
+        const roleId = linkedProfileId
+          ? userRoleMap[linkedProfileId]
           : userRoleMap[item.id] || null;
         const role = roleId ? productRoles.find(r => r.id === roleId) : null;
 
@@ -206,59 +178,29 @@ export default function UserAccessPage() {
         });
       }
 
-      // Fire-and-forget auto-link updates
-      if (updatePromises.length > 0) {
-        Promise.all(updatePromises).catch(console.error);
-      }
-
-      return mappedUsers;
+      return { users: mappedUsers, autoLinks };
     },
     enabled: productRoles.length > 0,
   });
 
-  // Change password mutation
-  const changePasswordMutation = useMutation({
-    mutationFn: async ({ userId, password }: { userId: string; password: string }) => {
-      const { data, error } = await supabase.functions.invoke('admin-set-password', {
-        body: { userId, newPassword: password },
-      });
+  const users = queryResult?.users || [];
 
-      if (error) throw error;
-      if (!data.success) throw new Error(data.error || 'Failed to set password');
-      return data;
-    },
-    onSuccess: () => {
-      toast.success('Password changed successfully. User will be required to change it on next login.');
-      setChangePasswordOpen(false);
-      setNewPassword('');
-      setConfirmPassword('');
-      setSelectedUser(null);
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to change password');
-    },
-  });
-
-  // Reset password mutation (sends email)
-  const resetPasswordMutation = useMutation({
-    mutationFn: async (userId: string) => {
-      const { data, error } = await supabase.functions.invoke('reset-user-password', {
-        body: { userId },
-      });
-
-      if (error) throw error;
-      if (!data.success) throw new Error(data.error || 'Failed to reset password');
-      return data;
-    },
-    onSuccess: (data) => {
-      toast.success(data.message || 'Password reset link has been generated.');
-      setResetPasswordOpen(false);
-      setSelectedUser(null);
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to reset password');
-    },
-  });
+  // Fire auto-link DB updates outside queryFn to keep queryFn pure
+  useEffect(() => {
+    const autoLinks = queryResult?.autoLinks;
+    if (!autoLinks?.length) return;
+    Promise.all(
+      autoLinks.map(({ resourceId, profileId }) =>
+        supabase
+          .from('resource_inventory')
+          .update({ profile_id: profileId })
+          .eq('id', resourceId)
+          .then(({ error }) => {
+            if (error) console.error(`Auto-link failed for resource ${resourceId}:`, error);
+          })
+      )
+    ).catch(console.error);
+  }, [queryResult?.autoLinks]);
 
   // Create linked account mutation
   const createAccountMutation = useMutation({
@@ -266,13 +208,12 @@ export default function UserAccessPage() {
       const { data, error } = await supabase.functions.invoke('create-linked-account', {
         body: { resourceInventoryId: resourceId, email, fullName, rid },
       });
-
       if (error) throw error;
-      if (!data.success) throw new Error(data.error || 'Failed to create account');
+      if (!data.ok) throw new Error(data.error || 'Failed to create account');
       return data;
     },
-    onSuccess: (data) => {
-      toast.success(data.message || 'Account created successfully');
+    onSuccess: () => {
+      toast.success('Account created successfully');
       setCreateAccountOpen(false);
       setSelectedUser(null);
       queryClient.invalidateQueries({ queryKey: ['user-access-resources'] });
@@ -282,23 +223,19 @@ export default function UserAccessPage() {
     },
   });
 
-  // Assign role mutation - uses resource_id as user_id when no profile exists
+  // Assign role mutation
   const assignRoleMutation = useMutation({
     mutationFn: async ({ userId, roleId }: { userId: string; roleId: string | null }) => {
-      // First, delete existing role assignment
       const { error: deleteError } = await supabase
         .from('user_product_roles')
         .delete()
         .eq('user_id', userId);
-      
       if (deleteError) throw deleteError;
 
-      // If a new role is being assigned, insert it
       if (roleId) {
         const { error: insertError } = await supabase
           .from('user_product_roles')
           .insert({ user_id: userId, role_id: roleId });
-        
         if (insertError) throw insertError;
       }
     },
@@ -312,38 +249,19 @@ export default function UserAccessPage() {
     },
   });
 
-  // Update email mutation - saves to both resource_inventory and profiles
+  // Update email mutation — only writes to resource_inventory (HR domain)
   const updateEmailMutation = useMutation({
-    mutationFn: async ({ resourceId, profileId, email }: { 
-      resourceId: string; 
-      profileId: string | null; 
-      email: string;
-    }) => {
+    mutationFn: async ({ resourceId, email }: { resourceId: string; email: string }) => {
       const normalizedEmail = email.trim().toLowerCase();
-      
-      // Validate email format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (normalizedEmail && !emailRegex.test(normalizedEmail)) {
         throw new Error('Invalid email format');
       }
-
-      // Update resource_inventory
-      const { error: inventoryError } = await supabase
+      const { error } = await supabase
         .from('resource_inventory')
         .update({ email: normalizedEmail || null })
         .eq('id', resourceId);
-      
-      if (inventoryError) throw inventoryError;
-
-      // If user has a profile, update profiles table too
-      if (profileId) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .update({ email: normalizedEmail || null })
-          .eq('id', profileId);
-        
-        if (profileError) throw profileError;
-      }
+      if (error) throw error;
     },
     onSuccess: () => {
       toast.success('Email updated successfully');
@@ -356,7 +274,6 @@ export default function UserAccessPage() {
     },
   });
 
-  // Filter users based on search
   const filteredUsers = useMemo(() => {
     if (!searchQuery.trim()) return users;
     const query = searchQuery.toLowerCase();
@@ -369,37 +286,9 @@ export default function UserAccessPage() {
     );
   }, [users, searchQuery]);
 
-  // Users with email + role but no profile (authorized but need login accounts)
   const usersNeedingAccounts = useMemo(() => {
     return users.filter(u => !u.profile_id && u.email && u.role_id);
   }, [users]);
-
-  const handleChangePassword = () => {
-    if (!selectedUser?.profile_id) {
-      toast.error('This resource does not have an associated user account');
-      return;
-    }
-    if (newPassword.length < 6) {
-      toast.error('Password must be at least 6 characters');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
-    }
-    changePasswordMutation.mutate({ 
-      userId: selectedUser.profile_id, 
-      password: newPassword 
-    });
-  };
-
-  const handleResetPassword = () => {
-    if (!selectedUser?.profile_id) {
-      toast.error('This resource does not have an associated user account');
-      return;
-    }
-    resetPasswordMutation.mutate(selectedUser.profile_id);
-  };
 
   const handleCreateAccount = () => {
     if (!selectedUser?.email) {
@@ -414,25 +303,6 @@ export default function UserAccessPage() {
     });
   };
 
-  const openChangePassword = (user: ResourceUser) => {
-    setSelectedUser(user);
-    setNewPassword('');
-    setConfirmPassword('');
-    setShowPassword(false);
-    setChangePasswordOpen(true);
-  };
-
-  const openResetPassword = (user: ResourceUser) => {
-    setSelectedUser(user);
-    setResetPasswordOpen(true);
-  };
-
-  const openCreateAccount = (user: ResourceUser) => {
-    setSelectedUser(user);
-    setCreateAccountOpen(true);
-  };
-
-  // Bulk create accounts for all users with email but no profile
   const handleBulkCreate = async () => {
     if (usersNeedingAccounts.length === 0) {
       toast.info('All users already have accounts');
@@ -447,14 +317,14 @@ export default function UserAccessPage() {
     for (const user of usersNeedingAccounts) {
       try {
         const { data, error } = await supabase.functions.invoke('create-linked-account', {
-          body: { 
-            resourceInventoryId: user.id, 
-            email: user.email, 
+          body: {
+            resourceInventoryId: user.id,
+            email: user.email,
             fullName: user.name,
-            rid: user.rid || undefined 
+            rid: user.rid || undefined,
           },
         });
-        if (error || !data?.success) {
+        if (error || !data?.ok) {
           errors.push(`${user.name}: ${data?.error || error?.message || 'Unknown error'}`);
         }
       } catch (err: any) {
@@ -487,7 +357,7 @@ export default function UserAccessPage() {
             User Access
           </h1>
           <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
-            Manage application access credentials for Catalyst users
+            Manage resource roster, product role assignments, and Catalyst login provisioning
           </p>
         </div>
         {usersNeedingAccounts.length > 0 && (
@@ -527,9 +397,9 @@ export default function UserAccessPage() {
                 <th className="w-[80px] px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>RID</th>
                 <th className="min-w-[150px] px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Name</th>
                 <th className="min-w-[200px] px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Email</th>
-                <th className="min-w-[180px] px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Role</th>
+                <th className="min-w-[180px] px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Product Role</th>
                 <th className="w-[80px] px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Status</th>
-                <th className="w-[220px] px-4 py-3 text-right text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Actions</th>
+                <th className="w-[160px] px-4 py-3 text-right text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -564,11 +434,7 @@ export default function UserAccessPage() {
                               autoFocus
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
-                                  updateEmailMutation.mutate({
-                                    resourceId: user.id,
-                                    profileId: user.profile_id,
-                                    email: editingEmailValue,
-                                  });
+                                  updateEmailMutation.mutate({ resourceId: user.id, email: editingEmailValue });
                                 } else if (e.key === 'Escape') {
                                   setEditingEmailId(null);
                                   setEditingEmailValue('');
@@ -578,23 +444,14 @@ export default function UserAccessPage() {
                           </div>
                           <button
                             className="h-7 w-7 flex items-center justify-center rounded"
-                            onClick={() => {
-                              updateEmailMutation.mutate({
-                                resourceId: user.id,
-                                profileId: user.profile_id,
-                                email: editingEmailValue,
-                              });
-                            }}
+                            onClick={() => updateEmailMutation.mutate({ resourceId: user.id, email: editingEmailValue })}
                             disabled={updateEmailMutation.isPending}
                           >
                             <span style={{ display: 'inline-flex', color: '#15803D' }}><CheckMarkIcon label="" size="small" /></span>
                           </button>
                           <button
                             className="h-7 w-7 flex items-center justify-center rounded"
-                            onClick={() => {
-                              setEditingEmailId(null);
-                              setEditingEmailValue('');
-                            }}
+                            onClick={() => { setEditingEmailId(null); setEditingEmailValue(''); }}
                           >
                             <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><CrossIcon label="" size="small" /></span>
                           </button>
@@ -602,10 +459,7 @@ export default function UserAccessPage() {
                       ) : (
                         <div
                           className="flex items-center gap-1.5 group cursor-pointer transition-colors"
-                          onClick={() => {
-                            setEditingEmailId(user.id);
-                            setEditingEmailValue(user.email || '');
-                          }}
+                          onClick={() => { setEditingEmailId(user.id); setEditingEmailValue(user.email || ''); }}
                           onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #172B4D)')}
                           onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)')}
                         >
@@ -622,7 +476,6 @@ export default function UserAccessPage() {
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      {/* Role dropdown enabled when email exists */}
                       {user.email ? (
                         (() => {
                           const roleOpts = [
@@ -664,28 +517,13 @@ export default function UserAccessPage() {
                     </td>
                     <td className="px-4 py-3 text-right">
                       {user.profile_id ? (
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            appearance="default"
-                            onClick={() => openChangePassword(user)}
-                            iconBefore={LockLockedIcon}
-                          >
-                            Change Password
-                          </Button>
-                          <Button
-                            appearance="default"
-                            onClick={() => openResetPassword(user)}
-                            iconBefore={RefreshIcon}
-                          >
-                            Reset
-                          </Button>
-                        </div>
+                        <Lozenge appearance="success">Account linked</Lozenge>
                       ) : user.email && user.role_id ? (
                         <div className="flex items-center justify-end gap-2">
                           <Lozenge appearance="inprogress">Authorized</Lozenge>
                           <Button
                             appearance="default"
-                            onClick={() => openCreateAccount(user)}
+                            onClick={() => { setSelectedUser(user); setCreateAccountOpen(true); }}
                             iconBefore={PersonAddIcon}
                           >
                             Create Login
@@ -709,108 +547,6 @@ export default function UserAccessPage() {
         </div>
       </div>
 
-      {/* Change Password Dialog */}
-      <Dialog open={changePasswordOpen} onOpenChange={setChangePasswordOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><LockLockedIcon label="" size="medium" /></span>
-              Change Password
-            </DialogTitle>
-            <DialogDescription>
-              Set a new password for <strong>{selectedUser?.name}</strong>. 
-              The user will be required to change this password on their next login.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <label htmlFor="new-password" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>New Password</label>
-              <div className="relative">
-                <Textfield
-                  id="new-password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={newPassword}
-                  onChange={(e) => setNewPassword((e.target as HTMLInputElement).value)}
-                  placeholder="Enter new password"
-                />
-                <button
-                  type="button"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 flex items-center justify-center"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><EyeOpenStrikethroughIcon label="Hide password" size="small" /></span>
-                  ) : (
-                    <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><EyeOpenIcon label="Show password" size="small" /></span>
-                  )}
-                </button>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="confirm-password" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Confirm Password</label>
-              <Textfield
-                id="confirm-password"
-                type={showPassword ? 'text' : 'password'}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword((e.target as HTMLInputElement).value)}
-                placeholder="Confirm new password"
-              />
-            </div>
-            {newPassword && confirmPassword && newPassword !== confirmPassword && (
-              <p className="text-sm" style={{ color: 'var(--ds-background-danger-bold, #CA3521)' }}>Passwords do not match</p>
-            )}
-          </div>
-          <DialogFooter>
-            <Button appearance="subtle" onClick={() => setChangePasswordOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              appearance="primary"
-              onClick={handleChangePassword}
-              isDisabled={changePasswordMutation.isPending || !newPassword || newPassword !== confirmPassword}
-            >
-              {changePasswordMutation.isPending ? 'Setting...' : 'Set Password'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Reset Password Dialog */}
-      <Dialog open={resetPasswordOpen} onOpenChange={setResetPasswordOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><RefreshIcon label="" size="medium" /></span>
-              Reset Password
-            </DialogTitle>
-            <DialogDescription>
-              Generate a password reset link for <strong>{selectedUser?.name}</strong>.
-              {selectedUser?.email && (
-                <> The link will be sent to <strong>{selectedUser.email}</strong>.</>
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
-              This will send a secure password reset link to the user's email address.
-              The link will expire after a set period.
-            </p>
-          </div>
-          <DialogFooter>
-            <Button appearance="subtle" onClick={() => setResetPasswordOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              appearance="primary"
-              onClick={handleResetPassword}
-              isDisabled={resetPasswordMutation.isPending}
-            >
-              {resetPasswordMutation.isPending ? 'Sending...' : 'Send Reset Link'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       {/* Create Account Dialog */}
       <Dialog open={createAccountOpen} onOpenChange={setCreateAccountOpen}>
         <DialogContent className="sm:max-w-md">
@@ -826,8 +562,7 @@ export default function UserAccessPage() {
           </DialogHeader>
           <div className="py-4">
             <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
-              This will create a new login account with a temporary password (<code>password@99</code>).
-              The user will be required to change this password on their first login.
+              This will create a new Catalyst login. The user will receive a password reset email to set their own password.
             </p>
           </div>
           <DialogFooter>
@@ -839,7 +574,7 @@ export default function UserAccessPage() {
               onClick={handleCreateAccount}
               isDisabled={createAccountMutation.isPending}
             >
-              {createAccountMutation.isPending ? 'Creating...' : 'Create Account'}
+              {createAccountMutation.isPending ? 'Creating…' : 'Create Account'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -854,7 +589,7 @@ export default function UserAccessPage() {
               Bulk Create Accounts
             </DialogTitle>
             <DialogDescription>
-              Create login accounts for {usersNeedingAccounts.length} user{usersNeedingAccounts.length !== 1 ? 's' : ''} 
+              Create login accounts for {usersNeedingAccounts.length} user{usersNeedingAccounts.length !== 1 ? 's' : ''}{' '}
               who have an email but no account yet.
             </DialogDescription>
           </DialogHeader>
@@ -862,7 +597,7 @@ export default function UserAccessPage() {
             {bulkProgress ? (
               <div className="space-y-2">
                 <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
-                  Creating accounts... {bulkProgress.done} / {bulkProgress.total}
+                  Creating accounts… {bulkProgress.done} / {bulkProgress.total}
                 </p>
                 <div className="w-full rounded-full h-2" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
                   <div
@@ -881,8 +616,7 @@ export default function UserAccessPage() {
             ) : (
               <>
                 <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
-                  Each account will be created with a temporary password (<code>password@99</code>).
-                  Users will be required to change it on first login.
+                  Each user will receive a password reset email to set their own password on first login.
                 </p>
                 <div className="max-h-32 overflow-y-auto text-xs rounded p-2" style={{ color: 'var(--ds-text-subtle, #44546F)', border: '1px solid var(--ds-border, #DCDFE4)' }}>
                   {usersNeedingAccounts.map(u => (
@@ -893,19 +627,11 @@ export default function UserAccessPage() {
             )}
           </div>
           <DialogFooter>
-            <Button
-              appearance="subtle"
-              onClick={() => setBulkCreateOpen(false)}
-              isDisabled={!!bulkProgress}
-            >
+            <Button appearance="subtle" onClick={() => setBulkCreateOpen(false)} isDisabled={!!bulkProgress}>
               Cancel
             </Button>
-            <Button
-              appearance="primary"
-              onClick={handleBulkCreate}
-              isDisabled={!!bulkProgress}
-            >
-              {bulkProgress ? 'Creating...' : `Create ${usersNeedingAccounts.length} Account${usersNeedingAccounts.length !== 1 ? 's' : ''}`}
+            <Button appearance="primary" onClick={handleBulkCreate} isDisabled={!!bulkProgress}>
+              {bulkProgress ? 'Creating…' : `Create ${usersNeedingAccounts.length} Account${usersNeedingAccounts.length !== 1 ? 's' : ''}`}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -23,7 +23,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCreateCatyConversation } from '@/hooks/useCatyAI';
 
 import EmptyState from '@atlaskit/empty-state';
-import SectionMessage from '@atlaskit/section-message';
+import { SectionMessage } from '@/components/ads';
 import Spinner from '@atlaskit/spinner';
 import Textfield from '@atlaskit/textfield';
 import { Box, xcss } from '@atlaskit/primitives';
@@ -69,9 +69,12 @@ import Modal, {
   ModalTitle,
   ModalTransition,
 } from '@atlaskit/modal-dialog';
+import Select from '@atlaskit/select';
+import { Fieldset, Label } from '@atlaskit/form';
 
 import {
   JiraTable,
+  makeCheckboxCell,
   makeKeyCell,
   makeCommentsCell,
   makeDateCell,
@@ -93,6 +96,7 @@ import {
   FlagsHost,
   flag,
   StatusPill,
+  BulkFooterBar,
 } from '@/components/shared/JiraTable';
 import type {
   Column,
@@ -124,6 +128,20 @@ import type {
   AssigneeOption,
   FixVersionOption,
 } from '@/components/shared/JiraFilterAtlaskit';
+
+// Drag-and-drop support for row ranking (2026-05-12 Tier 1 gap)
+import {
+  DndContext,
+  DragEndEvent,
+  closestCenter,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
 // ChevronsLeft/ChevronsRight (first/last page) have no ADS equivalent — inline SVG below
 const AkChevronsLeftIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M18.41 16.59L13.82 12l4.59-4.59L17 6l-6 6 6 6zM6 6h2v12H6z"/></svg>
@@ -131,6 +149,51 @@ const AkChevronsLeftIcon = () => (
 const AkChevronsRightIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M5.59 7.41L10.18 12l-4.59 4.59L7 18l6-6-6-6zM16 6h2v12h-2z"/></svg>
 );
+
+/**
+ * DragHandleCell — useSortable hook for row ranking.
+ * Called for each BacklogItem row; returns a draggable span with visual feedback.
+ */
+function DragHandleCell({ row }: { row: BacklogItem }) {
+  const { attributes, listeners, setNodeRef, transform } = useSortable({ id: row.id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition: 'transform 200ms ease-out',
+  };
+  return (
+    <span
+      ref={setNodeRef}
+      style={style}
+      className="jira-drag-handle"
+      aria-hidden
+      {...attributes}
+      {...listeners}
+    >
+      <span
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 16,
+          height: 16,
+          cursor: listeners ? 'grabbing' : 'grab',
+          color: token('color.icon.subtle', '#626F86'),
+          visibility: 'hidden', /* JiraTable.tsx tr:hover CSS shows it */
+        }}
+      >
+        {/* 6-dot grip — no ADS equivalent; inline SVG */}
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor" aria-hidden>
+          <circle cx="2" cy="2" r="1.5"/>
+          <circle cx="8" cy="2" r="1.5"/>
+          <circle cx="2" cy="8" r="1.5"/>
+          <circle cx="8" cy="8" r="1.5"/>
+          <circle cx="2" cy="14" r="1.5"/>
+          <circle cx="8" cy="14" r="1.5"/>
+        </svg>
+      </span>
+    </span>
+  );
+}
 
 // Apr 19, 2026 — U-4 (BAU Dashboard Atlaskit Conversion handover §2):
 // migrated outer page wrapper (blue page bg + white card + h1) onto the
@@ -1656,38 +1719,36 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // Jira-parity: 16px-wide drag-handle column at the leftmost position.
       // Shows a 6-dot grip icon on row hover; invisible at rest.
       // CSS in JiraTable.tsx (`.jira-drag-handle`) handles visibility.
-      // No functional DnD yet — visual parity only for Phase 4.
+      // 2026-05-12: functional DnD with @dnd-kit/sortable. DragHandleCell
+      // uses useSortable hook to track drag state and apply transform.
+      // Visibility gate: drag handle only shows when sortKey=rank_order AND
+      // groupBy=null (no active sort or grouping — matches Jira behavior).
       id: '__drag',
       label: '',
       width: 3,
       align: 'center' as const,
       alwaysVisible: true,
-      cell: () => (
-        <span
-          className="jira-drag-handle"
-          aria-hidden
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 16,
-            height: 16,
-            cursor: 'grab',
-            color: token('color.icon.subtle', '#626F86'),
-            visibility: 'hidden',  /* JiraTable.tsx tr:hover CSS shows it */
-          }}
-        >
-          {/* 6-dot grip — no ADS equivalent; inline SVG */}
-          <svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor" aria-hidden>
-            <circle cx="2" cy="2" r="1.5"/>
-            <circle cx="8" cy="2" r="1.5"/>
-            <circle cx="2" cy="8" r="1.5"/>
-            <circle cx="8" cy="8" r="1.5"/>
-            <circle cx="2" cy="14" r="1.5"/>
-            <circle cx="8" cy="14" r="1.5"/>
-          </svg>
-        </span>
-      ),
+      hidden: sortKey !== 'rank_order' || groupBy !== null,
+      cell: ({ row }) => <DragHandleCell row={row} />,
+    },
+    {
+      id: '__checkbox',
+      label: '',
+      width: 4,
+      align: 'center' as const,
+      alwaysVisible: true,
+      cell: makeCheckboxCell({
+        isChecked: (row: BacklogItem) => selectedIds.has(row.id),
+        onChange: (row: BacklogItem, checked: boolean) => {
+          const next = new Set(selectedIds);
+          if (checked) {
+            next.add(row.id);
+          } else {
+            next.delete(row.id);
+          }
+          setSelectedIds(next);
+        },
+      }),
     },
     {
       id: 'type',
@@ -1819,6 +1880,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'status',
       label: 'Status',
+      // 2026-05-11: increased to 18 fractions (220px+) to fit "READY FOR PRODUCTION"
+      // without truncation. Prior 144px (12 fractions) was measured from shorter
+      // status values like "READY FOR QA". BAU project uses longer status names.
+      width: 18,
       // 2026-05-08 re-probe: Jira measures Status at 120px OUTER with 8px
       // left container padding (112px effective). Catalyst TD has 12px+12px
       // = 24px cell padding overhead; 144px - 24px = 120px inner = matches
@@ -2104,6 +2169,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // Filters to Catalyst-owned rows only; Jira-synced rows are surfaced as a
   // partial-success count so the user knows why N of M weren't applied.
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [bulkMoveOpen, setBulkMoveOpen] = useState(false);
+  const [bulkMoveTarget, setBulkMoveTarget] = useState<string | null>(null);
+  const [bulkTransitionOpen, setBulkTransitionOpen] = useState(false);
+  const [bulkTransitionTarget, setBulkTransitionTarget] = useState<string | null>(null);
   const bulkUpdate = useMutation({
     mutationFn: async ({ ids, patch }: { ids: string[]; patch: Record<string, unknown> }) => {
       const editable = items.filter((it) => ids.includes(it.id) && it.source === 'catalyst');
@@ -2740,31 +2809,17 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         </div>
       </div>
 
-      {/* Bulk actions bar — only visible when selection is non-empty.
-          Atlaskit-native: Button primitives + a minimal DropdownMenu-style
-          popover for the status/assignee pickers. Delete requires a modal
-          confirmation (ModalDialog) before committing. */}
+      {/* Bulk footer bar — Jira-parity bottom-anchored action bar showing
+          when selectedIds.size > 0. MVP Phase 1: selection UX only (checkbox
+          visibility + footer appearance). Phase 2: Move / Transition handlers. */}
       {selectedIds.size > 0 && (
-        <BulkActionsBar
-          count={selectedIds.size}
-          // 2026-05-12 Jira parity: total in current filter scope drives the
-          // "Select all (N in scope)" CTA in the bar.
-          totalAvailable={sortedRows.length}
+        <BulkFooterBar
+          selectedCount={selectedIds.size}
           onSelectAll={() => setSelectedIds(new Set(sortedRows.map((r) => r.id)))}
-          // 2026-05-12 Jira parity: Edit fields opens bulk-edit wizard.
-          // Wired to inline flag for now; full bulk-edit modal is task #7
-          // follow-up — requires Vikram approval on field scope.
-          onEditFields={() => flag.info('Edit fields', `Bulk edit wizard scope (${selectedIds.size} items): pending Vikram approval.`)}
-          onClear={() => setSelectedIds(new Set())}
-          statusOptions={STATUS_OPTIONS}
-          assigneeOptions={assigneeOptions.map<AssigneeChoice>((a) => ({ id: a.id, name: a.name, avatarUrl: a.avatarUrl ?? null }))}
-          onChangeStatus={(next) => bulkUpdate.mutate({ ids: Array.from(selectedIds), patch: { status: next } })}
-          onChangeAssignee={(next) => bulkUpdate.mutate({
-            ids: Array.from(selectedIds),
-            patch: { assignee_id: next?.id ?? null, assignee_name: next?.name ?? null },
-          })}
+          onDeselectAll={() => setSelectedIds(new Set())}
           onDelete={() => setBulkDeleteOpen(true)}
-          isBusy={bulkUpdate.isPending || bulkDelete.isPending}
+          onMove={() => setBulkMoveOpen(true)}
+          onTransition={() => setBulkTransitionOpen(true)}
         />
       )}
 
@@ -2803,6 +2858,58 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           }}
         >
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+          <DndContext
+            collisionDetection={closestCenter}
+            onDragEnd={async (event: DragEndEvent) => {
+              const { active, over } = event;
+              if (!over || active.id === over.id || !projectKey) return;
+
+              // Find the dragged row and target row
+              const draggedRow = sortedRows.find((r) => r.id === active.id);
+              const overRow = sortedRows.find((r) => r.id === over.id);
+              if (!draggedRow || !overRow) return;
+
+              // Calculate new rank_order: midpoint between neighbors
+              // If dragging above overRow: new_rank = (overRow.rank_order - ABOVE_rank_order) / 2
+              // If dragging below overRow: new_rank = (BELOW_rank_order - overRow.rank_order) / 2
+              const draggedIndex = sortedRows.indexOf(draggedRow);
+              const overIndex = sortedRows.indexOf(overRow);
+              const direction = draggedIndex < overIndex ? 1 : -1; // 1 = down, -1 = up
+
+              let newRankOrder: number;
+              if (direction === 1) {
+                // Dragging down: insert after overRow
+                const below = sortedRows[overIndex + 1];
+                const currentRank = overRow.rank_order ?? 0;
+                const belowRank = below?.rank_order ?? (currentRank + 100);
+                newRankOrder = (currentRank + belowRank) / 2;
+              } else {
+                // Dragging up: insert before overRow
+                const above = sortedRows[overIndex - 1];
+                const currentRank = overRow.rank_order ?? 0;
+                const aboveRank = above?.rank_order ?? Math.max(0, currentRank - 100);
+                newRankOrder = (aboveRank + currentRank) / 2;
+              }
+
+              // Update the rank_order via bulkUpdate mutation (batch-optimized)
+              try {
+                await bulkUpdate.mutateAsync({
+                  ids: [draggedRow.id],
+                  patch: { rank_order: newRankOrder },
+                });
+                // Invalidate backlog queries to re-fetch and re-sort by rank_order
+                queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+                queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+              } catch (e: any) {
+                flag.error('Rank update failed', e?.message ?? String(e));
+              }
+            }}
+          >
+            <SortableContext
+              items={sortedRows.map((r) => r.id)}
+              strategy={verticalListSortingStrategy}
+              disabled={sortKey !== 'rank_order' || groupBy !== null}
+            >
           <JiraTable<BacklogItem>
             columns={filteredCols}
             data={groupedRows ? undefined : sortedRows}
@@ -3118,6 +3225,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
               />
             }
           />
+            </SortableContext>
+          </DndContext>
           </div>
         </div>
       </div>
@@ -3162,6 +3271,104 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         hint="If you're not sure, you can close the items instead."
         isLoading={bulkDelete.isPending}
       />
+
+      {/* Bulk Move Modal — Phase 2 */}
+      <ModalTransition>
+        {bulkMoveOpen && (
+          <Modal onClose={() => setBulkMoveOpen(false)}>
+            <ModalHeader>
+              <ModalTitle>Move {selectedIds.size} item{selectedIds.size === 1 ? '' : 's'} to...</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <Fieldset>
+                <Label htmlFor="bulk-move-parent-select">Parent Epic</Label>
+                <Select
+                  inputId="bulk-move-parent-select"
+                  options={epics.map(e => ({ label: e.issue_key, value: e.issue_key, data: e }))}
+                  value={bulkMoveTarget ? { label: bulkMoveTarget, value: bulkMoveTarget } : null}
+                  onChange={(opt) => setBulkMoveTarget(opt?.value ?? null)}
+                  placeholder="Select parent epic"
+                  isClearable
+                />
+              </Fieldset>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setBulkMoveOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                appearance="primary"
+                isDisabled={!bulkMoveTarget || bulkUpdate.isPending}
+                onClick={() => {
+                  if (bulkMoveTarget) {
+                    bulkUpdate.mutate(
+                      { ids: Array.from(selectedIds), patch: { parent_key: bulkMoveTarget } },
+                      {
+                        onSuccess: () => {
+                          setBulkMoveOpen(false);
+                          setBulkMoveTarget(null);
+                          setSelectedIds(new Set());
+                        },
+                      }
+                    );
+                  }
+                }}
+              >
+                {bulkUpdate.isPending ? 'Moving...' : 'Move'}
+              </Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
+
+      {/* Bulk Transition Modal — Phase 2 */}
+      <ModalTransition>
+        {bulkTransitionOpen && (
+          <Modal onClose={() => setBulkTransitionOpen(false)}>
+            <ModalHeader>
+              <ModalTitle>Transition {selectedIds.size} item{selectedIds.size === 1 ? '' : 's'} to...</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <FieldGroup>
+                <Label htmlFor="bulk-transition-status-select">Status</Label>
+                <Select
+                  inputId="bulk-transition-status-select"
+                  options={STATUS_OPTIONS.map(s => ({ label: s.label, value: s.value, data: s }))}
+                  value={bulkTransitionTarget ? { label: bulkTransitionTarget, value: bulkTransitionTarget } : null}
+                  onChange={(opt) => setBulkTransitionTarget(opt?.value ?? null)}
+                  placeholder="Select target status"
+                  isClearable
+                />
+              </FieldGroup>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setBulkTransitionOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                appearance="primary"
+                isDisabled={!bulkTransitionTarget || bulkUpdate.isPending}
+                onClick={() => {
+                  if (bulkTransitionTarget) {
+                    bulkUpdate.mutate(
+                      { ids: Array.from(selectedIds), patch: { status: bulkTransitionTarget } },
+                      {
+                        onSuccess: () => {
+                          setBulkTransitionOpen(false);
+                          setBulkTransitionTarget(null);
+                          setSelectedIds(new Set());
+                        },
+                      }
+                    );
+                  }
+                }}
+              >
+                {bulkUpdate.isPending ? 'Transitioning...' : 'Transition'}
+              </Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
 
       {/* Single FlagsHost for this route — picks up every showFlag()/flag.* call. */}
       <FlagsHost />

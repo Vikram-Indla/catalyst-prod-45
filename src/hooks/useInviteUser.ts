@@ -4,8 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 interface InviteUserParams {
   email: string;
   role: string;
-  full_name?: string;
   module_access: Record<string, boolean>;
+  full_name?: string;
 }
 
 interface InviteUserResult {

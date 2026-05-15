@@ -237,7 +237,6 @@ export function useRecentProjects(limit = 8) {
 
   const { data: locations = [], isLoading } = useQuery({
     queryKey: ['recent-locations', entries.map((e) => e.path).join('|'), tick],
-    enabled: keys.length > 0,
     staleTime: 60_000,
     queryFn: async () => {
       const { data, error } = await supabase

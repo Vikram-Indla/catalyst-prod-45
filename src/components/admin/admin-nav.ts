@@ -38,6 +38,8 @@ export const adminPockets: AdminNavPocket[] = [
     iconName: 'Users',
     path: '/admin/users-access',
     children: [
+      { label: 'Access Management', path: '/admin/access' },
+      { label: 'Resource Roster', path: '/admin/user-access' },
       { label: 'Resource Names', path: '/admin/users' },
       { label: 'Resource Roles', path: '/admin/roles-permissions' },
       { label: 'Jira User Sync', path: '/admin/jira-user-sync' },
@@ -51,8 +53,6 @@ export const adminPockets: AdminNavPocket[] = [
     iconName: 'Settings',
     path: '/admin/general',
     children: [
-      { label: 'User Access', path: '/admin/user-access' },
-      { label: 'Access Management', path: '/admin/access' },
       { label: 'Modules & Packages', path: '/admin/modules-packages' },
       { label: 'Notification Settings', path: '/admin/settings/notifications' },
       { label: 'Notification Triggers', path: '/admin/notification-triggers' },

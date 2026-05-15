@@ -37,6 +37,7 @@ export interface BacklogEpic {
   comment_count?: number | null;
   labels?: string[] | null;
   fix_versions?: string[] | null;
+  rank_order?: number | null;
 }
 
 export interface BacklogFeature {
@@ -92,6 +93,7 @@ export interface BacklogStory {
   parent_summary?: string | null;
   labels?: string[] | null;
   fix_versions?: string[] | null;
+  rank_order?: number | null;
   feature?: {
     id: string;
     display_id: string | null;

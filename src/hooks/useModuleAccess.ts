@@ -16,8 +16,14 @@ interface UserModulePermission {
 }
 
 /**
- * Fetches the current user's module access permissions based on their product roles.
- * Super Admins always get full access to all modules.
+ * Fetches the current user's module access permissions based on their product roles,
+ * merged with any per-user override stored on profiles.module_access.
+ *
+ * Priority (highest wins):
+ *   1. profiles.module_access override (set at invite time by admin)
+ *   2. admin_role_module_permissions (role-based defaults)
+ *
+ * Super Admins bypass both — always full access.
  */
 export function useUserModulePermissions() {
   const { user } = useAuth();
@@ -27,64 +33,87 @@ export function useUserModulePermissions() {
     queryKey: ['user-module-permissions', user?.id, productRoles],
     queryFn: async (): Promise<UserModulePermission[]> => {
       if (!user) return [];
-      
-      // Super Admin gets full access to everything
+
+      // Super Admin gets full access to everything — no override needed
       if (isSuperAdmin) {
         const { data: modules } = await supabase
           .from('admin_nav_modules')
           .select('module_key');
-        
         return (modules || []).map(m => ({
           module_key: m.module_key,
           access_level: 'full' as ModuleAccessLevel,
         }));
       }
 
-      // Get role codes for the user
+      // Fetch role-based permissions and per-user override in parallel
+      const [rolePermsResult, profileResult] = await Promise.all([
+        productRoles && productRoles.length > 0
+          ? supabase
+              .from('admin_role_module_permissions')
+              .select('module_key, access_level')
+              .in('role_code', productRoles)
+          : Promise.resolve({ data: [], error: null }),
+        supabase
+          .from('profiles')
+          .select('module_access')
+          .eq('id', user.id)
+          .maybeSingle(),
+      ]);
+
+      if (rolePermsResult.error) {
+        console.error('Error fetching module permissions:', rolePermsResult.error);
+      }
+
+      // Build role-based map (highest role level wins across multiple roles)
+      const accessPriority: Record<string, number> = { full: 3, view: 2, hidden: 1, none: 0 };
+      const roleMap = new Map<string, ModuleAccessLevel>();
+
+      (rolePermsResult.data || []).forEach((row) => {
+        const current = roleMap.get(row.module_key);
+        const next = (row.access_level === 'none' ? 'hidden' : row.access_level) as ModuleAccessLevel;
+        if (!current || accessPriority[next] > accessPriority[current]) {
+          roleMap.set(row.module_key, next);
+        }
+      });
+
+      // Per-user override from profiles.module_access — set at invite time.
+      // Record<string, boolean>: true → 'full', false → 'hidden'.
+      // An empty object ({}) means no override — fall through to role defaults.
+      const userOverride = (profileResult.data?.module_access ?? {}) as Record<string, boolean>;
+      const hasOverride = Object.keys(userOverride).length > 0;
+
+      if (hasOverride) {
+        // Merge: for each key in the override, replace the role-based level.
+        // Keys absent from the override keep their role-based value.
+        const merged = new Map<string, ModuleAccessLevel>(roleMap);
+        Object.entries(userOverride).forEach(([key, granted]) => {
+          merged.set(key, granted ? 'full' : 'hidden');
+        });
+        return Array.from(merged.entries()).map(([module_key, access_level]) => ({
+          module_key,
+          access_level,
+        }));
+      }
+
+      // No per-user override — use role defaults only.
+      // If the user has no roles at all, everything is hidden.
       if (!productRoles || productRoles.length === 0) {
-        // No roles = hidden for all modules
         const { data: modules } = await supabase
           .from('admin_nav_modules')
           .select('module_key');
-        
         return (modules || []).map(m => ({
           module_key: m.module_key,
           access_level: 'hidden' as ModuleAccessLevel,
         }));
       }
 
-      // Fetch permissions for the user's roles
-      // Take the highest access level if user has multiple roles
-      const { data, error } = await supabase
-        .from('admin_role_module_permissions')
-        .select('module_key, access_level')
-        .in('role_code', productRoles);
-
-      if (error) {
-        console.error('Error fetching module permissions:', error);
-        return [];
-      }
-
-      // Group by module_key and get highest access level
-      const moduleAccessMap = new Map<string, ModuleAccessLevel>();
-      const accessPriority: Record<string, number> = { full: 3, view: 2, hidden: 1, none: 0 };
-
-      (data || []).forEach((row) => {
-        const currentLevel = moduleAccessMap.get(row.module_key);
-        const newLevel = (row.access_level === 'none' ? 'hidden' : row.access_level) as ModuleAccessLevel;
-        
-        if (!currentLevel || accessPriority[newLevel] > accessPriority[currentLevel]) {
-          moduleAccessMap.set(row.module_key, newLevel);
-        }
-      });
-
-      return Array.from(moduleAccessMap.entries()).map(([module_key, access_level]) => ({
+      return Array.from(roleMap.entries()).map(([module_key, access_level]) => ({
         module_key,
         access_level,
       }));
     },
     enabled: !!user && !roleLoading,
-    staleTime: 60000, // Cache for 1 minute
+    staleTime: 60000,
   });
 
   return {
