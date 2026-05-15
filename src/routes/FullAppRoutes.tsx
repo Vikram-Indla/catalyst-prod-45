@@ -18,7 +18,7 @@ import { RouteRoleGuard } from "../components/RouteRoleGuard";
 const FeatureFlagsPage = lazy(() => import("../pages/admin/FeatureFlagsPage"));
 const AdminIconsPage = lazy(() => import("../pages/admin/icons/AdminIconsPage"));
 const AdminAvatarsPage = lazy(() => import("../pages/admin/avatars/AdminAvatarsPage"));
-const WorkListPageLazy = lazy(() => import("../pages/BacklogPage"));
+const WorkListPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogPage.atlaskit"));
 
 // ─── Lazy page imports ───────────────────────────────────────────
 const KBAdminSetup = ENABLE_AI ? lazy(() => import("../pages/KBAdminSetup")) : () => <FeatureComingSoon title="KB Admin" />;
