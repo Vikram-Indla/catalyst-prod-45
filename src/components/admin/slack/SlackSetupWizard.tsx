@@ -575,7 +575,6 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
           )}
         </div>
       </div>
-    </div>
   );
 }
 
