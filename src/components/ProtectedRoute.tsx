@@ -4,9 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
 
-// ⚠️ AUTH BYPASS — temporary for diagnostics. Remove when done.
-const AUTH_BYPASS = true;
-
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAdmin?: boolean;
@@ -30,7 +27,7 @@ export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRout
       }
       return data;
     },
-    enabled: !!user && !AUTH_BYPASS,
+    enabled: !!user,
     staleTime: 30000,
     retry: 1,
   });
@@ -47,23 +44,17 @@ export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRout
         .maybeSingle();
       return data;
     },
-    enabled: !!user && !AUTH_BYPASS,
+    enabled: !!user,
     staleTime: 60_000,
     retry: 1,
   });
 
   useEffect(() => {
-    if (AUTH_BYPASS) return;
     if (!profileLoading && profile && profile.approval_status !== 'APPROVED') {
       console.log('[ProtectedRoute] User not approved, signing out:', profile.approval_status);
       signOut();
     }
   }, [profile, profileLoading, signOut]);
-
-  // Bypass auth entirely when flag is on
-  if (AUTH_BYPASS) {
-    return <>{children}</>;
-  }
 
   if (loading || profileLoading || resourceLoading) {
     return (
