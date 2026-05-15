@@ -11,7 +11,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import BacklogPage from '@/pages/BacklogPage';
+import BacklogPage from '@/modules/project-work-hub/pages/BacklogPage.atlaskit';
 
 // Mock the database
 vi.mock('@/lib/supabase', () => ({
