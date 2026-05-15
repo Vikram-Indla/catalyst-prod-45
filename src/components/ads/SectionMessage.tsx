@@ -34,7 +34,7 @@ export function SectionMessage({
     <AkSectionMessage
       appearance={appearance}
       title={title}
-      actions={actions?.map((a) => ({ key: a.key, text: a.text as string, onClick: a.onClick }))}
+      actions={actions}
       testId={testId}
     >
       {children}
