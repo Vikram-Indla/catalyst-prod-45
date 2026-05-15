@@ -345,6 +345,7 @@ const ALLOWED_COLUMN_IDS = new Set([
   'parent',
   'assignee',
   'priority',
+  'fix_versions',
   'labels',
   'due_date',
   'created',
@@ -1730,14 +1731,15 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // CSS in JiraTable.tsx (`.jira-drag-handle`) handles visibility.
       // 2026-05-12: functional DnD with @dnd-kit/sortable. DragHandleCell
       // uses useSortable hook to track drag state and apply transform.
-      // Visibility gate: drag handle only shows when sortKey=rank_order AND
-      // groupBy=null (no active sort or grouping — matches Jira behavior).
+      // Visibility gate: drag handle shows in the default sort state only
+      // (sortKey=DEFAULT_SORT_KEY AND sortDir=DEFAULT_SORT_DIR AND no grouping).
+      // Any column sort deviation or grouping hides it — matches Jira behavior.
       id: '__drag',
       label: '',
       width: 3,
       align: 'center' as const,
       alwaysVisible: true,
-      hidden: sortKey !== 'rank_order' || groupBy !== null,
+      hidden: sortKey !== DEFAULT_SORT_KEY || sortDir !== DEFAULT_SORT_DIR || (groupBy !== null && groupBy !== 'none'),
       cell: ({ row }) => <DragHandleCell row={row} />,
     },
     {
@@ -2107,7 +2109,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         actions: rowActions.filter((a) => a.id !== 'open'),
       }),
     },
-  ]), [expandedIds, toggleExpanded, hasChildren, parentOptions, assigneeOptions, avatarsByName, updateField, rowActions]);
+  ]), [expandedIds, toggleExpanded, hasChildren, parentOptions, assigneeOptions, avatarsByName, updateField, rowActions, sortKey, sortDir, groupBy]);
 
   // Filter columns to only allowed standard Jira fields (2026-05-12).
   // Prevents type-specific custom fields and banned fields from appearing
@@ -3103,7 +3105,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             onSelectionChange={setSelectedIds}
             sortKey={sortKey || undefined}
             sortOrder={sortDir || undefined}
-            onSortChange={(k, ord) => { setSortKey(k); setSortDir(ord); }}
+            onSortChange={(k, ord) => {
+              // Empty key signals "sort cleared" — restore defaults so drag handles reappear
+              setSortKey(k || DEFAULT_SORT_KEY);
+              setSortDir((k ? ord : DEFAULT_SORT_DIR) as 'ASC' | 'DESC');
+            }}
             // Apr 28, 2026 (jira-compare cycle 2 T20+T21, refined cycle 3 +
             // cycle 3 second pass):
             // Pagination footer + circular info button removed — Jira /list

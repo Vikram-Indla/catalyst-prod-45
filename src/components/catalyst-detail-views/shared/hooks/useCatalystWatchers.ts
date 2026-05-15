@@ -51,7 +51,8 @@ export function useCatalystWatchers(issueKey: string | null | undefined) {
         .eq('issue_key', issueKey);
 
       if (error) {
-        console.error('[useCatalystWatchers] query error:', error.message);
+        // ph_issue_watchers may not be in the schema cache yet — gracefully degrade.
+        console.warn('[useCatalystWatchers] watchers unavailable:', error.message);
         return { count: 0, isWatching: false, watchers: [] };
       }
 

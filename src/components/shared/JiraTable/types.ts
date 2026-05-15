@@ -52,6 +52,8 @@ export interface Column<TRow> {
   align?: 'start' | 'center' | 'end';
   /** Always shown (cannot be hidden via column picker). */
   alwaysVisible?: boolean;
+  /** When true the column is completely excluded from rendering (e.g. drag handle when sort is active). */
+  hidden?: boolean;
   /** Default visibility (column picker uses this to seed state). */
   defaultVisible?: boolean;
   /** Extract the sort/edit value from the row. Defaults to row[id]. */

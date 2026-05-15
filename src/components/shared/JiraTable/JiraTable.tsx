@@ -214,8 +214,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
   // it (structural columns are pinned in place).
   const visibleColumns: Column<TRow>[] = useMemo(() => {
     const base = columnVisibility
-      ? columns.filter((c) => c.alwaysVisible || columnVisibility.has(c.id))
-      : columns;
+      ? columns.filter((c) => !c.hidden && (c.alwaysVisible || columnVisibility.has(c.id)))
+      : columns.filter((c) => !c.hidden);
     if (!effectiveColumnOrder || effectiveColumnOrder.length === 0) return base;
     const idx = new Map<string, number>();
     effectiveColumnOrder.forEach((id, i) => idx.set(id, i));
