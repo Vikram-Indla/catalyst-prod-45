@@ -111,15 +111,15 @@ function ParentLozenge({
         display: 'inline-flex', alignItems: 'center', gap: 4,
         padding: '2px 0px', borderRadius: 0,
         background: tok.bg, color: tok.text,
-        fontSize: 13, fontWeight: 500,
+        fontSize: 14, fontWeight: 400,
         cursor: onClick ? 'pointer' : 'default',
         maxWidth: 360, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
       }}
       title={`${parentKey} ${parentSummary ?? ''}`}
     >
       <IssueIcon type={parentType} size={14} />
-      <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600 }}>{parentKey}</span>
-      {parentSummary ? <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{parentSummary}</span> : null}
+      <span style={{ fontWeight: 400 }}>{parentKey}</span>
+      {parentSummary ? <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--ds-text-subtle, #505258)' }}>{parentSummary}</span> : null}
     </span>
   );
 }

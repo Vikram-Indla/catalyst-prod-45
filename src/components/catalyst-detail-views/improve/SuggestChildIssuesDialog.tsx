@@ -23,6 +23,7 @@
 import React, { useEffect, useState } from 'react';
 import Button from '@atlaskit/button/new';
 import Checkbox from '@atlaskit/checkbox';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import { token } from '@atlaskit/tokens';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -176,49 +177,20 @@ export function SuggestChildIssuesDialog({
   const childLabel = childWorkItemLabel(issueType);
 
   return (
-    <div
-      role="dialog"
-      aria-label={`${triggerLabel} — suggest ${childLabel.toLowerCase()}`}
-      data-testid="suggest-child-issues-dialog"
-      style={{
-        width: '100%',
-        background: token('color.background.neutral.subtle', '#F7F8F9'),
-        borderRadius: 6,
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        marginBottom: 16,
-      }}
-    >
-        <div style={{ padding: '20px 24px 8px' }}>
-          <h1
-            style={{
-              margin: 0,
-              fontSize: 20,
-              fontWeight: 600,
-              lineHeight: '24px',
-              color: token('color.text', '#292A2E'),
-            }}
-          >
-            {triggerLabel} — Suggest {childLabel.toLowerCase()}
-          </h1>
-          <p
-            style={{
-              margin: '4px 0 0',
-              fontSize: 13,
-              color: token('color.text.subtle', '#6B6E76'),
-            }}
-          >
-            {loading
-              ? 'Generating suggestions…'
-              : suggestions.length > 0
-                ? `Pick the ones you want — selected items become real ${childLabel.toLowerCase()} under this parent.`
-                : ''}
-          </p>
-        </div>
+    <ModalDialog onClose={onClose} width={680}>
+      <ModalHeader hasCloseButton>
+        <ModalTitle>{triggerLabel} — Suggest {childLabel.toLowerCase()}</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <p style={{ margin: '0 0 16px', fontSize: 13, color: token('color.text.subtle', '#6B6E76') }}>
+          {loading
+            ? 'Generating suggestions…'
+            : suggestions.length > 0
+              ? `Pick the ones you want — selected items become real ${childLabel.toLowerCase()} under this parent.`
+              : ''}
+        </p>
 
-        <div style={{ flex: 1, overflowY: 'auto', padding: '8px 24px 16px' }}>
+        <div>
           {loading && (
             <div style={{ padding: '32px 0', textAlign: 'center', color: token('color.text.subtle', '#6B6E76'), fontSize: 14 }}>
               Generating suggestions…
@@ -312,28 +284,20 @@ export function SuggestChildIssuesDialog({
             </div>
           )}
         </div>
-
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: 8,
-            padding: '12px 24px',
-            borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
-          }}
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose} isDisabled={creating}>
+          Cancel
+        </Button>
+        <Button
+          appearance="primary"
+          onClick={createSelected}
+          isLoading={creating}
+          isDisabled={loading || creating || checked.size === 0}
         >
-          <Button appearance="subtle" onClick={onClose} isDisabled={creating}>
-            Cancel
-          </Button>
-          <Button
-            appearance="primary"
-            onClick={createSelected}
-            isLoading={creating}
-            isDisabled={loading || creating || checked.size === 0}
-          >
-            Create {checked.size > 0 ? `${checked.size} ${childLabel.toLowerCase()}` : 'selected'}
-          </Button>
-        </div>
-      </div>
+          Create {checked.size > 0 ? `${checked.size} ${childLabel.toLowerCase()}` : 'selected'}
+        </Button>
+      </ModalFooter>
+    </ModalDialog>
   );
 }

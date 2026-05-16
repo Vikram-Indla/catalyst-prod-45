@@ -48,7 +48,7 @@ export function KeyDetailsFieldRow({
       <Inline space="space.250" alignBlock={alignBlock}>
         <span style={{
           fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258',
-          minWidth: 96, flexShrink: 0,
+          minWidth: 120, flexShrink: 0,
         }}>{label}</span>
         <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
       </Inline>

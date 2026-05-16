@@ -26,7 +26,7 @@ import { Heading } from '@/components/ads';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
-// Inline removed — FieldRow switched to stacked layout (jira-compare 2026-05-05)
+// Inline removed — FieldRow uses side-by-side row layout matching Jira (jira-compare 2026-05-16)
 import { useWorkflow } from '@/lib/workflows';
 import { StatusTransitionDropdown } from '@/components/workflow';
 import { CatalystConfigureDrawer, loadPinnedFields, PINNABLE_FIELDS } from './CatalystConfigureDrawer';
@@ -45,29 +45,43 @@ import { CatalystConfigureDrawer, loadPinnedFields, PINNABLE_FIELDS } from './Ca
  */
 function FieldRow({
   label,
+  alignBlock = 'center',
+  labelTopPad,
   children,
 }: {
   label: string;
-  /** @deprecated alignBlock and labelTopPad removed — stacked layout makes them irrelevant */
+  /** 'center' (default) for single-line fields (Assignee, Reporter, Priority, Fix versions).
+   *  'start' for multi-line values (Labels, multi-select) — aligns label to top of value column.
+   *  jira-compare 2026-05-16: Jira right rail uses side-by-side layout with alignItems center
+   *  for most fields. Multi-value fields use align-items flex-start so the label sits at top. */
   alignBlock?: 'start' | 'center';
+  /** @deprecated no-op; kept for call-site compat */
   labelTopPad?: boolean;
   children: React.ReactNode;
 }) {
-  /* jira-compare 2026-05-08: live DOM re-probe of BAU-5737 right rail:
-       label: 14px/500/#505258 (--ds-text-subtle), lineHeight 20px
-       value: 14px/400/#172B4D (--ds-text), lineHeight 20px
-     Supersedes K.11 stale entry (11px/600/#6B778C) — K.11 was measured from
-     a different Jira context surface that no longer reflects BAU right rail. */
+  /* jira-compare 2026-05-16: live DOM re-probe of BAU-5922 right rail confirms
+     Jira's right rail uses a SIDE-BY-SIDE row layout, NOT stacked:
+       container: display flex, flexDirection row, alignItems center, gap 8px, padding 4px 0
+       label: 14px/500/#505258, natural width (no fixed minWidth), flexShrink 0
+       value: 14px/400/#292A2E, flex 1, min-width 0
+     Previously Catalyst used a stacked layout (label above value) which differed
+     from Jira's side-by-side pattern. Fixed to match Jira parity exactly. */
   return (
-    <div style={{ padding: '4px 0 12px' }}>
+    <div style={{
+      display: 'flex', flexDirection: 'row',
+      alignItems: alignBlock === 'start' ? 'flex-start' : 'center',
+      gap: 8, padding: '4px 0',
+    }}>
       <div style={{
-        fontSize: 14, fontWeight: 500, lineHeight: '20px',
+        fontSize: 14, fontWeight: 500, lineHeight: '18.67px',
         color: 'var(--ds-text-subtle, #505258)',
-        marginBottom: 2, textTransform: 'none',
+        flexShrink: 0, whiteSpace: 'nowrap',
+        // Align label to top of value when value can be multi-line
+        ...(alignBlock === 'start' ? { paddingTop: 2 } : {}),
       }}>
         {label}
       </div>
-      <div style={{ fontSize: 14, lineHeight: '20px', color: 'var(--ds-text, #172B4D)', minWidth: 0 }}>
+      <div style={{ fontSize: 14, lineHeight: '20px', color: 'var(--ds-text, #292A2E)', flex: 1, minWidth: 0 }}>
         {children}
       </div>
     </div>
@@ -497,7 +511,7 @@ export function CatalystSidebarDetails({
                 fieldId === 'labels' &&
                 (issue?.issue_type === 'Task' || issue?.issue_type === 'Story')
               ) return (
-                <FieldRow key={fieldId} label="Labels" labelTopPad>
+                <FieldRow key={fieldId} label="Labels" alignBlock="start">
                   {issue && (
                     <EditableLabels
                       issueId={issue.id}
@@ -509,7 +523,7 @@ export function CatalystSidebarDetails({
                 </FieldRow>
               );
               if (fieldId === 'fixVersions' && issue?.issue_type !== 'Feature') return (
-                <FieldRow key={fieldId} label="Fix versions" labelTopPad>
+                <FieldRow key={fieldId} label="Fix versions" alignBlock="start">
                   {issue && (
                     <EditableFixVersions
                       issueId={issue.id}
@@ -559,7 +573,7 @@ export function CatalystSidebarDetails({
               Vikram approved 2026-05-10.
               Feature EXCLUDED: fixVersions NOT in Feature scheme (type 10173). */}
           {issue?.issue_type !== 'Feature' && (
-            <FieldRow label="Fix versions" labelTopPad>
+            <FieldRow label="Fix versions" alignBlock="start">
               {issue && (
                 <EditableFixVersions
                   issueId={issue.id}
@@ -638,7 +652,7 @@ export function CatalystSidebarDetails({
               Vikram approved Story addition 2026-05-10. Do not widen further without
               per-type Jira screen scheme validation (anti-pattern #18). */}
           {(issue?.issue_type === 'Task' || issue?.issue_type === 'Story') && (
-            <FieldRow label="Labels" labelTopPad>
+            <FieldRow label="Labels" alignBlock="start">
               {issue && (
                 <EditableLabels
                   issueId={issue.id}
@@ -753,10 +767,10 @@ export function CatalystSidebarDetails({
               <FieldRow label="IR Demo Date">
                 <CatalystIRDemoDateDisplay issue={issue} />
               </FieldRow>
-              <FieldRow label="IR Figma Approved" labelTopPad>
+              <FieldRow label="IR Figma Approved" alignBlock="start">
                 <CatalystIRFigmaApprovedDisplay issue={issue} />
               </FieldRow>
-              <FieldRow label="IR Demo Approved" labelTopPad>
+              <FieldRow label="IR Demo Approved" alignBlock="start">
                 <CatalystIRDemoApprovedDisplay issue={issue} />
               </FieldRow>
             </>

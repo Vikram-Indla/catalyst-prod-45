@@ -1358,6 +1358,7 @@ export default function KanbanBoardPage() {
             isOpen={true}
             onClose={() => setSelIssueId(null)}
             itemId={issuesById.get(selIssueId)?.issueKey ?? selIssueId}
+            itemType={issuesById.get(selIssueId)?.issueType ?? undefined}
             projectId={projMeta?.id ?? ''}
             projectKey={key}
           />
