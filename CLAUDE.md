@@ -318,6 +318,19 @@ When `ph_user_mapping` has no entry and the name fallback also fails, `jiraAccou
 
 ---
 
+## 2026-05-16 — ph_user_mapping miss propagates to edge functions — apply profiles.jira_account_id fallback everywhere
+**Surface:** `supabase/functions/ai-digest/themes.ts` (AI Focus / AI Theme tab) · any edge function resolving Jira account ID
+**Pattern:** After fixing `useForYouData.fetchUserMapping` (client-side hook), the `ai-digest` edge function's themes handler had the exact same bug — querying only `ph_user_mapping` for the Jira account ID with no fallback. Result: `jiraAccountIds = []` → early return with `totalIssuesAnalyzed: 0` → UI showed "Analysed 0 issues into 0 themes · Not enough activity to theme yet." The 90-day time window was already correct; the issue was purely the missing `ph_user_mapping` entry.
+A second co-located bug: `themes.ts` declared `lovableApiKey: string` in its `handleThemesRequest` parameter signature, but `index.ts` dispatched it as `geminiApiKey` (matching the 2026-05-16 Gemini-direct migration). With `lovableApiKey = undefined`, the AI call would have sent `Authorization: Bearer undefined` to the old Lovable gateway — silent 401/500 after the Jira ID fix unblocked the code path.
+**Fix:**
+1. Added `profiles.jira_account_id` fallback in `themes.ts` (mirrors `useForYouData` fix, commit `1eab16df6`).
+2. Renamed `lovableApiKey` → `geminiApiKey` in `handleThemesRequest` signature and body.
+3. Switched AI call from `https://ai.gateway.lovable.dev/v1/chat/completions` + `google/gemini-3-flash-preview` to `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions` + `gemini-2.5-flash` (Gemini direct, same as `index.ts`).
+**Rule:** When the `ph_user_mapping` fallback fix is applied to a client-side hook, **audit all edge functions** for the same pattern immediately — they share the same data model and same missing-entry problem. Use `grep -r "ph_user_mapping" supabase/functions/` to find all callsites. Every callsite needs the `profiles.jira_account_id` fallback. When an edge function is rewired to a new AI provider (Lovable → Gemini), check ALL dispatch callsites AND the handler signature for parameter name consistency — a mismatch is invisible at Deno runtime (no TypeScript compile error) and silently sends `undefined` as the bearer token.
+**Severity:** P1 (AI Focus tab always showed empty state for any user without a `ph_user_mapping` entry)
+
+---
+
 ## 2026-05-16 — Code archaeology before API troubleshooting — read existing implementations first
 **Surface:** wh-jira-bulk-sync edge function · any Jira API integration
 **Pattern:** Debugging Jira API search failures, I tested multiple endpoints: `/rest/api/3/search` (returned HTTP 410 deprecated), then `/rest/api/3/issues/search` (returned 0 results). Spent cycles trying alternatives before checking the existing working code. Lovable's `wh-jira-bulk-sync/index.ts` (already deployed and functional) uses `/rest/api/3/search/jql` — the correct endpoint the whole time. The endpoint choice was already proven in production; the failure diagnosis was wrong.
