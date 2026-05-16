@@ -141,12 +141,15 @@ export interface KanbanColumnDef {
 }
 
 export const KANBAN_COLUMNS: KanbanColumnDef[] = [
-  { id: 'col-requirements', name: 'IN REQUIREMENTS', category: 'todo', statuses: ['In Requirements', 'In Design', 'Awaiting Info'] },
+  // MDT/Product-hub demand-stage statuses → REQUIREMENTS column (additive; BAU has none of these)
+  { id: 'col-requirements', name: 'IN REQUIREMENTS', category: 'todo', statuses: ['In Requirements', 'In Design', 'Awaiting Info', 'Demand Intake', 'New', 'Demand Validation'] },
   { id: 'col-ready-dev', name: 'READY FOR DEV', category: 'todo', statuses: ['Ready for Development', 'Backlog', 'ToDo', 'To Do'] },
   { id: 'col-dev', name: 'IN DEVELOPMENT', category: 'in_progress', statuses: ['In Development', 'In Progress', 'Under Implementation'] },
   { id: 'col-testing', name: 'IN TESTING', category: 'in_progress', statuses: ['In QA', 'Ready for QA', 'Retest', 'Internal QA', 'Staging/QA', 'In Testing'] },
-  { id: 'col-uat', name: 'IN UAT', category: 'in_progress', statuses: ['In UAT', 'UAT Ready', 'BETA READY', 'In BETA', 'In Integration'] },
-  { id: 'col-done', name: 'DONE', category: 'done', statuses: ['Done', 'Closed', 'Resolved', 'In Production', 'ready for production', 'Rejected', 'Re-Open', 'Blocked'] },
+  // MDT 'Pending UAT/BETA' maps to UAT column
+  { id: 'col-uat', name: 'IN UAT', category: 'in_progress', statuses: ['In UAT', 'UAT Ready', 'BETA READY', 'In BETA', 'In Integration', 'Pending UAT/BETA'] },
+  // MDT 'On Hold' and 'Canceled' → DONE column (terminal/holding states)
+  { id: 'col-done', name: 'DONE', category: 'done', statuses: ['Done', 'Closed', 'Resolved', 'In Production', 'ready for production', 'Rejected', 'Re-Open', 'Blocked', 'On Hold', 'Canceled'] },
 ];
 
 export const COL_PRIMARY_STATUS: Record<string, string> = {};
