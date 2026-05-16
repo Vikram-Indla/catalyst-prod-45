@@ -272,6 +272,20 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 
 ---
 
+## 2026-05-16 — Code archaeology before API troubleshooting — read existing implementations first
+**Surface:** wh-jira-bulk-sync edge function · any Jira API integration
+**Pattern:** Debugging Jira API search failures, I tested multiple endpoints: `/rest/api/3/search` (returned HTTP 410 deprecated), then `/rest/api/3/issues/search` (returned 0 results). Spent cycles trying alternatives before checking the existing working code. Lovable's `wh-jira-bulk-sync/index.ts` (already deployed and functional) uses `/rest/api/3/search/jql` — the correct endpoint the whole time. The endpoint choice was already proven in production; the failure diagnosis was wrong.
+**Rule:** When debugging an integration that has an existing working implementation in the codebase:
+1. **Stop debugging immediately**
+2. **Read the working code first** — check the exact endpoint, headers, body structure, error handling
+3. **Replicate the working pattern exactly** — don't try alternatives until you've confirmed the existing code matches your current state
+4. **Only then** debug if the replicated pattern still fails
+
+This applies to ALL integrations with live code: Supabase edge functions, external APIs, webhooks. If Lovable built it and it's deployed, start there, not with curl experiments. The codebase IS the source of truth for "what works."
+**Severity:** P1 (wasted debugging cycles; wrong diagnosis; delays critical data sync)
+
+---
+
 ## 2026-05-12 — fullPageMode in CatalystViewBase needs body-as-scroll-container, not page-level scroll
 **Surface:** CatalystViewBase.tsx (fullPageMode) · BacklogDetailPage, IssueFullPage
 **Pattern:** The project hub layout constrains every page container with `height: '100%'; flex: 1; minHeight: 0` — the document never scrolls. `CatalystViewBase` in fullPageMode originally used `overflow: 'visible'` on `cv-drawer-body` and `minHeight: '100%'` on the `MODAL` wrapper. This produced a 1452px tall MODAL inside an 894px viewport with no scroll container — the page was stuck, fields above the fold were unreachable, and the sticky sidebar had no fixed-height parent to stick to.
