@@ -31,7 +31,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useTheme } from '@/hooks/useTheme';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { useGlobalSearchStore } from '@/stores/globalSearchStore';
+import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 interface ProductHubSidebarProps {
   expanded: boolean;
