@@ -79,6 +79,10 @@ export interface Request {
   linked_items_total: number;
   linked_items_done: number;
   linked_items_progress: number;
+  // Business request type — 'feature' | 'gap' | 'integration' | 'data_request'
+  request_type?: string | null;
+  // Product code — scope context for display transformations (e.g., MDT→INV)
+  product_code?: string | null;
 }
 
 export interface FilterCondition {

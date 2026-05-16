@@ -1617,6 +1617,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                         ? (isDraggingThis ? 'grabbing' : (meta?.sortable ? 'pointer' : 'grab'))
                         : undefined,
                       opacity: isDraggingThis ? 0.55 : 1,
+                      ...meta?.headerStyle,
                     }}
                   >
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>

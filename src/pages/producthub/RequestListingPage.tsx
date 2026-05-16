@@ -788,6 +788,7 @@ export default function RequestListingPage() {
             columnConfigs={columnConfigs}
             groupBy={groupBy}
             scopedProduct={scopedProduct}
+            productCode={productCode}
             brdTasksMap={brdTasksMap}
             columnWidths={columnWidths}
             onColumnWidthsChange={handleColumnWidthsChange}
