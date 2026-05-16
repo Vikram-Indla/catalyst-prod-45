@@ -482,9 +482,11 @@ interface UserMappingResult {
 // ─── Pure fetch functions (no React hooks, safe to call from useQuery) ────────
 
 async function fetchUserMapping(userId: string): Promise<UserMappingResult> {
+  // Include jira_account_id so we can use it as a final fallback if ph_user_mapping
+  // has no entry for this user (aligns with useAgeingItems which reads the same field).
   const { data: profileData } = await supabase
     .from('profiles')
-    .select('full_name')
+    .select('full_name, jira_account_id')
     .eq('id', userId)
     .single();
 
@@ -513,6 +515,12 @@ async function fetchUserMapping(userId: string): Promise<UserMappingResult> {
     if (nameMatches && nameMatches.length > 0) {
       jiraAccountIds = nameMatches.map((m: any) => m.jira_account_id).filter(Boolean);
     }
+  }
+
+  // Final fallback: ph_user_mapping had no entry, but profiles.jira_account_id is set.
+  // useAgeingItems uses this same field — keep both hooks in sync.
+  if (jiraAccountIds.length === 0 && (profileData as any)?.jira_account_id) {
+    jiraAccountIds = [(profileData as any).jira_account_id];
   }
 
   return { jiraAccountIds, userProfile };
