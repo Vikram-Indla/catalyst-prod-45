@@ -52,8 +52,8 @@
   /* JIRA-PARITY: probed 2026-04-26 BAU parent chip — ADS background.success=unresolved, actual=#B3DF72 */
   --cp-jira-epic-chip-bg: #B3DF72;
 
-  /* JIRA-PARITY: probed 2026-04-26 BAU parent chip — text color, actual=#292A2E */
-  --cp-jira-epic-chip-fg: #292A2E;
+  /* JIRA-PARITY: re-probed 2026-05-16 BAU parent chip — text color, jira-compare JC-2 measured rgb(31,132,9) */
+  --cp-jira-epic-chip-fg: rgb(31, 132, 9);
 
   /* ─── Kanban / Backlog column category dots ───────────────────────────────
    * Measured 2026-05-07 from BAU Kanban column headers.
