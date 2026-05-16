@@ -239,10 +239,10 @@ export async function handleThemesRequest(args: {
   body: ThemesRequestBody;
   supabase: any;     // SupabaseClient — typing across the Deno/ESM boundary
   userId: string;
-  lovableApiKey: string;
+  geminiApiKey: string;
   corsHeaders: Record<string, string>;
 }): Promise<Response> {
-  const { body, supabase, userId, lovableApiKey, corsHeaders } = args;
+  const { body, supabase, userId, geminiApiKey, corsHeaders } = args;
   const forceRefresh = body.forceRefresh === true;
   const scope = body.scope;
   const projectKey = body.projectKey ?? null;
@@ -272,9 +272,16 @@ export async function handleThemesRequest(args: {
     .limit(limit);
 
   if (scope === 'personal') {
-    // Look up the user's Jira account ids (a single auth user can be mapped
-    // to multiple Jira accounts — e.g. work + personal). Empty array = no
-    // mapped Jira account, surfaces as the empty state.
+    // Step 1: fetch the user's profile (jira_account_id is the primary fallback
+    // used by useAgeingItems — we mirror it here for consistency).
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('jira_account_id')
+      .eq('id', userId)
+      .single();
+
+    // Step 2: Look up the user's Jira account ids from ph_user_mapping.
+    // A single auth user can be mapped to multiple Jira accounts.
     const { data: mappings, error: mapErr } = await supabase
       .from('ph_user_mapping')
       .select('jira_account_id')
@@ -289,13 +296,23 @@ export async function handleThemesRequest(args: {
       );
     }
 
-    const jiraAccountIds = (mappings ?? [])
+    let jiraAccountIds = (mappings ?? [])
       .map((m: { jira_account_id: string | null }) => m.jira_account_id)
       .filter((id): id is string => Boolean(id));
+
+    // Step 3: Fallback to profiles.jira_account_id if ph_user_mapping has no
+    // entry for this user. Mirrors the fix applied to useForYouData.fetchUserMapping
+    // (commit 1eab16df6) — both hooks must stay in sync with each other and with
+    // useAgeingItems which reads profiles.jira_account_id directly.
+    if (jiraAccountIds.length === 0 && profile?.jira_account_id) {
+      console.log(`[themes] ph_user_mapping empty — using profiles.jira_account_id fallback: ${profile.jira_account_id}`);
+      jiraAccountIds = [profile.jira_account_id];
+    }
 
     if (jiraAccountIds.length === 0) {
       // No Jira mapping for this user — return typed empty so UI shows
       // the "not enough activity to theme yet" state instead of a stack trace.
+      console.warn(`[themes] No jira_account_id found for userId=${userId} — aborting`);
       const empty: ThemesResponse = {
         themes: [],
         generatedAt: new Date().toISOString(),
@@ -387,11 +404,13 @@ export async function handleThemesRequest(args: {
     projectKey: projectKey ?? undefined,
   });
 
-  const aiResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+  // Gemini direct (rewired 2026-05-16 — Lovable gateway deprecated).
+  // Same endpoint and model as the ai-digest default-mode handler in index.ts.
+  const aiResp = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
     method: 'POST',
-    headers: { Authorization: `Bearer ${lovableApiKey}`, 'Content-Type': 'application/json' },
+    headers: { Authorization: `Bearer ${geminiApiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'google/gemini-3-flash-preview',
+      model: 'gemini-2.5-flash',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
