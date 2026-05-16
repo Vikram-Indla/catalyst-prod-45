@@ -690,6 +690,29 @@ export function EditableFixVersions({ issueId, currentFixVersions, projectKey, o
           updateMutation.mutate(next);
         }}
         noOptionsMessage={() => 'No versions found for this project'}
+        styles={{
+          // jira-compare 2026-05-16: Jira renders Fix versions as plain 14px/400
+          // text links with transparent background — not ADS multi-value chips.
+          // Override the default chip styling to match.
+          multiValue: (base) => ({
+            ...base,
+            background: 'transparent',
+            border: 'none',
+            borderRadius: 0,
+            margin: '1px 4px 1px 0',
+          }),
+          multiValueLabel: (base) => ({
+            ...base,
+            fontSize: 14,
+            fontWeight: 400,
+            color: 'var(--ds-text, #292A2E)',
+            padding: '0 2px 0 0',
+          }),
+          multiValueRemove: (base) => ({
+            ...base,
+            color: 'var(--ds-text-subtle, #505258)',
+          }),
+        }}
       />
     </div>
   );

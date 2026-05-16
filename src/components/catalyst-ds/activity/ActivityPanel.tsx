@@ -125,7 +125,7 @@ function ActivityPanel({
               className={cn(
                 'px-3 py-1.5 rounded text-[13px] font-medium transition-colors duration-150',
                 activeTab === tab.key
-                  ? 'bg-[#DEEBFF] text-[#0747A6] dark:bg-[#1C3A5C] dark:text-[#4C9AFF]'
+                  ? 'bg-[#E9F2FE] text-[#1868DB] dark:bg-[#1C3A5C] dark:text-[#4C9AFF]'
                   : 'text-[var(--ds-text-subtlest,#6B778C)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
               )}
             >
@@ -159,7 +159,7 @@ function ActivityPanel({
                     className={cn(
                       'w-full text-left px-3 py-1.5 text-[13px] transition-colors',
                       order === sortOrder
-                        ? 'bg-[#DEEBFF] text-[#0747A6] dark:bg-[#1C3A5C] dark:text-[#4C9AFF]'
+                        ? 'bg-[#E9F2FE] text-[#1868DB] dark:bg-[#1C3A5C] dark:text-[#4C9AFF]'
                         : 'text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
                     )}
                   >
@@ -246,7 +246,7 @@ function ActivityPanel({
                           <textarea
                             value={editValue}
                             onChange={(e) => setEditValue(e.target.value)}
-                            className="w-full resize-none border-0 bg-transparent text-[13px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] focus:outline-none focus:ring-0 min-h-[60px]"
+                            className="w-full resize-none border-0 bg-transparent text-[14px] text-[var(--ds-text,#292A2E)] dark:text-[var(--ds-text,#EDEDED)] focus:outline-none focus:ring-0 min-h-[60px]"
                             autoFocus
                             onKeyDown={(e) => {
                               if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
@@ -327,7 +327,7 @@ function ActivityPanel({
                 type="button"
                 onClick={onLoadMoreHistory}
                 disabled={isLoadingMoreHistory}
-                className="text-[13px] font-medium text-[#0747A6] dark:text-[#4C9AFF] hover:underline disabled:opacity-50"
+                className="text-[14px] font-medium text-[#1868DB] dark:text-[#4C9AFF] hover:underline disabled:opacity-50"
               >
                 {isLoadingMoreHistory ? 'Loading...' : 'Load more activity'}
               </button>

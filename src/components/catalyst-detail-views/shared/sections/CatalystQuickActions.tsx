@@ -72,15 +72,14 @@ export function CatalystQuickActions({
   const primary = filtered.filter(i => i.section === 'primary');
   const secondary = filtered.filter(i => i.section === 'secondary');
 
-  /* Jira-parity (2026-04-19 revert): in the "+ and Sparkle" layout above
-     the description, Jira renders a NAKED + icon chip (no "Add" text).
-     The label would be visual noise against the unified icon pair.
-     The AI sparkle chip mirrors the same dimensions for visual balance.
-     A11y is preserved via aria-label + aria-haspopup + aria-expanded. */
+  /* jira-compare 2026-05-16: Jira's Add button is a transparent/borderless
+     icon button. DOM probe: bg rgba(0,0,0,0), border none, borderRadius 3px,
+     padding 6px 0px, height 32px, color rgb(80,82,88). The previous bordered
+     chip style (bg #FAFBFC, border 1px #DFE1E6, radius 4px) was not Jira-parity. */
   const btnStyle: React.CSSProperties = {
-    width: 28, height: 28, border: '1px solid #DFE1E6', background: 'var(--ds-surface-sunken, #FAFBFC)',
-    borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-    color: '#44546F', transition: 'background 0.15s, border-color 0.15s, color 0.15s',
+    width: 32, height: 32, border: 'none', background: 'transparent',
+    borderRadius: 3, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    color: 'var(--ds-text-subtle, #505258)', transition: 'background 0.15s, color 0.15s',
   };
 
   const itemStyle: React.CSSProperties = {
@@ -97,8 +96,8 @@ export function CatalystQuickActions({
         <button
           onClick={() => setShowMenu(!showMenu)}
           style={btnStyle}
-          onMouseEnter={e => { e.currentTarget.style.background = '#EBECF0'; e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.color = 'var(--ds-text, #172B4D)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #FAFBFC)'; e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)'; e.currentTarget.style.color = '#44546F'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; e.currentTarget.style.color = 'var(--ds-text, #292A2E)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtle, #505258)'; }}
           aria-haspopup="menu"
           aria-expanded={showMenu}
           aria-label="Add"

@@ -109,8 +109,8 @@ export function WatchersChip({ issueKey }: Props) {
           onClick={() => setListOpen(o => !o)}
           style={{
             background: 'none', border: 'none', cursor: 'pointer',
-            padding: '0 4px', minWidth: 16, textAlign: 'center',
-            fontSize: 13, color: '#44546F',
+            padding: '0 6px', minWidth: 16, textAlign: 'center',
+            fontSize: 14, fontWeight: 500, color: 'var(--ds-text-subtle, #505258)',
             fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
             lineHeight: '32px', borderRadius: 3,
           }}

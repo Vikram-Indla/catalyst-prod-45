@@ -184,6 +184,15 @@ export function TicketBreadcrumbs({
           align-items: center;
           line-height: 1;
         }
+        /* Reset the @atlaskit/breadcrumbs li > span wrapper that inherits
+           16px/500 from the ADS Breadcrumbs component defaults. Without this
+           the middleSlot (AddParentPicker) appears visually bolder/larger
+           than the other breadcrumb items. */
+        .tk-breadcrumbs li > span {
+          font-size: 14px;
+          font-weight: 400;
+          color: var(--ds-text-subtle, #42526E);
+        }
         .tk-breadcrumbs a,
         .tk-breadcrumbs button,
         .tk-breadcrumbs [aria-current="page"] {

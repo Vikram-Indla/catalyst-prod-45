@@ -303,21 +303,24 @@ export function AddParentPicker({
       );
     }
 
-    // Breadcrumb variant
+    // Breadcrumb variant — parent present: matches Jira breadcrumb link style
+    // (14px/400/rgb(80,82,88), 2px 4px padding, 3px radius, no border, no monospace)
     if (parentKey) {
       return (
         <button
           title={`Change ${noun}`}
           style={{
-            background: 'none', border: '1px solid transparent', borderRadius: 4, cursor: 'pointer',
-            padding: '2px 6px', display: 'inline-flex', alignItems: 'center', gap: 5,
-            fontSize: 12, fontWeight: 500, color: '#5E6C84', transition: 'border-color 150ms, background 150ms',
+            background: 'transparent', border: 'none', borderRadius: 3, cursor: 'pointer',
+            padding: '2px 4px', display: 'inline-flex', alignItems: 'center', gap: 4,
+            fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtle, #505258)',
+            fontFamily: 'var(--cp-font-body)', lineHeight: '20px',
+            transition: 'background 150ms, color 150ms',
           }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = '#DEEBFF'; e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'none'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; e.currentTarget.style.color = 'var(--ds-text, #292A2E)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtle, #505258)'; }}
         >
           <JiraIssueTypeIcon type={iconType} size={14} />
-          <span style={{ fontFamily: 'var(--cp-font-mono)' }}>{parentKey}</span>
+          <span>{parentKey}</span>
         </button>
       );
     }
