@@ -98,6 +98,70 @@ function persistDismissed(set: Set<string>) {
   } catch { /* SSR / privacy — no-op */ }
 }
 
+// ─── Skeleton (H1 fix: replaces plain "Loading…" text) ──────────────────────
+// Mirrors the shape of a FeedSection card so the user knows what's loading.
+// Uses CSS animation via a data-attribute so no extra dependency is needed.
+function SkeletonLine({ width = '100%', height = 12 }: { width?: string | number; height?: number }) {
+  return (
+    <div
+      style={{
+        width,
+        height,
+        borderRadius: 4,
+        background: 'linear-gradient(90deg, #F0F1F2 25%, #E4E5E7 50%, #F0F1F2 75%)',
+        backgroundSize: '200% 100%',
+        animation: 'catalyst-shimmer 1.4s infinite',
+      }}
+    />
+  );
+}
+
+function RecommendedPanelSkeleton() {
+  return (
+    <>
+      <style>{`
+        @keyframes catalyst-shimmer {
+          0%   { background-position: 200% 0 }
+          100% { background-position: -200% 0 }
+        }
+      `}</style>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        {[0, 1].map(i => (
+          <div
+            key={i}
+            style={{
+              border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+              borderRadius: 8,
+              padding: 16,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 12,
+            }}
+          >
+            {/* Header row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 32, height: 32, borderRadius: 6, background: '#E4E5E7', flexShrink: 0 }} />
+              <SkeletonLine width={160} height={14} />
+            </div>
+            <SkeletonLine width="70%" height={11} />
+            {/* Two card rows */}
+            {[0, 1].map(j => (
+              <div key={j} style={{ display: 'flex', gap: 12, paddingTop: 4 }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#E4E5E7', flexShrink: 0 }} />
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <SkeletonLine width="85%" height={12} />
+                  <SkeletonLine width="45%" height={10} />
+                  <SkeletonLine width="95%" height={11} />
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
 export default function RecommendedPanel({
   items,
   mentions,
@@ -141,9 +205,7 @@ export default function RecommendedPanel({
   );
 
   if (isLoading) {
-    return (
-      <div style={{ padding: 24, color: token('color.text.subtle', '#626F86') }}>Loading…</div>
-    );
+    return <RecommendedPanelSkeleton />;
   }
 
   const hasMentions = visibleMentions.length > 0;

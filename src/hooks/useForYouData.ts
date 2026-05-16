@@ -1,18 +1,29 @@
 /**
  * For You Page Data Hook - Real data from Jira sync (ph_issues)
- * MARAM V4.0 — ring-fenced to For You page
+ * MARAM V5.0 — 3-wave parallel architecture
  *
- * Cache architecture (2026-05-10):
- *   Two useQuery calls route through the existing React Query infrastructure
- *   (PersistQueryClientProvider in App.tsx, staleTime 5min, gcTime 30 days,
- *   localStorage persistence). Previously the hook used raw useState/useEffect
- *   which bypassed the cache entirely, causing a full 10+ query waterfall on
- *   every mount.
+ * Performance architecture (2026-05-16 perf RCA):
  *
- *   Query 1 — user mapping (staleTime 1 hour): profile + jira account IDs.
- *   Query 2 — raw data (staleTime 5 min): all issues, projects, starred, viewed.
- *   Mutations (toggleStar, trackView) use queryClient.setQueryData for
- *   optimistic updates without invalidating the full query.
+ *   Previous: 2-phase serial gate (fetchUserMapping → rawData enabled) caused
+ *   10+ sequential RTTs before first paint. Minimum load time: 3-6s cold cache.
+ *
+ *   Now: single useQuery, 3-wave parallel structure:
+ *     Wave 1 (10 parallel): profiles, ph_user_mapping, jira projects,
+ *             catalyst projects, planner tasks, stories, features, epics,
+ *             incidents, starred items.
+ *     Wave 2 (7 parallel, uses Wave 1): ph_projects, planner lookups,
+ *             ph_issues assigned, jira_sync_comments x2 mentions,
+ *             user_viewed_items.
+ *     Wave 3 (8 parallel, uses Wave 2): comments, mention enrichment,
+ *             ph_issue_attachments (SCOPED), viewed items, starred items,
+ *             user project list.
+ *   No separate fetchUserMapping call. userProfile embedded in ForYouRawData.
+ *   ph_issue_attachments now scoped to top assigned + mention issue keys only
+ *   (was a full-table scan).
+ *   workedOnItems derived client-side from assignedItems (eliminated duplicate
+ *   ph_issues query).
+ *   recommendedItems derived from already-fetched data (eliminated extra RTT).
+ *   Target: Recommended tab first paint in <1s cold cache, <100ms warm.
  */
 
 import { useState, useMemo, useCallback } from 'react';
@@ -460,6 +471,7 @@ const SELECT_FIELDS = 'id, issue_key, project_key, project_name, issue_type, sum
 // React Query localStorage persister.
 
 interface ForYouRawData {
+  userProfile: { firstName: string; lastName: string } | null;
   assignedItems: any[];
   workedOnItems: any[];
   starredData: any[];
@@ -474,65 +486,16 @@ interface ForYouRawData {
   attachmentCounts: [string, number][];
 }
 
-interface UserMappingResult {
-  jiraAccountIds: string[];
-  userProfile: { firstName: string; lastName: string } | null;
-}
+// ─── Pure fetch function (no React hooks, safe to call from useQuery) ─────────
+//
+// 3-wave architecture eliminates the previous 10+ serial RTT waterfall.
+// See module-level comment for the full wave breakdown.
 
-// ─── Pure fetch functions (no React hooks, safe to call from useQuery) ────────
-
-async function fetchUserMapping(userId: string): Promise<UserMappingResult> {
-  // Include jira_account_id so we can use it as a final fallback if ph_user_mapping
-  // has no entry for this user (aligns with useAgeingItems which reads the same field).
-  const { data: profileData } = await supabase
-    .from('profiles')
-    .select('full_name, jira_account_id')
-    .eq('id', userId)
-    .single();
-
-  const userProfile = profileData?.full_name
-    ? {
-        firstName: profileData.full_name.split(' ')[0] || 'there',
-        lastName: profileData.full_name.split(' ').slice(1).join(' ') || '',
-      }
-    : null;
-
-  let jiraAccountIds: string[] = [];
-  const { data: mappings } = await supabase
-    .from('ph_user_mapping')
-    .select('jira_account_id')
-    .eq('catalyst_profile_id', userId)
-    .eq('is_mapped', true);
-
-  if (mappings && mappings.length > 0) {
-    jiraAccountIds = mappings.map((m: any) => m.jira_account_id).filter(Boolean);
-  } else if (profileData?.full_name) {
-    const { data: nameMatches } = await supabase
-      .from('ph_user_mapping')
-      .select('jira_account_id')
-      .ilike('jira_display_name', `%${profileData.full_name}%`)
-      .eq('is_mapped', true);
-    if (nameMatches && nameMatches.length > 0) {
-      jiraAccountIds = nameMatches.map((m: any) => m.jira_account_id).filter(Boolean);
-    }
-  }
-
-  // Final fallback: ph_user_mapping had no entry, but profiles.jira_account_id is set.
-  // useAgeingItems uses this same field — keep both hooks in sync.
-  if (jiraAccountIds.length === 0 && (profileData as any)?.jira_account_id) {
-    jiraAccountIds = [(profileData as any).jira_account_id];
-  }
-
-  return { jiraAccountIds, userProfile };
-}
-
-async function fetchForYouRawData(
-  userId: string,
-  jiraAccountIds: string[],
-  userName: string,
-): Promise<ForYouRawData> {
-  // ── Wave 1: All independent lookups in parallel ──
+async function fetchForYouRawData(userId: string): Promise<ForYouRawData> {
+  // ── Wave 1: Everything independent, including user identity resolution ──
   const [
+    profileResult,
+    mappingsResult,
     { data: jiraProjects },
     { data: catalystProjects },
     { data: plannerAssigned },
@@ -541,8 +504,9 @@ async function fetchForYouRawData(
     { data: nativeEpics },
     { data: nativeIncidents },
     { data: stars },
-    { data: attachmentRows },
   ] = await Promise.all([
+    supabase.from('profiles').select('full_name, jira_account_id').eq('id', userId).single(),
+    supabase.from('ph_user_mapping').select('jira_account_id').eq('catalyst_profile_id', userId).eq('is_mapped', true),
     supabase.from('ph_jira_projects').select('project_key, name'),
     supabase.from('projects').select('id, key, name, avatar_url, color'),
     supabase.from('planner_tasks')
@@ -576,120 +540,347 @@ async function fetchForYouRawData(
       .order('updated_at', { ascending: false })
       .limit(100),
     supabase.from('user_starred_items').select('item_id, item_type').eq('user_id', userId),
-    supabase.from('ph_issue_attachments').select('issue_key'),
   ]);
 
-  // Attachment count map
+  // ── Resolve user identity from Wave 1 ──
+  const profileData = profileResult.data;
+  const userProfile = profileData?.full_name
+    ? {
+        firstName: profileData.full_name.split(' ')[0] || 'there',
+        lastName: profileData.full_name.split(' ').slice(1).join(' ') || '',
+      }
+    : null;
+
+  let jiraAccountIds: string[] = [];
+  if (mappingsResult.data && mappingsResult.data.length > 0) {
+    jiraAccountIds = mappingsResult.data.map((m: any) => m.jira_account_id).filter(Boolean);
+  } else if (profileData?.full_name) {
+    // Name-based fallback: one conditional RTT (only when ph_user_mapping has no entry)
+    const { data: nameMatches } = await supabase
+      .from('ph_user_mapping')
+      .select('jira_account_id')
+      .ilike('jira_display_name', `%${profileData.full_name}%`)
+      .eq('is_mapped', true);
+    if (nameMatches && nameMatches.length > 0) {
+      jiraAccountIds = nameMatches.map((m: any) => m.jira_account_id).filter(Boolean);
+    }
+  }
+  if (jiraAccountIds.length === 0 && (profileData as any)?.jira_account_id) {
+    jiraAccountIds = [(profileData as any).jira_account_id];
+  }
+
+  const userName = userProfile ? `${userProfile.firstName} ${userProfile.lastName}`.trim() : 'Unassigned';
+
+  // ── Build project maps from Wave 1 results ──
+  const localProjectNameMap = new Map<string, string>();
+  (jiraProjects || []).forEach((p: any) => localProjectNameMap.set(p.project_key, p.name));
+
+  const projectIdMap = new Map<string, string>();
+  const localProjectAvatarMap = new Map<string, string | null>();
+  const stableProjects: Project[] = [];
+
+  const plannerRows = plannerAssigned || [];
+  const statusIds = [...new Set(plannerRows.map((r: any) => r.status_id).filter(Boolean))];
+  const wsIds = [...new Set(plannerRows.map((r: any) => r.workstream_id).filter(Boolean))];
+  const catalystProjectKeys = (catalystProjects as Array<{ key: string }> | null || []).map(p => p.key).filter(Boolean);
+
+  const ninetyDaysAgo = new Date();
+  ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  const nameParts = userName.trim().split(/\s+/);
+  const firstName = nameParts[0] || '';
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
+  const canFetchMentions = firstName.length >= 2 && userName !== 'Unassigned';
+
+  // ── Wave 2: Parallel, uses Wave 1 results ──
+  const [
+    { data: phIconRows },
+    { data: statuses },
+    { data: workstreams },
+    { data: jiraAssignedRaw },
+    { data: mentionsModernRaw },
+    { data: mentionsLegacyRaw },
+    { data: viewedRowsRaw },
+  ] = await Promise.all([
+    catalystProjectKeys.length > 0
+      ? supabase.from('ph_projects').select('key, icon, color').in('key', catalystProjectKeys)
+      : Promise.resolve({ data: [] as any[] }),
+    statusIds.length > 0
+      ? supabase.from('planner_statuses').select('id, name').in('id', statusIds)
+      : Promise.resolve({ data: [] as any[] }),
+    wsIds.length > 0
+      ? supabase.from('planner_workstreams').select('id, name').in('id', wsIds)
+      : Promise.resolve({ data: [] as any[] }),
+    jiraAccountIds.length > 0
+      ? supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).is('archived_at', null).order('jira_updated_at', { ascending: false }).limit(200)
+      : Promise.resolve({ data: [] as any[] }),
+    // Mentions now run in parallel with ph_issues (was serial after it)
+    canFetchMentions
+      ? supabase.from('jira_sync_comments')
+          .select('id, jira_comment_id, issue_key, body, jira_created_at, author_account_id, author_display_name, author_avatar_url')
+          .ilike('body', `%@${firstName}%`)
+          .order('jira_created_at', { ascending: false })
+          .limit(10)
+      : Promise.resolve({ data: [] as any[] }),
+    canFetchMentions && lastName && lastName !== firstName
+      ? supabase.from('jira_sync_comments')
+          .select('id, jira_comment_id, issue_key, body, jira_created_at, author_account_id, author_display_name, author_avatar_url')
+          .ilike('body', `%${firstName} ${lastName}%`)
+          .order('jira_created_at', { ascending: false })
+          .limit(10)
+      : Promise.resolve({ data: [] as any[] }),
+    // Viewed items moved here from serial-after-Wave-2 position
+    (supabase as any)
+      .from('user_viewed_items')
+      .select('item_id, item_type, last_viewed_at')
+      .eq('user_id', userId)
+      .order('last_viewed_at', { ascending: false })
+      .limit(100),
+  ]);
+
+  // ── Build project maps using ph_projects from Wave 2 ──
+  const phIconMap = new Map<string, { icon: string | null; color: string | null }>();
+  (phIconRows || []).forEach((r: any) => phIconMap.set(r.key, { icon: r.icon, color: r.color }));
+  (catalystProjects as Array<{ id: string; key: string; name?: string | null; avatar_url?: string | null; color?: string | null }> | null || []).forEach(p => {
+    if (p.key) {
+      projectIdMap.set(p.key, p.id);
+      localProjectAvatarMap.set(p.key, p.avatar_url ?? null);
+    }
+    const ph = phIconMap.get(p.key);
+    stableProjects.push({
+      id: p.id,
+      key: p.key,
+      name: p.name || p.key,
+      avatar_url: p.avatar_url ?? null,
+      icon: ph?.icon ?? null,
+      color: ph?.color ?? p.color ?? null,
+    });
+  });
+
+  // Jira assigned with project IDs resolved
+  const jiraAssigned = (jiraAssignedRaw || []).map((r: any) => ({
+    ...r,
+    project_id: projectIdMap.get(r.project_key) || null,
+  }));
+
+  // workedOnItems is a date-filtered subset — no extra ph_issues query needed
+  const jiraWorked = jiraAssigned.filter(
+    (r: any) => r.jira_updated_at && new Date(r.jira_updated_at) >= ninetyDaysAgo
+  );
+
+  // Planner maps from Wave 2
+  const statusMap = new Map((statuses || []).map((s: any) => [s.id, s.name]));
+  const wsMap = new Map((workstreams || []).map((w: any) => [w.id, w.name]));
+
+  // Watched keys for comments query (Wave 3)
+  const watchedKeys = new Set<string>(jiraAssigned.map((r: any) => r.issue_key).filter(Boolean));
+  const watchedKeyList = [...watchedKeys].slice(0, 200);
+
+  // Process mentions from Wave 2 — dedup by jira_comment_id
+  const mergedById = new Map<string, any>();
+  [...(mentionsModernRaw || []), ...(mentionsLegacyRaw || [])].forEach((row: any) => {
+    if (!row.jira_comment_id) return;
+    if (row.author_display_name?.trim().toLowerCase() === userName.trim().toLowerCase()) return;
+    if (!mergedById.has(row.jira_comment_id)) mergedById.set(row.jira_comment_id, row);
+  });
+  const mergedMentions = [...mergedById.values()]
+    .sort((a, b) => new Date(b.jira_created_at || 0).getTime() - new Date(a.jira_created_at || 0).getTime())
+    .slice(0, 5);
+  const mentionIssueKeys = [...new Set(mergedMentions.map((r: any) => r.issue_key).filter(Boolean))];
+
+  // Top assigned keys for attachment scoping — no full-table scan
+  const topAssignedKeys = jiraAssigned.slice(0, 20).map((r: any) => r.issue_key).filter(Boolean);
+  const attachmentScopeKeys = [...new Set([...topAssignedKeys, ...mentionIssueKeys])];
+
+  // Viewed item keys from Wave 2
+  const viewedRows = viewedRowsRaw as Array<{ item_id: string; item_type: string; last_viewed_at: string }> | null;
+  const viewedPhKeys = (viewedRows || []).filter(r => r.item_type === 'ph_issue').map(r => r.item_id);
+  const viewedPlannerKeys = (viewedRows || []).filter(r => r.item_type === 'task').map(r => r.item_id);
+
+  // Starred item IDs from Wave 1
+  const starItemIds = (stars || []).map((s: any) => s.item_id);
+
+  // ── Wave 3: Parallel, uses Wave 2 results ──
+  const [
+    { data: commentRows },
+    { data: mentionIssueRows },
+    { data: attachmentRows },
+    { data: viewedPhRaw },
+    { data: viewedPlannerRaw },
+    { data: starredIssuesRaw },
+    { data: starredPlannerTasksRaw },
+    { data: userIssueProjects },
+  ] = await Promise.all([
+    // Comments on watched issues (now Wave 3, parallel with enrichment)
+    watchedKeyList.length > 0 && userName !== 'Unassigned'
+      ? supabase.from('jira_sync_comments')
+          .select('id, jira_comment_id, issue_key, body, jira_created_at, author_account_id, author_display_name, author_avatar_url')
+          .in('issue_key', watchedKeyList)
+          .gte('jira_created_at', thirtyDaysAgo.toISOString())
+          .order('jira_created_at', { ascending: false })
+          .limit(50)
+      : Promise.resolve({ data: [] as any[] }),
+    // Mention issue enrichment (ph_issues for mention issue keys)
+    mentionIssueKeys.length > 0
+      ? supabase.from('ph_issues').select('id, issue_key, summary, issue_type, project_key').in('issue_key', mentionIssueKeys)
+      : Promise.resolve({ data: [] as any[] }),
+    // Attachment counts SCOPED to relevant keys — no full-table scan
+    attachmentScopeKeys.length > 0
+      ? supabase.from('ph_issue_attachments').select('issue_key').in('issue_key', attachmentScopeKeys)
+      : Promise.resolve({ data: [] as any[] }),
+    // Viewed ph_issues
+    viewedPhKeys.length > 0
+      ? supabase.from('ph_issues').select(SELECT_FIELDS).in('issue_key', viewedPhKeys).is('archived_at', null)
+      : Promise.resolve({ data: [] as any[] }),
+    // Viewed planner tasks
+    viewedPlannerKeys.length > 0
+      ? supabase.from('planner_tasks')
+          .select('task_key, title, priority, assignee_id, updated_at, created_at, status_id, workstream_id, reporter_id')
+          .in('task_key', viewedPlannerKeys)
+          .is('deleted_at', null)
+      : Promise.resolve({ data: [] as any[] }),
+    // Starred ph_issues
+    starItemIds.length > 0
+      ? supabase.from('ph_issues').select(SELECT_FIELDS).in('issue_key', starItemIds).is('archived_at', null).order('jira_updated_at', { ascending: false })
+      : Promise.resolve({ data: [] as any[] }),
+    // Starred planner tasks
+    starItemIds.length > 0
+      ? supabase.from('planner_tasks')
+          .select('task_key, title, priority, assignee_id, updated_at, created_at, status_id')
+          .in('task_key', starItemIds)
+          .is('deleted_at', null)
+      : Promise.resolve({ data: [] as any[] }),
+    // User's jira project keys for allUserProjects
+    jiraAccountIds.length > 0
+      ? supabase.from('ph_issues').select('project_key').in('assignee_account_id', jiraAccountIds).is('deleted_at', null)
+      : Promise.resolve({ data: [] as any[] }),
+  ]);
+
+  // ── Build attachment map from scoped results ──
   const attMap = new Map<string, number>();
   (attachmentRows || []).forEach((r: any) => {
     attMap.set(r.issue_key, (attMap.get(r.issue_key) || 0) + 1);
   });
 
-  // Project maps
-  const projectIdMap = new Map<string, string>();
-  const localProjectAvatarMap = new Map<string, string | null>();
-  const stableProjects: Project[] = [];
+  // ── Process mentions with enrichment from Wave 3 ──
+  const issueByKey = new Map<string, any>();
+  (mentionIssueRows || []).forEach((r: any) => issueByKey.set(r.issue_key, r));
 
-  if (catalystProjects) {
-    const projectKeys = (catalystProjects as Array<{ key: string }>).map(p => p.key).filter(Boolean);
-    const phIconMap = new Map<string, { icon: string | null; color: string | null }>();
-    if (projectKeys.length > 0) {
-      const { data: phRows } = await supabase
-        .from('ph_projects')
-        .select('key, icon, color')
-        .in('key', projectKeys);
-      (phRows || []).forEach((r: { key: string; icon: string | null; color: string | null }) => {
-        phIconMap.set(r.key, { icon: r.icon, color: r.color });
-      });
+  // Fallback: catalyst_issues for any mention keys not found in ph_issues
+  const missedMentionKeys = mentionIssueKeys.filter(k => !issueByKey.has(k));
+  if (missedMentionKeys.length > 0) {
+    const { data: catRows } = await supabase
+      .from('catalyst_issues')
+      .select('id, issue_key, title, issue_type')
+      .in('issue_key', missedMentionKeys);
+    (catRows || []).forEach((r: any) => issueByKey.set(r.issue_key, {
+      id: r.id, issue_key: r.issue_key, summary: r.title, issue_type: r.issue_type,
+      project_key: (r.issue_key || '').split('-')[0],
+    }));
+    const stillMissing = missedMentionKeys.filter(k => !issueByKey.has(k));
+    if (stillMissing.length > 0) {
+      console.warn('[useForYouData] mentions enrichment miss:', stillMissing);
     }
-    (catalystProjects as Array<{ id: string; key: string; name?: string | null; avatar_url?: string | null; color?: string | null }>).forEach(p => {
-      if (p.key) {
-        projectIdMap.set(p.key, p.id);
-        localProjectAvatarMap.set(p.key, p.avatar_url ?? null);
-      }
-      const ph = phIconMap.get(p.key);
-      stableProjects.push({
-        id: p.id,
-        key: p.key,
-        name: p.name || p.key,
-        avatar_url: p.avatar_url ?? null,
-        icon: ph?.icon ?? null,
-        color: ph?.color ?? p.color ?? null,
-      });
+  }
+
+  const mentionsToPopulate: RecommendedMention[] = [];
+  mergedMentions.forEach((row: any) => {
+    if (!row.issue_key) return;
+    const issue = issueByKey.get(row.issue_key);
+    const projectKey = issue?.project_key || (typeof row.issue_key === 'string' ? row.issue_key.split('-')[0] : '');
+    mentionsToPopulate.push({
+      commentId: row.jira_comment_id,
+      commentBody: row.body || '',
+      commentCreatedAt: row.jira_created_at || new Date().toISOString(),
+      issueKey: row.issue_key,
+      issueId: issue?.id || row.issue_key,
+      issueSummary: issue?.summary || row.issue_key,
+      issueType: issue?.issue_type || 'task',
+      projectKey,
+      projectName: localProjectNameMap.get(projectKey) || projectKey || '',
+      mentionerId: row.author_account_id || null,
+      mentionerName: row.author_display_name || 'A teammate',
+      mentionerAvatarUrl: row.author_avatar_url || undefined,
     });
-  }
+  });
 
-  const localProjectNameMap = new Map<string, string>();
-  if (jiraProjects) {
-    jiraProjects.forEach((p: any) => localProjectNameMap.set(p.project_key, p.name));
-  }
+  // ── Process comments with enrichment ──
+  // Reuse issueByKey from mention enrichment where possible — only fetch missed keys
+  const mentionCommentIds = new Set(mergedMentions.map((m: any) => m.jira_comment_id));
+  const filteredComments = (commentRows || []).filter((row: any) => {
+    if (!row.jira_comment_id) return false;
+    if (mentionCommentIds.has(row.jira_comment_id)) return false;
+    return !(row.author_display_name?.trim().toLowerCase() === userName.trim().toLowerCase());
+  }).slice(0, 5);
 
-  // ── Merge Jira projects the user actually has work in ──────────────────────
-  // allUserProjects feeds the AI Focus "By project" picker. Without this merge,
-  // the picker only shows Catalyst-native `projects` rows — which are often
-  // empty when data flows exclusively through Jira sync. We query distinct
-  // project_keys from ph_issues where the user is assignee, cross-reference
-  // with ph_jira_projects for display names, and add any Jira project not
-  // already represented by a Catalyst-native entry.
-  if (jiraAccountIds.length > 0) {
-    const { data: userIssueProjects } = await supabase
+  const commentIssueKeys = [...new Set(filteredComments.map((r: any) => r.issue_key).filter(Boolean))];
+  const commentIssueByKey = new Map<string, any>(issueByKey);
+  const missedCommentKeys = commentIssueKeys.filter(k => !commentIssueByKey.has(k));
+  if (missedCommentKeys.length > 0) {
+    const { data: missedRows } = await supabase
       .from('ph_issues')
-      .select('project_key')
-      .in('assignee_account_id', jiraAccountIds)
-      .is('deleted_at', null);
+      .select('id, issue_key, summary, issue_type, project_key')
+      .in('issue_key', missedCommentKeys);
+    (missedRows || []).forEach((r: any) => commentIssueByKey.set(r.issue_key, r));
 
-    const existingKeys = new Set(stableProjects.map(p => p.key));
-    const jiraProjectKeys = [...new Set(
-      (userIssueProjects ?? []).map((r: any) => r.project_key).filter(Boolean)
-    )] as string[];
-
-    for (const key of jiraProjectKeys) {
-      if (!existingKeys.has(key)) {
-        stableProjects.push({
-          id: key, // use key as id — no Catalyst row ID exists
-          key,
-          name: localProjectNameMap.get(key) || key,
-          avatar_url: null,
-          icon: null,
-          color: null,
-        });
-        existingKeys.add(key);
-      }
+    const missedCatKeys = missedCommentKeys.filter(k => !commentIssueByKey.has(k));
+    if (missedCatKeys.length > 0) {
+      const { data: catRows } = await supabase
+        .from('catalyst_issues')
+        .select('id, issue_key, title, issue_type')
+        .in('issue_key', missedCatKeys);
+      (catRows || []).forEach((r: any) => commentIssueByKey.set(r.issue_key, {
+        id: r.id, issue_key: r.issue_key, summary: r.title, issue_type: r.issue_type,
+        project_key: (r.issue_key || '').split('-')[0],
+      }));
     }
   }
 
-  // ── Wave 2: Dependent lookups in parallel ──
-  const plannerRows = plannerAssigned || [];
-  const statusIds = [...new Set(plannerRows.map((r: any) => r.status_id).filter(Boolean))];
-  const wsIds = [...new Set(plannerRows.map((r: any) => r.workstream_id).filter(Boolean))];
-  const ninetyDaysAgo = new Date();
-  ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+  const commentsToPopulate: RecommendedComment[] = [];
+  filteredComments.forEach((row: any) => {
+    const issue = commentIssueByKey.get(row.issue_key);
+    const projectKey = issue?.project_key || (typeof row.issue_key === 'string' ? row.issue_key.split('-')[0] : '');
+    commentsToPopulate.push({
+      commentId: row.jira_comment_id,
+      commentBody: row.body || '',
+      commentCreatedAt: row.jira_created_at || new Date().toISOString(),
+      issueKey: row.issue_key,
+      issueId: issue?.id || row.issue_key,
+      issueSummary: issue?.summary || row.issue_key,
+      issueType: issue?.issue_type || 'task',
+      projectKey,
+      projectName: localProjectNameMap.get(projectKey) || projectKey || '',
+      authorId: row.author_account_id || null,
+      authorName: row.author_display_name || 'A teammate',
+      authorAvatarUrl: row.author_avatar_url || undefined,
+    });
+  });
 
-  const wave2Promises: PromiseLike<any>[] = [
-    statusIds.length > 0
-      ? supabase.from('planner_statuses').select('id, name').in('id', statusIds)
-      : Promise.resolve({ data: [] }),
-    wsIds.length > 0
-      ? supabase.from('planner_workstreams').select('id, name').in('id', wsIds)
-      : Promise.resolve({ data: [] }),
-  ];
+  // ── Derive recommendedItems from already-fetched data — no extra query ──
+  const recommendedKeySet = new Set<string>();
+  const recommendedKeyOrder: string[] = [];
+  const addRecommendedKey = (key: string) => {
+    if (key && !recommendedKeySet.has(key)) {
+      recommendedKeySet.add(key);
+      recommendedKeyOrder.push(key);
+    }
+  };
+  mentionsToPopulate.forEach(m => addRecommendedKey(m.issueKey));
+  commentsToPopulate.forEach(c => addRecommendedKey(c.issueKey));
+  jiraAssigned.slice(0, 10).forEach((r: any) => addRecommendedKey(r.issue_key));
 
-  if (jiraAccountIds.length > 0) {
-    wave2Promises.push(
-      supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).is('archived_at', null).order('jira_updated_at', { ascending: false }).limit(200),
-      supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).is('archived_at', null).gte('jira_updated_at', ninetyDaysAgo.toISOString()).order('jira_updated_at', { ascending: false }).limit(200),
-    );
-  }
+  // Build from jiraAssigned (full SELECT_FIELDS rows) + issue enrichment rows
+  const recByKey = new Map<string, any>();
+  jiraAssigned.forEach((r: any) => recByKey.set(r.issue_key, r));
+  // mentionIssueRows has a smaller field set — only fill gaps not in jiraAssigned
+  (mentionIssueRows || []).forEach((r: any) => {
+    if (!recByKey.has(r.issue_key)) recByKey.set(r.issue_key, r);
+  });
+  const recommendedItems = recommendedKeyOrder.map(k => recByKey.get(k)).filter(Boolean);
 
-  const wave2Results = await Promise.all(wave2Promises);
-  const statuses = wave2Results[0]?.data || [];
-  const workstreams = wave2Results[1]?.data || [];
-  const jiraAssignedRaw = jiraAccountIds.length > 0 ? (wave2Results[2]?.data || []) : [];
-  const jiraWorkedRaw = jiraAccountIds.length > 0 ? (wave2Results[3]?.data || []) : [];
-
-  // Map planner tasks
-  const statusMap = new Map(statuses.map((s: any) => [s.id, s.name]));
-  const wsMap = new Map(workstreams.map((w: any) => [w.id, w.name]));
+  // ── Map planner tasks ──
   const plannerMapped = plannerRows.map((row: any) =>
     mapPlannerTaskToIssueRow({
       ...row,
@@ -698,12 +889,9 @@ async function fetchForYouRawData(
       workstream_name: wsMap.get(row.workstream_id) || null,
     })
   );
+  const recentPlannerTasks = plannerMapped.filter((t: any) => t.jira_updated_at && new Date(t.jira_updated_at) >= ninetyDaysAgo);
 
-  // Map Jira issues
-  const jiraAssigned = jiraAssignedRaw.map((r: any) => ({ ...r, project_id: projectIdMap.get(r.project_key) || null }));
-  const jiraWorked = jiraWorkedRaw.map((r: any) => ({ ...r, project_id: projectIdMap.get(r.project_key) || null }));
-
-  // Map native items
+  // ── Map native items ──
   const nativeStoryRows = (nativeStories || []).map((s: any) => {
     const projName = s.feature?.project?.name || s.feature?.name || 'Backlog';
     const projKey = s.feature?.project?.key || s.feature?.display_id || 'BKL';
@@ -724,228 +912,27 @@ async function fetchForYouRawData(
   const allNativeItems = [...nativeStoryRows, ...nativeFeatureRows, ...nativeEpicRows, ...nativeIncidentRows];
   const jiraKeys = new Set([...jiraAssigned, ...jiraWorked].map((r: any) => r.issue_key));
   const dedupedNativeItems = allNativeItems.filter((item: any) => !jiraKeys.has(item.issue_key));
+  const recentNativeItems = dedupedNativeItems.filter((item: any) => item.jira_updated_at && new Date(item.jira_updated_at) >= ninetyDaysAgo);
 
   const assignedItems = [...jiraAssigned, ...plannerMapped, ...dedupedNativeItems];
-  const recentPlannerTasks = plannerMapped.filter((t: any) => t.jira_updated_at && new Date(t.jira_updated_at) >= ninetyDaysAgo);
-  const recentNativeItems = dedupedNativeItems.filter((item: any) => item.jira_updated_at && new Date(item.jira_updated_at) >= ninetyDaysAgo);
   const workedOnItems = [...jiraWorked, ...recentPlannerTasks, ...recentNativeItems];
 
   // ── Viewed items ──
-  const { data: viewedRowsRaw } = await (supabase as any)
-    .from('user_viewed_items')
-    .select('item_id, item_type, last_viewed_at')
-    .eq('user_id', userId)
-    .order('last_viewed_at', { ascending: false })
-    .limit(100);
-  const viewedRows = viewedRowsRaw as Array<{ item_id: string; item_type: string; last_viewed_at: string }> | null;
-
   let viewedItems: any[] = [];
   if (viewedRows && viewedRows.length > 0) {
-    const phKeys = viewedRows.filter(r => r.item_type === 'ph_issue').map(r => r.item_id);
-    const plannerKeys = viewedRows.filter(r => r.item_type === 'task').map(r => r.item_id);
-    const [viewedPhRaw, viewedPlannerRaw] = await Promise.all([
-      phKeys.length > 0
-        ? supabase.from('ph_issues').select(SELECT_FIELDS).in('issue_key', phKeys).is('archived_at', null)
-        : Promise.resolve({ data: [] as any[] }),
-      plannerKeys.length > 0
-        ? supabase.from('planner_tasks')
-            .select('task_key, title, priority, assignee_id, updated_at, created_at, status_id, workstream_id, reporter_id')
-            .in('task_key', plannerKeys)
-            .is('deleted_at', null)
-        : Promise.resolve({ data: [] as any[] }),
-    ]);
-    const viewedPh = (viewedPhRaw.data || []).map((r: any) => ({ ...r, project_id: projectIdMap.get(r.project_key) || null }));
-    const viewedPlanner = (viewedPlannerRaw.data || []).map((row: any) =>
+    const viewedAtByKey = new Map<string, string>(viewedRows.map(r => [r.item_id, r.last_viewed_at]));
+    const viewedPh = (viewedPhRaw || []).map((r: any) => ({
+      ...r,
+      project_id: projectIdMap.get(r.project_key) || null,
+    }));
+    const viewedPlanner = (viewedPlannerRaw || []).map((row: any) =>
       mapPlannerTaskToIssueRow({ ...row, assignee_name: userName, status_name: 'Backlog', workstream_name: null })
     );
-    const viewedAtByKey = new Map<string, string>(viewedRows.map(r => [r.item_id, r.last_viewed_at]));
     viewedItems = [...viewedPh, ...viewedPlanner]
       .map(r => ({ ...r, _last_viewed_at: viewedAtByKey.get(r.issue_key) || null }))
       .filter(r => r._last_viewed_at)
       .map(r => ({ ...r, jira_updated_at: r._last_viewed_at || r.jira_updated_at }))
       .sort((a, b) => new Date(b._last_viewed_at).getTime() - new Date(a._last_viewed_at).getTime());
-  }
-
-  // ── Recommended mentions ──
-  const mentionsToPopulate: RecommendedMention[] = [];
-  const recommendedKeyOrder: string[] = [];
-  const recommendedKeySet = new Set<string>();
-
-  if (userName && userName !== 'Unassigned') {
-    const parts = userName.trim().split(/\s+/);
-    const firstName = parts[0];
-    const lastName = parts.length > 1 ? parts[parts.length - 1] : '';
-
-    if (firstName && firstName.length >= 2) {
-      const [modernQ, legacyQ] = await Promise.all([
-        supabase
-          .from('jira_sync_comments')
-          .select('id, jira_comment_id, issue_key, body, jira_created_at, author_account_id, author_display_name, author_avatar_url')
-          .ilike('body', `%@${firstName}%`)
-          .order('jira_created_at', { ascending: false })
-          .limit(10),
-        lastName
-          ? supabase
-              .from('jira_sync_comments')
-              .select('id, jira_comment_id, issue_key, body, jira_created_at, author_account_id, author_display_name, author_avatar_url')
-              .ilike('body', `%${firstName} ${lastName}%`)
-              .order('jira_created_at', { ascending: false })
-              .limit(10)
-          : Promise.resolve({ data: [] as any[] }),
-      ]);
-
-      const mergedById = new Map<string, any>();
-      [...(modernQ.data || []), ...(legacyQ.data || [])].forEach((row: any) => {
-        if (!row.jira_comment_id) return;
-        if (row.author_display_name?.trim().toLowerCase() === userName.trim().toLowerCase()) return;
-        if (!mergedById.has(row.jira_comment_id)) mergedById.set(row.jira_comment_id, row);
-      });
-
-      const merged = [...mergedById.values()]
-        .sort((a, b) => new Date(b.jira_created_at || 0).getTime() - new Date(a.jira_created_at || 0).getTime())
-        .slice(0, 5);
-
-      const issueKeys = [...new Set(merged.map((r: any) => r.issue_key).filter(Boolean))];
-      const issueByKey = new Map<string, any>();
-      if (issueKeys.length > 0) {
-        const { data: issueRows } = await supabase
-          .from('ph_issues')
-          .select('id, issue_key, summary, issue_type, project_key')
-          .in('issue_key', issueKeys);
-        (issueRows || []).forEach((r: any) => issueByKey.set(r.issue_key, r));
-
-        const missedKeys = issueKeys.filter(k => !issueByKey.has(k));
-        if (missedKeys.length > 0) {
-          const { data: catRows } = await supabase
-            .from('catalyst_issues')
-            .select('id, issue_key, title, issue_type')
-            .in('issue_key', missedKeys);
-          (catRows || []).forEach((r: any) => issueByKey.set(r.issue_key, {
-            id: r.id, issue_key: r.issue_key, summary: r.title, issue_type: r.issue_type,
-            project_key: (r.issue_key || '').split('-')[0],
-          }));
-          const stillMissing = missedKeys.filter(k => !issueByKey.has(k));
-          if (stillMissing.length > 0) {
-            console.warn('[useForYouData] mentions enrichment miss:', stillMissing);
-          }
-        }
-      }
-
-      merged.forEach((row: any) => {
-        if (!row.issue_key) return;
-        const issue = issueByKey.get(row.issue_key);
-        const projectKey = issue?.project_key || (typeof row.issue_key === 'string' ? row.issue_key.split('-')[0] : '');
-        if (!recommendedKeySet.has(row.issue_key)) {
-          recommendedKeySet.add(row.issue_key);
-          recommendedKeyOrder.push(row.issue_key);
-        }
-        mentionsToPopulate.push({
-          commentId: row.jira_comment_id,
-          commentBody: row.body || '',
-          commentCreatedAt: row.jira_created_at || new Date().toISOString(),
-          issueKey: row.issue_key,
-          issueId: issue?.id || row.issue_key,
-          issueSummary: issue?.summary || row.issue_key,
-          issueType: issue?.issue_type || 'task',
-          projectKey,
-          projectName: localProjectNameMap.get(projectKey) || projectKey || '',
-          mentionerId: row.author_account_id || null,
-          mentionerName: row.author_display_name || 'A teammate',
-          mentionerAvatarUrl: row.author_avatar_url || undefined,
-        });
-      });
-    }
-  }
-
-  // ── Recommended comments ──
-  const commentsToPopulate: RecommendedComment[] = [];
-  const watchedKeys = new Set<string>((jiraAssignedRaw as any[]).map((r: any) => r.issue_key).filter(Boolean));
-
-  if (watchedKeys.size > 0 && userName && userName !== 'Unassigned') {
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const watchedKeyList = [...watchedKeys].slice(0, 200);
-
-    const { data: commentRows } = await supabase
-      .from('jira_sync_comments')
-      .select('id, jira_comment_id, issue_key, body, jira_created_at, author_account_id, author_display_name, author_avatar_url')
-      .in('issue_key', watchedKeyList)
-      .gte('jira_created_at', thirtyDaysAgo.toISOString())
-      .order('jira_created_at', { ascending: false })
-      .limit(50);
-
-    const mentionIds = new Set(mentionsToPopulate.map(m => m.commentId));
-    const filtered = (commentRows || []).filter((row: any) => {
-      if (!row.jira_comment_id) return false;
-      if (mentionIds.has(row.jira_comment_id)) return false;
-      return !(row.author_display_name?.trim().toLowerCase() === userName.trim().toLowerCase());
-    }).slice(0, 5);
-
-    const commentIssueKeys = [...new Set(filtered.map((r: any) => r.issue_key).filter(Boolean))];
-    const commentIssueByKey = new Map<string, any>();
-    if (commentIssueKeys.length > 0) {
-      const { data: issueRows } = await supabase
-        .from('ph_issues')
-        .select('id, issue_key, summary, issue_type, project_key')
-        .in('issue_key', commentIssueKeys);
-      (issueRows || []).forEach((r: any) => commentIssueByKey.set(r.issue_key, r));
-
-      const missedKeys = commentIssueKeys.filter(k => !commentIssueByKey.has(k));
-      if (missedKeys.length > 0) {
-        const { data: catRows } = await supabase
-          .from('catalyst_issues')
-          .select('id, issue_key, title, issue_type')
-          .in('issue_key', missedKeys);
-        (catRows || []).forEach((r: any) => commentIssueByKey.set(r.issue_key, {
-          id: r.id, issue_key: r.issue_key, summary: r.title, issue_type: r.issue_type,
-          project_key: (r.issue_key || '').split('-')[0],
-        }));
-      }
-    }
-
-    filtered.forEach((row: any) => {
-      const issue = commentIssueByKey.get(row.issue_key);
-      const projectKey = issue?.project_key || (typeof row.issue_key === 'string' ? row.issue_key.split('-')[0] : '');
-      if (!recommendedKeySet.has(row.issue_key)) {
-        recommendedKeySet.add(row.issue_key);
-        recommendedKeyOrder.push(row.issue_key);
-      }
-      commentsToPopulate.push({
-        commentId: row.jira_comment_id,
-        commentBody: row.body || '',
-        commentCreatedAt: row.jira_created_at || new Date().toISOString(),
-        issueKey: row.issue_key,
-        issueId: issue?.id || row.issue_key,
-        issueSummary: issue?.summary || row.issue_key,
-        issueType: issue?.issue_type || 'task',
-        projectKey,
-        projectName: localProjectNameMap.get(projectKey) || projectKey || '',
-        authorId: row.author_account_id || null,
-        authorName: row.author_display_name || 'A teammate',
-        authorAvatarUrl: row.author_avatar_url || undefined,
-      });
-    });
-  }
-
-  // Top assigned items feed the recommended set
-  (jiraAssigned as any[]).slice(0, 10).forEach((r: any) => {
-    if (!recommendedKeySet.has(r.issue_key)) {
-      recommendedKeySet.add(r.issue_key);
-      recommendedKeyOrder.push(r.issue_key);
-    }
-  });
-
-  let recommendedItems: any[] = [];
-  if (recommendedKeyOrder.length > 0) {
-    const { data: recRaw } = await supabase
-      .from('ph_issues')
-      .select(SELECT_FIELDS)
-      .in('issue_key', recommendedKeyOrder)
-      .is('archived_at', null);
-    const recByKey = new Map<string, any>(
-      (recRaw || []).map((r: any) => [r.issue_key, { ...r, project_id: projectIdMap.get(r.project_key) || null }])
-    );
-    recommendedItems = recommendedKeyOrder.map(k => recByKey.get(k)).filter(Boolean);
   }
 
   // ── Starred items ──
@@ -955,25 +942,26 @@ async function fetchForYouRawData(
   if (stars && stars.length > 0) {
     const starredKeys = new Set(stars.map((s: any) => s.item_id));
     starredItemIds = [...starredKeys];
-    const itemIds = stars.map((s: any) => s.item_id);
 
-    const [{ data: starredIssuesRaw }, { data: starredPlannerTasks }] = await Promise.all([
-      supabase.from('ph_issues').select(SELECT_FIELDS).in('issue_key', itemIds).is('archived_at', null).order('jira_updated_at', { ascending: false }),
-      supabase.from('planner_tasks').select('task_key, title, priority, assignee_id, updated_at, created_at, status_id').in('task_key', itemIds).is('deleted_at', null),
-    ]);
+    const starredIssues = (starredIssuesRaw || []).map((r: any) => ({
+      ...r,
+      project_id: projectIdMap.get(r.project_key) || null,
+    }));
 
-    const starredIssues = (starredIssuesRaw || []).map((r: any) => ({ ...r, project_id: projectIdMap.get(r.project_key) || null }));
     let starredPlannerMapped: any[] = [];
-    if (starredPlannerTasks && starredPlannerTasks.length > 0) {
-      const stIds = [...new Set(starredPlannerTasks.map((r: any) => r.status_id).filter(Boolean))];
-      const { data: sts } = stIds.length > 0
-        ? await supabase.from('planner_statuses').select('id, name').in('id', stIds)
-        : { data: [] as any[] };
-      const stMap = new Map((sts || []).map((s: any) => [s.id, s.name]));
-      starredPlannerMapped = starredPlannerTasks.map((row: any) =>
-        mapPlannerTaskToIssueRow({ ...row, assignee_name: 'Unassigned', status_name: stMap.get(row.status_id) || 'Backlog' })
+    if (starredPlannerTasksRaw && starredPlannerTasksRaw.length > 0) {
+      // Reuse the status map from Wave 2 for planner tasks
+      const stIds = [...new Set(starredPlannerTasksRaw.map((r: any) => r.status_id).filter(Boolean))];
+      const missingStIds = stIds.filter(id => !statusMap.has(id));
+      if (missingStIds.length > 0) {
+        const { data: sts } = await supabase.from('planner_statuses').select('id, name').in('id', missingStIds);
+        (sts || []).forEach((s: any) => statusMap.set(s.id, s.name));
+      }
+      starredPlannerMapped = starredPlannerTasksRaw.map((row: any) =>
+        mapPlannerTaskToIssueRow({ ...row, assignee_name: 'Unassigned', status_name: statusMap.get(row.status_id) || 'Backlog' })
       );
     }
+
     const starredNativeItems = allNativeItems.filter((item: any) => starredKeys.has(item.issue_key));
     const existingStarredKeys = new Set([
       ...starredIssues.map((r: any) => r.issue_key),
@@ -983,7 +971,27 @@ async function fetchForYouRawData(
     starredData = [...starredIssues, ...starredPlannerMapped, ...dedupedStarredNative];
   }
 
+  // ── allUserProjects: merge Catalyst projects with Jira-only projects ──
+  const existingKeys = new Set(stableProjects.map(p => p.key));
+  const jiraProjectKeys = [...new Set(
+    (userIssueProjects ?? []).map((r: any) => r.project_key).filter(Boolean)
+  )] as string[];
+  for (const key of jiraProjectKeys) {
+    if (!existingKeys.has(key)) {
+      stableProjects.push({
+        id: key,
+        key,
+        name: localProjectNameMap.get(key) || key,
+        avatar_url: null,
+        icon: null,
+        color: null,
+      });
+      existingKeys.add(key);
+    }
+  }
+
   return {
+    userProfile,
     assignedItems,
     workedOnItems,
     starredData,
@@ -1007,42 +1015,17 @@ export function useForYouData(authLoading = false) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState<{ field: string; order: 'asc' | 'desc' }>({ field: 'updated', order: 'desc' });
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
-  // selectedItemId/selectedItem/handleRowClick/closeDetailPanel removed
-  // 2026-05-11: the only consumer was ForYouDetailPanel (now deleted).
-  // ForYouPage routes all selections through useGlobalSearchStore.openDetail()
-  // which mounts the canonical CatalystDetailRouter via CatalystShell.
 
   const { user: authUser } = useAuth();
   const queryClient = useQueryClient();
 
-  // Step 1: User mapping — very stable (jira account IDs change almost never)
-  const mappingKey = ['for-you-user-mapping', authUser?.id];
-  const { data: userMapping } = useQuery({
-    queryKey: mappingKey,
-    queryFn: () => fetchUserMapping(authUser!.id),
-    // Don't start until auth is fully loaded AND authUser is set
-    enabled: !!authUser?.id && !authLoading,
-    staleTime: 60 * 60 * 1000, // 1 hour
-  });
-
-  const jiraAccountIds = useMemo(() => userMapping?.jiraAccountIds ?? [], [userMapping]);
-  const userProfile = userMapping?.userProfile ?? null;
-  const userName = userProfile
-    ? `${userProfile.firstName} ${userProfile.lastName}`.trim()
-    : 'Unassigned';
-
-  // Step 2: Main data — wait for mapping to resolve before firing
-  const rawDataKey = useMemo(
-    () => ['for-you-data', authUser?.id ?? '', jiraAccountIds.join(',')],
-    [authUser?.id, jiraAccountIds],
-  );
+  // Single query — no serial gate. User mapping resolved inside fetchForYouRawData.
+  const rawDataKey = useMemo(() => ['for-you-data', authUser?.id ?? ''], [authUser?.id]);
   const { data: rawData, isPending: dataPending } = useQuery({
     queryKey: rawDataKey,
-    queryFn: () => fetchForYouRawData(authUser!.id, jiraAccountIds, userName),
-    // Wait until: (1) auth is fully loaded, (2) user mapping has resolved
-    // This prevents wasted fetches while auth is initializing
-    enabled: !!authUser?.id && userMapping !== undefined && !authLoading,
-    staleTime: 5 * 60 * 1000, // 5 minutes — issues change more often than mapping
+    queryFn: () => fetchForYouRawData(authUser!.id),
+    enabled: !!authUser?.id && !authLoading,
+    staleTime: 5 * 60 * 1000,
   });
 
   const isLoading = dataPending;
@@ -1053,6 +1036,7 @@ export function useForYouData(authLoading = false) {
   const attachmentCounts = useMemo(() => new Map<string, number>(rawData?.attachmentCounts ?? []), [rawData]);
   const starredItems = useMemo(() => new Set<string>(rawData?.starredItemIds ?? []), [rawData]);
 
+  const userProfile = rawData?.userProfile ?? null;
   const user = {
     id: authUser?.id || 'current-user',
     firstName: userProfile?.firstName || 'there',
@@ -1129,16 +1113,11 @@ export function useForYouData(authLoading = false) {
   const generateImpactReport = () => { console.log('Generate impact report'); };
   const showDeprioritize = () => { console.log('Show deprioritize options'); };
 
-  /**
-   * Record a view. Upserts into user_viewed_items and updates the cached
-   * viewedItems list in place — no full refetch needed.
-   */
   const trackView = useCallback(async (itemId: string, itemType: string = 'ph_issue') => {
     if (!authUser?.id || !itemId) return;
 
     const now = new Date().toISOString();
 
-    // Optimistic: hoist the item to the top of viewedItems in the cache
     queryClient.setQueryData(rawDataKey, (old: ForYouRawData | undefined) => {
       if (!old) return old;
       const existing = old.viewedItems.find((r: any) => r.issue_key === itemId);
@@ -1159,7 +1138,6 @@ export function useForYouData(authLoading = false) {
       );
       if (error) { console.warn('[useForYouData] trackView failed:', error); return; }
 
-      // Re-hydrate viewedItems from DB and update cache
       const { data: refreshedRaw } = await (supabase as any)
         .from('user_viewed_items')
         .select('item_id, item_type, last_viewed_at')
@@ -1183,8 +1161,9 @@ export function useForYouData(authLoading = false) {
           : Promise.resolve({ data: [] as any[] }),
       ]);
       const viewedAtByKey = new Map<string, string>(refreshed.map(r => [r.item_id, r.last_viewed_at]));
+      const userName = rawData?.userProfile ? `${rawData.userProfile.firstName} ${rawData.userProfile.lastName}`.trim() : 'You';
       const allViewed = [...(viewedPhRaw.data || []), ...(viewedPlannerRaw.data || []).map((row: any) =>
-        mapPlannerTaskToIssueRow({ ...row, assignee_name: 'You', status_name: 'Backlog', workstream_name: null })
+        mapPlannerTaskToIssueRow({ ...row, assignee_name: userName, status_name: 'Backlog', workstream_name: null })
       )]
         .map((r: any) => ({ ...r, _last_viewed_at: viewedAtByKey.get(r.issue_key) || null }))
         .filter((r: any) => r._last_viewed_at)
@@ -1198,13 +1177,12 @@ export function useForYouData(authLoading = false) {
     } catch (err) {
       console.warn('[useForYouData] trackView threw:', err);
     }
-  }, [authUser?.id, queryClient, rawDataKey]);
+  }, [authUser?.id, queryClient, rawDataKey, rawData?.userProfile]);
 
   const toggleStar = useCallback(async (itemId: string) => {
     if (!authUser?.id) return;
     const isCurrentlyStarred = starredItems.has(itemId);
 
-    // Optimistic update
     queryClient.setQueryData(rawDataKey, (old: ForYouRawData | undefined) => {
       if (!old) return old;
       const newIds = isCurrentlyStarred
@@ -1225,7 +1203,6 @@ export function useForYouData(authLoading = false) {
         const { error } = await supabase.from('user_starred_items')
           .insert({ user_id: authUser.id, item_id: itemId, item_type: 'ph_issue' });
         if (error) throw error;
-        // Add the issue row to starredData from the assigned/worked cache
         queryClient.setQueryData(rawDataKey, (old: ForYouRawData | undefined) => {
           if (!old) return old;
           const issueRow = [...old.assignedItems, ...old.workedOnItems].find((r: any) => r.issue_key === itemId);
@@ -1237,7 +1214,6 @@ export function useForYouData(authLoading = false) {
       }
     } catch (err) {
       console.error('Error toggling star:', err);
-      // Rollback: invalidate the query so it refetches fresh state
       queryClient.invalidateQueries({ queryKey: rawDataKey });
     }
   }, [authUser?.id, starredItems, queryClient, rawDataKey]);
