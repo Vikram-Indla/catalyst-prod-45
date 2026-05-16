@@ -306,6 +306,31 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 
 ---
 
+## 2026-05-16 — Chrome MCP tabs die when starting from chrome://newtab — navigate from existing real URL only
+**Surface:** Chrome MCP tab management across all jira-compare sessions
+**Pattern:** `tabs_context_mcp(createIfEmpty: true)` creates a tab at `chrome://newtab/`. The Chrome extension cannot navigate a `chrome://` URL (permission denied). Calling `navigate` immediately after returns "Tab no longer exists" because the extension cannot drive the privileged page. Every attempt to `navigate` from `chrome://newtab` silently kills the tab.
+**Fix:** Always ask the user to manually open the target URL in Chrome first, then use `tabs_context_mcp(createIfEmpty: false)` to discover the existing real tab. Alternatively, if a tab already exists at a real URL (any http://), the extension can navigate it freely.
+**Rule:** Never start a Chrome MCP probe from `chrome://newtab`. Always have the user open `http://localhost:8080/...` first, THEN connect to that tab. `tabs_context_mcp(createIfEmpty: false)` discovers existing tabs without creating a new blank one.
+**Severity:** P1 (blocks all DOM probing until pattern is understood — wastes session budget on tab reconnection loops)
+
+---
+
+## 2026-05-16 — `includes('Sprint')` in sidebar text fires on fix-version names — use structural field check instead
+**Surface:** Structural DOM probe (bannedCheck heuristic), any future probe checking for banned field presence
+**Pattern:** A banned-field check ran `sidebar.textContent.includes('Sprint')` and returned `true`. This was flagged as "Sprint field shown on PI (not in PI scheme)". The actual source was a fix version VALUE named "Sprint 2.2 - 15 May 2025" — the fix version picker in `CatalystSidebarDetails` correctly shows fix versions for PI, and this project's versions are named after sprints. The naive text search cannot distinguish a field LABEL from a field VALUE.
+**Rule:** Never use `includes('fieldName')` on `element.textContent` to check whether a field is rendered. Instead: (1) look for the FieldRow label element specifically (`querySelector('[class*="FieldRow"] label')`), or (2) check the source code — grep the view component for the field name. Text-search on sidebar content produces false positives when field VALUES contain the banned word.
+**Severity:** P1 (false positive led to incorrect violation report; wastes probe time and obscures real issues)
+
+---
+
+## 2026-05-16 — CatalystStatusPill uses data-testid, not class — wrong selector causes "status pill missing" false alarm
+**Surface:** CatalystStatusPill DOM probe, all jira-compare status pill detection
+**Pattern:** DOM probe searched for `[class*="status"],[class*="Status"],[class*="lozenge"],[class*="pill"]` and found nothing — reported as "status pill undetectable / possibly missing". In reality, `CatalystStatusPill` renders a `<button data-testid="catalyst-status-pill-trigger">` with inline styles only — no identifying CSS class. The probe selector was wrong, not the component.
+**Rule:** When probing for the status pill, use `[data-testid="catalyst-status-pill-trigger"]` as the selector. Never assume a component is absent just because a class-based selector returns null — check the component source first to discover the correct selector (`data-testid`, `aria-label`, or specific tag+attribute combination).
+**Severity:** P1 (false negative — "component missing" report when component is correctly present; undermines audit credibility)
+
+---
+
 ## 2026-05-16 — useForYouData and useAgeingItems use DIFFERENT tables for current-user Jira ID
 **Surface:** For You / Assigned tab (AssignedPanel) vs For You / Ageing tab (AgeingPanel)
 **Pattern:** Ageing tab showed 24 items; Assigned tab showed empty state ("Nothing assigned to you"). Both panels read from `ph_issues` by `assignee_account_id`. Root cause: two different hooks resolve the current user's Jira account ID from different sources:
