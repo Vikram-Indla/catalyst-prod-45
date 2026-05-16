@@ -80,6 +80,7 @@ const TaskHubSidebar = lazyWithRetry(() => import('./TaskHubSidebar').then(m => 
 const TestHubSidebar = lazyWithRetry(() => import('./TestHubSidebar').then(m => ({ default: m.TestHubSidebar })), 'TestHubSidebar');
 
 const ProjectHubSidebar = lazyWithRetry(() => import('./ProjectHubSidebar').then(m => ({ default: m.ProjectHubSidebar })), 'ProjectHubSidebar');
+const ProductHubSidebar = lazyWithRetry(() => import('./ProductHubSidebar').then(m => ({ default: m.ProductHubSidebar })), 'ProductHubSidebar');
 const WikiSidebar = lazyWithRetry(() => import('./WikiSidebar').then(m => ({ default: m.WikiSidebar })), 'WikiSidebar');
 // C1 · Personal command center on / (Home). Replaces the empty 240px rail
 // users were seeing on Home with @atlaskit/side-navigation sections for
@@ -295,6 +296,9 @@ function CatalystShellContent() {
   // Check if on TestHub route
   const isTestHubRoute = location.pathname.startsWith('/testhub');
 
+  // Check if on ProductHub V5 route (/product-hub/*)
+  const isProductHubRoute = location.pathname.startsWith('/product-hub');
+
   // Check if on ProjectHub V5 route (/project-hub/*)
   const isProjectHubRoute = location.pathname.startsWith('/project-hub');
   const isProjectHubAllWorkRoute = /\/project-hub\/[^/]+\/allwork(\/|$|\?)/.test(location.pathname);
@@ -391,7 +395,8 @@ function CatalystShellContent() {
   // Spaces page, not Jira's hub canvas.
   const isWhiteCanvasRoute =
     location.pathname === '/project-hub/projects' ||
-    location.pathname === '/project/all-projects';
+    location.pathname === '/project/all-projects' ||
+    location.pathname === '/product-hub/products';
 
   const shouldWrapHubSurface = isHubSurfaceRoute && !isSelfFramedRoute && !isWhiteCanvasRoute;
   const isDarkTheme = useIsDarkTheme();
@@ -488,6 +493,18 @@ function CatalystShellContent() {
     if (isWikiRoute) {
       return (
         <WikiSidebar
+          expanded={true}
+          onToggle={cycleSidebarState}
+        />
+      );
+    }
+
+    // ProductHub V5 sidebar (/product-hub/*) — checked before isProductRoute so
+    // /product-hub/* doesn't fall through to ProductRoomSidebar (which gates on
+    // isModuleEnabled('PRODUCT') and may return null).
+    if (isProductHubRoute) {
+      return (
+        <ProductHubSidebar
           expanded={true}
           onToggle={cycleSidebarState}
         />
