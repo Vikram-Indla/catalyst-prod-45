@@ -103,6 +103,7 @@ interface Props {
   onFocusedRowChange?: (index: number) => void;
   columnWidths?: Record<string, number>;
   onColumnWidthsChange?: (widths: Record<string, number>) => void;
+  productCode?: string;
 }
 
 function getGroupKey(item: Request, groupBy: GroupByField): string {
@@ -126,6 +127,7 @@ export function RequestTable({
   columnConfigs,
   groupBy = 'none',
   scopedProduct,
+  productCode,
   // brdTasksMap and density are accepted but not rendered today; see header.
   // density,
   // brdTasksMap = {},
@@ -258,7 +260,7 @@ export function RequestTable({
       cell: ({ row }) => {
         const key = (row as any).initiative_key;
         // Transform display key for MDT→INV product scope.
-        const displayKey = key?.startsWith('MDT-') && scopedProduct?.code === 'INV'
+        const displayKey = key?.startsWith('MDT-') && (scopedProduct?.code === 'INV' || productCode === 'INV')
           ? 'INV-' + key.substring(4)
           : key;
         const attKey = (row as any).jira_issue_key || key;
