@@ -18,6 +18,11 @@ metadata:
   agent_library: ./.claude/agents/ (184 personas, shared across team)
   wrapper_skills: [preflight, jira-compare, design-intelligence, design-critique]
   mcp_servers: [atlassian, chrome, supabase]
+  supabase_project: lmqwtldpfacrrlvdnmld
+  supabase_url: https://lmqwtldpfacrrlvdnmld.supabase.co
+  vcs: gh (GitHub CLI)
+  git_default_branch: main
+  git_confirmation_gate: "before commit and push"
   iq_level: 1000
   design_system:
     source: https://atlassian.design/
@@ -180,7 +185,7 @@ Alternative — **persona overlay** (no dispatch): main Claude reads the persona
 |---|---|---|---|
 | **Lane A — Jira schema + REST API** | `project-management-jira-workflow-steward` | Atlassian MCP: `getJiraIssueTypeMetaWithFields`, `getJiraProjectIssueTypesMetadata`, `searchJiraIssuesUsingJql`, `getTransitionsForJiraIssue` + Jira REST API via edge functions: `/rest/api/3/search/jql` (paginated search with full issue payloads), `/rest/api/3/issue/{key}/changelog` (status transitions), `/rest/api/3/issue/{key}` (full details) | Screen scheme fields, workflow states, issue transitions, changelog history, full issue metadata, BAU-specific config |
 | **Lane B — Catalyst DOM** | `engineering-frontend-developer` | Chrome MCP: `javascript_tool`, `read_page`, `find` on `localhost:8080` | Live `getComputedStyle`, DOM structure, click handler wiring, current rendered state, network calls |
-| **Lane C — Supabase schema** | `engineering-database-optimizer` | Read, Grep over `supabase/` + Lovable schema dumps (read-only — no SQL execution) | `ph_*` table columns, indexes, RLS policies, foreign keys (only if task touches backend) |
+| **Lane C — Supabase schema (LIVE MCP)** | `engineering-database-optimizer` | Supabase MCP (project: `lmqwtldpfacrrlvdnmld`): `list_tables`, `execute_sql`, `list_extensions`, `list_migrations` — live read-only schema probes | `ph_*` table columns, indexes, RLS policies, foreign keys, extensions, migration history, current schema state |
 | **Lane D — Codebase static** | `engineering-codebase-onboarding-engineer` | Read, Grep + Rovo Search for patterns | File paths involved, call chain, prior CLAUDE.md lessons that touch these files, similar implementations in codebase |
 | **Lane E — Rovo AI requirement analysis** | `project-management-jira-workflow-steward` (switched to Rovo mode) | Rovo Search + Rovo Recommendations: analyze issue descriptions, acceptance criteria, links to similar issues, dependency mapping | Requirement clarity, scope boundaries, related work, potential conflicts |
 
@@ -438,8 +443,10 @@ Output:
 10. **Port 8080 lock** (CLAUDE.md). Lane B probe MUST hit localhost:8080. Any 8081 → HALT.
 11. **No `preview_*` tools.** Chrome MCP only for Lane B.
 12. **Re-probe loop cap: 3.** Beyond that, escalate to user.
-13. **SQL via Lovable manual paste only.** Lane C probe READS Supabase; never writes.
+13. **Supabase MCP for Lane C.** Read-only schema introspection: `list_tables`, `execute_sql` (SELECT only), `list_extensions`, `list_migrations` on project `lmqwtldpfacrrlvdnmld`. Never write via MCP during probe phase.
 14. **Jira REST API endpoints** (Lane A): Prefer existing proven endpoints in the codebase (e.g., `/rest/api/3/search/jql` from `wh-jira-bulk-sync`). Never try deprecated endpoints. Current approved endpoints: `/rest/api/3/search/jql` (paginated search), `/rest/api/3/issue/{key}/changelog` (transitions), `/rest/api/3/issue/{key}` (details). Always use the working credential pattern from `ph_jira_connection` table.
+15. **gh CLI for git operations with user confirmation gates.** Before any `git commit` or `git push origin main`, ask user explicitly: "Ready to commit these changes and push to main? [yes/no]". User must confirm in chat before proceeding. Use `gh` CLI (not direct git) for all PR/issue operations. Never auto-commit; never auto-push.
+16. **Commit message format:** `<type>(<scope>): <subject>` + `Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>` footer. Example: `fix(backlog): sort config race in JiraTable` + footer.
 
 ---
 

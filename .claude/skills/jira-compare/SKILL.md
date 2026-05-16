@@ -27,11 +27,12 @@ metadata:
 0. **Code archaeology FIRST.** Before using ANY Jira API endpoint, check `wh-jira-bulk-sync` and similar functions for the proven endpoint. Replicate the working pattern exactly. Only debug if replication fails. See CLAUDE.md 2026-05-16 lesson. Cost: ~30 seconds. Benefit: eliminates wrong alternatives.
 1. **DOM probe, not assumption.** Never assert Jira renders something without measuring it via `getComputedStyle` in Chrome MCP. Prior measurements in CLAUDE.md are starting points — re-probe at audit time.
 2. **Schema before field.** Before flagging a field as "missing from Catalyst," confirm it IS in the Jira screen scheme (`getJiraIssueTypeMetaWithFields`). Field absent from scheme → correct to exclude it. Anti-pattern #18.
-3. **CRUD gate is the acceptance test.** Visual match alone is NOT parity. Create → Read → Update → Delete on both sides must pass before the surface is declared done.
+3. **CRUD gate is the acceptance test.** Visual match alone is NOT parity. Create → Read → Update → Delete on both sides must pass before the surface is declared done. Use Supabase MCP (`execute_sql`, `list_tables` on project `lmqwtldpfacrrlvdnmld`) to verify backend state for CRUD-R.
 4. **Catalyst-native surfaces → mock HTML, not jira-compare.** If there is no equivalent Jira page (e.g., /admin/catalyst-features), skip this skill and produce a Phase 2.5 Section E mock HTML instead.
 5. **Port 8080 only.** localhost:8080. Never 8081 or any other port.
 6. **5-cycle cap.** Maximum 5 probe-fix-reprobe cycles per surface per session. On cycle 5, list remaining open items in handover rather than looping again.
 7. **Jira REST API endpoints** — Always use the proven endpoints from existing code: `/rest/api/3/search/jql` (search), `/rest/api/3/issue/{key}` (details), `/rest/api/3/issue/{key}/changelog` (history). Never try deprecated alternatives.
+8. **gh CLI for git operations with user confirmation gates.** After audit completes with fixes applied, ask user: "The parity audit is complete and changes have been implemented. Should I create a PR / commit and push to main? [yes/no]". User must confirm before `git commit`, `git push`, or `gh pr create`. Never auto-commit or auto-push without explicit user approval.
 
 ---
 
@@ -55,6 +56,12 @@ When complete:
 {N} drift items · {M} P0 blockers · CRUD: {PASS/FAIL}
 Red arrows on open violations. Screenshot follows.
 Cycle {N}/5
+
+🔗 GIT CONFIRMATION GATE — post before any commit/push:
+"The parity audit is complete and fixes have been applied. 
+Should I commit these changes and push to main? [yes/no]"
+
+Await explicit user confirmation before proceeding.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -222,19 +229,26 @@ Output: requirement clarity score, scope boundaries, related issue count, depend
 
 ---
 
-## Lane C — CRUD Acceptance Gate
+## Lane C — CRUD Acceptance Gate + Supabase MCP Verification
 
 Pick one canonical entity for the surface. Test all four operations:
 
-| Op | What to test | Pass condition |
-|---|---|---|
-| **C** (Create) | Create a new work item / comment / sub-task | Row appears in Supabase + rendered in Catalyst UI |
-| **R** (Read) | Navigate to the entity in Catalyst | All fields render, no "undefined" or empty placeholders |
-| **U** (Update) | Inline edit a field (status, assignee, priority) | Value persists after page reload |
-| **D** (Delete) | Delete via ⋯ menu | Row removed from Supabase, UI updates |
+| Op | What to test | Pass condition | Verification |
+|---|---|---|---|
+| **C** (Create) | Create a new work item / comment / sub-task via Catalyst UI | Row appears in Catalyst UI + persists in Supabase backend | Use Supabase MCP: `execute_sql(project_id="lmqwtldpfacrrlvdnmld", query="SELECT * FROM {table} WHERE id='{new_id}'")` |
+| **R** (Read) | Navigate to the entity in Catalyst | All fields render, no "undefined" or empty placeholders | DOM probe via Chrome MCP; cross-check Supabase query result for field values |
+| **U** (Update) | Inline edit a field (status, assignee, priority) | Value persists after page reload in both UI + backend | Update value in Catalyst, reload page, verify via Supabase MCP query that column value changed |
+| **D** (Delete) | Delete via ⋯ menu | Row removed from Catalyst UI + Supabase backend | Verify row is gone via Supabase MCP: `execute_sql(query="SELECT count(*) FROM {table} WHERE id='{deleted_id}'")`  returns 0 |
 
 **CRUD-R Diff rule (from jira-compare lesson 2026-04-28):**
 Data divergence between Jira and Catalyst is expected while `wh-jira-sync` is parked. Do NOT flag stale data as a P0. Flag structural/render gaps only.
+
+**Supabase MCP commands for CRUD verification:**
+```
+list_tables(project_id="lmqwtldpfacrrlvdnmld", schemas=["public"], verbose=true)
+execute_sql(project_id="lmqwtldpfacrrlvdnmld", query="SELECT * FROM {table} WHERE {condition} LIMIT 10")
+```
+Use `execute_sql` to query the exact table and row that was just created/updated/deleted to confirm backend state matches UI.
 
 ---
 
