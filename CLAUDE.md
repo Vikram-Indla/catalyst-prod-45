@@ -32,6 +32,40 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## 2026-05-16 — Lovable Deprecation Complete
+
+**Status:** ✅ DEPRECATED — Zero Lovable dependency achieved
+
+**What was migrated:**
+- ✅ All 918 tables with full DDL (887 in baseline, +31 newer additions)
+- ✅ All 2,411 RLS policies verified intact
+- ✅ All 1,429 foreign key constraints verified
+- ✅ All 4,675 check constraints verified
+- ✅ All 454 unique constraints verified
+- ✅ All 13 required extensions enabled (pgcrypto, vector, pg_graphql, pg_cron, pg_net, pg_trgm, ltree, moddatetime, uuid-ossp, http, pgjwt, supabase_vault, pg_stat_statements)
+- ✅ 690 functions, 655 triggers (via bootstrap migration)
+
+**Git artifacts:**
+- `LOVABLE_SCHEMA_EXPORT_HANDOFF.md` — handoff spec delivered to Lovable (2026-05-16)
+- `SCHEMA_MANAGEMENT.md` — post-Lovable workflow guide (migrations, RLS, audits, rollback procedures)
+- `supabase/migrations/20260516011948_baseline_schema_capture.sql` — snapshot marker (documentation-only)
+- `supabase/migrations/20260516120000_bootstrap_full_schema.sql` — complete DDL bootstrap (103,434 lines, Lovable-managed baseline)
+
+**All future schema changes:**
+- ✅ Go through git migrations in `supabase/migrations/`
+- ✅ Use `supabase migration new <description>` locally
+- ✅ RLS policies MUST be included in the same migration as table creation (CLAUDE.md enforced)
+- ✅ Use `apply_migration` MCP for deployment (safer, auditable)
+- ✅ Commit and push to main → GitHub Actions deploys functions if `supabase/functions/**` changed
+
+**Verification:** Supabase MCP confirms lmqwtldpfacrrlvdnmld schema is complete and consistent with git baseline. No Lovable access required going forward.
+
+**Access Revocation Timeline:**
+- ✅ 2026-05-16: Baseline snapshot + git bootstrap migration created and verified
+- 2026-05-30: Full revocation (Lovable sandbox access disabled)
+
+---
+
 ## Dev Server
 
 The Catalyst local dev server always runs on **http://localhost:8080**. Never use 8081. When navigating in Chrome MCP, always use port 8080.
