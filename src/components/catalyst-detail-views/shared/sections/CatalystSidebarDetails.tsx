@@ -561,7 +561,7 @@ export function CatalystSidebarDetails({
               (data-testid="issue-view-layout-group.common.ui.collapsible-group-factory.title").
               Previous 653 was measured from Subtasks/LWI/Activity — those ARE 653.
               Details and Development sections use 500. Corrected to match Jira parity. */}
-          <div style={{ fontSize: 16, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}>Details</div>
+          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}>Details</h2>
         </div>
 
         {!detailsCollapsed && <div style={{ padding: '0' }}>
