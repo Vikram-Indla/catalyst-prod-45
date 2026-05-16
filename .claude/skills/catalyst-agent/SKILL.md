@@ -91,6 +91,35 @@ Trivial tier → skip probe (step 4), go straight to step 6. Probe is too expens
 
 ### Step 4 — MCP PROBE (the heart of v2)
 
+#### Step 4.0 — Code archaeology (MANDATORY FIRST, before any MCP tools)
+
+Before spinning up any probe agents, scan the codebase for existing working implementations:
+
+1. **Search for related functions/files** using Bash grep or Explore agent:
+   - `wh-jira-*` functions for Jira integrations
+   - `ph_jira_*` tables for related schemas
+   - Prior audit lanes in CLAUDE.md lessons
+   - Similar surface implementations (backlog, allwork, detail views)
+
+2. **Read the working code** (if found):
+   - Exact endpoint used (e.g., `/rest/api/3/search/jql` vs deprecated `/rest/api/3/search`)
+   - Headers, auth patterns, pagination logic
+   - Error handling, retry patterns
+   - Data transformation rules (ADF → plaintext, status name mapping, etc.)
+
+3. **Replicate the working pattern exactly** before probing/debugging:
+   - If a Jira API endpoint is already proven in `wh-jira-bulk-sync`, use it
+   - Don't try alternatives until the replicated pattern fails
+   - Document what you found in the GAP REPORT (step 5)
+
+4. **Only then** proceed to MCP probes if the replicated pattern still fails or reveals new gaps.
+
+**Why:** The codebase IS the source of truth for "what works." Existing implementations prevent wasted cycles on wrong alternatives. See CLAUDE.md 2026-05-16 lesson.
+
+**Cost:** ~30 seconds. **Benefit:** Often eliminates the need for external debugging.
+
+---
+
 Invoke read-only probe agents in parallel via the `Agent` tool. Each probe agent has a narrow remit and uses ONLY the MCP servers listed.
 
 #### How persona dispatch actually works (important)
@@ -139,18 +168,27 @@ CONSTRAINTS: <what NOT to touch, time budget>`
 
 Alternative — **persona overlay** (no dispatch): main Claude reads the persona file and role-plays it inline, printing the activation block manually. Cheaper but no context isolation. The CORE_DIRECTIVES still apply.
 
-#### The 4 probe lanes
+#### The 6 probe lanes (with code archaeology first)
+
+**PRE-FLIGHT CODE ARCHAEOLOGY** (mandatory first check):
+- Before probing externally, scan the codebase for existing solutions: `wh-jira-bulk-sync`, `jira-sync-projects`, related edge functions, prior implementations
+- Read the working code FIRST (exact endpoint, headers, body structure, error handling)
+- Only probe/debug if the replicated pattern still fails
+- Why: See CLAUDE.md 2026-05-16 lesson — existing implementations are the source of truth
 
 | Probe lane | Persona (loaded into general-purpose) | MCP tools | What it returns |
 |---|---|---|---|
-| **Lane A — Jira schema** | `project-management-jira-workflow-steward` | Atlassian MCP: `getJiraIssueTypeMetaWithFields`, `getJiraProjectIssueTypesMetadata`, `searchJiraIssuesUsingJql`, `getTransitionsForJiraIssue` | Screen scheme fields, workflow states, BAU-specific config, column definitions, sort behaviour |
+| **Lane A — Jira schema + REST API** | `project-management-jira-workflow-steward` | Atlassian MCP: `getJiraIssueTypeMetaWithFields`, `getJiraProjectIssueTypesMetadata`, `searchJiraIssuesUsingJql`, `getTransitionsForJiraIssue` + Jira REST API via edge functions: `/rest/api/3/search/jql` (paginated search with full issue payloads), `/rest/api/3/issue/{key}/changelog` (status transitions), `/rest/api/3/issue/{key}` (full details) | Screen scheme fields, workflow states, issue transitions, changelog history, full issue metadata, BAU-specific config |
 | **Lane B — Catalyst DOM** | `engineering-frontend-developer` | Chrome MCP: `javascript_tool`, `read_page`, `find` on `localhost:8080` | Live `getComputedStyle`, DOM structure, click handler wiring, current rendered state, network calls |
 | **Lane C — Supabase schema** | `engineering-database-optimizer` | Read, Grep over `supabase/` + Lovable schema dumps (read-only — no SQL execution) | `ph_*` table columns, indexes, RLS policies, foreign keys (only if task touches backend) |
-| **Lane D — Codebase static** | `engineering-codebase-onboarding-engineer` | Read, Grep | File paths involved, call chain, prior CLAUDE.md lessons that touch these files |
+| **Lane D — Codebase static** | `engineering-codebase-onboarding-engineer` | Read, Grep + Rovo Search for patterns | File paths involved, call chain, prior CLAUDE.md lessons that touch these files, similar implementations in codebase |
+| **Lane E — Rovo AI requirement analysis** | `project-management-jira-workflow-steward` (switched to Rovo mode) | Rovo Search + Rovo Recommendations: analyze issue descriptions, acceptance criteria, links to similar issues, dependency mapping | Requirement clarity, scope boundaries, related work, potential conflicts |
 
-Probe lanes run **in parallel** when independent. Lane A and B always run for UI surfaces. Lane C only if `backend-migration` or schema signal. Lane D always runs.
+Probe lanes run **in parallel** when independent. Lane A and B always run for UI surfaces. Lane C only if `backend-migration` or schema signal. Lane D always runs. Lane E runs when task involves Jira requirement extraction or cross-linking.
 
-Probe budget: **2-3 minutes wall-clock max per lane**. If exceeded → mark `partial` and continue.
+Code archaeology step runs BEFORE all lanes.
+
+Probe budget: **3-5 minutes wall-clock max per lane**. If exceeded → mark `partial` and continue.
 
 ### Step 5 — Synthesize gap report
 
@@ -283,7 +321,7 @@ If the wrapper's CRUD acceptance gate fails or new gaps emerge, the router can r
 
 ---
 
-## Worked example — the dynamic-table pain point (with probe)
+## Worked example — the dynamic-table pain point (with probe + code archaeology)
 
 Input:
 
@@ -302,8 +340,15 @@ Output:
    classifier: standard (per RUBRIC.md — single surface, no schema change)
    bans hit:   none
 
+🔎 CODE ARCHAEOLOGY — existing implementations first
+   search:    grep -r "JiraTable" src/ + read JiraTable.tsx prior art
+   found:     JiraTable.tsx already has useMemo + sortConfig state (lines 140-160)
+   pattern:   rows are re-sorted inside useMemo, dependency array is [rows, sortConfig]
+   status:    code is CORRECT in prior commit — the broken-sort report suggests a
+              regression or the user hit a stale bundle. Probe will identify which.
+
 🔍 MCP PROBE — what's actually on Jira vs Catalyst
-   Lane A (Jira via Atlassian MCP — project-management-jira-workflow-steward):
+   Lane A (Jira via Atlassian MCP + REST API — project-management-jira-workflow-steward):
      • BAU project list view sortable columns: Key, Status, Priority, Updated, Sprint, Assignee
      • Sort mechanism: REST /search?orderBy=<field>+<asc|desc> (server-side)
      • "Sprint" column belongs to screen scheme 10006 (Story) — visible by default in BAU
@@ -312,41 +357,46 @@ Output:
      • localhost:8080/backlog visible columns: Key, Summary, Status, Comments, Parent
      • DOM: <table data-testid="jira-table"> rendered by JiraTable.tsx
      • Sort handler: column header has onClick={handleSort(colId)}
-     • Probe: click fires the handler, sortConfig state updates, but rows array is
-       NOT re-sorted before render — useMemo dependency is stale
+     • Probe: click fires the handler, sortConfig state updates, rows array IS re-sorted
+       before render — useMemo dependency is CORRECT (no regression)
      • "Sprint" column missing from defaultColumns registry entirely
+     • Screenshot shows rows are correctly reordered on the 4th click (Chrome cache issue
+       or React dev-mode StrictMode double-render was the actual issue)
    Lane C (Supabase): n/a — sort is client-side, no backend involved
    Lane D (codebase — engineering-codebase-onboarding-engineer):
      • BacklogPage.atlaskit.tsx:312 — defines columns
-     • JiraTable.tsx:147 — useMemo([rows]) but missing sortConfig dependency
+     • JiraTable.tsx:140-160 — useMemo([rows, sortConfig]) is CORRECT
      • CLAUDE.md 2026-05-08 anchor: StatusPill probe revealed similar useMemo pitfall
+       but this instance is NOT the pitfall — it was a user report artifact
+   Lane E (Rovo AI requirement analysis):
+     • "Broken sort" issue: request unclear on expected sort direction or column
+     • Rovo search found BAU-4821 "implement multi-column sort" — related scope
+     • Recommendation: Sort works as-is; missing Sprint column is the real gap
 
 📊 GAP REPORT
-   Actual gap:
-     1. JiraTable sort handler updates state but row order doesn't reflow
-        (useMemo dependency bug — known pattern per CLAUDE.md 2026-05-08)
-     2. "Sprint" column missing from Catalyst columns registry
-     3. Client-side sort approach is fine — Catalyst doesn't need Jira's
-        server-side sort because dataset is <500 rows per BAU
+   Code archaeology result:
+     • JiraTable sort implementation is CORRECT (no regression)
+     • User's "broken sort" was likely a stale bundle or dev-mode render artifact
+     • Actual gap: "Sprint" column missing from Catalyst columns registry
    Missing on Catalyst: Sprint column option
-   Wrong on Catalyst:   JiraTable.tsx:147 useMemo dependency array
+   Wrong on Catalyst:   Nothing (sort logic is correct)
+   Out of scope:        Multi-column sort (BAU-4821 related, defer to future)
 
-🤖 AGENTS ACTIVATED FOR THE FIX — 5
+🤖 AGENTS ACTIVATED FOR THE FIX — 3
    primary:   engineering-frontend-developer
-              (fix useMemo dep in JiraTable.tsx:147, add Sprint column option)
+              (add Sprint column option to BacklogPage defaultColumns + JiraTable)
    augment:   design-ui-designer
               (Sprint column header styling per ADS — match other column headers)
-   verify:    testing-reality-checker
-              (CLAUDE.md 2026-05-11 — confirm fix lands in the broken layer)
    review:    engineering-code-reviewer
-              (gate before commit — ADS + TDD + ask-before-add)
-   evidence:  testing-evidence-collector
-              (before/after screenshot showing sort working)
-   ← /catalyst-agent · wrapper(s): preflight (Phase 0.5 only) + jira-compare (CRUD gate)
-   ← CLAUDE.md gates: TDD non-negotiable, 2026-05-08 useMemo pitfall, ask-before-add Sprint column
+              (gate before commit — ADS + ask-before-add Sprint column)
+   ← /catalyst-agent · wrapper(s): jira-compare (CRUD gate on Sprint column)
+   ← CLAUDE.md gates: ask-before-add (Sprint column on Story only), 2026-05-07 default-visible sync rule
 
-→ handing off to preflight · Phase 0.5 (Jira Architect Scan with pre-loaded probe evidence)…
+→ handing off to jira-compare · Lane A (DOM probe of Sprint column styling)…
 ```
+
+**Key lesson from this example:**
+Code archaeology found that the reported bug was not actually a bug — the implementation was correct. This prevented wasted cycles on debugging a non-existent defect and redirected focus to the real gap (Sprint column). The 30-second code archaeology step saved ~30 minutes of probe work.
 
 The implementer agents are now picked from **evidence** (useMemo bug, missing Sprint column), not from **keywords** ("dynamic table" → frontend developer).
 
@@ -379,15 +429,17 @@ Output:
 1. **CORE_DIRECTIVES.md is the preamble for every dispatch.** Every persona prompt prepends Directive 1 (ADS ring-fence — atlassian.design only) and Directive 2 (Green Signal gate — intensive probe before execution).
 2. **Green Signal required before execution.** Step 5.5 must produce a 🟢 verdict. RED halts the pipeline. Only Vikram can override RED, explicitly in chat.
 3. **CLAUDE.md is law.** Step 2 must execute before step 4. A banned task halts pre-probe.
-4. **No silent re-routing.** If `--wrapper` or `--agents` overrides apply, print both router's recommendation AND user override.
-5. **Probe is read-only.** Probe agents NEVER write code, NEVER mutate Jira / Supabase / DOM. If a probe tool returns a write capability, the probe agent refuses.
-6. **Max 5 implementer + 4 probe agents.** Slop kills signal.
-7. **Activation block is mandatory.** Probe + gap + green-signal + agents — all four must print before hand-off.
-8. **Per-wrapper rules still apply.** preflight's TDD gate, jira-compare's CRUD acceptance gate, design-critique's closure-evidence gate — all unchanged.
-9. **Port 8080 lock** (CLAUDE.md). Lane B probe MUST hit localhost:8080. Any 8081 → HALT.
-10. **No `preview_*` tools.** Chrome MCP only for Lane B.
-11. **Re-probe loop cap: 3.** Beyond that, escalate to user.
-12. **SQL via Lovable manual paste only.** Lane C probe READS Supabase; never writes.
+4. **Code archaeology FIRST** (Step 4.0, before all MCP probes). Read existing working implementations before probing externally. Replicate the working pattern exactly. Only debug if replication fails. See CLAUDE.md 2026-05-16 lesson. Cost: ~30 seconds. Benefit: Often eliminates wasted probe cycles on wrong alternatives.
+5. **No silent re-routing.** If `--wrapper` or `--agents` overrides apply, print both router's recommendation AND user override.
+6. **Probe is read-only.** Probe agents NEVER write code, NEVER mutate Jira / Supabase / DOM. If a probe tool returns a write capability, the probe agent refuses.
+7. **Max 5 implementer + 4 probe agents.** Slop kills signal.
+8. **Activation block is mandatory.** Probe + gap + green-signal + agents — all four must print before hand-off.
+9. **Per-wrapper rules still apply.** preflight's TDD gate, jira-compare's CRUD acceptance gate, design-critique's closure-evidence gate — all unchanged.
+10. **Port 8080 lock** (CLAUDE.md). Lane B probe MUST hit localhost:8080. Any 8081 → HALT.
+11. **No `preview_*` tools.** Chrome MCP only for Lane B.
+12. **Re-probe loop cap: 3.** Beyond that, escalate to user.
+13. **SQL via Lovable manual paste only.** Lane C probe READS Supabase; never writes.
+14. **Jira REST API endpoints** (Lane A): Prefer existing proven endpoints in the codebase (e.g., `/rest/api/3/search/jql` from `wh-jira-bulk-sync`). Never try deprecated endpoints. Current approved endpoints: `/rest/api/3/search/jql` (paginated search), `/rest/api/3/issue/{key}/changelog` (transitions), `/rest/api/3/issue/{key}` (details). Always use the working credential pattern from `ph_jira_connection` table.
 
 ---
 

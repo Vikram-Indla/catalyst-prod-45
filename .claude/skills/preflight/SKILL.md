@@ -192,14 +192,26 @@ window.__catalystBoard.write({
 - Task references a BAU issue key, Jira field name, or screen scheme.
 - Prior handover transcript exists for this surface (re-probe to confirm prior state).
 
-### Four lanes (delegate, don't reimplement)
+### Code Archaeology (MANDATORY FIRST)
+
+Before running any lanes, check the codebase for existing working implementations:
+
+1. **Search for related functions** (edge functions, API integrations, prior implementations)
+2. **Read the working code** (exact endpoints, headers, pagination, error handling)
+3. **Replicate the working pattern** before debugging
+4. **Only probe/debug if replication fails**
+
+Cost: ~30 seconds. Benefit: Often eliminates wasted probe cycles on wrong alternatives. See CLAUDE.md 2026-05-16 lesson.
+
+### Five lanes (delegate, don't reimplement)
 
 | Lane | Primitive | Output |
 |---|---|---|
-| A — Visual/structural | `jira-compare` (Chrome MCP DOM probe, both Jira and Catalyst) | DOM probe JSON, computed-style diff, annotated screenshots |
-| B — Schema/data | Atlassian MCP: `getJiraIssueTypeMetaWithFields`, `getJiraProjectIssueTypesMetadata`, `searchJiraIssuesUsingJql` | Fields JSON, workflow states, permission schemes |
+| A — Visual/structural + Jira REST API | `jira-compare` (Chrome MCP DOM probe) + Jira REST API via edge functions (`/rest/api/3/search/jql`, `/rest/api/3/issue/{key}`) | DOM probe JSON, computed-style diff, annotated screenshots, full issue details, changelog |
+| B — Schema/data + Rovo | Atlassian MCP (`getJiraIssueTypeMetaWithFields`, `searchJiraIssuesUsingJql`) + Rovo Search (requirement analysis, related issues, dependencies) | Fields JSON, workflow states, permission schemes, requirement clarity, scope boundaries |
 | C — Static analysis | `ads-validator` | ADS token violations with file/line refs |
 | D — DOM measurements | `hermes-pixel-probe` | Spacing, typography, element dimensions |
+| E — Code archaeology results | `Explore` agent (grep for existing implementations) | File paths, prior patterns, proven endpoints, lessons from CLAUDE.md |
 
 ### Evidence envelope (passed to all Phase 2 advisors)
 

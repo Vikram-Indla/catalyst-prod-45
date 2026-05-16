@@ -24,12 +24,14 @@ metadata:
 
 ## ⚠️ HARD RULES — READ FIRST
 
+0. **Code archaeology FIRST.** Before using ANY Jira API endpoint, check `wh-jira-bulk-sync` and similar functions for the proven endpoint. Replicate the working pattern exactly. Only debug if replication fails. See CLAUDE.md 2026-05-16 lesson. Cost: ~30 seconds. Benefit: eliminates wrong alternatives.
 1. **DOM probe, not assumption.** Never assert Jira renders something without measuring it via `getComputedStyle` in Chrome MCP. Prior measurements in CLAUDE.md are starting points — re-probe at audit time.
 2. **Schema before field.** Before flagging a field as "missing from Catalyst," confirm it IS in the Jira screen scheme (`getJiraIssueTypeMetaWithFields`). Field absent from scheme → correct to exclude it. Anti-pattern #18.
 3. **CRUD gate is the acceptance test.** Visual match alone is NOT parity. Create → Read → Update → Delete on both sides must pass before the surface is declared done.
 4. **Catalyst-native surfaces → mock HTML, not jira-compare.** If there is no equivalent Jira page (e.g., /admin/catalyst-features), skip this skill and produce a Phase 2.5 Section E mock HTML instead.
 5. **Port 8080 only.** localhost:8080. Never 8081 or any other port.
 6. **5-cycle cap.** Maximum 5 probe-fix-reprobe cycles per surface per session. On cycle 5, list remaining open items in handover rather than looping again.
+7. **Jira REST API endpoints** — Always use the proven endpoints from existing code: `/rest/api/3/search/jql` (search), `/rest/api/3/issue/{key}` (details), `/rest/api/3/issue/{key}/changelog` (history). Never try deprecated alternatives.
 
 ---
 
@@ -89,9 +91,22 @@ Cycle {N}/5
 
 ---
 
-## Lane A — Chrome MCP DOM Probe
+## Pre-Flight Code Archaeology (MANDATORY FIRST)
 
-### Step 1 — Navigate to both surfaces
+Before running Lane A or B, check for existing Jira REST API implementations:
+
+1. **Search:** Look for `wh-jira-*` edge functions, `jira-sync-*` utilities, `ph_jira_connection` usage
+2. **Read the working pattern:** Exact endpoints, headers, credentials format, pagination, error handling
+3. **Replicate exactly:** Use the proven endpoint (e.g., `/rest/api/3/search/jql`) with the same auth pattern
+4. **Only probe/debug if replication fails**
+
+This prevents trying deprecated endpoints and ensures credential handling is correct.
+
+---
+
+## Lane A — Chrome MCP DOM Probe + Jira REST API Details
+
+### Step 1 — Navigate to both surfaces + fetch detailed data
 
 ```
 Jira:     {Jira base URL}/browse/{BAU-XXXX}
@@ -99,6 +114,12 @@ Catalyst: localhost:8080/{route}?issue={BAU-XXXX}
 ```
 
 Use `tabs_create_mcp` to open a second tab if needed. Probe one at a time.
+
+**Simultaneously (Jira REST API):**
+- Query `/rest/api/3/issue/{BAU-XXXX}` to get full issue details (fields, custom fields, parent, watchers, history)
+- Query `/rest/api/3/issue/{BAU-XXXX}/changelog` to get status transitions (for CRUD-R validation)
+- Query `/rest/api/3/search/jql?jql=key={BAU-XXXX}` to validate the issue is searchable via JQL
+- Use Rovo Search to find related issues and acceptance criteria in linked issues
 
 ### Step 2 — Structural probe script (run on EACH surface)
 
@@ -169,9 +190,9 @@ Use the `injectArrows` script from `design-intelligence/SKILL.md`. Arrow ID pref
 
 ---
 
-## Lane B — Atlassian MCP Schema Probe
+## Lane B — Atlassian MCP Schema Probe + Rovo Requirement Analysis
 
-Run for every field you plan to add or have added:
+**Schema probe (for every field you plan to add or have added):**
 
 ```
 Tool: getJiraIssueTypeMetaWithFields
@@ -188,6 +209,16 @@ Cross-check: every Catalyst field rendered for this type MUST appear in fields[]
 ```
 
 Anti-pattern #18 gate: if a field is in Catalyst's render path but NOT in `fields[].key` → P0 violation → remove or gate by type.
+
+**Rovo Requirement Analysis (parallel to schema probe):**
+
+Use Rovo Search to:
+1. **Find related issues** — search `is linked to {BAU-XXXX}` to discover dependency scope
+2. **Extract acceptance criteria** — read linked Epic/Story descriptions for requirements clarity
+3. **Map field dependencies** — if adding field X, check if linked issues reference X in their context
+4. **Identify scope conflicts** — Rovo can highlight if this issue's scope overlaps with concurrent work
+
+Output: requirement clarity score, scope boundaries, related issue count, dependency graph (if applicable)
 
 ---
 
