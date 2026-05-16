@@ -62,6 +62,7 @@ function TrendBadge({ text, dir }: { text: string; dir: TrendDir }) {
 // ── KPI cell ─────────────────────────────────────────────────────────────────
 
 function KpiCell({
+  label,
   question,
   value,
   unit,
@@ -72,6 +73,7 @@ function KpiCell({
   sparkTestId,
   borderRight,
 }: {
+  label: string;
   question: string;
   value: React.ReactNode;
   unit?: string;
@@ -94,6 +96,16 @@ function KpiCell({
         minWidth: 0,
       }}
     >
+      <span
+        style={{
+          fontSize: 12,
+          fontWeight: 600,
+          color: token('color.text', '#172B4D'),
+          display: 'block',
+        }}
+      >
+        {label}
+      </span>
       <span
         style={{
           fontSize: 11,
@@ -185,13 +197,15 @@ export function AtAGlanceWidget() {
   const totalCycle = useBrCycleTime({ startStep: funnelStep, endStep: landingStep });
 
   const { data: activeCount, isLoading: countLoading } = useQuery({
-    queryKey: ['br-active-count'],
+    queryKey: ['br-active-count', funnelStep],
     enabled: !loading && !!user?.id,
     queryFn: async () => {
       const { count, error } = await supabase
         .from('business_requests')
-        .select('*', { count: 'exact', head: true } as Parameters<typeof supabase.from>[1])
-        .is('deleted_at', null);
+        .select('id')
+        .neq('process_step', funnelStep)
+        .is('deleted_at', null)
+        .single() as unknown as { count: number; error: Error | null };
       if (error) throw error;
       return count ?? 0;
     },
@@ -243,6 +257,7 @@ export function AtAGlanceWidget() {
 
       <div style={{ display: 'flex' }}>
         <KpiCell
+          label="Active"
           question="How many business requests are we working on right now?"
           value={<span data-testid="kpi-active-value">{activeCount ?? '—'}</span>}
           trend={activeCount != null ? `${activeCount} active in pipeline` : undefined}
@@ -253,6 +268,7 @@ export function AtAGlanceWidget() {
           borderRight
         />
         <KpiCell
+          label="Business Cycle"
           question="How long does a typical request take — business side?"
           value={<span data-testid="kpi-cycle-median">{businessCycle.median ?? '—'}</span>}
           unit={businessCycle.median != null ? 'days' : undefined}
@@ -264,6 +280,7 @@ export function AtAGlanceWidget() {
           borderRight
         />
         <KpiCell
+          label="IT Cycle"
           question="How long does a typical request take — IT side?"
           value={<span data-testid="kpi-cycle-median">{itCycle.median ?? '—'}</span>}
           unit={itCycle.median != null ? 'days' : undefined}
@@ -275,6 +292,7 @@ export function AtAGlanceWidget() {
           borderRight
         />
         <KpiCell
+          label="Total Cycle"
           question="How many requests have we released in the last 30 days?"
           value={<span data-testid="kpi-cycle-median">{totalCycle.median ?? '—'}</span>}
           unit={totalCycle.median != null ? 'days (total)' : undefined}
