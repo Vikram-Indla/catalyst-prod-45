@@ -31,11 +31,11 @@ export function ConfirmDialog({
         animation: 'sdm-confirm-in 200ms ease-out',
       }}>
         <h3 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700, color: 'var(--ds-text, #172B4D)', marginBottom: 8 }}>{title}</h3>
-        <p style={{ fontSize: 13, color: '#5E6C84', lineHeight: 1.6, marginBottom: 20 }}>{message}</p>
+        <p style={{ fontSize: 13, color: 'var(--ds-text-subtle, #5E6C84)', lineHeight: 1.6, marginBottom: 20 }}>{message}</p>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button onClick={onCancel} style={{
             padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface, #FFF)', border: '1px solid #DFE1E6',
-            fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#5E6C84',
+            fontSize: 13, fontWeight: 500, cursor: 'pointer', color: 'var(--ds-text-subtle, #5E6C84)',
             transition: 'background 0.15s',
           }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}

@@ -97,7 +97,7 @@ function AtlaskitRendererPlaceholder({
       className="cv-desc-body"
       // Jira-measured: body 14/400, line-height 1.5, #292A2E, Atlassian Sans
       style={{
-        fontSize: 14, fontWeight: 400, color: '#292A2E', lineHeight: '24px',
+        fontSize: 14, fontWeight: 400, color: 'var(--ds-text, #292A2E)', lineHeight: '24px',
         fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
         whiteSpace: 'pre-wrap',
       }}
@@ -114,7 +114,7 @@ const DESC_BUILD_ID = 'atlaskit-canonical-v218';
 
 /* ── Scoped styles for ADF content inside CatalystView ── */
 /* Bump this version when the style block changes — forces re-injection on HMR. */
-const STYLE_ID = 'cv-desc-styles-v6';
+const STYLE_ID = 'cv-desc-styles-v7';
 if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
   const s = document.createElement('style');
   s.id = STYLE_ID;
@@ -130,12 +130,12 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
        canonical ADF renderer). The legacy '.adf-description-content'
        selector is retained defensively in case any stale prerender DOM
        sneaks in; safe to drop in a future pass. */
-    .cv-desc-body h1, .adf-description-content h1 { font-size: 24px; font-weight: 700; margin: 20px 0 8px; color: #292A2E; line-height: 1.3; }
-    .cv-desc-body h2, .adf-description-content h2 { font-size: 20px; font-weight: 600; margin: 16px 0 8px; color: #292A2E; line-height: 1.3; }
-    .cv-desc-body h3, .adf-description-content h3 { font-size: 16px; font-weight: 600; margin: 12px 0 4px; color: #292A2E; line-height: 1.4; }
-    .cv-desc-body h4, .adf-description-content h4 { font-size: 14px; font-weight: 600; margin: 12px 0 4px; color: #292A2E; }
-    .cv-desc-body h5, .adf-description-content h5 { font-size: 13px; font-weight: 600; margin: 8px 0 4px; color: #292A2E; }
-    .cv-desc-body h6, .adf-description-content h6 { font-size: 12px; font-weight: 600; margin: 8px 0 4px; color: #5E6C84; text-transform: uppercase; }
+    .cv-desc-body h1, .adf-description-content h1 { font-size: 24px; font-weight: 700; margin: 20px 0 8px; color: var(--ds-text, #292A2E); line-height: 1.3; }
+    .cv-desc-body h2, .adf-description-content h2 { font-size: 20px; font-weight: 600; margin: 16px 0 8px; color: var(--ds-text, #292A2E); line-height: 1.3; }
+    .cv-desc-body h3, .adf-description-content h3 { font-size: 16px; font-weight: 600; margin: 12px 0 4px; color: var(--ds-text, #292A2E); line-height: 1.4; }
+    .cv-desc-body h4, .adf-description-content h4 { font-size: 14px; font-weight: 600; margin: 12px 0 4px; color: var(--ds-text, #292A2E); }
+    .cv-desc-body h5, .adf-description-content h5 { font-size: 13px; font-weight: 600; margin: 8px 0 4px; color: var(--ds-text, #292A2E); }
+    .cv-desc-body h6, .adf-description-content h6 { font-size: 12px; font-weight: 600; margin: 8px 0 4px; color: var(--ds-text-subtle, #5E6C84); text-transform: uppercase; }
     .cv-desc-body ol, .cv-desc-body ul,
     .adf-description-content ol, .adf-description-content ul { margin: 4px 0 8px; padding-left: 24px; }
     .cv-desc-body li, .adf-description-content li { margin-bottom: 4px; }
@@ -149,7 +149,7 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
     .cv-desc-body th, .adf-description-content th { background: var(--ds-surface-sunken, #F4F5F7); font-weight: 600; text-align: left; }
     .cv-desc-body th, .cv-desc-body td,
     .adf-description-content th, .adf-description-content td { border: 1px solid var(--ds-border, #DFE1E6); padding: 8px 12px; font-size: 14px; vertical-align: top; }
-    .cv-desc-body blockquote, .adf-description-content blockquote { border-left: 2px solid var(--ds-border, #DFE1E6); padding: 8px 12px; margin: 8px 0; color: #5E6C84; }
+    .cv-desc-body blockquote, .adf-description-content blockquote { border-left: 2px solid var(--ds-border, #DFE1E6); padding: 8px 12px; margin: 8px 0; color: var(--ds-text-subtle, #5E6C84); }
     .cv-desc-body pre, .adf-description-content pre { background: var(--ds-surface-sunken, #F4F5F7); padding: 12px; border-radius: 4px; font-size: 13px; overflow-x: auto; margin: 4px 0 8px; font-family: var(--cp-font-mono); }
     .cv-desc-body code, .adf-description-content code { background: var(--ds-surface-sunken, #F4F5F7); padding: 2px 4px; border-radius: 3px; font-size: 12px; font-family: var(--cp-font-mono); }
     .cv-desc-body pre code, .adf-description-content pre code { background: none; padding: 0; }

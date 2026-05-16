@@ -588,7 +588,7 @@ export function CatalystSidebarDetails({
                 <button
                   type="button"
                   onClick={handleAssignToMe}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--ds-link, #1868DB)', fontSize: 14, fontWeight: 400, lineHeight: '20px', textAlign: 'left', marginTop: 4 }}
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--ds-link, #1868DB)', fontSize: 11, fontWeight: 400, lineHeight: '16px', textAlign: 'left', marginTop: 4 }}
                 >
                   Assign to me
                 </button>

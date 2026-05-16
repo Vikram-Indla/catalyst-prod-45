@@ -28,7 +28,7 @@ export function CatalystAcceptanceCriteria({ issue, label = 'Acceptance Criteria
       </div>
       {/* Jira-measured: body 14/400, line-height 1.5, #292A2E, Atlassian Sans */}
       <div style={{
-        fontSize: 14, fontWeight: 400, color: '#292A2E', lineHeight: 1.5, whiteSpace: 'pre-wrap',
+        fontSize: 14, fontWeight: 400, color: 'var(--ds-text, #292A2E)', lineHeight: 1.5, whiteSpace: 'pre-wrap',
         fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
       }}>
         {issue.acceptance_criteria}

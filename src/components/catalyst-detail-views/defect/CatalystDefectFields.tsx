@@ -174,7 +174,7 @@ export function CatalystDefectKeyRows({
 
       {hasRootCause && (
         <KeyDetailsFieldRow label="Root cause" alignBlock="center">
-          <span style={{ fontSize: 14, color: '#292A2E' }}>{rootCause}</span>
+          <span style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>{rootCause}</span>
         </KeyDetailsFieldRow>
       )}
 
@@ -194,7 +194,7 @@ export function CatalystDefectKeyRows({
 const BODY_STYLE: React.CSSProperties = {
   fontSize: 14,
   fontWeight: 400,
-  color: '#292A2E',
+  color: 'var(--ds-text, #292A2E)',
   lineHeight: 1.5,
   fontFamily:
     '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',

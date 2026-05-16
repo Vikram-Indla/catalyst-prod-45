@@ -255,7 +255,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
         {/* Error */}
         {isError && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '16px 0' }}>
-            <span style={{ fontSize: 13, color: '#FF5630' }}>Failed to load suggestions</span>
+            <span style={{ fontSize: 13, color: 'var(--ds-text-danger, #AE2A19)' }}>Failed to load suggestions</span>
             <button onClick={() => refetch()} style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
               border: '1px solid #DFE1E6', borderRadius: 3, background: 'var(--ds-surface, #fff)',

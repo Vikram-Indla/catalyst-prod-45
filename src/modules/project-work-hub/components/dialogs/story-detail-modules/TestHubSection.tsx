@@ -107,7 +107,7 @@ export function TestHubSection({ storyId }: { storyId: string }) {
                   <span className="sdm-type-icon">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#36B37E" strokeWidth="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                   </span>
-                  <span className="sdm-child-key" style={{ color: '#42526E' }}>{tc.case_key}</span>
+                  <span className="sdm-child-key" style={{ color: 'var(--ds-text-subtle, #42526E)' }}>{tc.case_key}</span>
                   <span className="sdm-child-summary">{tc.title}</span>
                   <span className="sdm-status-lozenge"><CatalystLozenge appearance={statusToLozenge(tc.status)}>{tc.status}</CatalystLozenge></span>
                   <span className="sdm-date-col">{formatDateShort(tc.created_at)}</span>
@@ -134,7 +134,7 @@ export function TestHubSection({ storyId }: { storyId: string }) {
                     display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 6px', borderRadius: 3,
                     fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.03em', flexShrink: 0,
                   }}>{ex.result?.replace('_', ' ') ?? 'N/A'}</span>
-                  <span className="sdm-child-key" style={{ color: '#42526E' }}>{ex.case_key ?? '—'}</span>
+                  <span className="sdm-child-key" style={{ color: 'var(--ds-text-subtle, #42526E)' }}>{ex.case_key ?? '—'}</span>
                   <span className="sdm-child-summary">{ex.cycle_name ?? 'Manual execution'}</span>
                   {ex.executed_by && (
                     <div className="sdm-child-avatar" style={{ background: getAvatarColor(ex.executed_by) }}>{ex.executed_by.charAt(0).toUpperCase()}</div>

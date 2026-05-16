@@ -74,8 +74,6 @@ export function makeDragHandleCell(isDragEnabled: () => boolean) {
           justifyContent: 'center',
           width: 20,
           height: 20,
-          opacity: 0,
-          transition: 'opacity 200ms',
           cursor: 'grab',
           color: token('color.text.subtle', '#42526E'),
         }}

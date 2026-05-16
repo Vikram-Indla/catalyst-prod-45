@@ -222,7 +222,7 @@ export function EditableAssignee({ issueId, issueKey, projectId, currentAssignee
               <div style={{
                 width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
                 border: '1px dashed #C1C7D0', display: 'flex', alignItems: 'center',
-                justifyContent: 'center', fontSize: 14, color: '#C1C7D0',
+                justifyContent: 'center', fontSize: 14, color: 'var(--ds-text-disabled, #C1C7D0)',
               }}>?</div>
             ) : (
               <AvatarCircle
@@ -352,7 +352,7 @@ export function EditableReporter({ issueId, projectId, currentReporterId, curren
               <div style={{
                 width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
                 border: '1px dashed #C1C7D0', display: 'flex', alignItems: 'center',
-                justifyContent: 'center', fontSize: 14, color: '#C1C7D0',
+                justifyContent: 'center', fontSize: 14, color: 'var(--ds-text-disabled, #C1C7D0)',
               }}>?</div>
             ) : (
               <AvatarCircle
@@ -815,7 +815,7 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
             <button onClick={e => { e.stopPropagation(); handleSelect(null); }} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 20, height: 20, borderRadius: '50%', border: 'none',
-              background: 'var(--ds-border, #DFE1E6)', cursor: 'pointer', color: '#42526E', flexShrink: 0,
+              background: 'var(--ds-border, #DFE1E6)', cursor: 'pointer', color: 'var(--ds-text-subtle, #42526E)', flexShrink: 0,
               opacity: hovered ? 1 : 0, transition: 'opacity 0.15s',
             }}
               onMouseEnter={e => (e.currentTarget.style.background = '#C1C7D0')}

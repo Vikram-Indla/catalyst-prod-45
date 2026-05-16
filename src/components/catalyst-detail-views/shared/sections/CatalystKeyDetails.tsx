@@ -47,7 +47,7 @@ export function KeyDetailsFieldRow({
     <div style={{ padding: '6px 0' }}>
       <Inline space="space.250" alignBlock={alignBlock}>
         <span style={{
-          fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258',
+          fontSize: 14, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text-subtle, #505258)',
           minWidth: 120, flexShrink: 0,
         }}>{label}</span>
         <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
