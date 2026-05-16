@@ -376,11 +376,12 @@ export type LozengeAppearance =
 // 2026-05-10 via DOM probe — bg returned rgba(0,0,0,0)). Same fix pattern
 // already applied to status dropdown dots.
 const LOZENGE_BG: Record<LozengeAppearance, string> = {
-  success:    'rgb(148, 199, 72)',    // #94C748 — Jira done category
-  inprogress: 'rgb(102, 157, 241)',   // #669DF1 — Jira in-progress category
-  default:    'rgb(220, 223, 228)',   // #DCDFE4 — Jira to-do category
+  // 2026-05-16 DOM probe corrections:
+  success:    'rgb(179, 223, 114)',   // #B3DF72 — Jira done category (was #94C748 — wrong)
+  inprogress: 'rgb(143, 184, 246)',   // #8FB8F6 — Jira in-progress category (was #669DF1 — wrong)
+  default:    'rgb(221, 222, 225)',   // #DDDEE1 — Jira to-do category
   moved:      'rgb(243, 214, 100)',
-  removed:    'rgb(255, 143, 115)',
+  removed:    'rgb(221, 222, 225)',   // Treat removed same as default (grey), not red
   new:        'rgb(184, 172, 246)',
 };
 const LOZENGE_FG = 'rgb(41, 42, 46)';
@@ -404,11 +405,12 @@ export function StatusPill({
       maxWidth: '200px',
     }}>
       <span style={{
-        fontSize: '14px',
-        fontWeight: 400,
+        // 2026-05-16: corrected to match Jira list DOM probe (11px/653/uppercase)
+        fontSize: '11px',
+        fontWeight: 653,
         lineHeight: '16px',
         color: LOZENGE_FG,
-        textTransform: 'none',
+        textTransform: 'uppercase',
         letterSpacing: '0.165px',
         overflow: 'hidden',
         textOverflow: 'ellipsis',

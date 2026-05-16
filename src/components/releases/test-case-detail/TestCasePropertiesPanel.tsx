@@ -26,6 +26,7 @@ import {
 } from '@/lib/atlaskit-icons';
 import { Lozenge, Avatar } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -171,7 +172,7 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
 
   // Assignee
   const assigneeName = testCase.assigned_user?.full_name || 'Unassigned';
-  const assigneeAvatar = testCase.assigned_user?.avatar_url;
+  const assigneeAvatar = resolveAvatarUrl(assigneeName) ?? testCase.assigned_user?.avatar_url;
 
   // Estimated duration - use unified utility
   const estimatedTime = getEstimatedDurationDisplay(testCase);

@@ -7,6 +7,7 @@
 import { useState, useEffect } from 'react';
 import { Pencil, CheckCircle, XCircle, Circle, AlertTriangle, ArrowUp, Minus, ArrowDown, Loader2, Check, X } from '@/lib/atlaskit-icons';
 import { Lozenge, Avatar } from '@/components/ads';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -109,7 +110,7 @@ export function TestCaseHeader({ testCase }: TestCaseHeaderProps) {
   const typeName = testCase.type?.name || 'Functional';
   const type = typeConfig[typeName] || typeConfig['Functional'];
   const assigneeName = testCase.assigned_user?.full_name || 'Unassigned';
-  const assigneeAvatar = testCase.assigned_user?.avatar_url;
+  const assigneeAvatar = resolveAvatarUrl(assigneeName) ?? testCase.assigned_user?.avatar_url;
   const estimatedTime = getEstimatedDurationDisplay(testCase);
   const createdAt = testCase.created_at ? format(new Date(testCase.created_at), 'MMM d, yyyy') : '—';
 

@@ -3,6 +3,7 @@ import { Check, X, Clock, UserPlus, MessageSquare } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -64,7 +65,7 @@ export function ApprovalsTab({ planId, planStatus }: Props) {
               <CardContent className="py-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <Avatar src={a.approver?.avatar_url || undefined} name={a.approver?.full_name || ''} size="medium" />
+                    <Avatar src={resolveAvatarUrl(a.approver?.full_name) ?? a.approver?.avatar_url ?? undefined} name={a.approver?.full_name || ''} size="medium" />
                     <div>
                       <p className="font-medium">{a.approver?.full_name}</p>
                       <p className="text-sm text-muted-foreground">Requested {format(new Date(a.requested_at), 'MMM d, yyyy')}</p>

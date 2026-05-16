@@ -178,7 +178,6 @@ function DragHandleCell({ row }: { row: BacklogItem }) {
           height: 16,
           cursor: listeners ? 'grabbing' : 'grab',
           color: token('color.icon.subtle', '#626F86'),
-          visibility: 'hidden', /* JiraTable.tsx tr:hover CSS shows it */
         }}
       >
         {/* 6-dot grip — no ADS equivalent; inline SVG */}
@@ -314,6 +313,12 @@ const STATUS_OPTIONS: StatusOption[] = [
   // Blocked / On Hold: Jira BAU DOM probe 2026-05-08 = grey (To Do category, rgb(221,222,225))
   { value: 'Blocked', label: 'Blocked', appearance: 'default', group: 'To Do' },
   { value: 'On Hold', label: 'On Hold', appearance: 'default', group: 'To Do' },
+  // Jira DOM probe 2026-05-16: Rejected = Done category (green), not grey.
+  { value: 'Rejected', label: 'Rejected', appearance: 'success', group: 'Done' },
+  { value: 'Cancelled', label: 'Cancelled', appearance: 'default', group: 'To Do' },
+  { value: 'Closed', label: 'Closed', appearance: 'success', group: 'Done' },
+  { value: 'In Review', label: 'In Review', appearance: 'inprogress', group: 'In Progress' },
+  { value: 'Ready to Implement', label: 'Ready to Implement', appearance: 'default', group: 'To Do' },
 ];
 // All distinct status values used in BAU — drives the status inline-edit dropdown.
 const ALL_BACKLOG_STATUSES = [
@@ -702,6 +707,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   const [showHierarchy, setShowHierarchy] = useState<boolean>(true);
   const [density, setDensity] = useState<'compact' | 'comfortable'>('compact');
   const [columnOrder, setColumnOrder] = useState<string[] | null>(null);
+  // Column width persistence — survives page reload (Jira saves widths per project).
+  const COL_WIDTHS_KEY = `ph-backlog-col-widths-v1:${projectKey}`;
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
+    try { const r = localStorage.getItem(COL_WIDTHS_KEY); return r ? JSON.parse(r) : {}; } catch { return {}; }
+  });
 
   // Apr 27 2026 (jira-compare regression iter 3 — Add people modal).
   // Catalyst's Add people CTA in the chrome band opens this modal,
@@ -1417,7 +1427,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         labelNode = <StatusPill appearance={appearance as LozengeAppearance}>{label}</StatusPill>;
       } else if (groupBy === 'assignee') {
         const isUnassigned = !sample.assignee_name;
-        const avatarUrl = sample.assignee_name ? avatarsByName?.get(sample.assignee_name) : null;
+        const avatarUrl = sample.assignee_name ? (resolveAvatarUrl(sample.assignee_name) ?? avatarsByName?.get(sample.assignee_name)) : null;
         labelNode = (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
             <Avatar size="small" name={k} src={avatarUrl || undefined} appearance={isUnassigned ? 'square' : 'circle'} />
@@ -1553,7 +1563,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         m.set(it.assignee_name, {
           id: it.assignee_name,
           name: it.assignee_name,
-          avatarUrl: avatarsByName.get(it.assignee_name.toLowerCase()) ?? null,
+          avatarUrl: resolveAvatarUrl(it.assignee_name) ?? avatarsByName.get(it.assignee_name.toLowerCase()) ?? null,
         });
       }
     });
@@ -1571,7 +1581,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         m.set(it.reporter_name, {
           id: it.reporter_name,
           name: it.reporter_name,
-          avatarUrl: avatarsByName.get(it.reporter_name.toLowerCase()) ?? null,
+          avatarUrl: resolveAvatarUrl(it.reporter_name) ?? avatarsByName.get(it.reporter_name.toLowerCase()) ?? null,
         });
       }
     });
@@ -1774,9 +1784,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // width:8 (96px): Type is the first data column — JiraTable prepends a
       // 28px chevron placeholder to its header. At width:6 (72px), content
       // area is only 48px; 28+30px "Type" text = 58px → clips to "Ty".
-      // width:8 → 96px → 72px content → 72-28=44px for label (fits ~30px) ✓
+      // 2026-05-16: reduced to width:4 (48px). Type col only contains a 16px icon;
+      // Jira packs icon directly in the Work merged cell. 48px is sufficient.
       label: 'Type',
-      width: 8,
+      width: 4,
       align: 'center',
       alwaysVisible: true,
       cell: ({ row: it }) => {
@@ -1891,9 +1902,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'status',
       label: 'Status',
-      // width:20 = 240px — fits "READY FOR PRODUCTION" (longest BAU status) without truncation.
-      // Prior H8 "fix" to 9 (108px) was wrong — status text clips badly at that width.
-      width: 20,
+      // 2026-05-16: Jira DOM probe = 180px. width:15 = 180px.
+      // Prior width:20 (240px) was too wide. Status pill wraps at all widths so 180px works.
+      width: 15,
       sortable: true,
       defaultVisible: true,
       // B.4 verdict: @atlaskit/popup portal mounts on this surface but
@@ -1941,9 +1952,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'parent',
       label: 'Parent',
-      // width:22 = 264px — fits "BAU-#### Epic name" without heavy truncation.
-      // Prior H8 "fix" to 10 (120px) made parent labels truncate after 1-2 words.
-      width: 22,
+      // 2026-05-16: Jira DOM probe = 129px. width:11 ≈ 132px matches.
+      // Prior width:22 (264px) was double Jira's actual column width.
+      width: 11,
       sortable: true,
       defaultVisible: true,
       cell: makeParentEditCell<BacklogItem>({
@@ -1980,7 +1991,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       defaultVisible: true,
       cell: makeAssigneeEditCell<BacklogItem>({
         getAssignee: (r) => r.assignee_name
-          ? { id: r.assignee_name, name: r.assignee_name, avatarUrl: avatarsByName.get(r.assignee_name.toLowerCase()) ?? null }
+          ? { id: r.assignee_name, name: r.assignee_name, avatarUrl: resolveAvatarUrl(r.assignee_name) ?? avatarsByName.get(r.assignee_name.toLowerCase()) ?? null }
           : null,
         options: assigneeOptions.map<AssigneeChoice>((a) => ({ id: a.id, name: a.name, avatarUrl: a.avatarUrl ?? null })),
         onChange: (row, next) => updateField.mutate({
@@ -2056,7 +2067,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'fix_versions',
       label: 'Fix versions',
-      width: 10,
+      // 2026-05-16: Jira DOM probe = 220px. width:18 = 216px (≈220px).
+      // Prior width:10 (120px) clipped version names badly.
+      width: 18,
       sortable: false,
       defaultVisible: true,
       accessor: (r: BacklogItem) => (r.fix_versions || []).join(', '),
@@ -2093,7 +2106,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       accessor: (r: BacklogItem) => r.reporter_name || '',
       cell: makeAssigneeCell((r: BacklogItem) =>
         r.reporter_name
-          ? { name: r.reporter_name, avatarUrl: avatarsByName.get(r.reporter_name.toLowerCase()) ?? null }
+          ? { name: r.reporter_name, avatarUrl: resolveAvatarUrl(r.reporter_name) ?? avatarsByName.get(r.reporter_name.toLowerCase()) ?? null }
           : null,
       ),
     },
@@ -3134,6 +3147,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             enableColumnReorder
             columnOrder={columnOrder ?? undefined}
             onColumnOrderChange={(next) => setColumnOrder(next)}
+            initialColumnWidths={columnWidths}
+            onColumnWidthsChange={(widths) => {
+              setColumnWidths(widths);
+              try { localStorage.setItem(COL_WIDTHS_KEY, JSON.stringify(widths)); } catch { /* quota */ }
+            }}
             ariaLabel="Unified backlog"
             emptyView={
               /* Tailwind base CSS zeroes margins on h2/p so @atlaskit/empty-state

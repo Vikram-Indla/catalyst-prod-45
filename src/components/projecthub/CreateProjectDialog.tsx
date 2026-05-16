@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Avatar } from '@/components/ads';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface Props {
@@ -278,7 +279,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
                   {selectedLead ? (
                     <span className="flex items-center gap-2 min-w-0">
                       <span className="flex-shrink-0">
-                        <Avatar src={selectedLead.avatar_url || undefined} name={selectedLead.display_name || '??'} size="xxsmall" />
+                        <Avatar src={resolveAvatarUrl(selectedLead.display_name) ?? selectedLead.avatar_url ?? undefined} name={selectedLead.display_name || '??'} size="xxsmall" />
                       </span>
                       <span className="truncate text-[13px]">{selectedLead.display_name}</span>
                     </span>
@@ -311,7 +312,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
                       className="flex items-center gap-2 px-2.5 py-2 rounded-md text-sm hover:bg-slate-50 dark:hover:bg-slate-800 w-full text-left"
                       style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
                     >
-                      <Avatar src={p.avatar_url || undefined} name={p.display_name || '??'} size="xsmall" />
+                      <Avatar src={resolveAvatarUrl(p.display_name) ?? p.avatar_url ?? undefined} name={p.display_name || '??'} size="xsmall" />
                       <div className="min-w-0">
                         <div className="text-[13px] font-medium truncate" style={{ color: textPrimary }}>{p.display_name}</div>
                         <div className="text-[11px] truncate" style={{ color: textMuted }}>{p.role || 'Team Member'}</div>

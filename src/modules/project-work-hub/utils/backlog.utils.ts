@@ -167,14 +167,17 @@ export const STORY_STATUS_LOZENGE: Record<string, LozengeConfig> = {
   'READY FOR PRODUCTION':   { color: 'success',    label: 'READY FOR PRODUCTION' },
   'In Review':              { color: 'inprogress', label: 'IN REVIEW' },
   'IN REVIEW':              { color: 'inprogress', label: 'IN REVIEW' },
-  'Cancelled':              { color: 'removed',    label: 'CANCELLED' },
-  'CANCELLED':              { color: 'removed',    label: 'CANCELLED' },
+  // Jira DOM probe 2026-05-16: Cancelled → grey (todo/default), Rejected → green (done category).
+  'Cancelled':              { color: 'default',    label: 'CANCELLED' },
+  'CANCELLED':              { color: 'default',    label: 'CANCELLED' },
+  'Rejected':               { color: 'success',    label: 'REJECTED' },
+  'REJECTED':               { color: 'success',    label: 'REJECTED' },
   // Legacy native statuses (fallback)
   'open':          { color: 'default',    label: 'OPEN' },
   'in_progress':   { color: 'inprogress', label: 'IN PROGRESS' },
   'in_review':     { color: 'inprogress', label: 'IN REVIEW' },
   'done':          { color: 'success',    label: 'DONE' },
-  'cancelled':     { color: 'removed',    label: 'CANCELLED' },
+  'cancelled':     { color: 'default',    label: 'CANCELLED' },
 };
 
 // ─── GROUP ORDER ──────────────────────────────────

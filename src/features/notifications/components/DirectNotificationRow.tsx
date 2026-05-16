@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import type React from 'react';
 import Avatar from '@atlaskit/avatar';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import type { DirectNotification } from '../types';
@@ -65,7 +66,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
   }, [notification.id, onMarkRead]);
 
   // Build avatar src — prefer real avatar_url, fall back to undefined (shows initials)
-  const avatarSrc = notification.actor?.avatarUrl ?? undefined;
+  const avatarSrc = resolveAvatarUrl(actorName) ?? notification.actor?.avatarUrl ?? undefined;
 
   return (
     <button
@@ -398,7 +399,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
         {/* Aggregation row (multiple updates from same person) */}
         {aggregation && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6 }}>
-            <Avatar name={aggregation.actor.displayName} size="xsmall" appearance="circle" src={aggregation.actor.avatarUrl ?? undefined} />
+            <Avatar name={aggregation.actor.displayName} size="xsmall" appearance="circle" src={resolveAvatarUrl(aggregation.actor.displayName) ?? aggregation.actor.avatarUrl ?? undefined} />
             <span
               style={{
                 fontFamily: 'var(--cp-font-body)',

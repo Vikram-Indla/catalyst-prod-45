@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -103,7 +104,7 @@ function SignoffRow({
   return (
     <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
       <div className="flex items-center gap-3">
-        <Avatar name={signoff.stakeholderName} size="small" />
+        <Avatar src={resolveAvatarUrl(signoff.stakeholderName) ?? undefined} name={signoff.stakeholderName} size="small" />
         <div>
           <div className="flex items-center gap-2">
             <span className="font-medium text-sm">{signoff.stakeholderName}</span>

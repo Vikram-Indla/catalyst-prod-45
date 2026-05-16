@@ -788,35 +788,28 @@ export function CatalystSidebarDetails({
       </div>
 
       {/* ── Timestamps (canonical) ──────────────────────────────────────
-          jira-compare 2026-05-08: live DOM re-probe of Jira BAU-5737:
-            "Created" label — 14px/500/rgb(80,82,88) = #505258
-            date value      — 12px/400/rgb(80,82,88)
+          jira-compare 2026-05-16 re-probe of Jira BAU-1919 (TreeWalker):
+            Container  — 14px/400/rgb(41,42,46)
+            Label SMALL — 12px/400/rgb(80,82,88) inline before date
+            Date text   — inherits 14px from container, rgb(41,42,46)
+            No relative time ("days ago") — Jira does not render this.
+          Each timestamp is a single line: "<small>Created</small> May 14, 2026 at 4:21 PM"
           Configure CTA removed — Catalyst-specific affordance not present in
           Jira's right panel. See CatalystConfigureDrawer for the component if
           re-enabling later. */}
       <div style={{ marginTop: 'auto', padding: '12px 0 0' }}>
         {issue?.jira_created_at && (
-          <div style={{ marginBottom: 8 }}>
-            <div style={{ fontSize: 14, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text-subtle, #505258)' }}>
-              Created
-            </div>
-            <div style={{ fontSize: 12, fontWeight: 400, lineHeight: '16px', color: 'var(--ds-text-subtle, #505258)' }}
-              title={issue.jira_created_at}>
-              {fmtJiraDate(issue.jira_created_at)}
-              <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}> · {fmtRelative(issue.jira_created_at)}</span>
-            </div>
+          <div style={{ marginBottom: 6, fontSize: 14, fontWeight: 400, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}
+            title={issue.jira_created_at}>
+            <small style={{ fontSize: 12, fontWeight: 400, color: 'var(--ds-text-subtle, #505258)', marginRight: 4 }}>Created</small>
+            {fmtJiraDate(issue.jira_created_at)}
           </div>
         )}
         {issue?.jira_updated_at && (
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text-subtle, #505258)' }}>
-              Updated
-            </div>
-            <div style={{ fontSize: 12, fontWeight: 400, lineHeight: '16px', color: 'var(--ds-text-subtle, #505258)' }}
-              title={issue.jira_updated_at}>
-              {fmtJiraDate(issue.jira_updated_at)}
-              <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}> · {fmtRelative(issue.jira_updated_at)}</span>
-            </div>
+          <div style={{ fontSize: 14, fontWeight: 400, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}
+            title={issue.jira_updated_at}>
+            <small style={{ fontSize: 12, fontWeight: 400, color: 'var(--ds-text-subtle, #505258)', marginRight: 4 }}>Updated</small>
+            {fmtJiraDate(issue.jira_updated_at)}
           </div>
         )}
       </div>

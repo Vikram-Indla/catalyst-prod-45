@@ -7,6 +7,7 @@
  */
 import React from 'react';
 import Avatar from '@atlaskit/avatar';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { AssigneePopover } from '../popovers/AssigneePopover';
 
 interface AssigneeCellProps {
@@ -47,7 +48,7 @@ export const AssigneeCell = React.memo(function AssigneeCell({
         <Avatar
           size="small"
           name={displayName}
-          src={avatarUrl ?? undefined}
+          src={resolveAvatarUrl(displayName) ?? avatarUrl ?? undefined}
           borderColor="transparent"
         />
       ) : (

@@ -160,6 +160,7 @@ export function ImproveIssueDropdown({
             color: 'var(--ds-text, #292A2E)',
             cursor: 'pointer', fontSize: 14, fontWeight: 500,
             fontFamily: 'inherit',
+            whiteSpace: 'nowrap',
             transition: 'background 0.15s',
           }}
           onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)'; }}

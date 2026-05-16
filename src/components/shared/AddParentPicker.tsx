@@ -304,7 +304,7 @@ export function AddParentPicker({
     }
 
     // Breadcrumb variant — parent present: matches Jira breadcrumb link style
-    // (14px/400/rgb(80,82,88), 2px 4px padding, 3px radius, no border, no monospace)
+    // jira-compare 2026-05-16 corrected: Jira breadcrumb items are 14px/400/rgb(80,82,88)
     if (parentKey) {
       return (
         <button
@@ -325,9 +325,7 @@ export function AddParentPicker({
       );
     }
     // Jira-parity "Add parent" trigger — plain text, matches breadcrumb link style.
-    // Jira Cloud renders this as a bare text link (14px/400/rgb(80,82,88))
-    // with 2px 0px padding — identical to other breadcrumb anchor items.
-    // Hover reveals a light background; focus stays within the breadcrumb visual language.
+    // jira-compare 2026-05-16 corrected: 14px/400/rgb(80,82,88) — Jira breadcrumbs are 14px.
     return (
       <button
         className="awAddParentLink"

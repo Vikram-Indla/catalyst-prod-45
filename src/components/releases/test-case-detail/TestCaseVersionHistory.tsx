@@ -14,6 +14,7 @@ import {
 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge, Avatar, Tooltip } from '@/components/ads';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -145,7 +146,7 @@ export function TestCaseVersionHistory({ testCaseId: propTestCaseId, currentVers
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <Avatar src={version.changed_by_profile?.avatar_url} name={authorName} size="xxsmall" />
+                    <Avatar src={resolveAvatarUrl(authorName) ?? version.changed_by_profile?.avatar_url} name={authorName} size="xxsmall" />
                     <span className="text-sm font-medium">{authorName}</span>
                     <span className="text-xs text-muted-foreground flex items-center gap-1">
                       <Clock className="w-3 h-3" />

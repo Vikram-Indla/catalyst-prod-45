@@ -191,7 +191,7 @@ export function TicketBreadcrumbs({
         .tk-breadcrumbs li > span {
           font-size: 14px;
           font-weight: 400;
-          color: var(--ds-text-subtle, #42526E);
+          color: var(--ds-text-subtle, #505258);
         }
         .tk-breadcrumbs a,
         .tk-breadcrumbs button,
@@ -202,19 +202,16 @@ export function TicketBreadcrumbs({
           font-family: var(--cp-font-body);
           font-size: 14px;
           font-weight: 400;
-          color: var(--ds-text-subtle, #42526E);
+          color: var(--ds-text-subtle, #505258);
           line-height: 20px;
           padding: 2px 4px;
           border-radius: 3px;
         }
-        /* jira-compare 2026-05-16: Jira project name crumb is a blue link
-           (rgb(24,104,219) = #1868DB). Only <a> tags get link colour;
-           buttons/spans (Add parent, issue key) stay subtle grey. */
-        .tk-breadcrumbs a {
-          color: var(--ds-link, #1868DB);
-        }
+        /* jira-compare 2026-05-16 re-probe (corrected): Jira breadcrumb items
+           are 14px/400/rgb(80,82,88) — grey at rest for ALL items including
+           anchor links. No blue link colour at rest (muted text is Jira UX). */
         .tk-breadcrumbs a:hover {
-          color: var(--ds-link-pressed, #0055CC);
+          color: var(--ds-link, #1868DB);
           text-decoration: underline;
         }
         .tk-breadcrumbs button {

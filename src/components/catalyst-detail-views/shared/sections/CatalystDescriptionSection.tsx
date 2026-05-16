@@ -189,6 +189,15 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
     .atlaskit-renderer-wrapper img {
       border-radius: 0 !important;
     }
+    /* 2026-05-16: Atlaskit renderer injects padding-left ~32px on its inner
+       document div (.ak-renderer-document). This pushes body text 32px right
+       of the "Description" h2 header (probed: header x=24, body x=56, delta=32).
+       Zero it out so description body aligns with the section heading. */
+    .atlaskit-renderer-wrapper [class*="ak-renderer-document"],
+    .atlaskit-renderer-wrapper > div:first-child {
+      padding-left: 0 !important;
+      margin-left: 0 !important;
+    }
     .cv-desc-body a, .adf-description-content a { color: #0052CC; text-decoration: none; }
     .cv-desc-body a:hover, .adf-description-content a:hover { text-decoration: underline; }
     .cv-desc-body hr, .adf-description-content hr { border: none; border-top: 1px solid var(--ds-border, #DFE1E6); margin: 16px 0; }

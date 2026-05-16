@@ -77,7 +77,7 @@ function ActivityPanel({
     { key: 'all', label: 'All' },
     { key: 'comments', label: 'Comments' },
     { key: 'history', label: 'History' },
-    { key: 'worklog', label: 'Worklog' },
+    { key: 'worklog', label: 'Work log' },
   ];
 
   const mergedAll = useMemo(() => {
@@ -125,8 +125,12 @@ function ActivityPanel({
               className={cn(
                 'px-3 py-1.5 rounded text-[13px] font-medium transition-colors duration-150',
                 activeTab === tab.key
-                  ? 'bg-[#E9F2FE] text-[#1868DB] dark:bg-[#1C3A5C] dark:text-[#4C9AFF]'
-                  : 'text-[var(--ds-text-subtlest,#6B778C)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
+                  /* jira-compare 2026-05-16: selected tab — bg rgb(233,242,254), color rgb(24,104,219),
+                     border-bottom 0.556px solid rgb(24,104,219) per TreeWalker probe on Jira BAU-1919. */
+                  ? 'bg-[#E9F2FE] text-[#1868DB] border-b border-[#1868DB] dark:bg-[#1C3A5C] dark:text-[#4C9AFF] dark:border-[#4C9AFF]'
+                  /* jira-compare 2026-05-16: unselected tabs use rgb(80,82,88) = --ds-text-subtle,
+                     NOT rgb(107,110,118) = --ds-text-subtlest. */
+                  : 'text-[var(--ds-text-subtle,#505258)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
               )}
             >
               {tab.label}

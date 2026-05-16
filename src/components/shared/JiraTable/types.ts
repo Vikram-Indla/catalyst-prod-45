@@ -236,6 +236,19 @@ export interface JiraTableProps<TRow> {
   }>;
 
   /**
+   * Seed JiraTable's internal column-width state on mount. Keys are column ids,
+   * values are pixel widths. Merged with natural widths — user override wins.
+   * Use with `onColumnWidthsChange` for localStorage persistence.
+   */
+  initialColumnWidths?: Record<string, number>;
+  /**
+   * Called whenever the user finishes resizing a column (on mouseup).
+   * Receives the full map of all user-overridden column widths.
+   * Use this to persist to localStorage or URL params.
+   */
+  onColumnWidthsChange?: (widths: Record<string, number>) => void;
+
+  /**
    * Enable column reorder via drag-and-drop on header cells. When `true`,
    * non-structural columns (id NOT starting with `__`) gain a grab cursor on
    * their header and can be dragged to a new position. Order is held in

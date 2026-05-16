@@ -19,14 +19,12 @@ import { resolveAvatarUrl } from '@/lib/avatars';
 interface ProfileIdentityRow {
   id: string;
   full_name: string | null;
+  avatar_url: string | null;
 }
 
 /**
- * Returns `Map<profileId, localAvatarUrl>` for any profile whose name
- * resolves to a local avatar asset. Profiles without a local match are
- * omitted — caller falls back to `CircleUser` / initials as before.
- *
- * §19: no `avatar_url` column selected; all URLs come from resolveAvatarUrl.
+ * Returns `Map<profileId, avatarUrl>`.
+ * Priority: local hashed asset → profiles.avatar_url (Jira CDN / Supabase storage).
  */
 export function useProfileAvatars() {
   const { data: avatarMap = new Map<string, string>() } = useQuery({
@@ -34,25 +32,26 @@ export function useProfileAvatars() {
     queryFn: async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('id, full_name')
+        .select('id, full_name, avatar_url')
         .not('full_name', 'is', null);
 
       const map = new Map<string, string>();
       (data as ProfileIdentityRow[] || []).forEach((p) => {
         if (!p.full_name) return;
-        const url = resolveAvatarUrl(p.full_name);
+        const url = resolveAvatarUrl(p.full_name) ?? p.avatar_url ?? null;
         if (url) map.set(p.id, url);
       });
       return map;
     },
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
   return avatarMap;
 }
 
 /**
- * Returns `Map<lowercaseName, localAvatarUrl>`. Same chokepoint as above.
+ * Returns `Map<lowercaseName, avatarUrl>`.
+ * Priority: local hashed asset → profiles.avatar_url (Jira CDN / Supabase storage).
  */
 export function useProfileAvatarsByName() {
   const { data: avatarMap = new Map<string, string>() } = useQuery({
@@ -60,13 +59,13 @@ export function useProfileAvatarsByName() {
     queryFn: async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('id, full_name')
+        .select('id, full_name, avatar_url')
         .not('full_name', 'is', null);
 
       const map = new Map<string, string>();
       (data as ProfileIdentityRow[] || []).forEach((p) => {
         if (!p.full_name) return;
-        const url = resolveAvatarUrl(p.full_name);
+        const url = resolveAvatarUrl(p.full_name) ?? p.avatar_url ?? null;
         if (url) map.set(p.full_name.toLowerCase(), url);
       });
       return map;

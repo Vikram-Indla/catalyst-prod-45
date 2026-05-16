@@ -74,14 +74,13 @@ const DENSITY = {
     avatarSize: 'medium' as const, // 32px
   },
   compact: {
-    // Measured from Jira's BAU list DOM 2026-05-08:
-    //   summary cell color #292A2E, font-size 14px, weight 400, row-height 48px.
-    // Our previous 13px read "washed out" compared to Jira at 14px — the
-    // difference is small on screen but meaningful for body-text density.
+    // Jira BAU list DOM probe 2026-05-16: tr height = 40px (not 48px).
+    // 48px was comfortable density leaking into compact. Jira's compact
+    // row uses 40px height with 8px top+bottom padding on each td.
     cellFontSize: 14,
     headerFontSize: 12,
-    rowHeight: 48,
-    cellPaddingY: 8,
+    rowHeight: 40,
+    cellPaddingY: 6,
     cellPaddingX: 12,
     headerPaddingY: 8,
     avatarSize: 'small' as const, // 24px
@@ -155,6 +154,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     onColumnOrderChange,
     enableVirtualization = false,
     stickyCreateFooter,
+    initialColumnWidths,
+    onColumnWidthsChange,
   } = props;
 
   // Right-click context menu state — one menu at a time, anchored to cursor.
@@ -271,15 +272,19 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
 
   // ── Column sizing ──────────────────────────────────────────────────────
   // Round H: user-resizable columns. Width storage is pixel-based per column
-  // id. Initial widths come from the schema (column.width is a fraction out
-  // of 100; we map that to pixels using the table's measured width so the
-  // initial layout matches the old DynamicTable sizing).
-  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
+  // id. Seeded from `initialColumnWidths` prop for localStorage persistence;
+  // falls back to schema fractions (column.width × 12) when absent.
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(
+    () => initialColumnWidths ?? {},
+  );
   const [resizing, setResizing] = useState<{
     id: string;
     startX: number;
     startWidth: number;
   } | null>(null);
+
+  const onColumnWidthsChangeRef = useRef(onColumnWidthsChange);
+  useEffect(() => { onColumnWidthsChangeRef.current = onColumnWidthsChange; }, [onColumnWidthsChange]);
 
   useEffect(() => {
     if (!resizing) return;
@@ -287,7 +292,14 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       const next = Math.max(48, resizing.startWidth + (e.clientX - resizing.startX));
       setColumnWidths((prev) => ({ ...prev, [resizing.id]: next }));
     };
-    const onUp = () => setResizing(null);
+    const onUp = () => {
+      setResizing(null);
+      // Notify parent after drag completes so it can persist to localStorage.
+      setColumnWidths((prev) => {
+        onColumnWidthsChangeRef.current?.(prev);
+        return prev;
+      });
+    };
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
     document.body.style.userSelect = 'none';
@@ -463,8 +475,9 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       /* Row hover. Apr 28, 2026 (jira-compare cycle 4): tokenized — was
          hardcoded #FAFBFC. --ds-background-neutral-subtle-hovered is the
          exact Atlaskit hover bg (rgba(9,30,66,0.06) in light theme). */
+      /* Jira DOM probe 2026-05-16: row hover bg = rgba(9,30,66,0.06) ≈ #F1F2F4 */
       .jira-table-grid table tbody > tr:hover > td {
-        background-color: var(--ds-background-neutral-subtle-hovered, #FAFBFC);
+        background-color: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
       }
       /* Whole-cell hover tint: when an editor trigger inside a cell is hovered
          OR opened, tint the entire <td> so the affordance reads as
@@ -516,8 +529,9 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       }
       /* Drag handle: hidden by default, visible on row hover.
          Jira shows 6-dot affordance only when there is no active sort
-         AND no grouping. CSS gate is temporary placeholder; Phase 4 adds
-         conditional isDragEnabled() logic to hide based on sortKey/groupBy state. */
+         AND no grouping. Using CSS (not inline style) so the hover rule
+         can actually override it — inline styles block CSS hover overrides. */
+      .jira-table-grid .jira-drag-handle { visibility: hidden; }
       .jira-table-grid table tbody > tr:hover .jira-drag-handle {
         visibility: visible;
       }
@@ -626,9 +640,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       /* 2026-05-10 Jira-parity: row body is the click target for opening
          the detail panel. cursor: pointer signals clickability. Inline
          editor cells override with their own cursors (text/pointer).
-         May 12 2026 (design-critique): added min-height 48px for Jira
-         density parity (was 40px). */
-      .jira-table-grid tbody tr:not(.jira-table-group-row) { cursor: pointer; min-height: 48px; }
+         2026-05-16: reverted to 40px (Jira compact DOM probe = 40px). */
+      .jira-table-grid tbody tr:not(.jira-table-group-row) { cursor: pointer; min-height: 40px; }
       /* 2026-05-10 Per-column filter chevron — hover-reveal on header.
          Active-filter state keeps chevron visible (opacity:1 inline). */
       .jira-table-grid thead th:hover .jira-filter-chevron { opacity: 1 !important; }
@@ -636,7 +649,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid tbody td {
         padding: 0 12px;
         vertical-align: middle;
-        min-height: 48px;
+        min-height: 40px;
         /* Phase 12 (2026-04-29): reverted to Atlaskit elevation.surface
            token via --ds-surface CSS variable. Phase 11 unblocked Atlaskit's
            bundled dark theme so --ds-surface flips natively. */
@@ -804,6 +817,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         background-color: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.04)) !important;
       }
       /* Drag-handle grip — hidden at rest, visible on row hover */
+      .jira-table-grid .jira-drag-handle { visibility: hidden; }
       .jira-table-grid table tbody > tr:hover .jira-drag-handle {
         visibility: visible;
       }
@@ -1016,13 +1030,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         const accessor = col.accessor ?? ((r: TRow) => (r as any)[col.id]);
         const value = accessor(row);
 
-        // The first column that's NOT a checkbox/caret/icon-only marker gets
-        // the depth indent. We treat any column whose id starts with `__` as
-        // structural and skip it — except for `__caret`, which is the natural
-        // anchor for the indent (so the caret column still renders to the
-        // RIGHT of the indent margin and lines up correctly on the second
-        // hierarchy level).
-        if (firstDataColIdx === -1 && col.id !== '__select') {
+        // The first non-structural column gets the expand chevron slot.
+        // Skip ALL __ prefix columns (drag, checkbox, select, actions) —
+        // the chevron goes into the first visible user-data column (e.g. type).
+        if (firstDataColIdx === -1 && !col.id.startsWith('__')) {
           firstDataColIdx = colIdx;
         }
         const isFirstDataCol = colIdx === firstDataColIdx;
@@ -1107,6 +1118,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     </button>
                   );
                 }
+                // Only render the empty slot when the hierarchy feature is active
+                // (getRowHasChildren is provided). Leaf rows in a flat list skip
+                // the slot entirely so the type icon starts at the cell edge.
+                if (!getRowHasChildren) return null;
                 return (
                   <span
                     aria-hidden="true"

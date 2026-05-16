@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Avatar } from '@/components/ads';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { X, Save, FileText, Layers, User, FolderTree, Loader2 } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -491,7 +492,7 @@ export function CreateFeatureModal({
                   <SelectValue placeholder={usersLoading ? "Loading..." : "Select assignee"}>
                     {selectedAssignee && (
                       <div className="flex items-center gap-2">
-                        <Avatar src={selectedAssignee.avatar_url || undefined} name={selectedAssignee.full_name || ''} size="xxsmall" />
+                        <Avatar src={resolveAvatarUrl(selectedAssignee.full_name) ?? selectedAssignee.avatar_url ?? undefined} name={selectedAssignee.full_name || ''} size="xxsmall" />
                         <span>{selectedAssignee.full_name}</span>
                       </div>
                     )}
@@ -505,7 +506,7 @@ export function CreateFeatureModal({
                       className="cursor-pointer hover:bg-muted focus:bg-muted"
                     >
                       <div className="flex items-center gap-2">
-                        <Avatar src={user.avatar_url || undefined} name={user.full_name || ''} size="xxsmall" />
+                        <Avatar src={resolveAvatarUrl(user.full_name) ?? user.avatar_url ?? undefined} name={user.full_name || ''} size="xxsmall" />
                         <span>{user.full_name}</span>
                       </div>
                     </SelectItem>
