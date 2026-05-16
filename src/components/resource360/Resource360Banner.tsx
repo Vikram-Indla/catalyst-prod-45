@@ -47,6 +47,31 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
   const avgAge = ages.length > 0 ? Math.round(ages.reduce((a, b) => a + b, 0) / ages.length) : 0;
   const staleCount = ages.filter(a => a > 14).length;
 
+  // Release stats chips — group active (non-done) items by release name,
+  // show top-3 by item count with days-until-end affordance.
+  const releaseMap = new Map<string, { count: number; endDate: string | null }>();
+  for (const item of items) {
+    const rn = item.release_name as string | undefined;
+    const cat = (item.status_category || '').toLowerCase();
+    const isDone = cat.includes('done') || cat.includes('closed') || cat.includes('resolved') || cat.includes('complete');
+    if (!isDone && rn) {
+      const existing = releaseMap.get(rn) ?? { count: 0, endDate: (item.release_end_date as string | null) ?? null };
+      existing.count++;
+      releaseMap.set(rn, existing);
+    }
+  }
+  const releaseChips = Array.from(releaseMap.entries())
+    .sort((a, b) => b[1].count - a[1].count)
+    .slice(0, 3)
+    .map(([name, info]) => {
+      let daysLabel: string | null = null;
+      if (info.endDate) {
+        const diff = Math.ceil((new Date(info.endDate).getTime() - Date.now()) / 86_400_000);
+        daysLabel = diff > 0 ? `${diff}d` : diff === 0 ? 'Today' : `${Math.abs(diff)}d ago`;
+      }
+      return { name, count: info.count, daysLabel, overdue: info.endDate ? new Date(info.endDate) < new Date() : false };
+    });
+
   const kpis = [
     { label: 'TOTAL', value: String(totalCount), color: 'var(--fg-1)', bg: 'var(--bg-app)' },
     { label: 'CLOSURE', value: `${closurePct}%`, color: 'var(--sem-success)', bg: 'var(--cp-success-light, #F0FDF4)' },
@@ -78,8 +103,8 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
         }}>{initials}</span>
       </div>
 
-      {/* Name + subtitle */}
-      <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      {/* Name + subtitle + release chips */}
+      <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, gap: 4 }}>
         <span style={{
           fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 800,
           color: 'var(--fg-1)', lineHeight: 1.2,
@@ -87,6 +112,36 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
         <span style={{ fontSize: 13, color: 'var(--fg-3)', lineHeight: 1.3, fontWeight: 500 }}>
           {summary.role}{summary.department ? ` · ${summary.department}` : ''}
         </span>
+        {releaseChips.length > 0 && (
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 2 }}>
+            {releaseChips.map(chip => (
+              <span
+                key={chip.name}
+                title={`${chip.name} · ${chip.count} active item${chip.count === 1 ? '' : 's'}${chip.daysLabel ? ` · ${chip.daysLabel}` : ''}`}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 5,
+                  padding: '2px 8px', borderRadius: 12,
+                  background: chip.overdue ? 'var(--cp-danger-light, #FEF2F2)' : 'var(--ds-background-selected, #EFF6FF)',
+                  border: `1px solid ${chip.overdue ? 'var(--sem-danger, #EF4444)' : 'var(--ds-border-selected, #B3D4FF)'}`,
+                  fontSize: 11, fontWeight: 600,
+                  color: chip.overdue ? 'var(--sem-danger, #B91C1C)' : 'var(--ds-text-brand, #1D4ED8)',
+                  fontFamily: 'var(--cp-font-body)',
+                  whiteSpace: 'nowrap', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis',
+                  cursor: 'default',
+                }}
+              >
+                <span style={{ maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis' }}>{chip.name}</span>
+                <span style={{
+                  background: chip.overdue ? 'var(--sem-danger, #EF4444)' : 'var(--ds-text-brand, #2563EB)',
+                  color: '#fff', borderRadius: 8, padding: '0 5px', fontSize: 10, fontWeight: 700,
+                }}>{chip.count}</span>
+                {chip.daysLabel && (
+                  <span style={{ opacity: 0.75, fontSize: 10 }}>{chip.daysLabel}</span>
+                )}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* KPI cards */}

@@ -172,9 +172,19 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
         .eq('user_id', user.id)
         .neq('entity_type', 'subtask')
         .order('visited_at', { ascending: false })
-        .limit(15);
+        .limit(75);
       if (error) { console.warn('global recents error:', error.message); return []; }
-      return data ?? [];
+      // Deduplicate by nav_path — rows are newest-first so first occurrence = most recent visit.
+      const seen = new Set<string>();
+      const deduped: typeof data = [];
+      for (const item of data ?? []) {
+        if (!seen.has(item.nav_path)) {
+          seen.add(item.nav_path);
+          deduped.push(item);
+          if (deduped.length === 15) break;
+        }
+      }
+      return deduped;
     },
     staleTime: 30_000,
   });

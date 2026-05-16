@@ -79,6 +79,7 @@ export interface WorkItem {
   parentKey?: string;
   parentSummary?: string;
   attachmentCount?: number;
+  statusCategory?: string;
 }
 
 export interface RecommendedMention {
@@ -422,6 +423,7 @@ function mapIssueToWorkItem(
     hubLabel: HUB_LABEL_MAP[hub],
     issueType,
     status: row.status || 'To Do',
+    statusCategory: row.status_category || undefined,
     priority,
     priorityLevel: priorityToLevel(priority),
     sprint: row.sprint_name || undefined,

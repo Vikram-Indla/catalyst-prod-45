@@ -22,19 +22,32 @@ export function useRecentProjectItems(projectId: string | undefined) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
+      // Fetch more than needed so deduplication by nav_path still yields 8 unique entries.
       const { data, error } = await supabase
         .from('user_recent_items')
         .select('id, entity_type, entity_id, entity_key, display_summary, nav_path, visited_at, visit_count')
         .eq('user_id', user.id)
         .eq('project_id', projectId)
         .order('visited_at', { ascending: false })
-        .limit(8);
+        .limit(40);
 
       if (error) {
         console.warn('useRecentProjectItems error:', error.message);
         return [];
       }
-      return (data ?? []) as RecentProjectItem[];
+
+      // Deduplicate by nav_path — rows are ordered newest-first so the first
+      // occurrence of each path is the most recent visit.
+      const seen = new Set<string>();
+      const deduped: RecentProjectItem[] = [];
+      for (const item of (data ?? []) as RecentProjectItem[]) {
+        if (!seen.has(item.nav_path)) {
+          seen.add(item.nav_path);
+          deduped.push(item);
+          if (deduped.length === 8) break;
+        }
+      }
+      return deduped;
     },
     enabled: !!projectId,
     staleTime: 30_000,
@@ -48,18 +61,30 @@ export function useGlobalRecentItems(limit = 10) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
+      // Fetch a larger batch so deduplication by nav_path still yields `limit` unique entries.
       const { data, error } = await supabase
         .from('user_recent_items')
         .select('id, entity_type, entity_id, entity_key, display_summary, project_id, project_name, nav_path, visited_at, visit_count')
         .eq('user_id', user.id)
         .order('visited_at', { ascending: false })
-        .limit(limit);
+        .limit(limit * 5);
 
       if (error) {
         console.warn('useGlobalRecentItems error:', error.message);
         return [];
       }
-      return (data ?? []) as RecentProjectItem[];
+
+      // Deduplicate by nav_path — newest-first so first occurrence = most recent visit.
+      const seen = new Set<string>();
+      const deduped: RecentProjectItem[] = [];
+      for (const item of (data ?? []) as RecentProjectItem[]) {
+        if (!seen.has(item.nav_path)) {
+          seen.add(item.nav_path);
+          deduped.push(item);
+          if (deduped.length === limit) break;
+        }
+      }
+      return deduped;
     },
     staleTime: 30_000,
   });
