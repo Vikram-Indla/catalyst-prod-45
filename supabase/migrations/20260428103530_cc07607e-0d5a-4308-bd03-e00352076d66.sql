@@ -7,6 +7,11 @@ DECLARE
   s_analysis uuid; s_backlog uuid; s_impl uuid; s_review uuid;
   s_uat uuid; s_ready uuid; s_done uuid; s_hold uuid; s_cancel uuid;
 BEGIN
+  IF NOT EXISTS (SELECT 1 FROM catalyst_workflow_schemes WHERE id = v_scheme) THEN
+    RAISE NOTICE 'Workflow scheme % not found, skipping rebuild.', v_scheme;
+    RETURN;
+  END IF;
+
   -- Wipe existing transitions and statuses for the scheme
   DELETE FROM catalyst_workflow_transitions WHERE scheme_id = v_scheme;
   DELETE FROM catalyst_workflow_statuses WHERE scheme_id = v_scheme;

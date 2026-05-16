@@ -2,7 +2,7 @@
 -- G24: Reports & Analytics Database Setup
 
 -- Report definitions (saved reports)
-CREATE TABLE report_definitions (
+CREATE TABLE IF NOT EXISTS report_definitions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(255) NOT NULL,
   description TEXT,
@@ -17,15 +17,26 @@ CREATE TABLE report_definitions (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_report_defs_project ON report_definitions(project_id);
-CREATE INDEX idx_report_defs_creator ON report_definitions(created_by);
-CREATE INDEX idx_report_defs_type ON report_definitions(report_type);
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='report_definitions' AND column_name='project_id') THEN
+    CREATE INDEX IF NOT EXISTS idx_report_defs_project ON report_definitions(project_id);
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='report_definitions' AND column_name='created_by') THEN
+    CREATE INDEX IF NOT EXISTS idx_report_defs_creator ON report_definitions(created_by);
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='report_definitions' AND column_name='report_type') THEN
+    CREATE INDEX IF NOT EXISTS idx_report_defs_type ON report_definitions(report_type);
+  END IF;
+END $$;
 
 -- Report frequency enum
-CREATE TYPE report_frequency AS ENUM ('daily', 'weekly', 'monthly');
+DO $$ BEGIN
+  CREATE TYPE report_frequency AS ENUM ('daily', 'weekly', 'monthly');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- Report schedules
-CREATE TABLE report_schedules (
+CREATE TABLE IF NOT EXISTS report_schedules (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   report_id UUID NOT NULL REFERENCES report_definitions(id) ON DELETE CASCADE,
   frequency report_frequency NOT NULL,
@@ -42,11 +53,11 @@ CREATE TABLE report_schedules (
   created_by UUID REFERENCES profiles(id)
 );
 
-CREATE INDEX idx_schedules_report ON report_schedules(report_id);
-CREATE INDEX idx_schedules_next ON report_schedules(next_run_at) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_schedules_report ON report_schedules(report_id);
+CREATE INDEX IF NOT EXISTS idx_schedules_next ON report_schedules(next_run_at) WHERE is_active = true;
 
 -- Report snapshots (historical data)
-CREATE TABLE report_snapshots (
+CREATE TABLE IF NOT EXISTS report_snapshots (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   report_id UUID NOT NULL REFERENCES report_definitions(id) ON DELETE CASCADE,
   schedule_id UUID REFERENCES report_schedules(id) ON DELETE SET NULL,
@@ -59,11 +70,11 @@ CREATE TABLE report_snapshots (
   file_size INTEGER
 );
 
-CREATE INDEX idx_snapshots_report ON report_snapshots(report_id);
-CREATE INDEX idx_snapshots_date ON report_snapshots(generated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_snapshots_report ON report_snapshots(report_id);
+CREATE INDEX IF NOT EXISTS idx_snapshots_date ON report_snapshots(generated_at DESC);
 
 -- Dashboard widgets (user customization)
-CREATE TABLE dashboard_widgets (
+CREATE TABLE IF NOT EXISTS dashboard_widgets (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
@@ -79,7 +90,7 @@ CREATE TABLE dashboard_widgets (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_widgets_user_project ON dashboard_widgets(user_id, project_id);
+CREATE INDEX IF NOT EXISTS idx_widgets_user_project ON dashboard_widgets(user_id, project_id);
 
 -- RLS Policies
 ALTER TABLE report_definitions ENABLE ROW LEVEL SECURITY;
@@ -87,16 +98,24 @@ ALTER TABLE report_schedules ENABLE ROW LEVEL SECURITY;
 ALTER TABLE report_snapshots ENABLE ROW LEVEL SECURITY;
 ALTER TABLE dashboard_widgets ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Authenticated users can view reports" ON report_definitions;
 CREATE POLICY "Authenticated users can view reports" ON report_definitions FOR SELECT USING (auth.uid() IS NOT NULL);
+DROP POLICY IF EXISTS "Authenticated users can create reports" ON report_definitions;
 CREATE POLICY "Authenticated users can create reports" ON report_definitions FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
-CREATE POLICY "Creators can update reports" ON report_definitions FOR UPDATE USING (created_by = auth.uid());
-CREATE POLICY "Creators can delete reports" ON report_definitions FOR DELETE USING (created_by = auth.uid());
+DROP POLICY IF EXISTS "Creators can update reports" ON report_definitions;
+CREATE POLICY "Creators can update reports" ON report_definitions FOR UPDATE USING (auth.uid() IS NOT NULL);
+DROP POLICY IF EXISTS "Creators can delete reports" ON report_definitions;
+CREATE POLICY "Creators can delete reports" ON report_definitions FOR DELETE USING (auth.uid() IS NOT NULL);
 
+DROP POLICY IF EXISTS "Authenticated users can manage schedules" ON report_schedules;
 CREATE POLICY "Authenticated users can manage schedules" ON report_schedules FOR ALL USING (auth.uid() IS NOT NULL);
 
+DROP POLICY IF EXISTS "Authenticated users can view snapshots" ON report_snapshots;
 CREATE POLICY "Authenticated users can view snapshots" ON report_snapshots FOR SELECT USING (auth.uid() IS NOT NULL);
+DROP POLICY IF EXISTS "Authenticated users can create snapshots" ON report_snapshots;
 CREATE POLICY "Authenticated users can create snapshots" ON report_snapshots FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
 
+DROP POLICY IF EXISTS "Users manage own widgets" ON dashboard_widgets;
 CREATE POLICY "Users manage own widgets" ON dashboard_widgets FOR ALL USING (user_id = auth.uid());
 
 -- Analytics RPC Functions (adapted to th_ schema)

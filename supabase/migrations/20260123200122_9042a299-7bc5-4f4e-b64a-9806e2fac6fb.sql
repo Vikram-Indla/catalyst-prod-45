@@ -18,9 +18,15 @@ CREATE TABLE IF NOT EXISTS test_folders (
 );
 
 -- Indexes for performance
-CREATE INDEX IF NOT EXISTS idx_test_folders_project_id ON test_folders(project_id);
-CREATE INDEX IF NOT EXISTS idx_test_folders_parent_id ON test_folders(parent_id);
-CREATE INDEX IF NOT EXISTS idx_test_folders_sort ON test_folders(project_id, parent_id, sort_order);
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='test_folders' AND column_name='project_id') THEN
+    CREATE INDEX IF NOT EXISTS idx_test_folders_project_id ON test_folders(project_id);
+    CREATE INDEX IF NOT EXISTS idx_test_folders_sort ON test_folders(project_id, parent_id, sort_order);
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='test_folders' AND column_name='parent_id') THEN
+    CREATE INDEX IF NOT EXISTS idx_test_folders_parent_id ON test_folders(parent_id);
+  END IF;
+END $$;
 
 -- ============================================================
 -- ADD folder_id TO test_cases
@@ -52,42 +58,24 @@ DROP POLICY IF EXISTS "Users can delete folders in their projects" ON test_folde
 
 CREATE POLICY "Users can view folders in their projects" ON test_folders
   FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM project_members pm 
-      WHERE pm.project_id = test_folders.project_id 
-      AND pm.user_id = auth.uid()
-    )
+    public.current_user_is_approved()
   );
 
 CREATE POLICY "Users can create folders in their projects" ON test_folders
   FOR INSERT WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM project_members pm 
-      WHERE pm.project_id = test_folders.project_id 
-      AND pm.user_id = auth.uid()
-    )
+    public.current_user_is_approved()
   );
 
 CREATE POLICY "Users can update folders in their projects" ON test_folders
   FOR UPDATE USING (
     created_by = auth.uid() OR
-    EXISTS (
-      SELECT 1 FROM project_members pm 
-      WHERE pm.project_id = test_folders.project_id 
-      AND pm.user_id = auth.uid() 
-      AND pm.role IN ('admin', 'owner')
-    )
+    public.current_user_is_approved()
   );
 
 CREATE POLICY "Users can delete folders in their projects" ON test_folders
   FOR DELETE USING (
     created_by = auth.uid() OR
-    EXISTS (
-      SELECT 1 FROM project_members pm 
-      WHERE pm.project_id = test_folders.project_id 
-      AND pm.user_id = auth.uid() 
-      AND pm.role IN ('admin', 'owner')
-    )
+    public.current_user_is_approved()
   );
 
 -- ============================================================

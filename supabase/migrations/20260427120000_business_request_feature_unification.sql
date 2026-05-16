@@ -67,13 +67,18 @@ CREATE UNIQUE INDEX IF NOT EXISTS business_requests_import_ref_uniq
 -- from the existing 'business_request' (sort_order=6) seeded in
 -- 20260308125127_*.sql. Conflict on `key` (text) — already unique.
 
-INSERT INTO public.initiative_types (id, key, label, description, icon, color_token, color_hex, sort_order, is_active)
-VALUES
-  (gen_random_uuid(), 'feature',      'Feature',      'Product feature request — new capability or user-facing enhancement.',                '⭐', 'blue',   '#1D4ED8',  7, true),
-  (gen_random_uuid(), 'gap',          'Gap',          'Identified gap in existing capability — must-have remediation.',                       '⚠️', 'orange', '#F97316',  8, true),
-  (gen_random_uuid(), 'integration',  'Integration',  'Integration with another system or platform.',                                          '🔗', 'blue',   '#2563EB',  9, true),
-  (gen_random_uuid(), 'data_request', 'Data Request', 'Data extract, report, or analytics request requiring engineering effort.',             '📊', 'teal',   '#0D9488', 10, true)
-ON CONFLICT (key) DO NOTHING;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='initiative_types') THEN
+    INSERT INTO public.initiative_types (id, key, label, description, icon, color_token, color_hex, sort_order, is_active)
+    VALUES
+      (gen_random_uuid(), 'feature',      'Feature',      'Product feature request — new capability or user-facing enhancement.',                '⭐', 'blue',   '#1D4ED8',  7, true),
+      (gen_random_uuid(), 'gap',          'Gap',          'Identified gap in existing capability — must-have remediation.',                       '⚠️', 'orange', '#F97316',  8, true),
+      (gen_random_uuid(), 'integration',  'Integration',  'Integration with another system or platform.',                                          '🔗', 'blue',   '#2563EB',  9, true),
+      (gen_random_uuid(), 'data_request', 'Data Request', 'Data extract, report, or analytics request requiring engineering effort.',             '📊', 'teal',   '#0D9488', 10, true)
+    ON CONFLICT (key) DO NOTHING;
+  END IF;
+END $$;
 
 
 -- ──────────────────────────────────────────────────────────────────────────

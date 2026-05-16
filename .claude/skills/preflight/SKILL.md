@@ -54,7 +54,8 @@ Your job is to classify, plan, and gate. Not to execute. Execution happens in su
 ⚠️ PORT LOCK ACTIVE: localhost:8080 is the only permitted Catalyst dev server.
 Any plan row referencing localhost:8081 or any other port → HALT.
 Claude preview tools (preview_start, preview_screenshot, preview_eval, etc.) → HALT.
-SQL execution via Claude tools → HALT. SQL goes to Lovable SQL editor (manual).
+SQL execution: Supabase MCP read-only (list_tables, execute_sql SELECT) on project lmqwtldpfacrrlvdnmld.
+For schema DDL writes: migrations in supabase/migrations/ directory + apply_migration MCP.
 ```
 
 This lock stays active for the entire session. If a plan row violates it, halt that row and correct before proceeding.
@@ -192,14 +193,26 @@ window.__catalystBoard.write({
 - Task references a BAU issue key, Jira field name, or screen scheme.
 - Prior handover transcript exists for this surface (re-probe to confirm prior state).
 
-### Four lanes (delegate, don't reimplement)
+### Code Archaeology (MANDATORY FIRST)
+
+Before running any lanes, check the codebase for existing working implementations:
+
+1. **Search for related functions** (edge functions, API integrations, prior implementations)
+2. **Read the working code** (exact endpoints, headers, pagination, error handling)
+3. **Replicate the working pattern** before debugging
+4. **Only probe/debug if replication fails**
+
+Cost: ~30 seconds. Benefit: Often eliminates wasted probe cycles on wrong alternatives. See CLAUDE.md 2026-05-16 lesson.
+
+### Five lanes (delegate, don't reimplement)
 
 | Lane | Primitive | Output |
 |---|---|---|
-| A — Visual/structural | `jira-compare` (Chrome MCP DOM probe, both Jira and Catalyst) | DOM probe JSON, computed-style diff, annotated screenshots |
-| B — Schema/data | Atlassian MCP: `getJiraIssueTypeMetaWithFields`, `getJiraProjectIssueTypesMetadata`, `searchJiraIssuesUsingJql` | Fields JSON, workflow states, permission schemes |
+| A — Visual/structural + Jira REST API | `jira-compare` (Chrome MCP DOM probe) + Jira REST API via edge functions (`/rest/api/3/search/jql`, `/rest/api/3/issue/{key}`) | DOM probe JSON, computed-style diff, annotated screenshots, full issue details, changelog |
+| B — Schema/data + Rovo | Atlassian MCP (`getJiraIssueTypeMetaWithFields`, `searchJiraIssuesUsingJql`) + Rovo Search (requirement analysis, related issues, dependencies) | Fields JSON, workflow states, permission schemes, requirement clarity, scope boundaries |
 | C — Static analysis | `ads-validator` | ADS token violations with file/line refs |
-| D — DOM measurements | `hermes-pixel-probe` | Spacing, typography, element dimensions |
+| D — Supabase schema introspection | Supabase MCP (project: `lmqwtldpfacrrlvdnmld`): `list_tables`, `execute_sql` (SELECT only), `list_extensions`, `list_migrations` | Table definitions, field types, constraints, RLS policies, migration history |
+| E — Code archaeology results | `Explore` agent (grep for existing implementations) + proven Supabase/Jira patterns | File paths, prior patterns, proven endpoints, lessons from CLAUDE.md, working edge functions |
 
 ### Evidence envelope (passed to all Phase 2 advisors)
 
@@ -383,10 +396,10 @@ Produce an ordered task list. Every row has seven columns. Downstream tooling pa
 
 ### Column rules
 
-- **Tool:** `claude-code` | `lovable-sql` | `atlassian-admin` | `manual` | `chrome-mcp`
+- **Tool:** `claude-code` | `supabase-migration` | `supabase-mcp` | `atlassian-admin` | `gh-cli` | `manual` | `chrome-mcp`
 - **Skill:** from `references/MATRIX.md`. Every skill needs a one-line justification with CLAUDE.md anchor.
 - **Model:** `opus` (synthesis), `sonnet` (default implementation), `haiku` (mechanical verify). Suggestion only — harness controls the active model.
-- **Gate:** which CLAUDE.md rule blocks merge at this row.
+- **Gate:** which CLAUDE.md rule blocks merge at this row. All git operations require Vikram confirmation before proceeding.
 - **Metric:** what evidence proves this row succeeded.
 
 ### Mandatory rows (auto-injected, non-negotiable)
@@ -400,18 +413,25 @@ Produce an ordered task list. Every row has seven columns. Downstream tooling pa
 | **schema probe** | Any backend/field task | Anti-pattern #18, CLAUDE.md 2026-05-05 |
 | **re-probe** | After any comparative fix | jira-compare cycle cap 5 |
 | **remove banned reference** | If Phase 0.5 detected a ban violation | CLAUDE.md ban list |
-| **SQL → Lovable** | Any Supabase schema change | `tool: lovable-sql, manual-required: true` |
+| **Schema migration** | Any Supabase schema change | `tool: supabase-migration, apply_migration MCP, user confirmation required` |
 | **ask-Vikram before merge** | End of every phase | CLAUDE.md small-steps |
+| **ask-Vikram before push** | Before any `git commit` or `git push` | CLAUDE.md 2026-05-16 confirmation gate |
 
 If any mandatory row is missing → HALT and re-plan.
 
 ### SQL rows — mandatory format
 
+For schema DDL (migrations):
 ```
-| N | {description} | lovable-sql | — | — | Vikram pastes in Lovable SQL editor | SQL applied, no error |
+| N | {description} | supabase-migration | — | — | Create migration file in supabase/migrations/ + apply_migration MCP | Migration applied, no error |
 ```
 
-Include the full SQL in a code block directly below the row. Vikram copies and pastes it. Claude does not execute SQL autonomously under any circumstances.
+Include the full SQL in a code block directly below the row. Use `supabase migration new <name>` to generate the timestamp, write the DDL, then use `apply_migration` MCP tool to test. Claude does not execute schema changes autonomously.
+
+For schema reads (probes/audits):
+```
+| N | {description} | supabase-mcp | — | — | execute_sql(project_id="lmqwtldpfacrrlvdnmld", query="...") | Result confirms {expected outcome} |
+```
 
 ---
 
@@ -427,12 +447,27 @@ For each row:
 5. Await Vikram "go".
 6. On "go" → trigger auto-commit sequence (see LEARNING_ENGINE.md Step 5).
 
-### Auto-commit on "go"
+### User confirmation gate (BEFORE any git operations)
+
+After implementing a row and passing its gate, ask Vikram explicitly:
+
+```
+Ready to commit these changes to main?
+Files to stage: {list specific files}
+Commit message: {proposed message}
+
+[yes/no]
+```
+
+Await explicit "yes" or "go" confirmation before proceeding to git commands.
+
+### Auto-commit on confirmed "go"
 
 ```bash
-git -C /Users/vikramindla/Documents/GitHub/catalyst-prod-45 add [specific files only]
-git -C /Users/vikramindla/Documents/GitHub/catalyst-prod-45 diff --staged
-git -C /Users/vikramindla/Documents/GitHub/catalyst-prod-45 commit -m "$(cat <<'EOF'
+# Only after user confirms "yes"
+git -C /Users/jahanarakhan/Documents/GitHub/catalyst-prod-45 add [specific files only]
+git -C /Users/jahanarakhan/Documents/GitHub/catalyst-prod-45 diff --staged
+git -C /Users/jahanarakhan/Documents/GitHub/catalyst-prod-45 commit -m "$(cat <<'EOF'
 {type}({scope}): {description under 72 chars}
 
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
@@ -457,9 +492,24 @@ window.__catalystBoard.write({
 });
 ```
 
-### PR creation — one per handover session
+### PR creation — one per handover session (with user confirmation)
 
 After all plan rows for the session are committed, before Phase 7 handover:
+
+**Ask Vikram to confirm PR creation:**
+
+```
+All implementation rows are committed. Ready to create a PR with these changes?
+
+PR Title: {title}
+PR Body summary: {summary of changes}
+
+[yes/no]
+```
+
+Await explicit "yes" confirmation before creating PR.
+
+**After confirmation, create PR:**
 
 ```bash
 gh pr create \

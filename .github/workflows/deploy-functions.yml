@@ -20,4 +20,4 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: |
-          supabase functions deploy --project-ref mqgshobotcvcjouzxdbi --no-verify-jwt
+          supabase functions deploy --project-ref lmqwtldpfacrrlvdnmld --no-verify-jwt

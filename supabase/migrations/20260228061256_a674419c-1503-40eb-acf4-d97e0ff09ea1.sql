@@ -257,13 +257,13 @@ FROM wh_work_items wi JOIN wh_statuses ws ON ws.id = wi.status_id
 GROUP BY wi.project_id;
 
 CREATE OR REPLACE VIEW wh_sidebar_projects AS
-SELECT p.id, p.name, p.key, p.color,
+SELECT p.id, p.name, p.key, NULL::text AS color,
   CASE WHEN s.user_id IS NOT NULL THEN true ELSE false END AS is_starred,
   r.last_visited
 FROM projects p
   LEFT JOIN wh_project_stars s ON s.project_id = p.id
   LEFT JOIN wh_project_recents r ON r.project_id = p.id
-WHERE p.is_archived = false;
+WHERE TRUE;
 
 -- FUNCTIONS
 CREATE OR REPLACE FUNCTION wh_generate_item_key() RETURNS TRIGGER AS $$

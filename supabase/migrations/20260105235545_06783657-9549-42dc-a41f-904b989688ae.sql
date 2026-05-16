@@ -7,21 +7,23 @@ ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS settings JSONB DEFAULT '{}'
 ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS archived_at TIMESTAMPTZ;
 ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS archived_by UUID REFERENCES public.profiles(id);
 
--- 2. Enhance project_members table with invitation and role fields
-ALTER TABLE public.project_members ADD COLUMN IF NOT EXISTS role VARCHAR(50) NOT NULL DEFAULT 'member';
-ALTER TABLE public.project_members ADD COLUMN IF NOT EXISTS email VARCHAR(255);
-ALTER TABLE public.project_members ADD COLUMN IF NOT EXISTS invitation_token UUID DEFAULT gen_random_uuid();
-ALTER TABLE public.project_members ADD COLUMN IF NOT EXISTS invited_by UUID REFERENCES public.profiles(id);
-ALTER TABLE public.project_members ADD COLUMN IF NOT EXISTS invited_at TIMESTAMPTZ DEFAULT NOW();
-ALTER TABLE public.project_members ADD COLUMN IF NOT EXISTS accepted_at TIMESTAMPTZ;
-ALTER TABLE public.project_members ADD COLUMN IF NOT EXISTS status VARCHAR(20) NOT NULL DEFAULT 'active';
-ALTER TABLE public.project_members ADD COLUMN IF NOT EXISTS last_active_at TIMESTAMPTZ;
-ALTER TABLE public.project_members ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
-
--- Indexes for project_members
-CREATE INDEX IF NOT EXISTS idx_project_members_status ON public.project_members(status);
-CREATE INDEX IF NOT EXISTS idx_project_members_email ON public.project_members(email);
-CREATE INDEX IF NOT EXISTS idx_project_members_role ON public.project_members(role);
+-- 2. Enhance project_members table with invitation and role fields (skip if table absent)
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='project_members') THEN
+    ALTER TABLE public.project_members ADD COLUMN IF NOT EXISTS role VARCHAR(50) NOT NULL DEFAULT 'member';
+    ALTER TABLE public.project_members ADD COLUMN IF NOT EXISTS email VARCHAR(255);
+    ALTER TABLE public.project_members ADD COLUMN IF NOT EXISTS invitation_token UUID DEFAULT gen_random_uuid();
+    ALTER TABLE public.project_members ADD COLUMN IF NOT EXISTS invited_by UUID REFERENCES public.profiles(id);
+    ALTER TABLE public.project_members ADD COLUMN IF NOT EXISTS invited_at TIMESTAMPTZ DEFAULT NOW();
+    ALTER TABLE public.project_members ADD COLUMN IF NOT EXISTS accepted_at TIMESTAMPTZ;
+    ALTER TABLE public.project_members ADD COLUMN IF NOT EXISTS status VARCHAR(20) NOT NULL DEFAULT 'active';
+    ALTER TABLE public.project_members ADD COLUMN IF NOT EXISTS last_active_at TIMESTAMPTZ;
+    ALTER TABLE public.project_members ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+    CREATE INDEX IF NOT EXISTS idx_project_members_status ON public.project_members(status);
+    CREATE INDEX IF NOT EXISTS idx_project_members_email ON public.project_members(email);
+    CREATE INDEX IF NOT EXISTS idx_project_members_role ON public.project_members(role);
+  END IF;
+END $$;
 
 -- 3. Create project_roles table
 CREATE TABLE IF NOT EXISTS public.project_roles (
@@ -45,17 +47,12 @@ ALTER TABLE public.project_roles ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Members can view project roles" ON public.project_roles;
 CREATE POLICY "Members can view project roles"
   ON public.project_roles FOR SELECT
-  USING (project_id IN (
-    SELECT project_id FROM public.project_members WHERE user_id = auth.uid()
-  ));
+  USING (public.current_user_is_approved());
 
 DROP POLICY IF EXISTS "Admins can manage roles" ON public.project_roles;
 CREATE POLICY "Admins can manage roles"
   ON public.project_roles FOR ALL
-  USING (project_id IN (
-    SELECT project_id FROM public.project_members 
-    WHERE user_id = auth.uid() AND role = 'admin'
-  ));
+  USING (public.is_user_admin(auth.uid()));
 
 -- 4. Create field_entity enum if not exists
 DO $$ BEGIN
@@ -96,17 +93,12 @@ ALTER TABLE public.custom_field_definitions ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Members can view custom fields" ON public.custom_field_definitions;
 CREATE POLICY "Members can view custom fields"
   ON public.custom_field_definitions FOR SELECT
-  USING (project_id IN (
-    SELECT project_id FROM public.project_members WHERE user_id = auth.uid()
-  ));
+  USING (public.current_user_is_approved());
 
 DROP POLICY IF EXISTS "Admins can manage custom fields" ON public.custom_field_definitions;
 CREATE POLICY "Admins can manage custom fields"
   ON public.custom_field_definitions FOR ALL
-  USING (project_id IN (
-    SELECT project_id FROM public.project_members 
-    WHERE user_id = auth.uid() AND role = 'admin'
-  ));
+  USING (public.is_user_admin(auth.uid()));
 
 -- 6. Create integration_status enum if not exists
 DO $$ BEGIN
@@ -141,17 +133,12 @@ ALTER TABLE public.project_integrations ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Members can view integrations" ON public.project_integrations;
 CREATE POLICY "Members can view integrations"
   ON public.project_integrations FOR SELECT
-  USING (project_id IN (
-    SELECT project_id FROM public.project_members WHERE user_id = auth.uid()
-  ));
+  USING (public.current_user_is_approved());
 
 DROP POLICY IF EXISTS "Admins can manage integrations" ON public.project_integrations;
 CREATE POLICY "Admins can manage integrations"
   ON public.project_integrations FOR ALL
-  USING (project_id IN (
-    SELECT project_id FROM public.project_members 
-    WHERE user_id = auth.uid() AND role = 'admin'
-  ));
+  USING (public.is_user_admin(auth.uid()));
 
 -- 8. Create notification_preferences table
 CREATE TABLE IF NOT EXISTS public.notification_preferences (
@@ -227,10 +214,7 @@ ALTER TABLE public.project_audit_logs ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Admins and leads can view audit logs" ON public.project_audit_logs;
 CREATE POLICY "Admins and leads can view audit logs"
   ON public.project_audit_logs FOR SELECT
-  USING (project_id IN (
-    SELECT project_id FROM public.project_members 
-    WHERE user_id = auth.uid() AND role IN ('admin', 'lead')
-  ));
+  USING (public.is_user_admin(auth.uid()));
 
 DROP POLICY IF EXISTS "System can insert audit logs" ON public.project_audit_logs;
 CREATE POLICY "System can insert audit logs"
@@ -260,10 +244,7 @@ ALTER TABLE public.api_keys ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Admins can manage API keys" ON public.api_keys;
 CREATE POLICY "Admins can manage API keys"
   ON public.api_keys FOR ALL
-  USING (project_id IN (
-    SELECT project_id FROM public.project_members 
-    WHERE user_id = auth.uid() AND role = 'admin'
-  ));
+  USING (public.is_user_admin(auth.uid()));
 
 -- 11. Create webhooks table
 CREATE TABLE IF NOT EXISTS public.webhooks (
@@ -288,10 +269,7 @@ ALTER TABLE public.webhooks ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Admins can manage webhooks" ON public.webhooks;
 CREATE POLICY "Admins can manage webhooks"
   ON public.webhooks FOR ALL
-  USING (project_id IN (
-    SELECT project_id FROM public.project_members 
-    WHERE user_id = auth.uid() AND role = 'admin'
-  ));
+  USING (public.is_user_admin(auth.uid()));
 
 -- 12. Create audit log helper function
 CREATE OR REPLACE FUNCTION create_project_audit_log(
@@ -361,10 +339,14 @@ END;
 $$ LANGUAGE plpgsql SET search_path = public;
 
 -- 14. Create update triggers
-DROP TRIGGER IF EXISTS update_project_members_timestamp ON public.project_members;
-CREATE TRIGGER update_project_members_timestamp
-  BEFORE UPDATE ON public.project_members
-  FOR EACH ROW EXECUTE FUNCTION update_timestamp();
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='project_members') THEN
+    DROP TRIGGER IF EXISTS update_project_members_timestamp ON public.project_members;
+    CREATE TRIGGER update_project_members_timestamp
+      BEFORE UPDATE ON public.project_members
+      FOR EACH ROW EXECUTE FUNCTION update_timestamp();
+  END IF;
+END $$;
 
 DROP TRIGGER IF EXISTS update_project_roles_timestamp ON public.project_roles;
 CREATE TRIGGER update_project_roles_timestamp

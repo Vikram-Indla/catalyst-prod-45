@@ -32,10 +32,11 @@ END $$;
 
 DO $$
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_publication_tables
-    WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'catalyst_status_history'
-  ) THEN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='catalyst_status_history')
+    AND NOT EXISTS (
+      SELECT 1 FROM pg_publication_tables
+      WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'catalyst_status_history'
+    ) THEN
     ALTER PUBLICATION supabase_realtime ADD TABLE public.catalyst_status_history;
   END IF;
 END $$;
@@ -43,6 +44,18 @@ END $$;
 -- Realtime sends only PK by default for UPDATE/DELETE — bump to FULL replica
 -- identity so the row payload includes project_key (needed by the client-side
 -- filter). Skip if Postgres already at FULL.
-ALTER TABLE public.ph_issues REPLICA IDENTITY FULL;
-ALTER TABLE public.tm_defects REPLICA IDENTITY FULL;
-ALTER TABLE public.catalyst_status_history REPLICA IDENTITY FULL;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='ph_issues') THEN
+    ALTER TABLE public.ph_issues REPLICA IDENTITY FULL;
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='tm_defects') THEN
+    ALTER TABLE public.tm_defects REPLICA IDENTITY FULL;
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='catalyst_status_history') THEN
+    ALTER TABLE public.catalyst_status_history REPLICA IDENTITY FULL;
+  END IF;
+END $$;

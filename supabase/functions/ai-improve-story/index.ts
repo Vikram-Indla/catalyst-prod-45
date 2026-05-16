@@ -18,8 +18,8 @@ const IMPROVE_INSTRUCTIONS: Record<string, string> = {
     "Add edge cases and failure conditions to acceptance criteria",
 };
 
-const AI_GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
-const DEFAULT_MODEL = "google/gemini-3-flash-preview";
+const AI_GATEWAY_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+const DEFAULT_MODEL = "gemini-2.5-flash";
 
 // Best-effort audit logger. Never throws — a logging failure must not fail
 // the request. Scoped to the deployed ai_governance_audit_log table.
@@ -67,10 +67,10 @@ serve(async (req) => {
       user_draft,
     } = body;
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) {
       return new Response(
-        JSON.stringify({ error: "LOVABLE_API_KEY is not configured" }),
+        JSON.stringify({ error: "GEMINI_API_KEY is not configured" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
@@ -104,7 +104,7 @@ Return JSON only: {"suggestions": ["...", "...", "..."]}`;
       const aiResp = await fetch(AI_GATEWAY_URL, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${GEMINI_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -213,11 +213,11 @@ Return JSON only: {"suggestions": ["...", "...", "..."]}`;
       const aiResp = await fetch(AI_GATEWAY_URL, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${GEMINI_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash-lite",
+          model: "gemini-2.5-flash-lite",
           messages: [
             {
               role: "system",
@@ -324,7 +324,7 @@ Return JSON: {"description": "...", "acceptance_criteria": "..."}`;
       const aiResp = await fetch(AI_GATEWAY_URL, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${GEMINI_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -421,7 +421,7 @@ Return JSON: {"summary": "..."}`;
       const aiResp = await fetch(AI_GATEWAY_URL, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${GEMINI_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -502,7 +502,7 @@ Return JSON: {"suggestions": [{"title": "...", "description": "...", "type": "${
       const aiResp = await fetch(AI_GATEWAY_URL, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${GEMINI_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -564,7 +564,7 @@ Return JSON: {"description": "...", "acceptance_criteria": "..."}`;
     const response = await fetch(AI_GATEWAY_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${GEMINI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

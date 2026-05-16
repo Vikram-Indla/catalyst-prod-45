@@ -1,236 +1,257 @@
+/**
+ * ForcePasswordReset — ADS-compliant first-login password gate.
+ * Shown when profiles.must_change_password = true.
+ * No skip — user must complete here or via emailed reset link.
+ */
 import { useState } from 'react';
-import { Loader2 } from '@/lib/atlaskit-icons';
+import Textfield from '@atlaskit/textfield';
+import Button from '@atlaskit/button';
+import SectionMessage from '@atlaskit/section-message';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { PasswordInput } from '@/components/auth/PasswordInput';
 
 interface ForcePasswordResetProps {
-  onSuccess: () => void;
   userId: string;
+  email: string;
+  onSuccess: () => void;
 }
 
-/**
- * Force Password Reset Component
- * Displayed when a user logs in with must_change_password = true
- * 
- * TODO: Replace this default-password + first-login-reset flow with a full email-based 
- * invitation + activation flow using the Catalyst HTML email template when we move to production.
- */
-export function ForcePasswordReset({ onSuccess, userId }: ForcePasswordResetProps) {
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
+const RULES = [
+  { id: 'len',     label: 'At least 8 characters',           test: (p: string) => p.length >= 8 },
+  { id: 'upper',   label: 'One uppercase letter (A–Z)',       test: (p: string) => /[A-Z]/.test(p) },
+  { id: 'lower',   label: 'One lowercase letter (a–z)',       test: (p: string) => /[a-z]/.test(p) },
+  { id: 'number',  label: 'One number (0–9)',                  test: (p: string) => /[0-9]/.test(p) },
+  { id: 'special', label: 'One special character (!@#$…)',    test: (p: string) => /[!@#$%^&*()\-_=+\[\]{};':"\\|,.<>\/?`~]/.test(p) },
+  { id: 'notpw1',  label: 'Not the default password',         test: (p: string) => p !== 'Password1' },
+];
 
-  const validatePassword = (password: string): string | null => {
-    if (password.length < 8) {
-      return 'Password must be at least 8 characters long';
-    }
-    if (!/[A-Z]/.test(password)) {
-      return 'Password must contain at least one uppercase letter';
-    }
-    if (!/[a-z]/.test(password)) {
-      return 'Password must contain at least one lowercase letter';
-    }
-    if (!/[0-9]/.test(password)) {
-      return 'Password must contain at least one number';
-    }
-    return null;
-  };
+const EyeIcon = ({ off }: { off?: boolean }) => off ? (
+  <svg width="16" height="16" fill="none" viewBox="0 0 16 16" aria-hidden="true">
+    <path d="M2 2l12 12M6.4 6.4a2 2 0 002.8 2.8M3.5 5C2.2 6.2 1.5 8 1.5 8s2.5 5 6.5 5c1.1 0 2.1-.3 3-.8M8 3c3.7 0 6.5 5 6.5 5-.5 1.1-1.3 2.1-2.2 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+  </svg>
+) : (
+  <svg width="16" height="16" fill="none" viewBox="0 0 16 16" aria-hidden="true">
+    <path d="M1.5 8s2.5-5 6.5-5 6.5 5 6.5 5-2.5 5-6.5 5-6.5-5-6.5-5z" stroke="currentColor" strokeWidth="1.3"/>
+    <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.3"/>
+  </svg>
+);
+
+export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForcePasswordResetProps) {
+  const [newPwd, setNewPwd] = useState('');
+  const [confirmPwd, setConfirmPwd] = useState('');
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [sendingLink, setSendingLink] = useState(false);
+  const [linkSent, setLinkSent] = useState(false);
+
+  const ruleResults = RULES.map(r => ({ ...r, passed: r.test(newPwd) }));
+  const allRulesPassed = ruleResults.every(r => r.passed);
+  const passwordsMatch = confirmPwd.length > 0 && newPwd === confirmPwd;
+  const canSubmit = allRulesPassed && passwordsMatch && !submitting;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canSubmit) return;
     setError(null);
-
-    // Validate passwords match
-    if (newPassword !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    // Validate password strength
-    const passwordError = validatePassword(newPassword);
-    if (passwordError) {
-      setError(passwordError);
-      return;
-    }
-
-    setIsLoading(true);
-
+    setSubmitting(true);
     try {
-      // Verify session is still valid
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      
-      if (userError || !user) {
-        // Session is invalid - sign out and show error
-        await supabase.auth.signOut();
-        throw new Error('Your session has expired. Please log in again.');
-      }
-
-      // Use edge function to update password with admin privileges
       const { data, error: invokeError } = await supabase.functions.invoke('user-update-password', {
-        body: { newPassword },
+        body: { newPassword: newPwd },
       });
-
-      if (invokeError) {
-        console.error('Edge function error:', invokeError);
-        // Check if it's a session/token error
-        if (invokeError.message?.includes('401') || invokeError.message?.includes('token') || invokeError.message?.includes('session')) {
-          await supabase.auth.signOut();
-          throw new Error('Your session has expired. Please log in again.');
-        }
-        throw new Error('Failed to update password. Please try again.');
-      }
-
-      if (!data?.success) {
-        // Check for session-related errors
-        if (data?.error?.includes('token') || data?.error?.includes('session') || data?.error?.includes('expired')) {
-          await supabase.auth.signOut();
-          throw new Error('Your session has expired. Please log in again.');
-        }
+      if (invokeError || !data?.success) {
         throw new Error(data?.error || 'Failed to update password. Please try again.');
       }
-
-      toast({
-        title: 'Password updated',
-        description: 'Your password has been changed successfully.',
-      });
-
       onSuccess();
     } catch (err) {
-      console.error('Error updating password:', err);
-      const errorMessage = (err as Error).message || 'Failed to update password. Please try again.';
-      setError(errorMessage);
-      
-      // If session expired, the signOut will trigger auth state change and redirect to login
+      setError((err as Error).message);
     } finally {
-      setIsLoading(false);
+      setSubmitting(false);
     }
   };
 
-  return (
-    <>
-      {/* Header */}
-      <h2 className="text-center mb-2" style={{
-        fontFamily: "'Playfair Display', serif",
-        fontSize: "clamp(1.5rem, 3vw, 1.875rem)",
-        fontWeight: 500,
-        color: "var(--ds-surface-raised, #1a1a1a)"
-      }}>
-        Reset your password
-      </h2>
-      <p className="text-center mb-6" style={{
-        fontFamily: "'DM Sans', sans-serif",
-        fontSize: "clamp(0.9rem, 2vw, 1rem)",
-        color: "rgba(26, 26, 26, 0.55)"
-      }}>
-        For your security, please create a new password on your first login.
-      </p>
+  const handleSendResetLink = async () => {
+    setSendingLink(true);
+    await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`,
+    });
+    await supabase.auth.signOut();
+    setSendingLink(false);
+    setLinkSent(true);
+  };
 
-      {/* Password Reset Form */}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* New Password Field */}
-        <div>
-          <label htmlFor="newPassword" className="block mb-1.5" style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: "0.875rem",
-            fontWeight: 500,
-            color: "var(--ds-surface-raised, #1a1a1a)"
-          }}>
-            New Password
+  if (linkSent) {
+    return (
+      <SectionMessage appearance="success" title="Reset link sent">
+        <p>
+          Check your inbox at <strong>{email}</strong>. Click the link to set your
+          password, then sign in.
+        </p>
+      </SectionMessage>
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {/* Header */}
+      <div style={{ textAlign: 'center' }}>
+        <h2 style={{
+          margin: '0 0 6px',
+          fontSize: 20,
+          fontWeight: 600,
+          color: 'var(--ds-text, #172B4D)',
+        }}>
+          Create your password
+        </h2>
+        <p style={{
+          margin: 0,
+          fontSize: 14,
+          color: 'var(--ds-text-subtle, #44546F)',
+        }}>
+          Set a strong password to access your account.
+        </p>
+      </div>
+
+      {error && (
+        <SectionMessage appearance="error">
+          <p>{error}</p>
+        </SectionMessage>
+      )}
+
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {/* New password */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <label
+            htmlFor="fpr-new"
+            style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)' }}
+          >
+            New password
           </label>
-          <PasswordInput
-            id="newPassword"
-            value={newPassword}
-            onChange={(val) => {
-              setNewPassword(val);
-              setError(null);
-            }}
-            placeholder="Enter your new password"
-            required
-            hasError={!!error}
+          <Textfield
+            id="fpr-new"
+            name="new-password"
+            type={showNew ? 'text' : 'password'}
+            value={newPwd}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewPwd(e.currentTarget.value)}
+            autoFocus
+            isRequired
+            autoComplete="new-password"
+            elemAfterInput={
+              <button
+                type="button"
+                className="clmp-pwd-toggle"
+                onClick={() => setShowNew(v => !v)}
+                aria-label={showNew ? 'Hide password' : 'Show password'}
+                tabIndex={-1}
+              >
+                <EyeIcon off={showNew} />
+              </button>
+            }
           />
-          <p className="mt-1.5 text-xs" style={{
-            fontFamily: "'DM Sans', sans-serif",
-            color: "rgba(26, 26, 26, 0.45)"
-          }}>
-            Min. 8 characters with uppercase, lowercase, and number
-          </p>
         </div>
 
-        {/* Confirm Password Field */}
-        <div>
-          <label htmlFor="confirmPassword" className="block mb-1.5" style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: "0.875rem",
-            fontWeight: 500,
-            color: "var(--ds-surface-raised, #1a1a1a)"
+        {/* Live rule checklist — appears as soon as user starts typing */}
+        {newPwd.length > 0 && (
+          <ul style={{
+            margin: 0,
+            padding: '10px 12px',
+            listStyle: 'none',
+            background: 'var(--ds-background-neutral, #F7F8F9)',
+            borderRadius: 'var(--ds-border-radius, 3px)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 5,
           }}>
-            Confirm New Password
+            {ruleResults.map(r => (
+              <li
+                key={r.id}
+                style={{
+                  fontSize: 12,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  color: r.passed
+                    ? 'var(--ds-text-success, #216E4E)'
+                    : 'var(--ds-text-subtle, #44546F)',
+                  transition: 'color 0.15s',
+                }}
+              >
+                <span style={{ fontSize: 11, minWidth: 10 }}>{r.passed ? '✓' : '○'}</span>
+                {r.label}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {/* Confirm password */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <label
+            htmlFor="fpr-confirm"
+            style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)' }}
+          >
+            Confirm password
           </label>
-          <PasswordInput
-            id="confirmPassword"
-            value={confirmPassword}
-            onChange={(val) => {
-              setConfirmPassword(val);
-              setError(null);
-            }}
-            placeholder="Confirm your new password"
-            required
-            hasError={!!error}
+          <Textfield
+            id="fpr-confirm"
+            name="confirm-password"
+            type={showConfirm ? 'text' : 'password'}
+            value={confirmPwd}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPwd(e.currentTarget.value)}
+            isRequired
+            autoComplete="new-password"
+            isInvalid={confirmPwd.length > 0 && !passwordsMatch}
+            elemAfterInput={
+              <button
+                type="button"
+                className="clmp-pwd-toggle"
+                onClick={() => setShowConfirm(v => !v)}
+                aria-label={showConfirm ? 'Hide password' : 'Show password'}
+                tabIndex={-1}
+              >
+                <EyeIcon off={showConfirm} />
+              </button>
+            }
           />
-          {/* Inline Error Message */}
-          {error && (
-            <p 
-              className="mt-2 text-sm"
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                color: "var(--ds-text-danger, #dc2626)"
-              }}
-            >
-              {error}
+          {confirmPwd.length > 0 && !passwordsMatch && (
+            <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--ds-text-danger, #AE2A19)' }}>
+              Passwords do not match
             </p>
           )}
         </div>
 
-        {/* Submit Button */}
-        <button
+        <Button
           type="submit"
-          disabled={isLoading}
-          className="w-full relative overflow-hidden transition-all duration-300"
-          style={{
-            fontFamily: "'DM Sans', sans-serif",
-            padding: "16px",
-            backgroundColor: "var(--ds-surface-raised, #1a1a1a)",
-            color: "#feffff",
-            fontWeight: 600,
-            borderRadius: "10px",
-            fontSize: "1rem",
-            border: "none",
-            cursor: isLoading ? "not-allowed" : "pointer",
-            marginTop: "8px",
-            opacity: isLoading ? 0.7 : 1
-          }}
-          onMouseEnter={e => {
-            if (!isLoading) {
-              e.currentTarget.style.transform = "translateY(-2px)";
-              e.currentTarget.style.boxShadow = "0 6px 20px rgba(26, 26, 26, 0.2)";
-            }
-          }}
-          onMouseLeave={e => {
-            if (!isLoading) {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "none";
-            }
-          }}
+          appearance="primary"
+          isLoading={submitting}
+          isDisabled={!canSubmit}
+          shouldFitContainer
         >
-          <span className="relative flex items-center justify-center gap-2">
-            {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-            Update Password
-          </span>
-        </button>
+          Set password and sign in
+        </Button>
       </form>
-    </>
+
+      {/* Safety valve — email reset link */}
+      <div style={{
+        borderTop: '1px solid var(--ds-border, #091E4224)',
+        paddingTop: 16,
+        textAlign: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 8,
+      }}>
+        <p style={{ margin: 0, fontSize: 12, color: 'var(--ds-text-subtlest, #626F86)' }}>
+          Having trouble setting a password?
+        </p>
+        <Button
+          appearance="subtle"
+          spacing="compact"
+          isLoading={sendingLink}
+          onClick={handleSendResetLink}
+        >
+          Send me a reset link instead
+        </Button>
+      </div>
+    </div>
   );
 }

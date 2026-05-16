@@ -52,10 +52,7 @@ ALTER TABLE public.tm_audit_logs ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Admins and leads can view audit logs" ON public.tm_audit_logs;
 CREATE POLICY "Admins and leads can view audit logs"
   ON public.tm_audit_logs FOR SELECT
-  USING (project_id IN (
-    SELECT project_id FROM public.project_members 
-    WHERE user_id = auth.uid() AND role IN ('admin', 'lead')
-  ));
+  USING (public.is_user_admin(auth.uid()));
 
 DROP POLICY IF EXISTS "System can insert audit logs" ON public.tm_audit_logs;
 CREATE POLICY "System can insert audit logs"

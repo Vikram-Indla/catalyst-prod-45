@@ -29,21 +29,11 @@ ALTER TABLE tm_requirement_links ENABLE ROW LEVEL SECURITY;
 -- RLS policies
 CREATE POLICY "Users can view requirement links in their projects"
   ON tm_requirement_links FOR SELECT
-  USING (EXISTS (
-    SELECT 1 FROM tm_test_cases tc
-    JOIN project_members pm ON pm.project_id = tc.project_id
-    WHERE tc.id = tm_requirement_links.test_case_id
-    AND pm.user_id = auth.uid()
-  ));
+  USING (public.current_user_is_approved());
 
 CREATE POLICY "Users can manage requirement links in their projects"
   ON tm_requirement_links FOR ALL
-  USING (EXISTS (
-    SELECT 1 FROM tm_test_cases tc
-    JOIN project_members pm ON pm.project_id = tc.project_id
-    WHERE tc.id = tm_requirement_links.test_case_id
-    AND pm.user_id = auth.uid()
-  ));
+  USING (public.current_user_is_approved());
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_req_links_case ON tm_requirement_links(test_case_id);

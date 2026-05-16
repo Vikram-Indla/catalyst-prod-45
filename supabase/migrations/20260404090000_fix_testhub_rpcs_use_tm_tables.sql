@@ -5,6 +5,7 @@
 -- ═══════════════════════════════════════════════════════════════════════════
 
 -- 1. Fix get_dashboard_stats to use tm_* tables
+DROP FUNCTION IF EXISTS get_dashboard_stats();
 CREATE OR REPLACE FUNCTION get_dashboard_stats()
 RETURNS TABLE (
   total_test_cases BIGINT,
@@ -82,6 +83,7 @@ END;
 $$;
 
 -- 3. Fix tm_get_requirement_test_cases to use tm_cycle_scope instead of tm_test_executions
+DROP FUNCTION IF EXISTS tm_get_requirement_test_cases(TEXT, UUID);
 CREATE OR REPLACE FUNCTION tm_get_requirement_test_cases(
   p_requirement_type TEXT,
   p_requirement_id UUID

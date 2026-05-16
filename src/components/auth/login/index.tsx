@@ -300,7 +300,7 @@ export function CatalystLoginPage() {
     return (
       <div className="clmp-fullstate">
         <div className="clmp-fullstate-inner" style={{ maxWidth: '420px', width: '100%' }}>
-          <ForcePasswordReset userId={currentUserId} onSuccess={handlePasswordResetSuccess} />
+          <ForcePasswordReset userId={currentUserId} email={user?.email ?? ''} onSuccess={handlePasswordResetSuccess} />
         </div>
       </div>
     );

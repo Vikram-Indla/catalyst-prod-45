@@ -98,14 +98,10 @@ Deno.serve(async (req) => {
       const pConfig = projectConfigs[projectKey] || { lookback_months: 3, status_categories: [], issue_types: [], fix_versions: [] }
       const lookbackMonths = pConfig.lookback_months ?? 3
 
-      // Build JQL for this project
+      // Build JQL for this project — SUPER STRICT GUARDRAIL: enforce 2026+ data window
       const jqlParts: string[] = []
       jqlParts.push(`project = "${projectKey}"`)
-      // Lifetime sync (0) skips the date filter entirely
-      if (lookbackMonths > 0) {
-        const lookbackDays = lookbackMonths * 30
-        jqlParts.push(`updated >= -${lookbackDays}d`)
-      }
+      jqlParts.push(`(created >= "2026/01/01" OR updated >= "2026/01/01")`)
 
       // Status category filter
       const statusCategories = pConfig.status_categories || []

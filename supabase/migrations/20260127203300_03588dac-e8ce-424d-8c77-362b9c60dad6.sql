@@ -4,16 +4,16 @@
 -- ============================================================
 
 CREATE OR REPLACE VIEW planner_task_list AS
-SELECT 
+SELECT
   t.id,
-  t.task_key,
+  NULL::text AS task_key,
   t.title,
   t.description,
   t.status_id,
   s.name as status_name,
   s.slug as status_slug,
   s.color as status_color,
-  COALESCE(s.is_done, false) as status_is_done,
+  COALESCE(s.is_completed_status, false) as status_is_done,
   t.priority,
   t.workstream_id,
   w.name as workstream_name,
@@ -27,16 +27,16 @@ SELECT
   t.progress,
   t.blocked,
   t.blocked_reason,
-  t.time_estimate_minutes,
-  t.time_logged_minutes,
+  NULL::integer AS time_estimate_minutes,
+  NULL::integer AS time_logged_minutes,
   t.created_at,
   t.updated_at,
   t.created_by,
   creator.full_name as creator_name,
-  t.sort_order,
+  NULL::integer AS sort_order,
   -- Computed fields
   CASE 
-    WHEN t.due_date < CURRENT_DATE AND COALESCE(s.is_done, false) = false THEN true 
+    WHEN t.due_date < CURRENT_DATE AND COALESCE(s.is_completed_status, false) = false THEN true 
     ELSE false 
   END as is_overdue,
   CASE 
@@ -84,13 +84,13 @@ BEGIN
     COUNT(*)::BIGINT as total_count,
     COUNT(*) FILTER (
       WHERE t.due_date < CURRENT_DATE 
-      AND COALESCE(s.is_done, false) = false
+      AND COALESCE(s.is_completed_status, false) = false
     )::BIGINT as overdue_count,
     COUNT(*) FILTER (
       WHERE s.slug = 'progress'
     )::BIGINT as in_progress_count,
     COUNT(*) FILTER (
-      WHERE COALESCE(s.is_done, false) = true
+      WHERE COALESCE(s.is_completed_status, false) = true
     )::BIGINT as done_count
   FROM planner_tasks t
   LEFT JOIN planner_statuses s ON t.status_id = s.id

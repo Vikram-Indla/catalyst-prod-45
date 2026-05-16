@@ -17,10 +17,10 @@ ALTER TABLE feature_flags ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NU
 
 -- 2. Backfill new columns from existing data
 UPDATE feature_flags SET
-  module_name = label,
-  enabled = is_enabled,
+  module_name = COALESCE(label, flag_key, module_key, ''),
+  enabled = COALESCE(is_enabled, false),
   icon_name = COALESCE(icon, 'Box'),
-  status = CASE WHEN is_enabled THEN 'live' ELSE 'draft' END,
+  status = CASE WHEN COALESCE(is_enabled, false) THEN 'live' ELSE 'draft' END,
   category = CASE
     WHEN group_name = 'Strategy' THEN 'Strategy'
     WHEN group_name = 'Product' THEN 'Product'
@@ -107,12 +107,15 @@ CREATE TRIGGER trg_feature_flags_audit
 ALTER TABLE feature_flag_dependencies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE feature_flag_audit ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "feature_flag_deps_read" ON feature_flag_dependencies;
 CREATE POLICY "feature_flag_deps_read" ON feature_flag_dependencies
   FOR SELECT TO authenticated USING (true);
 
+DROP POLICY IF EXISTS "feature_flag_audit_read" ON feature_flag_audit;
 CREATE POLICY "feature_flag_audit_read" ON feature_flag_audit
   FOR SELECT TO authenticated USING (true);
 
+DROP POLICY IF EXISTS "feature_flag_audit_admin_write" ON feature_flag_audit;
 CREATE POLICY "feature_flag_audit_admin_write" ON feature_flag_audit
   FOR INSERT TO authenticated
   WITH CHECK (

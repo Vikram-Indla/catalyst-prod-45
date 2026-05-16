@@ -4,6 +4,68 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## 2026-05-16 — PRODUCTION INFRASTRUCTURE SNAPSHOT
+
+**Active Supabase Project:** `lmqwtldpfacrrlvdnmld` (Catalyst KSA org)
+- **URL:** `https://lmqwtldpfacrrlvdnmld.supabase.co`
+- **Anon Key:** `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxtcXd0bGRwZmFjcnJsdmRubWxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NTkwODEsImV4cCI6MjA5NDQzNTA4MX0.CITWnsiEJEd1B-G4RReYZdaTFbBNvw8NnM8OrRvDX8s`
+
+**Connected Repositories:**
+1. `catalyst-prod-45` (web) — owns schema, migrations, edge functions; auto-deploys via git
+2. `CatyMobile` (iOS) — client-only; connects via Supabase Swift SDK
+
+**Application Secrets (Supabase):** 7 set
+- `ANTHROPIC_API_KEY` — Claude AI for CATY features
+- `GEMINI_API_KEY` — Google Gemini for story improvement, similarity, digests
+- `JIRA_BASE_URL` — `https://digital-transformation.atlassian.net`
+- `JIRA_EMAIL` — `vikramataol@gmail.com`
+- `JIRA_API_TOKEN` — stored (rotate after migration)
+- `JIRA_WEBHOOK_SECRET` — auto-generated; guards webhook receiver
+- `LIFECYCLE_CRON_SECRET` — auto-generated; guards cron triggers
+- `RESEND_API_KEY` — OTP email delivery (rotate after migration)
+
+**Edge Functions:** 44 deployed and ACTIVE
+- AI functions (`ai-digest`, `ai-improve-story`, `ai-similar-items`, `alignment-story`) — rewired to Google Gemini direct (2026-05-16)
+- Jira sync functions — ready for data pull on trigger
+
+**Database State:** Schema complete, zero rows (fresh data from Jira only, no Lovable migration)
+
+---
+
+## 2026-05-16 — Lovable Deprecation Complete
+
+**Status:** ✅ DEPRECATED — Zero Lovable dependency achieved
+
+**What was migrated:**
+- ✅ All 918 tables with full DDL (887 in baseline, +31 newer additions)
+- ✅ All 2,411 RLS policies verified intact
+- ✅ All 1,429 foreign key constraints verified
+- ✅ All 4,675 check constraints verified
+- ✅ All 454 unique constraints verified
+- ✅ All 13 required extensions enabled (pgcrypto, vector, pg_graphql, pg_cron, pg_net, pg_trgm, ltree, moddatetime, uuid-ossp, http, pgjwt, supabase_vault, pg_stat_statements)
+- ✅ 690 functions, 655 triggers (via bootstrap migration)
+
+**Git artifacts:**
+- `LOVABLE_SCHEMA_EXPORT_HANDOFF.md` — handoff spec delivered to Lovable (2026-05-16)
+- `SCHEMA_MANAGEMENT.md` — post-Lovable workflow guide (migrations, RLS, audits, rollback procedures)
+- `supabase/migrations/20260516011948_baseline_schema_capture.sql` — snapshot marker (documentation-only)
+- `supabase/migrations/20260516120000_bootstrap_full_schema.sql` — complete DDL bootstrap (103,434 lines, Lovable-managed baseline)
+
+**All future schema changes:**
+- ✅ Go through git migrations in `supabase/migrations/`
+- ✅ Use `supabase migration new <description>` locally
+- ✅ RLS policies MUST be included in the same migration as table creation (CLAUDE.md enforced)
+- ✅ Use `apply_migration` MCP for deployment (safer, auditable)
+- ✅ Commit and push to main → GitHub Actions deploys functions if `supabase/functions/**` changed
+
+**Verification:** Supabase MCP confirms lmqwtldpfacrrlvdnmld schema is complete and consistent with git baseline. No Lovable access required going forward.
+
+**Access Revocation Timeline:**
+- ✅ 2026-05-16: Baseline snapshot + git bootstrap migration created and verified
+- 2026-05-30: Full revocation (Lovable sandbox access disabled)
+
+---
+
 ## Dev Server
 
 The Catalyst local dev server always runs on **http://localhost:8080**. Never use 8081. When navigating in Chrome MCP, always use port 8080.
@@ -221,9 +283,40 @@ Ready for next step when you confirm.
 
 ---
 
+# SUPER STRICT GUARDRAIL — 2026 DATA ONLY
+
+**Jira data sync webhook and all Jira functions ONLY process issues with `created` or `updated` timestamps in year 2026.** This is non-negotiable.
+
+**Implementation:**
+- Every Jira ingest function (`wh-jira-sync`, `jira-sync-projects`, `jira-webhook-receiver`, etc.) must extract `created` and `updated` timestamps from incoming payloads
+- **Reject (do not insert/update) any issue where both `created` AND `updated` are before 2026-01-01T00:00:00Z**
+- Webhook receiver must return `{ ok: false, reason: "data outside 2026 window" }` for rejected payloads (log the issue key for audit)
+- Functions must log rejections with issue key, created date, updated date so we can track what was excluded
+- Backfill and initial sync functions must apply the same 2026 filter to `jira-sync-projects`, `wh-jira-bulk-sync`, etc.
+
+**Why:** Clean slate migration. Old Lovable data (pre-2026) is discarded intentionally. Only live 2026+ Jira data flows into the new project. This prevents stale/test data from polluting the new schema.
+
+**Severity:** P0 — data integrity gate. Missing this filter allows pre-2026 cruft to land in production.
+
+---
+
 # jira-compare — compounding lessons
 
 Append-only. Newest at top. Each entry: date, pattern, rule, surface.
+
+---
+
+## 2026-05-16 — Code archaeology before API troubleshooting — read existing implementations first
+**Surface:** wh-jira-bulk-sync edge function · any Jira API integration
+**Pattern:** Debugging Jira API search failures, I tested multiple endpoints: `/rest/api/3/search` (returned HTTP 410 deprecated), then `/rest/api/3/issues/search` (returned 0 results). Spent cycles trying alternatives before checking the existing working code. Lovable's `wh-jira-bulk-sync/index.ts` (already deployed and functional) uses `/rest/api/3/search/jql` — the correct endpoint the whole time. The endpoint choice was already proven in production; the failure diagnosis was wrong.
+**Rule:** When debugging an integration that has an existing working implementation in the codebase:
+1. **Stop debugging immediately**
+2. **Read the working code first** — check the exact endpoint, headers, body structure, error handling
+3. **Replicate the working pattern exactly** — don't try alternatives until you've confirmed the existing code matches your current state
+4. **Only then** debug if the replicated pattern still fails
+
+This applies to ALL integrations with live code: Supabase edge functions, external APIs, webhooks. If Lovable built it and it's deployed, start there, not with curl experiments. The codebase IS the source of truth for "what works."
+**Severity:** P1 (wasted debugging cycles; wrong diagnosis; delays critical data sync)
 
 ---
 

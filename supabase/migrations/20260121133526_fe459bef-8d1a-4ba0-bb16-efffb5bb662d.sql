@@ -29,21 +29,11 @@ ALTER TABLE tm_test_case_versions ENABLE ROW LEVEL SECURITY;
 -- RLS policies
 CREATE POLICY "Users can view version history in their projects"
   ON tm_test_case_versions FOR SELECT
-  USING (EXISTS (
-    SELECT 1 FROM tm_test_cases tc
-    JOIN project_members pm ON pm.project_id = tc.project_id
-    WHERE tc.id = tm_test_case_versions.test_case_id
-    AND pm.user_id = auth.uid()
-  ));
+  USING (public.current_user_is_approved());
 
 CREATE POLICY "Users can create versions in their projects"
   ON tm_test_case_versions FOR INSERT
-  WITH CHECK (EXISTS (
-    SELECT 1 FROM tm_test_cases tc
-    JOIN project_members pm ON pm.project_id = tc.project_id
-    WHERE tc.id = tm_test_case_versions.test_case_id
-    AND pm.user_id = auth.uid()
-  ));
+  WITH CHECK (public.current_user_is_approved());
 
 -- Index for fast lookups
 CREATE INDEX IF NOT EXISTS idx_versions_case ON tm_test_case_versions(test_case_id, version_number DESC);

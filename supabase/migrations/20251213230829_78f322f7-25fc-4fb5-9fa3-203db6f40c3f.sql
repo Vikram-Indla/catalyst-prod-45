@@ -40,7 +40,7 @@ CREATE TABLE public.development_inventory (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   role_code TEXT REFERENCES public.role_catalog(code),
-  project_id UUID REFERENCES public.projects(id),
+  project_id UUID, -- FK removed: public.projects table does not exist in this schema
   start_date DATE,
   end_date DATE,
   capacity_percent INTEGER NOT NULL DEFAULT 100 CHECK (capacity_percent >= 0 AND capacity_percent <= 100),

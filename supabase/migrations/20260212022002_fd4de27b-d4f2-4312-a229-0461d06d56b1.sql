@@ -22,7 +22,7 @@ WITH assignee_stats AS (
   GROUP BY i.assignee_account_id, i.assignee_display_name
 )
 SELECT
-  COALESCE(m.catalyst_profile_id, uuid_generate_v5(uuid_ns_url(), s.assignee_account_id)) AS id,
+  COALESCE(m.catalyst_profile_id, md5(s.assignee_account_id)::uuid) AS id,
   m.catalyst_profile_id AS user_id,
   s.assignee_account_id AS jira_account_id,
   COALESCE(p.full_name, m.jira_display_name, s.assignee_display_name) AS name,

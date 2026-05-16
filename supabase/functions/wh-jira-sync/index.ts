@@ -230,11 +230,9 @@ serve(async (req) => {
       const pConfig = projectConfigs[projectKey] || { lookback_months: 3, status_categories: [], issue_types: [], fix_versions: [] }
       const lookbackMonths = pConfig.lookback_months ?? 3
 
-      // Build JQL
+      // Build JQL — SUPER STRICT GUARDRAIL: enforce 2026+ data window
       const jqlParts: string[] = [`project = "${projectKey}"`]
-      if (lookbackMonths > 0) {
-        jqlParts.push(`updated >= -${lookbackMonths * 30}d`)
-      }
+      jqlParts.push(`(created >= "2026/01/01" OR updated >= "2026/01/01")`)
       const statusCategories = pConfig.status_categories || []
       if (statusCategories.length > 0) {
         jqlParts.push(`statusCategory in (${statusCategories.map(c => `"${c}"`).join(',')})`)

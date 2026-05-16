@@ -64,9 +64,7 @@ ALTER TABLE public.report_configurations ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view reports in their projects"
   ON public.report_configurations FOR SELECT
   USING (
-    project_id IN (
-      SELECT project_id FROM public.project_members WHERE user_id = auth.uid()
-    ) OR is_public = TRUE
+    public.current_user_is_approved() OR is_public = TRUE
   );
 
 CREATE POLICY "Users can manage their own reports"
@@ -115,15 +113,11 @@ ALTER TABLE public.generated_reports ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view generated reports in their projects"
   ON public.generated_reports FOR SELECT
-  USING (project_id IN (
-    SELECT project_id FROM public.project_members WHERE user_id = auth.uid()
-  ));
+  USING (public.current_user_is_approved());
 
 CREATE POLICY "Users can create reports in their projects"
   ON public.generated_reports FOR INSERT
-  WITH CHECK (project_id IN (
-    SELECT project_id FROM public.project_members WHERE user_id = auth.uid()
-  ));
+  WITH CHECK (public.current_user_is_approved());
 
 -- ══════════════════════════════════════════════════════════════════════════════
 -- MIGRATION 003: Dashboard Widgets
@@ -223,9 +217,7 @@ ALTER TABLE public.daily_execution_stats ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view stats in their projects"
   ON public.daily_execution_stats FOR SELECT
-  USING (project_id IN (
-    SELECT project_id FROM public.project_members WHERE user_id = auth.uid()
-  ));
+  USING (public.current_user_is_approved());
 
 -- ══════════════════════════════════════════════════════════════════════════════
 -- MIGRATION 005: Analytics Functions

@@ -2,17 +2,16 @@
 DROP VIEW IF EXISTS planner_board_columns;
 
 CREATE OR REPLACE VIEW planner_board_columns AS
-SELECT 
+SELECT
   ps.id,
   ps.name,
   ps.slug,
   ps.color,
-  ps.sort_order,
+  ps.position AS sort_order,
   ps.position,
   ps.is_default,
-  ps.is_done,
   ps.is_completed_status,
-  ps.is_system,
+  NULL::boolean AS is_system,
   ps.created_at,
   ps.updated_at,
   (

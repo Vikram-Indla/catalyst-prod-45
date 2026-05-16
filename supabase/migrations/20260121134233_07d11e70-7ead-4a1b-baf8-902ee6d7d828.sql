@@ -24,24 +24,12 @@ ALTER TABLE tm_run_templates ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view run templates in their projects"
 ON tm_run_templates FOR SELECT
-USING (EXISTS (
-  SELECT 1 FROM project_members pm
-  WHERE pm.project_id = tm_run_templates.project_id
-  AND pm.user_id = auth.uid()
-));
+USING (public.current_user_is_approved());
 
 CREATE POLICY "Users can manage run templates"
 ON tm_run_templates FOR ALL
-USING (EXISTS (
-  SELECT 1 FROM project_members pm
-  WHERE pm.project_id = tm_run_templates.project_id
-  AND pm.user_id = auth.uid()
-))
-WITH CHECK (EXISTS (
-  SELECT 1 FROM project_members pm
-  WHERE pm.project_id = tm_run_templates.project_id
-  AND pm.user_id = auth.uid()
-));
+USING (public.current_user_is_approved())
+WITH CHECK (public.current_user_is_approved());
 
 -- Index for templates
 CREATE INDEX idx_tm_run_templates_project ON tm_run_templates(project_id) WHERE is_active = true;
@@ -70,27 +58,12 @@ ALTER TABLE tm_run_case_assignments ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view run case assignments"
 ON tm_run_case_assignments FOR SELECT
-USING (EXISTS (
-  SELECT 1 FROM test_execution_runs r
-  JOIN project_members pm ON pm.project_id = r.project_id
-  WHERE r.id = tm_run_case_assignments.run_id
-  AND pm.user_id = auth.uid()
-));
+USING (public.current_user_is_approved());
 
 CREATE POLICY "Users can manage run case assignments"
 ON tm_run_case_assignments FOR ALL
-USING (EXISTS (
-  SELECT 1 FROM test_execution_runs r
-  JOIN project_members pm ON pm.project_id = r.project_id
-  WHERE r.id = tm_run_case_assignments.run_id
-  AND pm.user_id = auth.uid()
-))
-WITH CHECK (EXISTS (
-  SELECT 1 FROM test_execution_runs r
-  JOIN project_members pm ON pm.project_id = r.project_id
-  WHERE r.id = tm_run_case_assignments.run_id
-  AND pm.user_id = auth.uid()
-));
+USING (public.current_user_is_approved())
+WITH CHECK (public.current_user_is_approved());
 
 -- Indexes for run case assignments
 CREATE INDEX idx_tm_run_case_assignments_run ON tm_run_case_assignments(run_id);
@@ -122,24 +95,12 @@ ALTER TABLE tm_scheduled_runs ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view scheduled runs"
 ON tm_scheduled_runs FOR SELECT
-USING (EXISTS (
-  SELECT 1 FROM project_members pm
-  WHERE pm.project_id = tm_scheduled_runs.project_id
-  AND pm.user_id = auth.uid()
-));
+USING (public.current_user_is_approved());
 
 CREATE POLICY "Users can manage scheduled runs"
 ON tm_scheduled_runs FOR ALL
-USING (EXISTS (
-  SELECT 1 FROM project_members pm
-  WHERE pm.project_id = tm_scheduled_runs.project_id
-  AND pm.user_id = auth.uid()
-))
-WITH CHECK (EXISTS (
-  SELECT 1 FROM project_members pm
-  WHERE pm.project_id = tm_scheduled_runs.project_id
-  AND pm.user_id = auth.uid()
-));
+USING (public.current_user_is_approved())
+WITH CHECK (public.current_user_is_approved());
 
 -- Index for scheduled runs
 CREATE INDEX idx_tm_scheduled_runs_next ON tm_scheduled_runs(next_run_at) WHERE is_active = true;

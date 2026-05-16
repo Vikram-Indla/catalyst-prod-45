@@ -6,7 +6,6 @@
 
 import { useState, useEffect, useRef, FormEvent } from 'react';
 import Textfield from '@atlaskit/textfield';
-import Textarea from '@atlaskit/textarea';
 import Button from '@atlaskit/button';
 import SectionMessage from '@atlaskit/section-message';
 import { UserType } from './constants';
@@ -19,8 +18,6 @@ const REMEMBERED_EMAIL_KEY = 'catalyst_remembered_email';
 export interface ExternalAccessRequest {
   name: string;
   email: string;
-  org: string;
-  desc: string;
 }
 
 interface LoginFormPanelProps {
@@ -91,8 +88,6 @@ export function LoginFormPanel({
 
   const [externalName, setExternalName] = useState('');
   const [externalEmail, setExternalEmail] = useState('');
-  const [externalOrg, setExternalOrg] = useState('');
-  const [externalDesc, setExternalDesc] = useState('');
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -190,7 +185,7 @@ export function LoginFormPanel({
 
   const handleExternalSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    await onExternalSubmit({ name: externalName, email: externalEmail, org: externalOrg, desc: externalDesc });
+    await onExternalSubmit({ name: externalName, email: externalEmail });
     setSubmitSuccess(true);
   };
 
@@ -522,16 +517,6 @@ export function LoginFormPanel({
             <label htmlFor="ext-email" className="clmp-label">{t(lang, 'form.label.email')}</label>
             <Textfield id="ext-email" name="email" type="email" placeholder={t(lang, 'form.placeholder.email.org')}
               value={externalEmail} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setExternalEmail(e.currentTarget.value)} dir="ltr" isRequired />
-          </div>
-          <div className="clmp-field">
-            <label htmlFor="ext-org" className="clmp-label">{t(lang, 'form.label.org')}</label>
-            <Textfield id="ext-org" name="org" type="text" placeholder={t(lang, 'form.placeholder.org')}
-              value={externalOrg} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setExternalOrg(e.currentTarget.value)} />
-          </div>
-          <div className="clmp-field">
-            <label htmlFor="ext-desc" className="clmp-label">{t(lang, 'form.label.desc')}</label>
-            <Textarea id="ext-desc" name="desc" placeholder={t(lang, 'form.placeholder.desc')}
-              value={externalDesc} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setExternalDesc(e.target.value)} minimumRows={3} />
           </div>
           <Button type="submit" appearance="primary" shouldFitContainer>{t(lang, 'form.btn.submit')}</Button>
         </form>

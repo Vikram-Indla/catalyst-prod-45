@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS public.traceability_findings (
   resolved_at TIMESTAMPTZ,
   resolved_by UUID REFERENCES public.profiles(id),
   resolution_notes TEXT,
-  linked_defect_id UUID REFERENCES public.defects(id),
+  linked_defect_id UUID, -- FK to defects omitted: table created in a later migration
   linked_task_id UUID,
   ai_action_id UUID REFERENCES public.test_ai_actions(id),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
