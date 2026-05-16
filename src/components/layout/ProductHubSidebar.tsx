@@ -12,7 +12,7 @@
  * Dual-mode added 2026-05-16 so /product-hub/INV/* shows per-product nav.
  */
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import {
   LayoutGrid,
@@ -30,6 +30,8 @@ import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useTheme } from '@/hooks/useTheme';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { useGlobalSearchStore } from '@/stores/globalSearchStore';
 
 interface ProductHubSidebarProps {
   expanded: boolean;
@@ -42,6 +44,16 @@ interface BrRecentRow {
   title: string;
   request_key: string;
   updated_at: string;
+}
+
+interface RecentItemRow {
+  id: string;
+  entity_type: string;
+  entity_id: string;
+  entity_key: string | null;
+  display_summary: string | null;
+  nav_path: string;
+  visited_at: string;
 }
 
 interface ProductRow {
@@ -80,10 +92,10 @@ function buildPerProductConfig(product: ProductRow): SidebarConfig {
       {
         title: 'Planning',
         items: [
-          { id: 'dashboard', title: 'Dashboard', path: `${base}/dashboard`, icon: LayoutDashboard, exact: true },
-          { id: 'backlog',   title: 'Backlog',   path: `${base}/backlog`,   icon: ClipboardList,   exact: true },
-          { id: 'boards',    title: 'Boards',    path: `${base}/boards`,    icon: Columns3,        exact: false },
-          { id: 'allwork',   title: 'All Work',  path: `${base}/allwork`,   icon: Network,         exact: true },
+          { id: 'dashboard', title: 'Product Dashboard', path: `${base}/dashboard`, icon: LayoutDashboard, exact: true },
+          { id: 'backlog',   title: 'Product Backlog',   path: `${base}/backlog`,   icon: ClipboardList,   exact: true },
+          { id: 'boards',    title: 'Product Board',     path: `${base}/boards`,    icon: Columns3,        exact: false },
+          { id: 'allwork',   title: 'Product Work',      path: `${base}/allwork`,   icon: Network,         exact: true },
         ],
       },
     ],
@@ -149,7 +161,7 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
 
   const isScoped = !!scopedProduct && !!productCode;
 
-  // Recent BRs — only shown in global mode
+  // Recent BRs — only shown in global mode (no product scoped)
   const { data: recentBrs = [] } = useQuery<BrRecentRow[]>({
     queryKey: ['product-hub-recent-brs'],
     enabled: !isScoped,
@@ -166,8 +178,42 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
     refetchOnWindowFocus: false,
   });
 
+  // Per-product recents — shown when scoped to a product (parity with Project Hub sidebar).
+  // Queries user_recent_items filtered to nav_paths under /product-hub/{code}/
+  // so only items the user actually visited in this product appear.
+  const { data: perProductRecents = [] } = useQuery<RecentItemRow[]>({
+    queryKey: ['product-hub-per-product-recents', productCode],
+    enabled: isScoped && !!productCode,
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from('user_recent_items')
+        .select('id, entity_type, entity_id, entity_key, display_summary, nav_path, visited_at')
+        .eq('user_id', user.id)
+        .ilike('nav_path', `/product-hub/${productCode}/%`)
+        .order('visited_at', { ascending: false })
+        .limit(50);
+      if (error) { console.warn('[ProductHubSidebar] per-product recents error:', error.message); return []; }
+      // Deduplicate by nav_path — newest-first, cap at 15
+      const seen = new Set<string>();
+      const deduped: RecentItemRow[] = [];
+      for (const item of data ?? []) {
+        if (!seen.has(item.nav_path)) {
+          seen.add(item.nav_path);
+          deduped.push(item as RecentItemRow);
+          if (deduped.length === 15) break;
+        }
+      }
+      return deduped;
+    },
+    staleTime: 30_000,
+    refetchOnWindowFocus: false,
+  });
+
   const config: SidebarConfig = isScoped ? buildPerProductConfig(scopedProduct!) : GLOBAL_CONFIG;
 
+  // Global mode: recent BRs section
   const recentsSection = !isScoped && expanded && recentBrs.length > 0 ? (
     <div style={{ marginTop: 8 }}>
       <div style={{ height: 1, background: token('color.border'), margin: '4px 12px 8px' }} />
@@ -222,6 +268,66 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
     </div>
   ) : null;
 
+  // Per-product mode: user_recent_items section (mirrors Project Hub sidebar pattern)
+  const perProductRecentsSection = isScoped && expanded && perProductRecents.length > 0 ? (
+    <div style={{ marginTop: 8 }}>
+      <div style={{ height: 1, background: token('color.border'), margin: '4px 12px 8px' }} />
+
+      <button
+        onClick={() => setRecentsExpanded(p => !p)}
+        className="flex items-center w-full"
+        style={{ padding: '6px 12px', border: 'none', background: 'transparent', cursor: 'pointer', gap: 4 }}
+        aria-expanded={recentsExpanded}
+      >
+        <ChevronRight
+          size={12}
+          style={{
+            color: token('color.text.subtlest'),
+            transform: recentsExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+            transition: 'transform 150ms ease',
+          }}
+        />
+        <Clock size={12} style={{ color: token('color.text.subtlest') }} />
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-body)' }}>
+          Recent
+        </span>
+        <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-mono)' }}>
+          {perProductRecents.length}
+        </span>
+      </button>
+
+      {recentsExpanded && (
+        <div style={{ padding: '2px 0' }}>
+          {perProductRecents.map((item) => (
+            <div
+              key={item.id}
+              onClick={() => {
+                const { openDetail } = useGlobalSearchStore.getState();
+                openDetail({ id: item.entity_key || item.entity_id, itemType: item.entity_type as any });
+              }}
+              className="group"
+              style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '5px 12px 5px 28px', cursor: 'pointer', borderRadius: 3, margin: '0 4px', transition: 'background 80ms ease' }}
+              onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+            >
+              <span style={{ flexShrink: 0, marginTop: 1 }}>
+                <JiraIssueTypeIcon type={item.entity_type} size={14} />
+              </span>
+              <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <span style={{ fontSize: 13, fontWeight: 500, color: token('color.text'), fontFamily: 'var(--cp-font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.display_summary ?? ''}>
+                  {item.display_summary || item.entity_key || '—'}
+                </span>
+                <span style={{ fontSize: 11, fontWeight: 400, color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-mono)', letterSpacing: '0.01em' }}>
+                  {item.entity_key ?? item.entity_type} · {daysAgo(item.visited_at)}
+                </span>
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  ) : null;
+
   return (
     <SidebarBase
       config={config}
@@ -229,7 +335,7 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
       onToggle={onToggle}
       className={className}
     >
-      {recentsSection}
+      {isScoped ? perProductRecentsSection : recentsSection}
     </SidebarBase>
   );
 }

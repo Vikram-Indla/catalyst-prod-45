@@ -108,7 +108,10 @@ const RequirementAssistOutput = ENABLE_AI ? lazy(() => import("../pages/producth
 const ProductCardsPage = lazy(() => import("../pages/producthub/CardsPage"));
 // Block C/D (2026-05-01) — All Products listing for /product-hub/products.
 const AllProductsPage = lazy(() => import("../pages/product-hub/AllProductsPage"));
-// INV product-scoped backlog (Investor Journey — Business Request view).
+// 2026-05-16: per-product adapters — resolve products table, mount canonical components
+const ProductHubBacklogAdapter = lazy(() => import("../pages/product-hub/ProductHubPageAdapters"));
+const ProductHubAllWorkAdapter = lazy(() => import("../pages/product-hub/ProductHubPageAdapters").then(m => ({ default: m.ProductHubAllWorkAdapter })));
+// INV product-scoped backlog (legacy — superseded by ProductHubBacklogAdapter 2026-05-16).
 const InvestorJourneyBacklogPage = lazy(() => import("../pages/product-hub/InvestorJourneyBacklogPage"));
 const IdeationPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeationPage")) : () => <FeatureComingSoon title="Ideation" />;
 const IdeasRoadmapPage = ENABLE_AI ? lazy(() => import("../pages/product/ideas/IdeasRoadmapPage")) : () => <FeatureComingSoon title="Ideas Roadmap" />;
@@ -489,20 +492,21 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/dashboard" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/product-dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
         {/* Block D Phase 2.5 (2026-05-01) — product-scoped drilldown routes.
-            Mirror of /project-hub/{KEY}/* on the project side. The :code param
-            resolves against public.products.code (MINI/SEN/ENT/UNA). Pages
-            read useParams().code, look up the product, and scope their data.
-            Data filter is UI-only until ph_requests gains a product_id FK in
-            a follow-up migration — see lesson note in CLAUDE.md. */}
-        {/* Generic per-product routes */}
-        <Route path="/product-hub/:code/backlog" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
-        <Route path="/product-hub/:code/boards" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
-        <Route path="/product-hub/:code/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
-        <Route path="/product-hub/:code/allwork" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
-        <Route path="/product-hub/:code/dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
-        <Route path="/product-hub/:code/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
-        <Route path="/product-hub/:code/cards" element={<MG k="producthub" t="ProductHub"><S><ProductCardsPage /></S></MG>} />
-        <Route path="/product-hub/:code/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
+            Mirror of /project-hub/{KEY}/* on the project side.
+            :key param resolves against public.products.code (INV/MINI/SEN/ENT).
+            Canonical project-hub components are reused; ph_issues holds the
+            product data (project_key = product code, e.g. 'INV').
+            2026-05-16: renamed :code → :key so canonical components that read
+            useParams().key work without adaptation. */}
+        {/* Generic per-product routes — canonical components, same as project-hub */}
+        <Route path="/product-hub/:key/backlog" element={<MG k="producthub" t="ProductHub"><S><ProductHubBacklogAdapter /></S></MG>} />
+        <Route path="/product-hub/:key/boards" element={<MG k="producthub" t="ProductHub"><S><KanbanBoardPageLazy /></S></MG>} />
+        <Route path="/product-hub/:key/kanban" element={<MG k="producthub" t="ProductHub"><S><KanbanBoardPageLazy /></S></MG>} />
+        <Route path="/product-hub/:key/allwork" element={<MG k="producthub" t="ProductHub"><S><ProductHubAllWorkAdapter /></S></MG>} />
+        <Route path="/product-hub/:key/dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
+        <Route path="/product-hub/:key/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
+        <Route path="/product-hub/:key/cards" element={<MG k="producthub" t="ProductHub"><S><ProductCardsPage /></S></MG>} />
+        <Route path="/product-hub/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/product-hub/roadmaps" element={<Navigate to="/product-hub/roadmap" replace />} />
         <Route path="/product-hub/roadmaps-v1" element={<MG k="producthub" t="ProductHub"><S><IndustryRoadmapPage /></S></MG>} />
         <Route path="/product-hub/reports" element={<MG k="producthub" t="ProductHub"><S><IndustryComingSoon /></S></MG>} />

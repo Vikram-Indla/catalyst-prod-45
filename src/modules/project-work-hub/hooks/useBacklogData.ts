@@ -95,12 +95,16 @@ export function useRequestLinksByEpicKeys(epicKeys: string[]) {
  * Epic Backlog — pulls from ph_issues where issue_type = 'Epic',
  * project_key resolved from project UUID, filtered to 2026.
  */
-export function useEpicBacklog(projectId: string, opts?: { assigneeIds?: string[] }) {
+export function useEpicBacklog(projectId: string, opts?: { assigneeIds?: string[]; forceProjectKey?: string }) {
   const assigneeIds = opts?.assigneeIds ?? [];
   const hasAssigneeOverride = assigneeIds.length > 0;
+  const forceProjectKey = opts?.forceProjectKey;
 
   const { data: project } = useProject(projectId);
-  const projectKey = project?.key ?? null;
+  // forceProjectKey bypasses the projects-table lookup — used when the
+  // caller already knows the project key (e.g. Product Hub adapters whose
+  // projectId comes from the products table, not projects).
+  const projectKey = forceProjectKey ?? project?.key ?? null;
 
   return useQuery({
     queryKey: hasAssigneeOverride
@@ -158,7 +162,7 @@ export function useEpicBacklog(projectId: string, opts?: { assigneeIds?: string[
 
       return epics;
     },
-    enabled: hasAssigneeOverride ? true : (!!projectId && !!projectKey),
+    enabled: hasAssigneeOverride ? true : (!!forceProjectKey || (!!projectId && !!projectKey)),
   });
 }
 
@@ -180,12 +184,24 @@ export function useFeatureBacklog(projectId: string) {
  * project_key resolved from project UUID, filtered to 2026.
  * Parent epic resolved via parent_key lookup.
  */
-export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string[] }) {
+export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string[]; forceProjectKey?: string }) {
   const assigneeIds = opts?.assigneeIds ?? [];
   const hasAssigneeOverride = assigneeIds.length > 0;
+  const forceProjectKey = opts?.forceProjectKey;
 
   const { data: project } = useProject(projectId);
-  const projectKey = project?.key ?? null;
+  // forceProjectKey bypasses the projects-table lookup — used when the
+  // caller already knows the project key (e.g. Product Hub adapters whose
+  // projectId comes from the products table, not projects).
+  const projectKey = forceProjectKey ?? project?.key ?? null;
+
+  // When a product-hub key is forced, also include 'Business Request' issues
+  // (the MDT-* items stored by the Jira sync) so they appear as top-level
+  // leaf rows in the backlog. BAU has no 'Business Request' rows, so this
+  // filter extension is a no-op for normal project-hub usage.
+  const issueTypeFilter = forceProjectKey
+    ? ['Story', 'QA Bug', 'Production Incident', 'Business Request']
+    : ['Story', 'QA Bug', 'Production Incident'];
 
   return useQuery({
     queryKey: hasAssigneeOverride
@@ -197,7 +213,7 @@ export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string
       let query = supabase
         .from('ph_issues')
         .select(SELECT)
-        .in('issue_type', ['Story', 'QA Bug', 'Production Incident'])
+        .in('issue_type', issueTypeFilter)
         .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
         .is('jira_removed_at', null)
         .is('archived_at', null);
@@ -352,7 +368,7 @@ export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string
       const uniqueCat = catStories.filter((s) => !(s.story_key && seenKeys.has(s.story_key)));
       return [...jiraStories, ...uniqueCat];
     },
-    enabled: hasAssigneeOverride ? true : (!!projectId && !!projectKey),
+    enabled: hasAssigneeOverride ? true : (!!forceProjectKey || (!!projectId && !!projectKey)),
     staleTime: 5 * 60 * 1000,
   });
 }

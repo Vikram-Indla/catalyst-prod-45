@@ -533,7 +533,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
 
   const queryClient = useQueryClient();
 
-  const backlogOpts = assigneeIds?.length ? { assigneeIds } : undefined;
+  // Always pass forceProjectKey so Product Hub adapters (whose projectId
+  // comes from the products table, not projects) can bypass the
+  // projects-table lookup inside useStoryBacklog / useEpicBacklog.
+  // For normal project-hub usage this is a no-op (the resolved key matches).
+  const backlogOpts = {
+    ...(assigneeIds?.length ? { assigneeIds } : {}),
+    forceProjectKey: projectKey || undefined,
+  };
   const {
     data: stories = [],
     isLoading: storiesLoading,
