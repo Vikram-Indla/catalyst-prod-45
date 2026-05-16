@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus, FolderKanban, FolderOpen, Star, RefreshCw } from '@/lib/atlaskit-icons';
+import { Plus, FolderKanban, FolderOpen, Star } from '@/lib/atlaskit-icons';
 import type { ProjectFilters, SortColumn, SortDirection } from '@/types/projecthub';
 import { DEFAULT_FILTERS } from '@/types/projecthub';
 import {
@@ -17,11 +17,9 @@ import { AllProjectsToolbar } from '@/components/projecthub/AllProjectsToolbar';
 import { AllProjectsTable } from '@/components/projecthub/AllProjectsTable';
 import { ProjectDetailPanel } from '@/components/projecthub/ProjectDetailPanel';
 import { CreateSpaceModal } from '@/spaces';
-import { JiraSyncPanel, SyncCTALabel } from '@/components/projecthub/JiraSyncPanel';
 import { toast } from 'sonner';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { supabase } from '@/integrations/supabase/client';
 import { buildProjectSyncStats, SYNC_COUNT_DATE_BOUNDARY } from '@/hooks/projecthub-sync-utils';
 import type { ProjectSyncStats } from '@/hooks/projecthub-sync-utils';
@@ -49,7 +47,6 @@ export default function AllProjectsPage() {
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [syncPanelOpen, setSyncPanelOpen] = useState(false);
   const queryClient = useQueryClient();
 
   // Get current user for "My Projects" tab
@@ -163,29 +160,6 @@ export default function AllProjectsPage() {
         title="All Projects"
         actions={
           <div className="flex items-center gap-3">
-            {/* Jira Sync CTA — full pill on desktop, icon-only at <1024 (Loop 5b) */}
-            <Popover open={syncPanelOpen} onOpenChange={setSyncPanelOpen}>
-              <PopoverTrigger asChild>
-                {isNarrow ? (
-                  <button
-                    aria-label="Jira Sync"
-                    title="Jira Sync"
-                    className="h-9 w-9 bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] border border-slate-200 dark:border-slate-700 rounded-md flex items-center justify-center hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 hover:text-blue-600 transition-all text-slate-700 dark:text-slate-300 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none"
-                  >
-                    <RefreshCw size={16} strokeWidth={2} />
-                  </button>
-                ) : (
-                  <button className="h-10 px-4 bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] border border-slate-200 dark:border-slate-700 rounded-md text-[13px] font-semibold flex items-center gap-2.5 hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 hover:text-blue-600 transition-all text-slate-700 dark:text-slate-300 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none">
-                    <SyncCTALabel />
-                  </button>
-                )}
-              </PopoverTrigger>
-              <PopoverContent className="w-[360px] p-5 bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-slate-700" align="end">
-                <JiraSyncPanel />
-              </PopoverContent>
-            </Popover>
-
-            {/* New Project — full label on desktop, icon-only at <1024 (Loop 5b) */}
             {isNarrow ? (
               <button
                 onClick={() => setShowCreateModal(true)}
@@ -240,22 +214,14 @@ export default function AllProjectsPage() {
             </div>
             <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-200 mb-1" style={{ fontFamily: 'var(--cp-font-heading)' }}>No projects yet</h3>
             <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-md">
-              Connect Jira to sync your projects, or create one manually to get started.
+              Projects appear here after the Jira sync has run, or create one manually to get started.
             </p>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setSyncPanelOpen(true)}
-                className="h-9 px-4 border border-slate-200 dark:border-slate-700 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 bg-transparent text-slate-700 dark:text-slate-300 cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none"
-              >
-                ↔ Connect Jira
-              </button>
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="h-9 px-4 bg-blue-600 text-white rounded-md text-sm font-semibold hover:bg-blue-700 flex items-center gap-2 border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none"
-              >
-                <Plus className="w-4 h-4" /> Create project
-              </button>
-            </div>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="h-9 px-4 bg-blue-600 text-white rounded-md text-sm font-semibold hover:bg-blue-700 flex items-center gap-2 border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none"
+            >
+              <Plus className="w-4 h-4" /> Create project
+            </button>
           </div>
         ) : isMyProjectsNoAuth ? (
           /* QA1: My Projects — not logged in */

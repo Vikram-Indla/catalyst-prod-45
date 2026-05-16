@@ -166,6 +166,11 @@ function App() {
                     redirects live inside the shell. */}
                 <Route path="/product-hub" element={<Navigate to="/product-hub/products" replace />} />
 
+                {/* Same pattern for /project-hub — CatalystShell re-render loop
+                    prevents Navigate from committing when the redirect lives
+                    inside the shell. Mirror the /product-hub treatment above. */}
+                <Route path="/project-hub" element={<Navigate to="/project-hub/projects" replace />} />
+
                 {/* Protected shell with minimal routes */}
 
                 {/* Protected shell with minimal routes */}
