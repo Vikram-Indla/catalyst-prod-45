@@ -1,19 +1,30 @@
 /**
- * StatusCell — Atlaskit Lozenge + chevron, wrapped in StatusPopover for editing.
+ * StatusCell — Jira-exact status pill + chevron, wrapped in StatusPopover for editing.
  *
- * CLAUDE.md §5 "3 colours only" guardrail:
- *   Only three of Atlaskit Lozenge's six appearances are ever rendered:
- *     todo         -> 'default'     (grey)
- *     in_progress  -> 'inprogress'  (blue)
- *     done         -> 'success'     (green)
- *   `removed`, `new`, `moved` are NEVER used. Any unknown category falls
- *   back to 'default'.
+ * jira-compare 2026-05-17: Replaced @atlaskit/lozenge with a custom inline span that
+ * uses exact Jira-measured hex colors (K.11). The ADS bold tokens for success/inprogress
+ * render wrong colors (dark forest green / saturated blue) vs Jira's actual lime green /
+ * medium blue. This matches the same statusBg logic in CatalystStatusPill.tsx.
+ *
+ * 3 colours only (Jira subtask panel uses only these three status categories):
+ *   todo        → near-transparent grey  rgba(5,21,36,0.06)
+ *   in_progress → medium blue            #669DF1
+ *   done        → lime green             #94C748
  */
 import React from 'react';
-import Lozenge from '@atlaskit/lozenge';
 import { StatusPopover } from '../popovers/StatusPopover';
 
 type AllowedAppearance = 'default' | 'inprogress' | 'success';
+
+/** Jira-exact background/foreground per status category — matches CatalystStatusPill.tsx */
+function statusBg(appearance: AllowedAppearance): { bg: string; fg: string } {
+  const fg = '#292A2E'; // universal dark text — same for all Jira status pills
+  switch (appearance) {
+    case 'success':    return { bg: '#94C748',                fg }; // Done — lime green
+    case 'inprogress': return { bg: '#669DF1',                fg }; // In Progress — medium blue
+    default:           return { bg: 'rgba(5, 21, 36, 0.06)', fg }; // To Do — near-transparent
+  }
+}
 
 function categoryToAppearance(category: string): AllowedAppearance {
   const c = (category ?? '').toLowerCase();
@@ -35,6 +46,7 @@ export const StatusCell = React.memo(function StatusCell({
   status, statusCategory, onChange, readOnly,
 }: StatusCellProps) {
   const appearance = categoryToAppearance(statusCategory);
+  const { bg, fg } = statusBg(appearance);
 
   const trigger = (
     <button
@@ -46,7 +58,28 @@ export const StatusCell = React.memo(function StatusCell({
       aria-label={readOnly ? `Status ${status}` : `${status} — change status`}
       disabled={readOnly}
     >
-      <span data-cp-lozenge-jira-parity style={{ display: "inline-block" }}><Lozenge appearance={appearance} isBold={appearance !== 'default'}>{status}</Lozenge></span>
+      {/* jira-compare 2026-05-17: custom pill with exact Jira hex colors (K.11).
+          @atlaskit/lozenge bold tokens don't match Jira's actual status category
+          colors. Matches CatalystStatusPill.tsx statusBg pattern. */}
+      <span style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        padding: '2px 6px',
+        borderRadius: 3,
+        fontSize: 11,
+        fontWeight: 700,
+        lineHeight: '16px',
+        letterSpacing: '0.165px',
+        textTransform: 'uppercase',
+        background: bg,
+        color: fg,
+        whiteSpace: 'nowrap',
+        maxWidth: 100,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+      }}>
+        {status}
+      </span>
       {!readOnly && (
         <span className="sp-status-chevron-ak" aria-hidden>
           <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">

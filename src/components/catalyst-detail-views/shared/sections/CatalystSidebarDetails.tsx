@@ -543,9 +543,11 @@ export function CatalystSidebarDetails({
           <span style={{ display: 'inline-flex', transition: 'transform 0.15s ease', transform: detailsCollapsed ? 'rotate(0deg)' : 'rotate(90deg)', color: 'var(--ds-icon-subtle, #626F86)' }}>
             <ChevronRightIcon size="small" primaryColor="currentColor" />
           </span>
-          {/* jira-compare 2026-05-11 re-probe: 16/653/20px/rgb(41,42,46) is canonical
-              section header spec (live DOM BAU-5814 + QA Bug). Corrects 2026-05-08. */}
-          <div style={{ fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}>Details</div>
+          {/* jira-compare 2026-05-16 re-probe BAU-1919: "Details" h2 is 16px/500 in Jira
+              (data-testid="issue-view-layout-group.common.ui.collapsible-group-factory.title").
+              Previous 653 was measured from Subtasks/LWI/Activity — those ARE 653.
+              Details and Development sections use 500. Corrected to match Jira parity. */}
+          <div style={{ fontSize: 16, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}>Details</div>
         </div>
 
         {!detailsCollapsed && <div style={{ padding: '0' }}>
@@ -586,7 +588,7 @@ export function CatalystSidebarDetails({
                 <button
                   type="button"
                   onClick={handleAssignToMe}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--ds-link, #0C66E4)', fontSize: 11, textAlign: 'left', marginTop: 2 }}
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--ds-link, #1868DB)', fontSize: 14, fontWeight: 400, lineHeight: '20px', textAlign: 'left', marginTop: 4 }}
                 >
                   Assign to me
                 </button>

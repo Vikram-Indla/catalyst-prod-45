@@ -216,7 +216,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
                   alignItems: 'center', gap: 6,
                   fontFamily: "'Atlassian Sans', -apple-system, sans-serif", fontWeight: 400,
                 }}>
-                  <WorkItemTypeIcon type={item.type} size={14} />
+                  <WorkItemTypeIcon type={(item as any).rawType || item.type} size={14} />
                   {item.jiraKey}
                 </span>
                 {/* Status pill REMOVED from rail card per Jira parity (verified
