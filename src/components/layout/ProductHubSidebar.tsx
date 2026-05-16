@@ -223,21 +223,35 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
 
   const config: SidebarConfig = isScoped ? buildPerProductConfig(scopedProduct!) : GLOBAL_CONFIG;
 
-  // Group BRs by time bucket — TODAY only (matching canonical pattern)
-  // H1 gate: only show TODAY and YESTERDAY (user directive: max 48 hours)
+  // Group BRs by time bucket — TODAY + YESTERDAY, fallback to MOST RECENT when empty
+  // H1 gate: show TODAY and YESTERDAY (max 48 hours), then fallback to most recent (capped 15)
   const groupedBrs = useMemo(() => {
     const now = Date.now();
     const dayMs = 24 * 60 * 60 * 1000;
-    const groups: { label: string; items: typeof recentBrs }[] = [
-      { label: 'Today', items: [] },
-      { label: 'Yesterday', items: [] },
-    ];
+    const today: typeof recentBrs = [];
+    const yesterday: typeof recentBrs = [];
+
     for (const br of recentBrs) {
       const age = now - new Date(br.updated_at).getTime();
-      if (age < dayMs) groups[0].items.push(br);
-      else if (age < 2 * dayMs) groups[1].items.push(br);
-      // Filter out older items — canonical pattern: TODAY + YESTERDAY only
+      if (age < dayMs) today.push(br);
+      else if (age < 2 * dayMs) yesterday.push(br);
     }
+
+    const groups: { label: string; items: typeof recentBrs }[] = [
+      { label: 'Today', items: today },
+      { label: 'Yesterday', items: yesterday },
+    ];
+
+    // When both TODAY and YESTERDAY are empty, show MOST RECENT (up to 15 items)
+    if (today.length === 0 && yesterday.length === 0 && recentBrs.length > 0) {
+      const mostRecent = recentBrs
+        .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+        .slice(0, 15);
+      if (mostRecent.length > 0) {
+        groups.push({ label: 'Most Recent', items: mostRecent });
+      }
+    }
+
     return groups.filter(g => g.items.length > 0);
   }, [recentBrs]);
 
