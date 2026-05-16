@@ -13,6 +13,9 @@ import { LabelsTab } from '@/components/project-hub/settings/LabelsTab';
 import { ComponentsTab } from '@/components/project-hub/settings/ComponentsTab';
 import { IntegrationTab } from '@/components/project-hub/settings/IntegrationTab';
 import { NotificationsTab } from '@/components/project-hub/settings/NotificationsTab';
+import { ScreensTab } from '@/components/project-hub/settings/ScreensTab';
+import { LayoutTab } from '@/components/project-hub/settings/LayoutTab';
+import { FieldsTab } from '@/components/project-hub/settings/FieldsTab';
 import { SkeletonTable } from '@/components/project-hub/shared/SkeletonPulse';
 import '@/components/project-hub/shared/phStyles.css';
 
@@ -103,6 +106,18 @@ export default function ProjectSettingsPageNew() {
 
           {activeTab === 'Types' && project && (
             <TypesTab projectId={project.id} featureLayer={(project as any).feature_layer ?? false} />
+          )}
+
+          {activeTab === 'Layout' && project && (
+            <LayoutTab projectId={project.id} />
+          )}
+
+          {activeTab === 'Screens' && project && (
+            <ScreensTab projectId={project.id} />
+          )}
+
+          {activeTab === 'Fields' && project && (
+            <FieldsTab projectId={project.id} />
           )}
 
           {activeTab === 'Labels' && project && (
