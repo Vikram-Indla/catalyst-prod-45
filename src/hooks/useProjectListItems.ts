@@ -256,6 +256,7 @@ export function useWorkItemChildren(parentKey: string | undefined, enabled: bool
 
 /* ── Single work item (detail panel) ── */
 export function useWorkItem(itemId: string | undefined) {
+  const { user } = useAuth();
   return useQuery({
     queryKey: ['work-item-detail', itemId],
     queryFn: async (): Promise<WorkItem | null> => {
@@ -270,13 +271,14 @@ export function useWorkItem(itemId: string | undefined) {
       if (!data) return null;
       return mapPhIssue(data);
     },
-    enabled: !!itemId,
+    enabled: !!itemId && !!user,
     staleTime: 15_000,
   });
 }
 
 /* ── Search ── */
 export function useSearchWorkItems(projectKey: string | undefined, query: string) {
+  const { user } = useAuth();
   return useQuery({
     queryKey: ['work-items-search', projectKey, query],
     queryFn: async (): Promise<WorkItem[]> => {
@@ -294,7 +296,7 @@ export function useSearchWorkItems(projectKey: string | undefined, query: string
 
       return (data ?? []).map(mapPhIssue);
     },
-    enabled: !!projectKey && query.length >= 2,
+    enabled: !!projectKey && query.length >= 2 && !!user,
     staleTime: 5_000,
   });
 }
