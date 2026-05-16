@@ -4,6 +4,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { MemberRow } from './MemberRow';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button/new';
 
 interface MembersTabProps {
   projectId: string;
@@ -22,6 +24,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<{ id: string; name: string; email: string }[]>([]);
+  const [pendingRemove, setPendingRemove] = useState<{ id: string; name: string } | null>(null);
 
   const { data: members = [], isLoading } = useQuery({
     queryKey: ['ph-project-members', projectId],
@@ -99,15 +102,17 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
     }
   };
 
-  const removeMember = async (memberId: string) => {
-    if (!confirm('Remove this member from the project?')) return;
+  const confirmRemove = async () => {
+    if (!pendingRemove) return;
     try {
-      const { error } = await supabase.from('ph_project_members').delete().eq('id', memberId);
+      const { error } = await supabase.from('ph_project_members').delete().eq('id', pendingRemove.id);
       if (error) throw new Error(error.message);
       queryClient.invalidateQueries({ queryKey: ['ph-project-members', projectId] });
       toast.success('Member removed');
     } catch (err: any) {
       toast.error(err.message || 'Failed to remove member');
+    } finally {
+      setPendingRemove(null);
     }
   };
 
@@ -173,7 +178,8 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
         <div className="space-y-1">
           {members.map(m => (
             <MemberRow key={m.id} id={m.id} name={m.name} email={m.email} role={m.role}
-              isCurrentUser={m.user_id === currentUserId} onRoleChange={updateRole} onRemove={removeMember}
+              isCurrentUser={m.user_id === currentUserId} onRoleChange={updateRole}
+              onRemove={(id) => setPendingRemove({ id, name: m.name })}
             />
           ))}
         </div>
@@ -186,6 +192,24 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
           <strong>Viewer</strong> — Read-only access, can add comments
         </p>
       </div>
+
+      {/* Remove member confirmation modal */}
+      {pendingRemove && (
+        <ModalDialog onClose={() => setPendingRemove(null)}>
+          <ModalHeader hasCloseButton>
+            <ModalTitle appearance="warning">Remove member</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <p style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', margin: 0 }}>
+              Remove <strong>{pendingRemove.name}</strong> from this project? They will lose access to all project work items and settings.
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={() => setPendingRemove(null)}>Cancel</Button>
+            <Button appearance="warning" onClick={confirmRemove}>Remove</Button>
+          </ModalFooter>
+        </ModalDialog>
+      )}
     </div>
   );
 }
