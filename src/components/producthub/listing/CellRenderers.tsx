@@ -10,11 +10,20 @@ import type { RequestStatus } from '@/types/request';
 import { STATUS_DISPLAY, getPriorityLevel, getAvatarColor, getInitials } from '@/types/request';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { BusinessRequestIcon } from '@/components/producthub/shared/BusinessRequestBadge';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import Avatar from '@atlaskit/avatar';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useActiveUsers } from '@/hooks/useActiveUsers';
 
+/* ── Type mapping helper ── */
+function mapBrTypeToIconType(requestType: string): string {
+  const t = (requestType || '').toLowerCase().trim();
+  // request_type values: 'feature', 'gap', 'integration', 'data_request'
+  if (t === 'gap') return 'business gap';
+  if (t === 'data_request' || t === 'data request') return 'task'; // Data requests use task icon
+  return t; // 'feature' and 'integration' map directly
+}
 
 /* ── Status Cell ── */
 export const StatusCell = React.memo(function StatusCell({ status }: { status: RequestStatus }) {
@@ -258,15 +267,18 @@ export const TypeIconCell = React.memo(function TypeIconCell() {
 
 /* ── Type Cell — Block D (2026-05-01)
    Renders the ticket type as icon + lozenge label. Reads from
-   `request.type` (Feature, Gap, Integration, Data Request, Business
-   Request) — matches the discriminator on mim_business_requests.
-   Falls back to "Business Request" so legacy Catalyst rows render. */
-export const TypeCell = React.memo(function TypeCell({ type }: { type?: string | null }) {
-  const t = type || 'Business Request';
+   `request.request_type` (feature, gap, integration, data_request)
+   and maps to JiraIssueTypeIcon. Falls back to "Business Request"
+   so legacy Catalyst rows without request_type render. */
+export const TypeCell = React.memo(function TypeCell({ requestType }: { requestType?: string | null }) {
+  const displayLabel = requestType
+    ? requestType.charAt(0).toUpperCase() + requestType.slice(1).replace(/_/g, ' ')
+    : 'Business Request';
+  const iconType = requestType ? mapBrTypeToIconType(requestType) : 'business request';
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }} title={t}>
-      <BusinessRequestIcon size={14} />
-      <span style={{ fontSize: 12, color: 'var(--cp-text-secondary)' }}>{t}</span>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }} title={displayLabel}>
+      <JiraIssueTypeIcon type={iconType} size={14} />
+      <span style={{ fontSize: 12, color: 'var(--cp-text-secondary)' }}>{displayLabel}</span>
     </span>
   );
 });

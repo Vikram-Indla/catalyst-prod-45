@@ -71,7 +71,23 @@ const TERMINAL_STATUSES: RequestStatus[] = ['done', 'cancelled'];
 // make a clean reset more useful than a partial merge).
 const COLUMN_STORAGE_KEY = 'ph-backlog-columns-v2';
 const DENSITY_STORAGE_KEY = 'ph-backlog-density';
+const COLUMN_WIDTH_STORAGE_KEY = 'ph-backlog-column-widths';
 
+function loadColumnWidths(): Record<string, number> {
+  try {
+    const raw = localStorage.getItem(COLUMN_WIDTH_STORAGE_KEY);
+    if (raw) {
+      return JSON.parse(raw) as Record<string, number>;
+    }
+  } catch { /* ignore */ }
+  return {};
+}
+
+function saveColumnWidths(widths: Record<string, number>): void {
+  try {
+    localStorage.setItem(COLUMN_WIDTH_STORAGE_KEY, JSON.stringify(widths));
+  } catch { /* ignore */ }
+}
 
 function loadColumns(): ColumnConfig[] {
   try {
@@ -249,6 +265,7 @@ export default function RequestListingPage() {
   }, [mdtData]);
 
   const [density, setDensity] = useState<Density>(loadDensity);
+  const [columnWidths, setColumnWidths] = useState(loadColumnWidths());
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<BacklogTabType>('all');
   const [advancedFilters, setAdvancedFilters] = useState<Record<string, string[]>>({});
@@ -282,6 +299,11 @@ export default function RequestListingPage() {
   useEffect(() => { setOrderedData(null); }, [mappedInitiatives]);
   useEffect(() => { localStorage.setItem(COLUMN_STORAGE_KEY, JSON.stringify(columnConfigs)); }, [columnConfigs]);
   useEffect(() => { localStorage.setItem(DENSITY_STORAGE_KEY, density); }, [density]);
+  useEffect(() => { saveColumnWidths(columnWidths); }, [columnWidths]);
+
+  const handleColumnWidthsChange = useCallback((widths: Record<string, number>) => {
+    setColumnWidths(widths);
+  }, []);
 
   const handleSearch = useCallback((val: string) => {
     setLocalSearch(val);
@@ -765,7 +787,11 @@ export default function RequestListingPage() {
             density={density}
             columnConfigs={columnConfigs}
             groupBy={groupBy}
+            scopedProduct={scopedProduct}
+            productCode={productCode}
             brdTasksMap={brdTasksMap}
+            columnWidths={columnWidths}
+            onColumnWidthsChange={handleColumnWidthsChange}
             onRowClick={handleRowClick}
             onStatusChange={handleStatusChange}
             onFavoriteToggle={handleFavoriteToggle}

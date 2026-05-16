@@ -31,7 +31,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useTheme } from '@/hooks/useTheme';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { useGlobalSearchStore } from '@/stores/globalSearchStore';
+import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 interface ProductHubSidebarProps {
   expanded: boolean;
@@ -43,6 +43,7 @@ interface BrRecentRow {
   id: string;
   title: string;
   request_key: string;
+  request_type: string;
   updated_at: string;
 }
 
@@ -135,6 +136,15 @@ function daysAgo(iso: string): string {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
+// Map business request types to JiraIssueTypeIcon compatible types
+function mapBrTypeToIconType(requestType: string): string {
+  const t = (requestType || '').toLowerCase().trim();
+  // request_type values: 'feature', 'gap', 'integration', 'data_request'
+  if (t === 'gap') return 'business gap';
+  if (t === 'data_request' || t === 'data request') return 'task'; // Data requests use task icon
+  return t; // 'feature' and 'integration' map directly
+}
+
 export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubSidebarProps) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -168,7 +178,7 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from('business_requests')
-        .select('id, title, request_key, updated_at')
+        .select('id, title, request_key, request_type, updated_at')
         .order('updated_at', { ascending: false })
         .limit(15);
       if (error) { console.warn('[ProductHubSidebar] recent BRs error:', error.message); return []; }
@@ -213,8 +223,40 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
 
   const config: SidebarConfig = isScoped ? buildPerProductConfig(scopedProduct!) : GLOBAL_CONFIG;
 
-  // Global mode: recent BRs section
-  const recentsSection = !isScoped && expanded && recentBrs.length > 0 ? (
+  // Group BRs by time bucket — TODAY + YESTERDAY, fallback to MOST RECENT when empty
+  // H1 gate: show TODAY and YESTERDAY (max 48 hours), then fallback to most recent (capped 15)
+  const groupedBrs = useMemo(() => {
+    const now = Date.now();
+    const dayMs = 24 * 60 * 60 * 1000;
+    const today: typeof recentBrs = [];
+    const yesterday: typeof recentBrs = [];
+
+    for (const br of recentBrs) {
+      const age = now - new Date(br.updated_at).getTime();
+      if (age < dayMs) today.push(br);
+      else if (age < 2 * dayMs) yesterday.push(br);
+    }
+
+    const groups: { label: string; items: typeof recentBrs }[] = [
+      { label: 'Today', items: today },
+      { label: 'Yesterday', items: yesterday },
+    ];
+
+    // When both TODAY and YESTERDAY are empty, show MOST RECENT (up to 15 items)
+    if (today.length === 0 && yesterday.length === 0 && recentBrs.length > 0) {
+      const mostRecent = recentBrs
+        .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+        .slice(0, 15);
+      if (mostRecent.length > 0) {
+        groups.push({ label: 'Most Recent', items: mostRecent });
+      }
+    }
+
+    return groups.filter(g => g.items.length > 0);
+  }, [recentBrs]);
+
+  // Global mode: recent BRs section (matches ProjectHubSidebar pattern)
+  const recentsSection = !isScoped && expanded && groupedBrs.some(g => g.items.length > 0) ? (
     <div style={{ marginTop: 8 }}>
       <div style={{ height: 1, background: token('color.border'), margin: '4px 12px 8px' }} />
 
@@ -237,30 +279,49 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
           Recent
         </span>
         <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-mono)' }}>
-          {recentBrs.length}
+          {groupedBrs.reduce((acc, g) => acc + g.items.length, 0)}
         </span>
       </button>
 
       {recentsExpanded && (
         <div style={{ padding: '2px 0' }}>
-          {recentBrs.map((br) => (
-            <div
-              key={br.id}
-              onClick={() => navigate(`/product-hub/backlog?selectedRequest=${br.request_key}`)}
-              className="group"
-              style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '5px 12px 5px 28px', cursor: 'pointer', borderRadius: 3, margin: '0 4px', transition: 'background 80ms ease' }}
-              onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-            >
-              <span style={{ flexShrink: 0, marginTop: 4, width: 7, height: 7, borderRadius: '50%', background: token('color.background.brand.bold') }} />
-              <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <span style={{ fontSize: 13, fontWeight: 500, color: token('color.text'), fontFamily: 'var(--cp-font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={br.title}>
-                  {br.title}
-                </span>
-                <span style={{ fontSize: 11, fontWeight: 400, color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-mono)', letterSpacing: '0.01em' }}>
-                  {br.request_key} · {daysAgo(br.updated_at)}
-                </span>
-              </span>
+          {groupedBrs.map((group) => (
+            <div key={group.label}>
+              <div
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  color: token('color.text.subtlest'),
+                  padding: '6px 12px 2px 28px',
+                  fontFamily: 'var(--cp-font-body)',
+                }}
+              >
+                {group.label}
+              </div>
+              {group.items.map((br) => (
+                <div
+                  key={br.id}
+                  onClick={() => navigate(`/product-hub/backlog?selectedRequest=${br.request_key}`)}
+                  className="group"
+                  style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '5px 12px 5px 28px', cursor: 'pointer', borderRadius: 3, margin: '0 4px', transition: 'background 80ms ease' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                >
+                  <span style={{ flexShrink: 0, marginTop: 2, lineHeight: 0 }}>
+                    <JiraIssueTypeIcon type={mapBrTypeToIconType(br.request_type)} size={14} />
+                  </span>
+                  <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <span style={{ fontSize: 13, fontWeight: 500, color: token('color.text'), fontFamily: 'var(--cp-font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={br.title}>
+                      {br.title}
+                    </span>
+                    <span style={{ fontSize: 11, fontWeight: 400, color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-mono)', letterSpacing: '0.01em' }}>
+                      {br.request_key}
+                    </span>
+                  </span>
+                </div>
+              ))}
             </div>
           ))}
         </div>

@@ -4,6 +4,19 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## 2026-05-16 — STOP AND ASK before classifying entities; never blindly surface data that was stated as out of scope
+**Surface:** AllProjectsPage (`/project-hub/projects`), `useProjectHub.ts` `excludedProjectKeys`
+**Pattern:** The "Investor Journey" Jira project (key: INV) was synced and displayed in the All Projects table. Vikram had explicitly stated multiple times that Investor Journey is a **product, not a project** and belongs in the Products module, not Projects. The code surfaced it anyway because `excludedProjectKeys` only excluded `TH-DEFAULT` and `MDT`. Additionally, the Members column rendered inconsistently between rows (avatar placeholder vs "Add members" text) because the two rows had different member counts — a discrepancy that could have been caught by asking before shipping. The Key column values (BAU, INV) were also left-aligned while the column header was centered.
+**Three concrete mistakes:**
+1. **Entity classification** — Displaying INV under Projects without checking if it was classified as a product. Vikram stated it was a product multiple times. This is a **build-without-asking** failure.
+2. **Visual inconsistency not raised** — The Members column showed different UI (avatar vs text button) across rows. Should have been logged as a finding before shipping, not discovered post-hoc by Vikram.
+3. **Column alignment gap** — Key column header appeared centered (drag grip icon causes visual centering), cells were left-aligned. Never measured or compared against Jira before declaring done.
+**Rule:** Before rendering ANY Jira-synced project in a module, check: (1) Is this entity classified by Vikram as belonging to a different module? (2) Are all visible columns rendering consistently across ALL rows, not just the first row? (3) Are cell values aligned to match their column header alignment? When in doubt about classification of an entity, **STOP AND ASK** — do not assume Jira's list is the correct subset for Catalyst's module boundary. Add newly-excluded project keys to `excludedProjectKeys` in `useProjectHub.ts`.
+**Fix:** Added `'INV'` to `excludedProjectKeys` in `useProjectHub.ts:37`. Added `textAlign: 'center'` to Key column `<td>` in `AllProjectsTable.tsx:1107`.
+**Severity:** P0 (wrong entity shown in wrong module; Vikram had corrected this classification multiple times before)
+
+---
+
 ## 2026-05-16 — PRODUCTION INFRASTRUCTURE SNAPSHOT
 
 **Active Supabase Project:** `lmqwtldpfacrrlvdnmld` (Catalyst KSA org)
@@ -303,6 +316,31 @@ Ready for next step when you confirm.
 # jira-compare — compounding lessons
 
 Append-only. Newest at top. Each entry: date, pattern, rule, surface.
+
+---
+
+## 2026-05-16 — Chrome MCP tabs die when starting from chrome://newtab — navigate from existing real URL only
+**Surface:** Chrome MCP tab management across all jira-compare sessions
+**Pattern:** `tabs_context_mcp(createIfEmpty: true)` creates a tab at `chrome://newtab/`. The Chrome extension cannot navigate a `chrome://` URL (permission denied). Calling `navigate` immediately after returns "Tab no longer exists" because the extension cannot drive the privileged page. Every attempt to `navigate` from `chrome://newtab` silently kills the tab.
+**Fix:** Always ask the user to manually open the target URL in Chrome first, then use `tabs_context_mcp(createIfEmpty: false)` to discover the existing real tab. Alternatively, if a tab already exists at a real URL (any http://), the extension can navigate it freely.
+**Rule:** Never start a Chrome MCP probe from `chrome://newtab`. Always have the user open `http://localhost:8080/...` first, THEN connect to that tab. `tabs_context_mcp(createIfEmpty: false)` discovers existing tabs without creating a new blank one.
+**Severity:** P1 (blocks all DOM probing until pattern is understood — wastes session budget on tab reconnection loops)
+
+---
+
+## 2026-05-16 — `includes('Sprint')` in sidebar text fires on fix-version names — use structural field check instead
+**Surface:** Structural DOM probe (bannedCheck heuristic), any future probe checking for banned field presence
+**Pattern:** A banned-field check ran `sidebar.textContent.includes('Sprint')` and returned `true`. This was flagged as "Sprint field shown on PI (not in PI scheme)". The actual source was a fix version VALUE named "Sprint 2.2 - 15 May 2025" — the fix version picker in `CatalystSidebarDetails` correctly shows fix versions for PI, and this project's versions are named after sprints. The naive text search cannot distinguish a field LABEL from a field VALUE.
+**Rule:** Never use `includes('fieldName')` on `element.textContent` to check whether a field is rendered. Instead: (1) look for the FieldRow label element specifically (`querySelector('[class*="FieldRow"] label')`), or (2) check the source code — grep the view component for the field name. Text-search on sidebar content produces false positives when field VALUES contain the banned word.
+**Severity:** P1 (false positive led to incorrect violation report; wastes probe time and obscures real issues)
+
+---
+
+## 2026-05-16 — CatalystStatusPill uses data-testid, not class — wrong selector causes "status pill missing" false alarm
+**Surface:** CatalystStatusPill DOM probe, all jira-compare status pill detection
+**Pattern:** DOM probe searched for `[class*="status"],[class*="Status"],[class*="lozenge"],[class*="pill"]` and found nothing — reported as "status pill undetectable / possibly missing". In reality, `CatalystStatusPill` renders a `<button data-testid="catalyst-status-pill-trigger">` with inline styles only — no identifying CSS class. The probe selector was wrong, not the component.
+**Rule:** When probing for the status pill, use `[data-testid="catalyst-status-pill-trigger"]` as the selector. Never assume a component is absent just because a class-based selector returns null — check the component source first to discover the correct selector (`data-testid`, `aria-label`, or specific tag+attribute combination).
+**Severity:** P1 (false negative — "component missing" report when component is correctly present; undermines audit credibility)
 
 ---
 

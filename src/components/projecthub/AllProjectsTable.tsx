@@ -89,6 +89,9 @@ function formatSyncAge(lastSyncAt: string | null): string | null {
   return `${Math.round(hoursAgo / 24)}d ago`;
 }
 
+// Roles eligible to be assigned as project lead (system roles from profiles.role)
+const LEAD_ELIGIBLE_ROLES = new Set(['admin', 'program_manager', 'team_lead']);
+
 // ── Shared hooks ───────────────────────────────────────
 function useAllProfiles() {
   return useQuery({
@@ -165,7 +168,7 @@ function useFixedPopupPosition(
 // FIX 2 + FIX 4: Lead cell with click-anywhere-on-chip → reassign popup.
 // @atlaskit/popup v4.16 renders empty portals in this codebase, so we use a
 // self-rolled positioned div + useClickOutside instead. Atlaskit token styling.
-function LeadReassignPopover({ project }: { project: ProjectListItem }) {
+function LeadReassignPopover({ project }: { project: ProjectListItem; currentUserId?: string | null }) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -186,6 +189,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
   }, []);
 
   const filtered = useMemo(() => profiles.filter(p =>
+    LEAD_ELIGIBLE_ROLES.has(p.role || '') &&
     p.display_name?.toLowerCase().includes(debouncedSearch.toLowerCase())
   ), [profiles, debouncedSearch]);
 
@@ -403,7 +407,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
   );
 }
 
-function MemberManagePopover({ project }: { project: ProjectListItem }) {
+function MemberManagePopover({ project, currentUserId }: { project: ProjectListItem; currentUserId?: string | null }) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -434,9 +438,13 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
   }, [memberIds, pending]);
 
   // Sort: members first, then non-members; both groups by display name. Filter by search.
+  // Excludes the current logged-in user — you don't add yourself as a member.
   const sortedFiltered = useMemo(() => {
     const q = debouncedMemberSearch.toLowerCase();
-    const visible = profiles.filter(p => !q || p.display_name?.toLowerCase().includes(q));
+    const visible = profiles.filter(p =>
+      p.id !== currentUserId &&
+      (!q || p.display_name?.toLowerCase().includes(q))
+    );
     return [...visible].sort((a, b) => {
       const aMember = isEffectiveMember(a.id);
       const bMember = isEffectiveMember(b.id);
@@ -999,12 +1007,13 @@ interface Props {
   pageOffset?: number;
   /** Per-project sync stats: count, latest timestamp, 24h activity */
   projectSyncStats?: Record<string, import('@/hooks/projecthub-sync-utils').ProjectSyncStats>;
+  currentUserId?: string | null;
 }
 
 // ── Main component ─────────────────────────────────────
 export function AllProjectsTable({
   projects, favoriteIds, onToggleFav, sortCol, sortDir, onSort,
-  selectedRows, onToggleRow, pageOffset = 0, projectSyncStats,
+  selectedRows, onToggleRow, pageOffset = 0, projectSyncStats, currentUserId,
 }: Props) {
   const navigate = useNavigate();
   const trackRecent = useTrackRecentItem();
@@ -1104,10 +1113,10 @@ export function AllProjectsTable({
       // key cell via Tab. Visual treatment intentionally subtle (no underline,
       // matches existing key-cell style) so it reads as part of the table cell
       // rather than a flashy link.
-      case 'project_key': return <td key={colKey}><RouterLink to={`/project-hub/${p.project_key}/dashboard`} onClick={() => recordProjectView(p)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: token('color.text.subtle'), letterSpacing: '0.02em', textDecoration: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = String(token('color.link')); }} onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = String(token('color.text.subtle')); }}>{p.project_key}</RouterLink></td>;
+      case 'project_key': return <td key={colKey} style={{ textAlign: 'center' }}><RouterLink to={`/project-hub/${p.project_key}/dashboard`} onClick={() => recordProjectView(p)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: token('color.text.subtle'), letterSpacing: '0.02em', textDecoration: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = String(token('color.link')); }} onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = String(token('color.text.subtle')); }}>{p.project_key}</RouterLink></td>;
       // 'type' column is permanently banned from the Projects list view.
-      case 'lead': return <td key={colKey}><LeadReassignPopover project={p} /></td>;
-      case 'members': return <td key={colKey}><MemberManagePopover project={p} /></td>;
+      case 'lead': return <td key={colKey}><LeadReassignPopover project={p} currentUserId={currentUserId} /></td>;
+      case 'members': return <td key={colKey}><MemberManagePopover project={p} currentUserId={currentUserId} /></td>;
       case 'sync': return (
         <td key={colKey}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>

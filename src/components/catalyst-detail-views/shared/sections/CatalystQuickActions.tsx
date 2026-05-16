@@ -55,7 +55,7 @@ export function CatalystQuickActions({
     return () => document.removeEventListener('mousedown', h);
   }, [showMenu]);
 
-  const textColor = 'rgb(41, 42, 46)';
+  const textColor = 'var(--ds-text, #292A2E)';
   const hoverBg = 'rgba(11, 18, 14, 0.06)';
   const borderColor = 'rgba(11, 18, 14, 0.14)';
 
@@ -107,7 +107,10 @@ export function CatalystQuickActions({
         </button>
 
         {showMenu && (
-          <div style={{
+          <div
+            role="menu"
+            aria-label="Add options"
+            style={{
             position: 'absolute', left: 0, top: 34, background: 'var(--ds-surface, #FFFFFF)', borderRadius: 4,
             boxShadow: 'rgba(30,31,33,0.15) 0px 8px 12px, rgba(30,31,33,0.31) 0px 0px 1px',
             width: 266, zIndex: 400, padding: 0,
@@ -132,7 +135,7 @@ export function CatalystQuickActions({
 
             {/* Primary */}
             {primary.length > 0 && primary.map(item => (
-              <button key={item.id} onClick={item.action} style={itemStyle}
+              <button key={item.id} role="menuitem" onClick={item.action} style={itemStyle}
                 onMouseEnter={e => (e.currentTarget.style.background = hoverBg)}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
@@ -148,7 +151,7 @@ export function CatalystQuickActions({
 
             {/* Secondary */}
             {secondary.length > 0 && secondary.map(item => (
-              <button key={item.id} onClick={item.action} style={itemStyle}
+              <button key={item.id} role="menuitem" onClick={item.action} style={itemStyle}
                 onMouseEnter={e => (e.currentTarget.style.background = hoverBg)}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >

@@ -70,6 +70,13 @@ import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { JiraTable } from '@/components/shared/JiraTable';
 import type { Column, RowGroup } from '@/components/shared/JiraTable';
 
+interface ProductRow {
+  id: string;
+  code: string;
+  name: string;
+  color: string | null;
+}
+
 interface Props {
   data: Request[];
   loading?: boolean;
@@ -77,6 +84,7 @@ interface Props {
   columnConfigs: ColumnConfig[];
   groupBy?: GroupByField;
   brdTasksMap?: Record<string, BRDTask[]>;
+  scopedProduct?: ProductRow | null;
   onRowClick: (request: Request) => void;
   onStatusChange: (id: string, status: RequestStatus) => void;
   onFavoriteToggle: (id: string, isFavorited: boolean) => void;
@@ -93,6 +101,9 @@ interface Props {
   onRoadmapToggle?: (id: string, currentValue: boolean) => void;
   focusedRowIndex?: number;
   onFocusedRowChange?: (index: number) => void;
+  columnWidths?: Record<string, number>;
+  onColumnWidthsChange?: (widths: Record<string, number>) => void;
+  productCode?: string;
 }
 
 function getGroupKey(item: Request, groupBy: GroupByField): string {
@@ -115,6 +126,8 @@ export function RequestTable({
   loading = false,
   columnConfigs,
   groupBy = 'none',
+  scopedProduct,
+  productCode,
   // brdTasksMap and density are accepted but not rendered today; see header.
   // density,
   // brdTasksMap = {},
@@ -127,6 +140,8 @@ export function RequestTable({
   onRoadmapToggle,
   focusedRowIndex = -1,
   onFocusedRowChange,
+  columnWidths,
+  onColumnWidthsChange,
 }: Props) {
   const avatarsByName = useProfileAvatarsByName();
 
@@ -225,25 +240,35 @@ export function RequestTable({
     },
     {
       // Block D rule 2 (2026-05-01): canonical Type column. Reads
-      // request.type (Feature/Gap/Integration/Data Request/Business
-      // Request); falls back to "Business Request" for legacy rows.
+      // request.request_type (feature/gap/integration/data_request);
+      // maps to JiraIssueTypeIcon; falls back to "Business Request" for legacy rows.
       id: 'type', label: 'Type', width: 9, sortable: true,
-      accessor: (r: any) => r.type || 'Business Request',
-      cell: ({ row }) => <TypeCell type={(row as any).type} />,
+      accessor: (r: any) => r.request_type || 'Business Request',
+      cell: ({ row }) => <TypeCell requestType={(row as any).request_type} />,
     },
     {
       // Block D rule 2 (2026-05-01): label "ID" → "Key" to match Project
       // Backlog canonical and Jira's spelling.
+      // MDT→INV transformation (2026-05-16): display key as INV-### when viewing
+      // product INV backlog but source data is MDT-### (display-only; DB unchanged).
+      // Violation 3b fix (2026-05-17): KEY is second data column; TYPE is first and gets
+      // the 28px chevron-slot placeholder. KEY header needs matching padding-left to align
+      // with body cells that have chevron slots.
       id: 'initiative_key', label: 'Key', width: 8, sortable: true, alwaysVisible: true,
       accessor: (r: any) => r.initiative_key,
+      headerStyle: { paddingLeft: 28 },
       cell: ({ row }) => {
         const key = (row as any).initiative_key;
+        // Transform display key for MDT→INV product scope.
+        const displayKey = key?.startsWith('MDT-') && (scopedProduct?.code === 'INV' || productCode === 'INV')
+          ? 'INV-' + key.substring(4)
+          : key;
         const attKey = (row as any).jira_issue_key || key;
         const attCount = attachmentCounts.get(attKey) || 0;
         return (
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             {attCount > 0 && <span title="Attachments"><Paperclip size={12} style={{ color: 'var(--cp-text-muted)', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>}
-            <IDCell value={key} />
+            <IDCell value={displayKey} />
           </div>
         );
       },
@@ -425,6 +450,8 @@ export function RequestTable({
         contextMenuActions={contextMenuActions}
         onRowClick={onRowClick}
         enableColumnReorder
+        initialColumnWidths={columnWidths}
+        onColumnWidthsChange={onColumnWidthsChange}
         emptyView={emptyView}
       />
     </div>

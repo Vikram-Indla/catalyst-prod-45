@@ -262,6 +262,7 @@ export default function AllProjectsPage() {
                 onToggleAll={handleToggleAll}
                 pageOffset={startIdx}
                 projectSyncStats={syncStatsMap}
+                currentUserId={currentUserId}
               />
             </div>
             {totalPages > 1 && (

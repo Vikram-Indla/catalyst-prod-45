@@ -73,6 +73,8 @@ export interface Column<TRow> {
   hasActiveFilter?: boolean;
   /** Optional row-level visibility gate — if present and returns false, the column is hidden for that row. */
   include?: (row: TRow) => boolean;
+  /** Optional custom styles applied to the header <th> element. */
+  headerStyle?: React.CSSProperties;
 }
 
 /** Group definition for grouped rows. */
