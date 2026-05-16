@@ -629,7 +629,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
            antialiased to auto (via global index.css update). */
         font-size: 12px;
         font-weight: 653;
-        line-height: 16px;
+        line-height: 20px;
         color: rgb(80, 82, 88);
         text-transform: none;
         letter-spacing: normal;
