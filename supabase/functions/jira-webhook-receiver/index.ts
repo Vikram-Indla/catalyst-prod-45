@@ -73,6 +73,84 @@ async function handleVersionReleased(payload: any) {
   if (error) throw error;
 }
 
+// ── Map Jira accountId to Catalyst user_id ──
+async function getJiraToCatalystUserId(jiraAccountId: string): Promise<string | null> {
+  const { data: mapping } = await supabase
+    .from('jira_identity_map')
+    .select('catalyst_user_id')
+    .eq('jira_account_id', jiraAccountId)
+    .maybeSingle();
+  return mapping?.catalyst_user_id ?? null;
+}
+
+// ── Extract meaningful change description from changelog ──
+function extractMeaningfulChange(changelog: any): string | null {
+  if (!changelog?.items) return null;
+
+  const meaningfulFields = ['status', 'assignee', 'summary', 'description', 'priority'];
+  const change = changelog.items.find((i: any) => meaningfulFields.includes(i.field));
+
+  if (!change) return null;
+
+  const fieldName = change.field.charAt(0).toUpperCase() + change.field.slice(1);
+  const toString = change.toString || change.to || '';
+  return `${fieldName} changed to ${toString}`;
+}
+
+// ── For You page: record issue activity for assignee + reporter ──
+async function handleIssueUpdateForForYou(payload: any) {
+  const issue = payload.issue;
+  if (!issue || !issue.key || !issue.fields) return;
+
+  const issueKey = issue.key;
+  const summary = issue.fields.summary;
+  const projectKey = issue.fields.project?.key;
+  const projectName = issue.fields.project?.name;
+
+  // Extract users who care about this issue
+  const assignee = issue.fields.assignee;
+  const reporter = issue.fields.reporter;
+
+  const usersToNotify = new Set<string>();
+
+  // Add assignee
+  if (assignee?.accountId) {
+    const userId = await getJiraToCatalystUserId(assignee.accountId);
+    if (userId) usersToNotify.add(userId);
+  }
+
+  // Add reporter
+  if (reporter?.accountId) {
+    const userId = await getJiraToCatalystUserId(reporter.accountId);
+    if (userId) usersToNotify.add(userId);
+  }
+
+  if (usersToNotify.size === 0) return; // No mapped users
+
+  // Identify what changed (status, assignment, description, etc.)
+  const changeDescription = extractMeaningfulChange(payload.changelog);
+  if (!changeDescription) return; // Only record meaningful changes
+
+  // Write to user_recent_items for each affected user
+  for (const userId of usersToNotify) {
+    try {
+      await supabase.from('user_recent_items').insert({
+        user_id: userId,
+        entity_type: 'issue',
+        entity_id: issueKey,
+        entity_key: issueKey,
+        display_summary: summary,
+        project_id: projectKey,
+        project_name: projectName,
+        nav_path: `/allwork?issue=${issueKey}`,
+        visited_at: new Date().toISOString(),
+      });
+    } catch (err) {
+      console.error(`Failed to record for-you activity for ${userId}:`, err);
+    }
+  }
+}
+
 async function handleFixVersionsChange(payload: any) {
   const hasFixVersionChange = payload.changelog?.items?.some(
     (i: any) => i.field === 'fixVersions'
@@ -314,9 +392,17 @@ Deno.serve(async (req) => {
       });
     }
 
-    // ── Issue events — check fixVersions change first ──
+    // ── Issue events — For You page + fixVersions ──
     if (webhookEvent === 'jira:issue_updated' && payload.issue && payload.changelog) {
       try {
+        // Record for For You page (assignee + reporter activity)
+        await handleIssueUpdateForForYou(payload);
+      } catch (err) {
+        console.error('for-you handler error:', err);
+      }
+
+      try {
+        // Handle fix version changes (release hub)
         const handled = await handleFixVersionsChange(payload);
         if (handled) {
           // Also queue into sync_events for existing issue processing
