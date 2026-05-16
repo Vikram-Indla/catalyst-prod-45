@@ -95,32 +95,33 @@ export function useRequestLinksByEpicKeys(epicKeys: string[]) {
  * Epic Backlog — pulls from ph_issues where issue_type = 'Epic',
  * project_key resolved from project UUID, filtered to 2026.
  */
-export function useEpicBacklog(projectId: string) {
+export function useEpicBacklog(projectId: string, opts?: { assigneeIds?: string[] }) {
+  const assigneeIds = opts?.assigneeIds ?? [];
+  const hasAssigneeOverride = assigneeIds.length > 0;
+
   const { data: project } = useProject(projectId);
   const projectKey = project?.key ?? null;
 
   return useQuery({
-    queryKey: ['backlog-epics', projectId, projectKey],
+    queryKey: hasAssigneeOverride
+      ? ['backlog-epics-inv', assigneeIds.join(',')]
+      : ['backlog-epics', projectId, projectKey],
     queryFn: async (): Promise<BacklogEpic[]> => {
-      if (!projectKey) return [];
-      // F-iter9 unification: ph_issues now holds BOTH Jira-synced and
-      // Catalyst-native rows (distinguished by `source` column). Single
-      // query replaces the previous two-table parallel + JS merge.
-      // Apr 28, 2026: removed `comment_count` from the SELECT. The column
-      // does NOT exist on ph_issues — including it caused PostgREST 400
-      // (PG error 42703) and React Query treated `epics` as []. Visible
-      // symptom: Parent picker on every BAU row showed only "No parent"
-      // + "No matches" even though BAU has 13 epics. See CLAUDE.md §9 +
-      // §13 FP-012 for the forbidden columns list.
-      const { data, error } = await supabase
+      if (!hasAssigneeOverride && !projectKey) return [];
+      const SELECT = 'issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, parent_summary, issue_type, jira_created_at, jira_updated_at, source, labels, fix_versions, sort_order';
+      let query = supabase
         .from('ph_issues')
-        .select('issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, parent_summary, issue_type, jira_created_at, jira_updated_at, source, labels, fix_versions, sort_order')
-        .eq('project_key', projectKey)
+        .select(SELECT)
         .eq('issue_type', 'Epic')
         .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
         .is('jira_removed_at', null)
-        .is('archived_at', null)
-        .order('sort_order', { ascending: true, nullsFirst: false });
+        .is('archived_at', null);
+      if (hasAssigneeOverride) {
+        query = (query as any).in('assignee_account_id', assigneeIds);
+      } else {
+        query = (query as any).eq('project_key', projectKey!);
+      }
+      const { data, error } = await (query as any).order('sort_order', { ascending: true, nullsFirst: false });
       if (error) throw error;
 
       const epics: BacklogEpic[] = (data || []).map((row: any) => ({
@@ -157,7 +158,7 @@ export function useEpicBacklog(projectId: string) {
 
       return epics;
     },
-    enabled: !!projectId && !!projectKey,
+    enabled: hasAssigneeOverride ? true : (!!projectId && !!projectKey),
   });
 }
 
@@ -179,38 +180,33 @@ export function useFeatureBacklog(projectId: string) {
  * project_key resolved from project UUID, filtered to 2026.
  * Parent epic resolved via parent_key lookup.
  */
-export function useStoryBacklog(projectId: string) {
+export function useStoryBacklog(projectId: string, opts?: { assigneeIds?: string[] }) {
+  const assigneeIds = opts?.assigneeIds ?? [];
+  const hasAssigneeOverride = assigneeIds.length > 0;
+
   const { data: project } = useProject(projectId);
   const projectKey = project?.key ?? null;
 
   return useQuery({
-    // Apr 27, 2026 (L68): bumped query key 'backlog-stories' →
-    // 'backlog-stories-v2' so PersistQueryClient discards the stale
-    // cached payload that didn't include `issue_type` (added on parent
-    // lookups + leaf-row mapping today). Without this bump, the cached
-    // localStorage entry rehydrates with `parent_issue_type: undefined`
-    // and the Parent column falls back to the 'Story' icon for every
-    // row regardless of actual parent type. Per skill L29.
-    queryKey: ['backlog-stories-v2', projectId, projectKey],
+    queryKey: hasAssigneeOverride
+      ? ['backlog-stories-inv', assigneeIds.join(',')]
+      : ['backlog-stories-v2', projectId, projectKey],
     queryFn: async (): Promise<BacklogStory[]> => {
-      if (!projectKey) return [];
-      // F-iter9 unification: single query against ph_issues — Catalyst-native
-      // rows are filtered by `source='catalyst'` (year-window OR'd so Jira-
-      // synced rows still respect the YEAR_2026_START boundary).
-      // Apr 27, 2026 — Backlog scope expansion: include QA Bug + Production
-      // Incident alongside Story. The hook is named useStoryBacklog for
-      // historical reasons but now serves the unified leaf-item set
-      // ('story' | 'bug' | 'incident' in BacklogItem.type). Epics and
-      // Features remain in their dedicated hooks.
-      const { data, error } = await supabase
+      if (!hasAssigneeOverride && !projectKey) return [];
+      const SELECT = 'issue_key, summary, status, status_category, assignee_display_name, reporter_display_name, due_date, priority, parent_key, parent_summary, jira_created_at, jira_updated_at, source, issue_type, labels, fix_versions, sort_order';
+      let query = supabase
         .from('ph_issues')
-        .select('issue_key, summary, status, status_category, assignee_display_name, reporter_display_name, due_date, priority, parent_key, parent_summary, jira_created_at, jira_updated_at, source, issue_type, labels, fix_versions, sort_order')
-        .eq('project_key', projectKey)
+        .select(SELECT)
         .in('issue_type', ['Story', 'QA Bug', 'Production Incident'])
         .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
         .is('jira_removed_at', null)
-        .is('archived_at', null)
-        .order('sort_order', { ascending: true, nullsFirst: false });
+        .is('archived_at', null);
+      if (hasAssigneeOverride) {
+        query = (query as any).in('assignee_account_id', assigneeIds);
+      } else {
+        query = (query as any).eq('project_key', projectKey!);
+      }
+      const { data, error } = await (query as any).order('sort_order', { ascending: true, nullsFirst: false });
       if (error) throw error;
 
       const jiraRows = data || [];
@@ -356,7 +352,7 @@ export function useStoryBacklog(projectId: string) {
       const uniqueCat = catStories.filter((s) => !(s.story_key && seenKeys.has(s.story_key)));
       return [...jiraStories, ...uniqueCat];
     },
-    enabled: !!projectId && !!projectKey,
+    enabled: hasAssigneeOverride ? true : (!!projectId && !!projectKey),
     staleTime: 5 * 60 * 1000,
   });
 }

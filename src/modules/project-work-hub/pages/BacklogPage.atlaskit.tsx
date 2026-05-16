@@ -446,14 +446,15 @@ export default function NativeBacklogPage() {
 
 /* ─── The canonical page ───────────────────────────────────────────────── */
 
-function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey: string }) {
+export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string }) {
   // Apr 27, 2026 (L50): canonical Project Hub page-title pattern is
   // `{Project Name} {Hub Function}` — e.g. "Senaei BAU Backlog". Falls
   // back to the project key while the name is loading. Same pattern
   // should be applied to every Project Hub surface (Dashboard, Board,
   // Roadmap, etc.) — see the L50 lesson note for the sweep target list.
   const { data: project } = useProject(projectId);
-  const projectDisplayName = project?.name || projectKey;
+  const projectDisplayName = displayName || project?.name || projectKey;
+  const resolvedBaseUrl = baseUrl ?? `/project-hub/${projectKey}`;
   // Apr 28, 2026 — chrome band background derived from
   // `projects.settings.background`. Falls back to the Jira-parity blue.
   const projectBackground = readProjectBackground(project);
@@ -532,18 +533,19 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
 
   const queryClient = useQueryClient();
 
+  const backlogOpts = assigneeIds?.length ? { assigneeIds } : undefined;
   const {
     data: stories = [],
     isLoading: storiesLoading,
     error: storiesError,
     refetch: refetchStories,
-  } = useStoryBacklog(projectId);
+  } = useStoryBacklog(projectId, backlogOpts);
   const {
     data: epics = [],
     isLoading: epicsLoading,
     error: epicsError,
     refetch: refetchEpics,
-  } = useEpicBacklog(projectId);
+  } = useEpicBacklog(projectId, backlogOpts);
   const avatarsByName = useProfileAvatarsByName();
   const backlogError = storiesError || epicsError;
 
@@ -1527,11 +1529,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       sessionStorage.setItem(`backlog-scroll-${projectKey}`, Math.max(0, container.scrollTop).toString());
     }
     writeTicketOrigin({
-      fromUrl: `/project-hub/${projectKey}/backlog`,
+      fromUrl: `${resolvedBaseUrl}/backlog`,
       fromLabel: 'Backlog',
       fromType: 'story-backlog',
     });
-    navigate(`/project-hub/${projectKey}/backlog/${it.issue_key || it.id}`);
+    navigate(`${resolvedBaseUrl}/backlog/${it.issue_key || it.id}`);
   }, [projectKey, navigate]);
   // Detail callbacks removed 2026-05-12 task E: no longer managing panel state.
 
@@ -1620,7 +1622,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     { id: 'agile-board', label: 'Agile board', icon: <AkBoardIcon label="" />,
       onClick: (r) => {
         const parent = r.parent_key || r.key;
-        navigate(`/project-hub/${projectKey}/kanban${parent ? `?epic=${parent}` : ''}`);
+        navigate(`${resolvedBaseUrl}/kanban${parent ? `?epic=${parent}` : ''}`);
       } },
     { id: 'rank-top', label: 'Rank to top', icon: <AkArrowUpIcon label="" />,
       onClick: async (r) => {

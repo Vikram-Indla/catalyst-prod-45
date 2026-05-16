@@ -108,6 +108,8 @@ const RequirementAssistOutput = ENABLE_AI ? lazy(() => import("../pages/producth
 const ProductCardsPage = lazy(() => import("../pages/producthub/CardsPage"));
 // Block C/D (2026-05-01) — All Products listing for /product-hub/products.
 const AllProductsPage = lazy(() => import("../pages/product-hub/AllProductsPage"));
+// INV product-scoped backlog (Investor Journey, assignee-filtered Jira view).
+const InvestorJourneyBacklogPage = lazy(() => import("../pages/product-hub/InvestorJourneyBacklogPage"));
 const IdeationPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeationPage")) : () => <FeatureComingSoon title="Ideation" />;
 const IdeasRoadmapPage = ENABLE_AI ? lazy(() => import("../pages/product/ideas/IdeasRoadmapPage")) : () => <FeatureComingSoon title="Ideas Roadmap" />;
 const IdeasBacklogPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeasBacklogPage")) : () => <FeatureComingSoon title="Ideas Backlog" />;
@@ -491,6 +493,9 @@ export default function FullAppRoutes() {
             read useParams().code, look up the product, and scope their data.
             Data filter is UI-only until ph_requests gains a product_id FK in
             a follow-up migration — see lesson note in CLAUDE.md. */}
+        {/* INV-specific routes — must come before the generic :code wildcard */}
+        <Route path="/product-hub/INV/backlog" element={<MG k="producthub" t="ProductHub"><S><InvestorJourneyBacklogPage /></S></MG>} />
+        {/* Generic per-product routes */}
         <Route path="/product-hub/:code/backlog" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
         <Route path="/product-hub/:code/boards" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
         <Route path="/product-hub/:code/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
