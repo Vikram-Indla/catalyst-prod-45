@@ -9,8 +9,7 @@ interface BrRow {
   id: string;
   title: string;
   process_step: string;
-  assignee_id: string | null;
-  assignee_name: string | null;
+  assignee: string | null;
   entered_step_at: string | null;
 }
 
@@ -41,7 +40,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
     queryFn: async () => {
       const { data, error } = await supabase
         .from('business_requests')
-        .select('id, title, process_step, assignee_id, assignee_name, entered_step_at')
+        .select('id, title, process_step, assignee, entered_step_at')
         .eq('process_step', stageValue!)
         .is('deleted_at', null);
       if (error) throw error;
@@ -58,7 +57,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
   // Owner map: assignee_name → count
   const ownerMap = new Map<string, number>();
   brs.forEach(br => {
-    const name = br.assignee_name ?? 'Unassigned';
+    const name = br.assignee ?? 'Unassigned';
     ownerMap.set(name, (ownerMap.get(name) ?? 0) + 1);
   });
 

@@ -4,10 +4,11 @@
  * Contract (this test is the spec — implementation follows):
  *   - Args: { startStep: string, endStep: string }
  *   - Returns { median, avg, p90, sample_size, isLoading, isError, error }
- *   - Reads business_request_stage_history WHERE stage_code IN (startStep, endStep)
- *   - Computes per-BR cycle time = entered_at(endStep) - entered_at(startStep) in days
+ *   - Reads business_request_audit_logs WHERE field_changed='process_step'
+ *     AND new_value IN (startStep, endStep)
+ *   - Computes per-BR cycle time = created_at(new_value=endStep) - created_at(new_value=startStep) in days
  *   - Aggregates: median, avg (rounded to 1dp), p90, sample_size across all BRs
- *   - Skips BRs where either step is missing from history
+ *   - Skips BRs where either step is missing from audit logs
  *   - Unauthenticated → all stats null, no DB query
  *   - Auth loading    → isLoading=true
  *   - DB error        → isError=true, all stats null
@@ -32,19 +33,20 @@ const wrapper = ({ children }: { children: ReactNode }) => {
   return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
 };
 
-/** Builds a stage history row at a given day offset from epoch. */
-const stageRow = (brId: string, stageCode: string, dayOffset: number) => ({
+/** Builds an audit log row where a BR transitioned TO newValue at dayOffset days from epoch. */
+const auditRow = (brId: string, newValue: string, dayOffset: number) => ({
   business_request_id: brId,
-  stage_code: stageCode,
-  entered_at: new Date(dayOffset * 86_400_000).toISOString(),
+  new_value: newValue,
+  created_at: new Date(dayOffset * 86_400_000).toISOString(),
 });
 
-const mockHistoryQuery = (response: { data: any; error: any }) => {
-  // Chain: .from('business_request_stage_history').select('...').in('stage_code', [...])
+const mockAuditQuery = (response: { data: any; error: any }) => {
+  // Chain: .from('business_request_audit_logs').select('...').eq('field_changed', 'process_step').in('new_value', [...])
   const inFn = vi.fn().mockResolvedValue(response);
-  const select = vi.fn().mockReturnValue({ in: inFn });
+  const eq = vi.fn().mockReturnValue({ in: inFn });
+  const select = vi.fn().mockReturnValue({ eq });
   (supabase.from as any).mockReturnValueOnce({ select });
-  return { select, inFn };
+  return { select, eq, inFn };
 };
 
 const NULL_STATS = { median: null, avg: null, p90: null, sample_size: 0 };
@@ -79,9 +81,9 @@ describe('useBrCycleTime', () => {
     expect(result.current).toMatchObject(NULL_STATS);
   });
 
-  it('returns null stats when history is empty', async () => {
+  it('returns null stats when audit log is empty', async () => {
     (useAuth as any).mockReturnValue({ user: { id: 'u1' }, loading: false, isAuthenticated: true });
-    mockHistoryQuery({ data: [], error: null });
+    mockAuditQuery({ data: [], error: null });
 
     const { result } = renderHook(
       () => useBrCycleTime({ startStep: 'funnel', endStep: 'done' }),
@@ -94,14 +96,14 @@ describe('useBrCycleTime', () => {
 
   it('computes correct stats for 3 BRs with cycle times of 5, 10, 15 days', async () => {
     (useAuth as any).mockReturnValue({ user: { id: 'u1' }, loading: false, isAuthenticated: true });
-    mockHistoryQuery({
+    mockAuditQuery({
       data: [
-        stageRow('br-1', 'funnel', 0),
-        stageRow('br-1', 'done', 5),
-        stageRow('br-2', 'funnel', 0),
-        stageRow('br-2', 'done', 10),
-        stageRow('br-3', 'funnel', 0),
-        stageRow('br-3', 'done', 15),
+        auditRow('br-1', 'funnel', 0),
+        auditRow('br-1', 'done', 5),
+        auditRow('br-2', 'funnel', 0),
+        auditRow('br-2', 'done', 10),
+        auditRow('br-3', 'funnel', 0),
+        auditRow('br-3', 'done', 15),
       ],
       error: null,
     });
@@ -118,15 +120,15 @@ describe('useBrCycleTime', () => {
     expect(result.current.p90).toBe(15);
   });
 
-  it('skips BRs where start step is missing from history', async () => {
+  it('skips BRs where start step is missing from audit logs', async () => {
     (useAuth as any).mockReturnValue({ user: { id: 'u1' }, loading: false, isAuthenticated: true });
-    mockHistoryQuery({
+    mockAuditQuery({
       data: [
         // br-1: both steps present → included
-        stageRow('br-1', 'funnel', 0),
-        stageRow('br-1', 'done', 8),
+        auditRow('br-1', 'funnel', 0),
+        auditRow('br-1', 'done', 8),
         // br-2: only endStep present → excluded
-        stageRow('br-2', 'done', 5),
+        auditRow('br-2', 'done', 5),
       ],
       error: null,
     });
@@ -141,14 +143,14 @@ describe('useBrCycleTime', () => {
     expect(result.current.median).toBe(8);
   });
 
-  it('skips BRs where end step is missing from history', async () => {
+  it('skips BRs where end step is missing from audit logs', async () => {
     (useAuth as any).mockReturnValue({ user: { id: 'u1' }, loading: false, isAuthenticated: true });
-    mockHistoryQuery({
+    mockAuditQuery({
       data: [
-        stageRow('br-1', 'funnel', 0),
-        stageRow('br-1', 'done', 6),
+        auditRow('br-1', 'funnel', 0),
+        auditRow('br-1', 'done', 6),
         // br-2: only startStep → excluded
-        stageRow('br-2', 'funnel', 0),
+        auditRow('br-2', 'funnel', 0),
       ],
       error: null,
     });
@@ -163,9 +165,9 @@ describe('useBrCycleTime', () => {
     expect(result.current.median).toBe(6);
   });
 
-  it('queries with correct stage codes', async () => {
+  it('queries business_request_audit_logs with correct field and step values', async () => {
     (useAuth as any).mockReturnValue({ user: { id: 'u1' }, loading: false, isAuthenticated: true });
-    const { inFn } = mockHistoryQuery({ data: [], error: null });
+    const { eq, inFn } = mockAuditQuery({ data: [], error: null });
 
     renderHook(
       () => useBrCycleTime({ startStep: 'ready_for_implementation', endStep: 'done' }),
@@ -173,13 +175,14 @@ describe('useBrCycleTime', () => {
     );
 
     await waitFor(() => expect(inFn).toHaveBeenCalled());
-    expect(supabase.from).toHaveBeenCalledWith('business_request_stage_history');
-    expect(inFn).toHaveBeenCalledWith('stage_code', ['ready_for_implementation', 'done']);
+    expect(supabase.from).toHaveBeenCalledWith('business_request_audit_logs');
+    expect(eq).toHaveBeenCalledWith('field_changed', 'process_step');
+    expect(inFn).toHaveBeenCalledWith('new_value', ['ready_for_implementation', 'done']);
   });
 
   it('surfaces query errors via isError', async () => {
     (useAuth as any).mockReturnValue({ user: { id: 'u1' }, loading: false, isAuthenticated: true });
-    mockHistoryQuery({ data: null, error: new Error('permission denied') });
+    mockAuditQuery({ data: null, error: new Error('permission denied') });
 
     const { result } = renderHook(
       () => useBrCycleTime({ startStep: 'funnel', endStep: 'done' }),

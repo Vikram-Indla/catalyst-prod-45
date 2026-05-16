@@ -14,10 +14,10 @@ export interface CycleTimeStats {
   sample_size: number;
 }
 
-interface StageHistoryRow {
+interface AuditLogRow {
   business_request_id: string;
-  stage_code: string;
-  entered_at: string;
+  new_value: string;
+  created_at: string;
 }
 
 const NULL_STATS: CycleTimeStats = { median: null, avg: null, p90: null, sample_size: 0 };
@@ -48,28 +48,28 @@ export function useBrCycleTime({ startStep, endStep }: CycleTimeArgs) {
     enabled: !loading && !!user?.id,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('business_request_stage_history')
-        .select('business_request_id, stage_code, entered_at')
-        .in('stage_code', [startStep, endStep]);
+        .from('business_request_audit_logs')
+        .select('business_request_id, new_value, created_at')
+        .eq('field_changed', 'process_step')
+        .in('new_value', [startStep, endStep]);
 
       if (error) throw error;
 
-      // Group rows by BR.
+      // Group by BR: keep earliest created_at per step value per BR.
       const byBr = new Map<string, Record<string, string>>();
-      for (const row of (data ?? []) as StageHistoryRow[]) {
+      for (const row of (data ?? []) as AuditLogRow[]) {
         if (!byBr.has(row.business_request_id)) byBr.set(row.business_request_id, {});
-        // Keep earliest entered_at per stage per BR.
-        const stages = byBr.get(row.business_request_id)!;
-        if (!stages[row.stage_code] || row.entered_at < stages[row.stage_code]) {
-          stages[row.stage_code] = row.entered_at;
+        const steps = byBr.get(row.business_request_id)!;
+        if (!steps[row.new_value] || row.created_at < steps[row.new_value]) {
+          steps[row.new_value] = row.created_at;
         }
       }
 
       // Compute cycle days for BRs that have both steps.
       const cycleDays: number[] = [];
-      for (const stages of byBr.values()) {
-        if (!stages[startStep] || !stages[endStep]) continue;
-        const ms = new Date(stages[endStep]).getTime() - new Date(stages[startStep]).getTime();
+      for (const steps of byBr.values()) {
+        if (!steps[startStep] || !steps[endStep]) continue;
+        const ms = new Date(steps[endStep]).getTime() - new Date(steps[startStep]).getTime();
         cycleDays.push(ms / 86_400_000);
       }
 
