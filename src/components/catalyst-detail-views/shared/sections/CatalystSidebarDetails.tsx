@@ -543,11 +543,10 @@ export function CatalystSidebarDetails({
           <span style={{ display: 'inline-flex', transition: 'transform 0.15s ease', transform: detailsCollapsed ? 'rotate(0deg)' : 'rotate(90deg)', color: 'var(--ds-icon-subtle, #626F86)' }}>
             <ChevronRightIcon size="small" primaryColor="currentColor" />
           </span>
-          {/* jira-compare 2026-05-16 re-probe BAU-1919: "Details" h2 is 16px/500 in Jira
-              (data-testid="issue-view-layout-group.common.ui.collapsible-group-factory.title").
-              Previous 653 was measured from Subtasks/LWI/Activity — those ARE 653.
-              Details and Development sections use 500. Corrected to match Jira parity. */}
-          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}>Details</h2>
+          {/* jira-compare 2026-05-11 TreeWalker probe: Details header = 16px/653 matching
+              Key details, Subtasks, LWI, Activity. All section headers share the same spec.
+              SectionHeaderTypography.test.ts verifies this from a live DOM probe. */}
+          <div style={{ margin: 0, fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}>Details</div>
         </div>
 
         {!detailsCollapsed && <div style={{ padding: '0' }}>

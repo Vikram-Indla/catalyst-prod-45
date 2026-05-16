@@ -136,7 +136,7 @@ export function EditableAssignee({ issueId, issueKey, projectId, currentAssignee
       // instead of the literal string "Unknown".
       // jira-compare 2026-05-11 fix: Vikram defect "Assignee / Reporter
       // is wrong — shows Unknown" was because the SELECT dropped email.
-      const { data: profiles } = await supabase.from('profiles').select('id, full_name, email, avatar_url').in('id', userIds);
+      const { data: profiles } = await supabase.from('profiles').select('id, full_name, email').in('id', userIds);
       const profileMap = new Map((profiles ?? []).map(p => [p.id, p]));
       return data.map(d => {
         const p = profileMap.get(d.user_id);
@@ -144,7 +144,7 @@ export function EditableAssignee({ issueId, issueKey, projectId, currentAssignee
         return {
           user_id: d.user_id,
           full_name,
-          avatar_url: resolveAvatarUrl(full_name) ?? p?.avatar_url ?? null,
+          avatar_url: resolveAvatarUrl(full_name) ?? null,
           role: d.role,
         };
       }) as ProjectMember[];
@@ -275,7 +275,7 @@ export function EditableReporter({ issueId, projectId, currentReporterId, curren
       if (!data?.length) return [];
       const userIds = data.map(d => d.user_id);
       // Same fallback chain as EditableAssignee — full_name ?? email ?? 'Unknown'
-      const { data: profiles } = await supabase.from('profiles').select('id, full_name, email, avatar_url').in('id', userIds);
+      const { data: profiles } = await supabase.from('profiles').select('id, full_name, email').in('id', userIds);
       const profileMap = new Map((profiles ?? []).map(p => [p.id, p]));
       return data.map(d => {
         const p = profileMap.get(d.user_id);
@@ -283,7 +283,7 @@ export function EditableReporter({ issueId, projectId, currentReporterId, curren
         return {
           user_id: d.user_id,
           full_name,
-          avatar_url: resolveAvatarUrl(full_name) ?? p?.avatar_url ?? null,
+          avatar_url: resolveAvatarUrl(full_name) ?? null,
           role: d.role,
         };
       }) as ProjectMember[];
