@@ -136,6 +136,15 @@ function daysAgo(iso: string): string {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
+// Map business request types to JiraIssueTypeIcon compatible types
+function mapBrTypeToIconType(requestType: string): string {
+  const t = (requestType || '').toLowerCase().trim();
+  // request_type values: 'feature', 'gap', 'integration', 'data_request'
+  if (t === 'gap') return 'business gap';
+  if (t === 'data_request' || t === 'data request') return 'task'; // Data requests use task icon
+  return t; // 'feature' and 'integration' map directly
+}
+
 export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubSidebarProps) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -287,7 +296,7 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                 >
                   <span style={{ flexShrink: 0, marginTop: 2, lineHeight: 0 }}>
-                    <JiraIssueTypeIcon type="Feature" size={14} />
+                    <JiraIssueTypeIcon type={mapBrTypeToIconType(br.request_type)} size={14} />
                   </span>
                   <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <span style={{ fontSize: 13, fontWeight: 500, color: token('color.text'), fontFamily: 'var(--cp-font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={br.title}>
