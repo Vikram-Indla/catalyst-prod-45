@@ -624,6 +624,40 @@ async function fetchForYouRawData(
     jiraProjects.forEach((p: any) => localProjectNameMap.set(p.project_key, p.name));
   }
 
+  // ── Merge Jira projects the user actually has work in ──────────────────────
+  // allUserProjects feeds the AI Focus "By project" picker. Without this merge,
+  // the picker only shows Catalyst-native `projects` rows — which are often
+  // empty when data flows exclusively through Jira sync. We query distinct
+  // project_keys from ph_issues where the user is assignee, cross-reference
+  // with ph_jira_projects for display names, and add any Jira project not
+  // already represented by a Catalyst-native entry.
+  if (jiraAccountIds.length > 0) {
+    const { data: userIssueProjects } = await supabase
+      .from('ph_issues')
+      .select('project_key')
+      .in('assignee_account_id', jiraAccountIds)
+      .is('deleted_at', null);
+
+    const existingKeys = new Set(stableProjects.map(p => p.key));
+    const jiraProjectKeys = [...new Set(
+      (userIssueProjects ?? []).map((r: any) => r.project_key).filter(Boolean)
+    )] as string[];
+
+    for (const key of jiraProjectKeys) {
+      if (!existingKeys.has(key)) {
+        stableProjects.push({
+          id: key, // use key as id — no Catalyst row ID exists
+          key,
+          name: localProjectNameMap.get(key) || key,
+          avatar_url: null,
+          icon: null,
+          color: null,
+        });
+        existingKeys.add(key);
+      }
+    }
+  }
+
   // ── Wave 2: Dependent lookups in parallel ──
   const plannerRows = plannerAssigned || [];
   const statusIds = [...new Set(plannerRows.map((r: any) => r.status_id).filter(Boolean))];

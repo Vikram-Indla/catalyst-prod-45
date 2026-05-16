@@ -78,6 +78,8 @@ export interface ThemesResponse {
   totalIssuesAnalyzed: number;
   scope: { mode: 'project' | 'personal'; projectKey?: string };
   cached: boolean;
+  /** Edge function returned cached data because the issue set hasn't changed. */
+  no_delta?: boolean;
 }
 
 export interface ThemesError {
@@ -97,10 +99,55 @@ function buildQueryKey(args: UseAiThemesArgs) {
     : [QUERY_ROOT, 'personal'] as const;
 }
 
+/**
+ * Pre-check the ai_theme_cache table before invoking the edge function.
+ * Skips the ~600ms edge function cold-start on cache hits by reading
+ * directly from Supabase. Only called for normal loads (not forceRefresh).
+ *
+ * Returns the cached ThemesResponse if a valid unexpired entry exists,
+ * or null if the cache is empty / stale / signature-invalidated.
+ */
+async function readClientSideCache(args: UseAiThemesArgs): Promise<ThemesResponse | null> {
+  try {
+    const scope = args.scope;
+    const projectKey = args.scope === 'project' ? args.projectKey : null;
+
+    let q = supabase
+      .from('ai_theme_cache')
+      .select('payload, expires_at')
+      .eq('scope_mode', scope)
+      .gt('expires_at', new Date().toISOString());
+
+    if (projectKey) {
+      q = q.eq('project_key', projectKey);
+    } else {
+      q = q.is('project_key', null);
+    }
+
+    const { data } = await (q as any).maybeSingle();
+    if (!data?.payload) return null;
+
+    const payload = data.payload as ThemesResponse;
+    // Validate shape defensively
+    if (!Array.isArray(payload?.themes)) return null;
+
+    return { ...payload, cached: true };
+  } catch {
+    return null; // any error falls through to edge function
+  }
+}
+
 async function invokeThemes(
   args: UseAiThemesArgs,
   opts: { forceRefresh: boolean },
 ): Promise<ThemesResponse> {
+  // Layer 1: Read client-side cache first (skip edge function cold-start).
+  // Only bypass on explicit forceRefresh — e.g. Re-analyze button.
+  if (!opts.forceRefresh) {
+    const cached = await readClientSideCache(args);
+    if (cached) return cached;
+  }
+
   const { data, error } = await supabase.functions.invoke<ThemesResponse | ThemesError>(
     'ai-digest',
     {

@@ -373,28 +373,40 @@ export async function handleThemesRequest(args: {
   const signature = await computeIssuesSignature(
     issueRows.map(i => ({ issue_key: i.issue_key, updated_at: i.jira_updated_at })),
   );
-  if (!forceRefresh) {
-    const cacheQuery = supabase
-      .from('ai_theme_cache')
-      .select('payload, issues_signature, expires_at')
-      .eq('user_id', userId)
-      .eq('scope_mode', scope);
-    const { data: cached } = projectKey
-      ? await cacheQuery.eq('project_key', projectKey).maybeSingle()
-      : await cacheQuery.is('project_key', null).maybeSingle();
+  // Cache check — runs for both normal loads AND forceRefresh.
+  // forceRefresh bypasses TTL but NOT the no-delta guard: if the user hits
+  // Re-analyze but nothing in their issue set has changed (same signature),
+  // we return the existing cache entry instead of burning a Gemini call.
+  // The `no_delta` flag in the response tells the client why.
+  const cacheQuery = supabase
+    .from('ai_theme_cache')
+    .select('payload, issues_signature, expires_at')
+    .eq('user_id', userId)
+    .eq('scope_mode', scope);
+  const { data: cached } = projectKey
+    ? await cacheQuery.eq('project_key', projectKey).maybeSingle()
+    : await cacheQuery.is('project_key', null).maybeSingle();
 
-    if (
-      cached &&
-      cached.issues_signature === signature &&
-      new Date(cached.expires_at).getTime() > Date.now()
-    ) {
-      console.log(`[themes] cache HIT user=${userId} scope=${scope} project=${projectKey ?? 'personal'}`);
-      const payload = cached.payload as ThemesResponse;
-      return new Response(
-        JSON.stringify({ ...payload, cached: true }),
-        { headers: jsonHeaders },
-      );
-    }
+  if (cached && cached.issues_signature === signature) {
+    // No-delta: data hasn't changed since the last LLM run.
+    // Serve the existing cache regardless of forceRefresh or TTL.
+    console.log(`[themes] no-delta cache HIT user=${userId} scope=${scope} project=${projectKey ?? 'personal'} forceRefresh=${forceRefresh}`);
+    const payload = cached.payload as ThemesResponse;
+    return new Response(
+      JSON.stringify({ ...payload, cached: true, no_delta: true }),
+      { headers: jsonHeaders },
+    );
+  }
+
+  if (!forceRefresh && cached && new Date(cached.expires_at).getTime() > Date.now()) {
+    // TTL cache HIT (different signature but not expired) — should not happen
+    // in practice since signature change invalidates, but belt-and-suspenders.
+    console.log(`[themes] TTL cache HIT user=${userId}`);
+    const payload = cached.payload as ThemesResponse;
+    return new Response(
+      JSON.stringify({ ...payload, cached: true }),
+      { headers: jsonHeaders },
+    );
   }
 
   // ── 4. LLM call ─────────────────────────────────────────────────────────
