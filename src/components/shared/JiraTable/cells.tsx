@@ -479,16 +479,24 @@ export function makeStatusEditCell<T>(opts: {
         <button
           ref={triggerRef}
           type="button"
-          data-jira-table-editor
+          data-jira-cell-editor
           onClick={handleOpen}
           style={{
-            background: 'transparent', border: 'none', padding: 0,
+            background: 'transparent', border: 'none', padding: '2px 4px',
+            margin: '-2px -4px', borderRadius: 3,
             cursor: editable ? 'pointer' : 'default',
+            fontFamily: 'inherit',
+            display: 'inline-flex', alignItems: 'center', gap: 2,
           }}
         >
           <StatusPill appearance={opts.appearanceFor(status)}>
             {status ?? '—'}
           </StatusPill>
+          {editable && (
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden style={{ flexShrink: 0, opacity: 0.55, marginLeft: 1 }}>
+              <path d="M1 2.5L4 5.5L7 2.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          )}
         </button>
         {open && typeof document !== 'undefined' && ReactDOM.createPortal(
           <div

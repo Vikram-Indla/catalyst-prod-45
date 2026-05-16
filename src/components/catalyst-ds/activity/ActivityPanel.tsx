@@ -123,13 +123,14 @@ function ActivityPanel({
               type="button"
               onClick={() => setActiveTab(tab.key)}
               className={cn(
-                'px-3 py-1.5 rounded text-[13px] font-medium transition-colors duration-150',
+                /* jira-compare 2026-05-16 (corrected): Jira Activity tabs are 14px/400, NOT 13px/500.
+                   TreeWalker probe on BAU-1919: fontSize=14px, fontWeight=400 on all tab elements.
+                   Selected tab: borderBottom="0px none" on the tab element itself — active state
+                   is conveyed purely by bg=rgb(233,242,254) on parent + color=rgb(24,104,219) on tab.
+                   The prior 'border-b border-[#1868DB]' was incorrect — removed. */
+                'px-3 py-1.5 rounded text-[14px] font-normal transition-colors duration-150',
                 activeTab === tab.key
-                  /* jira-compare 2026-05-16: selected tab — bg rgb(233,242,254), color rgb(24,104,219),
-                     border-bottom 0.556px solid rgb(24,104,219) per TreeWalker probe on Jira BAU-1919. */
-                  ? 'bg-[#E9F2FE] text-[#1868DB] border-b border-[#1868DB] dark:bg-[#1C3A5C] dark:text-[#4C9AFF] dark:border-[#4C9AFF]'
-                  /* jira-compare 2026-05-16: unselected tabs use rgb(80,82,88) = --ds-text-subtle,
-                     NOT rgb(107,110,118) = --ds-text-subtlest. */
+                  ? 'bg-[#E9F2FE] text-[#1868DB] dark:bg-[#1C3A5C] dark:text-[#4C9AFF]'
                   : 'text-[var(--ds-text-subtle,#505258)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
               )}
             >
@@ -142,7 +143,7 @@ function ActivityPanel({
           <button
             type="button"
             onClick={() => setSortOpen(!sortOpen)}
-            className="flex items-center gap-1 text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:text-[var(--ds-text,#172B4D)] dark:hover:text-[var(--ds-text,#EDEDED)] transition-colors"
+            className="flex items-center gap-1 text-[14px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:text-[var(--ds-text,#172B4D)] dark:hover:text-[var(--ds-text,#EDEDED)] transition-colors"
           >
             {sortOrder === 'newest' ? 'Newest first' : 'Oldest first'}
             <ChevronDown className="h-3.5 w-3.5" />
@@ -161,7 +162,7 @@ function ActivityPanel({
                       setSortOpen(false);
                     }}
                     className={cn(
-                      'w-full text-left px-3 py-1.5 text-[13px] transition-colors',
+                      'w-full text-left px-3 py-1.5 text-[14px] transition-colors',
                       order === sortOrder
                         ? 'bg-[#E9F2FE] text-[#1868DB] dark:bg-[#1C3A5C] dark:text-[#4C9AFF]'
                         : 'text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'

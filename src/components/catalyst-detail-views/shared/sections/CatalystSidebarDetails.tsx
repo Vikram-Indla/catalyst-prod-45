@@ -26,7 +26,7 @@ import { Heading } from '@/components/ads';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
-// Inline removed — FieldRow uses side-by-side row layout matching Jira (jira-compare 2026-05-16)
+// jira-compare 2026-05-16 correction: FieldRow reverted to STACKED (column) layout
 import { useWorkflow } from '@/lib/workflows';
 import { StatusTransitionDropdown } from '@/components/workflow';
 import { CatalystConfigureDrawer, loadPinnedFields, PINNABLE_FIELDS } from './CatalystConfigureDrawer';
@@ -34,14 +34,14 @@ import { CatalystConfigureDrawer, loadPinnedFields, PINNABLE_FIELDS } from './Ca
 /**
  * FieldRow — sidebar field row atom (Phase E.3, 2026-04-18).
  *
- * Collapses the repeated {flex + fixed-width label + flex-1 value} pattern
- * into a single call-site per field. Label typography (14/500/#505258 with
- * lineHeight 18.67px) is Jira-measured and kept inline so future typography
- * updates touch one spot. Horizontal gap uses @atlaskit/primitives Inline
- * with space.250 (20px) — the one token that maps exactly to Jira's measured
- * value. Vertical padding stays inline at 11px top/bottom; this doesn't map
- * to any space token cleanly, and we're not drifting for the sake of
- * tokenization.
+ * jira-compare 2026-05-16 (corrected): Jira right rail uses a STACKED (column)
+ * layout — label above, value below. Fresh DOM probe of BAU-1919 right rail:
+ *   "Fix versions" label y=192, "None" value y=221 — same x=1394 → stacked
+ *   "Assignee" label y=263, avatar+name y=293 — same x=1395 → stacked
+ *   Label: 14px/500/rgb(80,82,88), Value: 14px/400/rgb(41,42,46)
+ *   Row vertical span ~71px (8px top pad + label + ~8px gap + value + 8px bottom pad)
+ * The previous session (2026-05-16) incorrectly set flexDirection:'row' based
+ * on a bad probe. This corrects it back to column/stacked parity with Jira.
  */
 function FieldRow({
   label,
@@ -50,38 +50,24 @@ function FieldRow({
   children,
 }: {
   label: string;
-  /** 'center' (default) for single-line fields (Assignee, Reporter, Priority, Fix versions).
-   *  'start' for multi-line values (Labels, multi-select) — aligns label to top of value column.
-   *  jira-compare 2026-05-16: Jira right rail uses side-by-side layout with alignItems center
-   *  for most fields. Multi-value fields use align-items flex-start so the label sits at top. */
+  /** @deprecated no-op in stacked layout; kept for call-site compat */
   alignBlock?: 'start' | 'center';
   /** @deprecated no-op; kept for call-site compat */
   labelTopPad?: boolean;
   children: React.ReactNode;
 }) {
-  /* jira-compare 2026-05-16: live DOM re-probe of BAU-5922 right rail confirms
-     Jira's right rail uses a SIDE-BY-SIDE row layout, NOT stacked:
-       container: display flex, flexDirection row, alignItems center, gap 8px, padding 4px 0
-       label: 14px/500/#505258, natural width (no fixed minWidth), flexShrink 0
-       value: 14px/400/#292A2E, flex 1, min-width 0
-     Previously Catalyst used a stacked layout (label above value) which differed
-     from Jira's side-by-side pattern. Fixed to match Jira parity exactly. */
   return (
     <div style={{
-      display: 'flex', flexDirection: 'row',
-      alignItems: alignBlock === 'start' ? 'flex-start' : 'center',
-      gap: 8, padding: '4px 0',
+      display: 'flex', flexDirection: 'column',
+      gap: 4, padding: '8px 0',
     }}>
       <div style={{
-        fontSize: 14, fontWeight: 500, lineHeight: '18.67px',
+        fontSize: 14, fontWeight: 500, lineHeight: '20px',
         color: 'var(--ds-text-subtle, #505258)',
-        flexShrink: 0, whiteSpace: 'nowrap',
-        // Align label to top of value when value can be multi-line
-        ...(alignBlock === 'start' ? { paddingTop: 2 } : {}),
       }}>
         {label}
       </div>
-      <div style={{ fontSize: 14, lineHeight: '20px', color: 'var(--ds-text, #292A2E)', flex: 1, minWidth: 0 }}>
+      <div style={{ fontSize: 14, lineHeight: '20px', color: 'var(--ds-text, #292A2E)', minWidth: 0 }}>
         {children}
       </div>
     </div>

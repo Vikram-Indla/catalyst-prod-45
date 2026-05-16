@@ -263,7 +263,7 @@ export function makeStatusEditCell<T>({
                 Set status
               </span>
             )}
-            {/* Jira parity: small dropdown chevron after the status pill */}
+            {/* status chevron ▾ — Jira parity */}
             <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden style={{ flexShrink: 0, opacity: 0.55, marginLeft: 1 }}>
               <path d="M1 2.5L4 5.5L7 2.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
