@@ -135,7 +135,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     focusedRowId: focusedRowIdProp,
     onFocusedRowChange,
     onEscape,
-    density = 'comfortable',
+    density = 'compact',
     isLoading,
     emptyView,
     ariaLabel = 'Work items',
@@ -635,6 +635,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         letter-spacing: normal;
         white-space: nowrap;
         user-select: none;
+        /* 2026-05-17: Added vertical column dividers matching tbody. */
+        border-right: 1px solid #EBECF0;
       }
       .jira-table-grid thead th.jira-th-sortable { cursor: pointer; }
       /* Apr 28, 2026 (jira-compare cycle 4): tokenized — was hardcoded #EBECF0 */
@@ -675,6 +677,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         font-weight: 400;
         color: var(--ds-text, #292A2E);
         font-family: inherit;
+        /* 2026-05-17: Added vertical column dividers. Each td renders a
+           right border so columns are visually separated. Without this,
+           the table appears as plain rows without grid structure. Jira
+           uses 1px solid #EBECF0 (Atlaskit border.subtle) on the right
+           edge of each cell. */
+        border-right: 1px solid #EBECF0;
       }
       /* Column resize handle — 6px hit area on the right edge of each
          sortable/resizable header. Highlights on hover to advertise. */

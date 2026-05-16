@@ -149,7 +149,7 @@ export function UWVTable({
       {
         id: '__caret',
         label: '',
-        width: 3,
+        width: 4,
         align: 'center',
         alwaysVisible: true,
         cell: makeCaretCell({
