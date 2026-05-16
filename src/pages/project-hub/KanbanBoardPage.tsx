@@ -431,7 +431,8 @@ export default function KanbanBoardPage() {
     const epicOptions = allEpics.map(e => ({
       id: e.key,
       label: e.summary || e.key,
-      labelExtra: e.key,
+      // Only show the key as secondary text when a summary exists — avoids "BAU-XXX BAU-XXX" duplication
+      labelExtra: e.summary ? e.key : undefined,
     }));
     const typeOptions = allTypes.map(t => ({
       id: t.type,
