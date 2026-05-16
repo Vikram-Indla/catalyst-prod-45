@@ -1,21 +1,29 @@
 /**
  * ProductHubSidebar — /product-hub sidebar
  *
- * Module-level nav for the Product Hub:
- *   - "All Products" nav link
- *   - RECENT section: most recently updated business_requests (title + request_key)
+ * DUAL MODE (mirrors SidebarProjectNav / ProductRoomSidebar pattern):
+ *   - Global (/product-hub/products, /product-hub/backlog, etc.):
+ *       Shows "All Products" nav link + Recent BRs section.
+ *   - Per-product (/product-hub/{CODE}/*):
+ *       Shows product name header + Dashboard / Backlog / Boards / All Work nav
+ *       + "← All Products" back link.
  *
- * Mirrors the ModuleLevelSidebar pattern from ProjectHubSidebar.
- * Added 2026-05-16 to fix the missing sidebar on /product-hub/products.
+ * Added 2026-05-16 for /product-hub/products.
+ * Dual-mode added 2026-05-16 so /product-hub/INV/* shows per-product nav.
  */
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import {
   LayoutGrid,
   ChevronRight,
   Clock,
-  X,
+  LayoutDashboard,
+  ClipboardList,
+  Columns3,
+  Network,
+  ArrowLeft,
+  Settings,
 } from '@/lib/atlaskit-icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
@@ -36,6 +44,75 @@ interface BrRecentRow {
   updated_at: string;
 }
 
+interface ProductRow {
+  id: string;
+  code: string;
+  name: string;
+  color: string | null;
+}
+
+const RESERVED_HUB_PATHS = new Set([
+  'products', 'backlog', 'kanban', 'table', 'dashboard', 'roadmap',
+  'roadmaps', 'roadmaps-v1', 'reports', 'cards', 'ideation',
+  'requirement-assist', 'req-assist',
+]);
+
+function extractProductCode(pathname: string): string | null {
+  const m = pathname.match(/^\/product-hub\/([^/]+)(?:\/|$)/);
+  if (!m) return null;
+  const seg = m[1];
+  if (RESERVED_HUB_PATHS.has(seg.toLowerCase())) return null;
+  return seg.toUpperCase();
+}
+
+function buildPerProductConfig(product: ProductRow): SidebarConfig {
+  const base = `/product-hub/${product.code}`;
+  return {
+    badge: product.code.slice(0, 2),
+    label: product.name,
+    sections: [
+      {
+        title: '',
+        items: [
+          { id: 'all-products', title: 'All Products', path: '/product-hub/products', icon: ArrowLeft, exact: true },
+        ],
+      },
+      {
+        title: 'Planning',
+        items: [
+          { id: 'dashboard', title: 'Dashboard', path: `${base}/dashboard`, icon: LayoutDashboard, exact: true },
+          { id: 'backlog',   title: 'Backlog',   path: `${base}/backlog`,   icon: ClipboardList,   exact: true },
+          { id: 'boards',    title: 'Boards',    path: `${base}/boards`,    icon: Columns3,        exact: false },
+          { id: 'allwork',   title: 'All Work',  path: `${base}/allwork`,   icon: Network,         exact: true },
+        ],
+      },
+    ],
+    footerItem: {
+      id: 'settings', title: 'Settings', path: `${base}/settings`, icon: Settings, exact: true,
+    },
+  };
+}
+
+const GLOBAL_CONFIG: SidebarConfig = {
+  badge: 'PH',
+  label: 'Product Hub',
+  showFavorites: false,
+  sections: [
+    {
+      title: '',
+      items: [
+        {
+          id: 'all-products',
+          title: 'All Products',
+          path: '/product-hub/products',
+          icon: LayoutGrid,
+          exact: false,
+        },
+      ],
+    },
+  ],
+};
+
 function daysAgo(iso: string): string {
   const ms = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(ms / 60_000);
@@ -52,54 +129,49 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
   const { isDark } = useTheme();
   const [recentsExpanded, setRecentsExpanded] = useState(true);
 
-  // Fetch most recently updated business requests — ordered by updated_at DESC.
-  // The user expects MDT-project BRs to appear here; all active BRs are
-  // effectively MDT-scoped in the current tenant, so no additional filter is
-  // needed. Limit 15 to keep the rail scannable.
+  const productCode = extractProductCode(pathname);
+
+  const { data: scopedProduct } = useQuery<ProductRow | null>({
+    queryKey: ['product-hub', 'sidebar-product-by-code', productCode],
+    enabled: !!productCode,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('products')
+        .select('id, code, name, color')
+        .eq('code', productCode)
+        .eq('is_active', true)
+        .maybeSingle();
+      if (error) { console.warn('[ProductHubSidebar] product lookup error:', error.message); return null; }
+      return data as ProductRow | null;
+    },
+    staleTime: 5 * 60_000,
+  });
+
+  const isScoped = !!scopedProduct && !!productCode;
+
+  // Recent BRs — only shown in global mode
   const { data: recentBrs = [] } = useQuery<BrRecentRow[]>({
     queryKey: ['product-hub-recent-brs'],
+    enabled: !isScoped,
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from('business_requests')
         .select('id, title, request_key, updated_at')
-        .is('deleted_at', null)
         .order('updated_at', { ascending: false })
         .limit(15);
-      if (error) {
-        console.warn('[ProductHubSidebar] recent BRs error:', error.message);
-        return [];
-      }
+      if (error) { console.warn('[ProductHubSidebar] recent BRs error:', error.message); return []; }
       return (data ?? []) as BrRecentRow[];
     },
     staleTime: 30_000,
     refetchOnWindowFocus: false,
   });
 
-  const moduleConfig: SidebarConfig = {
-    badge: 'PT',
-    label: 'Product Hub',
-    showFavorites: false,
-    sections: [
-      {
-        title: '',
-        items: [
-          {
-            id: 'all-products',
-            title: 'All Products',
-            path: '/product-hub/products',
-            icon: LayoutGrid,
-            exact: false,
-          },
-        ],
-      },
-    ],
-  };
+  const config: SidebarConfig = isScoped ? buildPerProductConfig(scopedProduct!) : GLOBAL_CONFIG;
 
-  const recentsSection = expanded && recentBrs.length > 0 ? (
+  const recentsSection = !isScoped && expanded && recentBrs.length > 0 ? (
     <div style={{ marginTop: 8 }}>
       <div style={{ height: 1, background: token('color.border'), margin: '4px 12px 8px' }} />
 
-      {/* Section header — collapsible */}
       <button
         onClick={() => setRecentsExpanded(p => !p)}
         className="flex items-center w-full"
@@ -115,32 +187,14 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
           }}
         />
         <Clock size={12} style={{ color: token('color.text.subtlest') }} />
-        <span
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            color: token('color.text.subtlest'),
-            fontFamily: 'var(--cp-font-body)',
-          }}
-        >
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-body)' }}>
           Recent
         </span>
-        <span
-          style={{
-            marginLeft: 'auto',
-            fontSize: 10,
-            fontWeight: 600,
-            color: token('color.text.subtlest'),
-            fontFamily: 'var(--cp-font-mono)',
-          }}
-        >
+        <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-mono)' }}>
           {recentBrs.length}
         </span>
       </button>
 
-      {/* Recent BR rows */}
       {recentsExpanded && (
         <div style={{ padding: '2px 0' }}>
           {recentBrs.map((br) => (
@@ -148,68 +202,16 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
               key={br.id}
               onClick={() => navigate(`/product-hub/backlog?selectedRequest=${br.request_key}`)}
               className="group"
-              style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 8,
-                padding: '5px 12px 5px 28px',
-                cursor: 'pointer',
-                borderRadius: 3,
-                margin: '0 4px',
-                transition: 'background 80ms ease',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = token('color.background.neutral.subtle.hovered');
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'transparent';
-              }}
+              style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '5px 12px 5px 28px', cursor: 'pointer', borderRadius: 3, margin: '0 4px', transition: 'background 80ms ease' }}
+              onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
-              {/* BR indicator dot */}
-              <span
-                style={{
-                  flexShrink: 0,
-                  marginTop: 4,
-                  width: 7,
-                  height: 7,
-                  borderRadius: '50%',
-                  background: token('color.background.brand.bold'),
-                }}
-              />
-
-              {/* Two-line block: title (line 1), request_key + age (line 2) */}
-              <span
-                style={{
-                  flex: 1,
-                  minWidth: 0,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 1,
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 500,
-                    color: token('color.text'),
-                    fontFamily: 'var(--cp-font-body)',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                  title={br.title}
-                >
+              <span style={{ flexShrink: 0, marginTop: 4, width: 7, height: 7, borderRadius: '50%', background: token('color.background.brand.bold') }} />
+              <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <span style={{ fontSize: 13, fontWeight: 500, color: token('color.text'), fontFamily: 'var(--cp-font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={br.title}>
                   {br.title}
                 </span>
-                <span
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 400,
-                    color: token('color.text.subtlest'),
-                    fontFamily: 'var(--cp-font-mono)',
-                    letterSpacing: '0.01em',
-                  }}
-                >
+                <span style={{ fontSize: 11, fontWeight: 400, color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-mono)', letterSpacing: '0.01em' }}>
                   {br.request_key} · {daysAgo(br.updated_at)}
                 </span>
               </span>
@@ -222,7 +224,7 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
 
   return (
     <SidebarBase
-      config={moduleConfig}
+      config={config}
       expanded={expanded}
       onToggle={onToggle}
       className={className}

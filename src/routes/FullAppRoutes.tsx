@@ -485,7 +485,8 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/backlog" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
         <Route path="/product-hub/table" element={<MG k="producthub" t="ProductHub"><S><CatalystDemandTable /></S></MG>} />
         <Route path="/product-hub/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
-        <Route path="/product-hub/dashboard" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
+        {/* /product-hub/dashboard deprecated 2026-05-16 — redirects to products list */}
+        <Route path="/product-hub/dashboard" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/product-hub/product-dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
         {/* Block D Phase 2.5 (2026-05-01) — product-scoped drilldown routes.
             Mirror of /project-hub/{KEY}/* on the project side. The :code param
@@ -493,14 +494,12 @@ export default function FullAppRoutes() {
             read useParams().code, look up the product, and scope their data.
             Data filter is UI-only until ph_requests gains a product_id FK in
             a follow-up migration — see lesson note in CLAUDE.md. */}
-        {/* INV-specific routes — must come before the generic :code wildcard */}
-        <Route path="/product-hub/INV/backlog" element={<MG k="producthub" t="ProductHub"><S><InvestorJourneyBacklogPage /></S></MG>} />
         {/* Generic per-product routes */}
         <Route path="/product-hub/:code/backlog" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
         <Route path="/product-hub/:code/boards" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
         <Route path="/product-hub/:code/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
         <Route path="/product-hub/:code/allwork" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
-        <Route path="/product-hub/:code/dashboard" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
+        <Route path="/product-hub/:code/dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
         <Route path="/product-hub/:code/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
         <Route path="/product-hub/:code/cards" element={<MG k="producthub" t="ProductHub"><S><ProductCardsPage /></S></MG>} />
         <Route path="/product-hub/:code/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
@@ -526,7 +525,7 @@ export default function FullAppRoutes() {
         <Route path="/producthub/backlog" element={<Navigate to="/product-hub/backlog" replace />} />
         <Route path="/producthub/table" element={<Navigate to="/product-hub/table" replace />} />
         <Route path="/producthub/kanban" element={<Navigate to="/product-hub/kanban" replace />} />
-        <Route path="/producthub/dashboard" element={<Navigate to="/product-hub/dashboard" replace />} />
+        <Route path="/producthub/dashboard" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/producthub/roadmaps" element={<Navigate to="/product-hub/roadmap" replace />} />
         <Route path="/producthub/roadmaps-v1" element={<Navigate to="/product-hub/roadmaps-v1" replace />} />
         <Route path="/producthub/reports" element={<Navigate to="/product-hub/reports" replace />} />

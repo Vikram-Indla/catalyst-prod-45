@@ -306,7 +306,7 @@ export function RequestTable({
         const name = (row as any).assignee_name;
         const directAvatar = (row as any).assignee_avatar;
         const url = directAvatar || (name ? avatarsByName.get(name.toLowerCase()) : undefined);
-        return <AssigneeCell name={name} avatarUrl={url} />;
+        return <AssigneeCell name={name} avatarUrl={url} requestId={(row as any).id} />;
       },
     },
     {
