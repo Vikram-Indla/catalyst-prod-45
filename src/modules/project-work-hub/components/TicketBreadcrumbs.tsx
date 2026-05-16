@@ -207,6 +207,16 @@ export function TicketBreadcrumbs({
           padding: 2px 4px;
           border-radius: 3px;
         }
+        /* jira-compare 2026-05-16: Jira project name crumb is a blue link
+           (rgb(24,104,219) = #1868DB). Only <a> tags get link colour;
+           buttons/spans (Add parent, issue key) stay subtle grey. */
+        .tk-breadcrumbs a {
+          color: var(--ds-link, #1868DB);
+        }
+        .tk-breadcrumbs a:hover {
+          color: var(--ds-link-pressed, #0055CC);
+          text-decoration: underline;
+        }
         .tk-breadcrumbs button {
           background: transparent;
           border: none;
