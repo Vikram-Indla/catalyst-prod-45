@@ -135,7 +135,7 @@ export function CatalystQuickActions({
 
             {/* Primary */}
             {primary.length > 0 && primary.map(item => (
-              <button key={item.id} onClick={item.action} style={itemStyle}
+              <button key={item.id} role="menuitem" onClick={item.action} style={itemStyle}
                 onMouseEnter={e => (e.currentTarget.style.background = hoverBg)}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
@@ -151,7 +151,7 @@ export function CatalystQuickActions({
 
             {/* Secondary */}
             {secondary.length > 0 && secondary.map(item => (
-              <button key={item.id} onClick={item.action} style={itemStyle}
+              <button key={item.id} role="menuitem" onClick={item.action} style={itemStyle}
                 onMouseEnter={e => (e.currentTarget.style.background = hoverBg)}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
