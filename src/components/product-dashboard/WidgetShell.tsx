@@ -3,10 +3,12 @@ import { token } from '@atlaskit/tokens';
 
 export function WidgetIconBtn({
   title,
+  'aria-label': ariaLabel,
   onClick,
   children,
 }: {
   title: string;
+  'aria-label'?: string;
   onClick?: (e: React.MouseEvent) => void;
   children: React.ReactNode;
 }) {
@@ -15,6 +17,7 @@ export function WidgetIconBtn({
     <button
       type="button"
       title={title}
+      aria-label={ariaLabel ?? title}
       onClick={onClick}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
@@ -74,12 +77,8 @@ export function WidgetShell({
         flexDirection: 'column',
       }}
     >
-      {/* Header — click anywhere except actions to collapse */}
+      {/* Header */}
       <div
-        role="button"
-        tabIndex={0}
-        onClick={() => setCollapsed(c => !c)}
-        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setCollapsed(c => !c); }}
         style={{
           padding: '14px 18px',
           minHeight: 60,
@@ -91,6 +90,7 @@ export function WidgetShell({
           cursor: 'pointer',
           userSelect: 'none',
         }}
+        onClick={() => setCollapsed(c => !c)}
       >
         <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
           <h2
@@ -121,12 +121,14 @@ export function WidgetShell({
 
         {/* Action buttons — stopPropagation so clicking them doesn't collapse */}
         <div
-          role="presentation"
           onClick={e => e.stopPropagation()}
           style={{ display: 'flex', gap: 4, flexShrink: 0, alignItems: 'center' }}
         >
           {actions}
-          <WidgetIconBtn title={collapsed ? 'Expand' : 'Collapse'}>
+          <WidgetIconBtn
+            title={collapsed ? 'Expand' : 'Collapse'}
+            onClick={e => { e.stopPropagation(); setCollapsed(c => !c); }}
+          >
             {collapsed ? '⌄' : '⌃'}
           </WidgetIconBtn>
         </div>
