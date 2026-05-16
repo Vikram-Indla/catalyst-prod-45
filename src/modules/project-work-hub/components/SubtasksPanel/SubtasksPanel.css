@@ -158,12 +158,24 @@
   background: var(--ds-surface, #FFFFFF);
 }
 
-/* Jira-parity: table header cells in subtasks panel — compact padding + muted label color */
+/* Jira-parity: table header cells in subtasks panel — compact padding + muted label color.
+   jira-compare 2026-05-16: fresh DOM probe on BAU-5538 in Jira confirmed
+   12px/653 (not 11px/600 as previously set). */
 .sp-ak-table .jira-table-grid table thead > tr > th {
   padding: 0 8px !important;
   color: var(--ds-text-subtle, #505258) !important;
-  font-size: 11px !important;
-  font-weight: 600 !important;
+  font-size: 12px !important;
+  font-weight: 653 !important;
+}
+
+/* Jira-parity: constrain data rows to 40px height (Jira measured 40px on BAU-5538).
+   Catalyst was rendering ~52px due to cell padding/content expansion. */
+.sp-ak-table .jira-table-grid table tbody > tr {
+  height: 40px !important;
+}
+.sp-ak-table .jira-table-grid table tbody > tr > td {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 /* DynamicTable forwards row.className to <tr>, so we paint backgrounds
