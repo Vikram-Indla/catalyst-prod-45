@@ -5,6 +5,71 @@ This document enforces that **any structural or behavioral change to a canonical
 
 ---
 
+## Core Governance Rules (2026-05-17)
+
+### Rule 1: Feature Flags Declare Intent
+When a canonical component has optional features (e.g., group create affordance, sticky footer, column reordering), expose those as **feature flag props** at the canonical level, NOT as scattered consumer-specific implementations.
+
+**Bad Pattern** (Silent Divergence):
+```typescript
+// BacklogPage doesn't use group create, so just doesn't pass onAddToGroup
+<JiraTable ... />  // No group create
+
+// RequestTable also doesn't use group create, for different reasons, also doesn't pass it
+<JiraTable ... />  // No group create
+// Both consumers end up with no group create, but for hidden reasons
+```
+
+**Good Pattern** (Explicit Intent):
+```typescript
+// BacklogPage: explicit flag says "no group create, yes sticky footer"
+<JiraTable
+  ...
+  enableGroupCreateButton={false}
+  enableStickyCreateFooter={true}
+/>
+
+// RequestTable: explicit flag says "no group create, no sticky footer"
+<JiraTable
+  ...
+  enableGroupCreateButton={false}
+  enableStickyCreateFooter={false}
+/>
+```
+
+**Why:** Code reviewers can instantly see each consumer's intent. Future developers won't accidentally assume "if prop is omitted, feature is disabled" — the flags are explicit. This prevents silent divergence where two consumers have identical outcomes via different code paths.
+
+### Rule 2: Audit Impact Across All Consumers
+Before shipping a change to a canonical component, list all consumers and verify the impact:
+
+```
+# Canonical change: "Add AI Improve button to JiraTable header"
+Impact audit:
+- BacklogPage: Will show button ✓ (desired)
+- RequestTable: Will show button (undesired — product backlog has different UX)
+- SubtasksPanel: Will show button (need to verify — detail context OK?)
+---
+Action: Add `enableAiImprove={true/false}` feature flag to prevent unintended surface changes
+```
+
+### Rule 3: Consumer Changes Require Canonical Backfill
+If a consumer needs custom behavior that isn't exposed via the canonical component's feature flags, **add the feature flag first** rather than working around it in the consumer.
+
+```typescript
+// Bad: Custom logic in consumer to hide a feature
+export function RequestTable(props) {
+  const [showAiButton, setShowAiButton] = useState(false);  // Hidden by consumer logic
+  return <JiraTable ... />;
+}
+
+// Good: Use feature flag on canonical component
+export function RequestTable(props) {
+  return <JiraTable ... enableAiImprove={false} />;  // Explicit, canonical-controlled
+}
+```
+
+---
+
 ## 1. JiraTable
 **Location:** `/src/components/shared/JiraTable/`
 
@@ -15,23 +80,20 @@ This document enforces that **any structural or behavioral change to a canonical
 - Cell editors from `editors.tsx`
 - `BulkFooterBar` (bulk action affordance)
 
-**14 Consumer Files:**
+**7 Active Consumer Files (as of 2026-05-17):**
 
-| Consumer | Module | Purpose |
-|----------|--------|---------|
-| `BacklogPage.atlaskit.tsx` | project-work-hub > pages | Project backlog (stories, tasks, epics) |
-| `StoryBacklogPage.atlaskit.tsx` | project-work-hub > pages | Backlog grouped/sorted by story status |
-| `RequestTable.tsx` | producthub > listing | Product/Investor-Journey request list |
-| `ProductBacklogListTable.tsx` | product-backlog > components | Product backlog list view |
-| `UWVTable.tsx` | universal-work-view | Universal work view table (all types) |
-| `SubtasksPanel/index.tsx` | project-work-hub > components | Subtasks inline list in detail view |
-| `IncidentListPage.tsx` | pages > incidenthub | Incident management list |
-| `CreateStoryModal.tsx` | workhub > create-story | Modal table for story creation flow |
-| `CreateBusinessRequestModal.tsx` | business-requests | Modal table for BR creation |
-| `BrArabicTitleSection.tsx` | catalyst-detail-views > BR sections | BR-specific table section |
-| `BrAttachmentsSection.tsx` | catalyst-detail-views > BR sections | Attachments table in BR detail |
-| `AddPeopleModal.tsx` | project-work-hub > components | People picker modal table |
-| `useCreateStory.ts` | workhub > create-story | Hook using JiraTable types |
+| Consumer | Module | Purpose | Feature Flags |
+|----------|--------|---------|---|
+| `BacklogPage.atlaskit.tsx` | project-work-hub > pages | Project backlog (stories, tasks, epics) | enableGroupCreateButton=false, enableStickyCreateFooter=true |
+| `StoryBacklogPage.atlaskit.tsx` | project-work-hub > pages | Backlog grouped/sorted by story status | enableGroupCreateButton=false, enableStickyCreateFooter=false |
+| `RequestTable.tsx` | producthub > listing | Product/Investor-Journey request list | enableGroupCreateButton=false, enableStickyCreateFooter=false |
+| `ProductBacklogListTable.tsx` | product-backlog > components | Product backlog list view | enableGroupCreateButton=false, enableStickyCreateFooter=false |
+| `UWVTable.tsx` | universal-work-view | Universal work view table (all types) | enableGroupCreateButton=false, enableStickyCreateFooter=false |
+| `SubtasksPanel/index.tsx` | project-work-hub > components | Subtasks inline list in detail view | enableGroupCreateButton=false, enableStickyCreateFooter=false |
+| `IncidentListPage.tsx` | pages > incidenthub | Incident management list | enableGroupCreateButton=false, enableStickyCreateFooter=false |
+
+**Future/Hypothetical Consumers** (mentioned in prior planning, not yet implemented):
+- CreateStoryModal, CreateBusinessRequestModal, BrArabicTitleSection, BrAttachmentsSection, AddPeopleModal, useCreateStory (when these features are built)
 
 **Feature Toggles (Props) — CANONICAL LEVEL:**
 
