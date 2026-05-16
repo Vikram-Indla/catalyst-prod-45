@@ -306,6 +306,18 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 
 ---
 
+## 2026-05-16 — useForYouData and useAgeingItems use DIFFERENT tables for current-user Jira ID
+**Surface:** For You / Assigned tab (AssignedPanel) vs For You / Ageing tab (AgeingPanel)
+**Pattern:** Ageing tab showed 24 items; Assigned tab showed empty state ("Nothing assigned to you"). Both panels read from `ph_issues` by `assignee_account_id`. Root cause: two different hooks resolve the current user's Jira account ID from different sources:
+- `useAgeingItems` → `profiles.jira_account_id` (direct column on profiles table) ✅
+- `useForYouData.fetchUserMapping` → `ph_user_mapping.jira_account_id` (separate mapping table) ❌ (no entry existed for the user)
+When `ph_user_mapping` has no entry and the name fallback also fails, `jiraAccountIds = []` → `ph_issues` query is skipped → Assigned tab silent empty state with no error.
+**Fix:** Added `profiles.jira_account_id` as a final fallback in `fetchUserMapping`: if `ph_user_mapping` lookup returns no IDs, check `profiles.jira_account_id` (the same field `useAgeingItems` uses). Now both hooks align.
+**Rule:** Any hook that resolves "current user's Jira account ID" MUST check `profiles.jira_account_id` as a fallback if `ph_user_mapping` returns empty. Never silently swallow an empty `jiraAccountIds` — add a console.warn and the profiles fallback. Before shipping a new panel that queries `ph_issues` by `assignee_account_id`, verify which ID-resolution path it uses and confirm the result is non-empty for the test user.
+**Severity:** P1 (silent data incompleteness — empty state with no error, no console warning)
+
+---
+
 ## 2026-05-16 — Code archaeology before API troubleshooting — read existing implementations first
 **Surface:** wh-jira-bulk-sync edge function · any Jira API integration
 **Pattern:** Debugging Jira API search failures, I tested multiple endpoints: `/rest/api/3/search` (returned HTTP 410 deprecated), then `/rest/api/3/issues/search` (returned 0 results). Spent cycles trying alternatives before checking the existing working code. Lovable's `wh-jira-bulk-sync/index.ts` (already deployed and functional) uses `/rest/api/3/search/jql` — the correct endpoint the whole time. The endpoint choice was already proven in production; the failure diagnosis was wrong.
