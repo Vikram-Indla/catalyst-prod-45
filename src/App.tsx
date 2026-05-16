@@ -58,7 +58,7 @@ const FullAppRoutes = ENABLE_FULL_APP
 //   • Persist via SyncStorage → page reloads hydrate instantly from cache,
 //     refetch only happens after staleTime elapses
 //   • buster: bump CACHE_VERSION to invalidate ALL cached queries on deploy
-const CACHE_VERSION = 'v1.2026-04-25';
+const CACHE_VERSION = 'v2.2026-05-16';
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
 const queryClient = new QueryClient({
