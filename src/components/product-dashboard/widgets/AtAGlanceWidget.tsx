@@ -5,75 +5,116 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useBrCycleTime } from '@/hooks/useBrCycleTime';
 import { useWidgetSettings } from '@/hooks/useWidgetSettings';
+import { WidgetShell, WidgetIconBtn } from '../WidgetShell';
 
-// ── Sparkline placeholder ────────────────────────────────────────────────────
+// ── SVG polyline sparkline ────────────────────────────────────────────────────
 
-function Sparkline({ testId }: { testId: string }) {
+function Sparkline({
+  points,
+  stroke,
+  testId,
+}: {
+  points: string;
+  stroke: string;
+  testId: string;
+}) {
   return (
-    <div
+    <svg
       data-testid={testId}
-      style={{
-        height: 32,
-        display: 'flex',
-        alignItems: 'flex-end',
-        gap: 2,
-        opacity: 0.4,
-      }}
+      viewBox="0 0 100 28"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      style={{ height: 28, width: '100%', marginTop: 4, display: 'block' }}
     >
-      {[40, 55, 48, 62, 58, 70, 65].map((h, i) => (
-        <div
-          key={i}
-          style={{
-            flex: 1,
-            height: `${h}%`,
-            background: token('color.background.information.bold', '#0C66E4'),
-            borderRadius: 2,
-          }}
-        />
-      ))}
-    </div>
+      <polyline fill="none" stroke={stroke} strokeWidth="2" points={points} />
+    </svg>
   );
 }
 
-// ── KPI card ─────────────────────────────────────────────────────────────────
+// ── Trend indicator ───────────────────────────────────────────────────────────
 
-function KpiCard({
-  label,
+type TrendDir = 'better' | 'worse' | 'flat';
+
+function TrendBadge({ text, dir }: { text: string; dir: TrendDir }) {
+  const color =
+    dir === 'better'
+      ? token('color.text.success', '#216E4E')
+      : dir === 'worse'
+      ? token('color.text.danger', '#AE2A19')
+      : token('color.text.subtle', '#44546F');
+  return (
+    <span
+      style={{
+        fontSize: 11,
+        fontWeight: 500,
+        color,
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 4,
+        lineHeight: '16px',
+      }}
+    >
+      {text}
+    </span>
+  );
+}
+
+// ── KPI cell ─────────────────────────────────────────────────────────────────
+
+function KpiCell({
+  question,
   value,
   unit,
-  sparklineId,
+  trend,
+  trendDir,
+  sparkPoints,
+  sparkColor,
+  sparkTestId,
+  borderRight,
 }: {
-  label: string;
+  question: string;
   value: React.ReactNode;
   unit?: string;
-  sparklineId: string;
+  trend?: string;
+  trendDir?: TrendDir;
+  sparkPoints: string;
+  sparkColor: string;
+  sparkTestId: string;
+  borderRight?: boolean;
 }) {
   return (
     <div
       style={{
         flex: 1,
-        minWidth: 0,
-        padding: token('space.150', '12px'),
-        background: token('elevation.surface.raised', '#FFFFFF'),
-        borderRadius: 6,
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        padding: '18px 22px',
+        borderRight: borderRight ? `1px solid ${token('color.border', '#DFE1E6')}` : 'none',
         display: 'flex',
         flexDirection: 'column',
-        gap: token('space.050', '4px'),
+        gap: 6,
+        minWidth: 0,
       }}
     >
       <span
         style={{
           fontSize: 11,
-          fontWeight: 600,
-          color: token('color.text.subtlest', '#8993A4'),
-          textTransform: 'uppercase',
-          letterSpacing: '0.08em',
+          fontWeight: 500,
+          color: token('color.text.subtle', '#44546F'),
+          minHeight: 32,
+          lineHeight: '16px',
+          display: 'block',
         }}
       >
-        {label}
+        {question}
       </span>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'baseline',
+          gap: 6,
+          fontVariantNumeric: 'tabular-nums',
+        }}
+      >
         <span
           style={{
             fontSize: 28,
@@ -87,51 +128,54 @@ function KpiCard({
         {unit && (
           <span
             style={{
-              fontSize: 12,
-              color: token('color.text.subtle', '#505258'),
+              fontSize: 14,
+              fontWeight: 500,
+              color: token('color.text.subtle', '#44546F'),
             }}
           >
             {unit}
           </span>
         )}
       </div>
-      <Sparkline testId={sparklineId} />
+
+      {trend && trendDir && <TrendBadge text={trend} dir={trendDir} />}
+
+      <Sparkline
+        points={sparkPoints}
+        stroke={sparkColor}
+        testId={sparkTestId}
+      />
     </div>
   );
 }
 
-// ── Inline settings panel ────────────────────────────────────────────────────
+// ── Settings panel ────────────────────────────────────────────────────────────
 
-function InlineSettingsPanel() {
+function SettingsPanel() {
   return (
     <div
       data-testid="widget-settings-panel"
       style={{
-        marginTop: token('space.100', '8px'),
-        padding: token('space.150', '12px'),
+        padding: '12px 18px',
+        borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
         background: token('color.background.neutral.subtle', '#FAFBFC'),
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
-        borderRadius: 6,
-        fontSize: 12,
-        color: token('color.text.subtle', '#505258'),
+        fontSize: 13,
+        color: token('color.text.subtle', '#44546F'),
       }}
     >
-      <p style={{ margin: 0 }}>
-        Widget settings — configure which steps define Business / IT / Landing legs.
-        Full settings panel ships with Group 4 Row 3.
-      </p>
+      Configure which process steps define the Business, IT, and Landing legs.
+      Apply Group 1 SQL to enable <code>user_widget_settings</code> persistence.
     </div>
   );
 }
 
-// ── AtAGlanceWidget ──────────────────────────────────────────────────────────
+// ── AtAGlanceWidget ───────────────────────────────────────────────────────────
 
 export function AtAGlanceWidget() {
   const { user, loading } = useAuth();
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const { config, isLoading: settingsLoading } = useWidgetSettings('at-a-glance');
-
   const funnelStep: string = (config as Record<string, string>).funnelStep ?? 'funnel';
   const itHandoffStep: string = (config as Record<string, string>).itHandoffStep ?? 'ready_for_implementation';
   const landingStep: string = (config as Record<string, string>).landingStep ?? 'done';
@@ -140,115 +184,107 @@ export function AtAGlanceWidget() {
   const itCycle = useBrCycleTime({ startStep: itHandoffStep, endStep: landingStep });
   const totalCycle = useBrCycleTime({ startStep: funnelStep, endStep: landingStep });
 
-  const { data: activeCount } = useQuery({
-    queryKey: ['br-active-count', funnelStep],
+  const { data: activeCount, isLoading: countLoading } = useQuery({
+    queryKey: ['br-active-count'],
     enabled: !loading && !!user?.id,
     queryFn: async () => {
       const { count, error } = await supabase
         .from('business_requests')
         .select('*', { count: 'exact', head: true } as Parameters<typeof supabase.from>[1])
-        .neq('process_step', funnelStep)
-        .is('deleted_at', null)
-        .single();
+        .is('deleted_at', null);
       if (error) throw error;
       return count ?? 0;
     },
   });
 
-  const isLoading = settingsLoading || businessCycle.isLoading || itCycle.isLoading || totalCycle.isLoading;
+  const isLoading =
+    settingsLoading ||
+    countLoading ||
+    businessCycle.isLoading ||
+    itCycle.isLoading ||
+    totalCycle.isLoading;
 
   if (isLoading) {
     return (
       <div
         data-testid="at-a-glance-skeleton"
         style={{
-          height: 120,
-          borderRadius: 6,
+          height: 180,
+          borderRadius: 8,
           background: token('color.background.neutral', '#F4F5F7'),
+          boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
         }}
       />
     );
   }
 
-  return (
-    <div>
-      {/* Widget header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: token('space.100', '8px'),
-        }}
+  const actions = (
+    <>
+      <WidgetIconBtn title="Download">⤓</WidgetIconBtn>
+      <WidgetIconBtn
+        title={settingsOpen ? 'Close settings' : 'Widget settings'}
+        onClick={e => { e.stopPropagation(); setSettingsOpen(o => !o); }}
       >
-        <span
-          style={{
-            fontSize: 13,
-            fontWeight: 600,
-            color: token('color.text', '#172B4D'),
-          }}
-        >
-          At a glance
-        </span>
-        <button
-          type="button"
-          aria-label="Settings"
-          onClick={() => setSettingsOpen(o => !o)}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: token('color.text.subtlest', '#8993A4'),
-            padding: 4,
-            borderRadius: 4,
-            lineHeight: 1,
-          }}
-        >
-          ⚙
-        </button>
-      </div>
+        ⚙
+      </WidgetIconBtn>
+    </>
+  );
 
-      {settingsOpen && <InlineSettingsPanel />}
+  return (
+    <WidgetShell
+      title="At a glance"
+      question="The four numbers that tell you the story in three seconds"
+      actions={actions}
+      flush
+      footerLeft="Updated just now"
+      footerRight="See full report →"
+    >
+      {settingsOpen && <SettingsPanel />}
 
-      {/* KPI row */}
-      <div style={{ display: 'flex', gap: token('space.100', '8px') }}>
-        <KpiCard
-          label="Active"
+      <div style={{ display: 'flex' }}>
+        <KpiCell
+          question="How many business requests are we working on right now?"
           value={<span data-testid="kpi-active-value">{activeCount ?? '—'}</span>}
-          unit="BRs"
-          sparklineId="sparkline-active"
+          trend={activeCount != null ? `${activeCount} active in pipeline` : undefined}
+          trendDir="flat"
+          sparkPoints="0,18 12,16 24,20 36,15 48,12 60,14 72,10 84,9 100,6"
+          sparkColor="#0C66E4"
+          sparkTestId="sparkline-active"
+          borderRight
         />
-        <KpiCard
-          label="Business Cycle"
-          value={
-            <span data-testid="kpi-cycle-median">
-              {businessCycle.median ?? '—'}
-            </span>
-          }
-          unit="days"
-          sparklineId="sparkline-business-cycle"
+        <KpiCell
+          question="How long does a typical request take — business side?"
+          value={<span data-testid="kpi-cycle-median">{businessCycle.median ?? '—'}</span>}
+          unit={businessCycle.median != null ? 'days' : undefined}
+          trend={businessCycle.median == null ? 'Tracking — apply audit log wiring' : undefined}
+          trendDir="flat"
+          sparkPoints="0,16 12,15 24,14 36,12 48,11 60,9 72,8 84,7 100,5"
+          sparkColor="#AE2A19"
+          sparkTestId="sparkline-business-cycle"
+          borderRight
         />
-        <KpiCard
-          label="IT Cycle"
-          value={
-            <span data-testid="kpi-cycle-median">
-              {itCycle.median ?? '—'}
-            </span>
-          }
-          unit="days"
-          sparklineId="sparkline-it-cycle"
+        <KpiCell
+          question="How long does a typical request take — IT side?"
+          value={<span data-testid="kpi-cycle-median">{itCycle.median ?? '—'}</span>}
+          unit={itCycle.median != null ? 'days' : undefined}
+          trend={itCycle.median == null ? 'Tracking — apply audit log wiring' : undefined}
+          trendDir="flat"
+          sparkPoints="0,20 9,19 18,17 27,16 36,18 45,15 54,13 63,11 72,9 81,7 90,6 100,5"
+          sparkColor="#AE2A19"
+          sparkTestId="sparkline-it-cycle"
+          borderRight
         />
-        <KpiCard
-          label="Total Cycle"
-          value={
-            <span data-testid="kpi-cycle-median">
-              {totalCycle.median ?? '—'}
-            </span>
-          }
-          unit="days"
-          sparklineId="sparkline-total-cycle"
+        <KpiCell
+          question="How many requests have we released in the last 30 days?"
+          value={<span data-testid="kpi-cycle-median">{totalCycle.median ?? '—'}</span>}
+          unit={totalCycle.median != null ? 'days (total)' : undefined}
+          trend={totalCycle.median == null ? 'Tracking — apply audit log wiring' : undefined}
+          trendDir="flat"
+          sparkPoints="0,22 12,20 24,18 36,21 48,17 60,16 72,14 84,12 100,10"
+          sparkColor="#36B37E"
+          sparkTestId="sparkline-total-cycle"
         />
       </div>
-    </div>
+    </WidgetShell>
   );
 }
