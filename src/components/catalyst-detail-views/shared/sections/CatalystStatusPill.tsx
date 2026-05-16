@@ -39,7 +39,7 @@ import { WorkflowViewerModal } from './WorkflowViewerModal';
  *   because no ADS token matches the Jira status category colours exactly.
  */
 function statusBg(appearance: LozengeAppearance): { bg: string; fg: string } {
-  const fg = '#292A2E'; // universal dark text — same for all Jira status pills
+  const fg = 'var(--ds-text, #292A2E)'; // universal dark text — same for all Jira status pills
   switch (appearance) {
     case 'success':    return { bg: '#94C748',                fg };  // Done/In QA — lime green
     case 'inprogress': return { bg: '#669DF1',                fg };  // In Progress — medium blue

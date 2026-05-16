@@ -262,7 +262,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
   const handleDelete = useCallback((id: string) => deleteMutation.mutateAsync(id), [deleteMutation]);
 
   return (
-    <div style={{ borderTop: '1px solid #EBECF0', paddingTop: 20, marginTop: 8 }}>
+    <div style={{ borderTop: '1px solid var(--ds-border-subtle, #EBECF0)', paddingTop: 20, marginTop: 8 }}>
       <ActivityPanel
         comments={mappedComments}
         historyItems={mappedHistory}

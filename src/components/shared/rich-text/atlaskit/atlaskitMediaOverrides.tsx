@@ -153,20 +153,11 @@ function ImageLightbox({ src, onClose }: { src: string; onClose: () => void }) {
 function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onClick: () => void }) {
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
-  const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
   const [hovered, setHovered] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
   const issueKey = useContext(IssueKeyContext);
 
-  const handleLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
-    const img = e.currentTarget;
-    setDims({ w: img.naturalWidth, h: img.naturalHeight });
-    setLoaded(true);
-  }, []);
-
-  const handleError = useCallback(() => {
-    setErrored(true);
-  }, []);
+  const handleLoad = useCallback(() => { setLoaded(true); }, []);
+  const handleError = useCallback(() => { setErrored(true); }, []);
 
   const handleDownload = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -180,29 +171,14 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
     document.body.removeChild(a);
   }, [src]);
 
-  const containerWidth = containerRef.current?.clientWidth ?? 670;
-  const aspectHeight = dims ? Math.min(containerWidth * (dims.h / dims.w), 600) : 200;
-
   if (errored) {
-    /* jira-compare 2026-05-03 (P3.4 — chip honesty pass): the proxy
-       returns HTTP 403 with body {"error":"Jira returned 403"} (probed).
-       Root cause is auth-scope on the Supabase edge function's PAT, not
-       a missing endpoint — the proxy IS deployed at
-       /functions/v1/jira-attachment-proxy on the runtime project
-       mqgshobotcvcjouzxdbi. Real fix lives in Supabase edge function
-       config; this chip improves what the user sees in the meantime:
-         - filename comes from ADF `alt` (real name) instead of URL tail
-         - "Open" goes to the Jira ISSUE page (where the user's browser
-           cookie can render the attachment), not the failing proxy URL
-         - copy is honest: "Image hosted on Jira" + auth hint */
+    /* jira-compare 2026-05-03 (P3.4 — chip honesty pass) */
     const fallbackName = (src.split('?')[0].split('/').pop() || 'image').slice(0, 60);
     const filename = (alt && alt.trim()) ? alt.trim().slice(0, 60) : fallbackName;
-    const openHref = issueKey
-      ? `${JIRA_BROWSE_BASE}/${issueKey}`
-      : src;
+    const openHref = issueKey ? `${JIRA_BROWSE_BASE}/${issueKey}` : src;
     return (
       <div style={{
-        margin: '12px 0', padding: '12px 16px', borderRadius: 'var(--ds-border-radius, 4px)',
+        margin: '8px 0', padding: '12px 16px', borderRadius: 'var(--ds-border-radius, 4px)',
         background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
         border: '1px solid var(--ds-border, #DFE1E6)',
         fontSize: 14, color: 'var(--ds-text, #292A2E)',
@@ -231,49 +207,38 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
 
   return (
     <div
-      ref={containerRef}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      style={{
-        display: 'block', width: '100%', maxWidth: '100%',
-        margin: '12px 0', clear: 'both', position: 'relative',
-      }}
+      style={{ display: 'block', width: '100%', margin: '8px 0', position: 'relative' }}
     >
-      <div
-        style={{
-          width: '100%',
-          height: loaded && dims ? aspectHeight : 200,
-          borderRadius: 4, overflow: 'hidden',
-          position: 'relative', cursor: 'pointer',
-          background: loaded ? 'transparent' : 'var(--ds-surface-sunken, #F4F5F7)',
-          border: loaded ? '1px solid #E2E8F0' : 'none',
-          transition: 'height 100ms ease-in',
-        }}
+      {/* Loading skeleton — shown until the image fires onLoad */}
+      {!loaded && (
+        <div style={{
+          width: '100%', height: 200, borderRadius: 3,
+          background: 'var(--ds-surface-sunken, #F4F5F7)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <Loader2 size={24} style={{ color: '#6B6E76', animation: 'spin 0.86s cubic-bezier(0.4,0.15,0.6,0.85) infinite' }} />
+        </div>
+      )}
+      {/* Natural proportional rendering — width:100% of container, height:auto.
+          Matches Jira's <img> rendering: no fixed-height box, no objectFit crop,
+          no letterboxing. The img is hidden (opacity:0, height:0) until onLoad
+          so the skeleton is visible during fetch without layout jump. */}
+      <img
+        src={src}
+        alt={alt ?? ''}
+        onLoad={handleLoad}
+        onError={handleError}
         onClick={onClick}
-      >
-        {!loaded && (
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            width: '100%', height: '100%',
-          }}>
-            <Loader2 size={24} style={{ color: '#6B6E76', animation: 'spin 0.86s cubic-bezier(0.4,0.15,0.6,0.85) infinite' }} />
-          </div>
-        )}
-        <img
-          src={src}
-          alt={alt ?? ''}
-          onLoad={handleLoad}
-          onError={handleError}
-          style={{
-            display: 'block',
-            width: '100%', height: loaded && dims ? aspectHeight : 0,
-            objectFit: 'contain', objectPosition: 'center',
-            opacity: loaded ? 1 : 0,
-            position: loaded ? 'relative' : 'absolute',
-            top: 0, left: 0,
-          }}
-        />
-      </div>
+        style={{
+          display: loaded ? 'block' : 'none',
+          width: '100%',
+          height: 'auto',
+          borderRadius: 3,
+          cursor: 'pointer',
+        }}
+      />
       {loaded && hovered && (
         <button
           onClick={handleDownload}
@@ -316,11 +281,49 @@ function CatalystMediaNode(props: Record<string, any>) {
   );
 }
 
-/* `mediaSingle` wraps a single `media` node. Our default @atlaskit
-   layout would apply figure styling / caption wrapping — we just pass
-   children through and let MediaImageCard own its margins. */
-function CatalystMediaSingle({ children }: { children?: React.ReactNode }) {
-  return <>{children}</>;
+/* `mediaSingle` wraps a single `media` node. Jira stores the author's
+   chosen pixel width and layout alignment on the mediaSingle attrs
+   (e.g. width:671, widthType:"pixel", layout:"align-start"). We must
+   honour those values so the image renders at the same size the author
+   set in the Jira editor — not stretched to 100% of the container.
+   Without this, a 671px image saved in Jira renders at ~700px in
+   Catalyst (full container width). */
+function CatalystMediaSingle({
+  children,
+  width,
+  widthType,
+  layout,
+}: {
+  children?: React.ReactNode;
+  width?: number;
+  widthType?: string;
+  layout?: string;
+  [key: string]: unknown;
+}) {
+  // Derive CSS max-width from ADF mediaSingle attrs.
+  // widthType:"pixel" → hard pixel cap; widthType:"percentage" → % of container.
+  // Absent widthType → unconstrained (100%).
+  let maxWidth: string = '100%';
+  if (widthType === 'pixel' && typeof width === 'number' && width > 0) {
+    maxWidth = `${width}px`;
+  } else if (widthType === 'percentage' && typeof width === 'number' && width > 0) {
+    maxWidth = `${width}%`;
+  }
+
+  // layout controls horizontal alignment of the block within the content area.
+  // "align-start" / default → left; "center" → centred; "align-end" → right.
+  // "wide" / "full-width" → treat as 100% (breakout not supported in drawer).
+  const isCenter = layout === 'center';
+  const isEnd = layout === 'align-end';
+  const marginLeft = isCenter ? 'auto' : '0';
+  const marginRight = (isCenter || isEnd) ? 'auto' : '0';
+  if (layout === 'wide' || layout === 'full-width') maxWidth = '100%';
+
+  return (
+    <div style={{ maxWidth, marginLeft, marginRight, width: '100%' }}>
+      {children}
+    </div>
+  );
 }
 
 /* `mediaGroup` wraps multiple `media` nodes (attachment grid). Flex

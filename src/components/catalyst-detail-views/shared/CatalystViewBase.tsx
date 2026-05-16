@@ -297,7 +297,7 @@ export function CatalystViewBase({
     width: '100%', height: '100%', background: 'var(--ds-surface, #FFFFFF)',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
     animation: 'cv-panel-in 200ms ease-out',
-    borderLeft: '1px solid #DFE1E6',
+    borderLeft: '1px solid var(--ds-border, #DFE1E6)',
   } : {
     width: 1100, maxWidth: '95vw', minHeight: 600, maxHeight: 'calc(100vh - 80px)',
     background: 'var(--ds-surface, #FFFFFF)', borderRadius: 8,
@@ -385,7 +385,7 @@ export function CatalystViewBase({
           display: 'flex', alignItems: 'center',
           justifyContent: 'space-between',
           padding: '10px 20px', minHeight: 44, flexShrink: 0,
-          borderBottom: '1px solid #EBECF0',
+          borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)',
           ...((!panelMode && !fullPageMode) ? {} : {
             position: 'sticky',
             top: 0,
@@ -567,7 +567,7 @@ export function CatalystViewBase({
               Panel/modal modes keep overflow-y:auto for independent column scroll. */}
           <div className="cv-drawer-left" data-sdm-scope style={{
             flex: 1, padding: '20px 24px 32px 24px',
-            borderRight: '1px solid #EBECF0', minWidth: 0, minHeight: 0,
+            borderRight: '1px solid var(--ds-border-subtle, #EBECF0)', minWidth: 0, minHeight: 0,
             // fullPageMode: cap field rows at ~780px (matches modal left-panel width
             // at 1100px total minus ~320px sidebar). Without this, fields like
             // Priority and Severity stretch to fill the full viewport width.

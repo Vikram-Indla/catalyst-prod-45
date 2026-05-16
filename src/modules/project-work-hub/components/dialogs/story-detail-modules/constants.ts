@@ -28,37 +28,37 @@ export const STATUS_CATEGORIES: Record<string, string[]> = {
  */
 export const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
   todo:        { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)' },
-  in_progress: { bg: '#DEEBFF', text: '#0747A6' },
-  done:        { bg: '#E3FCEF', text: '#006644' },
-  blocked:     { bg: '#FFEBE6', text: '#BF2600' },
-  on_hold:     { bg: '#FFF0B3', text: '#974F0C' },
-  in_uat:      { bg: '#DEEBFF', text: '#0747A6' }, // was #00B8D9 cyan — now Atlaskit inprogress-blue
-  in_beta:     { bg: '#DEEBFF', text: '#0747A6' },
-  in_prod:     { bg: '#E3FCEF', text: '#006644' },
-  in_review:   { bg: '#DEEBFF', text: '#0747A6' },
+  in_progress: { bg: 'var(--ds-background-information, #DEEBFF)', text: 'var(--ds-link-pressed, #0747A6)' },
+  done:        { bg: 'var(--ds-background-success, #E3FCEF)', text: 'var(--ds-text-success, #006644)' },
+  blocked:     { bg: 'var(--ds-background-danger, #FFEBE6)', text: 'var(--ds-text-danger, #BF2600)' },
+  on_hold:     { bg: 'var(--ds-background-warning, #FFF0B3)', text: 'var(--ds-text-warning, #974F0C)' },
+  in_uat:      { bg: 'var(--ds-background-information, #DEEBFF)', text: 'var(--ds-link-pressed, #0747A6)' }, // was #00B8D9 cyan — now Atlaskit inprogress-blue
+  in_beta:     { bg: 'var(--ds-background-information, #DEEBFF)', text: 'var(--ds-link-pressed, #0747A6)' },
+  in_prod:     { bg: 'var(--ds-background-success, #E3FCEF)', text: 'var(--ds-text-success, #006644)' },
+  in_review:   { bg: 'var(--ds-background-information, #DEEBFF)', text: 'var(--ds-link-pressed, #0747A6)' },
 };
 
 export const LOZENGE_STYLES: Record<'grey' | 'blue' | 'green', React.CSSProperties> = {
   grey:  { background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
-  blue:  { background: '#DEEBFF', color: '#0747A6' },
-  green: { background: '#E3FCEF', color: '#006644' },
+  blue:  { background: 'var(--ds-background-information, #DEEBFF)', color: 'var(--ds-link-pressed, #0747A6)' },
+  green: { background: 'var(--ds-background-success, #E3FCEF)', color: 'var(--ds-text-success, #006644)' },
 };
 
 export const LOZENGE: Record<StatusCategory, React.CSSProperties> = {
   todo:        { background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
-  in_progress: { background: '#DEEBFF', color: '#0747A6' },
-  done:        { background: '#E3FCEF', color: '#006644' },
+  in_progress: { background: 'var(--ds-background-information, #DEEBFF)', color: 'var(--ds-link-pressed, #0747A6)' },
+  done:        { background: 'var(--ds-background-success, #E3FCEF)', color: 'var(--ds-text-success, #006644)' },
 };
 
 export const PRIORITY_COLORS: Record<string, string> = {
-  Highest: '#FF5630', High: '#FF5630', Medium: '#FFAB00', Low: '#36B37E', Lowest: '#8993A4',
+  Highest: 'var(--ds-icon-danger, #FF5630)', High: 'var(--ds-icon-danger, #FF5630)', Medium: 'var(--ds-icon-warning, #FFAB00)', Low: 'var(--ds-background-success-bold, #36B37E)', Lowest: 'var(--ds-background-neutral-bold, #8993A4)',
 };
 
 export const PRIORITY_STYLES: Record<string, { color: string; symbol: string }> = {
-  Highest: { color: '#AE2A19', symbol: '▲▲' },
-  High: { color: '#DE350B', symbol: '▲' },
+  Highest: { color: 'var(--ds-text-danger, #AE2A19)', symbol: '▲▲' },
+  High: { color: 'var(--ds-text-danger, #DE350B)', symbol: '▲' },
   Medium: { color: 'var(--ds-text-warning, #D97706)', symbol: '—' },
-  Low: { color: '#36B37E', symbol: '▼' },
+  Low: { color: 'var(--ds-background-success-bold, #36B37E)', symbol: '▼' },
   Lowest: { color: 'var(--ds-text-subtlest, #6B778C)', symbol: '▼▼' },
 };
 
@@ -69,9 +69,9 @@ export const PRIORITY_ICONS: Record<string, string> = {
 export const PRIORITY_LIST: PriorityLevel[] = ['Highest', 'High', 'Medium', 'Low', 'Lowest'];
 
 export const TEST_RESULT_STYLES: Record<TestResult, React.CSSProperties> = {
-  passed:  { background: '#E3FCEF', color: '#006644' },
-  failed:  { background: '#FFEDEB', color: '#BF2600' },
-  blocked: { background: '#FFF0B3', color: '#974F0C' },
+  passed:  { background: 'var(--ds-background-success, #E3FCEF)', color: 'var(--ds-text-success, #006644)' },
+  failed:  { background: 'var(--ds-background-danger, #FFEDEB)', color: 'var(--ds-text-danger, #BF2600)' },
+  blocked: { background: 'var(--ds-background-warning, #FFF0B3)', color: 'var(--ds-text-warning, #974F0C)' },
   skipped: { background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
   not_run: { background: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, #6B778C)' },
 };
@@ -86,11 +86,11 @@ export const LINK_TYPE_LABELS: Record<string, string> = {
 };
 
 export const LINK_TYPE_STYLES: Record<string, React.CSSProperties> = {
-  blocks:           { background: '#FFEDEB', color: '#BF2600' },
-  'is blocked by':  { background: '#FFEDEB', color: '#BF2600' },
-  'relates to':     { background: '#FFF0B3', color: '#974F0C' },
-  relates_to:       { background: '#FFF0B3', color: '#974F0C' },
-  duplicates:       { background: '#FFEDEB', color: '#BF2600' },
+  blocks:           { background: 'var(--ds-background-danger, #FFEDEB)', color: 'var(--ds-text-danger, #BF2600)' },
+  'is blocked by':  { background: 'var(--ds-background-danger, #FFEDEB)', color: 'var(--ds-text-danger, #BF2600)' },
+  'relates to':     { background: 'var(--ds-background-warning, #FFF0B3)', color: 'var(--ds-text-warning, #974F0C)' },
+  relates_to:       { background: 'var(--ds-background-warning, #FFF0B3)', color: 'var(--ds-text-warning, #974F0C)' },
+  duplicates:       { background: 'var(--ds-background-danger, #FFEDEB)', color: 'var(--ds-text-danger, #BF2600)' },
   'is duplicated by': { background: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, #6B778C)' },
   clones:           { background: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' },
   'is cloned by':   { background: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' },
@@ -163,14 +163,14 @@ export const WORK_ITEM_ICONS: Record<string, string> = Object.fromEntries(
 
 export const menuItemStyle: React.CSSProperties = {
   display: 'flex', alignItems: 'center', gap: 6, width: '100%', padding: '7px 14px',
-  background: 'none', border: 'none', fontSize: 13, color: '#344054', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
+  background: 'none', border: 'none', fontSize: 13, color: 'var(--ds-text-subtle, #344054)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
   textAlign: 'left',
 };
 
 export const detailLabelStyle: React.CSSProperties = {
-  fontSize: 11, fontWeight: 650, color: '#475467', padding: '8px 0', textTransform: 'uppercase', letterSpacing: '0.04em',
+  fontSize: 11, fontWeight: 650, color: 'var(--ds-text-subtle, #475467)', padding: '8px 0', textTransform: 'uppercase', letterSpacing: '0.04em',
 };
 
 export const detailValueStyle: React.CSSProperties = {
-  fontSize: 13, color: '#101828', padding: '6px 0',
+  fontSize: 13, color: 'var(--ds-text, #101828)', padding: '6px 0',
 };

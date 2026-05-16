@@ -131,7 +131,7 @@ export interface IssueRowProps {
 
 export function IssueRow({ item, columns, onDelete, onCopyLink }: IssueRowProps) {
   const isDone = item.status_category === 'done';
-  const avatarColor = item.assignee_display_name ? getAvatarColor(item.assignee_display_name) : '#8993A4';
+  const avatarColor = item.assignee_display_name ? getAvatarColor(item.assignee_display_name) : 'var(--ds-background-neutral-bold, #8993A4)';
   const avatarInitial = item.assignee_display_name?.charAt(0).toUpperCase() ?? '?';
   return (
     <div className="sdm-child-row" role="listitem">
@@ -149,7 +149,7 @@ export function IssueRow({ item, columns, onDelete, onCopyLink }: IssueRowProps)
         <div className="sdm-child-avatar" style={{ background: avatarColor }} title={item.assignee_display_name ?? 'Unassigned'}>{avatarInitial}</div>
       )}
       {columns.priority && (
-        <div className="sdm-priority-dot" style={{ background: PRIORITY_COLORS[item.priority] ?? '#8993A4' }} title={item.priority} />
+        <div className="sdm-priority-dot" style={{ background: PRIORITY_COLORS[item.priority] ?? 'var(--ds-background-neutral-bold, #8993A4)' }} title={item.priority} />
       )}
       {columns.created && (
         <span className="sdm-date-col" title={item.jira_created_at ?? ''}>{formatDateShort(item.jira_created_at)}</span>

@@ -198,7 +198,7 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
       padding-left: 0 !important;
       margin-left: 0 !important;
     }
-    .cv-desc-body a, .adf-description-content a { color: #0052CC; text-decoration: none; }
+    .cv-desc-body a, .adf-description-content a { color: var(--ds-link, #0052CC); text-decoration: none; }
     .cv-desc-body a:hover, .adf-description-content a:hover { text-decoration: underline; }
     .cv-desc-body hr, .adf-description-content hr { border: none; border-top: 1px solid var(--ds-border, #DFE1E6); margin: 16px 0; }
     .cv-desc-body img, .adf-description-content img { max-width: 100%; border-radius: 4px; cursor: pointer; }
@@ -419,7 +419,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
               transition: 'opacity 150ms cubic-bezier(0.15,1,0.3,1), color 150ms cubic-bezier(0.15,1,0.3,1), background 150ms cubic-bezier(0.15,1,0.3,1)',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.color = '#292A2E';
+              e.currentTarget.style.color = 'var(--ds-text, #292A2E)';
               e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)';
               prefetchEpicEditor();
             }}
@@ -441,6 +441,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
               workItemId={issue.id}
               placeholder="Add a description..."
               onAttachmentUploaded={handleInlineAttachmentUploaded}
+              appearance="full-page"
             />
           </Suspense>
         </div>

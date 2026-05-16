@@ -497,7 +497,7 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDelete}
-              className="bg-[#DE350B] hover:bg-[#BF2600] text-white"
+              className="bg-[var(--ds-background-danger-bold,#DE350B)] hover:bg-[var(--ds-background-danger-bold-hovered,#BF2600)] text-white"
             >Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -557,7 +557,7 @@ function AttachmentRow({ attachment, canDelete, bucket, onPreview, onDelete }: {
               <img src={thumbUrl} alt="" className="att-thumb-img" />
             ) : isVideo ? (
               <div className="att-thumb-fallback">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="#42526E"><path d="M8 5v14l11-7z" /></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ds-text-subtle, #42526E)"><path d="M8 5v14l11-7z" /></svg>
               </div>
             ) : (
               <FileIcon />
@@ -669,8 +669,8 @@ function FileIcon() {
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
       <rect width="32" height="32" rx="4" fill="var(--ds-surface-sunken, #F4F5F7)" />
       <path d="M10 8h8l6 6v10a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z"
-        fill="#DDE1E6" stroke="#BFC4CE" strokeWidth="1" />
-      <path d="M18 8v6h6" fill="none" stroke="#BFC4CE" strokeWidth="1" />
+        fill="var(--ds-background-neutral, #DDE1E6)" stroke="var(--ds-border, #BFC4CE)" strokeWidth="1" />
+      <path d="M18 8v6h6" fill="none" stroke="var(--ds-border, #BFC4CE)" strokeWidth="1" />
     </svg>
   );
 }

@@ -122,7 +122,7 @@ export function CatalystKeyDetails({
             transform: collapsed ? 'rotate(0deg)' : 'rotate(90deg)',
           }}
         >
-          <ChevronRightIcon label="" primaryColor="#5E6C84" size="small" />
+          <ChevronRightIcon label="" primaryColor="var(--ds-icon-subtle, #5E6C84)" size="small" />
         </span>
         {/* jira-compare 2026-05-11 re-probe: canonical Jira section header is
             16px/653/20px/rgb(41,42,46) — measured on the innermost text node of

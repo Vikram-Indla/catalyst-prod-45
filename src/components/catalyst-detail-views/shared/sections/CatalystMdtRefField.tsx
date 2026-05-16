@@ -79,8 +79,8 @@ export function CatalystMdtRefField({ issue, onUpdate }: Props) {
         }}
         placeholder="Add text"
         style={{
-          fontSize: 14, color: '#292A2E', fontFamily: 'inherit',
-          border: '1px solid #4C9AFF', borderRadius: 3,
+          fontSize: 14, color: 'var(--ds-text, #292A2E)', fontFamily: 'inherit',
+          border: '1px solid var(--ds-border-focused, #4C9AFF)', borderRadius: 3,
           padding: '4px 6px', width: '100%', outline: 'none',
           background: 'var(--ds-surface, #FFFFFF)',
         }}
@@ -96,7 +96,7 @@ export function CatalystMdtRefField({ issue, onUpdate }: Props) {
         background: 'transparent', border: 'none', padding: '4px 6px',
         margin: 0, font: 'inherit', cursor: 'pointer', textAlign: 'left',
         width: '100%', borderRadius: 3, transition: 'background 0.15s',
-        color: current ? '#292A2E' : '#6B6E76',
+        color: current ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-disabled, #6B6E76)',
       }}
       onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
