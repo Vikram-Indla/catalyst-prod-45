@@ -331,6 +331,11 @@ export default function IncidentListPage() {
           onPageChange={setPage}
           onRowClick={(r: any) => navigate(`/incident-hub/view/${r.id}`)}
           enableColumnReorder
+          // 2026-05-17: Feature flags declare intent explicitly per canonical
+          // governance framework. IncidentListPage has no group create affordances
+          // or sticky footer — create is via NewIncidentModal.
+          enableGroupCreateButton={false}
+          enableStickyCreateFooter={false}
           emptyView={
             <div className="flex flex-col items-center justify-center py-12">
               <AlertTriangle size={32} style={{ color: textMuted }} />

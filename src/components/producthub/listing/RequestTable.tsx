@@ -453,6 +453,12 @@ export function RequestTable({
         initialColumnWidths={columnWidths}
         onColumnWidthsChange={onColumnWidthsChange}
         emptyView={emptyView}
+        // 2026-05-17: Feature flags declare intent explicitly per canonical
+        // governance framework. RequestTable (product backlog) does not use
+        // group create affordances or sticky footer — product backlog uses
+        // external create flow via ProductHub.
+        enableGroupCreateButton={false}
+        enableStickyCreateFooter={false}
       />
     </div>
   );

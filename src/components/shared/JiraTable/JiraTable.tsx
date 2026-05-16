@@ -143,6 +143,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     onColumnVisibilityChange,
     collapsedGroups,
     onToggleGroup,
+    enableGroupCreateButton = false,
     onAddToGroup,
     renderGroupInlineRow,
     getRowHasChildren,
@@ -153,6 +154,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     columnOrder: columnOrderProp,
     onColumnOrderChange,
     enableVirtualization = false,
+    enableStickyCreateFooter = false,
     stickyCreateFooter,
     initialColumnWidths,
     onColumnWidthsChange,
@@ -1316,9 +1318,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   {g.meta}
                 </span>
               )}
-              {onAddToGroup && (
+              {enableGroupCreateButton && onAddToGroup && (
                 // 2026-05-08: + is AFTER label (Jira parity). Hidden by default,
                 // visible on row hover via .jira-group-header-row:hover .jira-group-add-btn CSS.
+                // 2026-05-17: feature flag `enableGroupCreateButton` gates this entire feature
+                // to ensure consumers declare intent explicitly via canonical prop.
                 <span className="jira-group-add-btn" style={{ display: 'inline-flex' }}>
                   <button
                     type="button"
@@ -1805,8 +1809,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
           {/* Jira-parity: sticky inline-create footer row. Always visible at the
               bottom of the table, pinned via position:sticky bottom:0.
               Renders a placeholder "What needs to be done?" row in idle state;
-              switches to `active` content when the consumer opens the create form. */}
-          {stickyCreateFooter && (
+              switches to `active` content when the consumer opens the create form.
+              2026-05-17: feature flag `enableStickyCreateFooter` gates this entire feature
+              to ensure consumers declare intent explicitly via canonical prop. */}
+          {enableStickyCreateFooter && stickyCreateFooter && (
             <tfoot style={{ position: 'sticky', bottom: 0, zIndex: 3 }}>
               <tr>
                 <td

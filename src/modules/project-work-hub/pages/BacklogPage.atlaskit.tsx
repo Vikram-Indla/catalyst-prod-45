@@ -2940,6 +2940,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             groups={groupedRows ?? undefined}
             collapsedGroups={collapsedGroups}
             onToggleGroup={toggleGroup}
+            // 2026-05-17: Feature flags declare intent explicitly per canonical
+            // governance framework. BacklogPage has sticky footer create only
+            // (no group inline-create affordances per user feedback 2026-05-17).
+            enableGroupCreateButton={false}
+            enableStickyCreateFooter={true}
             // Apr 28 2026 (carryover #13 — chevron discoverability):
             // expandedRowIds passes through expandedIds directly. Removed
             // the typeFilter='all' inversion (which previously fed the

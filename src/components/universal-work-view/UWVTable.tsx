@@ -331,6 +331,11 @@ export function UWVTable({
             description="Adjust filters or scope to see more items."
           />
         }
+        // 2026-05-17: Feature flags declare intent explicitly per canonical
+        // governance framework. UWVTable (universal work view) has no group
+        // create affordances or sticky footer — create is external flow.
+        enableGroupCreateButton={false}
+        enableStickyCreateFooter={false}
       />
     </div>
   );

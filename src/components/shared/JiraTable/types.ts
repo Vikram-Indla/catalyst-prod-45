@@ -274,10 +274,31 @@ export interface JiraTableProps<TRow> {
   enableVirtualization?: boolean;
 
   /**
+   * Feature flag: when true, the group header '+' button is rendered and
+   * `onAddToGroup` callback is invoked on click. When false (default), the
+   * group header '+' button is completely hidden regardless of whether
+   * `onAddToGroup` is passed.
+   *
+   * Default: false. Existing consumers see no change.
+   */
+  enableGroupCreateButton?: boolean;
+
+  /**
+   * Feature flag: when true, renders the sticky inline-create footer row
+   * pinned to the viewport bottom. When false (default), the footer is
+   * completely hidden regardless of whether `stickyCreateFooter` is passed.
+   *
+   * Default: false. Existing consumers see no change.
+   */
+  enableStickyCreateFooter?: boolean;
+
+  /**
    * Jira-parity: sticky inline-create footer row always visible at the
    * bottom of the table. When provided, renders a <tfoot> row pinned to
    * the viewport bottom. `placeholder` is shown in idle state; `active`
    * replaces it when the consumer has opened the create form.
+   *
+   * Only rendered when `enableStickyCreateFooter` is true.
    */
   stickyCreateFooter?: {
     /** Placeholder text shown in idle state. Default: '+ What needs to be done?' */
