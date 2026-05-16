@@ -77,7 +77,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
     try {
       const { error } = await supabase
         .from('ph_project_members')
-        .insert({ project_id: projectId, user_id: user.id, role: 'member' } as any);
+        .insert({ project_id: projectId, user_id: user.id, role: 'member' });
       if (error) throw new Error(error.message);
       queryClient.invalidateQueries({ queryKey: ['ph-project-members', projectId] });
       toast.success(`${user.name} added as Member`);
@@ -90,7 +90,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
 
   const updateRole = async (memberId: string, role: string) => {
     try {
-      const { error } = await supabase.from('ph_project_members').update({ role } as any).eq('id', memberId);
+      const { error } = await supabase.from('ph_project_members').update({ role }).eq('id', memberId);
       if (error) throw new Error(error.message);
       queryClient.invalidateQueries({ queryKey: ['ph-project-members', projectId] });
       toast.success('Role updated');

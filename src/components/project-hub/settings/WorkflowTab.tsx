@@ -4,6 +4,7 @@ import '@/components/project-hub/shared/phStyles.css';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Plus } from '@/lib/atlaskit-icons';
+import { WorkItemTypeIcon } from '@/components/icons';
 import {
   DndContext,
   closestCenter,
@@ -29,6 +30,14 @@ interface WorkflowTabProps {
   projectId: string;
 }
 
+interface WorkTypeWorkflow {
+  id: string;
+  name: string;
+  icon: string;
+  workflow_name: string | null;
+  position: number;
+}
+
 interface WorkflowStatus {
   id: string;
   name: string;
@@ -42,6 +51,20 @@ interface WorkflowStatus {
 export function WorkflowTab({ projectId }: WorkflowTabProps) {
   const queryClient = useQueryClient();
   const queryKey = ['ph-workflow-statuses', projectId];
+
+  const { data: workTypes = [] } = useQuery({
+    queryKey: ['ph-work-types-workflow', projectId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_work_types')
+        .select('id,name,icon,workflow_name,position')
+        .eq('project_id', projectId)
+        .order('position');
+      if (error) throw new Error(error.message);
+      return (data || []) as WorkTypeWorkflow[];
+    },
+    enabled: !!projectId,
+  });
 
   const [addOpen, setAddOpen] = useState(false);
   const [editStatus, setEditStatus] = useState<WorkflowStatus | null>(null);
@@ -188,8 +211,56 @@ export function WorkflowTab({ projectId }: WorkflowTabProps) {
   // Get item count (always 0 in Phase 1)
   const getItemCount = (_statusId: string) => 0;
 
+  // Group work types by workflow_name
+  const workflowGroups = workTypes.reduce<Map<string, WorkTypeWorkflow[]>>((acc, t) => {
+    const key = t.workflow_name ?? 'Default Workflow';
+    if (!acc.has(key)) acc.set(key, []);
+    acc.get(key)!.push(t);
+    return acc;
+  }, new Map());
+
   return (
     <div className="space-y-5">
+      {/* Workflow Scheme — per issue type mapping */}
+      <div className="ph-card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--divider)', background: 'var(--ds-surface-sunken,#F8FAFC)' }}>
+          <h3 className="ph-card-title" style={{ marginBottom: 2 }}>Workflow Scheme</h3>
+          <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: 0 }}>
+            Each work type uses a named workflow. Types sharing a workflow share the same status transitions.
+          </p>
+        </div>
+
+        {/* Column headers */}
+        <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', padding: '0 20px', borderBottom: '1px solid var(--divider)', background: 'var(--ds-surface-sunken,#F8FAFC)' }}>
+          {['Work type', 'Workflow'].map(h => (
+            <div key={h} style={{ padding: '7px 8px 7px 0', fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--fg-3)' }}>
+              {h}
+            </div>
+          ))}
+        </div>
+
+        {workTypes.map((t, i) => (
+          <div
+            key={t.id}
+            style={{
+              display: 'grid', gridTemplateColumns: '220px 1fr', padding: '0 20px',
+              borderBottom: i < workTypes.length - 1 ? '1px solid var(--divider)' : 'none',
+              transition: 'background 80ms',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--ds-surface-sunken,#F8FAFC)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '11px 8px 11px 0' }}>
+              <WorkItemTypeIcon type={t.icon} size={16} />
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>{t.name}</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', padding: '11px 8px 11px 0' }}>
+              <span style={{ fontSize: 13, color: 'var(--ds-text-subtle,#64748B)' }}>{t.workflow_name ?? '—'}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* Workflow Editor Card */}
       <div className="ph-card">
         <h3 className="ph-card-title">Workflow</h3>

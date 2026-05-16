@@ -9,10 +9,6 @@ import { GeneralTab } from '@/components/project-hub/settings/GeneralTab';
 import { MembersTab } from '@/components/project-hub/settings/MembersTab';
 import { WorkflowTab } from '@/components/project-hub/settings/WorkflowTab';
 import { TypesTab } from '@/components/project-hub/settings/TypesTab';
-import { LabelsTab } from '@/components/project-hub/settings/LabelsTab';
-import { ComponentsTab } from '@/components/project-hub/settings/ComponentsTab';
-import { IntegrationTab } from '@/components/project-hub/settings/IntegrationTab';
-import { NotificationsTab } from '@/components/project-hub/settings/NotificationsTab';
 import { ScreensTab } from '@/components/project-hub/settings/ScreensTab';
 import { LayoutTab } from '@/components/project-hub/settings/LayoutTab';
 import { FieldsTab } from '@/components/project-hub/settings/FieldsTab';
@@ -120,17 +116,7 @@ export default function ProjectSettingsPageNew() {
             <FieldsTab projectId={project.id} />
           )}
 
-          {activeTab === 'Labels' && project && (
-            <LabelsTab projectId={project.id} />
-          )}
 
-          {activeTab === 'Components' && project && (
-            <ComponentsTab projectId={project.id} />
-          )}
-
-          {activeTab === 'Integration' && <IntegrationTab />}
-
-          {activeTab === 'Notifications' && <NotificationsTab />}
 
           {!project && !isLoading && (
             <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #94A3B8)', textAlign: 'center', padding: '40px 0' }}>Project not found.</div>
