@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { CircleUser } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { getAvatarColor, getUserInitials } from '@/utils/avatarColor';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { Tooltip } from '@/components/ads';
 
 export function UserAvatar() {
@@ -17,11 +18,10 @@ export function UserAvatar() {
         .select('full_name, avatar_url')
         .eq('id', user.id)
         .maybeSingle();
-      setProfile({
-        id: user.id,
-        name: p?.full_name || user.email?.split('@')[0] || 'User',
-        avatarUrl: p?.avatar_url || null,
-      });
+      const name = p?.full_name || user.email?.split('@')[0] || 'User';
+      // Fall back to the bundled PNG when profiles.avatar_url is null
+      const avatarUrl = p?.avatar_url || resolveAvatarUrl(name);
+      setProfile({ id: user.id, name, avatarUrl });
     })();
   }, []);
 
