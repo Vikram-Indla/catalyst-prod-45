@@ -1104,7 +1104,7 @@ export function AllProjectsTable({
       // key cell via Tab. Visual treatment intentionally subtle (no underline,
       // matches existing key-cell style) so it reads as part of the table cell
       // rather than a flashy link.
-      case 'project_key': return <td key={colKey}><RouterLink to={`/project-hub/${p.project_key}/dashboard`} onClick={() => recordProjectView(p)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: token('color.text.subtle'), letterSpacing: '0.02em', textDecoration: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = String(token('color.link')); }} onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = String(token('color.text.subtle')); }}>{p.project_key}</RouterLink></td>;
+      case 'project_key': return <td key={colKey} style={{ textAlign: 'center' }}><RouterLink to={`/project-hub/${p.project_key}/dashboard`} onClick={() => recordProjectView(p)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: token('color.text.subtle'), letterSpacing: '0.02em', textDecoration: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = String(token('color.link')); }} onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = String(token('color.text.subtle')); }}>{p.project_key}</RouterLink></td>;
       // 'type' column is permanently banned from the Projects list view.
       case 'lead': return <td key={colKey}><LeadReassignPopover project={p} /></td>;
       case 'members': return <td key={colKey}><MemberManagePopover project={p} /></td>;

@@ -34,7 +34,7 @@ export function useProjects() {
         .order('name', { ascending: true });
 
       if (error) throw new Error(`Failed to fetch projects: ${error.message}`);
-      const excludedProjectKeys = new Set(['TH-DEFAULT', 'MDT']);
+      const excludedProjectKeys = new Set(['TH-DEFAULT', 'MDT', 'INV']);
 
       const projectData = ((data ?? []) as ProjectListItem[]).filter(
         (p) => !excludedProjectKeys.has(p.project_key)

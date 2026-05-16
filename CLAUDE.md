@@ -4,6 +4,19 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## 2026-05-16 — STOP AND ASK before classifying entities; never blindly surface data that was stated as out of scope
+**Surface:** AllProjectsPage (`/project-hub/projects`), `useProjectHub.ts` `excludedProjectKeys`
+**Pattern:** The "Investor Journey" Jira project (key: INV) was synced and displayed in the All Projects table. Vikram had explicitly stated multiple times that Investor Journey is a **product, not a project** and belongs in the Products module, not Projects. The code surfaced it anyway because `excludedProjectKeys` only excluded `TH-DEFAULT` and `MDT`. Additionally, the Members column rendered inconsistently between rows (avatar placeholder vs "Add members" text) because the two rows had different member counts — a discrepancy that could have been caught by asking before shipping. The Key column values (BAU, INV) were also left-aligned while the column header was centered.
+**Three concrete mistakes:**
+1. **Entity classification** — Displaying INV under Projects without checking if it was classified as a product. Vikram stated it was a product multiple times. This is a **build-without-asking** failure.
+2. **Visual inconsistency not raised** — The Members column showed different UI (avatar vs text button) across rows. Should have been logged as a finding before shipping, not discovered post-hoc by Vikram.
+3. **Column alignment gap** — Key column header appeared centered (drag grip icon causes visual centering), cells were left-aligned. Never measured or compared against Jira before declaring done.
+**Rule:** Before rendering ANY Jira-synced project in a module, check: (1) Is this entity classified by Vikram as belonging to a different module? (2) Are all visible columns rendering consistently across ALL rows, not just the first row? (3) Are cell values aligned to match their column header alignment? When in doubt about classification of an entity, **STOP AND ASK** — do not assume Jira's list is the correct subset for Catalyst's module boundary. Add newly-excluded project keys to `excludedProjectKeys` in `useProjectHub.ts`.
+**Fix:** Added `'INV'` to `excludedProjectKeys` in `useProjectHub.ts:37`. Added `textAlign: 'center'` to Key column `<td>` in `AllProjectsTable.tsx:1107`.
+**Severity:** P0 (wrong entity shown in wrong module; Vikram had corrected this classification multiple times before)
+
+---
+
 ## 2026-05-16 — PRODUCTION INFRASTRUCTURE SNAPSHOT
 
 **Active Supabase Project:** `lmqwtldpfacrrlvdnmld` (Catalyst KSA org)
