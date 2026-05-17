@@ -56,6 +56,15 @@ export const adminPockets: AdminNavPocket[] = [
       { label: 'Modules & Packages', path: '/admin/modules-packages' },
       { label: 'Notification Settings', path: '/admin/settings/notifications' },
       { label: 'Notification Triggers', path: '/admin/notification-triggers' },
+    ],
+  },
+  {
+    id: 'design-system',
+    label: 'Design system',
+    iconName: 'Palette',
+    path: '/admin/components',
+    children: [
+      { label: 'Components', path: '/admin/components' },
       // RESET ICONS — runtime asset override management. Admin-only.
       { label: 'Icons', path: '/admin/icons' },
       { label: 'Avatars', path: '/admin/avatars' },
@@ -136,6 +145,7 @@ export const REGISTERED_ADMIN_ROUTES = new Set([
   '/admin/notification-triggers',
   '/admin/icons',
   '/admin/avatars',
+  '/admin/components',
   '/admin/workflows',
   '/admin/programs',
   '/admin/portfolios',
