@@ -78,7 +78,6 @@ import {
   makeKeyCell,
   makeCommentsCell,
   makeDateCell,
-  makeTypeIconCell,
   makeCaretCell,
   makeStatusEditCell,
   makeStatusEditCellAkPopup,
@@ -342,7 +341,8 @@ const PRIORITY_OPTIONS = ['highest', 'critical', 'high', 'medium', 'low', 'lowes
 // Type-specific custom fields (Gap Classification, IR Demo Date, etc.) are permanently banned.
 // See CLAUDE.md 2026-05-05, 2026-05-07 for the full ban list.
 const ALLOWED_COLUMN_IDS = new Set([
-  'type',
+  // 2026-05-17 jira-compare: standalone 'type' column removed; type icon
+  // now lives inside the Key cell via makeKeyCell getIcon prefix.
   'key',
   'summary',
   'status',
@@ -1781,72 +1781,14 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       }),
     },
     {
-      id: 'type',
-      // Apr 27, 2026 — jira-compare audit P1 #5 + P-A11Y #12: Jira's BAU
-      // list type column has a visible "Type" header (data-key=issuetype,
-      // ~110px wide). Catalyst was icon-only with `label: ''` which is
-      // both a parity gap and an a11y gap (screen readers read an empty
-      // header for the issue-type cell). Setting label to "Type" fixes
-      // both findings in one change — visible text doubles as the
-      // accessible name on the th element.
-      // 2026-05-12 design-critique H8 fix: reduced from width:9 (108px) to
-      // width:8 (96px): Type is the first data column — JiraTable prepends a
-      // 28px chevron placeholder to its header. At width:6 (72px), content
-      // area is only 48px; 28+30px "Type" text = 58px → clips to "Ty".
-      // 2026-05-16: reduced to width:4 (48px). Type col only contains a 16px icon;
-      // Jira packs icon directly in the Work merged cell. 48px is sufficient.
-      label: 'Type',
-      width: 4,
-      align: 'center',
-      alwaysVisible: true,
-      cell: ({ row: it }) => {
-        let icon: React.ReactNode;
-        if (it.type === 'initiative') {
-          const init = initiativesByKey?.get(it.key || '');
-          const bg = init?.initiative_type_color_hex || '#904EE2';
-          icon = (
-            <span
-              title={init?.initiative_type_label || 'Request'}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 16,
-                height: 16,
-                borderRadius: 3,
-                background: bg,
-                color: 'var(--ds-text-inverse, #FFFFFF)',
-                fontSize: 10,
-                fontWeight: 700,
-              }}
-            >
-              {(init?.initiative_type_key || 'I')[0].toUpperCase()}
-            </span>
-          );
-        } else {
-          const typeMap: Record<Exclude<BacklogType, 'initiative'>, string> = {
-            epic: 'Epic',
-            feature: 'Feature',
-            story: 'Story',
-            bug: 'QA Bug',
-            incident: 'Production Incident',
-          };
-          icon = <JiraIssueTypeIcon type={typeMap[it.type as Exclude<BacklogType, 'initiative'>]} size={16} />;
-        }
-        return (
-          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16 }}>
-            {icon}
-          </span>
-        );
-      },
-    },
-    {
       id: 'key',
       label: 'Key',
-      // 2026-05-08 re-probe: Jira BAU list measures Key at 120px.
-      // width:10 × 12 = 120px matches. Previous width:7 (~84px) was too
-      // narrow once sort indicator "↑" is added alongside the key text.
-      width: 10,
+      // 2026-05-17 jira-compare: standalone Type column removed (Jira packs
+      // the type icon inside the "Work" combined cell, not as its own
+      // column). Icon now renders as a leading prefix inside this Key cell
+      // via makeKeyCell's 4th `getIcon` argument. Width bumped from 10 (120px)
+      // to 12 (~144px) to cover the icon + key text without truncation.
+      width: 12,
       sortable: true,
       defaultVisible: true,
       accessor: (r) => r.key || '',
@@ -1856,6 +1798,39 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         (r: BacklogItem) => r.key,
         (r: BacklogItem) => openDetail(r),
         (r: BacklogItem) => `/project-hub/${projectKey}/backlog/${r.key || r.id}`,
+        (it: BacklogItem) => {
+          if (it.type === 'initiative') {
+            const init = initiativesByKey?.get(it.key || '');
+            const bg = init?.initiative_type_color_hex || '#904EE2';
+            return (
+              <span
+                title={init?.initiative_type_label || 'Request'}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 16,
+                  height: 16,
+                  borderRadius: 3,
+                  background: bg,
+                  color: 'var(--ds-text-inverse, #FFFFFF)',
+                  fontSize: 10,
+                  fontWeight: 700,
+                }}
+              >
+                {(init?.initiative_type_key || 'I')[0].toUpperCase()}
+              </span>
+            );
+          }
+          const typeMap: Record<Exclude<BacklogType, 'initiative'>, string> = {
+            epic: 'Epic',
+            feature: 'Feature',
+            story: 'Story',
+            bug: 'QA Bug',
+            incident: 'Production Incident',
+          };
+          return <JiraIssueTypeIcon type={typeMap[it.type as Exclude<BacklogType, 'initiative'>]} size={16} />;
+        },
       ),
     },
     {
