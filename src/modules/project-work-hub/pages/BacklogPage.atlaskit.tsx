@@ -2879,6 +2879,15 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                 // Invalidate backlog queries to re-fetch and re-sort by rank_order
                 queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
                 queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+                // 2026-05-17 jira-compare cycle 2: explicit success feedback.
+                // When the current sort is not rank_order, the visual list
+                // won't re-shuffle even though the rank update persisted —
+                // toast confirms the action so the user doesn't assume drag
+                // is broken.
+                flag.success(
+                  'Reordered',
+                  `${draggedRow.key || 'Row'} moved. ${sortKey !== 'rank_order' ? 'Clear column sort to see the new order.' : ''}`.trim(),
+                );
               } catch (e: any) {
                 flag.error('Rank update failed', e?.message ?? String(e));
               }
@@ -2887,7 +2896,23 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             <SortableContext
               items={sortedRows.map((r) => r.id)}
               strategy={verticalListSortingStrategy}
-              disabled={sortKey !== 'rank_order' || groupBy !== null}
+              // 2026-05-17 jira-compare cycle 2: previously disabled unless
+              // sortKey === 'rank_order', but no column produces that sortKey,
+              // so SortableContext was always disabled and drag silently
+              // never fired. Vikram flagged "drag handle not working" once the
+              // handle was made visible.
+              //
+              // New gate matches the row-level handle's visibility gate
+              // (rowDragHandleHidden, set at the JiraTable call site below):
+              // drag is enabled in the default sort state (key ASC) with no
+              // grouping. Drag fires bulkUpdate of sort_order; visual reorder
+              // is immediate when sortKey resolves to rank_order, and persists
+              // for the next visit if the user later sorts by rank_order.
+              disabled={
+                sortKey !== DEFAULT_SORT_KEY ||
+                sortDir !== DEFAULT_SORT_DIR ||
+                (groupBy !== null && groupBy !== 'none')
+              }
             >
           <JiraTable<BacklogItem>
             columns={filteredCols}
