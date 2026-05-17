@@ -2,12 +2,17 @@
  * WorkflowAdminPage — Admin module for managing issue type workflows.
  * Tabs for each issue type, showing statuses + transition matrix.
  * Light theme (Catalyst V12 light tokens).
+ *
+ * "Ask CATY" button opens CatyWorkflowPanel — a fixed-right AI workflow editor.
+ * The panel operates on the active issue type's scheme only.
  */
 import React, { useState } from 'react';
 import { useAllWorkflowSchemes, useCatalystWorkflow } from '@/hooks/useCatalystWorkflow';
 import { WorkflowEditor } from './WorkflowEditor';
 import { WorkflowDiagram } from './WorkflowDiagram';
+import { CatyWorkflowPanel } from '@/components/admin/CatyWorkflowPanel';
 import { cn } from '@/lib/utils';
+import Button from '@atlaskit/button/new';
 import BoardsIcon from '@atlaskit/icon/core/boards';
 import GridIcon from '@atlaskit/icon/core/grid';
 import BoardIcon from '@atlaskit/icon/core/board';
@@ -18,10 +23,9 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 const ISSUE_TYPES = [
   { key: 'Story', label: 'Story' },
   { key: 'Epic', label: 'Epic' },
+  { key: 'Feature', label: 'Feature' },
   { key: 'Sub-task', label: 'Sub-task' },
-  { key: 'Defect', label: 'Defect' },
-  { key: 'Business Request', label: 'Business Request' },
-  { key: 'Task', label: 'Task' },
+  { key: 'QA Bug', label: 'QA Bug' },
 ];
 
 type ViewMode = 'editor' | 'diagram';
@@ -29,11 +33,22 @@ type ViewMode = 'editor' | 'diagram';
 export default function WorkflowAdminPage() {
   const [activeType, setActiveType] = useState('Story');
   const [viewMode, setViewMode] = useState<ViewMode>('editor');
+  const [catyOpen, setCatyOpen] = useState(false);
   const { data: schemes = [] } = useAllWorkflowSchemes();
+
+  // The active workflow — passed down to the panel so it knows the live state
+  const activeWorkflow = useCatalystWorkflow(activeType);
 
   return (
     <AdminGuard>
-    <div className="space-y-0 bg-white min-h-screen text-[var(--ds-text,#0F172A)]">
+    <div
+      className="space-y-0 bg-white min-h-screen text-[var(--ds-text,#0F172A)]"
+      style={{
+        // Shrink main content when CATY panel is open to prevent overlap
+        marginRight: catyOpen ? 380 : 0,
+        transition: 'margin-right 0.2s ease',
+      }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ds-border,#E2E8F0)]">
         <div className="flex items-center gap-3">
@@ -50,32 +65,35 @@ export default function WorkflowAdminPage() {
           </div>
         </div>
 
-        {/* View toggle */}
-        <div className="flex items-center gap-1 bg-[var(--ds-surface-sunken,#F8FAFC)] border border-[var(--ds-border,#E2E8F0)] rounded-md p-0.5">
-          <button
-            onClick={() => setViewMode('editor')}
-            className={cn(
-              'flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors',
-              viewMode === 'editor'
-                ? 'bg-white text-[var(--ds-text,#0F172A)] shadow-sm border border-[var(--ds-border,#E2E8F0)]'
-                : 'text-[var(--ds-text-subtlest,#64748B)] hover:text-[var(--ds-text,#0F172A)]'
-            )}
+        <div className="flex items-center gap-3">
+          {/* Ask CATY button */}
+          <Button
+            appearance={catyOpen ? 'primary' : 'default'}
+            isSelected={catyOpen}
+            onClick={() => setCatyOpen(o => !o)}
           >
-            <GridIcon label="" size="small" />
-            Editor
-          </button>
-          <button
-            onClick={() => setViewMode('diagram')}
-            className={cn(
-              'flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors',
-              viewMode === 'diagram'
-                ? 'bg-white text-[var(--ds-text,#0F172A)] shadow-sm border border-[var(--ds-border,#E2E8F0)]'
-                : 'text-[var(--ds-text-subtlest,#64748B)] hover:text-[var(--ds-text,#0F172A)]'
-            )}
-          >
-            <BoardIcon label="" size="small" />
-            Diagram
-          </button>
+            ✦ Ask CATY
+          </Button>
+
+          {/* View toggle */}
+          <div className="flex items-center gap-1 bg-[var(--ds-surface-sunken,#F8FAFC)] border border-[var(--ds-border,#E2E8F0)] rounded-md p-0.5">
+            <Button
+              appearance="subtle"
+              isSelected={viewMode === 'editor'}
+              iconBefore={() => <GridIcon label="" size="small" />}
+              onClick={() => setViewMode('editor')}
+            >
+              Editor
+            </Button>
+            <Button
+              appearance="subtle"
+              isSelected={viewMode === 'diagram'}
+              iconBefore={() => <BoardIcon label="" size="small" />}
+              onClick={() => setViewMode('diagram')}
+            >
+              Diagram
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -107,6 +125,20 @@ export default function WorkflowAdminPage() {
         ))}
       </Tabs>
     </div>
+
+    {/* CatyWorkflowPanel — position:fixed, outside the shrinking main div */}
+    {activeWorkflow.scheme && (
+      <CatyWorkflowPanel
+        isOpen={catyOpen}
+        onClose={() => setCatyOpen(false)}
+        schemeId={activeWorkflow.scheme.id}
+        schemeName={activeWorkflow.scheme.name}
+        issueType={activeType}
+        statuses={activeWorkflow.statuses}
+        transitions={activeWorkflow.transitions}
+        onInvalidate={activeWorkflow.invalidate}
+      />
+    )}
     </AdminGuard>
   );
 }
@@ -133,11 +165,15 @@ function WorkflowTabContent({ issueType, viewMode }: { issueType: string; viewMo
 
   if (viewMode === 'diagram') {
     return (
-      <WorkflowDiagram
-        statuses={workflow.statuses}
-        transitions={workflow.transitions}
-        schemeName={workflow.scheme.name}
-      />
+      <div style={{ height: 'calc(100vh - 160px)', minHeight: 560 }}>
+        <WorkflowDiagram
+          scheme={workflow.scheme}
+          statuses={workflow.statuses}
+          transitions={workflow.transitions}
+          onInvalidate={workflow.invalidate}
+          schemeName={workflow.scheme.name}
+        />
+      </div>
     );
   }
 
