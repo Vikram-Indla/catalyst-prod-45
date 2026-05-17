@@ -22,6 +22,7 @@ import { token } from '@atlaskit/tokens';
 
 import type { ComponentRegistryEntry } from '@/registry/components.registry';
 import { getAllConsumersByName, getUsageByName } from '@/registry/usage-map.generated';
+import ComponentLivePreview from './ComponentLivePreview';
 
 const CONSUMER_PREVIEW_LIMIT = 10;
 const REPO_ROOT = '/Users/vikramindla/Documents/GitHub/catalyst-prod-45';
@@ -295,6 +296,8 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
       {entry.feature_flags && entry.feature_flags.length > 0 && (
         <FeatureFlagsTable flags={entry.feature_flags} />
       )}
+
+      <ComponentLivePreview entry={entry} />
 
       <ConsumerList name={entry.name} />
 

@@ -19,11 +19,11 @@
  *   - Side-by-side frame uses CSS grid (no hand-rolled flex tabs)
  */
 import { useState } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 import Heading from '@atlaskit/heading';
 import Button from '@atlaskit/button/new';
 import { token } from '@atlaskit/tokens';
 
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import type { ComponentRegistryEntry } from '@/registry/components.registry';
 import { previewFixtures, hasFixture, getDeferredReason } from './componentPreviewFixtures';
 
@@ -71,21 +71,19 @@ function ThemedFrame({ mode, children }: ThemedFrameProps) {
   );
 }
 
-function PreviewError({ error }: { error: Error }) {
-  return (
-    <div
-      style={{
-        fontSize: 12,
-        color: token('color.text.danger', '#AE2A19'),
-        background: token('color.background.danger', '#FFEDEB'),
-        padding: token('space.100', '8px'),
-        borderRadius: 4,
-      }}
-    >
-      Render failed: {error.message}
-    </div>
-  );
-}
+const PREVIEW_ERROR_FALLBACK = (
+  <div
+    style={{
+      fontSize: 12,
+      color: token('color.text.danger', '#AE2A19'),
+      background: token('color.background.danger', '#FFEDEB'),
+      padding: token('space.100', '8px'),
+      borderRadius: 4,
+    }}
+  >
+    Render failed — open the spec card source link to inspect.
+  </div>
+);
 
 export interface ComponentLivePreviewProps {
   entry: ComponentRegistryEntry;
@@ -146,10 +144,10 @@ export default function ComponentLivePreview({ entry }: ComponentLivePreviewProp
           gap: token('space.200', '16px'),
         }}
       >
-        <ErrorBoundary FallbackComponent={PreviewError}>
+        <ErrorBoundary fallback={PREVIEW_ERROR_FALLBACK}>
           <ThemedFrame mode="light">{fixture()}</ThemedFrame>
         </ErrorBoundary>
-        <ErrorBoundary FallbackComponent={PreviewError}>
+        <ErrorBoundary fallback={PREVIEW_ERROR_FALLBACK}>
           <ThemedFrame mode="dark">{fixture()}</ThemedFrame>
         </ErrorBoundary>
       </div>
