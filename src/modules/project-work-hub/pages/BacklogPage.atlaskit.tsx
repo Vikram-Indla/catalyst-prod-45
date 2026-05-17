@@ -19,7 +19,11 @@ import ReactDOM from 'react-dom';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+<<<<<<< Updated upstream
 import { useAuth } from '@/hooks/useAuth';
+=======
+import { useAuth } from '@/lib/auth';
+>>>>>>> Stashed changes
 import { useCreateCatyConversation } from '@/hooks/useCatyAI';
 
 import EmptyState from '@atlaskit/empty-state';
@@ -346,10 +350,12 @@ const PRIORITY_OPTIONS = ['highest', 'critical', 'high', 'medium', 'low', 'lowes
 // Type-specific custom fields (Gap Classification, IR Demo Date, etc.) are permanently banned.
 // See CLAUDE.md 2026-05-05, 2026-05-07 for the full ban list.
 const ALLOWED_COLUMN_IDS = new Set([
-  // 2026-05-17 jira-compare: standalone 'type' column removed; type icon
-  // now lives inside the Key cell via makeKeyCell getIcon prefix.
+  // 2026-05-17 jira-compare cycle 2: standalone 'type' column removed; type
+  // icon now lives inside the Work cell via makeKeyCell getIcon prefix.
+  // 2026-05-17 jira-compare cycle 2 (design-critique H4 P0): standalone
+  // summary column merged into the key column (now labeled "Work").
+  // key id retained for URL backward-compat.
   'key',
-  'summary',
   'status',
   'comments',
   'parent',
@@ -451,7 +457,15 @@ export default function NativeBacklogPage() {
 
 /* ─── The canonical page ───────────────────────────────────────────────── */
 
+<<<<<<< Updated upstream
 export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string }) {
+=======
+function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey: string }) {
+  // May 12, 2026 (Phase 1.3): CATY hooks for Ask CATY toolbar button.
+  const { user } = useAuth();
+  const createConversation = useCreateCatyConversation();
+
+>>>>>>> Stashed changes
   // Apr 27, 2026 (L50): canonical Project Hub page-title pattern is
   // `{Project Name} {Hub Function}` — e.g. "Senaei BAU Backlog". Falls
   // back to the project key while the name is loading. Same pattern
@@ -641,7 +655,8 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // Summary | Status | Comments | Parent — NO Assignee by default. Assignee is
   // available via the column picker (+) but hidden in the factory layout.
   // NOTE: Comments column is banned (2026-05-11), removed from defaults
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'assignee', 'priority', 'parent', 'fix_versions'];
+  // 2026-05-17 jira-compare cycle 2: 'summary' merged into 'key' (Work column).
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'status', 'assignee', 'priority', 'parent', 'fix_versions'];
 
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
@@ -1761,24 +1776,30 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     // canonical's __select is the only selection column, fed by the same
     // selection / onSelectionChange props (lines ~3031-3033).
     {
+      // 2026-05-17 jira-compare cycle 2 (design-critique H4 P0): merged Key
+      // and Summary columns into ONE "Work" column matching Jira's BAU list.
+      // Jira renders [type icon][BAU-key link][summary text] in a SINGLE
+      // cell with one header labeled "Work". Catalyst was splitting this
+      // across two columns ("Key" + "Summary") with a vertical divider that
+      // Jira does not have. Column id stays 'key' for URL backward-compat
+      // (DEFAULT_VISIBLE_COLUMNS / ALLOWED_COLUMN_IDS still reference 'key').
+      // The standalone 'summary' column block below is now deleted.
       id: 'key',
-      label: 'Key',
-      // 2026-05-17 jira-compare: standalone Type column removed (Jira packs
-      // the type icon inside the "Work" combined cell, not as its own
-      // column). Icon now renders as a leading prefix inside this Key cell
-      // via makeKeyCell's 4th `getIcon` argument. Width bumped from 10 (120px)
-      // to 12 (~144px) to cover the icon + key text without truncation.
-      width: 12,
+      label: 'Work',
+      flex: true,
       sortable: true,
+      alwaysVisible: true,
       defaultVisible: true,
       accessor: (r) => r.key || '',
-      // Jira-parity: key cell renders as <a> so keyboard nav, middle-click,
-      // and Ctrl+click all work. Left-click preventDefault → opens detail panel.
-      cell: makeKeyCell(
-        (r: BacklogItem) => r.key,
-        (r: BacklogItem) => openDetail(r),
-        (r: BacklogItem) => `/project-hub/${projectKey}/backlog/${r.key || r.id}`,
-        (it: BacklogItem) => {
+      // Composed cell: keyCellRenderer renders [icon][BAU-XXXX link],
+      // summaryCellRenderer adds the inline-editable title text. Both
+      // factories are instantiated once per column-array memo recreation.
+      cell: (() => {
+        const keyCellRenderer = makeKeyCell(
+          (r: BacklogItem) => r.key,
+          (r: BacklogItem) => openDetail(r),
+          (r: BacklogItem) => `/project-hub/${projectKey}/backlog/${r.key || r.id}`,
+          (it: BacklogItem) => {
           if (it.type === 'initiative') {
             const init = initiativesByKey?.get(it.key || '');
             const bg = init?.initiative_type_color_hex || '#904EE2';
@@ -1811,57 +1832,43 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           };
           return <JiraIssueTypeIcon type={typeMap[it.type as Exclude<BacklogType, 'initiative'>]} size={16} />;
         },
-      ),
-    },
-    {
-      id: 'summary',
-      // Apr 27, 2026 — jira-compare audit P1 #6: Jira's BAU list Summary
-      // column renders at ~400px on a 1100-min table. Catalyst was 22%
-      // (~242px) — well below the audit's ≥360px acceptance target.
-      // Bumped 22 → 33 (~363px @ 1100 minw) to hit parity. Drops Updated
-      // from defaultVisible (see Updated col below) to make room — Jira
-      // hides Updated by default in the BAU list as well.
-      label: 'Summary',
-      flex: true,
-      sortable: true,
-      alwaysVisible: true,
-      cell: makeSummaryInlineEditCell<BacklogItem>({
-        getSummary: (r) => r.title,
-        // Iron dome OPEN (2026-04-27 audit). Every row is inline-editable.
-        // The unified architecture is: catalyst rows write directly to
-        // ph_issues; jira-sourced rows write to ph_issues optimistically
-        // AND queue a write-back via jira_write_back_queue (the gate at
-        // BacklogPage.atlaskit.tsx:387 in updateField.mutate routes the
-        // queue insert on source==='jira'). The factory's optional
-        // canEdit / getReadOnlyTooltip props are kept available in
-        // editors.tsx for other surfaces that may want them, but BAU
-        // backlog deliberately does not constrain edits by source.
-        onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { title: next } }),
-        // 2026-05-12 Jira parity: row hover → ↗ "Open work item" opens the
-        // detail panel for that row (mirrors Jira's full-width detail open).
-        onOpenWorkItem: (row) => openDetail(row),
-        // 2026-05-12 Jira parity: row hover → + "Create child item" triggers
-        // inline create scoped to that row's parent group. For now we route
-        // through the existing inlineCreateGroup state machine so the new
-        // item appears as a sibling under the same parent. Wiring to a true
-        // per-row child-create (sub-task family) is task #4 follow-up — see
-        // ph_issues.parent_key relationship and Jira hierarchy rules.
-        onCreateChild: (row) => {
-          // Default group target = the row's parent key when grouped by parent,
-          // else fall back to row's own id so child inserts as sibling.
-          const groupId = groupBy === 'parent'
-            ? (row.parent_key || row.id)
-            : row.parent_key || row.id;
-          setInlineCreateGroup(groupId);
-        },
-        // Show + button on rows that can have children: Epic, Feature,
-        // Story (sub-task parent). Exclude API Requirement and sub-task
-        // types from the affordance.
-        canCreateChild: (row) => {
-          const t = row.type || '';
-          return t === 'Epic' || t === 'Feature' || t === 'Story' || t === 'Task';
-        },
-      }),
+        );
+        const summaryCellRenderer = makeSummaryInlineEditCell<BacklogItem>({
+          getSummary: (r) => r.title,
+          // Iron dome OPEN (2026-04-27 audit). Every row is inline-editable.
+          onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { title: next } }),
+          // 2026-05-12 Jira parity: row hover → ↗ "Open work item" opens the
+          // detail panel for that row (mirrors Jira's full-width detail open).
+          onOpenWorkItem: (row) => openDetail(row),
+          // 2026-05-12 Jira parity: row hover → + "Create child item".
+          onCreateChild: (row) => {
+            const groupId = groupBy === 'parent'
+              ? (row.parent_key || row.id)
+              : row.parent_key || row.id;
+            setInlineCreateGroup(groupId);
+          },
+          canCreateChild: (row) => {
+            const t = row.type || '';
+            return t === 'Epic' || t === 'Feature' || t === 'Story' || t === 'Task';
+          },
+        });
+        return function WorkCell(props: any) {
+          return (
+            <span
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                width: '100%',
+                minWidth: 0,
+              }}
+            >
+              <span style={{ flexShrink: 0 }}>{keyCellRenderer(props)}</span>
+              <span style={{ flex: 1, minWidth: 0 }}>{summaryCellRenderer(props)}</span>
+            </span>
+          );
+        };
+      })(),
     },
     {
       id: 'status',
@@ -2301,6 +2308,28 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     flag.success('Exported', `${rows.length} rows exported to CSV`);
   };
 
+  // May 12, 2026 (Phase 1.3): Ask CATY handler. Creates a CATY conversation
+  // with the current backlog filter as context, then navigates to the CATY page.
+  const handleAskCaty = async () => {
+    if (!user || !project) return;
+    try {
+      const conversation = await createConversation.mutateAsync({
+        userId: user.id,
+        projectId: project.id,
+        type: 'chat', // CATY conversation_type enum: chat | generation | analysis | query
+      });
+      // Navigate to CATY with the conversation ID
+      // Pass filterValue as initial context (natural language JQL)
+      const params = new URLSearchParams({
+        conversation: conversation.id,
+        context: filterValue,
+      });
+      navigate(`/caty?${params.toString()}`);
+    } catch (error) {
+      flag.error('Failed to create CATY conversation', String(error));
+    }
+  };
+
   // Shared icon-button styles for the right-cluster toolbar buttons.
   // All 32×32, transparent bg, ADS subtle text token.
   const toolbarIconButtonStyle: React.CSSProperties = {
@@ -2681,6 +2710,30 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             }
           />
         </div>
+
+        {/* May 12, 2026 — Phase 1.3 (jira-compare cycle 2):
+            Ask CATY button opens AI panel with backlog JQL context.
+            Positioned between search and filter to match Jira's ✦ Ask AI button.
+            Uses useCreateCatyConversation hook to create a conversation
+            and navigates to /caty route. Button styling matches other
+            toolbar icon buttons (32x32, transparent, subtle text color). */}
+        <button
+          type="button"
+          title="Ask CATY about backlog"
+          onClick={handleAskCaty}
+          style={{
+            ...toolbarIconButtonStyle,
+            marginInline: 4,
+          }}
+          disabled={createConversation.isPending}
+        >
+          {createConversation.isPending ? (
+            <Spinner size="small" />
+          ) : (
+            <span style={{ fontSize: 18 }}>✨</span>
+          )}
+        </button>
+
         <div style={{ position: 'relative' }}>
           <JiraFilterAtlaskit
             value={filterValue}
