@@ -2683,29 +2683,6 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           />
         </div>
 
-        {/* May 12, 2026 — Phase 1.3 (jira-compare cycle 2):
-            Ask CATY button opens AI panel with backlog JQL context.
-            Positioned between search and filter to match Jira's ✦ Ask AI button.
-            Uses useCreateCatyConversation hook to create a conversation
-            and navigates to /caty route. Button styling matches other
-            toolbar icon buttons (32x32, transparent, subtle text color). */}
-        <button
-          type="button"
-          title="Ask CATY about backlog"
-          onClick={handleAskCaty}
-          style={{
-            ...toolbarIconButtonStyle,
-            marginInline: 4,
-          }}
-          disabled={createConversation.isPending}
-        >
-          {createConversation.isPending ? (
-            <Spinner size="small" />
-          ) : (
-            <span style={{ fontSize: 18 }}>✨</span>
-          )}
-        </button>
-
         <div style={{ position: 'relative' }}>
           <JiraFilterAtlaskit
             value={filterValue}
@@ -2895,12 +2872,18 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                 newRankOrder = (aboveRank + currentRank) / 2;
               }
 
-              // Update the sort_order via bulkUpdate mutation (batch-optimized)
+              // Write sort_order directly to ph_issues — bulkUpdate filters to
+              // source==='catalyst' (correct for Jira-synced fields like summary
+              // /status) but sort_order is a Catalyst-local rank field with no
+              // Jira sync, so the filter wrongly rejected Jira rows and drag
+              // silently failed. Row-menu Rank-to-top/bottom already write
+              // sort_order directly without a source filter — mirror that.
               try {
-                await bulkUpdate.mutateAsync({
-                  ids: [draggedRow.id],
-                  patch: { sort_order: newRankOrder },
-                });
+                const { error: updErr } = await supabase
+                  .from('ph_issues')
+                  .update({ sort_order: newRankOrder, jira_updated_at: new Date().toISOString() })
+                  .eq('issue_key', draggedRow.id);
+                if (updErr) throw updErr;
                 // Invalidate backlog queries to re-fetch and re-sort by rank_order
                 queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
                 queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });

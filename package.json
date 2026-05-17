@@ -19,7 +19,8 @@
     "test:visual": "playwright test --config=playwright.ads.config.ts --project=visual",
     "test:visual:webkit": "playwright test --config=playwright.ads.config.ts --project=visual-webkit",
     "test:visual:update": "playwright test --config=playwright.ads.config.ts --project=visual --update-snapshots",
-    "test:a11y": "playwright test --config=playwright.ads.config.ts --project=a11y"
+    "test:a11y": "playwright test --config=playwright.ads.config.ts --project=a11y",
+    "scan:components": "tsx scripts/scan-components.ts"
   },
   "dependencies": {
     "@atlaskit/atlassian-navigation": "^5.7.0",
