@@ -151,17 +151,54 @@ const AkChevronsRightIcon = () => (
 /**
  * DragHandleCell — useSortable hook for row ranking.
  * Called for each BacklogItem row; returns a draggable span with visual feedback.
+ *
+ * 2026-05-17 jira-compare cycle 2 (design-critique H1 P0): The transform that
+ * dnd-kit produces during drag was being applied to the handle <span> itself,
+ * but the handle lives inside a <td style={{ overflow: 'hidden' }}> in
+ * JiraTable.tsx — so any movement was clipped immediately and the user saw
+ * nothing happen ("can hold the handle but cannot move the row"). Fix: keep
+ * useSortable bound to the handle (so dnd-kit picks up the listeners) but
+ * imperatively walk up to the parent <tr> and apply the transform there
+ * via useEffect, since the canonical JiraTable's TR rendering doesn't expose
+ * a ref forwarding hook today. The whole row visually slides during drag,
+ * matching Jira's pattern, and the td overflow clip no longer blocks the
+ * visual feedback because TR is outside the td chain.
  */
 function DragHandleCell({ row }: { row: BacklogItem }) {
-  const { attributes, listeners, setNodeRef, transform } = useSortable({ id: row.id });
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition: 'transform 200ms ease-out',
-  };
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({ id: row.id });
+  const handleRef = useRef<HTMLSpanElement | null>(null);
+
+  // Combined ref: feeds both dnd-kit's setNodeRef and our local handleRef
+  // so the useEffect below can walk up to the row's <tr>.
+  const combinedRef = useCallback((el: HTMLSpanElement | null) => {
+    handleRef.current = el;
+    setNodeRef(el);
+  }, [setNodeRef]);
+
+  // Hoist the transform from the handle to the parent <tr>.
+  useEffect(() => {
+    const tr = handleRef.current?.closest('tr') as HTMLTableRowElement | null;
+    if (!tr) return;
+    if (isDragging && transform) {
+      tr.style.transform = CSS.Transform.toString(transform);
+      tr.style.transition = 'transform 200ms ease-out';
+      tr.style.zIndex = '10';
+      tr.style.position = 'relative';
+      tr.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))';
+      tr.style.boxShadow = '0 2px 8px rgba(9,30,66,0.15)';
+    } else {
+      tr.style.transform = '';
+      tr.style.transition = '';
+      tr.style.zIndex = '';
+      tr.style.position = '';
+      tr.style.background = '';
+      tr.style.boxShadow = '';
+    }
+  }, [transform, isDragging]);
+
   return (
     <span
-      ref={setNodeRef}
-      style={style}
+      ref={combinedRef}
       className="jira-drag-handle"
       aria-hidden
       {...attributes}
