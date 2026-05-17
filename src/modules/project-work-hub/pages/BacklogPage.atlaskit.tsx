@@ -2302,28 +2302,6 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
     flag.success('Exported', `${rows.length} rows exported to CSV`);
   };
 
-  // May 12, 2026 (Phase 1.3): Ask CATY handler. Creates a CATY conversation
-  // with the current backlog filter as context, then navigates to the CATY page.
-  const handleAskCaty = async () => {
-    if (!user || !project) return;
-    try {
-      const conversation = await createConversation.mutateAsync({
-        userId: user.id,
-        projectId: project.id,
-        type: 'chat', // CATY conversation_type enum: chat | generation | analysis | query
-      });
-      // Navigate to CATY with the conversation ID
-      // Pass filterValue as initial context (natural language JQL)
-      const params = new URLSearchParams({
-        conversation: conversation.id,
-        context: filterValue,
-      });
-      navigate(`/caty?${params.toString()}`);
-    } catch (error) {
-      flag.error('Failed to create CATY conversation', String(error));
-    }
-  };
-
   // Shared icon-button styles for the right-cluster toolbar buttons.
   // All 32×32, transparent bg, ADS subtle text token.
   const toolbarIconButtonStyle: React.CSSProperties = {
