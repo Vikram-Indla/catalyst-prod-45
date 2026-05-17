@@ -14,6 +14,7 @@ import EditIcon from '@atlaskit/icon/core/edit';
 import CloseIcon from '@atlaskit/icon/core/close';
 import DeleteIcon from '@atlaskit/icon/core/delete';
 import { AdminGuard } from '@/components/admin/AdminGuard';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { supabase } from '@/integrations/supabase/client';
 import { useInviteUser } from '@/hooks/useInviteUser';
 import { useAuth } from '@/lib/auth';
@@ -25,6 +26,7 @@ interface CatalystUser {
   id: string;
   full_name: string | null;
   email: string | null;
+  avatar_url: string | null;
   role: string | null;
   created_at: string | null;
   module_access: Record<string, boolean> | null;
@@ -91,10 +93,6 @@ const DEFAULT_MODULE_ACCESS: Record<string, boolean> = Object.fromEntries(
 );
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function userInitial(u: { full_name: string | null; email: string | null }) {
-  return ((u.full_name || u.email || '?')[0] || '?').toUpperCase();
-}
 
 function moduleCount(moduleAccess: Record<string, boolean> | null): number {
   if (!moduleAccess) return 0;
@@ -442,14 +440,11 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
           padding: '16px 20px', borderBottom: '1px solid var(--ds-border, #EBECF0)',
           display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0,
         }}>
-          <div style={{
-            width: 40, height: 40, borderRadius: '50%', flexShrink: 0,
-            background: 'var(--ds-background-brand-bold, #0052CC)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#fff', fontSize: 16, fontWeight: 600,
-          }}>
-            {userInitial(user)}
-          </div>
+          <CatalystAvatar
+            name={user.full_name || user.email || '?'}
+            src={user.avatar_url}
+            size="large"
+          />
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {user.full_name || user.email}
@@ -748,7 +743,7 @@ function PeopleTab() {
     queryKey: ['admin-access-people'],
     queryFn: async () => {
       const [profilesRes, rolesRes] = await Promise.all([
-        supabase.from('profiles').select('id, full_name, email, created_at, module_access, approval_status').order('full_name'),
+        supabase.from('profiles').select('id, full_name, email, avatar_url, created_at, module_access, approval_status').order('full_name'),
         supabase.from('user_roles').select('user_id, role'),
       ]);
       if (profilesRes.error) throw profilesRes.error;
@@ -758,6 +753,7 @@ function PeopleTab() {
         id: p.id,
         full_name: p.full_name,
         email: p.email,
+        avatar_url: p.avatar_url ?? null,
         role: roleMap[p.id] || null,
         created_at: p.created_at,
         module_access: (p.module_access as Record<string, boolean> | null) ?? null,
@@ -857,14 +853,11 @@ function PeopleTab() {
                 >
                   <td style={{ padding: '10px 12px', fontWeight: 500 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <div style={{
-                        width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-                        background: 'var(--ds-background-brand-bold, #0052CC)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: '#fff', fontSize: 11, fontWeight: 700,
-                      }}>
-                        {userInitial(u)}
-                      </div>
+                      <CatalystAvatar
+                        name={u.full_name || u.email || '?'}
+                        src={u.avatar_url}
+                        size="small"
+                      />
                       {u.full_name || '—'}
                     </div>
                   </td>
