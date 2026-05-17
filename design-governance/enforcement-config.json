@@ -1,0 +1,8 @@
+{
+  "enforceStrictly": true,
+  "description": "Design System Enforcement Toggle. When true: violations BLOCK PR merge (exit code 1). When false: violations logged but don't block (exit code 0).",
+  "lastUpdated": "2026-05-18T00:00:00Z",
+  "updatedBy": "Claude Haiku (Implementation)",
+  "mode": "STRICT",
+  "notes": "Set to false only during migration phases or testing. Production should always be true."
+}

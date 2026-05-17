@@ -3,14 +3,32 @@
  * Orchestrates all validators and produces a consolidated report
  */
 
-const ADSTokenScanner = require('./ads-token-scanner.js');
-const TypographyEnforcer = require('./typography-enforcer.js');
-const SpacingGridValidator = require('./spacing-grid-validator.js');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import ADSTokenScanner from './ads-token-scanner.js';
+import TypographyEnforcer from './typography-enforcer.js';
+import SpacingGridValidator from './spacing-grid-validator.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class DesignSystemAudit {
   constructor(sourcePath) {
     this.sourcePath = sourcePath;
     this.results = {};
+    this.enforcementConfig = this.loadEnforcementConfig();
+  }
+
+  loadEnforcementConfig() {
+    try {
+      const configPath = path.resolve(__dirname, '../enforcement-config.json');
+      const configData = fs.readFileSync(configPath, 'utf-8');
+      return JSON.parse(configData);
+    } catch (e) {
+      console.warn('⚠️  Could not load enforcement-config.json, defaulting to strict mode');
+      return { enforceStrictly: true };
+    }
   }
 
   run() {
@@ -61,11 +79,20 @@ class DesignSystemAudit {
   printSummary() {
     const allPassed = Object.values(this.results).every(r => r.passed);
     const totalViolations = Object.values(this.results).reduce((sum, r) => sum + r.violations.length, 0);
+    const enforceMode = this.enforcementConfig.enforceStrictly ? 'STRICT' : 'LENIENT';
+    const enforceModeEmoji = this.enforcementConfig.enforceStrictly ? '🔒' : '📋';
+
+    console.log(`${enforceModeEmoji} Enforcement Mode: ${enforceMode}`);
+    console.log('');
 
     if (allPassed) {
       console.log('✅ AUDIT PASSED: All validators passed with 0 violations');
     } else {
-      console.log(`❌ AUDIT FAILED: ${totalViolations} total violations found`);
+      if (this.enforcementConfig.enforceStrictly) {
+        console.log(`❌ AUDIT FAILED: ${totalViolations} total violations found (STRICT mode — PR merge will be blocked)`);
+      } else {
+        console.log(`⚠️  AUDIT VIOLATIONS FOUND: ${totalViolations} violations detected (LENIENT mode — violations logged but not blocking)`);
+      }
       console.log('\nBreakdown:');
       Object.entries(this.results).forEach(([name, result]) => {
         const status = result.passed ? '✅' : '❌';
@@ -76,16 +103,30 @@ class DesignSystemAudit {
   }
 
   getResult() {
-    return Object.values(this.results).every(r => r.passed) ? 0 : 1;
+    const allPassed = Object.values(this.results).every(r => r.passed);
+
+    // If all passed, always return 0 (success)
+    if (allPassed) {
+      return 0;
+    }
+
+    // If violations found:
+    // - STRICT mode: return 1 (fail, block PR)
+    // - LENIENT mode: return 0 (pass, allow PR but violations logged)
+    if (this.enforcementConfig.enforceStrictly) {
+      return 1;  // Block merge
+    } else {
+      return 0;  // Allow merge (violations still logged above)
+    }
   }
 }
 
 // CLI runner
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   const sourcePath = process.argv[2] || './src';
   const audit = new DesignSystemAudit(sourcePath);
   const results = audit.run();
   process.exit(audit.getResult());
 }
 
-module.exports = DesignSystemAudit;
+export default DesignSystemAudit;
