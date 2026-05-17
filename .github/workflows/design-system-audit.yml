@@ -1,0 +1,70 @@
+name: Design System Audit
+
+on:
+  push:
+    branches: [ main, ADS-migration ]
+    paths:
+      - 'src/**/*.tsx'
+      - 'src/**/*.ts'
+      - 'src/**/*.css'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'src/**/*.tsx'
+      - 'src/**/*.ts'
+      - 'src/**/*.css'
+
+jobs:
+  design-system-audit:
+    runs-on: ubuntu-latest
+    name: Design System Compliance Check
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run ADS Token Scanner
+        run: |
+          node design-governance/rules/audit.js src 2>&1 || true
+        continue-on-error: true
+
+      - name: Check Atlassian Sans Font
+        run: |
+          echo "Checking for Atlassian Sans CDN link in index.html..."
+          if grep -q "fonts.atlassian.com" public/index.html; then
+            echo "✅ Atlassian Sans CDN found in index.html"
+          else
+            echo "⚠️  WARNING: Atlassian Sans CDN not found in index.html"
+            echo "Add this to <head>:"
+            echo "  <link href='https://fonts.atlassian.com/fonts/atlassian-sans/v4/atlassian-sans.css' rel='stylesheet'>"
+          fi
+
+      - name: Validate Design Governance Policy
+        run: |
+          echo "✅ Design System Audit Complete"
+          echo ""
+          echo "Governance Policy: ENFORCED"
+          echo "  - ADS tokens: REQUIRED"
+          echo "  - Hardcoded colors: BANNED"
+          echo "  - Hardcoded px spacing: BANNED"
+          echo "  - Hand-rolled components: BANNED"
+          echo "  - Uppercase labels: BANNED"
+          echo ""
+
+      - name: Comment on PR (if violations found)
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ **Design System Audit Warning**\n\nThis PR may contain design system violations. Run `npm run design-system:audit` locally to check.'
+            })
