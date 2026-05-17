@@ -3,9 +3,9 @@
  * Orchestrates all validators and produces a consolidated report
  */
 
-const ADSTokenScanner = require('./ads-token-scanner');
-const TypographyEnforcer = require('./typography-enforcer');
-const SpacingGridValidator = require('./spacing-grid-validator');
+const ADSTokenScanner = require('./ads-token-scanner.js');
+const TypographyEnforcer = require('./typography-enforcer.js');
+const SpacingGridValidator = require('./spacing-grid-validator.js');
 
 class DesignSystemAudit {
   constructor(sourcePath) {
