@@ -106,4 +106,44 @@ describe('recordLocationVisit — deduplication', () => {
     expect(stored[1].projectKey).toBe('C');
     expect(stored[2].projectKey).toBe('B');
   });
+
+  // Regression: 2026-05-17 — 4× "BAU › Backlog" duplicates in Home Recent rail.
+  // Root cause: SECTION_LABELS maps `backlog`, `epic-backlog`, `feature-backlog`,
+  // and `story-backlog` all to the display label "Backlog", but the dedup key
+  // was the raw path. Four distinct paths → four rows that all rendered as
+  // "BAU › Backlog". Fix: dedup by (projectKey, section-family). One bucket per
+  // display label per project.
+  it('collapses all four backlog-variant sections into one entry per project (family dedup)', () => {
+    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/backlog',          section: 'backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/epic-backlog',     section: 'epic-backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/feature-backlog',  section: 'feature-backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/story-backlog',    section: 'story-backlog' });
+
+    const stored = JSON.parse(localStorage.getItem('catalyst.recentLocations.v2') || '[]');
+
+    // Exactly one row — the most recent (story-backlog), normalized to its section root.
+    expect(stored).toHaveLength(1);
+    expect(stored[0].projectKey).toBe('BAU');
+    expect(stored[0].section).toBe('story-backlog');
+    expect(stored[0].path).toBe('/project-hub/BAU/story-backlog');
+  });
+
+  // Regression: 2026-05-17 — duplicate "BAU › Backlog" entries on Home Recent rail.
+  // Root cause: useRecordProjectVisit passed `location.pathname` verbatim, so deep
+  // paths like /project-hub/BAU/backlog/BAU-5717 (BacklogDetailPage routes) bypassed
+  // the path-equality dedup and produced N rows all labeled "BAU › Backlog".
+  it('should dedupe deep paths to the section root — visiting 5 issues in the backlog stores 1 entry', () => {
+    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/backlog', section: 'backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/backlog/BAU-5717', section: 'backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/backlog/BAU-5803', section: 'backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/backlog/BAU-1234', section: 'backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/backlog/BAU-9999', section: 'backlog' });
+
+    const stored = JSON.parse(localStorage.getItem('catalyst.recentLocations.v2') || '[]');
+
+    expect(stored).toHaveLength(1);
+    expect(stored[0].path).toBe('/project-hub/BAU/backlog');
+    expect(stored[0].section).toBe('backlog');
+    expect(stored[0].projectKey).toBe('BAU');
+  });
 });

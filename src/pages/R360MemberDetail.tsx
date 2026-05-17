@@ -478,37 +478,38 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                 </div>
                 {/* §9 — Backlog health chip: single ADS chip, stale as subsidiary indicator */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
-                  {/* Main count — shows total active backlog */}
+                  {/* Main count — active backlog total.
+                      Treatment is NEUTRAL regardless of stale subcount —
+                      "active" is informational, not alarming. The "38 stale"
+                      sub-row below carries the warning treatment when
+                      relevant. Earlier the whole badge flipped to ADS
+                      danger styling whenever stale > 0, which signalled
+                      DANGER for what is actually just "your open work"
+                      (design-critique 2026-05-17, H2/H4 P0).  */}
                   <div
                     onClick={() => setTicketListMode(bannerOpenCount > 0 ? 'open' : null)}
                     title={`${bannerOpenCount} items in your active backlog (not yet done)`}
                     style={{
                       display: 'inline-flex', flexDirection: 'column', alignItems: 'center',
                       padding: '6px 14px', borderRadius: 6, gap: 1,
-                      background: bannerStaleCount > 0
-                        ? token('color.background.danger.subtle', '#FFEDEB')
-                        : token('color.background.neutral.subtle', '#F7F8F9'),
-                      border: `1px solid ${bannerStaleCount > 0
-                        ? token('color.border.danger', '#FF8F73')
-                        : token('color.border', '#091E4224')}`,
+                      background: token('color.background.neutral.subtle', '#F7F8F9'),
+                      border: `1px solid ${token('color.border', '#091E4224')}`,
                       cursor: bannerOpenCount > 0 ? 'pointer' : 'default',
                       transition: 'background 80ms ease',
                     }}
                     onMouseEnter={e => {
-                      if (bannerOpenCount > 0) (e.currentTarget as HTMLElement).style.background = bannerStaleCount > 0
-                        ? token('color.background.danger.subtle.hovered', '#FFBDAD')
-                        : token('color.background.neutral.subtle.hovered', '#F1F2F4');
+                      if (bannerOpenCount > 0) {
+                        (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4');
+                      }
                     }}
                     onMouseLeave={e => {
-                      (e.currentTarget as HTMLElement).style.background = bannerStaleCount > 0
-                        ? token('color.background.danger.subtle', '#FFEDEB')
-                        : token('color.background.neutral.subtle', '#F7F8F9');
+                      (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle', '#F7F8F9');
                     }}
                   >
-                    <div style={{ fontSize: 22, fontWeight: 700, lineHeight: '26px', fontVariantNumeric: 'tabular-nums', color: bannerStaleCount > 0 ? token('color.text.danger', '#AE2A19') : token('color.text', '#172B4D') }}>
+                    <div style={{ fontSize: 22, fontWeight: 700, lineHeight: '26px', fontVariantNumeric: 'tabular-nums', color: token('color.text', '#172B4D') }}>
                       {bannerOpenCount}
                     </div>
-                    <div style={{ fontSize: 10, fontWeight: 600, lineHeight: '13px', letterSpacing: '0.04em', color: bannerStaleCount > 0 ? token('color.text.danger', '#AE2A19') : token('color.text.subtle', '#44546F') }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, lineHeight: '13px', letterSpacing: '0.04em', color: token('color.text.subtle', '#44546F') }}>
                       active
                     </div>
                   </div>

@@ -75,6 +75,14 @@ export function useTeamResourceIds(myProfileId: string | null | undefined) {
         }));
     },
     enabled: !!myProfileId,
-    staleTime: 5 * 60 * 1000,
+    // Tightened from 5 minutes → 30 seconds. The previous 5-min cache caused
+    // post-migration / post-role-change state to persist far too long — e.g.
+    // when the orphan-profile fix landed (2026-05-17) the team list kept
+    // returning the pre-migration result until the user manually hard-
+    // refreshed. 30s is still long enough to coalesce tab-switch refetches
+    // but short enough that DB corrections become visible in seconds, not
+    // minutes. Refetch on window focus picks up the rest.
+    staleTime: 30 * 1000,
+    refetchOnWindowFocus: true,
   });
 }

@@ -111,6 +111,44 @@ const CANONICAL_NAV_SECTIONS = new Set([
 /** Section slugs we never want to record (ticket detail / modal). */
 const EXCLUDED_SECTIONS = new Set(['story', 'issue', 'epic', 'feature', 'issues']);
 
+/**
+ * Maps a raw section slug to its DISPLAY family — the bucket the Recent
+ * sidebar collapses entries into.
+ *
+ * Why this exists
+ * ───────────────
+ * The Recent list dedupes by raw `path` so visiting two different URLs
+ * always produces two rows. But the display label is derived from the
+ * section slug via SECTION_LABELS, and multiple slugs intentionally map
+ * to the same label — `backlog`, `epic-backlog`, `feature-backlog`,
+ * `story-backlog` all render as "Backlog". Without grouping at the
+ * dedup layer, the user sees N identical-looking rows with different
+ * timestamps (RCA: 2026-05-17, BAU › Backlog ×4 in the sidebar).
+ *
+ * The fix is to dedup on (projectKey + family) rather than full path.
+ * Path is still stored so clicking the row navigates to whichever
+ * variant the user most recently used.
+ *
+ * Extending: when adding a new SECTION_LABELS entry that intentionally
+ * shares a label with an existing slug, add the slug → family mapping
+ * here too. Slugs not listed map to themselves (1-to-1 with display).
+ */
+const SECTION_FAMILY: Record<string, string> = {
+  backlog: 'backlog',
+  'epic-backlog': 'backlog',
+  'feature-backlog': 'backlog',
+  'story-backlog': 'backlog',
+  // boards + board: both render as "Boards"/"Board" — collapse if they
+  // ever appear as separate routes. Currently `boards` is the canonical
+  // slug; if a singular `board` route gets added, mirror it here.
+  boards: 'boards',
+  board: 'boards',
+};
+
+function sectionFamily(section: string): string {
+  return SECTION_FAMILY[section] ?? section;
+}
+
 function titleCase(slug: string): string {
   return slug
     .split('-')
@@ -176,9 +214,26 @@ export function recordLocationVisit(input: {
   const { projectKey, path, section } = input;
   if (!projectKey || !path) return;
   const now = Date.now();
-  const existing = readStore().filter((e) => e.path !== path);
+
+  // Normalize path → section ROOT. The caller often passes
+  // `location.pathname` verbatim, which on detail routes carries an issue
+  // key tail (e.g. `/project-hub/BAU/backlog/BAU-5717`). Storing the
+  // verbatim path means every issue-detail click creates a new row that
+  // all read "BAU › Backlog" in the sidebar (RCA 2026-05-17 — deep-path
+  // dedup bypass). Section-root normalization is what the dedup-by-path
+  // contract was always meant to imply.
+  const normalizedPath = `/project-hub/${projectKey}/${section}`;
+
+  // Dedup by (projectKey + section-family). Family collapses display-label
+  // collisions (`backlog`, `epic-backlog`, `feature-backlog`, `story-
+  // backlog` all → "Backlog"), so visiting the epic-backlog after the
+  // story-backlog evicts the older row instead of stacking up.
+  const family = sectionFamily(section);
+  const existing = readStore().filter(
+    (e) => !(e.projectKey === projectKey && sectionFamily(e.section) === family),
+  );
   const next: StoredEntry[] = [
-    { projectKey, path, section, visitedAt: now },
+    { projectKey, path: normalizedPath, section, visitedAt: now },
     ...existing,
   ].slice(0, MAX_ENTRIES);
   writeStore(next);
@@ -230,9 +285,22 @@ export function useRecentProjects(limit = 8) {
     return () => window.removeEventListener('catalyst:recent-locations-updated', handler);
   }, []);
 
-  const entries = readStore()
-    .filter((e) => CANONICAL_NAV_SECTIONS.has(e.section))
-    .slice(0, limit);
+  // Read-time dedup safety net: when localStorage was populated BEFORE the
+  // recordLocationVisit dedup-by-family fix landed, the store can still hold
+  // multiple rows that collapse to the same display label (e.g. 4 backlog-
+  // variant rows that all read "BAU › Backlog"). Collapse here too so the
+  // sidebar shows the latest entry per (projectKey, family). Newer visits
+  // are guaranteed first by the writer's prepend ordering.
+  const allEntries = readStore().filter((e) => CANONICAL_NAV_SECTIONS.has(e.section));
+  const seenFamily = new Set<string>();
+  const entries: StoredEntry[] = [];
+  for (const e of allEntries) {
+    const familyKey = `${e.projectKey}|${sectionFamily(e.section)}`;
+    if (seenFamily.has(familyKey)) continue;
+    seenFamily.add(familyKey);
+    entries.push(e);
+    if (entries.length >= limit) break;
+  }
   const keys = Array.from(new Set(entries.map((e) => e.projectKey)));
 
   const { data: locations = [], isLoading } = useQuery({

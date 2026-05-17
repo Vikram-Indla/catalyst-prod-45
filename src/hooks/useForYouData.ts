@@ -94,7 +94,14 @@ export interface WorkItem {
 }
 
 export interface RecommendedMention {
-  commentId: string;
+  commentId: string;        // jira_comment_id (Jira-side text identifier — used as a row key)
+  /**
+   * UUID of the matching `ph_comments` row, if one exists. `ph_comment_reactions.comment_id`
+   * FK references `ph_comments.id`, so reactions must use this UUID, NOT the Jira-side
+   * `commentId`. Null when no Catalyst-side row exists for this Jira comment yet — in
+   * that case reactions are unavailable for this card (see ReactionStrip gating).
+   */
+  phCommentId: string | null;
   commentBody: string;
   commentCreatedAt: string;
   issueKey: string;
@@ -109,7 +116,9 @@ export interface RecommendedMention {
 }
 
 export interface RecommendedComment {
-  commentId: string;
+  commentId: string;        // jira_comment_id (Jira-side text identifier)
+  /** UUID of matching ph_comments row — see RecommendedMention.phCommentId. */
+  phCommentId: string | null;
   commentBody: string;
   commentCreatedAt: string;
   issueKey: string;
@@ -702,6 +711,14 @@ async function fetchForYouRawData(userId: string): Promise<ForYouRawData> {
   // Starred item IDs from Wave 1
   const starItemIds = (stars || []).map((s: any) => s.item_id);
 
+  // jira_comment_ids needed for ph_comments → reactions FK resolution (Wave 3).
+  // We resolve every comment that surfaces in the mentions / comments feed up
+  // front so `useCommentReactions` can use the canonical UUID instead of the
+  // Jira-side text identifier (which would silently fail the FK).
+  const mentionAndFeedCommentIds = [...new Set([
+    ...mergedMentions.map((m: any) => m.jira_comment_id).filter(Boolean),
+  ])];
+
   // ── Wave 3: Parallel, uses Wave 2 results ──
   const [
     { data: commentRows },
@@ -712,6 +729,7 @@ async function fetchForYouRawData(userId: string): Promise<ForYouRawData> {
     { data: starredIssuesRaw },
     { data: starredPlannerTasksRaw },
     { data: userIssueProjects },
+    { data: phCommentRows },
   ] = await Promise.all([
     // Comments on watched issues (now Wave 3, parallel with enrichment)
     watchedKeyList.length > 0 && userName !== 'Unassigned'
@@ -756,7 +774,27 @@ async function fetchForYouRawData(userId: string): Promise<ForYouRawData> {
     jiraAccountIds.length > 0
       ? supabase.from('ph_issues').select('project_key').in('assignee_account_id', jiraAccountIds).is('deleted_at', null)
       : Promise.resolve({ data: [] as any[] }),
+    // ph_comments lookup for the mentions feed. `ph_comment_reactions.comment_id`
+    // is a UUID FK to ph_comments(id); the Recommended cards therefore need the
+    // ph_comments UUID, NOT the jira_comment_id text key. We also pull
+    // jira_comment_ids that appear in any `commentRows` (watched-comments feed)
+    // below — but that list isn't known until commentRows resolves, so for
+    // initial paint we cover only the mentions feed. Comments-feed entries
+    // get their phCommentId in a second pass after commentRows below.
+    mentionAndFeedCommentIds.length > 0
+      ? supabase.from('ph_comments').select('id, jira_comment_id').in('jira_comment_id', mentionAndFeedCommentIds)
+      : Promise.resolve({ data: [] as any[] }),
   ]);
+
+  // Build jira_comment_id → ph_comments.id map. Used to enrich both mentions
+  // and comments below. Comments-feed entries that surfaced after Wave 3
+  // dispatch (i.e., commentRows ids not in mentionAndFeedCommentIds) get a
+  // small follow-up SELECT — typically 0-5 ids — far cheaper than blocking
+  // Wave 3 on commentRows.
+  const phCommentIdByJiraCommentId = new Map<string, string>();
+  (phCommentRows || []).forEach((r: any) => {
+    if (r.jira_comment_id && r.id) phCommentIdByJiraCommentId.set(r.jira_comment_id, r.id);
+  });
 
   // ── Build attachment map from scoped results ──
   const attMap = new Map<string, number>();
@@ -792,6 +830,7 @@ async function fetchForYouRawData(userId: string): Promise<ForYouRawData> {
     const projectKey = issue?.project_key || (typeof row.issue_key === 'string' ? row.issue_key.split('-')[0] : '');
     mentionsToPopulate.push({
       commentId: row.jira_comment_id,
+      phCommentId: phCommentIdByJiraCommentId.get(row.jira_comment_id) ?? null,
       commentBody: row.body || '',
       commentCreatedAt: row.jira_created_at || new Date().toISOString(),
       issueKey: row.issue_key,
@@ -838,12 +877,29 @@ async function fetchForYouRawData(userId: string): Promise<ForYouRawData> {
     }
   }
 
+  // Catch-up SELECT: comments-feed jira_comment_ids not covered by the Wave 3
+  // ph_comments lookup (which only saw the mentions list). Tiny query — at
+  // most 5 ids per render — keeps reactions reliable without blocking Wave 3.
+  const commentFeedJiraIds = filteredComments
+    .map((r: any) => r.jira_comment_id)
+    .filter((id: string | null) => !!id && !phCommentIdByJiraCommentId.has(id));
+  if (commentFeedJiraIds.length > 0) {
+    const { data: extraPhComments } = await supabase
+      .from('ph_comments')
+      .select('id, jira_comment_id')
+      .in('jira_comment_id', commentFeedJiraIds);
+    (extraPhComments || []).forEach((r: any) => {
+      if (r.jira_comment_id && r.id) phCommentIdByJiraCommentId.set(r.jira_comment_id, r.id);
+    });
+  }
+
   const commentsToPopulate: RecommendedComment[] = [];
   filteredComments.forEach((row: any) => {
     const issue = commentIssueByKey.get(row.issue_key);
     const projectKey = issue?.project_key || (typeof row.issue_key === 'string' ? row.issue_key.split('-')[0] : '');
     commentsToPopulate.push({
       commentId: row.jira_comment_id,
+      phCommentId: phCommentIdByJiraCommentId.get(row.jira_comment_id) ?? null,
       commentBody: row.body || '',
       commentCreatedAt: row.jira_created_at || new Date().toISOString(),
       issueKey: row.issue_key,
@@ -1200,8 +1256,15 @@ export function useForYouData(authLoading = false) {
           .delete().eq('user_id', authUser.id).eq('item_id', itemId);
         if (error) throw error;
       } else {
+        // Detect item_type from the source row instead of hardcoding 'ph_issue'.
+        // Without this, planner_task stars get stored as ph_issue, polluting
+        // analytics and downstream filtering. The row already carries
+        // `issue_type` from the mapper (planner tasks use 'planner_task').
+        const sourceRow = [...(rawData?.assignedItems ?? []), ...(rawData?.workedOnItems ?? [])]
+          .find((r: any) => r.issue_key === itemId);
+        const itemType = sourceRow?.issue_type === 'planner_task' ? 'task' : 'ph_issue';
         const { error } = await supabase.from('user_starred_items')
-          .insert({ user_id: authUser.id, item_id: itemId, item_type: 'ph_issue' });
+          .insert({ user_id: authUser.id, item_id: itemId, item_type: itemType });
         if (error) throw error;
         queryClient.setQueryData(rawDataKey, (old: ForYouRawData | undefined) => {
           if (!old) return old;
@@ -1216,7 +1279,7 @@ export function useForYouData(authLoading = false) {
       console.error('Error toggling star:', err);
       queryClient.invalidateQueries({ queryKey: rawDataKey });
     }
-  }, [authUser?.id, starredItems, queryClient, rawDataKey]);
+  }, [authUser?.id, starredItems, queryClient, rawDataKey, rawData]);
 
   return {
     activeMode, setActiveMode,
