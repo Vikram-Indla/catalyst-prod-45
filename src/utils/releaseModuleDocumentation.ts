@@ -758,42 +758,11 @@ export const RELEASE_MODULE_DOCUMENTATION: RouteDocumentation[] = [
     status: 'production',
   },
 
-  // 12. Ask AI
-  {
-    route: '/releases/ask-ai',
-    pageTitle: 'Ask AI',
-    component: 'src/pages/releases/PlaceholderPage.tsx',
-    description: 'AI-powered assistant for test recommendations, coverage analysis, and quality insights.',
-    functionalSpecs: {
-      features: [
-        'Conversational AI interface (planned)',
-        'Test case generation from requirements',
-        'Coverage gap analysis',
-        'Defect prediction and risk assessment',
-        'Quality improvement recommendations',
-      ],
-      userActions: [
-        'Ask questions about testing',
-        'Generate test cases from prompts',
-        'Analyze coverage gaps',
-        'Get quality recommendations',
-      ],
-      businessLogic: ['AI model integration for analysis'],
-    },
-    technicalSpecs: {
-      dataHooks: ['To be implemented'],
-      databaseTables: ['N/A - Calls AI API'],
-      keyComponents: ['Placeholder page currently'],
-      stateManagement: ['N/A'],
-    },
-    dataFlow: {
-      sources: ['User prompts', 'Project test data'],
-      transformations: ['AI processing'],
-      outputs: ['Generated content, recommendations'],
-    },
-    integrations: ['Lovable AI (planned)'],
-    status: 'placeholder',
-  },
+  // 12. Ask AI — REMOVED 2026-05-17 (PR-5 banned-orphan sweep).
+  //   The /releases/ask-ai route and the src/features/ask-ai/ mock module
+  //   were deleted 2026-04-01 and 2026-04-XX respectively. CATY (CatalystAI)
+  //   is the canonical AI persona — see src/pages/testhub/CatyAIPage.tsx.
+  //   Permanently banned by src/registry/__tests__/banned-orphans.test.ts.
 
   // 13. Coverage Reports
   {

@@ -21,6 +21,9 @@ import { IssueBreakdownPopover } from './IssueBreakdownPopover';
 // positioned divs with useClickOutside instead. Popup kept available for
 // future use when the lib is upgraded.
 import Textfield from '@atlaskit/textfield';
+import Lozenge from '@atlaskit/lozenge';
+import CheckCircleIcon from '@atlaskit/icon/glyph/check-circle';
+import AddCircleIcon from '@atlaskit/icon/glyph/add-circle';
 import { token } from '@atlaskit/tokens';
 // AKDropdownMenu removed — passes isSelected + testId to DOM <button> breaking
 // Popper's ref chain in this codebase. Self-rolled positioned menu used instead.
@@ -97,8 +100,37 @@ function useAllProfiles() {
   return useQuery({
     queryKey: ['profiles-all'],
     queryFn: async () => {
-      const { data } = await supabase.from('profiles').select('id, full_name, avatar_url, role').order('full_name');
-      return (data || []).map(p => ({ ...p, display_name: p.full_name || '' }));
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url, role')
+        .order('full_name');
+
+      const rows = (profiles || []).map(p => ({ ...p, display_name: p.full_name || '' }));
+
+      // Avatar fallback pass — for profiles whose avatar_url is null, look up
+      // resource_inventory.avatar_url (Jira-synced CDN URL). Same pattern as
+      // r360Service.getMemberOverview and MemberStack.useMemberProfiles.
+      // CLAUDE.md 2026-05-17 lesson: profiles.avatar_url is rarely populated;
+      // resource_inventory.avatar_url IS, via Jira sync.
+      const needsFallback = rows.filter(r => !r.avatar_url).map(r => r.id);
+      if (needsFallback.length > 0) {
+        const { data: resources } = await (supabase as any)
+          .from('resource_inventory')
+          .select('profile_id, avatar_url')
+          .in('profile_id', needsFallback)
+          .not('avatar_url', 'is', null);
+        const fallbackMap = new Map<string, string>(
+          (resources ?? []).map((r: { profile_id: string; avatar_url: string }) => [r.profile_id, r.avatar_url]),
+        );
+        rows.forEach(r => {
+          if (!r.avatar_url) {
+            const fb = fallbackMap.get(r.id);
+            if (fb) r.avatar_url = fb;
+          }
+        });
+      }
+
+      return rows;
     },
     staleTime: 60_000,
   });
@@ -168,7 +200,7 @@ function useFixedPopupPosition(
 // FIX 2 + FIX 4: Lead cell with click-anywhere-on-chip → reassign popup.
 // @atlaskit/popup v4.16 renders empty portals in this codebase, so we use a
 // self-rolled positioned div + useClickOutside instead. Atlaskit token styling.
-function LeadReassignPopover({ project }: { project: ProjectListItem; currentUserId?: string | null }) {
+function LeadReassignPopover({ project, currentUserId }: { project: ProjectListItem; currentUserId?: string | null }) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -182,6 +214,18 @@ function LeadReassignPopover({ project }: { project: ProjectListItem; currentUse
   const [optimisticLead, setOptimisticLead] = useState<{ id: string; name: string; avatar_url: string | null } | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
+  // Default lead fallback: when no lead is set on the project, fall back to
+  // the current authenticated user as the implicit lead (design-critique
+  // 2026-05-17 — "while there is no lead, the default lead always must be
+  // Vikram"). The DB still holds lead_id = null; this is a display fallback
+  // so the row never reads as "unassigned" for the user who's looking at it.
+  // Clicking the picker still opens reassign — that's how you'd explicitly
+  // set a different lead and persist it.
+  const currentUserProfile = useMemo(
+    () => currentUserId ? profiles.find(p => p.id === currentUserId) ?? null : null,
+    [profiles, currentUserId],
+  );
+
   const handleSearchChange = useCallback((val: string) => {
     setSearch(val);
     clearTimeout(searchTimerRef.current);
@@ -194,8 +238,12 @@ function LeadReassignPopover({ project }: { project: ProjectListItem; currentUse
   ), [profiles, debouncedSearch]);
 
   const displayLead = optimisticLead
-    ? { name: optimisticLead.name, avatar_url: optimisticLead.avatar_url, id: optimisticLead.id }
-    : { name: project.lead_name, avatar_url: project.lead_avatar_url, id: project.lead_id };
+    ? { name: optimisticLead.name, avatar_url: optimisticLead.avatar_url, id: optimisticLead.id, isDefault: false }
+    : project.lead_id
+      ? { name: project.lead_name, avatar_url: project.lead_avatar_url, id: project.lead_id, isDefault: false }
+      : currentUserProfile
+        ? { name: currentUserProfile.display_name, avatar_url: currentUserProfile.avatar_url, id: currentUserProfile.id, isDefault: true }
+        : { name: null, avatar_url: null, id: null, isDefault: false };
 
   const handleLeadChange = useCallback((newLeadId: string) => {
     const selectedProfile = profiles.find(p => p.id === newLeadId);
@@ -260,12 +308,18 @@ function LeadReassignPopover({ project }: { project: ProjectListItem; currentUse
               <Avatar src={displayLead.avatar_url || undefined} name={displayLead.name || '??'} size="small" />
             </span>
             <span
-              title={displayLead.name || ''}
+              title={displayLead.isDefault ? `Default lead — ${displayLead.name} (no lead assigned yet)` : displayLead.name}
               style={{
                 pointerEvents: 'none',
                 fontSize: 14,
+                // Default-fallback rows render at slightly subtler color +
+                // italic so users can tell at a glance which projects have
+                // an explicitly-set lead vs the fallback to themselves.
                 fontWeight: 500,
-                color: token('color.text'),
+                fontStyle: displayLead.isDefault ? 'italic' : 'normal',
+                color: displayLead.isDefault
+                  ? token('color.text.subtle')
+                  : token('color.text'),
                 fontFamily: 'var(--cp-font-body)',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
@@ -276,7 +330,31 @@ function LeadReassignPopover({ project }: { project: ProjectListItem; currentUse
             </span>
           </>
         ) : (
-          <span style={{ pointerEvents: 'none', fontSize: 14, color: token('color.text.subtle'), fontFamily: 'var(--cp-font-body)' }}>— Assign lead</span>
+          // Empty state — render the same Atlaskit Avatar + label pair as the
+          // populated state, just with no src (Avatar shows its default
+          // silhouette glyph) and "Assign lead" instead of a name. Keeps the
+          // visual rhythm of the column stable whether or not a lead is set,
+          // and signals the picker is interactive (design-critique 2026-05-17
+          // H4 P0 — empty cell was bare em-dash text, broke ADS pattern).
+          <>
+            <span aria-hidden="true" style={{ flexShrink: 0, pointerEvents: 'none' }}>
+              <Avatar size="small" />
+            </span>
+            <span
+              style={{
+                pointerEvents: 'none',
+                fontSize: 14,
+                fontWeight: 500,
+                color: token('color.text.subtle'),
+                fontFamily: 'var(--cp-font-body)',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              Assign lead
+            </span>
+          </>
         )}
       </button>
 
@@ -575,54 +653,21 @@ function MemberManagePopover({ project, currentUserId }: { project: ProjectListI
                 {p.display_name}
               </span>
               {isLead ? (
-                <span
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 700,
-                    color: token('color.text.brand'),
-                    background: token('color.background.selected'),
-                    padding: '2px 6px',
-                    borderRadius: 3,
-                  }}
-                  aria-label="Project lead"
-                >
-                  LEAD
-                </span>
+                <Lozenge appearance="inprogress" isBold={false}>Lead</Lozenge>
               ) : isMember ? (
-                <span
-                  aria-hidden
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 22,
-                    height: 22,
-                    borderRadius: 11,
-                    background: token('color.background.success'),
-                    color: token('color.text.inverse'),
-                    fontSize: 12,
-                    fontWeight: 700,
-                  }}
-                >
-                  ✓
+                // ADS canonical selection indicator: brand-blue CheckCircleIcon.
+                // Replaces the previous hand-rolled green "✓" circle which was
+                // an ADS violation (raw bg color, custom shape, custom font).
+                // Design-critique 2026-05-17 H4 P0.
+                <span aria-hidden style={{ display: 'inline-flex', color: token('color.icon.brand', '#0C66E4'), flexShrink: 0 }}>
+                  <CheckCircleIcon label="" size="medium" primaryColor="currentColor" />
                 </span>
               ) : (
-                <span
-                  aria-hidden
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 22,
-                    height: 22,
-                    borderRadius: 11,
-                    border: `1px dashed ${token('color.border')}`,
-                    color: token('color.text.subtle'),
-                    fontSize: 14,
-                    fontWeight: 700,
-                  }}
-                >
-                  +
+                // ADS canonical "add" affordance — outlined neutral, becomes
+                // visible on row hover (the row itself is the click target;
+                // the icon is decorative).
+                <span aria-hidden style={{ display: 'inline-flex', color: token('color.icon.subtle', '#626F86'), flexShrink: 0 }}>
+                  <AddCircleIcon label="" size="medium" primaryColor="currentColor" />
                 </span>
               )}
             </div>
@@ -745,6 +790,45 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
     queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
   };
 
+  // MDT is permanently mapped to a Product, not a Project (CLAUDE.md
+  // 2026-05-17 directive). Hide the "Sync with Jira" item for MDT-keyed
+  // rows so the user can't accidentally re-import MDT data into the
+  // projects table.
+  const isMDT = project.project_key === 'MDT';
+
+  const handleSyncWithJira = async () => {
+    close();
+    const dismissId = toast.loading(`Syncing ${project.project_key} from Jira…`);
+    try {
+      const { data, error } = await supabase.functions.invoke('jira-sync-projects', {
+        body: {
+          projectKeys: [project.project_key],
+          syncMode: 'delta',
+          // The 2026 filter is enforced server-side by all jira-* ingest
+          // functions per CLAUDE.md guardrail (only created|updated ≥ 2026-01
+          // is accepted). Passing the flag here makes the contract explicit
+          // for any reader who's tracing the call site.
+          since: '2026-01-01T00:00:00Z',
+        },
+      });
+      toast.dismiss(dismissId);
+      if (error) throw error;
+      toast.success(`${project.project_key} sync started — refreshing…`);
+      // Invalidate so the row's issue counts + last-sync timestamp refresh.
+      queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
+      queryClient.invalidateQueries({ queryKey: ['project-sync-stats'] });
+      // Surface any function-returned info for debug visibility.
+      if (data && typeof data === 'object' && 'message' in data) {
+        // eslint-disable-next-line no-console
+        console.info('[Sync with Jira]', data);
+      }
+    } catch (err) {
+      toast.dismiss(dismissId);
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      toast.error(`Sync failed: ${msg}`);
+    }
+  };
+
   const handleRenameSubmit = async () => {
     const next = renameValue.trim();
     if (!next || next === project.name) {
@@ -846,6 +930,18 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
             onClick={() => { close(); navigate(`/project-hub/${project.project_key}/settings`); }}>
             Project settings
           </button>
+          {/* Sync with Jira — only shown for projects mapped to a Jira board.
+              MDT is permanently routed to the Products module (not Projects),
+              so we suppress the option there (CLAUDE.md 2026-05-17). */}
+          {!isMDT && (
+            <>
+              <div style={{ height: 1, background: token('color.border'), margin: '4px 0' }} role="separator" />
+              <button role="menuitem" style={menuItemStyle} onMouseEnter={menuItemHover} onMouseLeave={menuItemLeave}
+                onClick={handleSyncWithJira}>
+                Sync with Jira
+              </button>
+            </>
+          )}
           <div style={{ height: 1, background: token('color.border'), margin: '4px 0' }} role="separator" />
           <button role="menuitem" style={menuItemStyle} onMouseEnter={menuItemHover} onMouseLeave={menuItemLeave}
             onClick={handleArchive}>
@@ -1113,7 +1209,11 @@ export function AllProjectsTable({
       // key cell via Tab. Visual treatment intentionally subtle (no underline,
       // matches existing key-cell style) so it reads as part of the table cell
       // rather than a flashy link.
-      case 'project_key': return <td key={colKey} style={{ textAlign: 'center' }}><RouterLink to={`/project-hub/${p.project_key}/dashboard`} onClick={() => recordProjectView(p)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: token('color.text.subtle'), letterSpacing: '0.02em', textDecoration: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = String(token('color.link')); }} onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = String(token('color.text.subtle')); }}>{p.project_key}</RouterLink></td>;
+      // Key cell — left-aligned per design-critique 2026-05-17 ("BAU is not
+      // aligned with the key and the starred functionality"). Previously
+      // centered, which made the key drift away from the Name column's
+      // left-aligned start, breaking the row's visual grid.
+      case 'project_key': return <td key={colKey} style={{ textAlign: 'left' }}><RouterLink to={`/project-hub/${p.project_key}/dashboard`} onClick={() => recordProjectView(p)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: token('color.text.subtle'), letterSpacing: '0.02em', textDecoration: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = String(token('color.link')); }} onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = String(token('color.text.subtle')); }}>{p.project_key}</RouterLink></td>;
       // 'type' column is permanently banned from the Projects list view.
       case 'lead': return <td key={colKey}><LeadReassignPopover project={p} currentUserId={currentUserId} /></td>;
       case 'members': return <td key={colKey}><MemberManagePopover project={p} currentUserId={currentUserId} /></td>;
@@ -1186,6 +1286,10 @@ export function AllProjectsTable({
                   onDragEnd={onDragEnd}
                   sortDirection={activeSortColKey === c.key ? (sortDir as SortDir) : null}
                   onSort={SORTABLE_PROJECT_KEYS.has(c.key) ? handleHeaderSort : undefined}
+                  // Projects table opts OUT of drag-to-reorder — the six-dot
+                  // grips on every header were design-critique 2026-05-17 H8 P0
+                  // visual noise. Resize handle (right-edge) is kept.
+                  hideDragHandle
                 />
               );
             })}

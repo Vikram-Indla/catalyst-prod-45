@@ -26,6 +26,12 @@ export function useMemberProfiles(allMemberIds: string[]) {
     queryKey: ['member-profiles-batch', uniqueIds.sort().join(',')],
     queryFn: async () => {
       if (uniqueIds.length === 0) return profileCache;
+      // Track which profile_ids still need an avatar after the profiles pass —
+      // some users have `profiles.avatar_url = null` because the user-upload
+      // flow never fires for them, but `resource_inventory.avatar_url` carries
+      // the live Jira CDN URL via sync (CLAUDE.md 2026-05-17 — same fix path
+      // as r360Service.getMemberOverview).
+      const needsAvatarFallback: string[] = [];
       for (let i = 0; i < uniqueIds.length; i += 100) {
         const chunk = uniqueIds.slice(i, i + 100);
         const { data } = await supabase
@@ -35,9 +41,29 @@ export function useMemberProfiles(allMemberIds: string[]) {
         if (data) {
           data.forEach(p => {
             profileCache.set(p.id, { full_name: p.full_name || '', avatar_url: p.avatar_url });
+            if (!p.avatar_url) needsAvatarFallback.push(p.id);
           });
         }
       }
+
+      // Fallback pass — fetch resource_inventory.avatar_url for any profile_id
+      // whose profiles.avatar_url was null. One query, scoped to the missing
+      // set, so the round-trip is amortised across all empty-avatar members.
+      if (needsAvatarFallback.length > 0) {
+        const { data: resources } = await (supabase as any)
+          .from('resource_inventory')
+          .select('profile_id, avatar_url')
+          .in('profile_id', needsAvatarFallback)
+          .not('avatar_url', 'is', null);
+        (resources ?? []).forEach((r: { profile_id: string; avatar_url: string | null }) => {
+          if (!r.avatar_url) return;
+          const existing = profileCache.get(r.profile_id);
+          if (existing) {
+            profileCache.set(r.profile_id, { ...existing, avatar_url: r.avatar_url });
+          }
+        });
+      }
+
       uniqueIds.forEach(id => {
         if (!profileCache.has(id)) {
           profileCache.set(id, { full_name: '', avatar_url: null });

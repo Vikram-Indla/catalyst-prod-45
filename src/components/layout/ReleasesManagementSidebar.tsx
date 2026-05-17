@@ -68,7 +68,11 @@ const releasesManagementSections: SidebarSection[] = [
   {
     title: 'Analytics & AI',
     items: [
-      { id: 'ask-ai', title: 'Ask AI', path: '/releases/ask-ai', icon: Sparkles, exact: false },
+      // Ask AI nav item removed 2026-05-17 — its target route (under
+      // releases/) and the src/features/ask-ai/* mock module were both
+      // deleted earlier this cycle. Catalyst's AI persona is CATY (see
+      // CatyAIPage). The dead route + this nav entry are permanently
+      // banned by src/registry/__tests__/banned-orphans.test.ts.
       { id: 'coverage', title: 'Coverage Reports', path: '/releases/coverage', icon: PieChart, exact: false },
       { id: 'quality-gates', title: 'Quality Gates', path: '/releases/quality-gates', icon: ShieldCheck, exact: false },
       { id: 'rtm', title: 'RTM', path: '/releases/rtm', icon: Network, exact: false },
