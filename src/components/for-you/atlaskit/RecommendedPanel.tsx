@@ -51,13 +51,15 @@ import TextArea from '@atlaskit/textarea';
 import EditIcon from '@atlaskit/icon/glyph/edit';
 import EmojiAddIcon from '@atlaskit/icon/glyph/emoji-add';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
+import { toast } from 'sonner';
 import ForYouRow from './ForYouRow';
-import { ForYouEmptyState, GroupHeading, groupByRecency } from './helpers';
+import { ForYouEmptyState, GroupHeading, groupByRecency, MentionSparkleArt } from './helpers';
 import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { useWorkItemComments } from '@/hooks/useWorkItemComments';
 import { useCommentReactions } from '@/hooks/useCommentReactions';
-import type { WorkItem, RecommendedMention, RecommendedComment } from '@/hooks/useForYouData';
+import { useGlobalSearchStore } from '@/store/globalSearchStore';
+import type { WorkItem, RecommendedMention, RecommendedComment, TabType } from '@/hooks/useForYouData';
 
 interface RecommendedPanelProps {
   items: WorkItem[];
@@ -72,6 +74,13 @@ interface RecommendedPanelProps {
    * `resolveAvatarUrl()` chokepoint as every other avatar in the app.
    */
   currentUserName?: string;
+  /**
+   * Lets the empty state route the user to a tab with content. Without this
+   * the Recommended empty state is a dead end (Cooper goal-directed P0,
+   * design-critique 2026-05-17). Optional so existing tests that mount
+   * RecommendedPanel directly don't need to pass it.
+   */
+  onSwitchTab?: (tab: TabType) => void;
 }
 
 // ─── Dismiss persistence ────────────────────────────────────────────────────
@@ -170,6 +179,7 @@ export default function RecommendedPanel({
   onSelect,
   onToggleStar,
   currentUserName,
+  onSwitchTab,
 }: RecommendedPanelProps) {
   // Index items by issueKey so a mention / comment card can hand back the
   // same WorkItem object when opening the detail panel.
@@ -179,9 +189,33 @@ export default function RecommendedPanel({
     return m;
   }, [items]);
 
-  const resolveSelect = (issueKey: string) => {
+  /**
+   * Open the detail modal for a mentioned/commented issue.
+   *
+   * Primary path: look the issue up in the paginated `items` window. When the
+   * issue lives in the visible page, we hand the full WorkItem to `onSelect`
+   * so the page-level handler can also record a view + use rich item context.
+   *
+   * Fallback path: items is paginated (PAGE_SIZE = 20 in ForYouPage). When a
+   * mention's issueKey isn't in the first page the lookup silently no-ops —
+   * which manifests as "clicking the mention does nothing". We instead open
+   * the canonical detail modal directly via globalSearchStore using the
+   * mention/comment row's own metadata. Same code path the rest of the app
+   * uses (notifications, global search, project sidebar).
+   */
+  const resolveSelect = (issueKey: string, fallback?: { issueId: string; issueType: string; projectKey: string }) => {
     const target = itemByKey.get(issueKey);
-    if (target) onSelect(target);
+    if (target) {
+      onSelect(target);
+      return;
+    }
+    if (fallback) {
+      useGlobalSearchStore.getState().openDetail({
+        id: issueKey, // Detail router resolves by issue_key (CLAUDE.md 2026-05-10)
+        itemType: fallback.issueType,
+        projectKey: fallback.projectKey,
+      });
+    }
   };
 
   // Dismiss mechanism (Jira parity — X on every row).
@@ -216,6 +250,11 @@ export default function RecommendedPanel({
       <ForYouEmptyState
         title="Nothing recommended yet"
         description="When teammates mention you or comment on your work, recommendations will show here."
+        renderImage={() => <MentionSparkleArt />}
+        // Send the user to Assigned where they always have work — gives them
+        // a path out of the dead end (design-critique 2026-05-17, Cooper P0).
+        primaryActionText={onSwitchTab ? 'See assigned work' : undefined}
+        onPrimaryAction={onSwitchTab ? () => onSwitchTab('assigned') : undefined}
       />
     );
   }
@@ -234,9 +273,12 @@ export default function RecommendedPanel({
             currentUserName={currentUserName}
             rows={visibleMentions.map(m => ({
               commentId: m.commentId,
+              phCommentId: m.phCommentId,
               headline: (
                 <>
-                  <span style={{ color: token('color.text', '#292A2E'), fontWeight: 400 }}>{m.mentionerName}</span>
+                  {/* Author name carries weight 600 — Jira screenshot shows it
+                      visibly bolder than the "mentioned you on" connector. */}
+                  <span style={{ color: token('color.text', '#292A2E'), fontWeight: 600 }}>{m.mentionerName}</span>
                   <span style={{ color: token('color.text.subtle', '#44546F'), fontWeight: 400 }}>{' '}mentioned you on{' '}</span>
                   <HeadlineIssueTitle issueType={m.issueType} issueSummary={m.issueSummary} />
                 </>
@@ -247,6 +289,7 @@ export default function RecommendedPanel({
               issueKey: m.issueKey,
               issueId: m.issueId,
               issueType: m.issueType,
+              projectKey: m.projectKey,
               commentBody: m.commentBody,
               commentCreatedAt: m.commentCreatedAt,
             }))}
@@ -261,9 +304,10 @@ export default function RecommendedPanel({
             currentUserName={currentUserName}
             rows={visibleComments.map(c => ({
               commentId: c.commentId,
+              phCommentId: c.phCommentId,
               headline: (
                 <>
-                  <span style={{ color: token('color.text', '#292A2E'), fontWeight: 400 }}>{c.authorName}</span>
+                  <span style={{ color: token('color.text', '#292A2E'), fontWeight: 600 }}>{c.authorName}</span>
                   <span style={{ color: token('color.text.subtle', '#44546F'), fontWeight: 400 }}>{' '}commented on{' '}</span>
                   <HeadlineIssueTitle issueType={c.issueType} issueSummary={c.issueSummary} />
                 </>
@@ -274,6 +318,7 @@ export default function RecommendedPanel({
               issueKey: c.issueKey,
               issueId: c.issueId,
               issueType: c.issueType,
+              projectKey: c.projectKey,
               commentBody: c.commentBody,
               commentCreatedAt: c.commentCreatedAt,
             }))}
@@ -311,6 +356,8 @@ export default function RecommendedPanel({
 
 interface FeedRow {
   commentId: string;
+  /** ph_comments.id UUID, used by useCommentReactions FK. Null when no row exists yet. */
+  phCommentId: string | null;
   headline: React.ReactNode;
   authorName: string;
   authorAvatarUrl?: string;
@@ -318,6 +365,7 @@ interface FeedRow {
   issueKey: string;
   issueId: string;
   issueType: string;
+  projectKey: string;
   commentBody: string;
   commentCreatedAt: string;
 }
@@ -333,7 +381,7 @@ function FeedSection({
   label: string;
   intro: string;
   rows: FeedRow[];
-  onOpen: (issueKey: string) => void;
+  onOpen: (issueKey: string, fallback?: { issueId: string; issueType: string; projectKey: string }) => void;
   onDismiss: (commentId: string) => void;
   currentUserName?: string;
 }) {
@@ -363,10 +411,14 @@ function FeedSection({
         <PurpleCategoryTile />
         <h4
           style={{
+            // CLAUDE.md 2026-05-12 — Jira section headers measure 16/20 with
+            // weight 600 and `letter-spacing: normal`. The previous
+            // `-0.003em` came from an out-of-spec H1 sweep and broke the
+            // x-height alignment on the section row.
             font: `600 16px/20px "Inter", system-ui, sans-serif`,
             color: token('color.text', '#292A2E'),
             margin: 0,
-            letterSpacing: '-0.003em',
+            letterSpacing: 'normal',
           }}
         >
           {label}
@@ -388,7 +440,11 @@ function FeedSection({
             key={row.commentId}
             row={row}
             currentUserName={currentUserName}
-            onOpen={() => onOpen(row.issueKey)}
+            onOpen={() => onOpen(row.issueKey, {
+              issueId: row.issueId,
+              issueType: row.issueType,
+              projectKey: row.projectKey,
+            })}
             onDismiss={() => onDismiss(row.commentId)}
           />
         ))}
@@ -421,9 +477,14 @@ function PurpleCategoryTile() {
         width: 32,
         height: 32,
         borderRadius: 6,
-        background: 'rgb(201, 124, 244)',
+        // Route through ADS tokens so the tile adapts to dark mode. The
+        // earlier `rgb(201,124,244)` literal stayed bright purple in dark
+        // mode, blowing out next to a dark surface. `color.background.accent.purple.subtler`
+        // is the closest ADS token to Jira's home-recommended tile in light
+        // mode and flips automatically in dark.
+        background: token('color.background.accent.purple.subtler', 'rgb(201, 124, 244)'),
         flexShrink: 0,
-        color: 'rgb(41, 42, 46)',
+        color: token('color.icon.accent.purple', 'rgb(41, 42, 46)'),
       }}
     >
       <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -457,6 +518,7 @@ function FeedCard({
   onDismiss: () => void;
 }) {
   const [hover, setHover] = React.useState(false);
+  const [dismissFocused, setDismissFocused] = React.useState(false);
   const avatarSrc = row.authorAvatarUrl || resolveAvatarUrl(row.authorName) || undefined;
   const relative = formatRelativeTimestamp(row.commentCreatedAt);
 
@@ -486,8 +548,10 @@ function FeedCard({
 
       {/* Dismiss (X) — Jira parity: top-right of every feed row.
           24×24 subtle icon button that clears the row from the feed and
-          persists the dismissal to localStorage. Stays invisible until the
-          row is hovered so it doesn't clutter the resting state. */}
+          persists the dismissal to localStorage. Resting state stays
+          hidden; becomes visible on row hover OR keyboard focus on the
+          button itself (WCAG 2.4.7 — opacity:0 elements that remain in
+          the tab order are inaccessible). */}
       <Tooltip content="Dismiss">
         <button
           type="button"
@@ -496,6 +560,8 @@ function FeedCard({
             e.stopPropagation();
             onDismiss();
           }}
+          onFocus={() => setDismissFocused(true)}
+          onBlur={() => setDismissFocused(false)}
           style={{
             position: 'absolute',
             top: 8,
@@ -510,9 +576,13 @@ function FeedCard({
             borderRadius: 3,
             cursor: 'pointer',
             color: token('color.text.subtle', '#626F86'),
-            opacity: hover ? 1 : 0,
-            transition: 'opacity 120ms ease, background-color 120ms ease',
+            opacity: hover || dismissFocused ? 1 : 0,
+            transition: 'opacity 120ms ease, background-color 120ms ease, box-shadow 120ms ease',
             padding: 0,
+            outline: 'none',
+            boxShadow: dismissFocused
+              ? `0 0 0 2px ${token('color.border.focused', '#388BFF')}`
+              : 'none',
           }}
           onMouseDown={e => e.preventDefault()}
         >
@@ -558,10 +628,12 @@ function FeedCard({
           <span>{relative}</span>
         </div>
 
-        {/* Comment body — full text with @-chips rendered inline. */}
+        {/* Comment body — full text with @-chips rendered inline.
+            Bumped from 13/18 to 14/20 to match Jira's For You card body
+            and to read at the same density as the headline above it. */}
         <div
           style={{
-            font: `400 13px/18px "Inter", system-ui, sans-serif`,
+            font: `400 14px/20px "Inter", system-ui, sans-serif`,
             color: token('color.text.subtle', '#44546F'),
             whiteSpace: 'pre-wrap',
             wordBreak: 'break-word',
@@ -573,9 +645,13 @@ function FeedCard({
 
         {/* Emoji reactions — Jira parity (DOM probe: data-testid="render-reactions").
             Each chip is 37×24 with a 0.556px border and radius 4. Persisted
-            against `ph_comment_reactions` via useCommentReactions — the row's
-            `commentId` is the ph_comments primary key. */}
-        <ReactionStrip commentId={row.commentId} />
+            against `ph_comment_reactions.comment_id` — which is a UUID FK to
+            `ph_comments.id`. We pass `phCommentId` (the resolved UUID), NOT
+            `commentId` (the Jira-side text id). When phCommentId is null —
+            no Catalyst-side row exists yet — the strip renders a disabled
+            placeholder so users see the affordance but can't fire an insert
+            that would silently fail the FK constraint. */}
+        <ReactionStrip phCommentId={row.phCommentId} />
 
         {/* Reply composer — Jira parity:
              Row 1: 32px viewer avatar + a bordered textarea wrapper with
@@ -617,7 +693,7 @@ function ReplyComposer({
 }) {
   const [value, setValue] = useState('');
   const [focused, setFocused] = useState(false);
-  const { createComment, isCreating } = useWorkItemComments('ph_issue', issueId);
+  const { createCommentAsync, isCreating } = useWorkItemComments('ph_issue', issueId);
 
   const userAvatarSrc =
     currentUserName ? resolveAvatarUrl(currentUserName) || undefined : undefined;
@@ -625,11 +701,24 @@ function ReplyComposer({
 
   const canSubmit = value.trim().length > 0 && !isCreating;
 
-  const handleSubmit = () => {
+  // Await the mutation explicitly so a failed insert surfaces to the user
+  // instead of silently clearing the textarea. The previous fire-and-forget
+  // `createComment(value)` swallowed network/permission errors — the user
+  // saw an empty textarea and believed the reply posted. Toast on error,
+  // keep the draft so it can be retried without retyping.
+  const handleSubmit = async () => {
     if (!canSubmit) return;
-    createComment(value.trim());
-    setValue('');
-    setFocused(false);
+    const draft = value.trim();
+    try {
+      await createCommentAsync(draft);
+      setValue('');
+      setFocused(false);
+    } catch (err) {
+      // Keep draft + focus so the user can retry. createComment's own hook
+      // already logs; here we only need user-facing feedback.
+      toast.error('Could not post your reply. Try again.');
+      console.warn('[RecommendedPanel] reply submit failed', err);
+    }
   };
 
   return (
@@ -838,10 +927,13 @@ const EMOJI_CHAR: Record<string, string> = Object.fromEntries(
   DEFAULT_REACTIONS.map(r => [r.key, r.char])
 );
 
-function ReactionStrip({ commentId }: { commentId: string }) {
+function ReactionStrip({ phCommentId }: { phCommentId: string | null }) {
   // Supabase-backed reactions for this specific ph_comments row. The hook
-  // handles fetch + optimistic toggle + cache invalidation.
-  const { reactions, toggleReaction } = useCommentReactions(commentId);
+  // is null-safe — when phCommentId is null we still render the affordance
+  // (with the buttons disabled) so the user knows reactions exist on the
+  // surface but their write would silently fail the FK.
+  const { reactions, toggleReaction } = useCommentReactions(phCommentId);
+  const isAvailable = phCommentId !== null;
 
   // Build a lookup map so we can decorate each default chip with its live
   // count + self-reacted state. Extra emojis in `reactions` (outside the
@@ -855,10 +947,13 @@ function ReactionStrip({ commentId }: { commentId: string }) {
   //   chip size:     37.1 × 24 (grows when the count is > 0)
   //   chip border:   0.556px solid rgba(11,18,14,0.14)  (1px on our DPR)
   //   chip radius:   4
-  //   chip bg:       transparent (rest), rgba(28,85,170,0.06) when self-reacted
+  //   chip bg:       transparent (rest), `color.background.selected` when self-reacted
   //   trigger chip:  32 × 24 with emoji-add glyph (NOT a bare "+")
   //   gap:           4
-  const chipBorder = 'rgba(11, 18, 14, 0.14)';
+  // We route the chip border through ADS `color.border` so dark mode flips
+  // the hairline — previously a hardcoded `rgba(11,18,14,0.14)` literal
+  // disappeared on dark backgrounds.
+  const chipBorder = token('color.border', 'rgba(11, 18, 14, 0.14)');
 
   return (
     <div
@@ -877,9 +972,10 @@ function ReactionStrip({ commentId }: { commentId: string }) {
         const live = byEmoji.get(r.key);
         const count = live?.count ?? 0;
         const isActive = !!live?.reactedByMe;
-        // Only render chips that have been used at least once, OR the user
-        // has already reacted — suppress the empty starter strip to keep density.
-        if (count === 0 && !isActive) return null;
+        // Jira parity: render the full starter strip always so the
+        // affordance is discoverable. Chips with zero count render in a
+        // muted state until someone reacts. Earlier the strip suppressed
+        // unused chips, hiding the reaction surface from new users.
         return (
           <ReactionChip
             key={r.key}
@@ -887,7 +983,8 @@ function ReactionStrip({ commentId }: { commentId: string }) {
             label={r.label}
             count={count}
             isActive={isActive}
-            onClick={() => toggleReaction(r.key)}
+            disabled={!isAvailable}
+            onClick={() => isAvailable && toggleReaction(r.key)}
             chipBorder={chipBorder}
           />
         );
@@ -901,7 +998,8 @@ function ReactionStrip({ commentId }: { commentId: string }) {
           label={r.emoji}
           count={r.count}
           isActive={r.reactedByMe}
-          onClick={() => toggleReaction(r.emoji)}
+          disabled={!isAvailable}
+          onClick={() => isAvailable && toggleReaction(r.emoji)}
           chipBorder={chipBorder}
         />
       ))}
@@ -910,11 +1008,12 @@ function ReactionStrip({ commentId }: { commentId: string }) {
           adding a 🎉 ("party") reaction so the chip is still useful. */}
       <button
         type="button"
-        aria-label="Add reaction"
-        onClick={() => toggleReaction('party')}
+        aria-label={isAvailable ? 'Add reaction' : 'Reactions unavailable for this comment'}
+        onClick={() => isAvailable && toggleReaction('party')}
+        disabled={!isAvailable}
         style={{
           all: 'unset',
-          cursor: 'pointer',
+          cursor: isAvailable ? 'pointer' : 'not-allowed',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -925,6 +1024,7 @@ function ReactionStrip({ commentId }: { commentId: string }) {
           color: token('color.text.subtle', '#626F86'),
           background: 'transparent',
           transition: 'background-color 120ms ease',
+          opacity: isAvailable ? 1 : 0.4,
         }}
       >
         <EmojiAddIcon label="" size="small" primaryColor="currentColor" />
@@ -936,7 +1036,7 @@ function ReactionStrip({ commentId }: { commentId: string }) {
 // Individual reaction chip — when count>0 the chip shows the numeric count
 // next to the emoji (Jira parity: "🔥 2").
 function ReactionChip({
-  char, label, count, isActive, onClick, chipBorder,
+  char, label, count, isActive, onClick, chipBorder, disabled = false,
 }: {
   char: string;
   label: string;
@@ -944,16 +1044,18 @@ function ReactionChip({
   isActive: boolean;
   onClick: () => void;
   chipBorder: string;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
       aria-pressed={isActive}
-      aria-label={label}
+      aria-label={disabled ? `${label} (unavailable)` : label}
       style={{
         all: 'unset',
-        cursor: 'pointer',
+        cursor: disabled ? 'not-allowed' : 'pointer',
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -963,14 +1065,18 @@ function ReactionChip({
         height: 24,
         padding: count > 0 ? '0 6px' : 0,
         border: `1px solid ${isActive ? token('color.border.selected', '#0C66E4') : chipBorder}`,
+        // Route selected bg through ADS `color.background.selected` so dark
+        // mode flips correctly. The previous `rgba(28,85,170,0.06)` literal
+        // was tuned for light surfaces only.
         background: isActive
-          ? 'rgba(28, 85, 170, 0.06)'
+          ? token('color.background.selected', 'rgba(28, 85, 170, 0.06)')
           : 'transparent',
         borderRadius: 4,
         fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
         fontSize: 16,
         lineHeight: 1,
-        transition: 'background-color 120ms ease, border-color 120ms ease',
+        opacity: disabled ? 0.4 : count === 0 && !isActive ? 0.6 : 1,
+        transition: 'background-color 120ms ease, border-color 120ms ease, opacity 120ms ease',
       }}
     >
       <span aria-hidden="true">{char}</span>
@@ -1145,11 +1251,14 @@ function renderInlineAtMentions(text: string): React.ReactNode[] {
 function MentionChip({ label }: { label: string }) {
   // Jira parity (DOM probe 2026-04-24 — Atlaskit Lozenge-style @-mention):
   //   padding:      0px 4.2px 2px 3.22px (from pf-editor ADF-mention span)
-  //   line-height:  23.996px ≈ 24
-  //   font:         400 14/24 Atlassian Sans
+  //   line-height:  20px (matches parent comment body line-height — earlier
+  //                 24px bumped the line rhythm of a 20px paragraph)
+  //   font:         400 14/20 Atlassian Sans
   //   radius:       20
-  //   bg:           rgba(5,21,36,0.06)
-  //   color:        rgb(80,82,88)
+  //   bg:           color.background.neutral — was `rgba(5,21,36,0.06)`
+  //                 literal which stays near-black in dark mode and disappears
+  //                 against the dark surface (CLAUDE.md ADS token rule).
+  //   color:        color.text.subtle
   // Display-only — the chip is non-interactive in the feed (unlike Jira's
   // hover-card trigger, which we haven't built yet).
   return (
@@ -1158,9 +1267,9 @@ function MentionChip({ label }: { label: string }) {
         display: 'inline-block',
         padding: '0 4.2px 2px 3.22px',
         borderRadius: 20,
-        background: 'rgba(5, 21, 36, 0.06)',
+        background: token('color.background.neutral', 'rgba(5, 21, 36, 0.06)'),
         color: token('color.text.subtle', '#505258'),
-        font: `400 14px/24px "Inter", system-ui, sans-serif`,
+        font: `400 14px/20px "Inter", system-ui, sans-serif`,
         whiteSpace: 'nowrap',
       }}
     >
@@ -1172,8 +1281,12 @@ function MentionChip({ label }: { label: string }) {
 // ─── Utilities ──────────────────────────────────────────────────────────────
 
 /**
- * Lightweight relative-time formatter. Mirrors Jira's conventions:
+ * Compact relative-time formatter matching Jira's For You meta row:
  *   "just now" | "Xm" | "Xh" | "yesterday" | "Xd" | "Xw" | "Xmo" | "Xy"
+ *
+ * Replaces the previous verbose "X minutes ago / X hours ago" output, which
+ * wasted meta-row width and forced wraps on long author names + project
+ * names. "yesterday" stays spelled out because Jira renders it that way too.
  * Returns "earlier" on any parse failure — never throws in the render path.
  */
 function formatRelativeTimestamp(iso: string): string {
@@ -1182,16 +1295,16 @@ function formatRelativeTimestamp(iso: string): string {
   const diffMs = Date.now() - then;
   const diffMin = Math.floor(diffMs / 60_000);
   if (diffMin < 1) return 'just now';
-  if (diffMin < 60) return diffMin === 1 ? '1 minute ago' : `${diffMin} minutes ago`;
+  if (diffMin < 60) return `${diffMin}m`;
   const diffH = Math.floor(diffMin / 60);
-  if (diffH < 24) return diffH === 1 ? '1 hour ago' : `${diffH} hours ago`;
+  if (diffH < 24) return `${diffH}h`;
   const diffD = Math.floor(diffH / 24);
   if (diffD === 1) return 'yesterday';
-  if (diffD < 7) return `${diffD} days ago`;
+  if (diffD < 7) return `${diffD}d`;
   const diffW = Math.floor(diffD / 7);
-  if (diffW < 5) return diffW === 1 ? '1 week ago' : `${diffW} weeks ago`;
+  if (diffW < 5) return `${diffW}w`;
   const diffMo = Math.floor(diffD / 30);
-  if (diffMo < 12) return diffMo === 1 ? '1 month ago' : `${diffMo} months ago`;
+  if (diffMo < 12) return `${diffMo}mo`;
   const diffY = Math.floor(diffD / 365);
-  return diffY === 1 ? '1 year ago' : `${diffY} years ago`;
+  return `${diffY}y`;
 }

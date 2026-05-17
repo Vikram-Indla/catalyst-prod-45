@@ -99,13 +99,25 @@ export const r360Service = {
   },
 
   async getMemberOverview(resourceId: string) {
+    // `avatar_url` added to the SELECT so we can use the Jira-CDN URL stored
+    // on resource_inventory as the primary source. The profile fallback below
+    // only fires when the resource row has no avatar (e.g. for a Catalyst-
+    // native resource that hasn't been Jira-mapped yet).
     const { data: resource } = await typedQuery('resource_inventory')
-      .select('id, rid, name, role_name, department_name, vendor_name, resource_type, profile_id, jira_account_id')
+      .select('id, rid, name, role_name, department_name, vendor_name, resource_type, profile_id, jira_account_id, avatar_url')
       .eq('id', resourceId)
       .single();
     if (!resource) return null;
 
-    let avatar_url: string | null = null;
+    // Avatar resolution priority (design-critique 2026-05-17):
+    //   1. resource_inventory.avatar_url  — Jira sync writes here, source of truth
+    //   2. profiles.avatar_url            — user-uploaded fallback when no Jira mapping
+    //   3. null                            — RingView renders initials with gradient
+    //
+    // Earlier the service skipped (1) entirely and read only (2), which made
+    // the Ring View's centre avatar fall back to initials for every user whose
+    // profile_id row was created before the avatar-sync backfill landed.
+    let avatar_url: string | null = (resource as any).avatar_url ?? null;
     let country: string | null = null;
     let country_code: string | null = null;
     let country_flag_svg_url: string | null = null;
@@ -115,7 +127,7 @@ export const r360Service = {
         .select('avatar_url, country, country_code, country_flag_svg_url, location')
         .eq('id', resource.profile_id)
         .maybeSingle();
-      avatar_url = (profile as any)?.avatar_url ?? null;
+      if (!avatar_url) avatar_url = (profile as any)?.avatar_url ?? null;
       country = (profile as any)?.country ?? null;
       country_code = (profile as any)?.country_code ?? null;
       country_flag_svg_url = (profile as any)?.country_flag_svg_url ?? null;

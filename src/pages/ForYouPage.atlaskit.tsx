@@ -36,7 +36,7 @@
  * - Tab switch → updates activeTab + persists to localStorage
  * - View all projects → /projects route
  */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import { useAuth } from '@/lib/auth';
 import { useForYouData, type TabType, type WorkItem } from '@/hooks/useForYouData';
@@ -100,31 +100,46 @@ export default function ForYouPageAtlaskit() {
     allUserProjects,
   } = data;
 
-  // ─── Persist the tab across refreshes ────────────────────────────────────
-  // April 2026 — Worked on / Viewed were pruned from the tab strip.
-  // Late April 2026 — 'ai-recap' was replaced by 'ai-theme' (same slot).
-  // Any stale localStorage value from before either change is migrated
-  // to a live tab on mount so the user lands on a real tab instead of
-  // staring at an orphaned selection state.
-  useEffect(() => {
+  // ─── Restore tab from localStorage SYNCHRONOUSLY on first render ─────────
+  // Previously this ran in `useEffect` AFTER the first paint, causing a
+  // visible flash from `recommended` → user's actual stored tab. The hook's
+  // default `activeTab` initial value is `'recommended'`, so the effect
+  // approach was always one paint behind reality.
+  //
+  // Now we read localStorage synchronously the first time this component
+  // renders and push the migrated value back into useForYouData via
+  // setActiveTab during a layout effect — before paint. The flash is gone.
+  //
+  // Migrations preserved from the previous effect:
+  //   - 'ai-recap'        → 'ai-theme' (same slot, successor tab)
+  //   - 'worked'|'viewed' → 'recommended' (those tabs were pruned April 2026)
+  const initialStoredTabRef = useRef<TabType | null>(null);
+  if (initialStoredTabRef.current === null) {
     try {
       const stored = localStorage.getItem(FOR_YOU_TAB_KEY) as string | null;
-      // 'ai-recap' migrates to 'ai-theme' (same slot, successor tab).
-      // 'worked' / 'viewed' migrate to 'recommended' (landing default).
       if (stored === 'ai-recap') {
+        initialStoredTabRef.current = 'ai-theme';
         localStorage.setItem(FOR_YOU_TAB_KEY, 'ai-theme');
-        setActiveTab('ai-theme');
       } else if (stored === 'worked' || stored === 'viewed') {
+        initialStoredTabRef.current = 'recommended';
         localStorage.setItem(FOR_YOU_TAB_KEY, 'recommended');
-        setActiveTab('recommended');
-      } else if (stored && stored !== activeTab) {
-        setActiveTab(stored as TabType);
+      } else if (stored) {
+        initialStoredTabRef.current = stored as TabType;
+      } else {
+        // Sentinel value so we don't re-enter this branch — `recommended` is
+        // already the hook default, no setActiveTab needed.
+        initialStoredTabRef.current = 'recommended';
       }
     } catch {
-      /* localStorage unavailable (SSR/privacy) — no-op */
+      initialStoredTabRef.current = 'recommended';
     }
-    // We only want to run this on mount; activeTab ref won't be stale
-    // because setActiveTab is stable.
+  }
+  // useLayoutEffect runs before paint — applies the stored tab to the hook
+  // state before the user sees any UI.
+  useLayoutEffect(() => {
+    if (initialStoredTabRef.current && initialStoredTabRef.current !== activeTab) {
+      setActiveTab(initialStoredTabRef.current);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -196,6 +211,10 @@ export default function ForYouPageAtlaskit() {
       onSelect: handleSelect,
       onToggleStar: toggleStar,
     };
+    // `onSwitchTab` lets empty states route the user to a tab with content
+    // (design-critique 2026-05-17 — Cooper goal-directed: empty states must
+    // provide a recovery path, not be dead ends).
+    const onSwitchTab = handleTabChange;
     switch (activeTab) {
       // AI Theme and Ageing own their own data pipelines — the generic
       // {items, onSelect, onToggleStar} row-feed props don't apply. Their
@@ -208,12 +227,12 @@ export default function ForYouPageAtlaskit() {
       case 'ageing':      return <AgeingPanel />;
       // R360 owns its own data pipeline — no row-feed props.
       case 'r360':        return <R360Panel />;
-      case 'recommended': return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} />;
+      case 'recommended': return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} />;
       case 'assigned':    return <AssignedPanel    {...panelProps} />;
-      case 'starred':     return <StarredPanel     {...panelProps} />;
-      default:            return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} />;
+      case 'starred':     return <StarredPanel     {...panelProps} onSwitchTab={onSwitchTab} />;
+      default:            return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} />;
     }
-  }, [activeTab, visibleItems, isLoading, handleSelect, toggleStar, recommendedMentions, recommendedComments, currentUserName, allUserProjects]);
+  }, [activeTab, visibleItems, isLoading, handleSelect, toggleStar, recommendedMentions, recommendedComments, currentUserName, allUserProjects, handleTabChange]);
 
   // AI Theme and Ageing render their own vertical lists/grids internally —
   // neither shares the client-side pagination window that the row-feed tabs
@@ -267,10 +286,14 @@ export default function ForYouPageAtlaskit() {
         {!isR360Active && (
           <h1
             style={{
-              font: `500 20px/24px "Inter", system-ui, sans-serif`,
+              // Jira "For you" page title measures 24px/28px 500 in the
+              // current AtlasKit Heading scale. The earlier 20px/24px was
+              // visibly smaller than the Jira reference and read as a
+              // section header instead of the page H1.
+              font: `500 24px/28px "Inter", system-ui, sans-serif`,
               color: token('color.text', '#292A2E'),
               margin: 0,
-              letterSpacing: '-0.003em',
+              letterSpacing: 0,
             }}
           >
             For you
@@ -293,9 +316,30 @@ export default function ForYouPageAtlaskit() {
         {panel}
       </div>
 
-      {/* Load more + sentinel */}
+      {/* Load more + sentinel.
+          Sentinel must sit inside a `position: relative` container so its
+          own `position: absolute` resolves against a real ancestor. Without
+          that, the 1×1 div anchors to the page root and the
+          IntersectionObserver rootMargin firing was unpredictable. */}
       {showPagination && hasMore && (
-        <div style={{ display: 'flex', justifyContent: 'center', paddingBlock: 24 }}>
+        <div
+          style={{
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            paddingBlock: 24,
+            gap: 8,
+          }}
+        >
+          {/* Sentinel placed BEFORE the button so IntersectionObserver fires
+              as soon as the user nears the bottom of the visible feed — the
+              button is the fallback affordance, not the trigger. */}
+          <div
+            ref={sentinelRef}
+            aria-hidden="true"
+            style={{ position: 'absolute', top: -200, left: 0, width: 1, height: 1, pointerEvents: 'none' }}
+          />
           <button
             type="button"
             onClick={loadMore}
@@ -311,7 +355,6 @@ export default function ForYouPageAtlaskit() {
           >
             Load more
           </button>
-          <div ref={sentinelRef} style={{ position: 'absolute', width: 1, height: 1, pointerEvents: 'none' }} />
         </div>
       )}
 

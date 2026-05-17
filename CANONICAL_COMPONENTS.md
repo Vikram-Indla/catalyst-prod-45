@@ -15,6 +15,27 @@ The component library is now browseable at **`/admin/components`** under the new
 | **Banned** | All 8 permanently-banned items (MDT Ref, Service Now#, Assessment Feature, Story Points, Development, Automation, AI Sparkles, Notion) with CLAUDE.md anchor + live-reference count (green ✓ at 0, red ⚠ INVESTIGATE otherwise). |
 | **Violations** | Live scan of ADS-compliance defects (`scripts/scan-ads-violations.ts`) — hand-rolled dropdowns, deprecated shim imports, banned imports, primitive duplication. Sortable by severity (P0/P1/P2) and category. Each row is a VS Code deep link. |
 | **Cascade** | Pick a component + change kind (patch/minor/major) → see every consumer that will be affected. Tick off as reviewed. Copy a markdown checklist into the PR description. Cascade discipline = Rule 2's "audit impact across all consumers" rule, mechanized. |
+| **Publish** (v2, shipped 2026-05-17) | Pick a canonical component → edit active version + feature-flag toggles → "Publish" UPSERTs `component_config` → every consumer that uses `useComponentConfig` re-renders with the new config on next mount. "Reset" deletes the runtime row and falls back to registry defaults. |
+| **History** (v2, shipped 2026-05-17) | Append-only audit log of every publish / update / rollback / reset. Each row exposes "Rollback" → opens a dry-run modal showing the flag diff + affected consumer count before confirm. |
+
+### v2 publish/rollback runtime — how cascade application works
+
+When `/admin/components` Publish tab writes to `component_config`, every consumer of the canonical component re-resolves its config on next render via the shared `useComponentConfig()` hook. The resolution order is locked:
+
+```
+1. caller prop      (explicit consumer intent — always wins)
+2. component_config (runtime override published from /admin/components)
+3. registry default (the canonical fallback declared in components.registry.ts)
+```
+
+The dev-mode console logs every override at first read:
+```
+[components] jira-table v1.4.0 — overrides: enableStickyCreateFooter=true (runtime)
+```
+
+**Currently wired (PR-2):** JiraTable consumes `useComponentConfig('jira-table', { ... })` for `enableGroupCreateButton`, `enableStickyCreateFooter`, `enableColumnReorder`. Consumers that pass these props explicitly still win.
+
+**v3 candidates:** per-route scoping (`enable on /backlog only`), CI gate on registry drift, ts-morph codemod for prop rename cascades, telemetry on runtime override usage.
 
 **Data sources:**
 - `src/registry/components.registry.ts` — curated source of truth (10 canonical + 8 banned). **Hand-edit to add a new canonical component.**

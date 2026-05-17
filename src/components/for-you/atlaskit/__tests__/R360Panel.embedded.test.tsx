@@ -84,11 +84,14 @@ describe('R360Panel — renders ring view not capacity chart', () => {
     expect(screen.getByTestId('r360-member-detail').dataset.resourceId).toBe('res-alice');
   });
 
-  it('switches back to self when the "Me" pill is clicked', async () => {
+  it('switches back to self via the "← My view" return link', async () => {
+    // "Me" pill removed 2026-05-17 — the detail-panel header is the identity
+    // indicator. Return path is the "← My view" link that only appears while
+    // viewing a teammate.
     render(<MemoryRouter><R360Panel /></MemoryRouter>, { wrapper });
     await userEvent.click(screen.getByText('Alice Tan'));
-    const meBtns = screen.getAllByText(/\bme\b/i);
-    await userEvent.click(meBtns[0]);
+    expect(screen.getByTestId('r360-member-detail').dataset.resourceId).toBe('res-alice');
+    await userEvent.click(screen.getByText(/← My view/));
     expect(screen.getByTestId('r360-member-detail').dataset.resourceId).toBe('res-vikram');
   });
 });
