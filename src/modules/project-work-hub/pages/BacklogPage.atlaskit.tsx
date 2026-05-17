@@ -2924,14 +2924,20 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                 // Invalidate backlog queries to re-fetch and re-sort by rank_order
                 queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
                 queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
-                // 2026-05-17 jira-compare cycle 2: explicit success feedback.
-                // When the current sort is not rank_order, the visual list
-                // won't re-shuffle even though the rank update persisted —
-                // toast confirms the action so the user doesn't assume drag
-                // is broken.
+                // 2026-05-17 jira-compare cycle 2: when an explicit column
+                // sort was active, the client-side sort was overriding the
+                // DB sort_order so the drag appeared to do nothing. Auto-
+                // clear the sort after a successful drag so the persisted
+                // rank order is visible immediately. Display now shows the
+                // row in its new position (DB-natural order, no client
+                // re-sort applied — see sortedRows guard at line ~1304).
+                if (sortKey !== null) {
+                  setSortKey(null);
+                  setSortDir(null);
+                }
                 flag.success(
                   'Reordered',
-                  `${draggedRow.key || 'Row'} moved. ${sortKey !== 'rank_order' ? 'Clear column sort to see the new order.' : ''}`.trim(),
+                  `${draggedRow.key || 'Row'} moved.`,
                 );
               } catch (e: any) {
                 flag.error('Rank update failed', e?.message ?? String(e));
