@@ -983,6 +983,11 @@ export function SubtasksPanel({
                     enableColumnReorder
                     rowsPerPage={0}
                     emptyView={null}
+                    // 2026-05-17: Feature flags declare intent — SubtasksPanel
+                    // has inline create (via InlineCreateWithAI below), no group
+                    // create affordances or sticky footer.
+                    enableGroupCreateButton={false}
+                    enableStickyCreateFooter={false}
                   />
                   {creating && canCreate && (
                     <InlineCreateWithAI

@@ -18,6 +18,7 @@ import { RouteRoleGuard } from "../components/RouteRoleGuard";
 const FeatureFlagsPage = lazy(() => import("../pages/admin/FeatureFlagsPage"));
 const AdminIconsPage = lazy(() => import("../pages/admin/icons/AdminIconsPage"));
 const AdminAvatarsPage = lazy(() => import("../pages/admin/avatars/AdminAvatarsPage"));
+const ComponentsAdminPage = lazy(() => import("../pages/admin/components/ComponentsAdminPage"));
 const WorkListPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogPage.atlaskit"));
 
 // ─── Lazy page imports ───────────────────────────────────────────
@@ -877,6 +878,8 @@ export default function FullAppRoutes() {
           <Route path="notification-triggers" element={<S><NotificationTriggers /></S>} />
           <Route path="settings/notifications" element={<S><UserNotificationSettingsPage /></S>} />
           <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
+          {/* Design system pocket — preflight 2026-05-17 consolidation. */}
+          <Route path="components" element={<S><ComponentsAdminPage /></S>} />
           {/* RESET ICONS — runtime asset override management. Admin-only. */}
           <Route path="icons" element={<S><AdminIconsPage /></S>} />
           <Route path="avatars" element={<S><AdminAvatarsPage /></S>} />

@@ -661,6 +661,12 @@ export function ProductBacklogListTable({
               getRowId={(row) => row.id}
               density="compact"
               striped={true}
+              // 2026-05-17: Feature flags declare intent explicitly per canonical
+              // governance framework. ProductBacklogListTable (product backlog) has
+              // no group create affordances or sticky footer — create is external
+              // (modal or ProductBacklogPage flow).
+              enableGroupCreateButton={false}
+              enableStickyCreateFooter={false}
             />
           </div>
         </SortableContext>

@@ -132,10 +132,14 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     rowsPerPage = 25,
     page,
     onPageChange,
+    showRowCount = true,
+    totalRowCount,
+    renderRowDragHandle,
+    rowDragHandleHidden,
     focusedRowId: focusedRowIdProp,
     onFocusedRowChange,
     onEscape,
-    density = 'comfortable',
+    density = 'compact',
     isLoading,
     emptyView,
     ariaLabel = 'Work items',
@@ -143,6 +147,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     onColumnVisibilityChange,
     collapsedGroups,
     onToggleGroup,
+    enableGroupCreateButton = false,
     onAddToGroup,
     renderGroupInlineRow,
     getRowHasChildren,
@@ -153,6 +158,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     columnOrder: columnOrderProp,
     onColumnOrderChange,
     enableVirtualization = false,
+    enableStickyCreateFooter = false,
     stickyCreateFooter,
     initialColumnWidths,
     onColumnWidthsChange,
@@ -535,6 +541,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid table tbody > tr:hover .jira-drag-handle {
         visibility: visible;
       }
+      /* 2026-05-17 jira-compare cycle 2: row-level drag handle overlay.
+         Absolute-positioned outside the column flow (anchored to the row
+         __select cell). Hidden at rest, visible on row hover. */
+      .jira-table-grid table tbody > tr:hover .jira-row-drag-handle {
+        visibility: visible;
+      }
       /* Row menu: hidden by default, visible on row hover. */
       .jira-table-grid table tbody > tr:hover .jira-row-menu-trigger {
         opacity: 1;
@@ -627,12 +639,14 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
            antialiased to auto (via global index.css update). */
         font-size: 12px;
         font-weight: 653;
-        line-height: 16px;
+        line-height: 20px;
         color: rgb(80, 82, 88);
         text-transform: none;
         letter-spacing: normal;
         white-space: nowrap;
         user-select: none;
+        /* 2026-05-17: Added vertical column dividers matching tbody. */
+        border-right: 1px solid #EBECF0;
       }
       .jira-table-grid thead th.jira-th-sortable { cursor: pointer; }
       /* Apr 28, 2026 (jira-compare cycle 4): tokenized — was hardcoded #EBECF0 */
@@ -673,6 +687,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         font-weight: 400;
         color: var(--ds-text, #292A2E);
         font-family: inherit;
+        /* 2026-05-17: Added vertical column dividers. Each td renders a
+           right border so columns are visually separated. Without this,
+           the table appears as plain rows without grid structure. Jira
+           uses 1px solid #EBECF0 (Atlaskit border.subtle) on the right
+           edge of each cell. */
+        border-right: 1px solid #EBECF0;
       }
       /* Column resize handle — 6px hit area on the right edge of each
          sortable/resizable header. Highlights on hover to advertise. */
@@ -821,6 +841,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid table tbody > tr:hover .jira-drag-handle {
         visibility: visible;
       }
+      /* 2026-05-17 jira-compare cycle 2: row-level drag handle overlay
+         hover-reveal (dark-mode block; mirrors light-mode rule above). */
+      .jira-table-grid table tbody > tr:hover .jira-row-drag-handle {
+        visibility: visible;
+      }
       /* 2026-05-12 Jira parity: row hover reveals ↗ open + add child buttons
          on the right edge of the Summary cell. Pattern mirrors .jira-drag-handle:
          visibility: hidden at rest (set inline), flip to visible on tr:hover. */
@@ -922,14 +947,24 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     }> = [];
 
     if (selectable) {
+      // 2026-05-17 jira-compare cycle 2: when row-level drag handle is wired,
+      // reserve a same-width spacer in the header so the master checkbox
+      // aligns with body row checkboxes (the body has [handle-spacer][cb]).
+      const headerHandleSpacer =
+        renderRowDragHandle && !rowDragHandleHidden ? (
+          <span style={{ width: 16, height: 16, display: 'inline-block' }} aria-hidden />
+        ) : null;
       cells.push({
         key: '__select',
         content: (
-          <AkCheckbox
-            isChecked={allSelected}
-            onChange={(e) => toggleAll(e.target.checked)}
-            label=""
-          />
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            {headerHandleSpacer}
+            <AkCheckbox
+              isChecked={allSelected}
+              onChange={(e) => toggleAll(e.target.checked)}
+              label=""
+            />
+          </span>
         ),
         width: 3,
       });
@@ -978,7 +1013,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     }
 
     return { cells };
-  }, [allSelected, visibleColumns, columns, columnVisibility, onColumnVisibilityChange, showColumnManager, d.headerFontSize, selectable, toggleAll]);
+  }, [allSelected, visibleColumns, columns, columnVisibility, onColumnVisibilityChange, showColumnManager, d.headerFontSize, selectable, toggleAll, renderRowDragHandle, rowDragHandleHidden]);
 
   // ── Build @atlaskit/dynamic-table rows ────────────────────────────────────
   // If grouped, insert group-header pseudo-rows between groups.
@@ -997,13 +1032,33 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       const rowCells: Array<{ key: string; content: React.ReactNode; colSpan?: number }> = [];
 
       if (selectable) {
+        const dragHandleNode =
+          renderRowDragHandle && !rowDragHandleHidden ? renderRowDragHandle(row) : null;
         rowCells.push({
           key: `${id}-select`,
           content: (
             <span
               data-jira-table-editor // marker: click shouldn't trigger row navigation
               onClick={(e) => e.stopPropagation()}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
             >
+              {/* 2026-05-17 jira-compare cycle 2 (revision 2): row-level drag
+                  handle rendered as an INLINE-FLEX sibling of the checkbox so
+                  the handle's width is reserved on every row (Jira's pattern:
+                  the gutter is always allocated). visibility:hidden keeps the
+                  handle in layout but invisible at rest; the .jira-row-drag-
+                  handle CSS rule flips it to visible on tr:hover. Previous
+                  revision used position:absolute which was clipped by the td's
+                  overflow:hidden. */}
+              {dragHandleNode && (
+                <span
+                  className="jira-row-drag-handle"
+                  style={{ visibility: 'hidden', display: 'inline-flex' }}
+                  aria-hidden
+                >
+                  {dragHandleNode}
+                </span>
+              )}
               <AkCheckbox
                 isChecked={isSelected}
                 onChange={(e) => {
@@ -1316,9 +1371,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   {g.meta}
                 </span>
               )}
-              {onAddToGroup && (
+              {enableGroupCreateButton && onAddToGroup && (
                 // 2026-05-08: + is AFTER label (Jira parity). Hidden by default,
                 // visible on row hover via .jira-group-header-row:hover .jira-group-add-btn CSS.
+                // 2026-05-17: feature flag `enableGroupCreateButton` gates this entire feature
+                // to ensure consumers declare intent explicitly via canonical prop.
                 <span className="jira-group-add-btn" style={{ display: 'inline-flex' }}>
                   <button
                     type="button"
@@ -1421,6 +1478,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     selectedSet,
     showColumnManager,
     toggleRow,
+    renderRowDragHandle,
+    rowDragHandleHidden,
   ]);
 
   // ── Cell-width calculation for THEAD + TBODY ───────────────────────────
@@ -1805,8 +1864,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
           {/* Jira-parity: sticky inline-create footer row. Always visible at the
               bottom of the table, pinned via position:sticky bottom:0.
               Renders a placeholder "What needs to be done?" row in idle state;
-              switches to `active` content when the consumer opens the create form. */}
-          {stickyCreateFooter && (
+              switches to `active` content when the consumer opens the create form.
+              2026-05-17: feature flag `enableStickyCreateFooter` gates this entire feature
+              to ensure consumers declare intent explicitly via canonical prop. */}
+          {enableStickyCreateFooter && stickyCreateFooter && (
             <tfoot style={{ position: 'sticky', bottom: 0, zIndex: 3 }}>
               <tr>
                 <td
@@ -1888,6 +1949,35 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               disabled={current >= totalPages}
               style={pageBtnStyle(current >= totalPages)}
             >Next ›</button>
+          </div>
+        );
+      })()}
+
+      {/* Row-count footer — renders "{N} of {Total} items" (or just "{N} items"
+          when totalRowCount is omitted). Hidden when grouping is active
+          (groups have their own row counts) or when data is empty.
+          2026-05-17 jira-compare: parity with Jira's "50 of 1000+" footer. */}
+      {showRowCount && !groups && data && data.length > 0 && !onPageChange && (() => {
+        const visible = data.length;
+        const total = totalRowCount ?? visible;
+        const label = visible === total
+          ? `${visible} item${visible === 1 ? '' : 's'}`
+          : `${visible} of ${total} items`;
+        return (
+          <div
+            data-testid="jira-table-row-count"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '8px 12px',
+              borderTop: '1px solid #DFE1E6',
+              fontSize: 12,
+              color: 'var(--ds-text-subtle, #505258)',
+              background: 'var(--ds-surface, #FFFFFF)',
+            }}
+          >
+            {label}
           </div>
         );
       })()}

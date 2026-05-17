@@ -4,6 +4,20 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## 2026-05-17 — Jira packs Type icon INSIDE the "Work" column; no standalone Type column in Jira's list view
+**Surface:** UWVTable (`/project-hub/:key/allwork`), IncidentListPage (`/incidents`), BacklogPage (`/project-hub/:key/backlog`)
+**Pattern:** Live Jira BAU list screenshot (2026-05-17) showed ONE combined "Work" column rendering `[type icon][BAU-key][summary text]` in a single cell — NO standalone Type column. Catalyst had standalone Type columns in 3 surfaces: `id: '__type'` (width 3) in `UWVTable.tsx:162`, `id: '__type'` (width 4) in `IncidentListPage.tsx:104`, and `id: 'type'` (width 4, label `'Type'`) in `BacklogPage.atlaskit.tsx:1784`. An earlier 2026-04-27 audit note claimed Jira HAS a Type column header (`data-key=issuetype, ~110px`); that audit's reading was either wrong or Jira's UI changed — the 2026-05-17 screenshot is the current ground truth. A pre-existing handover proposed deleting `__type` from "all 7 JiraTable consumers" but the grep showed `__type` exists in only 2 of 7 — the handover's surface mapping was inaccurate. Always re-probe before applying a handover.
+**Rule:** Jira's BAU list view shows ONE combined "Work" column with type icon + key + summary. For parity:
+1. Catalyst surfaces that have a standalone icon-only Type column (`id: '__type'` or icon-only `id: 'type'`) should remove that column and render the type icon as a leading prefix inside the Key cell.
+2. Use `makeKeyCell(getKey, onOpen, getHref, getIcon)` — the 4th positional argument added 2026-05-17 — to pass a per-row icon renderer that lives inside the Key cell.
+3. Drop the `makeTypeIconCell` import once the standalone column is removed (utility still exists in `cells.tsx` for any future standalone-icon-column case).
+4. BacklogPage's `id: 'type'` column was NOT removed in this cycle (per explicit user scope) — flag for a follow-up parity cycle.
+5. Before applying any handover, grep the codebase to verify the handover's claims about which files / which patterns / which line numbers. "Handover says X" is not the same as "X is true now."
+**Fix:** Added `getIcon` as optional 4th param to `makeKeyCell` ([cells.tsx:248](src/components/shared/JiraTable/cells.tsx:248)). Removed `__type` column block + `makeTypeIconCell` import from [UWVTable.tsx](src/components/universal-work-view/UWVTable.tsx) and [IncidentListPage.tsx](src/pages/incidenthub/IncidentListPage.tsx); both now pass the type icon into `makeKeyCell` via `getIcon`. Test: [no-type-icon-column.test.ts](src/components/shared/JiraTable/__tests__/no-type-icon-column.test.ts) — 6 source-grep assertions (no `__type`, no `makeTypeIconCell` import, icon source appears within `makeKeyCell(...)` call).
+**Severity:** P1 (parity drift — icon-only column was non-Jira convention; H2 affordance gap also; not a CRUD blocker)
+
+---
+
 ## 2026-05-16 — STOP AND ASK before classifying entities; never blindly surface data that was stated as out of scope
 **Surface:** AllProjectsPage (`/project-hub/projects`), `useProjectHub.ts` `excludedProjectKeys`
 **Pattern:** The "Investor Journey" Jira project (key: INV) was synced and displayed in the All Projects table. Vikram had explicitly stated multiple times that Investor Journey is a **product, not a project** and belongs in the Products module, not Projects. The code surfaced it anyway because `excludedProjectKeys` only excluded `TH-DEFAULT` and `MDT`. Additionally, the Members column rendered inconsistently between rows (avatar placeholder vs "Add members" text) because the two rows had different member counts — a discrepancy that could have been caught by asking before shipping. The Key column values (BAU, INV) were also left-aligned while the column header was centered.
