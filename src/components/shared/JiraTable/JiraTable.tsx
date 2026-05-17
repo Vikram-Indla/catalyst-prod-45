@@ -947,14 +947,24 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     }> = [];
 
     if (selectable) {
+      // 2026-05-17 jira-compare cycle 2: when row-level drag handle is wired,
+      // reserve a same-width spacer in the header so the master checkbox
+      // aligns with body row checkboxes (the body has [handle-spacer][cb]).
+      const headerHandleSpacer =
+        renderRowDragHandle && !rowDragHandleHidden ? (
+          <span style={{ width: 16, height: 16, display: 'inline-block' }} aria-hidden />
+        ) : null;
       cells.push({
         key: '__select',
         content: (
-          <AkCheckbox
-            isChecked={allSelected}
-            onChange={(e) => toggleAll(e.target.checked)}
-            label=""
-          />
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            {headerHandleSpacer}
+            <AkCheckbox
+              isChecked={allSelected}
+              onChange={(e) => toggleAll(e.target.checked)}
+              label=""
+            />
+          </span>
         ),
         width: 3,
       });
@@ -1003,7 +1013,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     }
 
     return { cells };
-  }, [allSelected, visibleColumns, columns, columnVisibility, onColumnVisibilityChange, showColumnManager, d.headerFontSize, selectable, toggleAll]);
+  }, [allSelected, visibleColumns, columns, columnVisibility, onColumnVisibilityChange, showColumnManager, d.headerFontSize, selectable, toggleAll, renderRowDragHandle, rowDragHandleHidden]);
 
   // ── Build @atlaskit/dynamic-table rows ────────────────────────────────────
   // If grouped, insert group-header pseudo-rows between groups.
@@ -1030,24 +1040,20 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             <span
               data-jira-table-editor // marker: click shouldn't trigger row navigation
               onClick={(e) => e.stopPropagation()}
-              style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
             >
-              {/* 2026-05-17 jira-compare cycle 2: row-level drag handle overlay.
-                  Absolute-positioned to the left of the checkbox so the handle
-                  appears OUTSIDE the column flow on row-hover — matches Jira's
-                  grip-on-row pattern. Caller (BacklogPage) wires dnd-kit inside
-                  the returned node. */}
+              {/* 2026-05-17 jira-compare cycle 2 (revision 2): row-level drag
+                  handle rendered as an INLINE-FLEX sibling of the checkbox so
+                  the handle's width is reserved on every row (Jira's pattern:
+                  the gutter is always allocated). visibility:hidden keeps the
+                  handle in layout but invisible at rest; the .jira-row-drag-
+                  handle CSS rule flips it to visible on tr:hover. Previous
+                  revision used position:absolute which was clipped by the td's
+                  overflow:hidden. */}
               {dragHandleNode && (
                 <span
                   className="jira-row-drag-handle"
-                  style={{
-                    position: 'absolute',
-                    left: -18,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    visibility: 'hidden',
-                    pointerEvents: 'auto',
-                  }}
+                  style={{ visibility: 'hidden', display: 'inline-flex' }}
                   aria-hidden
                 >
                   {dragHandleNode}
@@ -1472,6 +1478,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     selectedSet,
     showColumnManager,
     toggleRow,
+    renderRowDragHandle,
+    rowDragHandleHidden,
   ]);
 
   // ── Cell-width calculation for THEAD + TBODY ───────────────────────────

@@ -173,7 +173,13 @@ function DragHandleCell({ row }: { row: BacklogItem }) {
           alignItems: 'center',
           justifyContent: 'center',
           width: 16,
-          height: 16,
+          height: 20,
+          // 2026-05-17 jira-compare cycle 2 (rev 2): Jira renders the drag
+          // handle as a small button with a subtle dark rounded background
+          // (per Vikram screenshot). Adds visual weight so the grip reads
+          // as an interactive affordance, not a decorative icon.
+          borderRadius: 3,
+          background: token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'),
           cursor: listeners ? 'grabbing' : 'grab',
           color: token('color.icon.subtle', '#626F86'),
         }}
