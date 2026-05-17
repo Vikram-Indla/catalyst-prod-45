@@ -19,7 +19,7 @@ import ReactDOM from 'react-dom';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/lib/auth';
 import { useCreateCatyConversation } from '@/hooks/useCatyAI';
 
 import EmptyState from '@atlaskit/empty-state';
@@ -74,11 +74,9 @@ import { Fieldset, Label } from '@atlaskit/form';
 
 import {
   JiraTable,
-  makeCheckboxCell,
   makeKeyCell,
   makeCommentsCell,
   makeDateCell,
-  makeTypeIconCell,
   makeCaretCell,
   makeStatusEditCell,
   makeStatusEditCellAkPopup,
@@ -133,6 +131,8 @@ import type {
 import {
   DndContext,
   DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
   closestCenter,
 } from '@dnd-kit/core';
 import {
@@ -152,20 +152,26 @@ const AkChevronsRightIcon = () => (
 
 /**
  * DragHandleCell — useSortable hook for row ranking.
- * Called for each BacklogItem row; returns a draggable span with visual feedback.
+ *
+ * 2026-05-17 jira-compare cycle 2 (revision 3): TR-transform hack reverted.
+ * Trying to apply dnd-kit's transform to the parent <tr> via closest('tr')
+ * was the wrong layer — TRs inside table-layout: fixed have inconsistent
+ * transform behavior across browsers AND setNodeRef remained on the handle
+ * so verticalListSortingStrategy never saw the actual rows. The canonical
+ * fix is DragOverlay — a portal-mounted ghost that follows the cursor,
+ * independent of any table clipping. The handle stays as the sortable item;
+ * the overlay (rendered in BacklogPage's DndContext) gives the visual
+ * feedback; original row stays put; drop persists. Cleaner, more reliable.
  */
 function DragHandleCell({ row }: { row: BacklogItem }) {
-  const { attributes, listeners, setNodeRef, transform } = useSortable({ id: row.id });
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition: 'transform 200ms ease-out',
-  };
+  const { attributes, listeners, setNodeRef, isDragging } = useSortable({ id: row.id });
+
   return (
     <span
       ref={setNodeRef}
-      style={style}
       className="jira-drag-handle"
       aria-hidden
+      style={{ opacity: isDragging ? 0.4 : 1 }}
       {...attributes}
       {...listeners}
     >
@@ -175,10 +181,15 @@ function DragHandleCell({ row }: { row: BacklogItem }) {
           alignItems: 'center',
           justifyContent: 'center',
           width: 16,
-          height: 16,
+          height: 20,
+          // 2026-05-17 jira-compare cycle 2 (rev 2): Jira renders the drag
+          // handle as a small button with a subtle dark rounded background
+          // (per Vikram screenshot). Adds visual weight so the grip reads
+          // as an interactive affordance, not a decorative icon.
+          borderRadius: 3,
+          background: token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'),
           cursor: listeners ? 'grabbing' : 'grab',
           color: token('color.icon.subtle', '#626F86'),
-          visibility: 'hidden', /* JiraTable.tsx tr:hover CSS shows it */
         }}
       >
         {/* 6-dot grip — no ADS equivalent; inline SVG */}
@@ -263,6 +274,7 @@ export interface BacklogItem {
   comment_count: number | null;
   labels: string[] | null;
   fix_versions: string[] | null;
+  rank_order: number | null;
 }
 
 /* ─── Status mapping (shared with Story Backlog) ────────────────────────── */
@@ -313,6 +325,12 @@ const STATUS_OPTIONS: StatusOption[] = [
   // Blocked / On Hold: Jira BAU DOM probe 2026-05-08 = grey (To Do category, rgb(221,222,225))
   { value: 'Blocked', label: 'Blocked', appearance: 'default', group: 'To Do' },
   { value: 'On Hold', label: 'On Hold', appearance: 'default', group: 'To Do' },
+  // Jira DOM probe 2026-05-16: Rejected = Done category (green), not grey.
+  { value: 'Rejected', label: 'Rejected', appearance: 'success', group: 'Done' },
+  { value: 'Cancelled', label: 'Cancelled', appearance: 'default', group: 'To Do' },
+  { value: 'Closed', label: 'Closed', appearance: 'success', group: 'Done' },
+  { value: 'In Review', label: 'In Review', appearance: 'inprogress', group: 'In Progress' },
+  { value: 'Ready to Implement', label: 'Ready to Implement', appearance: 'default', group: 'To Do' },
 ];
 // All distinct status values used in BAU — drives the status inline-edit dropdown.
 const ALL_BACKLOG_STATUSES = [
@@ -336,14 +354,18 @@ const PRIORITY_OPTIONS = ['highest', 'critical', 'high', 'medium', 'low', 'lowes
 // Type-specific custom fields (Gap Classification, IR Demo Date, etc.) are permanently banned.
 // See CLAUDE.md 2026-05-05, 2026-05-07 for the full ban list.
 const ALLOWED_COLUMN_IDS = new Set([
-  'type',
+  // 2026-05-17 jira-compare cycle 2: standalone 'type' column removed; type
+  // icon now lives inside the Work cell via makeKeyCell getIcon prefix.
+  // 2026-05-17 jira-compare cycle 2 (design-critique H4 P0): standalone
+  // summary column merged into the key column (now labeled "Work").
+  // key id retained for URL backward-compat.
   'key',
-  'summary',
   'status',
   'comments',
   'parent',
   'assignee',
   'priority',
+  'fix_versions',
   'labels',
   'due_date',
   'created',
@@ -439,14 +461,19 @@ export default function NativeBacklogPage() {
 
 /* ─── The canonical page ───────────────────────────────────────────────── */
 
-function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey: string }) {
+export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string }) {
+  // May 12, 2026 (Phase 1.3): CATY hooks for Ask CATY toolbar button.
+  const { user } = useAuth();
+  const createConversation = useCreateCatyConversation();
+
   // Apr 27, 2026 (L50): canonical Project Hub page-title pattern is
   // `{Project Name} {Hub Function}` — e.g. "Senaei BAU Backlog". Falls
   // back to the project key while the name is loading. Same pattern
   // should be applied to every Project Hub surface (Dashboard, Board,
   // Roadmap, etc.) — see the L50 lesson note for the sweep target list.
   const { data: project } = useProject(projectId);
-  const projectDisplayName = project?.name || projectKey;
+  const projectDisplayName = displayName || project?.name || projectKey;
+  const resolvedBaseUrl = baseUrl ?? `/project-hub/${projectKey}`;
   // Apr 28, 2026 — chrome band background derived from
   // `projects.settings.background`. Falls back to the Jira-parity blue.
   const projectBackground = readProjectBackground(project);
@@ -465,8 +492,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // position (left of Search in the list toolbar). On click: creates a
   // CATY conversation scoped to this project, then navigates to /caty
   // with the conversation id passed via URLSearchParams.
-  const { user } = useAuth();
-  const createCatyConversation = useCreateCatyConversation();
+  // 2026-05-17: useAuth + useCreateCatyConversation already declared at
+  // the top of the component body (lines ~458-459) for the CATY hook
+  // setup; reuse those bindings here instead of re-declaring.
+  const createCatyConversation = createConversation;
   const handleAskCaty = useCallback(async () => {
     if (!user?.id || !projectId) return;
     try {
@@ -525,18 +554,26 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
 
   const queryClient = useQueryClient();
 
+  // Always pass forceProjectKey so Product Hub adapters (whose projectId
+  // comes from the products table, not projects) can bypass the
+  // projects-table lookup inside useStoryBacklog / useEpicBacklog.
+  // For normal project-hub usage this is a no-op (the resolved key matches).
+  const backlogOpts = {
+    ...(assigneeIds?.length ? { assigneeIds } : {}),
+    forceProjectKey: projectKey || undefined,
+  };
   const {
     data: stories = [],
     isLoading: storiesLoading,
     error: storiesError,
     refetch: refetchStories,
-  } = useStoryBacklog(projectId);
+  } = useStoryBacklog(projectId, backlogOpts);
   const {
     data: epics = [],
     isLoading: epicsLoading,
     error: epicsError,
     refetch: refetchEpics,
-  } = useEpicBacklog(projectId);
+  } = useEpicBacklog(projectId, backlogOpts);
   const avatarsByName = useProfileAvatarsByName();
   const backlogError = storiesError || epicsError;
 
@@ -620,7 +657,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // Summary | Status | Comments | Parent — NO Assignee by default. Assignee is
   // available via the column picker (+) but hidden in the factory layout.
   // NOTE: Comments column is banned (2026-05-11), removed from defaults
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'assignee', 'priority', 'parent', 'fix_versions'];
+  // 2026-05-17 jira-compare cycle 2: 'summary' merged into 'key' (Work column).
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'status', 'assignee', 'priority', 'parent', 'fix_versions'];
 
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
@@ -633,6 +671,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   const [filterValue, setFilterValue] = useState<JiraFilterValue>(emptyFilterValue);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => parseSet(searchParams.get('expanded')));
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  // 2026-05-17 jira-compare cycle 2 (rev 3): track the row currently being
+  // dragged so the DragOverlay portal can render a ghost preview that
+  // follows the cursor. Cleared on drag end / cancel.
+  const [activeDragRow, setActiveDragRow] = useState<BacklogItem | null>(null);
   // Default sort — Key ASC matches Jira's default "Rank" ordering which
   // surfaces oldest issues (BAU-310 first). Updated DESC was incorrect —
   // live probe 2026-05-04 shows Jira BAU list starts at BAU-310, not newest.
@@ -700,6 +742,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   const [showHierarchy, setShowHierarchy] = useState<boolean>(true);
   const [density, setDensity] = useState<'compact' | 'comfortable'>('compact');
   const [columnOrder, setColumnOrder] = useState<string[] | null>(null);
+  // Column width persistence — survives page reload (Jira saves widths per project).
+  const COL_WIDTHS_KEY = `ph-backlog-col-widths-v1:${projectKey}`;
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
+    try { const r = localStorage.getItem(COL_WIDTHS_KEY); return r ? JSON.parse(r) : {}; } catch { return {}; }
+  });
 
   // Apr 27 2026 (jira-compare regression iter 3 — Add people modal).
   // Catalyst's Add people CTA in the chrome band opens this modal,
@@ -1001,6 +1048,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           created_at: null,
           comment_count: null,
           labels: null,
+          fix_versions: null,
+          rank_order: null,
         });
       });
     }
@@ -1034,6 +1083,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         due_date: (e as any).end_date ?? (e as any).due_date ?? null,
         comment_count: e.comment_count ?? null,
         labels: (e as any).labels ?? null,
+        fix_versions: (e as any).fix_versions ?? null,
+        rank_order: (e as any).rank_order ?? null,
       });
     });
 
@@ -1077,6 +1128,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           due_date: null,
           comment_count: null,
           labels: null,
+          fix_versions: null,
+          rank_order: null,
         });
       }
     });
@@ -1128,6 +1181,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         due_date: (s as any).start_date ?? (s as any).due_date ?? null,
         comment_count: null,
         labels: (s as any).labels ?? null,
+        fix_versions: (s as any).fix_versions ?? null,
+        rank_order: (s as any).rank_order ?? null,
       });
     });
     return out;
@@ -1407,7 +1462,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         labelNode = <StatusPill appearance={appearance as LozengeAppearance}>{label}</StatusPill>;
       } else if (groupBy === 'assignee') {
         const isUnassigned = !sample.assignee_name;
-        const avatarUrl = sample.assignee_name ? avatarsByName?.get(sample.assignee_name) : null;
+        const avatarUrl = sample.assignee_name ? (resolveAvatarUrl(sample.assignee_name) ?? avatarsByName?.get(sample.assignee_name)) : null;
         labelNode = (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
             <Avatar size="small" name={k} src={avatarUrl || undefined} appearance={isUnassigned ? 'square' : 'circle'} />
@@ -1507,11 +1562,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       sessionStorage.setItem(`backlog-scroll-${projectKey}`, Math.max(0, container.scrollTop).toString());
     }
     writeTicketOrigin({
-      fromUrl: `/project-hub/${projectKey}/backlog`,
+      fromUrl: `${resolvedBaseUrl}/backlog`,
       fromLabel: 'Backlog',
       fromType: 'story-backlog',
     });
-    navigate(`/project-hub/${projectKey}/backlog/${it.issue_key || it.id}`);
+    navigate(`${resolvedBaseUrl}/backlog/${it.issue_key || it.id}`);
   }, [projectKey, navigate]);
   // Detail callbacks removed 2026-05-12 task E: no longer managing panel state.
 
@@ -1543,7 +1598,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         m.set(it.assignee_name, {
           id: it.assignee_name,
           name: it.assignee_name,
-          avatarUrl: avatarsByName.get(it.assignee_name.toLowerCase()) ?? null,
+          avatarUrl: resolveAvatarUrl(it.assignee_name) ?? avatarsByName.get(it.assignee_name.toLowerCase()) ?? null,
         });
       }
     });
@@ -1561,7 +1616,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         m.set(it.reporter_name, {
           id: it.reporter_name,
           name: it.reporter_name,
-          avatarUrl: avatarsByName.get(it.reporter_name.toLowerCase()) ?? null,
+          avatarUrl: resolveAvatarUrl(it.reporter_name) ?? avatarsByName.get(it.reporter_name.toLowerCase()) ?? null,
         });
       }
     });
@@ -1600,7 +1655,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     { id: 'agile-board', label: 'Agile board', icon: <AkBoardIcon label="" />,
       onClick: (r) => {
         const parent = r.parent_key || r.key;
-        navigate(`/project-hub/${projectKey}/kanban${parent ? `?epic=${parent}` : ''}`);
+        navigate(`${resolvedBaseUrl}/kanban${parent ? `?epic=${parent}` : ''}`);
       } },
     { id: 'rank-top', label: 'Rank to top', icon: <AkArrowUpIcon label="" />,
       onClick: async (r) => {
@@ -1610,23 +1665,23 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         // (PENDING Vikram approval + Lovable manual paste). Until that
         // lands the column doesn't exist → graceful fallback to info flag.
         try {
-          const { data: minRow, error: minErr } = await (supabase
-            .from('ph_issues') as any)
-            .select('rank_order')
+          const { data: minRow, error: minErr } = await supabase
+            .from('ph_issues')
+            .select('sort_order')
             .eq('project_key', projectKey)
-            .not('rank_order', 'is', null)
-            .order('rank_order', { ascending: true })
+            .not('sort_order', 'is', null)
+            .order('sort_order', { ascending: true })
             .limit(1)
             .maybeSingle();
           if (minErr || !minRow) {
-            flag.info('Rank to top', `Schema pending: rank_order column not yet migrated. See migrations-pending/.`);
+            flag.info('Rank to top', `No sortable rows found.`);
             return;
           }
-          const newRank = (minRow.rank_order ?? 100) - 10;
-          const { error: updErr } = await (supabase
-            .from('ph_issues') as any)
-            .update({ rank_order: newRank })
-            .eq('id', r.id);
+          const newRank = ((minRow as any).sort_order ?? 100) - 10;
+          const { error: updErr } = await supabase
+            .from('ph_issues')
+            .update({ sort_order: newRank } as any)
+            .eq('issue_key', r.id);
           if (updErr) throw updErr;
           queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
           flag.success('Ranked to top', r.key || r.id);
@@ -1638,23 +1693,23 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       onClick: async (r) => {
         // Symmetric: writes rank_order higher than current MAX in project scope.
         try {
-          const { data: maxRow, error: maxErr } = await (supabase
-            .from('ph_issues') as any)
-            .select('rank_order')
+          const { data: maxRow, error: maxErr } = await supabase
+            .from('ph_issues')
+            .select('sort_order')
             .eq('project_key', projectKey)
-            .not('rank_order', 'is', null)
-            .order('rank_order', { ascending: false })
+            .not('sort_order', 'is', null)
+            .order('sort_order', { ascending: false })
             .limit(1)
             .maybeSingle();
           if (maxErr || !maxRow) {
-            flag.info('Rank to bottom', `Schema pending: rank_order column not yet migrated.`);
+            flag.info('Rank to bottom', `No sortable rows found.`);
             return;
           }
-          const newRank = (maxRow.rank_order ?? 0) + 10;
-          const { error: updErr } = await (supabase
-            .from('ph_issues') as any)
-            .update({ rank_order: newRank })
-            .eq('id', r.id);
+          const newRank = ((maxRow as any).sort_order ?? 0) + 10;
+          const { error: updErr } = await supabase
+            .from('ph_issues')
+            .update({ sort_order: newRank } as any)
+            .eq('issue_key', r.id);
           if (updErr) throw updErr;
           queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
           flag.success('Ranked to bottom', r.key || r.id);
@@ -1715,84 +1770,65 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // Type col cell renderer instead (matches Jira's inline expand pattern).
   // F9 (iter-9): Type col widened from width:3 (~40px) to width:9 (~108px).
   const columns = useMemo<Column<BacklogItem>[]>(() => ([
+    // 2026-05-17 jira-compare cycle 2 (design-critique H8 P0): __drag
+    // column removed entirely. Drag handle now renders as a row-level
+    // absolute-positioned overlay on the __select cell via JiraTable's
+    // renderRowDragHandle prop (wired below at the JiraTable call site).
+    // Matches Jira's grip-on-row-hover pattern; eliminates the wasted
+    // ~36px empty column 2 that Vikram flagged.
+    // 2026-05-17 jira-compare cycle 2: redundant __checkbox column removed.
+    // JiraTable auto-prepends a __select column when selectable={true} —
+    // having both rendered as an empty column 2 visible to Vikram. Now the
+    // canonical's __select is the only selection column, fed by the same
+    // selection / onSelectionChange props (lines ~3031-3033).
     {
-      // Jira-parity: 16px-wide drag-handle column at the leftmost position.
-      // Shows a 6-dot grip icon on row hover; invisible at rest.
-      // CSS in JiraTable.tsx (`.jira-drag-handle`) handles visibility.
-      // 2026-05-12: functional DnD with @dnd-kit/sortable. DragHandleCell
-      // uses useSortable hook to track drag state and apply transform.
-      // Visibility gate: drag handle only shows when sortKey=rank_order AND
-      // groupBy=null (no active sort or grouping — matches Jira behavior).
-      id: '__drag',
-      label: '',
-      width: 3,
-      align: 'center' as const,
+      // 2026-05-17 jira-compare cycle 2 (design-critique H4 P0): merged Key
+      // and Summary columns into ONE "Work" column matching Jira's BAU list.
+      // Jira renders [type icon][BAU-key link][summary text] in a SINGLE
+      // cell with one header labeled "Work". Catalyst was splitting this
+      // across two columns ("Key" + "Summary") with a vertical divider that
+      // Jira does not have. Column id stays 'key' for URL backward-compat
+      // (DEFAULT_VISIBLE_COLUMNS / ALLOWED_COLUMN_IDS still reference 'key').
+      // The standalone 'summary' column block below is now deleted.
+      id: 'key',
+      label: 'Work',
+      flex: true,
+      sortable: true,
       alwaysVisible: true,
-      hidden: sortKey !== 'rank_order' || groupBy !== null,
-      cell: ({ row }) => <DragHandleCell row={row} />,
-    },
-    {
-      id: '__checkbox',
-      label: '',
-      width: 4,
-      align: 'center' as const,
-      alwaysVisible: true,
-      cell: makeCheckboxCell({
-        isChecked: (row: BacklogItem) => selectedIds.has(row.id),
-        onChange: (row: BacklogItem, checked: boolean) => {
-          const next = new Set(selectedIds);
-          if (checked) {
-            next.add(row.id);
-          } else {
-            next.delete(row.id);
+      defaultVisible: true,
+      accessor: (r) => r.key || '',
+      // Composed cell: keyCellRenderer renders [icon][BAU-XXXX link],
+      // summaryCellRenderer adds the inline-editable title text. Both
+      // factories are instantiated once per column-array memo recreation.
+      cell: (() => {
+        const keyCellRenderer = makeKeyCell(
+          (r: BacklogItem) => r.key,
+          (r: BacklogItem) => openDetail(r),
+          (r: BacklogItem) => `/project-hub/${projectKey}/backlog/${r.key || r.id}`,
+          (it: BacklogItem) => {
+          if (it.type === 'initiative') {
+            const init = initiativesByKey?.get(it.key || '');
+            const bg = init?.initiative_type_color_hex || '#904EE2';
+            return (
+              <span
+                title={init?.initiative_type_label || 'Request'}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 16,
+                  height: 16,
+                  borderRadius: 3,
+                  background: bg,
+                  color: 'var(--ds-text-inverse, #FFFFFF)',
+                  fontSize: 10,
+                  fontWeight: 700,
+                }}
+              >
+                {(init?.initiative_type_key || 'I')[0].toUpperCase()}
+              </span>
+            );
           }
-          setSelectedIds(next);
-        },
-      }),
-    },
-    {
-      id: 'type',
-      // Apr 27, 2026 — jira-compare audit P1 #5 + P-A11Y #12: Jira's BAU
-      // list type column has a visible "Type" header (data-key=issuetype,
-      // ~110px wide). Catalyst was icon-only with `label: ''` which is
-      // both a parity gap and an a11y gap (screen readers read an empty
-      // header for the issue-type cell). Setting label to "Type" fixes
-      // both findings in one change — visible text doubles as the
-      // accessible name on the th element.
-      // 2026-05-12 design-critique H8 fix: reduced from width:9 (108px) to
-      // width:8 (96px): Type is the first data column — JiraTable prepends a
-      // 28px chevron placeholder to its header. At width:6 (72px), content
-      // area is only 48px; 28+30px "Type" text = 58px → clips to "Ty".
-      // width:8 → 96px → 72px content → 72-28=44px for label (fits ~30px) ✓
-      label: 'Type',
-      width: 8,
-      align: 'center',
-      alwaysVisible: true,
-      cell: ({ row: it }) => {
-        let icon: React.ReactNode;
-        if (it.type === 'initiative') {
-          const init = initiativesByKey?.get(it.key || '');
-          const bg = init?.initiative_type_color_hex || '#904EE2';
-          icon = (
-            <span
-              title={init?.initiative_type_label || 'Request'}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 16,
-                height: 16,
-                borderRadius: 3,
-                background: bg,
-                color: 'var(--ds-text-inverse, #FFFFFF)',
-                fontSize: 10,
-                fontWeight: 700,
-              }}
-            >
-              {(init?.initiative_type_key || 'I')[0].toUpperCase()}
-            </span>
-          );
-        } else {
           const typeMap: Record<Exclude<BacklogType, 'initiative'>, string> = {
             epic: 'Epic',
             feature: 'Feature',
@@ -1800,99 +1836,52 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             bug: 'QA Bug',
             incident: 'Production Incident',
           };
-          icon = <JiraIssueTypeIcon type={typeMap[it.type as Exclude<BacklogType, 'initiative'>]} size={16} />;
-        }
-        return (
-          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16 }}>
-            {icon}
-          </span>
+          return <JiraIssueTypeIcon type={typeMap[it.type as Exclude<BacklogType, 'initiative'>]} size={16} />;
+        },
         );
-      },
-    },
-    {
-      id: 'key',
-      label: 'Key',
-      // 2026-05-08 re-probe: Jira BAU list measures Key at 120px.
-      // width:10 × 12 = 120px matches. Previous width:7 (~84px) was too
-      // narrow once sort indicator "↑" is added alongside the key text.
-      width: 10,
-      sortable: true,
-      defaultVisible: true,
-      accessor: (r) => r.key || '',
-      // Jira-parity: key cell renders as <a> so keyboard nav, middle-click,
-      // and Ctrl+click all work. Left-click preventDefault → opens detail panel.
-      cell: makeKeyCell(
-        (r: BacklogItem) => r.key,
-        (r: BacklogItem) => openDetail(r),
-        (r: BacklogItem) => `/project-hub/${projectKey}/backlog/${r.key || r.id}`,
-      ),
-    },
-    {
-      id: 'summary',
-      // Apr 27, 2026 — jira-compare audit P1 #6: Jira's BAU list Summary
-      // column renders at ~400px on a 1100-min table. Catalyst was 22%
-      // (~242px) — well below the audit's ≥360px acceptance target.
-      // Bumped 22 → 33 (~363px @ 1100 minw) to hit parity. Drops Updated
-      // from defaultVisible (see Updated col below) to make room — Jira
-      // hides Updated by default in the BAU list as well.
-      label: 'Summary',
-      flex: true,
-      sortable: true,
-      alwaysVisible: true,
-      cell: makeSummaryInlineEditCell<BacklogItem>({
-        getSummary: (r) => r.title,
-        // Iron dome OPEN (2026-04-27 audit). Every row is inline-editable.
-        // The unified architecture is: catalyst rows write directly to
-        // ph_issues; jira-sourced rows write to ph_issues optimistically
-        // AND queue a write-back via jira_write_back_queue (the gate at
-        // BacklogPage.atlaskit.tsx:387 in updateField.mutate routes the
-        // queue insert on source==='jira'). The factory's optional
-        // canEdit / getReadOnlyTooltip props are kept available in
-        // editors.tsx for other surfaces that may want them, but BAU
-        // backlog deliberately does not constrain edits by source.
-        onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { title: next } }),
-        // 2026-05-12 Jira parity: row hover → ↗ "Open work item" opens the
-        // detail panel for that row (mirrors Jira's full-width detail open).
-        onOpenWorkItem: (row) => openDetail(row),
-        // 2026-05-12 Jira parity: row hover → + "Create child item" triggers
-        // inline create scoped to that row's parent group. For now we route
-        // through the existing inlineCreateGroup state machine so the new
-        // item appears as a sibling under the same parent. Wiring to a true
-        // per-row child-create (sub-task family) is task #4 follow-up — see
-        // ph_issues.parent_key relationship and Jira hierarchy rules.
-        onCreateChild: (row) => {
-          // Default group target = the row's parent key when grouped by parent,
-          // else fall back to row's own id so child inserts as sibling.
-          const groupId = groupBy === 'parent'
-            ? (row.parent_key || row.id)
-            : row.parent_key || row.id;
-          setInlineCreateGroup(groupId);
-        },
-        // Show + button on rows that can have children: Epic, Feature,
-        // Story (sub-task parent). Exclude API Requirement and sub-task
-        // types from the affordance.
-        canCreateChild: (row) => {
-          const t = row.type || '';
-          return t === 'Epic' || t === 'Feature' || t === 'Story' || t === 'Task';
-        },
-      }),
+        const summaryCellRenderer = makeSummaryInlineEditCell<BacklogItem>({
+          getSummary: (r) => r.title,
+          // Iron dome OPEN (2026-04-27 audit). Every row is inline-editable.
+          onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { title: next } }),
+          // 2026-05-12 Jira parity: row hover → ↗ "Open work item" opens the
+          // detail panel for that row (mirrors Jira's full-width detail open).
+          onOpenWorkItem: (row) => openDetail(row),
+          // 2026-05-12 Jira parity: row hover → + "Create child item".
+          onCreateChild: (row) => {
+            const groupId = groupBy === 'parent'
+              ? (row.parent_key || row.id)
+              : row.parent_key || row.id;
+            setInlineCreateGroup(groupId);
+          },
+          canCreateChild: (row) => {
+            const t = row.type || '';
+            return t === 'Epic' || t === 'Feature' || t === 'Story' || t === 'Task';
+          },
+        });
+        return function WorkCell(props: any) {
+          return (
+            <span
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                width: '100%',
+                minWidth: 0,
+              }}
+            >
+              <span style={{ flexShrink: 0 }}>{keyCellRenderer(props)}</span>
+              <span style={{ flex: 1, minWidth: 0 }}>{summaryCellRenderer(props)}</span>
+            </span>
+          );
+        };
+      })(),
     },
     {
       id: 'status',
       label: 'Status',
-      // 2026-05-11: increased to 18 fractions (220px+) to fit "READY FOR PRODUCTION"
-      // without truncation. Prior 144px (12 fractions) was measured from shorter
-      // status values like "READY FOR QA". BAU project uses longer status names.
-      width: 18,
-      // 2026-05-08 re-probe: Jira measures Status at 120px OUTER with 8px
-      // left container padding (112px effective). Catalyst TD has 12px+12px
-      // = 24px cell padding overhead; 144px - 24px = 120px inner = matches
-      // Jira's 112px effective + pill margin. "READY FOR QA" needs ~112px
-      // text — fits at 120px inner without truncation.
-      // 2026-05-12 design-critique H8 fix: reduced from width:12 (144px) to
-      // width:9 (108px) to reduce excessive default spacing. Most BAU status
-      // values are ≤20 chars and fit comfortably at 108px inner.
-      width: 9,
+      // 2026-05-16: Jira DOM probe = 180px. width:15 = 180px.
+      // Prior width:20 (240px) was too wide. Status pill wraps at all widths so 180px works.
+      width: 15,
       sortable: true,
       defaultVisible: true,
       // B.4 verdict: @atlaskit/popup portal mounts on this surface but
@@ -1940,19 +1929,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'parent',
       label: 'Parent',
-      // Apr 27, 2026 — jira-compare audit P1 #6: Jira's BAU list Parent
-      // column renders at ~395px (longest content: "BAU-#### Senaei BAU
-      // - <epic name>"). Catalyst was 12% (~142px), forcing parent
-      // labels to truncate after a single word. Bumped 12 → 26
-      // (~286px @ 1100 minw) to hit the audit's ≥280px acceptance
-      // target.
-      // 2026-05-08 re-probe: Jira BAU list measures Parent at 160px.
-      // width:13 × 12 = 156px ≈ matches. Previous width:10 (~120px) was
-      // 40px too narrow — parent key+name was heavily truncated.
-      // 2026-05-12 design-critique H8 fix: reduced from width:13 (156px) to
-      // width:10 (120px) to reduce excessive default spacing. Parent links
-      // truncate gracefully at 120px inner with ellipsis.
-      width: 10,
+      // 2026-05-16: Jira DOM probe = 129px. width:11 ≈ 132px matches.
+      // Prior width:22 (264px) was double Jira's actual column width.
+      width: 11,
       sortable: true,
       defaultVisible: true,
       cell: makeParentEditCell<BacklogItem>({
@@ -1983,15 +1962,13 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'assignee',
       label: 'Assignee',
-      // 2026-05-12 design-critique H8 fix: reduced from width:10 (120px) to
-      // width:8 (96px). Avatar (24px) + name fits at 96px inner with common
-      // name lengths; truncates gracefully for longer names.
-      width: 8,
+      // width:11 = 132px — fits avatar + typical name length without cramping.
+      width: 11,
       sortable: true,
       defaultVisible: true,
       cell: makeAssigneeEditCell<BacklogItem>({
         getAssignee: (r) => r.assignee_name
-          ? { id: r.assignee_name, name: r.assignee_name, avatarUrl: avatarsByName.get(r.assignee_name.toLowerCase()) ?? null }
+          ? { id: r.assignee_name, name: r.assignee_name, avatarUrl: resolveAvatarUrl(r.assignee_name) ?? avatarsByName.get(r.assignee_name.toLowerCase()) ?? null }
           : null,
         options: assigneeOptions.map<AssigneeChoice>((a) => ({ id: a.id, name: a.name, avatarUrl: a.avatarUrl ?? null })),
         onChange: (row, next) => updateField.mutate({
@@ -2067,7 +2044,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'fix_versions',
       label: 'Fix versions',
-      width: 10,
+      // 2026-05-16: Jira DOM probe = 220px. width:18 = 216px (≈220px).
+      // Prior width:10 (120px) clipped version names badly.
+      width: 18,
       sortable: false,
       defaultVisible: true,
       accessor: (r: BacklogItem) => (r.fix_versions || []).join(', '),
@@ -2104,7 +2083,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       accessor: (r: BacklogItem) => r.reporter_name || '',
       cell: makeAssigneeCell((r: BacklogItem) =>
         r.reporter_name
-          ? { name: r.reporter_name, avatarUrl: avatarsByName.get(r.reporter_name.toLowerCase()) ?? null }
+          ? { name: r.reporter_name, avatarUrl: resolveAvatarUrl(r.reporter_name) ?? avatarsByName.get(r.reporter_name.toLowerCase()) ?? null }
           : null,
       ),
     },
@@ -2120,7 +2099,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         actions: rowActions.filter((a) => a.id !== 'open'),
       }),
     },
-  ]), [expandedIds, toggleExpanded, hasChildren, parentOptions, assigneeOptions, avatarsByName, updateField, rowActions]);
+  ]), [expandedIds, toggleExpanded, hasChildren, parentOptions, assigneeOptions, avatarsByName, updateField, rowActions, sortKey, sortDir, groupBy]);
 
   // Filter columns to only allowed standard Jira fields (2026-05-12).
   // Prevents type-specific custom fields and banned fields from appearing
@@ -2173,6 +2152,19 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   const [bulkMoveTarget, setBulkMoveTarget] = useState<string | null>(null);
   const [bulkTransitionOpen, setBulkTransitionOpen] = useState(false);
   const [bulkTransitionTarget, setBulkTransitionTarget] = useState<string | null>(null);
+  // Bulk change wizard — 2-step modal (step 1: choose action; step 2: configure + confirm).
+  const [bulkWizardOpen, setBulkWizardOpen] = useState(false);
+  const [bulkWizardStep, setBulkWizardStep] = useState<1 | 2>(1);
+  const [bulkWizardAction, setBulkWizardAction] = useState<'edit' | 'move' | 'transition' | 'delete' | null>(null);
+  const [bulkWizardEditField, setBulkWizardEditField] = useState<'priority' | 'status' | 'assignee' | 'parent' | null>(null);
+  const [bulkWizardEditValue, setBulkWizardEditValue] = useState<string | null>(null);
+  const closeBulkWizard = () => {
+    setBulkWizardOpen(false);
+    setBulkWizardStep(1);
+    setBulkWizardAction(null);
+    setBulkWizardEditField(null);
+    setBulkWizardEditValue(null);
+  };
   const bulkUpdate = useMutation({
     mutationFn: async ({ ids, patch }: { ids: string[]; patch: Record<string, unknown> }) => {
       const editable = items.filter((it) => ids.includes(it.id) && it.source === 'catalyst');
@@ -2440,7 +2432,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           { id: 'import-csv', label: 'Import work items from CSV', icon: <AkDownloadIcon label="" size="small" />,
             onClick: () => flag.info('Import CSV', 'CSV importer scope: pending Vikram approval.') },
           { id: 'bulk-change', label: 'Bulk change work items', icon: <AkEditIcon label="" size="small" />,
-            onClick: () => flag.info('Bulk change', 'Bulk change wizard scope: pending Vikram approval (task #7).') },
+            onClick: () => setBulkWizardOpen(true), opensModal: true },
         ]},
         // Group 3 — navigation (Jira parity item 9)
         { items: [
@@ -2702,6 +2694,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             }
           />
         </div>
+
         <div style={{ position: 'relative' }}>
           <JiraFilterAtlaskit
             value={filterValue}
@@ -2860,7 +2853,15 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
           <DndContext
             collisionDetection={closestCenter}
+            onDragStart={(event: DragStartEvent) => {
+              // Capture the row being dragged so DragOverlay can render
+              // a portal-mounted ghost that follows the cursor.
+              const row = sortedRows.find((r) => r.id === event.active.id) ?? null;
+              setActiveDragRow(row);
+            }}
+            onDragCancel={() => setActiveDragRow(null)}
             onDragEnd={async (event: DragEndEvent) => {
+              setActiveDragRow(null);
               const { active, over } = event;
               if (!over || active.id === over.id || !projectKey) return;
 
@@ -2891,15 +2892,36 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 newRankOrder = (aboveRank + currentRank) / 2;
               }
 
-              // Update the rank_order via bulkUpdate mutation (batch-optimized)
+              // Write sort_order directly to ph_issues — bulkUpdate filters to
+              // source==='catalyst' (correct for Jira-synced fields like summary
+              // /status) but sort_order is a Catalyst-local rank field with no
+              // Jira sync, so the filter wrongly rejected Jira rows and drag
+              // silently failed. Row-menu Rank-to-top/bottom already write
+              // sort_order directly without a source filter — mirror that.
               try {
-                await bulkUpdate.mutateAsync({
-                  ids: [draggedRow.id],
-                  patch: { rank_order: newRankOrder },
-                });
+                const { error: updErr } = await supabase
+                  .from('ph_issues')
+                  .update({ sort_order: newRankOrder, jira_updated_at: new Date().toISOString() })
+                  .eq('issue_key', draggedRow.id);
+                if (updErr) throw updErr;
                 // Invalidate backlog queries to re-fetch and re-sort by rank_order
                 queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
                 queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+                // 2026-05-17 jira-compare cycle 2: when an explicit column
+                // sort was active, the client-side sort was overriding the
+                // DB sort_order so the drag appeared to do nothing. Auto-
+                // clear the sort after a successful drag so the persisted
+                // rank order is visible immediately. Display now shows the
+                // row in its new position (DB-natural order, no client
+                // re-sort applied — see sortedRows guard at line ~1304).
+                if (sortKey !== null) {
+                  setSortKey(null);
+                  setSortDir(null);
+                }
+                flag.success(
+                  'Reordered',
+                  `${draggedRow.key || 'Row'} moved.`,
+                );
               } catch (e: any) {
                 flag.error('Rank update failed', e?.message ?? String(e));
               }
@@ -2908,7 +2930,23 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             <SortableContext
               items={sortedRows.map((r) => r.id)}
               strategy={verticalListSortingStrategy}
-              disabled={sortKey !== 'rank_order' || groupBy !== null}
+              // 2026-05-17 jira-compare cycle 2: previously disabled unless
+              // sortKey === 'rank_order', but no column produces that sortKey,
+              // so SortableContext was always disabled and drag silently
+              // never fired. Vikram flagged "drag handle not working" once the
+              // handle was made visible.
+              //
+              // New gate matches the row-level handle's visibility gate
+              // (rowDragHandleHidden, set at the JiraTable call site below):
+              // drag is enabled in the default sort state (key ASC) with no
+              // grouping. Drag fires bulkUpdate of sort_order; visual reorder
+              // is immediate when sortKey resolves to rank_order, and persists
+              // for the next visit if the user later sorts by rank_order.
+              disabled={
+                sortKey !== DEFAULT_SORT_KEY ||
+                sortDir !== DEFAULT_SORT_DIR ||
+                (groupBy !== null && groupBy !== 'none')
+              }
             >
           <JiraTable<BacklogItem>
             columns={filteredCols}
@@ -2916,6 +2954,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             groups={groupedRows ?? undefined}
             collapsedGroups={collapsedGroups}
             onToggleGroup={toggleGroup}
+            // 2026-05-17: Feature flags declare intent explicitly per canonical
+            // governance framework. BacklogPage has sticky footer create only
+            // (no group inline-create affordances per user feedback 2026-05-17).
+            enableGroupCreateButton={false}
+            enableStickyCreateFooter={true}
             // Apr 28 2026 (carryover #13 — chevron discoverability):
             // expandedRowIds passes through expandedIds directly. Removed
             // the typeFilter='all' inversion (which previously fed the
@@ -2940,80 +2983,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 else next.add(rowId);
                 return next;
               });
-            }}
-            // Apr 27 2026 (jira-compare regression F-NEW-2 functional):
-            // per-group "+" → opens an inline-create row inside that group
-            // with summary input + Create + Cancel. Mirrors Jira's
-            // `child-create-button-wrapper` testid + position. On submit,
-            // creates an issue with status=groupId (groupBy=status case).
-            onAddToGroup={(groupId: string) => {
-              setInlineCreateGroup((prev) => (prev === groupId ? null : groupId));
-              // Expand the group so the inline-create row is visible (it only
-              // renders when the group is not collapsed).
-              setCollapsedGroups((prev) => {
-                if (!prev.has(groupId)) return prev;
-                const next = new Set(prev);
-                next.delete(groupId);
-                return next;
-              });
-            }}
-            renderGroupInlineRow={(groupId: string) => {
-              if (inlineCreateGroup !== groupId) return null;
-              const submit = async (
-                summaryText: string,
-                issueType: CreatableIssueType,
-                assignee: { id: string; name: string } | null,
-              ) => {
-                const trimmed = summaryText.trim();
-                if (!trimmed || !projectKey) return;
-                if (trimmed.length > 255) {
-                  flag.error('Summary must be 255 characters or fewer');
-                  return;
-                }
-                setInlineCreateSubmitting(true);
-                try {
-                  const issueKey = await generateIssueKey(projectKey);
-                  const nowIso = new Date().toISOString();
-                  // groupBy=status case: groupId IS the status string. Other
-                  // groupBy modes (priority/assignee/parent) fall back to
-                  // 'To Do' so we never write a malformed status.
-                  const statusForGroup = groupBy === 'status' ? groupId : 'To Do';
-                  const { error } = await supabase.from('ph_issues').insert({
-                    issue_key: issueKey,
-                    project_key: projectKey,
-                    summary: trimmed,
-                    issue_type: issueType,
-                    status: statusForGroup,
-                    priority: 'medium',
-                    source: 'catalyst',
-                    // Apr 27 2026 (regression iter 3 — assignee picker
-                    // landed): write assignee_account_id + display name
-                    // when the user picked a member, else NULL.
-                    assignee_account_id: assignee?.id ?? null,
-                    assignee_display_name: assignee?.name ?? null,
-                    jira_created_at: nowIso,
-                    jira_updated_at: nowIso,
-                  } as any);
-                  if (error) throw error;
-                  flag.success(`Created ${issueKey} — ${trimmed}`);
-                  queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
-                  queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
-                  setInlineCreateGroup(null);
-                } catch {
-                  flag.error('Failed to create');
-                } finally {
-                  setInlineCreateSubmitting(false);
-                }
-              };
-              return (
-                <InlineGroupCreateRow
-                  groupLabel={groupId}
-                  isSubmitting={inlineCreateSubmitting}
-                  members={chromeBandMembers}
-                  onSubmit={submit}
-                  onCancel={() => setInlineCreateGroup(null)}
-                />
-              );
             }}
             stickyCreateFooter={{
               placeholder: 'What needs to be done?',
@@ -3101,9 +3070,19 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             selectable
             selection={selectedIds}
             onSelectionChange={setSelectedIds}
+            renderRowDragHandle={(row) => <DragHandleCell row={row} />}
+            rowDragHandleHidden={
+              sortKey !== DEFAULT_SORT_KEY ||
+              sortDir !== DEFAULT_SORT_DIR ||
+              (groupBy !== null && groupBy !== 'none')
+            }
             sortKey={sortKey || undefined}
             sortOrder={sortDir || undefined}
-            onSortChange={(k, ord) => { setSortKey(k); setSortDir(ord); }}
+            onSortChange={(k, ord) => {
+              // Empty key signals "sort cleared" — restore defaults so drag handles reappear
+              setSortKey(k || DEFAULT_SORT_KEY);
+              setSortDir((k ? ord : DEFAULT_SORT_DIR) as 'ASC' | 'DESC');
+            }}
             // Apr 28, 2026 (jira-compare cycle 2 T20+T21, refined cycle 3 +
             // cycle 3 second pass):
             // Pagination footer + circular info button removed — Jira /list
@@ -3128,6 +3107,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             enableColumnReorder
             columnOrder={columnOrder ?? undefined}
             onColumnOrderChange={(next) => setColumnOrder(next)}
+            initialColumnWidths={columnWidths}
+            onColumnWidthsChange={(widths) => {
+              setColumnWidths(widths);
+              try { localStorage.setItem(COL_WIDTHS_KEY, JSON.stringify(widths)); } catch { /* quota */ }
+            }}
             ariaLabel="Unified backlog"
             emptyView={
               /* Tailwind base CSS zeroes margins on h2/p so @atlaskit/empty-state
@@ -3226,6 +3210,70 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             }
           />
             </SortableContext>
+            {/* 2026-05-17 jira-compare cycle 2 (rev 3): DragOverlay portal.
+                Renders a ghost preview of the row being dragged. Portal-
+                mounted at document.body so it follows the cursor regardless
+                of the table's overflow:hidden clipping. Shows type icon,
+                key, and summary in a card-like wrapper with shadow. */}
+            <DragOverlay dropAnimation={{ duration: 200, easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)' }}>
+              {activeDragRow ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '8px 12px',
+                    background: token('elevation.surface.overlay', '#FFFFFF'),
+                    border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    borderRadius: 4,
+                    boxShadow: token('elevation.shadow.overlay', '0 8px 24px rgba(9,30,66,0.15)'),
+                    opacity: 0.96,
+                    cursor: 'grabbing',
+                    maxWidth: 600,
+                    fontSize: 14,
+                    fontFamily: 'inherit',
+                  }}
+                >
+                  <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
+                    {activeDragRow.type === 'initiative' ? (
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: 16,
+                          height: 16,
+                          borderRadius: 3,
+                          background: '#904EE2',
+                          color: 'var(--ds-text-inverse, #FFFFFF)',
+                          fontSize: 10,
+                          fontWeight: 700,
+                        }}
+                      >
+                        I
+                      </span>
+                    ) : (
+                      <JiraIssueTypeIcon
+                        type={
+                          activeDragRow.type === 'epic' ? 'Epic'
+                          : activeDragRow.type === 'feature' ? 'Feature'
+                          : activeDragRow.type === 'bug' ? 'QA Bug'
+                          : activeDragRow.type === 'incident' ? 'Production Incident'
+                          : 'Story'
+                        }
+                        size={16}
+                      />
+                    )}
+                  </span>
+                  <span style={{ color: token('color.link', '#0C66E4'), textDecoration: 'underline', fontWeight: 500, flexShrink: 0 }}>
+                    {activeDragRow.key || '—'}
+                  </span>
+                  <span style={{ color: token('color.text', '#172B4D'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                    {activeDragRow.title}
+                  </span>
+                </div>
+              ) : null}
+            </DragOverlay>
           </DndContext>
           </div>
         </div>
@@ -3365,6 +3413,222 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
               >
                 {bulkUpdate.isPending ? 'Transitioning...' : 'Transition'}
               </Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
+
+      {/* Bulk Change Wizard — 2-step modal triggered from "Bulk change work items" menu.
+          Step 1: choose operation (Edit / Move / Transition / Delete).
+          Step 2: configure operation + confirm.
+          Reuses bulkUpdate + bulkDelete mutations. */}
+      <ModalTransition>
+        {bulkWizardOpen && (
+          <Modal onClose={closeBulkWizard} width="medium">
+            <ModalHeader>
+              <ModalTitle>
+                Bulk change {selectedIds.size} work item{selectedIds.size === 1 ? '' : 's'}
+              </ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              {/* Step indicator */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+                {[1, 2].map((s) => (
+                  <React.Fragment key={s}>
+                    <span style={{
+                      width: 24, height: 24, borderRadius: '50%',
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 12, fontWeight: 700,
+                      background: bulkWizardStep >= s ? '#0C66E4' : '#DFE1E6',
+                      color: bulkWizardStep >= s ? '#fff' : '#42526E',
+                    }}>{s}</span>
+                    <span style={{ fontSize: 12, color: bulkWizardStep >= s ? '#0C66E4' : '#7A869A', fontWeight: 500 }}>
+                      {s === 1 ? 'Choose action' : 'Configure & confirm'}
+                    </span>
+                    {s < 2 && <span style={{ flex: 1, height: 1, background: '#DFE1E6' }} />}
+                  </React.Fragment>
+                ))}
+              </div>
+
+              {/* Step 1 — choose action */}
+              {bulkWizardStep === 1 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {([
+                    { id: 'edit' as const, label: 'Edit', description: 'Change a field value on all selected items.' },
+                    { id: 'move' as const, label: 'Move', description: 'Reassign selected items to a different parent epic.' },
+                    { id: 'transition' as const, label: 'Transition', description: 'Move selected items to a new status.' },
+                    { id: 'delete' as const, label: 'Delete', description: 'Permanently remove selected items (Catalyst-owned only).' },
+                  ] as const).map((opt) => (
+                    <label
+                      key={opt.id}
+                      style={{
+                        display: 'flex', alignItems: 'flex-start', gap: 12,
+                        padding: '12px 16px', borderRadius: 6, cursor: 'pointer',
+                        border: `2px solid ${bulkWizardAction === opt.id ? '#0C66E4' : '#DFE1E6'}`,
+                        background: bulkWizardAction === opt.id ? '#E9F2FF' : '#FAFBFC',
+                        transition: 'border-color 80ms, background 80ms',
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="bulk-action"
+                        value={opt.id}
+                        checked={bulkWizardAction === opt.id}
+                        onChange={() => setBulkWizardAction(opt.id)}
+                        style={{ marginTop: 2, accentColor: '#0C66E4' }}
+                      />
+                      <div>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: '#292A2E', marginBottom: 2 }}>{opt.label}</div>
+                        <div style={{ fontSize: 13, color: '#44546F' }}>{opt.description}</div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              )}
+
+              {/* Step 2 — configure action */}
+              {bulkWizardStep === 2 && bulkWizardAction === 'edit' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div>
+                    <Label htmlFor="bulk-edit-field-select">Field to update</Label>
+                    <Select
+                      inputId="bulk-edit-field-select"
+                      options={[
+                        { value: 'priority', label: 'Priority' },
+                        { value: 'status', label: 'Status' },
+                        { value: 'parent', label: 'Parent Epic' },
+                      ]}
+                      value={bulkWizardEditField ? { value: bulkWizardEditField, label: { priority: 'Priority', status: 'Status', assignee: 'Assignee', parent: 'Parent Epic' }[bulkWizardEditField] } : null}
+                      onChange={(opt) => { setBulkWizardEditField((opt?.value as any) ?? null); setBulkWizardEditValue(null); }}
+                      placeholder="Select field"
+                    />
+                  </div>
+                  {bulkWizardEditField === 'priority' && (
+                    <div>
+                      <Label htmlFor="bulk-edit-priority-val">New priority</Label>
+                      <Select
+                        inputId="bulk-edit-priority-val"
+                        options={PRIORITY_OPTIONS.map((p) => ({ value: p, label: p[0].toUpperCase() + p.slice(1) }))}
+                        value={bulkWizardEditValue ? { value: bulkWizardEditValue, label: bulkWizardEditValue[0].toUpperCase() + bulkWizardEditValue.slice(1) } : null}
+                        onChange={(opt) => setBulkWizardEditValue(opt?.value ?? null)}
+                        placeholder="Select priority"
+                      />
+                    </div>
+                  )}
+                  {bulkWizardEditField === 'status' && (
+                    <div>
+                      <Label htmlFor="bulk-edit-status-val">New status</Label>
+                      <Select
+                        inputId="bulk-edit-status-val"
+                        options={STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label }))}
+                        value={bulkWizardEditValue ? { value: bulkWizardEditValue, label: STATUS_OPTIONS.find((s) => s.value === bulkWizardEditValue)?.label ?? bulkWizardEditValue } : null}
+                        onChange={(opt) => setBulkWizardEditValue(opt?.value ?? null)}
+                        placeholder="Select status"
+                      />
+                    </div>
+                  )}
+                  {bulkWizardEditField === 'parent' && (
+                    <div>
+                      <Label htmlFor="bulk-edit-parent-val">New parent epic</Label>
+                      <Select
+                        inputId="bulk-edit-parent-val"
+                        options={epics.map((e) => ({ value: e.issue_key, label: `${e.issue_key} — ${e.title}` }))}
+                        value={bulkWizardEditValue ? { value: bulkWizardEditValue, label: bulkWizardEditValue } : null}
+                        onChange={(opt) => setBulkWizardEditValue(opt?.value ?? null)}
+                        placeholder="Select epic"
+                        isClearable
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+              {bulkWizardStep === 2 && bulkWizardAction === 'move' && (
+                <div>
+                  <Label htmlFor="bulk-wiz-move-select">Parent Epic</Label>
+                  <Select
+                    inputId="bulk-wiz-move-select"
+                    options={epics.map((e) => ({ value: e.issue_key, label: `${e.issue_key} — ${e.title}` }))}
+                    value={bulkWizardEditValue ? { value: bulkWizardEditValue, label: bulkWizardEditValue } : null}
+                    onChange={(opt) => setBulkWizardEditValue(opt?.value ?? null)}
+                    placeholder="Select parent epic"
+                    isClearable
+                  />
+                </div>
+              )}
+              {bulkWizardStep === 2 && bulkWizardAction === 'transition' && (
+                <div>
+                  <Label htmlFor="bulk-wiz-transition-select">Target status</Label>
+                  <Select
+                    inputId="bulk-wiz-transition-select"
+                    options={STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label }))}
+                    value={bulkWizardEditValue ? { value: bulkWizardEditValue, label: STATUS_OPTIONS.find((s) => s.value === bulkWizardEditValue)?.label ?? bulkWizardEditValue } : null}
+                    onChange={(opt) => setBulkWizardEditValue(opt?.value ?? null)}
+                    placeholder="Select target status"
+                  />
+                </div>
+              )}
+              {bulkWizardStep === 2 && bulkWizardAction === 'delete' && (
+                <div style={{ padding: '12px 0' }}>
+                  <SectionMessage appearance="warning">
+                    <p>You are about to permanently delete <strong>{selectedIds.size} work item{selectedIds.size === 1 ? '' : 's'}</strong>. This cannot be undone. Jira-synced items will be skipped.</p>
+                  </SectionMessage>
+                </div>
+              )}
+            </ModalBody>
+            <ModalFooter>
+              {bulkWizardStep === 1 ? (
+                <>
+                  <Button appearance="subtle" onClick={closeBulkWizard}>Cancel</Button>
+                  <Button
+                    appearance="primary"
+                    isDisabled={!bulkWizardAction}
+                    onClick={() => setBulkWizardStep(2)}
+                  >
+                    Next
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button appearance="subtle" onClick={() => setBulkWizardStep(1)}>Back</Button>
+                  <Button appearance="subtle" onClick={closeBulkWizard}>Cancel</Button>
+                  <Button
+                    appearance={bulkWizardAction === 'delete' ? 'danger' : 'primary'}
+                    isDisabled={
+                      bulkUpdate.isPending || bulkDelete.isPending ||
+                      (bulkWizardAction === 'edit' && (!bulkWizardEditField || !bulkWizardEditValue)) ||
+                      (bulkWizardAction === 'move' && !bulkWizardEditValue) ||
+                      (bulkWizardAction === 'transition' && !bulkWizardEditValue)
+                    }
+                    onClick={() => {
+                      if (bulkWizardAction === 'delete') {
+                        bulkDelete.mutate(Array.from(selectedIds), {
+                          onSuccess: () => { closeBulkWizard(); setSelectedIds(new Set()); },
+                        });
+                      } else if (bulkWizardAction === 'move' && bulkWizardEditValue) {
+                        bulkUpdate.mutate(
+                          { ids: Array.from(selectedIds), patch: { parent_key: bulkWizardEditValue } },
+                          { onSuccess: () => { closeBulkWizard(); setSelectedIds(new Set()); } },
+                        );
+                      } else if (bulkWizardAction === 'transition' && bulkWizardEditValue) {
+                        bulkUpdate.mutate(
+                          { ids: Array.from(selectedIds), patch: { status: bulkWizardEditValue } },
+                          { onSuccess: () => { closeBulkWizard(); setSelectedIds(new Set()); } },
+                        );
+                      } else if (bulkWizardAction === 'edit' && bulkWizardEditField && bulkWizardEditValue) {
+                        const patchKey = bulkWizardEditField === 'parent' ? 'parent_key' : bulkWizardEditField;
+                        bulkUpdate.mutate(
+                          { ids: Array.from(selectedIds), patch: { [patchKey]: bulkWizardEditValue } },
+                          { onSuccess: () => { closeBulkWizard(); setSelectedIds(new Set()); } },
+                        );
+                      }
+                    }}
+                  >
+                    {(bulkUpdate.isPending || bulkDelete.isPending)
+                      ? 'Working...'
+                      : bulkWizardAction === 'delete' ? 'Delete' : 'Apply changes'}
+                  </Button>
+                </>
+              )}
             </ModalFooter>
           </Modal>
         )}
@@ -4492,6 +4756,8 @@ type ToolbarMenuItem = {
   icon?: React.ReactNode;
   isDisabled?: boolean;
   onClick?: () => void;
+  /** When true, skip focus-return to trigger so a newly-opened modal can claim focus. */
+  opensModal?: boolean;
 };
 type ToolbarMenuGroup = {
   title?: string;
@@ -4653,7 +4919,7 @@ function ToolbarMenuButton({
                       if (item.isDisabled) return;
                       item.onClick?.();
                       setIsOpen(false);
-                      triggerRef.current?.focus();
+                      if (!item.opensModal) triggerRef.current?.focus();
                     }}
                     style={{
                       display: 'flex',

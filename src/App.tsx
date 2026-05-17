@@ -58,7 +58,7 @@ const FullAppRoutes = ENABLE_FULL_APP
 //   • Persist via SyncStorage → page reloads hydrate instantly from cache,
 //     refetch only happens after staleTime elapses
 //   • buster: bump CACHE_VERSION to invalidate ALL cached queries on deploy
-const CACHE_VERSION = 'v1.2026-04-25';
+const CACHE_VERSION = 'v2.2026-05-16';
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
 const queryClient = new QueryClient({
@@ -165,6 +165,11 @@ function App() {
                     fires Navigate without committing the URL change when
                     redirects live inside the shell. */}
                 <Route path="/product-hub" element={<Navigate to="/product-hub/products" replace />} />
+
+                {/* Same pattern for /project-hub — CatalystShell re-render loop
+                    prevents Navigate from committing when the redirect lives
+                    inside the shell. Mirror the /product-hub treatment above. */}
+                <Route path="/project-hub" element={<Navigate to="/project-hub/projects" replace />} />
 
                 {/* Protected shell with minimal routes */}
 

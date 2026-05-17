@@ -74,16 +74,29 @@ interface ForYouRowProps {
 // 'default' | 'inprogress' | 'success' and never set custom colors.
 type LozengeAppearance = 'default' | 'inprogress' | 'success' | 'removed' | 'moved' | 'new';
 
-function statusToAppearance(status: string): LozengeAppearance {
+function statusToAppearance(status: string, category?: string): LozengeAppearance {
+  // CLAUDE.md 2026-05-08 lesson: status colors must come from the status
+  // CATEGORY (To Do / In Progress / Done), not text inference. BAU's
+  // "In Design" sits in the To Do category and renders grey in Jira — a
+  // string match on "design" → 'inprogress' (blue) was the legacy bug.
+  // Honor `status_category` when present; only fall back to string inference
+  // for rows that arrive without a category (planner_task, native items).
+  const cat = (category || '').toLowerCase();
+  if (cat === 'done') return 'success';
+  if (cat === 'in progress' || cat === 'in_progress' || cat === 'indeterminate') return 'inprogress';
+  if (cat === 'to do' || cat === 'to_do' || cat === 'new') return 'default';
+
   const s = (status || '').toLowerCase();
   if (s.includes('done') || s.includes('approved') || s.includes('complet') || s === 'closed') return 'success';
   if (
     s.includes('progress') || s.includes('review') || s.includes('active') ||
     s === 'in dev' || s.includes('integration') || s.includes('development') ||
     s.includes('testing') || s.includes('staging') || s.includes('in qa') ||
-    s.includes('deployed') || s.includes('in design')
+    s.includes('deployed')
   ) return 'inprogress';
-  // Amber/yellow for items explicitly flagged as needing re-attention
+  // "In Design" intentionally NOT in the inprogress list — BAU project keeps
+  // it in the To Do category. Per-project status taxonomy means we should
+  // never blanket-color a status by its label alone.
   if (s.includes('re-open') || s.includes('reopen') || s.includes('blocked') || s.includes('on hold')) return 'moved';
   return 'default';
 }
@@ -94,6 +107,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
   const avatarUrl = resolveAvatarUrl(item.assignee.name) || undefined;
   const isStarred = !!item.starred;
   const [isActive, setIsActive] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleClick = useCallback(() => {
     onSelect?.(item);
@@ -119,8 +133,8 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
       onKeyDown={handleKeyDown}
       onMouseEnter={() => setIsActive(true)}
       onMouseLeave={() => setIsActive(false)}
-      onFocus={() => setIsActive(true)}
-      onBlur={() => setIsActive(false)}
+      onFocus={() => { setIsActive(true); setIsFocused(true); }}
+      onBlur={() => { setIsActive(false); setIsFocused(false); }}
       aria-label={`${item.key} ${item.summary}`}
       data-testid="for-you-row"
       style={{
@@ -136,8 +150,14 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
           ? token('elevation.surface.hovered', 'rgba(9,30,66,0.06)')
           : 'transparent',
         color: token('color.text', '#292A2E'),
-        transition: 'background-color 150ms cubic-bezier(0.15, 1, 0.3, 1)',
+        transition: 'background-color 150ms cubic-bezier(0.15, 1, 0.3, 1), box-shadow 120ms ease',
         outline: 'none',
+        // WCAG 2.4.7 — keyboard focus indicator. ADS border.focused (#388BFF)
+        // routed via inset ring so it sits on top of the row's hover bg without
+        // shifting layout. Only renders on actual keyboard focus, not hover.
+        boxShadow: isFocused
+          ? `inset 0 0 0 2px ${token('color.border.focused', '#388BFF')}`
+          : 'none',
         minWidth: 0,
       }}
     >
@@ -150,7 +170,10 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: token('space.025', '2px') }}>
         <div
           style={{
-            font: `500 14px/20px "Inter", system-ui, sans-serif`,
+            // Jira renders the For You row summary at 14/400, NOT 500.
+            // The earlier 500 made Catalyst rows read one weight heavier
+            // than the Jira reference.
+            font: `400 14px/20px "Inter", system-ui, sans-serif`,
             color: token('color.text', '#292A2E'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -163,9 +186,8 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
         <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flexWrap: 'wrap' }}>
           <span
             style={{
-              // Jira renders the key inline in the same Inter stack at
-              // the meta-row size — NOT a monospace pill. Matches the
-              // 12/16/400 subtle meta pattern from the Recommended card.
+              // Key is the primary identifier — render at color.text.subtle
+              // so it sits above project name in the meta-row hierarchy.
               font: `400 12px/16px "Inter", system-ui, sans-serif`,
               color: token('color.text.subtle', '#44546F'),
               letterSpacing: 0,
@@ -174,14 +196,13 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             {item.key}
           </span>
           {!hideProject && (
-            // Jira parity: project name renders as plain subtle text
-            // next to the key — no pill, no icon. This is the recent-work
-            // breadcrumb pattern in Jira's For You rows (April 2026 DOM).
+            // Project name uses `color.text.subtlest` — one tier below the key.
+            // Earlier both spans were `color.text.subtle`, flattening hierarchy.
             <Tooltip content={item.project}>
               <span
                 style={{
                   font: `400 12px/16px "Inter", system-ui, sans-serif`,
-                  color: token('color.text.subtle', '#505258'),
+                  color: token('color.text.subtlest', '#626F86'),
                   maxWidth: 180,
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -197,7 +218,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             // strips text-transform:uppercase + letter-spacing from Atlaskit's
             // inner label span (jira-compare 2026-04-28 lesson).
             <span data-cp-lozenge-jira-parity>
-              <Lozenge appearance={statusToAppearance(item.status)}>{item.status}</Lozenge>
+              <Lozenge appearance={statusToAppearance(item.status, item.statusCategory)}>{item.status}</Lozenge>
             </span>
           )}
           <span
@@ -267,6 +288,11 @@ function StarButton({
   onClick: (e: MouseEvent<HTMLButtonElement>) => void;
 }) {
   const [hover, setHover] = useState(false);
+  const [focused, setFocused] = useState(false);
+  // WCAG 2.4.7 — keyboard users must see the star they're focused on, even if
+  // the row isn't hovered. Previously opacity:0 made the button invisible to
+  // keyboard navigation despite remaining in the tab order.
+  const isVisible = alwaysVisible || focused;
   return (
     <Tooltip content={isStarred ? 'Unstar' : 'Star'}>
       <button
@@ -276,6 +302,8 @@ function StarButton({
         aria-pressed={isStarred}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
         style={{
           width: 28,
           height: 28,
@@ -288,10 +316,14 @@ function StarButton({
           border: 'none',
           borderRadius: 4,
           cursor: 'pointer',
-          opacity: alwaysVisible ? 1 : 0,
-          transition: 'opacity 150ms cubic-bezier(0.15, 1, 0.3, 1), background-color 150ms cubic-bezier(0.15, 1, 0.3, 1)',
+          opacity: isVisible ? 1 : 0,
+          transition: 'opacity 150ms cubic-bezier(0.15, 1, 0.3, 1), background-color 150ms cubic-bezier(0.15, 1, 0.3, 1), box-shadow 120ms ease',
           padding: 0,
           color: isStarred ? GOLD : token('color.icon.subtle', '#6B778C'),
+          outline: 'none',
+          boxShadow: focused
+            ? `0 0 0 2px ${token('color.border.focused', '#388BFF')}`
+            : 'none',
         }}
       >
         {isStarred ? (

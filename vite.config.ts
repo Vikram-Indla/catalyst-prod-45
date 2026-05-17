@@ -1,6 +1,7 @@
 import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import fs from "node:fs";
 import { spawnSync } from "node:child_process";
 import { componentTagger } from "lovable-tagger";
 
@@ -68,6 +69,55 @@ function devDepsWatcher(): Plugin {
 
       server.watcher.on("change", onChange);
       server.watcher.on("add", onChange);
+    },
+  };
+}
+
+/**
+ * ATLASKIT SUBPATH RESOLVER
+ *
+ * Atlaskit packages use a "subdirectory package.json" pattern for subpath
+ * exports: @atlaskit/adf-schema/schema-default resolves to the directory
+ * node_modules/@atlaskit/adf-schema/schema-default which contains a
+ * package.json with a `module` field. Rollup's default resolver treats the
+ * directory as a file and throws ENOENT.
+ *
+ * This plugin intercepts those imports, reads the subdir package.json,
+ * and returns the correct ESM entry path. Covers ALL @atlaskit/* subpaths
+ * so we never need to add individual vite aliases per subpath.
+ */
+function atlaskitSubpathResolver(): Plugin {
+  const nodeModules = path.resolve(__dirname, 'node_modules');
+
+  function tryResolveDir(dirPath: string): string | null {
+    const pkgJson = path.join(dirPath, 'package.json');
+    if (!fs.existsSync(pkgJson)) return null;
+    try {
+      const meta = JSON.parse(fs.readFileSync(pkgJson, 'utf8'));
+      const entry = meta['module'] || meta['main'];
+      if (!entry) return null;
+      return path.resolve(dirPath, entry);
+    } catch {
+      return null;
+    }
+  }
+
+  return {
+    name: 'atlaskit-subpath-resolver',
+
+    // Vite's alias system does prefix matching, so an alias for
+    // @atlaskit/adf-schema also matches @atlaskit/adf-schema/schema-default.
+    // After replacement, Rollup gets an absolute path to a DIRECTORY and
+    // tries to open it as a file → ENOENT. The load hook intercepts those
+    // cases and reads the package.json `module` field to find the real file.
+    load(id) {
+      if (!path.isAbsolute(id)) return null;
+      // Only act on paths inside node_modules/@atlaskit with no file extension.
+      if (!id.includes('/node_modules/@atlaskit/')) return null;
+      if (path.extname(id) !== '') return null;
+      const file = tryResolveDir(id);
+      if (!file) return null;
+      return `export * from ${JSON.stringify(file)};\nexport { default } from ${JSON.stringify(file)};`;
     },
   };
 }
@@ -154,6 +204,7 @@ export default defineConfig(({ mode, command }) => {
 
   },
   plugins: [
+    atlaskitSubpathResolver(),
     isBuild ? skipHeavyModules() : null,
     !isBuild && devDepsWatcher(),
     react(),
@@ -182,7 +233,16 @@ export default defineConfig(({ mode, command }) => {
       // RangeError "Duplicate use of step JSON ID" on first page load.
       // Root packages: prosemirror-collab, editor-plugin-analytics,
       // editor-plugin-type-ahead, editor-core, editor-common, and 10 others.
-      "@atlaskit/adf-schema": path.resolve(__dirname, "./node_modules/@atlaskit/adf-schema"),
+      // @atlaskit/adf-schema layout varies by npm version: older npm leaves it
+      // nested under @atlaskit/renderer; newer npm hoists it to the top level
+      // (it is also a direct dep + override at version 52.6.6, so both copies
+      // are the same). Pick whichever physically exists so the dedupe alias
+      // still resolves to a single canonical path either way.
+      "@atlaskit/adf-schema": (() => {
+        const nested = path.resolve(__dirname, "./node_modules/@atlaskit/renderer/node_modules/@atlaskit/adf-schema");
+        const hoisted = path.resolve(__dirname, "./node_modules/@atlaskit/adf-schema");
+        return fs.existsSync(nested) ? nested : hoisted;
+      })(),
       // Browser polyfill for Node's `events` — @atlaskit/editor-plugin-block-controls
       // imports { EventEmitter } from 'events'; Vite treats 'events' as a Node built-in
       // by default, so we force it to the npm `events` package.
@@ -196,6 +256,16 @@ export default defineConfig(({ mode, command }) => {
       // exist since we depend on @atlaskit/renderer. The hoisted top-level copy
       // is not reliable across install environments (only present when hoisted).
       "react-intl-next": path.resolve(__dirname, "./node_modules/@atlaskit/renderer/node_modules/react-intl-next/index.js"),
+      // @atlaskit/editor-plugins layout varies by npm version: older npm leaves
+      // it nested under editor-core, newer npm hoists it to the top level (it
+      // is also a direct dep + override at version 13.0.120). Pick whichever
+      // physically exists so the dedupe alias resolves to a single canonical
+      // path on either layout.
+      "@atlaskit/editor-plugins": (() => {
+        const nested = path.resolve(__dirname, "./node_modules/@atlaskit/editor-core/node_modules/@atlaskit/editor-plugins");
+        const hoisted = path.resolve(__dirname, "./node_modules/@atlaskit/editor-plugins");
+        return fs.existsSync(nested) ? nested : hoisted;
+      })(),
       // ─────────────────────────────────────────────────────────────────────
       // CRITICAL: Force a SINGLE ProseMirror instance shared by Atlaskit + Tiptap.
       //

@@ -4,39 +4,46 @@ ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS display_status text DEFAULT
 
 -- Drop and recreate view to change column type
 DROP VIEW IF EXISTS public.v_project_list;
-
-CREATE VIEW public.v_project_list AS
-SELECT p.id,
-    p.key AS project_key,
-    p.name,
-    p.department,
-    p.description,
-    COALESCE(p.display_status, p.status::text) AS status,
-    p.health_status,
-    p.status_category,
-    p.total_epics,
-    p.total_stories,
-    p.total_tasks,
-    p.work_items_todo,
-    p.work_items_in_progress,
-    p.work_items_done,
-    p.completion_percentage,
-    p.updated_at,
-    p.created_at,
-    p.owner_id,
-    p.priority,
-    p.tags,
-    COALESCE(mc.member_count, 0) AS member_count,
-    mc.member_ids
-FROM projects p
-LEFT JOIN LATERAL (
-    SELECT count(*)::integer AS member_count,
-           array_agg(pm.user_id) AS member_ids
-    FROM project_members pm
-    WHERE pm.project_id = p.id
-) mc ON true
-WHERE p.status = 'active'::program_status
-ORDER BY p.updated_at DESC;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='project_members') THEN
+    RAISE NOTICE 'project_members not found, skipping v_project_list';
+    RETURN;
+  END IF;
+  EXECUTE $view$
+    CREATE VIEW public.v_project_list AS
+    SELECT p.id,
+        p.key AS project_key,
+        p.name,
+        p.department,
+        p.description,
+        COALESCE(p.display_status, p.status::text) AS status,
+        p.health_status,
+        p.status_category,
+        p.total_epics,
+        p.total_stories,
+        p.total_tasks,
+        p.work_items_todo,
+        p.work_items_in_progress,
+        p.work_items_done,
+        p.completion_percentage,
+        p.updated_at,
+        p.created_at,
+        p.owner_id,
+        p.priority,
+        p.tags,
+        COALESCE(mc.member_count, 0) AS member_count,
+        mc.member_ids
+    FROM projects p
+    LEFT JOIN LATERAL (
+        SELECT count(*)::integer AS member_count,
+               array_agg(pm.user_id) AS member_ids
+        FROM project_members pm
+        WHERE pm.project_id = p.id
+    ) mc ON true
+    WHERE p.status = 'active'::program_status
+    ORDER BY p.updated_at DESC
+  $view$;
+END $$;
 
 -- Set correct display statuses per reference image
 UPDATE projects SET display_status = 'planning' WHERE key = 'AI';

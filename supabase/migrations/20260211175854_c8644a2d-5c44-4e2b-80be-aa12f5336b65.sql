@@ -147,7 +147,7 @@ CREATE POLICY "Users can manage own suggestions" ON caty_suggestions FOR ALL
   USING (conversation_id IN (SELECT id FROM caty_conversations WHERE user_id = auth.uid()));
 CREATE POLICY "Anyone can read active templates" ON caty_prompt_templates FOR SELECT USING (is_active = true);
 CREATE POLICY "Project members can manage analytics" ON caty_analytics FOR ALL
-  USING (project_id IN (SELECT project_id FROM project_members WHERE user_id = auth.uid()));
+  USING (public.current_user_is_approved());
 
 -- Step 9: Seed Prompt Templates
 INSERT INTO caty_prompt_templates (template_key, name, description, system_prompt, category, is_default) VALUES

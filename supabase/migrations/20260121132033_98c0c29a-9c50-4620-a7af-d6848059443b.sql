@@ -46,38 +46,20 @@ ALTER TABLE tm_gherkin_steps ENABLE ROW LEVEL SECURITY;
 -- RLS policies for step definitions
 CREATE POLICY "Users can view step definitions in their projects"
   ON tm_step_definitions FOR SELECT
-  USING (EXISTS (
-    SELECT 1 FROM project_members pm 
-    WHERE pm.project_id = tm_step_definitions.project_id 
-    AND pm.user_id = auth.uid()
-  ));
+  USING (public.current_user_is_approved());
 
 CREATE POLICY "Users can manage step definitions in their projects"
   ON tm_step_definitions FOR ALL
-  USING (EXISTS (
-    SELECT 1 FROM project_members pm 
-    WHERE pm.project_id = tm_step_definitions.project_id 
-    AND pm.user_id = auth.uid()
-  ));
+  USING (public.current_user_is_approved());
 
 -- RLS policies for gherkin steps
 CREATE POLICY "Users can view gherkin steps"
   ON tm_gherkin_steps FOR SELECT
-  USING (EXISTS (
-    SELECT 1 FROM tm_test_cases tc
-    JOIN project_members pm ON pm.project_id = tc.project_id
-    WHERE tc.id = tm_gherkin_steps.test_case_id
-    AND pm.user_id = auth.uid()
-  ));
+  USING (public.current_user_is_approved());
 
 CREATE POLICY "Users can manage gherkin steps"
   ON tm_gherkin_steps FOR ALL
-  USING (EXISTS (
-    SELECT 1 FROM tm_test_cases tc
-    JOIN project_members pm ON pm.project_id = tc.project_id
-    WHERE tc.id = tm_gherkin_steps.test_case_id
-    AND pm.user_id = auth.uid()
-  ));
+  USING (public.current_user_is_approved());
 
 -- Index for fast lookups
 CREATE INDEX IF NOT EXISTS idx_gherkin_steps_case ON tm_gherkin_steps(test_case_id, step_number);

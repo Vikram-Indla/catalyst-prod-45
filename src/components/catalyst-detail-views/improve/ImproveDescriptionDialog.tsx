@@ -13,13 +13,15 @@
  *   marks that field decided. Modal closes when both fields are
  *   either accepted or rejected (or via Cancel).
  *
- *   Implementation mounts inline in leftContent (not a portal overlay)
- *   — jira-compare 2026-05-10 moved from stacked modal to inline panel
- *   matching Jira's own UX. Esc closes; no backdrop click needed.
+ *   2026-05-17 FIX: Moved from inline render (cramped inside the narrow
+ *   right sidebar) to a proper @atlaskit/modal-dialog overlay at width=900.
+ *   The 2-column diff grid requires ~880px to render comfortably; rendering
+ *   inline in a ~380px sidebar was the root cause of "horrible" Improve UX.
  */
 
 import React, { useEffect, useState } from 'react';
 import Button from '@atlaskit/button/new';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import Select from '@atlaskit/select';
 import Textfield from '@atlaskit/textfield';
 import { token } from '@atlaskit/tokens';
@@ -154,63 +156,30 @@ export function ImproveDescriptionDialog({
   const triggerLabel = improveTriggerLabel(issueType);
 
   return (
-    <div
-      role="dialog"
-      aria-label={`${triggerLabel} — improve description`}
-      data-testid="improve-description-dialog"
-      style={{
-        width: '100%',
-        background: token('color.background.neutral.subtle', '#F7F8F9'),
-        borderRadius: 6,
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        marginBottom: 16,
-      }}
-    >
-        {/* Header */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '20px 24px 12px',
-            borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-          }}
-        >
-          <div>
-            <h1
-              style={{
-                margin: 0,
-                fontSize: 20,
-                fontWeight: 600,
-                lineHeight: '24px',
-                color: token('color.text', '#292A2E'),
-              }}
-            >
-              {triggerLabel} — Improve description
-            </h1>
-            <p
-              style={{
-                margin: '4px 0 0',
-                fontSize: 13,
-                color: token('color.text.subtle', '#6B6E76'),
-              }}
-            >
-              Atlassian-Intelligence-style refinement. Per-type prompt focus is applied automatically.
-            </p>
-          </div>
-        </div>
+    <ModalDialog onClose={onClose} width={900}>
+      <ModalHeader hasCloseButton>
+        <ModalTitle>
+          {triggerLabel} — Improve description
+        </ModalTitle>
+      </ModalHeader>
+
+      <ModalBody>
+        {/* Subtitle */}
+        <p style={{ margin: '0 0 16px', fontSize: 13, color: token('color.text.subtle', '#6B6E76') }}>
+          Atlassian-Intelligence-style refinement. Per-type prompt focus is applied automatically.
+        </p>
 
         {/* Controls */}
         <div
           style={{
             display: 'flex',
             gap: 12,
-            padding: '12px 24px',
+            marginBottom: 16,
             alignItems: 'flex-end',
-            borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+            padding: '12px 16px',
+            background: token('color.background.neutral.subtle', '#F7F8F9'),
+            borderRadius: 6,
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
           }}
         >
           <div style={{ flex: '1 1 320px', minWidth: 240 }}>
@@ -268,12 +237,9 @@ export function ImproveDescriptionDialog({
           </div>
         </div>
 
-        {/* Body */}
+        {/* Diff output */}
         <div
           style={{
-            flex: 1,
-            overflowY: 'auto',
-            padding: '16px 24px',
             display: 'flex',
             flexDirection: 'column',
             gap: 16,
@@ -327,22 +293,14 @@ export function ImproveDescriptionDialog({
             </>
           )}
         </div>
+      </ModalBody>
 
-        {/* Footer */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: 8,
-            padding: '12px 24px',
-            borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
-          }}
-        >
-          <Button appearance="subtle" onClick={onClose}>
-            Close
-          </Button>
-      </div>
-    </div>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={onClose}>
+          Close
+        </Button>
+      </ModalFooter>
+    </ModalDialog>
   );
 }
 

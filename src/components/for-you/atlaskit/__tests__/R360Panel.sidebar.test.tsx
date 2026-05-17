@@ -54,13 +54,16 @@ describe('R360Panel — sidebar roster (Decision B)', () => {
     expect(screen.getByTestId('r360-roster-sidebar')).toBeTruthy();
   });
 
-  it('sidebar contains "Me" and all team member names', async () => {
+  it('sidebar contains all team member names (and no "Me" tile by design)', async () => {
     render(<R360Panel />);
     await new Promise(r => setTimeout(r, 10));
     const sidebar = screen.getByTestId('r360-roster-sidebar');
-    expect(sidebar.textContent).toContain('Me');
+    expect(sidebar.textContent).toContain('Team members');
     expect(sidebar.textContent).toContain('Alice Tan');
     expect(sidebar.textContent).toContain('Bob Smith');
+    // The "Me" tile was removed 2026-05-17 — the R360MemberDetail header is the
+    // identity indicator. The sidebar must NOT render a "Me" button by default.
+    expect(sidebar.querySelector('button[data-testid="r360-me-tile"]')).toBeNull();
   });
 
   it('clicking a sidebar member row switches the detail view to that member', async () => {
@@ -72,16 +75,17 @@ describe('R360Panel — sidebar roster (Decision B)', () => {
     expect(detail.getAttribute('data-resource-id')).toBe('res-alice');
   });
 
-  it('clicking "Me" restores own view', async () => {
+  it('"← My view" return link restores own view when viewing a teammate', async () => {
     render(<R360Panel />);
     await new Promise(r => setTimeout(r, 10));
-    // First select Alice
+    // First select Alice — switches detail to teammate
     const aliceRow = screen.getByText('Alice Tan').closest('button') as HTMLButtonElement;
     fireEvent.click(aliceRow);
-    // Then click Me
-    const meRow = screen.getByText('Me').closest('button') as HTMLButtonElement;
-    fireEvent.click(meRow);
-    const detail = screen.getByTestId('r360-detail');
-    expect(detail.getAttribute('data-resource-id')).toBe('res-vikram');
+    expect(screen.getByTestId('r360-detail').getAttribute('data-resource-id')).toBe('res-alice');
+    // The "← My view" return link should now appear at the top of the sidebar.
+    const returnLink = screen.getByText(/← My view/).closest('button') as HTMLButtonElement;
+    fireEvent.click(returnLink);
+    // Detail view should be back to the current user's resource.
+    expect(screen.getByTestId('r360-detail').getAttribute('data-resource-id')).toBe('res-vikram');
   });
 });

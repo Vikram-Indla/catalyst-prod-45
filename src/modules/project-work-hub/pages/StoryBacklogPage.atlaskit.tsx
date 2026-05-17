@@ -887,6 +887,11 @@ export default function AtlaskitStoryBacklogPage({
             onPageChange={setPage}
             density="comfortable"
             ariaLabel="Story backlog"
+            // 2026-05-17: Feature flags declare intent explicitly per canonical
+            // governance framework. StoryBacklogPage has no group create affordances
+            // or sticky footer — create is via separate InlineCreateRow component.
+            enableGroupCreateButton={false}
+            enableStickyCreateFooter={false}
             emptyView={
               <EmptyState
                 header="No stories match your filters"

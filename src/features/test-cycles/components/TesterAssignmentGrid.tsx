@@ -7,6 +7,7 @@ import { Plus, Trash2, Users, Loader2, UserCircle } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Avatar, Lozenge } from '@/components/ads';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { Progress } from '@/components/ui/progress';
 import {
   Select,
@@ -130,7 +131,7 @@ export const TesterAssignmentGrid = memo(function TesterAssignmentGrid({
                 className="flex items-start gap-3 p-3 rounded-lg border bg-muted/30"
               >
                 <Avatar
-                  src={assignment.user_avatar || undefined}
+                  src={resolveAvatarUrl(assignment.user_name) ?? assignment.user_avatar ?? undefined}
                   name={assignment.user_name || '?'}
                   size="medium"
                 />
@@ -231,7 +232,7 @@ export const TesterAssignmentGrid = memo(function TesterAssignmentGrid({
                       <SelectItem key={user.id} value={user.id}>
                         <div className="flex items-center gap-2">
                           <Avatar
-                            src={user.avatar_url || undefined}
+                            src={resolveAvatarUrl(user.full_name) ?? user.avatar_url ?? undefined}
                             name={user.full_name || user.email || '?'}
                             size="xxsmall"
                           />

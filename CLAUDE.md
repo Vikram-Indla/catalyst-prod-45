@@ -4,6 +4,95 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## 2026-05-17 — Jira packs Type icon INSIDE the "Work" column; no standalone Type column in Jira's list view
+**Surface:** UWVTable (`/project-hub/:key/allwork`), IncidentListPage (`/incidents`), BacklogPage (`/project-hub/:key/backlog`)
+**Pattern:** Live Jira BAU list screenshot (2026-05-17) showed ONE combined "Work" column rendering `[type icon][BAU-key][summary text]` in a single cell — NO standalone Type column. Catalyst had standalone Type columns in 3 surfaces: `id: '__type'` (width 3) in `UWVTable.tsx:162`, `id: '__type'` (width 4) in `IncidentListPage.tsx:104`, and `id: 'type'` (width 4, label `'Type'`) in `BacklogPage.atlaskit.tsx:1784`. An earlier 2026-04-27 audit note claimed Jira HAS a Type column header (`data-key=issuetype, ~110px`); that audit's reading was either wrong or Jira's UI changed — the 2026-05-17 screenshot is the current ground truth. A pre-existing handover proposed deleting `__type` from "all 7 JiraTable consumers" but the grep showed `__type` exists in only 2 of 7 — the handover's surface mapping was inaccurate. Always re-probe before applying a handover.
+**Rule:** Jira's BAU list view shows ONE combined "Work" column with type icon + key + summary. For parity:
+1. Catalyst surfaces that have a standalone icon-only Type column (`id: '__type'` or icon-only `id: 'type'`) should remove that column and render the type icon as a leading prefix inside the Key cell.
+2. Use `makeKeyCell(getKey, onOpen, getHref, getIcon)` — the 4th positional argument added 2026-05-17 — to pass a per-row icon renderer that lives inside the Key cell.
+3. Drop the `makeTypeIconCell` import once the standalone column is removed (utility still exists in `cells.tsx` for any future standalone-icon-column case).
+4. BacklogPage's `id: 'type'` column was NOT removed in this cycle (per explicit user scope) — flag for a follow-up parity cycle.
+5. Before applying any handover, grep the codebase to verify the handover's claims about which files / which patterns / which line numbers. "Handover says X" is not the same as "X is true now."
+**Fix:** Added `getIcon` as optional 4th param to `makeKeyCell` ([cells.tsx:248](src/components/shared/JiraTable/cells.tsx:248)). Removed `__type` column block + `makeTypeIconCell` import from [UWVTable.tsx](src/components/universal-work-view/UWVTable.tsx) and [IncidentListPage.tsx](src/pages/incidenthub/IncidentListPage.tsx); both now pass the type icon into `makeKeyCell` via `getIcon`. Test: [no-type-icon-column.test.ts](src/components/shared/JiraTable/__tests__/no-type-icon-column.test.ts) — 6 source-grep assertions (no `__type`, no `makeTypeIconCell` import, icon source appears within `makeKeyCell(...)` call).
+**Severity:** P1 (parity drift — icon-only column was non-Jira convention; H2 affordance gap also; not a CRUD blocker)
+
+---
+
+## 2026-05-16 — STOP AND ASK before classifying entities; never blindly surface data that was stated as out of scope
+**Surface:** AllProjectsPage (`/project-hub/projects`), `useProjectHub.ts` `excludedProjectKeys`
+**Pattern:** The "Investor Journey" Jira project (key: INV) was synced and displayed in the All Projects table. Vikram had explicitly stated multiple times that Investor Journey is a **product, not a project** and belongs in the Products module, not Projects. The code surfaced it anyway because `excludedProjectKeys` only excluded `TH-DEFAULT` and `MDT`. Additionally, the Members column rendered inconsistently between rows (avatar placeholder vs "Add members" text) because the two rows had different member counts — a discrepancy that could have been caught by asking before shipping. The Key column values (BAU, INV) were also left-aligned while the column header was centered.
+**Three concrete mistakes:**
+1. **Entity classification** — Displaying INV under Projects without checking if it was classified as a product. Vikram stated it was a product multiple times. This is a **build-without-asking** failure.
+2. **Visual inconsistency not raised** — The Members column showed different UI (avatar vs text button) across rows. Should have been logged as a finding before shipping, not discovered post-hoc by Vikram.
+3. **Column alignment gap** — Key column header appeared centered (drag grip icon causes visual centering), cells were left-aligned. Never measured or compared against Jira before declaring done.
+**Rule:** Before rendering ANY Jira-synced project in a module, check: (1) Is this entity classified by Vikram as belonging to a different module? (2) Are all visible columns rendering consistently across ALL rows, not just the first row? (3) Are cell values aligned to match their column header alignment? When in doubt about classification of an entity, **STOP AND ASK** — do not assume Jira's list is the correct subset for Catalyst's module boundary. Add newly-excluded project keys to `excludedProjectKeys` in `useProjectHub.ts`.
+**Fix:** Added `'INV'` to `excludedProjectKeys` in `useProjectHub.ts:37`. Added `textAlign: 'center'` to Key column `<td>` in `AllProjectsTable.tsx:1107`.
+**Severity:** P0 (wrong entity shown in wrong module; Vikram had corrected this classification multiple times before)
+
+---
+
+## 2026-05-16 — PRODUCTION INFRASTRUCTURE SNAPSHOT
+
+**Active Supabase Project:** `lmqwtldpfacrrlvdnmld` (Catalyst KSA org)
+- **URL:** `https://lmqwtldpfacrrlvdnmld.supabase.co`
+- **Anon Key:** `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxtcXd0bGRwZmFjcnJsdmRubWxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NTkwODEsImV4cCI6MjA5NDQzNTA4MX0.CITWnsiEJEd1B-G4RReYZdaTFbBNvw8NnM8OrRvDX8s`
+
+**Connected Repositories:**
+1. `catalyst-prod-45` (web) — owns schema, migrations, edge functions; auto-deploys via git
+2. `CatyMobile` (iOS) — client-only; connects via Supabase Swift SDK
+
+**Application Secrets (Supabase):** 7 set
+- `ANTHROPIC_API_KEY` — Claude AI for CATY features
+- `GEMINI_API_KEY` — Google Gemini for story improvement, similarity, digests
+- `JIRA_BASE_URL` — `https://digital-transformation.atlassian.net`
+- `JIRA_EMAIL` — `vikramataol@gmail.com`
+- `JIRA_API_TOKEN` — stored (rotate after migration)
+- `JIRA_WEBHOOK_SECRET` — auto-generated; guards webhook receiver
+- `LIFECYCLE_CRON_SECRET` — auto-generated; guards cron triggers
+- `RESEND_API_KEY` — OTP email delivery (rotate after migration)
+
+**Edge Functions:** 44 deployed and ACTIVE
+- AI functions (`ai-digest`, `ai-improve-story`, `ai-similar-items`, `alignment-story`) — rewired to Google Gemini direct (2026-05-16)
+- Jira sync functions — ready for data pull on trigger
+
+**Database State:** Schema complete, zero rows (fresh data from Jira only, no Lovable migration)
+
+---
+
+## 2026-05-16 — Lovable Deprecation Complete
+
+**Status:** ✅ DEPRECATED — Zero Lovable dependency achieved
+
+**What was migrated:**
+- ✅ All 918 tables with full DDL (887 in baseline, +31 newer additions)
+- ✅ All 2,411 RLS policies verified intact
+- ✅ All 1,429 foreign key constraints verified
+- ✅ All 4,675 check constraints verified
+- ✅ All 454 unique constraints verified
+- ✅ All 13 required extensions enabled (pgcrypto, vector, pg_graphql, pg_cron, pg_net, pg_trgm, ltree, moddatetime, uuid-ossp, http, pgjwt, supabase_vault, pg_stat_statements)
+- ✅ 690 functions, 655 triggers (via bootstrap migration)
+
+**Git artifacts:**
+- `LOVABLE_SCHEMA_EXPORT_HANDOFF.md` — handoff spec delivered to Lovable (2026-05-16)
+- `SCHEMA_MANAGEMENT.md` — post-Lovable workflow guide (migrations, RLS, audits, rollback procedures)
+- `supabase/migrations/20260516011948_baseline_schema_capture.sql` — snapshot marker (documentation-only)
+- `supabase/migrations/20260516120000_bootstrap_full_schema.sql` — complete DDL bootstrap (103,434 lines, Lovable-managed baseline)
+
+**All future schema changes:**
+- ✅ Go through git migrations in `supabase/migrations/`
+- ✅ Use `supabase migration new <description>` locally
+- ✅ RLS policies MUST be included in the same migration as table creation (CLAUDE.md enforced)
+- ✅ Use `apply_migration` MCP for deployment (safer, auditable)
+- ✅ Commit and push to main → GitHub Actions deploys functions if `supabase/functions/**` changed
+
+**Verification:** Supabase MCP confirms lmqwtldpfacrrlvdnmld schema is complete and consistent with git baseline. No Lovable access required going forward.
+
+**Access Revocation Timeline:**
+- ✅ 2026-05-16: Baseline snapshot + git bootstrap migration created and verified
+- 2026-05-30: Full revocation (Lovable sandbox access disabled)
+
+---
+
 ## Dev Server
 
 The Catalyst local dev server always runs on **http://localhost:8080**. Never use 8081. When navigating in Chrome MCP, always use port 8080.
@@ -221,9 +310,90 @@ Ready for next step when you confirm.
 
 ---
 
+# SUPER STRICT GUARDRAIL — 2026 DATA ONLY
+
+**Jira data sync webhook and all Jira functions ONLY process issues with `created` or `updated` timestamps in year 2026.** This is non-negotiable.
+
+**Implementation:**
+- Every Jira ingest function (`wh-jira-sync`, `jira-sync-projects`, `jira-webhook-receiver`, etc.) must extract `created` and `updated` timestamps from incoming payloads
+- **Reject (do not insert/update) any issue where both `created` AND `updated` are before 2026-01-01T00:00:00Z**
+- Webhook receiver must return `{ ok: false, reason: "data outside 2026 window" }` for rejected payloads (log the issue key for audit)
+- Functions must log rejections with issue key, created date, updated date so we can track what was excluded
+- Backfill and initial sync functions must apply the same 2026 filter to `jira-sync-projects`, `wh-jira-bulk-sync`, etc.
+
+**Why:** Clean slate migration. Old Lovable data (pre-2026) is discarded intentionally. Only live 2026+ Jira data flows into the new project. This prevents stale/test data from polluting the new schema.
+
+**Severity:** P0 — data integrity gate. Missing this filter allows pre-2026 cruft to land in production.
+
+---
+
 # jira-compare — compounding lessons
 
 Append-only. Newest at top. Each entry: date, pattern, rule, surface.
+
+---
+
+## 2026-05-16 — Chrome MCP tabs die when starting from chrome://newtab — navigate from existing real URL only
+**Surface:** Chrome MCP tab management across all jira-compare sessions
+**Pattern:** `tabs_context_mcp(createIfEmpty: true)` creates a tab at `chrome://newtab/`. The Chrome extension cannot navigate a `chrome://` URL (permission denied). Calling `navigate` immediately after returns "Tab no longer exists" because the extension cannot drive the privileged page. Every attempt to `navigate` from `chrome://newtab` silently kills the tab.
+**Fix:** Always ask the user to manually open the target URL in Chrome first, then use `tabs_context_mcp(createIfEmpty: false)` to discover the existing real tab. Alternatively, if a tab already exists at a real URL (any http://), the extension can navigate it freely.
+**Rule:** Never start a Chrome MCP probe from `chrome://newtab`. Always have the user open `http://localhost:8080/...` first, THEN connect to that tab. `tabs_context_mcp(createIfEmpty: false)` discovers existing tabs without creating a new blank one.
+**Severity:** P1 (blocks all DOM probing until pattern is understood — wastes session budget on tab reconnection loops)
+
+---
+
+## 2026-05-16 — `includes('Sprint')` in sidebar text fires on fix-version names — use structural field check instead
+**Surface:** Structural DOM probe (bannedCheck heuristic), any future probe checking for banned field presence
+**Pattern:** A banned-field check ran `sidebar.textContent.includes('Sprint')` and returned `true`. This was flagged as "Sprint field shown on PI (not in PI scheme)". The actual source was a fix version VALUE named "Sprint 2.2 - 15 May 2025" — the fix version picker in `CatalystSidebarDetails` correctly shows fix versions for PI, and this project's versions are named after sprints. The naive text search cannot distinguish a field LABEL from a field VALUE.
+**Rule:** Never use `includes('fieldName')` on `element.textContent` to check whether a field is rendered. Instead: (1) look for the FieldRow label element specifically (`querySelector('[class*="FieldRow"] label')`), or (2) check the source code — grep the view component for the field name. Text-search on sidebar content produces false positives when field VALUES contain the banned word.
+**Severity:** P1 (false positive led to incorrect violation report; wastes probe time and obscures real issues)
+
+---
+
+## 2026-05-16 — CatalystStatusPill uses data-testid, not class — wrong selector causes "status pill missing" false alarm
+**Surface:** CatalystStatusPill DOM probe, all jira-compare status pill detection
+**Pattern:** DOM probe searched for `[class*="status"],[class*="Status"],[class*="lozenge"],[class*="pill"]` and found nothing — reported as "status pill undetectable / possibly missing". In reality, `CatalystStatusPill` renders a `<button data-testid="catalyst-status-pill-trigger">` with inline styles only — no identifying CSS class. The probe selector was wrong, not the component.
+**Rule:** When probing for the status pill, use `[data-testid="catalyst-status-pill-trigger"]` as the selector. Never assume a component is absent just because a class-based selector returns null — check the component source first to discover the correct selector (`data-testid`, `aria-label`, or specific tag+attribute combination).
+**Severity:** P1 (false negative — "component missing" report when component is correctly present; undermines audit credibility)
+
+---
+
+## 2026-05-16 — useForYouData and useAgeingItems use DIFFERENT tables for current-user Jira ID
+**Surface:** For You / Assigned tab (AssignedPanel) vs For You / Ageing tab (AgeingPanel)
+**Pattern:** Ageing tab showed 24 items; Assigned tab showed empty state ("Nothing assigned to you"). Both panels read from `ph_issues` by `assignee_account_id`. Root cause: two different hooks resolve the current user's Jira account ID from different sources:
+- `useAgeingItems` → `profiles.jira_account_id` (direct column on profiles table) ✅
+- `useForYouData.fetchUserMapping` → `ph_user_mapping.jira_account_id` (separate mapping table) ❌ (no entry existed for the user)
+When `ph_user_mapping` has no entry and the name fallback also fails, `jiraAccountIds = []` → `ph_issues` query is skipped → Assigned tab silent empty state with no error.
+**Fix:** Added `profiles.jira_account_id` as a final fallback in `fetchUserMapping`: if `ph_user_mapping` lookup returns no IDs, check `profiles.jira_account_id` (the same field `useAgeingItems` uses). Now both hooks align.
+**Rule:** Any hook that resolves "current user's Jira account ID" MUST check `profiles.jira_account_id` as a fallback if `ph_user_mapping` returns empty. Never silently swallow an empty `jiraAccountIds` — add a console.warn and the profiles fallback. Before shipping a new panel that queries `ph_issues` by `assignee_account_id`, verify which ID-resolution path it uses and confirm the result is non-empty for the test user.
+**Severity:** P1 (silent data incompleteness — empty state with no error, no console warning)
+
+---
+
+## 2026-05-16 — ph_user_mapping miss propagates to edge functions — apply profiles.jira_account_id fallback everywhere
+**Surface:** `supabase/functions/ai-digest/themes.ts` (AI Focus / AI Theme tab) · any edge function resolving Jira account ID
+**Pattern:** After fixing `useForYouData.fetchUserMapping` (client-side hook), the `ai-digest` edge function's themes handler had the exact same bug — querying only `ph_user_mapping` for the Jira account ID with no fallback. Result: `jiraAccountIds = []` → early return with `totalIssuesAnalyzed: 0` → UI showed "Analysed 0 issues into 0 themes · Not enough activity to theme yet." The 90-day time window was already correct; the issue was purely the missing `ph_user_mapping` entry.
+A second co-located bug: `themes.ts` declared `lovableApiKey: string` in its `handleThemesRequest` parameter signature, but `index.ts` dispatched it as `geminiApiKey` (matching the 2026-05-16 Gemini-direct migration). With `lovableApiKey = undefined`, the AI call would have sent `Authorization: Bearer undefined` to the old Lovable gateway — silent 401/500 after the Jira ID fix unblocked the code path.
+**Fix:**
+1. Added `profiles.jira_account_id` fallback in `themes.ts` (mirrors `useForYouData` fix, commit `1eab16df6`).
+2. Renamed `lovableApiKey` → `geminiApiKey` in `handleThemesRequest` signature and body.
+3. Switched AI call from `https://ai.gateway.lovable.dev/v1/chat/completions` + `google/gemini-3-flash-preview` to `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions` + `gemini-2.5-flash` (Gemini direct, same as `index.ts`).
+**Rule:** When the `ph_user_mapping` fallback fix is applied to a client-side hook, **audit all edge functions** for the same pattern immediately — they share the same data model and same missing-entry problem. Use `grep -r "ph_user_mapping" supabase/functions/` to find all callsites. Every callsite needs the `profiles.jira_account_id` fallback. When an edge function is rewired to a new AI provider (Lovable → Gemini), check ALL dispatch callsites AND the handler signature for parameter name consistency — a mismatch is invisible at Deno runtime (no TypeScript compile error) and silently sends `undefined` as the bearer token.
+**Severity:** P1 (AI Focus tab always showed empty state for any user without a `ph_user_mapping` entry)
+
+---
+
+## 2026-05-16 — Code archaeology before API troubleshooting — read existing implementations first
+**Surface:** wh-jira-bulk-sync edge function · any Jira API integration
+**Pattern:** Debugging Jira API search failures, I tested multiple endpoints: `/rest/api/3/search` (returned HTTP 410 deprecated), then `/rest/api/3/issues/search` (returned 0 results). Spent cycles trying alternatives before checking the existing working code. Lovable's `wh-jira-bulk-sync/index.ts` (already deployed and functional) uses `/rest/api/3/search/jql` — the correct endpoint the whole time. The endpoint choice was already proven in production; the failure diagnosis was wrong.
+**Rule:** When debugging an integration that has an existing working implementation in the codebase:
+1. **Stop debugging immediately**
+2. **Read the working code first** — check the exact endpoint, headers, body structure, error handling
+3. **Replicate the working pattern exactly** — don't try alternatives until you've confirmed the existing code matches your current state
+4. **Only then** debug if the replicated pattern still fails
+
+This applies to ALL integrations with live code: Supabase edge functions, external APIs, webhooks. If Lovable built it and it's deployed, start there, not with curl experiments. The codebase IS the source of truth for "what works."
+**Severity:** P1 (wasted debugging cycles; wrong diagnosis; delays critical data sync)
 
 ---
 

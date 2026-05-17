@@ -48,33 +48,33 @@ const CheckmarkIcon = () => (
 const PRIORITY_SVG: Record<string, React.ReactNode> = {
   Highest: (
     <svg width="16" height="16" viewBox="0 0 16 16">
-      <path d="M3 8l5-5 5 5" fill="none" stroke="#FF5630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M3 12l5-5 5 5" fill="none" stroke="#FF5630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3 8l5-5 5 5" fill="none" stroke="var(--ds-icon-danger, #FF5630)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3 12l5-5 5 5" fill="none" stroke="var(--ds-icon-danger, #FF5630)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   ),
   High: (
     <svg width="16" height="16" viewBox="0 0 16 16">
-      <path d="M3 10l5-5 5 5" fill="none" stroke="#FF5630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3 10l5-5 5 5" fill="none" stroke="var(--ds-icon-danger, #FF5630)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   ),
   Medium: (
     /* jira-compare S-23 (2026-04-28): Jira renders Medium as three
      * horizontal bars (≡), not two. Match Jira's medium_new.svg. */
     <svg width="16" height="16" viewBox="0 0 16 16">
-      <path d="M3 4.5h10" fill="none" stroke="#FFAB00" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M3 8h10" fill="none" stroke="#FFAB00" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M3 11.5h10" fill="none" stroke="#FFAB00" strokeWidth="2" strokeLinecap="round"/>
+      <path d="M3 4.5h10" fill="none" stroke="var(--ds-icon-warning, #FFAB00)" strokeWidth="2" strokeLinecap="round"/>
+      <path d="M3 8h10" fill="none" stroke="var(--ds-icon-warning, #FFAB00)" strokeWidth="2" strokeLinecap="round"/>
+      <path d="M3 11.5h10" fill="none" stroke="var(--ds-icon-warning, #FFAB00)" strokeWidth="2" strokeLinecap="round"/>
     </svg>
   ),
   Low: (
     <svg width="16" height="16" viewBox="0 0 16 16">
-      <path d="M3 6l5 5 5-5" fill="none" stroke="#2684FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3 6l5 5 5-5" fill="none" stroke="var(--ds-link, #2684FF)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   ),
   Lowest: (
     <svg width="16" height="16" viewBox="0 0 16 16">
-      <path d="M3 4l5 5 5-5" fill="none" stroke="#2684FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M3 8l5 5 5-5" fill="none" stroke="#2684FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3 4l5 5 5-5" fill="none" stroke="var(--ds-link, #2684FF)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3 8l5 5 5-5" fill="none" stroke="var(--ds-link, #2684FF)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   ),
 };
@@ -144,7 +144,7 @@ export function EditableAssignee({ issueId, issueKey, projectId, currentAssignee
         return {
           user_id: d.user_id,
           full_name,
-          avatar_url: resolveAvatarUrl(full_name),
+          avatar_url: resolveAvatarUrl(full_name) ?? null,
           role: d.role,
         };
       }) as ProjectMember[];
@@ -221,8 +221,8 @@ export function EditableAssignee({ issueId, issueKey, projectId, currentAssignee
             {opt.value === UNASSIGNED_VALUE ? (
               <div style={{
                 width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
-                border: '1px dashed #C1C7D0', display: 'flex', alignItems: 'center',
-                justifyContent: 'center', fontSize: 14, color: '#C1C7D0',
+                border: '1px dashed var(--ds-border, #C1C7D0)', display: 'flex', alignItems: 'center',
+                justifyContent: 'center', fontSize: 14, color: 'var(--ds-text-disabled, #C1C7D0)',
               }}>?</div>
             ) : (
               <AvatarCircle
@@ -283,7 +283,7 @@ export function EditableReporter({ issueId, projectId, currentReporterId, curren
         return {
           user_id: d.user_id,
           full_name,
-          avatar_url: resolveAvatarUrl(full_name),
+          avatar_url: resolveAvatarUrl(full_name) ?? null,
           role: d.role,
         };
       }) as ProjectMember[];
@@ -351,8 +351,8 @@ export function EditableReporter({ issueId, projectId, currentReporterId, curren
             {opt.value === REPORTER_NONE_VALUE ? (
               <div style={{
                 width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
-                border: '1px dashed #C1C7D0', display: 'flex', alignItems: 'center',
-                justifyContent: 'center', fontSize: 14, color: '#C1C7D0',
+                border: '1px dashed var(--ds-border, #C1C7D0)', display: 'flex', alignItems: 'center',
+                justifyContent: 'center', fontSize: 14, color: 'var(--ds-text-disabled, #C1C7D0)',
               }}>?</div>
             ) : (
               <AvatarCircle
@@ -579,8 +579,8 @@ export function EditableStoryPoints({ issueId, currentPoints, onUpdate }: {
             style={{
               height: 36, padding: '0 12px', display: 'flex', alignItems: 'center',
               cursor: 'pointer', fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtlest, #6B778C)',
-              background: currentPoints == null ? '#DEEBFF' : 'transparent',
-              borderBottom: '1px solid #F4F5F7',
+              background: currentPoints == null ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
+              borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)',
             }}
             onMouseEnter={e => { if (currentPoints != null) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
             onMouseLeave={e => { if (currentPoints != null) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
@@ -593,7 +593,7 @@ export function EditableStoryPoints({ issueId, currentPoints, onUpdate }: {
               style={{
                 height: 36, padding: '0 12px', display: 'flex', alignItems: 'center',
                 cursor: 'pointer', fontSize: 14, fontWeight: 400, color: 'var(--ds-text, #172B4D)',
-                background: p === currentPoints ? '#DEEBFF' : 'transparent',
+                background: p === currentPoints ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
               }}
               onMouseEnter={e => { if (p !== currentPoints) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
               onMouseLeave={e => { if (p !== currentPoints) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
@@ -690,6 +690,29 @@ export function EditableFixVersions({ issueId, currentFixVersions, projectKey, o
           updateMutation.mutate(next);
         }}
         noOptionsMessage={() => 'No versions found for this project'}
+        styles={{
+          // jira-compare 2026-05-16: Jira renders Fix versions as plain 14px/400
+          // text links with transparent background — not ADS multi-value chips.
+          // Override the default chip styling to match.
+          multiValue: (base) => ({
+            ...base,
+            background: 'transparent',
+            border: 'none',
+            borderRadius: 0,
+            margin: '1px 4px 1px 0',
+          }),
+          multiValueLabel: (base) => ({
+            ...base,
+            fontSize: 14,
+            fontWeight: 400,
+            color: 'var(--ds-text, #292A2E)',
+            padding: '0 2px 0 0',
+          }),
+          multiValueRemove: (base) => ({
+            ...base,
+            color: 'var(--ds-text-subtle, #505258)',
+          }),
+        }}
       />
     </div>
   );
@@ -700,7 +723,7 @@ export function EditableFixVersions({ issueId, currentFixVersions, projectKey, o
 /** Canonical epic icon — lightning bolt on purple rounded square (Jira parity) */
 const EpicIconInline = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 16 16" style={{ flexShrink: 0 }}>
-    <rect fill="#6554C0" width="16" height="16" rx="2"/>
+    <rect fill="var(--ds-background-discovery-bold, #6554C0)" width="16" height="16" rx="2"/>
     <path fill="var(--ds-surface, #FFF)" d="M8.39 2L4.5 9h3.11v5L11.5 7H8.39V2z"/>
   </svg>
 );
@@ -792,10 +815,10 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
             <button onClick={e => { e.stopPropagation(); handleSelect(null); }} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 20, height: 20, borderRadius: '50%', border: 'none',
-              background: 'var(--ds-border, #DFE1E6)', cursor: 'pointer', color: '#42526E', flexShrink: 0,
+              background: 'var(--ds-border, #DFE1E6)', cursor: 'pointer', color: 'var(--ds-text-subtle, #42526E)', flexShrink: 0,
               opacity: hovered ? 1 : 0, transition: 'opacity 0.15s',
             }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#C1C7D0')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-bold, #C1C7D0)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-border, #DFE1E6)')}
             >
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -824,16 +847,16 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
                 onKeyDown={e => { if (e.key === 'Escape') { setOpen(false); setSearch(''); } }}
                 style={{
                   width: '100%', height: 40, padding: '0 12px',
-                  border: '2px solid #4C9AFF', borderRadius: 3,
+                  border: '2px solid var(--ds-border-focused, #4C9AFF)', borderRadius: 3,
                   fontSize: 14, fontFamily: 'inherit', outline: 'none', color: 'var(--ds-text, #172B4D)',
                 }} />
             </div>
 
             {/* Show done checkbox */}
-            <div style={{ padding: '6px 12px', borderBottom: '1px solid #F4F5F7' }}>
+            <div style={{ padding: '6px 12px', borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>
                 <input type="checkbox" checked={showDone} onChange={e => setShowDone(e.target.checked)}
-                  style={{ width: 16, height: 16, accentColor: '#0052CC', cursor: 'pointer' }} />
+                  style={{ width: 16, height: 16, accentColor: 'var(--ds-background-brand-bold, #0052CC)', cursor: 'pointer' }} />
                 Show done work items
               </label>
             </div>
@@ -846,12 +869,12 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
                   <div key={result.id} onClick={() => handleSelect(result.issue_key)}
                     style={{
                       padding: '10px 12px', cursor: 'pointer',
-                      borderBottom: '1px solid #F4F5F7',
-                      background: isActive ? '#DEEBFF' : 'transparent',
+                      borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)',
+                      background: isActive ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
                       transition: 'background 0.1s',
                     }}
                     onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
-                    onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = isActive ? '#DEEBFF' : 'transparent'; }}
+                    onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = isActive ? 'var(--ds-background-information, #DEEBFF)' : 'transparent'; }}
                   >
                     {/* Line 1: icon + key */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>

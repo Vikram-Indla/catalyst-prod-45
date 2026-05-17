@@ -25,11 +25,11 @@ export default function ProjectJiraLayout() {
       // @ts-ignore
       const { data, error: qErr } = await supabase
         .from('projects')
-        .select('id, name, key, color')
+        .select('id, name, key')
         .eq('key', key!)
         .maybeSingle();
       if (qErr) throw qErr;
-      return data as { id: string; name: string; key: string; color: string } | null;
+      return data as { id: string; name: string; key: string } | null;
     },
     enabled: !!key,
   });

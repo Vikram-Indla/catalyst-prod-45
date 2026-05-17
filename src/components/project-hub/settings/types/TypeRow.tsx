@@ -1,14 +1,5 @@
-import { Zap, Layers, Bookmark, Bug, CheckSquare, CornerDownRight, MoreHorizontal } from '@/lib/atlaskit-icons';
-
-const ICON_MAP: Record<string, React.ComponentType<any>> = {
-  Zap, Layers, Bookmark, Bug, CheckSquare, CornerDownRight,
-  'zap': Zap,
-  'layers': Layers,
-  'bookmark': Bookmark,
-  'bug': Bug,
-  'check-square': CheckSquare,
-  'corner-down-right': CornerDownRight,
-};
+import { MoreHorizontal } from '@/lib/atlaskit-icons';
+import { WorkItemTypeIcon } from '@/components/icons';
 
 const LEVEL_STYLES: Record<string, { bg: string; text: string }> = {
   Top: { bg: '#F5F3FF', text: '#7C3AED' },
@@ -34,7 +25,6 @@ interface TypeRowProps {
 }
 
 export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, featureLayerEnabled, itemCount, onViewFields }: TypeRowProps) {
-  const IconComp = ICON_MAP[icon] || ICON_MAP[icon.toLowerCase()] || Zap;
   const normalizedLevel = level.charAt(0).toUpperCase() + level.slice(1).toLowerCase();
   const ls = LEVEL_STYLES[normalizedLevel] || LEVEL_STYLES[level] || LEVEL_STYLES.Work;
   const isDisabledFeature = isFeatureType && !featureLayerEnabled;
@@ -44,13 +34,8 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
       className="flex items-center gap-3 px-3 rounded-lg hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors"
       style={{ height: 48, opacity: isDisabledFeature ? 0.5 : 1 }}
     >
-      {/* Icon circle */}
-      <div
-        className="flex items-center justify-center rounded-lg flex-shrink-0"
-        style={{ width: 28, height: 28, background: color, borderRadius: 8 }}
-      >
-        <IconComp size={14} color="var(--ds-text-inverse, #FFFFFF)" strokeWidth={2.5} />
-      </div>
+      {/* Work item type icon — canonical, no colored circles (A3) */}
+      <WorkItemTypeIcon type={icon} size={20} />
 
       {/* Name */}
       <span className="flex-1 truncate" style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)' }}>

@@ -9,6 +9,8 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string, fullName?: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  sendOtp: (email: string) => Promise<{ error: any }>;
+  verifyOtp: (email: string, token: string) => Promise<{ error: any }>;
   loading: boolean;
   isAuthenticated: boolean;
 }
@@ -51,36 +53,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // THEN check for existing session, but never block the UI indefinitely
     const checkSession = async () => {
       try {
-        const sessionResult = await Promise.race([
+        const { data: { session }, error } = await Promise.race([
           supabase.auth.getSession(),
           new Promise<never>((_, reject) =>
             window.setTimeout(() => reject(new Error('getSession timeout')), 6000)
           ),
         ]);
 
-        const { data: { session }, error } = sessionResult;
-
         if (error || !session) {
           safeFinalize(null, null);
           return;
         }
 
-        const userResult = await Promise.race([
-          supabase.auth.getUser(),
-          new Promise<never>((_, reject) =>
-            window.setTimeout(() => reject(new Error('getUser timeout')), 6000)
-          ),
-        ]);
+        // Session exists in localStorage — unblock the UI immediately (Jira-like).
+        // getSession() is local-only (no network). Trust it and show the app now.
+        safeFinalize(session, session.user);
 
-        const { data: { user }, error: userError } = userResult;
-        if (userError || !user) {
-          console.warn('[auth] Stale or unreachable session, clearing...');
-          await supabase.auth.signOut();
-          safeFinalize(null, null);
-          return;
+        // Background: verify the token is still accepted by the server.
+        // Only sign out on a hard auth rejection (401) — never on network failures.
+        // This means being offline or behind a slow connection never logs you out.
+        try {
+          const { data: { user }, error: userError } = await Promise.race([
+            supabase.auth.getUser(),
+            new Promise<never>((_, reject) =>
+              window.setTimeout(() => reject(new Error('getUser timeout')), 8000)
+            ),
+          ]);
+
+          const isHardAuthError = userError && (
+            (userError as any).status === 401 ||
+            userError.name === 'AuthSessionMissingError' ||
+            userError.name === 'AuthApiError'
+          );
+
+          if (isHardAuthError) {
+            console.warn('[auth] Server rejected token, signing out:', userError.message);
+            await supabase.auth.signOut();
+            if (isMounted) { setSession(null); setUser(null); }
+          } else if (user && isMounted) {
+            setUser(user);
+          }
+          // Network errors / timeouts: keep the session we already set
+        } catch {
+          // getUser timed out or threw — keep existing session, autoRefreshToken handles renewal
         }
-
-        safeFinalize(session, user);
       } catch (err) {
         console.error('Session check error:', err);
         safeFinalize(null, null);
@@ -97,6 +113,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       subscription.unsubscribe();
     };
   }, []);
+
+  const sendOtp = useCallback(async (email: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('send-login-otp', {
+        body: { email: email.toLowerCase().trim() },
+      });
+      if (error || data?.ok === false) {
+        const msg = data?.error || error?.message || 'Could not send code';
+        toast({ title: 'Could not send code', description: msg, variant: 'destructive' });
+        return { error: error || new Error(msg) };
+      }
+      return { error: null };
+    } catch (error: any) {
+      toast({ title: 'Could not send code', description: error.message, variant: 'destructive' });
+      return { error };
+    }
+  }, [toast]);
+
+  const verifyOtp = useCallback(async (email: string, token: string) => {
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email: email.toLowerCase().trim(),
+        token,
+        type: 'magiclink',
+      });
+      if (error) {
+        toast({ title: 'Invalid code', description: 'The code is incorrect or expired.', variant: 'destructive' });
+        return { error };
+      }
+      return { error: null };
+    } catch (error: any) {
+      toast({ title: 'Verification failed', description: error.message, variant: 'destructive' });
+      return { error };
+    }
+  }, [toast]);
 
   const signIn = useCallback(async (email: string, password: string) => {
     try {
@@ -254,7 +305,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [toast]);
 
-  const value = useMemo(() => ({ user, session, signIn, signUp, signOut, loading, isAuthenticated: !!user }), [user, session, signIn, signUp, signOut, loading]);
+  const value = useMemo(() => ({ user, session, signIn, signUp, signOut, sendOtp, verifyOtp, loading, isAuthenticated: !!user }), [user, session, signIn, signUp, signOut, sendOtp, verifyOtp, loading]);
 
   return (
     <AuthContext.Provider value={value}>

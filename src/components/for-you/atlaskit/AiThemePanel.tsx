@@ -103,18 +103,35 @@ interface AiThemePanelProps {
 const LS_SCOPE = 'for-you:ai-theme:scope';
 const LS_PROJECT = 'for-you:ai-theme:project-key';
 
+/**
+ * Format the generation timestamp as an "As of HH:MM AM/PM today · cached"
+ * label per product spec. Uses absolute clock time (not relative) so users
+ * know exactly when the analysis ran — "As of 8:00 AM today" is immediately
+ * actionable; "3 hours ago" requires mental arithmetic.
+ *
+ * Same-day    → "As of 8:00 AM today"
+ * Yesterday   → "As of yesterday at 8:00 AM"
+ * Older       → "As of Mon 12 May at 8:00 AM"
+ */
 function formatGeneratedAt(iso: string | undefined): string {
   if (!iso) return '';
-  const diffMs = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diffMs / 60000);
-  if (mins < 1) return 'just now';
-  if (mins === 1) return '1 minute ago';
-  if (mins < 60) return `${mins} minutes ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours === 1) return '1 hour ago';
-  if (hours < 24) return `${hours} hours ago`;
-  const days = Math.floor(hours / 24);
-  return days === 1 ? 'yesterday' : `${days} days ago`;
+  const generated = new Date(iso);
+  if (isNaN(generated.getTime())) return '';
+
+  const now = new Date();
+  const timeStr = generated.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+  const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterdayMidnight = new Date(todayMidnight.getTime() - 86_400_000);
+  const generatedMidnight = new Date(
+    generated.getFullYear(), generated.getMonth(), generated.getDate()
+  );
+
+  if (generatedMidnight >= todayMidnight) return `As of ${timeStr} today`;
+  if (generatedMidnight >= yesterdayMidnight) return `As of yesterday at ${timeStr}`;
+
+  const dateStr = generated.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' });
+  return `As of ${dateStr} at ${timeStr}`;
 }
 
 export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
@@ -235,12 +252,41 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
       <div style={{ flex: 1 }} />
 
       {data && !isLoading && Array.isArray(data.themes) && (
-        <Text size="small" color="color.text.subtle">
-          Analysed {data.totalIssuesAnalyzed ?? 0}{' '}
-          {(data.totalIssuesAnalyzed ?? 0) === 1 ? 'issue' : 'issues'} into {data.themes.length}{' '}
-          {data.themes.length === 1 ? 'theme' : 'themes'} · {formatGeneratedAt(data.generatedAt)}
-          {data.cached ? ' · cached' : ''}
-        </Text>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <Text size="small" color="color.text.subtle">
+            Analysed {data.totalIssuesAnalyzed ?? 0}{' '}
+            {(data.totalIssuesAnalyzed ?? 0) === 1 ? 'issue' : 'issues'} into{' '}
+            {data.themes.length}{' '}
+            {data.themes.length === 1 ? 'theme' : 'themes'}
+          </Text>
+          {/* Freshness chip — "As of 8:00 AM today · cached" */}
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            paddingInline: '6px',
+            paddingBlock: '2px',
+            borderRadius: 4,
+            background: token('color.background.neutral', '#F1F2F4'),
+            font: `400 11px/16px "Inter", system-ui, sans-serif`,
+            color: token('color.text.subtle', '#44546F'),
+            whiteSpace: 'nowrap',
+          }}>
+            {/* Green dot when data is fresh (within 2h); grey otherwise */}
+            <span style={{
+              width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
+              background: (() => {
+                if (!data.generatedAt) return token('color.icon.disabled', '#8590A2');
+                const ageMs = Date.now() - new Date(data.generatedAt).getTime();
+                return ageMs < 2 * 3_600_000
+                  ? token('color.icon.success', '#22A06B')
+                  : token('color.icon.disabled', '#8590A2');
+              })(),
+            }} />
+            {formatGeneratedAt(data.generatedAt)}
+            {data.cached ? ' · cached' : ''}
+          </span>
+        </div>
       )}
 
       <Button
@@ -249,9 +295,20 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
         onClick={() => refresh()}
         iconBefore={RefreshIcon}
         isDisabled={isLoading || isRefreshing}
+        title={data?.no_delta ? 'No changes in your issues since last analysis — results are still current' : undefined}
       >
         {isRefreshing ? 'Re-analyzing…' : 'Re-analyze'}
       </Button>
+      {/* no_delta indicator — shown briefly after a Re-analyze that found no changes */}
+      {data?.no_delta && !isRefreshing && (
+        <span style={{
+          font: `400 11px/16px "Inter", system-ui, sans-serif`,
+          color: token('color.text.subtlest', '#626F86'),
+          whiteSpace: 'nowrap',
+        }}>
+          No changes since last analysis
+        </span>
+      )}
     </Box>
   );
 

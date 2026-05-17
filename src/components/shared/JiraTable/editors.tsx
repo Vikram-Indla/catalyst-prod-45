@@ -253,6 +253,9 @@ export function makeStatusEditCell<T>({
               borderRadius: 3,
               cursor: 'pointer',
               fontFamily: 'inherit',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 2,
             }}
           >
             {lozenge ?? (
@@ -260,6 +263,10 @@ export function makeStatusEditCell<T>({
                 Set status
               </span>
             )}
+            {/* status chevron ▾ — Jira parity */}
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden style={{ flexShrink: 0, opacity: 0.55, marginLeft: 1 }}>
+              <path d="M1 2.5L4 5.5L7 2.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </button>
         )}
       >
@@ -1014,12 +1021,9 @@ export function makeParentEditCell<T>({
               textAlign: 'left',
             }}
           >
-            {/* Jira renders a BLANK parent cell when there's no parent —
-                the entire cell is still clickable. We render an invisible
-                full-width span so the button expands to the column width
-                and any click in the empty cell opens the picker. */}
+            {/* Jira renders "None" when there's no parent — plain muted text. */}
             {filledDisplay ?? (
-              <span style={{ display: 'block', width: '100%', height: 18 }} />
+              <span style={{ color: token('color.text.subtlest', '#7A869A'), fontSize: 14 }}>None</span>
             )}
           </button>
         )}

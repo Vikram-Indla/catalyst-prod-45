@@ -21,7 +21,7 @@ import {
   useTestSlackConnection,
   SlackConfig,
 } from '@/hooks/useSlackAdmin';
-import Button from '@atlaskit/button/new';
+import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Lozenge } from '@/components/ads';
@@ -390,11 +390,11 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                           <p className="text-sm text-slate-500 mt-0.5">{scope.description}</p>
                         </div>
                       </div>
-                      <Button
+                      <IconButton
                         appearance="subtle"
-                        iconBefore={CopyIcon}
+                        icon={CopyIcon}
                         onClick={() => copyToClipboard(scope.id)}
-                      />
+                      label="" />
                     </div>
                   );
                 })}
@@ -440,11 +440,11 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                       onChange={(e) => updateFormData('redirect_uri', (e.target as HTMLInputElement).value)}
                     />
                   </div>
-                  <Button
+                  <IconButton
                     appearance="default"
-                    iconBefore={CopyIcon}
+                    icon={CopyIcon}
                     onClick={() => copyToClipboard(formData.redirect_uri)}
-                  />
+                  label="" />
                 </div>
               </div>
 
@@ -575,7 +575,6 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
           )}
         </div>
       </div>
-    </div>
   );
 }
 

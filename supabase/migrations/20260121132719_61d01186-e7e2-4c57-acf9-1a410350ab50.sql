@@ -51,21 +51,11 @@ ALTER TABLE tm_test_attachments ENABLE ROW LEVEL SECURITY;
 -- RLS policies for attachments
 CREATE POLICY "Users can view attachments in their projects"
   ON tm_test_attachments FOR SELECT
-  USING (EXISTS (
-    SELECT 1 FROM tm_test_cases tc
-    JOIN project_members pm ON pm.project_id = tc.project_id
-    WHERE tc.id = tm_test_attachments.test_case_id
-    AND pm.user_id = auth.uid()
-  ));
+  USING (public.current_user_is_approved());
 
 CREATE POLICY "Users can manage attachments in their projects"
   ON tm_test_attachments FOR ALL
-  USING (EXISTS (
-    SELECT 1 FROM tm_test_cases tc
-    JOIN project_members pm ON pm.project_id = tc.project_id
-    WHERE tc.id = tm_test_attachments.test_case_id
-    AND pm.user_id = auth.uid()
-  ));
+  USING (public.current_user_is_approved());
 
 -- Storage policies for test-attachments bucket
 CREATE POLICY "Users can view test attachments"

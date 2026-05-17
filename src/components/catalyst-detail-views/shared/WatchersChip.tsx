@@ -1,26 +1,30 @@
 /**
  * WatchersChip — Jira-parity watch indicator for the detail header.
  *
- * Placement: between IssueNavChevrons and the Share button in
- * CatalystViewBase. Mirrors Jira's pattern: outline eye when not watching,
- * filled eye when watching, count next to the icon.
+ * Jira UX (2026-05-17 re-probe, canonical):
+ *   [eye icon]  [count]
+ *   ↑ direct toggle    ↑ click opens watcher list popover
  *
- * Atlaskit primitives: @atlaskit/button IconButton (interactive wrapper) +
- * @atlaskit/tooltip. The Atlaskit icon bundle in this version does NOT
- * ship a watch/eye glyph (verified 2026-05-03 via fs check), so we use
- * an inline SVG matching Jira's canonical eye shape.
+ * Eye icon = instantly start/stop watching (no intermediate popover).
+ * Count number = click opens the watchers list popover.
  *
- * jira-compare 2026-05-03 — swapped from star/star-filled (which read as
- * "favourite", not "watcher") to eye/eye-filled to match Jira's parity.
+ * Atlaskit primitives: @atlaskit/button IconButton + @atlaskit/tooltip.
+ * Eye glyph: inline SVG (verified absent from @atlaskit/icon bundles 2026-05-03).
+ *
+ * History:
+ *   2026-05-03 — swapped star → eye glyph for Jira parity
+ *   2026-05-05 — self-rolled popover (manages watcher list), Escape capture guard
+ *   2026-05-17 — FIXED: eye now directly toggles (was opening popover, breaking Jira parity)
+ *                count span now opens the watcher list popover
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { IconButton } from '@atlaskit/button/new';
-import Button from '@atlaskit/button/new';
 import Avatar from '@atlaskit/avatar';
 import Tooltip from '@atlaskit/tooltip';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { useCatalystWatchers } from './hooks/useCatalystWatchers';
 
-/** Outline eye icon — Jira's canonical "Start watching" glyph. */
+/** Outline eye — "Start watching" glyph. */
 function EyeIcon({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -32,7 +36,7 @@ function EyeIcon({ size = 16 }: { size?: number }) {
   );
 }
 
-/** Filled eye icon — Jira's "Stop watching" glyph (selected state). */
+/** Filled eye — "Stop watching" glyph (selected state). */
 function EyeFilledIcon({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -54,61 +58,75 @@ export function WatchersChip({ issueKey }: Props) {
   const count = data?.count ?? 0;
   const isWatching = data?.isWatching ?? false;
   const watchers = data?.watchers ?? [];
-  const label = isWatching ? 'Stop watching' : 'Start watching';
+  const actionLabel = isWatching ? 'Stop watching' : 'Start watching';
+  const tooltipLabel = `${actionLabel} · ${count} watcher${count === 1 ? '' : 's'}`;
 
-  const [open, setOpen] = useState(false);
-  const triggerRef = useRef<HTMLSpanElement>(null);
+  const [listOpen, setListOpen] = useState(false);
+  const countRef = useRef<HTMLButtonElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
 
-  // Self-rolled click-outside (matches AllProjectsTable pattern; @atlaskit/popup
-  // v4.16 has a known empty-portal bug in this codebase).
+  // Self-rolled click-outside for the watcher list popover.
   useEffect(() => {
-    if (!open) return;
+    if (!listOpen) return;
     const mouseHandler = (e: MouseEvent) => {
       const target = e.target as Node;
-      if (triggerRef.current?.contains(target)) return;
+      if (countRef.current?.contains(target)) return;
       if (popupRef.current?.contains(target)) return;
-      setOpen(false);
+      setListOpen(false);
     };
-    // Escape closes the popover and stops propagation so the parent modal
-    // doesn't also close (event would otherwise bubble to the modal's Escape handler).
+    // Capture-phase Escape: closes popover without propagating to parent modal.
     const keyHandler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.stopPropagation();
-        setOpen(false);
+        setListOpen(false);
       }
     };
     document.addEventListener('mousedown', mouseHandler);
-    document.addEventListener('keydown', keyHandler, true); // capture phase beats modal
+    document.addEventListener('keydown', keyHandler, true);
     return () => {
       document.removeEventListener('mousedown', mouseHandler);
       document.removeEventListener('keydown', keyHandler, true);
     };
-  }, [open]);
+  }, [listOpen]);
 
   return (
-    <span ref={triggerRef} style={{ display: 'inline-flex', alignItems: 'center', gap: 2, position: 'relative' }}>
-      <Tooltip content={`${label} · ${count} watcher${count === 1 ? '' : 's'}`} position="bottom">
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 0, position: 'relative' }}>
+      {/* Eye icon — direct toggle (Jira parity: click eye = start/stop watching immediately) */}
+      <Tooltip content={tooltipLabel} position="bottom">
         <IconButton
           appearance="subtle"
           isSelected={isWatching}
+          isLoading={toggle.isPending}
           icon={() => isWatching ? <EyeFilledIcon size={16} /> : <EyeIcon size={16} />}
-          label="Manage watchers"
-          onClick={() => setOpen(o => !o)}
+          label={actionLabel}
+          onClick={() => toggle.mutate()}
         />
       </Tooltip>
-      <span style={{
-        fontSize: 13, color: '#44546F', minWidth: 12, textAlign: 'center',
-        fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
-      }}>
-        {count}
-      </span>
 
-      {open && (
+      {/* Count — click opens watcher list popover (Jira parity) */}
+      <Tooltip content={`${count} watcher${count === 1 ? '' : 's'} — click to view`} position="bottom">
+        <button
+          ref={countRef}
+          onClick={() => setListOpen(o => !o)}
+          style={{
+            background: 'none', border: 'none', cursor: 'pointer',
+            padding: '0 6px', minWidth: 16, textAlign: 'center',
+            fontSize: 14, fontWeight: 500, color: 'var(--ds-text-subtle, #505258)',
+            fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
+            lineHeight: '32px', borderRadius: 3,
+          }}
+          aria-label={`${count} watchers — open list`}
+        >
+          {count}
+        </button>
+      </Tooltip>
+
+      {/* Watcher list popover — opens from count click */}
+      {listOpen && (
         <div
           ref={popupRef}
           role="dialog"
-          aria-label="Manage watchers"
+          aria-label="Watchers"
           style={{
             position: 'absolute', top: 'calc(100% + 4px)', right: 0,
             minWidth: 260, maxWidth: 320, zIndex: 200,
@@ -121,7 +139,8 @@ export function WatchersChip({ issueKey }: Props) {
         >
           <div style={{
             padding: '0 16px 8px', fontSize: 11, fontWeight: 600,
-            color: 'var(--ds-text-subtlest, #6B778C)',
+            color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase',
+            letterSpacing: '0.04em',
           }}>
             Watchers
           </div>
@@ -135,26 +154,15 @@ export function WatchersChip({ issueKey }: Props) {
                 <div key={w.user_id} style={{
                   display: 'flex', alignItems: 'center', gap: 10,
                   padding: '6px 16px', fontSize: 13,
+                  color: 'var(--ds-text, #172B4D)',
                 }}>
-                  <Avatar size="small" name={w.full_name ?? w.email ?? 'Unknown'} src={w.avatar_url ?? undefined} />
+                  <Avatar size="small" name={w.full_name ?? w.email ?? 'Unknown'} src={resolveAvatarUrl(w.full_name ?? w.email) ?? w.avatar_url ?? undefined} />
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {w.full_name ?? w.email ?? 'Unknown'}
                   </span>
                 </div>
               ))
             )}
-          </div>
-          <div style={{
-            borderTop: '1px solid var(--ds-border, #DFE1E6)',
-            padding: '8px 16px 0', display: 'flex', justifyContent: 'flex-end',
-          }}>
-            <Button
-              appearance="subtle"
-              onClick={() => toggle.mutate()}
-              isLoading={toggle.isPending}
-            >
-              {label}
-            </Button>
           </div>
         </div>
       )}

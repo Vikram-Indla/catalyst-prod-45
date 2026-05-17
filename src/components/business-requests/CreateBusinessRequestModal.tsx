@@ -512,8 +512,18 @@ function BRStatusChip({ status, onChange }: { status: string; onChange: (s: stri
 function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange: (f: File[]) => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
+  const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
 
-  const addFiles = useCallback((inc: File[]) => onFilesChange([...files, ...inc].slice(0, 10)), [files, onFilesChange]);
+  const addFiles = useCallback((inc: File[]) => {
+    const validFiles = inc.filter(f => {
+      if (f.size > MAX_FILE_SIZE) {
+        flag.warning(`File too large: ${f.name}`, `Max 25 MB per file (${(f.size / 1048576).toFixed(1)} MB)`);
+        return false;
+      }
+      return true;
+    });
+    onFilesChange([...files, ...validFiles].slice(0, 10));
+  }, [files, onFilesChange]);
   const handleDrop = useCallback((e: React.DragEvent) => { e.preventDefault(); setDragOver(false); addFiles(Array.from(e.dataTransfer.files)); }, [addFiles]);
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => { addFiles(Array.from(e.target.files || [])); if (inputRef.current) inputRef.current.value = ''; };
   const remove = (i: number) => onFilesChange(files.filter((_, j) => j !== i));
@@ -637,8 +647,10 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [titleBlurred, setTitleBlurred] = useState(false);
   const [arabicBlurred, setArabicBlurred] = useState(false);
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
   const [formError, setFormError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [translationPreview, setTranslationPreview] = useState<{ text: string; direction: 'en_to_ar' | 'ar_to_en' } | null>(null);
 
   // Seed initial status from /admin/workflows (Business Request scheme)
   const { initialStatus: brInitialStatus, statuses: brStatuses } = useCatalystWorkflow('Business Request');
@@ -655,6 +667,12 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
     setFormError(null);
   }, []);
 
+  const markTouched = useCallback((field: string) => {
+    setTouchedFields(prev => new Set(prev).add(field));
+  }, []);
+
+  const isTouched = (field: string) => touchedFields.has(field) || submitAttempted;
+
   // ── Validation ─────────────────────────────────────────────────────────────
   const validate = () => {
     if (!form.arabic_title.trim()) return false;
@@ -668,16 +686,26 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
   const handleTranslateToArabic = useCallback(async () => {
     if (!form.title.trim()) return;
     const result = await translate(form.title, 'en_to_ar');
-    if (result) set('arabic_title', result);
+    if (result) setTranslationPreview({ text: result, direction: 'en_to_ar' });
     else flag.warning('Translation unavailable', 'Please enter the Arabic name manually');
-  }, [form.title, translate, set]);
+  }, [form.title, translate]);
 
   const handleTranslateToEnglish = useCallback(async () => {
     if (!form.arabic_title.trim()) return;
     const result = await translate(form.arabic_title, 'ar_to_en');
-    if (result) set('title', result);
-    else flag.warning('Translation unavailable', 'Please enter the English name manually');
-  }, [form.arabic_title, translate, set]);
+    if (result) setTranslationPreview({ text: result, direction: 'ar_to_en' });
+    else flag.warning('Translation unavailable', 'Please enter the Arabic name manually');
+  }, [form.arabic_title, translate]);
+
+  const applyTranslation = useCallback(() => {
+    if (!translationPreview) return;
+    if (translationPreview.direction === 'en_to_ar') {
+      set('arabic_title', translationPreview.text);
+    } else {
+      set('title', translationPreview.text);
+    }
+    setTranslationPreview(null);
+  }, [translationPreview, set]);
 
   // ── Submit ──────────────────────────────────────────────────────────────────
   const handleCreate = useCallback(async () => {
@@ -716,6 +744,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
       setSubmitAttempted(false);
       setTitleBlurred(false);
       setArabicBlurred(false);
+      setTouchedFields(new Set());
       onClose();
     } catch (err: any) {
       setUploading(false);
@@ -728,6 +757,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
     setSubmitAttempted(false);
     setTitleBlurred(false);
     setArabicBlurred(false);
+    setTouchedFields(new Set());
     setFormError(null);
     onClose();
   }, [onClose]);
@@ -880,11 +910,12 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
                       options={TYPE_SELECT_OPTIONS}
                       value={TYPE_SELECT_OPTIONS.find(o => o.value === form.request_type) ?? null}
                       onChange={(opt: any) => set('request_type', opt?.value ?? '')}
+                      onBlur={() => markTouched('request_type')}
                       placeholder="Feature · Gap · Integration · Data Request"
                       isSearchable={false}
                       isClearable
                     />
-                    {submitAttempted && !form.request_type && <ErrorMessage>Type is required</ErrorMessage>}
+                    {isTouched('request_type') && !form.request_type && <ErrorMessage>Type is required</ErrorMessage>}
                   </>
                 )}
               </Field>
@@ -899,12 +930,13 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
                       options={PRIORITY_OPTIONS}
                       value={PRIORITY_OPTIONS.find(o => o.value === form.urgency) ?? null}
                       onChange={(opt: any) => set('urgency', opt?.value ?? '')}
+                      onBlur={() => markTouched('urgency')}
                       formatOptionLabel={formatIconOption}
                       placeholder="Select priority"
                       isSearchable={false}
                       isClearable
                     />
-                    {submitAttempted && !form.urgency && <ErrorMessage>Priority is required</ErrorMessage>}
+                    {isTouched('urgency') && !form.urgency && <ErrorMessage>Priority is required</ErrorMessage>}
                   </>
                 )}
               </Field>
@@ -1047,6 +1079,47 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
 
             </Box>
           </ModalBody>
+
+          {/* ── Translation Preview Dialog ──────────────────────────────────── */}
+          {translationPreview && (
+            <ModalTransition>
+              <ModalDialog onClose={() => setTranslationPreview(null)} width="large" shouldScrollInViewport>
+                <ModalHeader>
+                  <ModalTitle>Confirm translation</ModalTitle>
+                </ModalHeader>
+                <ModalBody>
+                  <Box xcss={fieldGroupStyles}>
+                    <p style={{ fontSize: 13, color: token('color.text', '#292A2E'), fontFamily: 'var(--cp-font-body)', marginBottom: 8 }}>
+                      {translationPreview.direction === 'en_to_ar'
+                        ? 'English text will be translated to Arabic:'
+                        : 'Arabic text will be translated to English:'}
+                    </p>
+                    <div style={{
+                      padding: 12,
+                      background: token('color.background.neutral', '#F4F5F7'),
+                      borderRadius: 3,
+                      fontFamily: 'var(--cp-font-body)',
+                      fontSize: 14,
+                      color: token('color.text', '#292A2E'),
+                      direction: translationPreview.direction === 'en_to_ar' ? 'rtl' : 'ltr',
+                      textAlign: translationPreview.direction === 'en_to_ar' ? 'right' : 'left',
+                      lineHeight: '20px',
+                      wordBreak: 'break-word'
+                    }}>
+                      {translationPreview.text}
+                    </div>
+                  </Box>
+                </ModalBody>
+                <ModalFooter>
+                  <Box xcss={footerLeftStyles} />
+                  <Box xcss={footerRightStyles}>
+                    <Button appearance="subtle" onClick={() => setTranslationPreview(null)}>Keep original</Button>
+                    <Button appearance="primary" onClick={applyTranslation}>Use translation</Button>
+                  </Box>
+                </ModalFooter>
+              </ModalDialog>
+            </ModalTransition>
+          )}
 
           {/* ── Footer ─────────────────────────────────────────────────────── */}
           <ModalFooter>

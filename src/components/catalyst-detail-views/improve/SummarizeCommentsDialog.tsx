@@ -17,6 +17,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Button from '@atlaskit/button/new';
+import ModalDialog, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import { token } from '@atlaskit/tokens';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -140,113 +141,74 @@ export function SummarizeCommentsDialog({
   const triggerLabel = improveTriggerLabel(issueType);
 
   return (
-    <div
-      role="dialog"
-      aria-label={`${triggerLabel} — summarize comments`}
-      data-testid="summarize-comments-dialog"
-      style={{
-        width: '100%',
-        background: token('color.background.neutral.subtle', '#F7F8F9'),
-        borderRadius: 6,
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        marginBottom: 16,
-      }}
-      >
-        <div style={{ padding: '20px 24px 8px' }}>
-          <h1
+    <ModalDialog onClose={onClose} width={640}>
+      <ModalHeader hasCloseButton>
+        <ModalTitle>{triggerLabel} — Summarize comments</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <p style={{ margin: '0 0 16px', fontSize: 13, color: token('color.text.subtle', '#6B6E76') }}>
+          {commentCount !== null ? `${commentCount} comment${commentCount === 1 ? '' : 's'} processed.` : 'Fetching comments…'}
+        </p>
+
+        {loading && (
+          <div style={{ padding: '32px 0', textAlign: 'center', color: token('color.text.subtle', '#6B6E76'), fontSize: 14 }}>
+            Generating summary…
+          </div>
+        )}
+
+        {error && (
+          <div
             style={{
-              margin: 0,
-              fontSize: 20,
-              fontWeight: 600,
-              lineHeight: '24px',
-              color: token('color.text', '#292A2E'),
-            }}
-          >
-            {triggerLabel} — Summarize comments
-          </h1>
-          <p
-            style={{
-              margin: '4px 0 0',
+              padding: 12,
+              borderRadius: 4,
+              background: token('color.background.danger', '#FFEBE6'),
+              color: token('color.text.danger', '#AE2A19'),
               fontSize: 13,
-              color: token('color.text.subtle', '#6B6E76'),
             }}
           >
-            {commentCount !== null ? `${commentCount} comment${commentCount === 1 ? '' : 's'} processed.` : 'Fetching comments…'}
-          </p>
-        </div>
+            {error}
+          </div>
+        )}
 
-        <div style={{ flex: 1, overflowY: 'auto', padding: '8px 24px 16px' }}>
-          {loading && (
-            <div style={{ padding: '32px 0', textAlign: 'center', color: token('color.text.subtle', '#6B6E76'), fontSize: 14 }}>
-              Generating summary…
-            </div>
-          )}
+        {!loading && !error && summary !== null && summary.length === 0 && (
+          <div style={{ padding: '24px 0', textAlign: 'center', color: token('color.text.subtle', '#6B6E76'), fontSize: 14 }}>
+            No comments to summarize yet.
+          </div>
+        )}
 
-          {error && (
-            <div
-              style={{
-                padding: 12,
-                borderRadius: 4,
-                background: token('color.background.danger', '#FFEBE6'),
-                color: token('color.text.danger', '#AE2A19'),
-                fontSize: 13,
-              }}
-            >
-              {error}
-            </div>
-          )}
-
-          {!loading && !error && summary !== null && summary.length === 0 && (
-            <div style={{ padding: '24px 0', textAlign: 'center', color: token('color.text.subtle', '#6B6E76'), fontSize: 14 }}>
-              No comments to summarize yet.
-            </div>
-          )}
-
-          {!loading && !error && summary && summary.length > 0 && (
-            <div
-              style={{
-                padding: 16,
-                borderRadius: 6,
-                background: token('color.background.neutral', '#F4F5F7'),
-                border: `1px solid ${token('color.border', '#DFE1E6')}`,
-                fontSize: 14,
-                lineHeight: '21px',
-                color: token('color.text', '#292A2E'),
-                whiteSpace: 'pre-wrap',
-              }}
-            >
-              {summary}
-            </div>
-          )}
-        </div>
-
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: 8,
-            padding: '12px 24px',
-            borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
-          }}
-        >
-          {summary && (
-            <Button
-              appearance="subtle"
-              onClick={() => {
-                navigator.clipboard.writeText(summary);
-                toast.success('Summary copied to clipboard');
-              }}
-            >
-              Copy
-            </Button>
-          )}
-          <Button appearance="primary" onClick={onClose}>
-            Close
+        {!loading && !error && summary && summary.length > 0 && (
+          <div
+            style={{
+              padding: 16,
+              borderRadius: 6,
+              background: token('color.background.neutral', '#F4F5F7'),
+              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              fontSize: 14,
+              lineHeight: '21px',
+              color: token('color.text', '#292A2E'),
+              whiteSpace: 'pre-wrap',
+            }}
+          >
+            {summary}
+          </div>
+        )}
+      </ModalBody>
+      <ModalFooter>
+        {summary && (
+          <Button
+            appearance="subtle"
+            onClick={() => {
+              navigator.clipboard.writeText(summary);
+              toast.success('Summary copied to clipboard');
+            }}
+          >
+            Copy
           </Button>
-        </div>
-    </div>
+        )}
+        <Button appearance="primary" onClick={onClose}>
+          Close
+        </Button>
+      </ModalFooter>
+    </ModalDialog>
   );
 }

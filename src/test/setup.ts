@@ -1,6 +1,11 @@
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
+// Stub Atlaskit platform feature flags to prevent "Client must be initialized" errors.
+// The CJS resolver checks for a global booleanResolver before calling FeatureGates.checkGate.
+// Setting it to always return false short-circuits the uninitialized client throw.
+(globalThis as any)['__PLATFORM_FEATURE_FLAGS__'] = { booleanResolver: () => false };
+
 // Mock matchMedia
 Object.defineProperty(window, "matchMedia", {
   writable: true,
@@ -17,24 +22,39 @@ Object.defineProperty(window, "matchMedia", {
 });
 
 // Mock ResizeObserver
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+global.ResizeObserver = vi.fn().mockImplementation(function() {
+  this.observe = vi.fn();
+  this.unobserve = vi.fn();
+  this.disconnect = vi.fn();
+});
 
-// Mock Supabase client
+// Mock Supabase client — chainable proxy so any .method() depth resolves cleanly.
+// Terminal methods (single, then) resolve; all others return a new proxy.
+function makeChainableQuery(resolvedData = { data: null, error: null }) {
+  const proxy: any = new Proxy({}, {
+    get(_target, prop: string) {
+      if (prop === 'then') {
+        // Make the proxy thenable so `await query` works
+        return (resolve: (v: any) => void) => resolve(resolvedData);
+      }
+      if (prop === 'single') {
+        return vi.fn(() => Promise.resolve(resolvedData));
+      }
+      if (prop === 'in') {
+        // .in() resolves with array data
+        return vi.fn(() => makeChainableQuery({ data: [], error: null }));
+      }
+      // All other query builder methods (eq, is, or, order, limit, ilike, neq, not, gt, lt, gte, lte, filter)
+      return vi.fn(() => makeChainableQuery({ data: [], error: null }));
+    },
+  });
+  return proxy;
+}
+
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
     from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn(() => Promise.resolve({ data: null, error: null })),
-          order: vi.fn(() => Promise.resolve({ data: [], error: null })),
-        })),
-        single: vi.fn(() => Promise.resolve({ data: null, error: null })),
-        order: vi.fn(() => Promise.resolve({ data: [], error: null })),
-      })),
+      select: vi.fn(() => makeChainableQuery({ data: [], error: null })),
       insert: vi.fn(() => ({
         select: vi.fn(() => ({
           single: vi.fn(() => Promise.resolve({ data: { id: "test-id" }, error: null })),

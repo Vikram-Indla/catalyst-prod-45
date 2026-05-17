@@ -62,7 +62,11 @@ SELECT
   'a0000005-0000-0000-0000-000000000001',
   'Funnel', 'funnel', 'todo', '#DFE1E6', 1, FALSE, FALSE,
   NULL, TRUE, '{}'::TEXT[]
-WHERE NOT EXISTS (
+WHERE EXISTS (
+  SELECT 1 FROM catalyst_workflow_schemes
+   WHERE id = 'a0000005-0000-0000-0000-000000000001'
+)
+AND NOT EXISTS (
   SELECT 1 FROM catalyst_workflow_statuses
    WHERE scheme_id = 'a0000005-0000-0000-0000-000000000001'
      AND slug = 'funnel'

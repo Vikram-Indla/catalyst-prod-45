@@ -637,7 +637,7 @@ export function ProductBacklogListTable({
         <Button
           onClick={onRefresh}
           appearance="subtle"
-          iconBefore={<AkRefreshIcon label="Refresh" />}
+          icon={() => <AkRefreshIcon label="Refresh" />}
         >
           Refresh
         </Button>
@@ -657,10 +657,16 @@ export function ProductBacklogListTable({
           <div style={{ overflow: 'auto' }}>
             <JiraTable
               columns={columns}
-              rows={requests}
-              rowKey="id"
-              density="regular"
+              data={requests}
+              getRowId={(row) => row.id}
+              density="compact"
               striped={true}
+              // 2026-05-17: Feature flags declare intent explicitly per canonical
+              // governance framework. ProductBacklogListTable (product backlog) has
+              // no group create affordances or sticky footer — create is external
+              // (modal or ProductBacklogPage flow).
+              enableGroupCreateButton={false}
+              enableStickyCreateFooter={false}
             />
           </div>
         </SortableContext>

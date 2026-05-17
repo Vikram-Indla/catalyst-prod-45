@@ -157,7 +157,7 @@
 
 .att-menu-badge {
   background: var(--ds-border, #DFE1E6);
-  color: #42526E;
+  color: var(--ds-text-subtle, #42526E);
   font-size: 11px;
   font-weight: 600;
   padding: 1px 6px;
@@ -440,7 +440,7 @@
 @media (max-width: 768px) { .att-row-actions { opacity: 1; } }
 
 .att-delete-btn { color: rgba(8, 15, 33, 0.55); }
-.att-delete-btn:hover { color: #DE350B; background-color: rgba(222, 53, 11, 0.08); }
+.att-delete-btn:hover { color: var(--ds-text-danger, #DE350B); background-color: rgba(222, 53, 11, 0.08); }
 
 /* ─── UPLOAD PROGRESS ─── */
 .att-upload-list { display: flex; flex-direction: column; gap: 4px; padding: 4px 0; }
@@ -455,11 +455,11 @@
   background: var(--ds-surface-sunken, #F8FAFC);
 }
 .att-upload-row--error { background: rgba(222, 53, 11, 0.06); }
-.att-upload-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #29292E; }
+.att-upload-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ds-text, #292A2E); }
 .att-upload-bar { height: 6px; background: var(--ds-border, #DFE1E6); border-radius: 3px; overflow: hidden; }
 .att-upload-bar-fill { height: 100%; background: var(--ds-text-brand, #2563EB); transition: width 0.2s ease; }
 .att-upload-pct { font-size: 11px; color: var(--ds-text-accent-gray, #505258); text-align: right; font-variant-numeric: tabular-nums; }
-.att-upload-error { color: #DE350B; font-size: 12px; grid-column: 2 / span 2; }
+.att-upload-error { color: var(--ds-text-danger, #DE350B); font-size: 12px; grid-column: 2 / span 2; }
 .att-upload-retry {
   grid-column: 3;
   background: transparent; border: none; padding: 0;

@@ -184,19 +184,24 @@ export default function KanbanBoardPage() {
 
   /* ═══ BOARDS LIST (multi-board support) ═══ */
 
+  // FIX: was gated on projMeta?.id (enabled: !!projMeta?.id), forcing a 2-hop
+  // waterfall: projMeta→boards. Now uses a PostgREST inner-join on key so
+  // both projMeta and project-boards queries fire in parallel on mount.
   const { data: projectBoards = [], refetch: refetchBoards } = useQuery({
-    queryKey: ['project-boards', projMeta?.id],
+    queryKey: ['project-boards', key],
     queryFn: async () => {
-      if (!projMeta?.id) return [];
+      if (!key) return [];
       const { data } = await supabase
         .from('boards')
-        .select('id, name, sort_order')
-        .eq('project_id', projMeta.id)
+        .select('id, name, sort_order, ph_projects!inner(key)')
+        .eq('ph_projects.key', key.toUpperCase())
         .is('deleted_at', null)
         .order('sort_order');
-      return (data ?? []) as { id: string; name: string; sort_order: number }[];
+      return (data ?? []).map((b: any) => ({
+        id: b.id, name: b.name, sort_order: b.sort_order,
+      })) as { id: string; name: string; sort_order: number }[];
     },
-    enabled: !!projMeta?.id,
+    enabled: !!key,
     staleTime: 60_000,
   });
 
@@ -286,30 +291,53 @@ export default function KanbanBoardPage() {
   }, [dynamicBoardData]);
 
   const { data: rawIssues = [], isLoading } = useQuery({
-    queryKey: ['kanban-issues', key, projMeta?.id, showArchived],
+    // FIX: projMeta?.id removed from queryKey — was causing double-fetch of all
+    // ph_issues (once with id=undefined on mount, again when projMeta resolved).
+    // projId is read from TanStack cache inside the queryFn instead.
+    queryKey: ['kanban-issues', key, showArchived],
     queryFn: async () => {
       if (!key) return [];
       const PAGE = 1000;
-      let all: any[] = [];
-      let from = 0;
-      while (true) {
-        let q = supabase.from('ph_issues')
-          .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at, jira_created_at, archived_at')
-          .eq('project_key', key.toUpperCase())
-          .is('deleted_at', null);
-        // F3: default view hides archived; Archived chip inverts it.
-        q = showArchived
-          ? q.not('archived_at', 'is', null)
-          : q.is('archived_at', null);
-        const { data, error } = await q
-          .order('jira_updated_at', { ascending: false })
-          .range(from, from + PAGE - 1);
-        if (error) throw error;
-        if (!data?.length) break;
-        all = all.concat(data);
-        if (data.length < PAGE) break;
-        from += PAGE;
-      }
+
+      // Read projMeta from cache — available without a round-trip since
+      // ph-project-meta fires in parallel. By the time the first ph_issues
+      // page resolves (~400ms), projMeta (~150ms) is already in cache.
+      const cachedMeta = qc.getQueryData<{ id: string } | null>(['ph-project-meta', key]);
+
+      // --- parallel fetch: ph_issues (paginated) + catalyst_issues ---
+      const fetchJira = async () => {
+        let all: any[] = [];
+        let from = 0;
+        while (true) {
+          let q = supabase.from('ph_issues')
+            .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at, jira_created_at, archived_at')
+            .eq('project_key', key.toUpperCase())
+            .is('deleted_at', null);
+          q = showArchived ? q.not('archived_at', 'is', null) : q.is('archived_at', null);
+          const { data, error } = await q
+            .order('jira_updated_at', { ascending: false })
+            .range(from, from + PAGE - 1);
+          if (error) throw error;
+          if (!data?.length) break;
+          all = all.concat(data);
+          if (data.length < PAGE) break;
+          from += PAGE;
+        }
+        return all;
+      };
+
+      const fetchCatalyst = async () => {
+        if (!cachedMeta?.id || showArchived) return [] as any[];
+        const { data } = await supabase
+          .from('catalyst_issues')
+          .select('id, issue_key, title, status, issue_type, priority, assignee_id, parent_key, labels, created_at, updated_at')
+          .eq('project_id', cachedMeta.id)
+          .order('created_at', { ascending: false });
+        return data ?? [];
+      };
+
+      // Fire both in parallel — eliminates the sequential catalyst_issues wait.
+      const [all, catData] = await Promise.all([fetchJira(), fetchCatalyst()]);
 
       const jiraIssues: BoardIssue[] = all.map((r: any): BoardIssue => {
         let fv: string | null = null;
@@ -340,12 +368,6 @@ export default function KanbanBoardPage() {
 
       // Merge in Catalyst-native (in-app created) issues.
       // Jira-wins: skip catalyst rows whose issue_key already exists in ph_issues.
-      if (!projMeta?.id || showArchived) return jiraIssues;
-      const { data: catData } = await supabase
-        .from('catalyst_issues')
-        .select('id, issue_key, title, status, issue_type, priority, assignee_id, parent_key, labels, created_at, updated_at')
-        .eq('project_id', projMeta.id)
-        .order('created_at', { ascending: false });
       const seen = new Set(jiraIssues.map(i => i.issueKey).filter(Boolean));
       const catIssues: BoardIssue[] = (catData || [])
         .filter((r: any) => !(r.issue_key && seen.has(r.issue_key)))
@@ -431,7 +453,8 @@ export default function KanbanBoardPage() {
     const epicOptions = allEpics.map(e => ({
       id: e.key,
       label: e.summary || e.key,
-      labelExtra: e.key,
+      // Only show the key as secondary text when a summary exists — avoids "BAU-XXX BAU-XXX" duplication
+      labelExtra: e.summary ? e.key : undefined,
     }));
     const typeOptions = allTypes.map(t => ({
       id: t.type,
@@ -896,21 +919,10 @@ export default function KanbanBoardPage() {
 
   /* ═══ LOADING STATE ═══ */
 
-  if (isLoading) return (
-    <div className="flex flex-col flex-1 min-h-0" style={{ background: tk.pageBg }}>
-      <div style={{ height: 48, background: 'transparent' }} />
-      <div className="flex flex-1" style={{ gap: 8, padding: '0 16px 16px 16px' }}>
-        {KANBAN_COLUMNS.map(c => (
-          <div key={c.id} style={{ width: 267, background: tk.surfaceAlt, borderRadius: 6 }}>
-            <div style={{ height: 48, background: tk.surfaceAlt, borderRadius: '6px 6px 0 0' }} />
-            <div className="flex flex-col" style={{ gap: 4, padding: '0 10px 10px' }}>
-              {[0, 1, 2].map(i => <div key={i} className="animate-pulse" style={{ height: 72, background: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 4, boxShadow: tk.cardShadowRest }} />)}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+  // FIX: removed early skeleton bailout — board chrome (header, toolbar, column
+  // names) now renders immediately. Skeleton cards are injected inline per column
+  // via the `isLoading` prop so users see board structure at T=0 rather than a
+  // blank shell for 1-3 seconds. Jira does the same: structure first, cards hydrate.
 
   /* ═══ RENDER ═══ */
 
@@ -1304,6 +1316,7 @@ export default function KanbanBoardPage() {
             tk={tk}
             selectedId={selIssueId}
             focusedId={focusedId}
+            isLoading={isLoading}
             onToggleFlag={handleToggleFlag}
             onCopyLink={handleCopyLink}
             onCopyKey={handleCopyKey}
@@ -1357,6 +1370,7 @@ export default function KanbanBoardPage() {
             isOpen={true}
             onClose={() => setSelIssueId(null)}
             itemId={issuesById.get(selIssueId)?.issueKey ?? selIssueId}
+            itemType={issuesById.get(selIssueId)?.issueType ?? undefined}
             projectId={projMeta?.id ?? ''}
             projectKey={key}
           />

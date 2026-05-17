@@ -21,6 +21,8 @@ import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPan
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
+import { BrStatusSection } from '@/components/business-requests/BrStatusSection';
+import { useBRStatusTransition } from '@/hooks/useBRStatusTransition';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewBusinessRequest({
@@ -31,6 +33,7 @@ export default function CatalystViewBusinessRequest({
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
+  const { mutate: transitionStatus, isPending: isTransitioning } = useBRStatusTransition();
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
 
@@ -46,6 +49,23 @@ export default function CatalystViewBusinessRequest({
       </div>
 
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
+
+      {issue && (
+        <BrStatusSection
+          currentStatusSlug={issue.process_step || 'funnel'}
+          requestId={issue.id}
+          onStatusChange={(newStatusSlug, comment) => {
+            transitionStatus({
+              requestId: issue.id,
+              fromStatusSlug: issue.process_step || 'funnel',
+              toStatusSlug: newStatusSlug,
+              comment
+            });
+          }}
+          isLoading={isTransitioning}
+        />
+      )}
+
       {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
       {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}

@@ -93,7 +93,10 @@ export function WeekStripCollapsible({
             >{f.label}</span>
           );
         })}
-        <span style={{ marginLeft: 'auto', fontSize: '12.5px', color: 'var(--ds-text-subtlest, #626F86)', fontFamily: 'ui-monospace, SFMono-Regular, monospace' }}>{weekItems.length} items</span>
+        {/* "N items" right-aligned count was removed 2026-05-17 — it
+            duplicated the "All (N)" pill 2 cm to its left (design-critique
+            H8 P1). Keeping marginLeft:auto on the last filter pill would
+            push the row apart; we let the cluster sit left-aligned now. */}
       </div>
 
       {/* Collapsible Week Strip */}

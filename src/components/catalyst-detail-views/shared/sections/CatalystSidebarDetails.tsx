@@ -26,7 +26,7 @@ import { Heading } from '@/components/ads';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
-// Inline removed — FieldRow switched to stacked layout (jira-compare 2026-05-05)
+// jira-compare 2026-05-16 correction: FieldRow reverted to STACKED (column) layout
 import { useWorkflow } from '@/lib/workflows';
 import { StatusTransitionDropdown } from '@/components/workflow';
 import { CatalystConfigureDrawer, loadPinnedFields, PINNABLE_FIELDS } from './CatalystConfigureDrawer';
@@ -34,40 +34,40 @@ import { CatalystConfigureDrawer, loadPinnedFields, PINNABLE_FIELDS } from './Ca
 /**
  * FieldRow — sidebar field row atom (Phase E.3, 2026-04-18).
  *
- * Collapses the repeated {flex + fixed-width label + flex-1 value} pattern
- * into a single call-site per field. Label typography (14/500/#505258 with
- * lineHeight 18.67px) is Jira-measured and kept inline so future typography
- * updates touch one spot. Horizontal gap uses @atlaskit/primitives Inline
- * with space.250 (20px) — the one token that maps exactly to Jira's measured
- * value. Vertical padding stays inline at 11px top/bottom; this doesn't map
- * to any space token cleanly, and we're not drifting for the sake of
- * tokenization.
+ * jira-compare 2026-05-16 (corrected): Jira right rail uses a STACKED (column)
+ * layout — label above, value below. Fresh DOM probe of BAU-1919 right rail:
+ *   "Fix versions" label y=192, "None" value y=221 — same x=1394 → stacked
+ *   "Assignee" label y=263, avatar+name y=293 — same x=1395 → stacked
+ *   Label: 14px/500/rgb(80,82,88), Value: 14px/400/rgb(41,42,46)
+ *   Row vertical span ~71px (8px top pad + label + ~8px gap + value + 8px bottom pad)
+ * The previous session (2026-05-16) incorrectly set flexDirection:'row' based
+ * on a bad probe. This corrects it back to column/stacked parity with Jira.
  */
 function FieldRow({
   label,
+  alignBlock = 'center',
+  labelTopPad,
   children,
 }: {
   label: string;
-  /** @deprecated alignBlock and labelTopPad removed — stacked layout makes them irrelevant */
+  /** @deprecated no-op in stacked layout; kept for call-site compat */
   alignBlock?: 'start' | 'center';
+  /** @deprecated no-op; kept for call-site compat */
   labelTopPad?: boolean;
   children: React.ReactNode;
 }) {
-  /* jira-compare 2026-05-08: live DOM re-probe of BAU-5737 right rail:
-       label: 14px/500/#505258 (--ds-text-subtle), lineHeight 20px
-       value: 14px/400/#172B4D (--ds-text), lineHeight 20px
-     Supersedes K.11 stale entry (11px/600/#6B778C) — K.11 was measured from
-     a different Jira context surface that no longer reflects BAU right rail. */
   return (
-    <div style={{ padding: '4px 0 12px' }}>
+    <div style={{
+      display: 'flex', flexDirection: 'column',
+      gap: 4, padding: '8px 0',
+    }}>
       <div style={{
         fontSize: 14, fontWeight: 500, lineHeight: '20px',
         color: 'var(--ds-text-subtle, #505258)',
-        marginBottom: 2, textTransform: 'none',
       }}>
         {label}
       </div>
-      <div style={{ fontSize: 14, lineHeight: '20px', color: 'var(--ds-text, #172B4D)', minWidth: 0 }}>
+      <div style={{ fontSize: 14, lineHeight: '20px', color: 'var(--ds-text, #292A2E)', minWidth: 0 }}>
         {children}
       </div>
     </div>
@@ -497,7 +497,7 @@ export function CatalystSidebarDetails({
                 fieldId === 'labels' &&
                 (issue?.issue_type === 'Task' || issue?.issue_type === 'Story')
               ) return (
-                <FieldRow key={fieldId} label="Labels" labelTopPad>
+                <FieldRow key={fieldId} label="Labels" alignBlock="start">
                   {issue && (
                     <EditableLabels
                       issueId={issue.id}
@@ -509,7 +509,7 @@ export function CatalystSidebarDetails({
                 </FieldRow>
               );
               if (fieldId === 'fixVersions' && issue?.issue_type !== 'Feature') return (
-                <FieldRow key={fieldId} label="Fix versions" labelTopPad>
+                <FieldRow key={fieldId} label="Fix versions" alignBlock="start">
                   {issue && (
                     <EditableFixVersions
                       issueId={issue.id}
@@ -543,9 +543,10 @@ export function CatalystSidebarDetails({
           <span style={{ display: 'inline-flex', transition: 'transform 0.15s ease', transform: detailsCollapsed ? 'rotate(0deg)' : 'rotate(90deg)', color: 'var(--ds-icon-subtle, #626F86)' }}>
             <ChevronRightIcon size="small" primaryColor="currentColor" />
           </span>
-          {/* jira-compare 2026-05-11 re-probe: 16/653/20px/rgb(41,42,46) is canonical
-              section header spec (live DOM BAU-5814 + QA Bug). Corrects 2026-05-08. */}
-          <div style={{ fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}>Details</div>
+          {/* jira-compare 2026-05-11 TreeWalker probe: Details header = 16px/653 matching
+              Key details, Subtasks, LWI, Activity. All section headers share the same spec.
+              SectionHeaderTypography.test.ts verifies this from a live DOM probe. */}
+          <div style={{ margin: 0, fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}>Details</div>
         </div>
 
         {!detailsCollapsed && <div style={{ padding: '0' }}>
@@ -557,7 +558,7 @@ export function CatalystSidebarDetails({
               Vikram approved 2026-05-10.
               Feature EXCLUDED: fixVersions NOT in Feature scheme (type 10173). */}
           {issue?.issue_type !== 'Feature' && (
-            <FieldRow label="Fix versions" labelTopPad>
+            <FieldRow label="Fix versions" alignBlock="start">
               {issue && (
                 <EditableFixVersions
                   issueId={issue.id}
@@ -586,7 +587,7 @@ export function CatalystSidebarDetails({
                 <button
                   type="button"
                   onClick={handleAssignToMe}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--ds-link, #0C66E4)', fontSize: 11, textAlign: 'left', marginTop: 2 }}
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--ds-link, #1868DB)', fontSize: 11, fontWeight: 400, lineHeight: '16px', textAlign: 'left', marginTop: 4 }}
                 >
                   Assign to me
                 </button>
@@ -636,7 +637,7 @@ export function CatalystSidebarDetails({
               Vikram approved Story addition 2026-05-10. Do not widen further without
               per-type Jira screen scheme validation (anti-pattern #18). */}
           {(issue?.issue_type === 'Task' || issue?.issue_type === 'Story') && (
-            <FieldRow label="Labels" labelTopPad>
+            <FieldRow label="Labels" alignBlock="start">
               {issue && (
                 <EditableLabels
                   issueId={issue.id}
@@ -751,10 +752,10 @@ export function CatalystSidebarDetails({
               <FieldRow label="IR Demo Date">
                 <CatalystIRDemoDateDisplay issue={issue} />
               </FieldRow>
-              <FieldRow label="IR Figma Approved" labelTopPad>
+              <FieldRow label="IR Figma Approved" alignBlock="start">
                 <CatalystIRFigmaApprovedDisplay issue={issue} />
               </FieldRow>
-              <FieldRow label="IR Demo Approved" labelTopPad>
+              <FieldRow label="IR Demo Approved" alignBlock="start">
                 <CatalystIRDemoApprovedDisplay issue={issue} />
               </FieldRow>
             </>
@@ -772,35 +773,28 @@ export function CatalystSidebarDetails({
       </div>
 
       {/* ── Timestamps (canonical) ──────────────────────────────────────
-          jira-compare 2026-05-08: live DOM re-probe of Jira BAU-5737:
-            "Created" label — 14px/500/rgb(80,82,88) = #505258
-            date value      — 12px/400/rgb(80,82,88)
+          jira-compare 2026-05-16 re-probe of Jira BAU-1919 (TreeWalker):
+            Container  — 14px/400/rgb(41,42,46)
+            Label SMALL — 12px/400/rgb(80,82,88) inline before date
+            Date text   — inherits 14px from container, rgb(41,42,46)
+            No relative time ("days ago") — Jira does not render this.
+          Each timestamp is a single line: "<small>Created</small> May 14, 2026 at 4:21 PM"
           Configure CTA removed — Catalyst-specific affordance not present in
           Jira's right panel. See CatalystConfigureDrawer for the component if
           re-enabling later. */}
       <div style={{ marginTop: 'auto', padding: '12px 0 0' }}>
         {issue?.jira_created_at && (
-          <div style={{ marginBottom: 8 }}>
-            <div style={{ fontSize: 14, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text-subtle, #505258)' }}>
-              Created
-            </div>
-            <div style={{ fontSize: 12, fontWeight: 400, lineHeight: '16px', color: 'var(--ds-text-subtle, #505258)' }}
-              title={issue.jira_created_at}>
-              {fmtJiraDate(issue.jira_created_at)}
-              <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}> · {fmtRelative(issue.jira_created_at)}</span>
-            </div>
+          <div style={{ marginBottom: 6, fontSize: 14, fontWeight: 400, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}
+            title={issue.jira_created_at}>
+            <small style={{ fontSize: 12, fontWeight: 400, color: 'var(--ds-text-subtle, #505258)', marginRight: 4 }}>Created</small>
+            {fmtJiraDate(issue.jira_created_at)}
           </div>
         )}
         {issue?.jira_updated_at && (
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text-subtle, #505258)' }}>
-              Updated
-            </div>
-            <div style={{ fontSize: 12, fontWeight: 400, lineHeight: '16px', color: 'var(--ds-text-subtle, #505258)' }}
-              title={issue.jira_updated_at}>
-              {fmtJiraDate(issue.jira_updated_at)}
-              <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}> · {fmtRelative(issue.jira_updated_at)}</span>
-            </div>
+          <div style={{ fontSize: 14, fontWeight: 400, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}
+            title={issue.jira_updated_at}>
+            <small style={{ fontSize: 12, fontWeight: 400, color: 'var(--ds-text-subtle, #505258)', marginRight: 4 }}>Updated</small>
+            {fmtJiraDate(issue.jira_updated_at)}
           </div>
         )}
       </div>

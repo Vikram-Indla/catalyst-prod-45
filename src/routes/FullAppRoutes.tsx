@@ -18,7 +18,8 @@ import { RouteRoleGuard } from "../components/RouteRoleGuard";
 const FeatureFlagsPage = lazy(() => import("../pages/admin/FeatureFlagsPage"));
 const AdminIconsPage = lazy(() => import("../pages/admin/icons/AdminIconsPage"));
 const AdminAvatarsPage = lazy(() => import("../pages/admin/avatars/AdminAvatarsPage"));
-const WorkListPageLazy = lazy(() => import("../pages/BacklogPage"));
+const ComponentsAdminPage = lazy(() => import("../pages/admin/components/ComponentsAdminPage"));
+const WorkListPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogPage.atlaskit"));
 
 // ─── Lazy page imports ───────────────────────────────────────────
 const KBAdminSetup = ENABLE_AI ? lazy(() => import("../pages/KBAdminSetup")) : () => <FeatureComingSoon title="KB Admin" />;
@@ -108,6 +109,11 @@ const RequirementAssistOutput = ENABLE_AI ? lazy(() => import("../pages/producth
 const ProductCardsPage = lazy(() => import("../pages/producthub/CardsPage"));
 // Block C/D (2026-05-01) — All Products listing for /product-hub/products.
 const AllProductsPage = lazy(() => import("../pages/product-hub/AllProductsPage"));
+// 2026-05-16: per-product adapters — resolve products table, mount canonical components
+const ProductHubBacklogAdapter = lazy(() => import("../pages/product-hub/ProductHubPageAdapters"));
+const ProductHubAllWorkAdapter = lazy(() => import("../pages/product-hub/ProductHubPageAdapters").then(m => ({ default: m.ProductHubAllWorkAdapter })));
+// INV product-scoped backlog (legacy — superseded by ProductHubBacklogAdapter 2026-05-16).
+const InvestorJourneyBacklogPage = lazy(() => import("../pages/product-hub/InvestorJourneyBacklogPage"));
 const IdeationPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeationPage")) : () => <FeatureComingSoon title="Ideation" />;
 const IdeasRoadmapPage = ENABLE_AI ? lazy(() => import("../pages/product/ideas/IdeasRoadmapPage")) : () => <FeatureComingSoon title="Ideas Roadmap" />;
 const IdeasBacklogPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeasBacklogPage")) : () => <FeatureComingSoon title="Ideas Backlog" />;
@@ -359,6 +365,7 @@ const MiningComingSoon = lazy(() => import("../pages/enterprise/MiningComingSoon
 const IndustryPage = lazy(() => import("../pages/enterprise/DemandIntakeCatalyst"));
 const IndustryComingSoon = lazy(() => import("../pages/enterprise/IndustryComingSoon"));
 const DemandSummaryPage = lazy(() => import("../pages/enterprise/DemandSummaryPage"));
+const ProductDashboardPageV2 = lazy(() => import("../components/product-dashboard/ProductDashboardPage").then(m => ({ default: m.ProductDashboardPage })));
 const ProductRoomPage = lazy(() => import("../pages/ProductRoomPage"));
 const CapacityPlanningPage = lazy(() => import("../pages/CapacityPlanningPage"));
 // CatalystDemandKanban removed during Kanban consolidation (Phase 8); route was never wired.
@@ -482,21 +489,25 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/backlog" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
         <Route path="/product-hub/table" element={<MG k="producthub" t="ProductHub"><S><CatalystDemandTable /></S></MG>} />
         <Route path="/product-hub/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
-        <Route path="/product-hub/dashboard" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
+        {/* /product-hub/dashboard deprecated 2026-05-16 — redirects to products list */}
+        <Route path="/product-hub/dashboard" element={<Navigate to="/product-hub/products" replace />} />
+        <Route path="/product-hub/product-dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
         {/* Block D Phase 2.5 (2026-05-01) — product-scoped drilldown routes.
-            Mirror of /project-hub/{KEY}/* on the project side. The :code param
-            resolves against public.products.code (MINI/SEN/ENT/UNA). Pages
-            read useParams().code, look up the product, and scope their data.
-            Data filter is UI-only until ph_requests gains a product_id FK in
-            a follow-up migration — see lesson note in CLAUDE.md. */}
-        <Route path="/product-hub/:code/backlog" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
-        <Route path="/product-hub/:code/boards" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
-        <Route path="/product-hub/:code/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
-        <Route path="/product-hub/:code/allwork" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
-        <Route path="/product-hub/:code/dashboard" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
-        <Route path="/product-hub/:code/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
-        <Route path="/product-hub/:code/cards" element={<MG k="producthub" t="ProductHub"><S><ProductCardsPage /></S></MG>} />
-        <Route path="/product-hub/:code/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
+            Mirror of /project-hub/{KEY}/* on the project side.
+            :key param resolves against public.products.code (INV/MINI/SEN/ENT).
+            Canonical project-hub components are reused; ph_issues holds the
+            product data (project_key = product code, e.g. 'INV').
+            2026-05-16: renamed :code → :key so canonical components that read
+            useParams().key work without adaptation. */}
+        {/* Generic per-product routes — canonical components, same as project-hub */}
+        <Route path="/product-hub/:key/backlog" element={<MG k="producthub" t="ProductHub"><S><ProductHubBacklogAdapter /></S></MG>} />
+        <Route path="/product-hub/:key/boards" element={<MG k="producthub" t="ProductHub"><S><KanbanBoardPageLazy /></S></MG>} />
+        <Route path="/product-hub/:key/kanban" element={<MG k="producthub" t="ProductHub"><S><KanbanBoardPageLazy /></S></MG>} />
+        <Route path="/product-hub/:key/allwork" element={<MG k="producthub" t="ProductHub"><S><ProductHubAllWorkAdapter /></S></MG>} />
+        <Route path="/product-hub/:key/dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
+        <Route path="/product-hub/:key/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
+        <Route path="/product-hub/:key/cards" element={<MG k="producthub" t="ProductHub"><S><ProductCardsPage /></S></MG>} />
+        <Route path="/product-hub/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/product-hub/roadmaps" element={<Navigate to="/product-hub/roadmap" replace />} />
         <Route path="/product-hub/roadmaps-v1" element={<MG k="producthub" t="ProductHub"><S><IndustryRoadmapPage /></S></MG>} />
         <Route path="/product-hub/reports" element={<MG k="producthub" t="ProductHub"><S><IndustryComingSoon /></S></MG>} />
@@ -519,7 +530,7 @@ export default function FullAppRoutes() {
         <Route path="/producthub/backlog" element={<Navigate to="/product-hub/backlog" replace />} />
         <Route path="/producthub/table" element={<Navigate to="/product-hub/table" replace />} />
         <Route path="/producthub/kanban" element={<Navigate to="/product-hub/kanban" replace />} />
-        <Route path="/producthub/dashboard" element={<Navigate to="/product-hub/dashboard" replace />} />
+        <Route path="/producthub/dashboard" element={<Navigate to="/product-hub/products" replace />} />
         <Route path="/producthub/roadmaps" element={<Navigate to="/product-hub/roadmap" replace />} />
         <Route path="/producthub/roadmaps-v1" element={<Navigate to="/product-hub/roadmaps-v1" replace />} />
         <Route path="/producthub/reports" element={<Navigate to="/product-hub/reports" replace />} />
@@ -867,6 +878,8 @@ export default function FullAppRoutes() {
           <Route path="notification-triggers" element={<S><NotificationTriggers /></S>} />
           <Route path="settings/notifications" element={<S><UserNotificationSettingsPage /></S>} />
           <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
+          {/* Design system pocket — preflight 2026-05-17 consolidation. */}
+          <Route path="components" element={<S><ComponentsAdminPage /></S>} />
           {/* RESET ICONS — runtime asset override management. Admin-only. */}
           <Route path="icons" element={<S><AdminIconsPage /></S>} />
           <Route path="avatars" element={<S><AdminAvatarsPage /></S>} />

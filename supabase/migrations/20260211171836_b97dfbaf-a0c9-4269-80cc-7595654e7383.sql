@@ -148,25 +148,25 @@ ALTER TABLE tm_test_sets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tm_test_set_cases ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view test sets in their projects" ON tm_test_sets FOR SELECT
-  USING (project_id IN (SELECT project_id FROM project_members WHERE user_id = auth.uid()));
+  USING (public.current_user_is_approved());
 
 CREATE POLICY "Users can create test sets" ON tm_test_sets FOR INSERT
-  WITH CHECK (project_id IN (SELECT project_id FROM project_members WHERE user_id = auth.uid()));
+  WITH CHECK (public.current_user_is_approved());
 
 CREATE POLICY "Users can update test sets" ON tm_test_sets FOR UPDATE
-  USING (project_id IN (SELECT project_id FROM project_members WHERE user_id = auth.uid()));
+  USING (public.current_user_is_approved());
 
 CREATE POLICY "Users can delete test sets" ON tm_test_sets FOR DELETE
-  USING (project_id IN (SELECT project_id FROM project_members WHERE user_id = auth.uid()));
+  USING (public.current_user_is_approved());
 
 CREATE POLICY "Users can view test set cases" ON tm_test_set_cases FOR SELECT
-  USING (test_set_id IN (SELECT id FROM tm_test_sets WHERE project_id IN (SELECT project_id FROM project_members WHERE user_id = auth.uid())));
+  USING (test_set_id IN (SELECT id FROM tm_test_sets WHERE public.current_user_is_approved()));
 
 CREATE POLICY "Users can manage test set cases" ON tm_test_set_cases FOR INSERT
-  WITH CHECK (test_set_id IN (SELECT id FROM tm_test_sets WHERE project_id IN (SELECT project_id FROM project_members WHERE user_id = auth.uid())));
+  WITH CHECK (test_set_id IN (SELECT id FROM tm_test_sets WHERE public.current_user_is_approved()));
 
 CREATE POLICY "Users can update test set cases" ON tm_test_set_cases FOR UPDATE
-  USING (test_set_id IN (SELECT id FROM tm_test_sets WHERE project_id IN (SELECT project_id FROM project_members WHERE user_id = auth.uid())));
+  USING (test_set_id IN (SELECT id FROM tm_test_sets WHERE public.current_user_is_approved()));
 
 CREATE POLICY "Users can delete test set cases" ON tm_test_set_cases FOR DELETE
-  USING (test_set_id IN (SELECT id FROM tm_test_sets WHERE project_id IN (SELECT project_id FROM project_members WHERE user_id = auth.uid())));
+  USING (test_set_id IN (SELECT id FROM tm_test_sets WHERE public.current_user_is_approved()));

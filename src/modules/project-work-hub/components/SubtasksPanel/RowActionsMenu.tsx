@@ -45,10 +45,10 @@ export function RowActionsMenu({ onOpen, onRename, onDelete }: RowActionsMenuPro
       </DropdownItemGroup>
       <DropdownItemGroup>
         <DropdownItem
-          elemBefore={<Trash2 size={14} color="#BF2600" />}
+          elemBefore={<Trash2 size={14} color="var(--ds-text-danger, #AE2A19)" />}
           onClick={() => onDelete()}
         >
-          <span style={{ color: '#BF2600' }}>Delete</span>
+          <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>Delete</span>
         </DropdownItem>
       </DropdownItemGroup>
     </DropdownMenu>

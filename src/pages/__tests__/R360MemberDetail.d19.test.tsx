@@ -11,6 +11,7 @@ import React from 'react';
 import { render, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // ── Heavy deps stubbed so the component can mount in jsdom ────────────────────
 
@@ -36,7 +37,7 @@ vi.mock('@/components/r360/R360ProfileDrawer', () => ({
   default: () => null,
 }));
 
-vi.mock('./r360-member', () => ({
+vi.mock('../r360-member', () => ({
   getWeekRange: () => ({ start: new Date(), end: new Date(), label: 'Week 20' }),
   getMonthRange: () => ({ start: new Date(), end: new Date(), label: 'May 2026' }),
   WeekStripCollapsible: () => null,
@@ -54,6 +55,14 @@ vi.mock('@/components/resource360/r360-member.css', () => ({}));
 
 import R360MemberDetail from '../R360MemberDetail';
 
+function wrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      {children}
+    </QueryClientProvider>
+  );
+}
+
 describe('R360MemberDetail — D-19 scroll reset guard', () => {
   beforeEach(() => {
     vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
@@ -64,6 +73,7 @@ describe('R360MemberDetail — D-19 scroll reset guard', () => {
       <MemoryRouter>
         <R360MemberDetail resourceId="res-1" embedded={true} />
       </MemoryRouter>,
+      { wrapper },
     );
 
     // Clear any calls from initial mount
@@ -88,6 +98,7 @@ describe('R360MemberDetail — D-19 scroll reset guard', () => {
       <MemoryRouter>
         <R360MemberDetail resourceId="res-1" embedded={false} />
       </MemoryRouter>,
+      { wrapper },
     );
 
     await act(async () => {

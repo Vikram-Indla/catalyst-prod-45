@@ -8,7 +8,21 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+vi.mock('@/lib/auth', () => ({
+  useAuth: () => ({ user: { id: 'test-user' }, session: null }),
+}));
+
 import ForYouTabs, { FOR_YOU_TAB_ORDER } from '@/components/for-you/atlaskit/ForYouTabs';
+
+function wrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      {children}
+    </QueryClientProvider>
+  );
+}
 import type { TabType } from '@/hooks/useForYouData';
 
 // Minimal tabCounts — must include 'r360' once TabType has it
@@ -42,7 +56,8 @@ describe('ForYouTabs — Resource 360° tab', () => {
         activeTab="r360"
         tabCounts={COUNTS}
         onChange={vi.fn()}
-      />
+      />,
+      { wrapper }
     );
     expect(
       screen.getByRole('tab', { name: /Resource 360°/i })
@@ -55,7 +70,8 @@ describe('ForYouTabs — Resource 360° tab', () => {
         activeTab="r360"
         tabCounts={COUNTS}
         onChange={vi.fn()}
-      />
+      />,
+      { wrapper }
     );
     const tab = screen.getByRole('tab', { name: /Resource 360°/i });
     expect(tab).toHaveAttribute('aria-selected', 'true');
@@ -67,7 +83,8 @@ describe('ForYouTabs — Resource 360° tab', () => {
         activeTab="recommended"
         tabCounts={{ ...COUNTS, r360: 99 }}
         onChange={vi.fn()}
-      />
+      />,
+      { wrapper }
     );
     // The tab label renders but the count badge should NOT be present,
     // because showCount:false means the badge is suppressed regardless of count.

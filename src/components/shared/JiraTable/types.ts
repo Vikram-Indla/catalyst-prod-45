@@ -52,6 +52,8 @@ export interface Column<TRow> {
   align?: 'start' | 'center' | 'end';
   /** Always shown (cannot be hidden via column picker). */
   alwaysVisible?: boolean;
+  /** When true the column is completely excluded from rendering (e.g. drag handle when sort is active). */
+  hidden?: boolean;
   /** Default visibility (column picker uses this to seed state). */
   defaultVisible?: boolean;
   /** Extract the sort/edit value from the row. Defaults to row[id]. */
@@ -71,6 +73,8 @@ export interface Column<TRow> {
   hasActiveFilter?: boolean;
   /** Optional row-level visibility gate — if present and returns false, the column is hidden for that row. */
   include?: (row: TRow) => boolean;
+  /** Optional custom styles applied to the header <th> element. */
+  headerStyle?: React.CSSProperties;
 }
 
 /** Group definition for grouped rows. */
@@ -129,6 +133,29 @@ export interface JiraTableProps<TRow> {
   rowsPerPage?: number;
   page?: number;
   onPageChange?: (next: number) => void;
+  /**
+   * Row-count footer (2026-05-17 jira-compare): when data.length > 0 and
+   * not grouping, renders a small "{N} of {Total} items" indicator at the
+   * bottom of the table. Mirrors Jira's "50 of 1000+" list footer.
+   * - `showRowCount` defaults to `true`.
+   * - `totalRowCount` is the un-filtered total. When omitted, falls back
+   *   to data.length so the indicator reads "{N} items".
+   */
+  showRowCount?: boolean;
+  totalRowCount?: number;
+  /**
+   * Row-level drag handle (2026-05-17 jira-compare cycle 2): when set, the
+   * canonical renders the returned node as an absolute-positioned overlay
+   * anchored to the row's left edge — outside the column flow — matching
+   * Jira's grip-on-row-hover pattern. Avoids the wasted-column-width cost
+   * of a dedicated __drag column.
+   * - `renderRowDragHandle(row)` returns the handle JSX. Caller wires
+   *   dnd-kit (or equivalent) inside the returned node.
+   * - `rowDragHandleHidden` mirrors the Jira behavior of hiding the
+   *   handle when a non-default sort or grouping is active.
+   */
+  renderRowDragHandle?: (row: TRow) => ReactNode;
+  rowDragHandleHidden?: boolean;
   /** Currently-focused row key (keyboard nav). */
   focusedRowId?: string;
   /** Called when keyboard nav moves focus. Parent may persist or scroll. */
@@ -234,6 +261,19 @@ export interface JiraTableProps<TRow> {
   }>;
 
   /**
+   * Seed JiraTable's internal column-width state on mount. Keys are column ids,
+   * values are pixel widths. Merged with natural widths — user override wins.
+   * Use with `onColumnWidthsChange` for localStorage persistence.
+   */
+  initialColumnWidths?: Record<string, number>;
+  /**
+   * Called whenever the user finishes resizing a column (on mouseup).
+   * Receives the full map of all user-overridden column widths.
+   * Use this to persist to localStorage or URL params.
+   */
+  onColumnWidthsChange?: (widths: Record<string, number>) => void;
+
+  /**
    * Enable column reorder via drag-and-drop on header cells. When `true`,
    * non-structural columns (id NOT starting with `__`) gain a grab cursor on
    * their header and can be dragged to a new position. Order is held in
@@ -257,10 +297,31 @@ export interface JiraTableProps<TRow> {
   enableVirtualization?: boolean;
 
   /**
+   * Feature flag: when true, the group header '+' button is rendered and
+   * `onAddToGroup` callback is invoked on click. When false (default), the
+   * group header '+' button is completely hidden regardless of whether
+   * `onAddToGroup` is passed.
+   *
+   * Default: false. Existing consumers see no change.
+   */
+  enableGroupCreateButton?: boolean;
+
+  /**
+   * Feature flag: when true, renders the sticky inline-create footer row
+   * pinned to the viewport bottom. When false (default), the footer is
+   * completely hidden regardless of whether `stickyCreateFooter` is passed.
+   *
+   * Default: false. Existing consumers see no change.
+   */
+  enableStickyCreateFooter?: boolean;
+
+  /**
    * Jira-parity: sticky inline-create footer row always visible at the
    * bottom of the table. When provided, renders a <tfoot> row pinned to
    * the viewport bottom. `placeholder` is shown in idle state; `active`
    * replaces it when the consumer has opened the create form.
+   *
+   * Only rendered when `enableStickyCreateFooter` is true.
    */
   stickyCreateFooter?: {
     /** Placeholder text shown in idle state. Default: '+ What needs to be done?' */

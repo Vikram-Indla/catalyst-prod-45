@@ -3,13 +3,27 @@
  * All colors use CSS custom properties for dark mode compliance
  */
 
-import React from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { format, differenceInDays } from 'date-fns';
 import type { RequestStatus } from '@/types/request';
 import { STATUS_DISPLAY, getPriorityLevel, getAvatarColor, getInitials } from '@/types/request';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { BusinessRequestIcon } from '@/components/producthub/shared/BusinessRequestBadge';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import Avatar from '@atlaskit/avatar';
+import { useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useActiveUsers } from '@/hooks/useActiveUsers';
 
+/* ── Type mapping helper ── */
+function mapBrTypeToIconType(requestType: string): string {
+  const t = (requestType || '').toLowerCase().trim();
+  // request_type values: 'feature', 'gap', 'integration', 'data_request'
+  if (t === 'gap') return 'business gap';
+  if (t === 'data_request' || t === 'data request') return 'task'; // Data requests use task icon
+  return t; // 'feature' and 'integration' map directly
+}
 
 /* ── Status Cell ── */
 export const StatusCell = React.memo(function StatusCell({ status }: { status: RequestStatus }) {
@@ -52,28 +66,133 @@ export const ScoreCell = React.memo(function ScoreCell({ score }: { score: numbe
   );
 });
 
-/* ── Assignee Cell ── */
-export const AssigneeCell = React.memo(function AssigneeCell({ name, avatarUrl }: { name: string | null; avatarUrl?: string }) {
-  if (!name) {
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <div style={{ width: 22, height: 22, borderRadius: '50%', border: '1.5px dashed var(--cp-border-strong)', background: 'transparent', flexShrink: 0 }} />
-        <span style={{ fontSize: 13, color: 'var(--cp-text-muted)' }}>Unassigned</span>
-      </div>
-    );
-  }
-  return (
-    <div className="pb-assignee">
-      {avatarUrl ? (
-        <img src={avatarUrl} alt={name} className="pb-avatar" style={{ objectFit: 'cover' }} />
-      ) : (
-        <div className="pb-avatar" style={{ backgroundColor: getAvatarColor(name) }}>
-          {getInitials(name)}
-        </div>
-      )}
-      <span className="pb-assignee-name">{name}</span>
-    </div>
+/* ── Assignee Cell — Atlaskit Avatar + inline picker ── */
+export const AssigneeCell = React.memo(function AssigneeCell({
+  name, avatarUrl, requestId,
+}: { name: string | null; avatarUrl?: string; requestId?: string }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [saving, setSaving] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const queryClient = useQueryClient();
+  const { data: users = [] } = useActiveUsers();
+
+  const openPicker = useCallback((e: React.MouseEvent) => {
+    if (!requestId) return;
+    e.stopPropagation();
+    const r = triggerRef.current?.getBoundingClientRect();
+    if (r) setPos({ top: r.bottom + 4, left: r.left });
+    setSearch('');
+    setOpen(true);
+  }, [requestId]);
+
+  useEffect(() => {
+    if (!open) return;
+    const handle = (e: MouseEvent) => {
+      if (
+        triggerRef.current?.contains(e.target as Node) ||
+        popupRef.current?.contains(e.target as Node)
+      ) return;
+      setOpen(false);
+    };
+    document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, [open]);
+
+  const handleSelect = useCallback(async (userId: string, userName: string) => {
+    if (!requestId) return;
+    setSaving(true);
+    setOpen(false);
+    await (supabase as any).from('ph_requests').update({ assignee_id: userId }).eq('id', requestId);
+    queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
+    setSaving(false);
+  }, [requestId, queryClient]);
+
+  const filtered = users.filter(u =>
+    !search ||
+    u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+    u.email.toLowerCase().includes(search.toLowerCase()),
   );
+
+  const trigger = (
+    <button
+      ref={triggerRef}
+      onClick={openPicker}
+      title={requestId ? 'Click to change assignee' : undefined}
+      style={{
+        display: 'inline-flex', alignItems: 'center', gap: 6,
+        background: 'none', border: 'none', padding: 0, cursor: requestId ? 'pointer' : 'default',
+        borderRadius: 4, outline: 'none',
+        opacity: saving ? 0.5 : 1,
+      }}
+    >
+      <Avatar
+        src={avatarUrl}
+        name={name || 'Unassigned'}
+        size="small"
+        appearance="circle"
+      />
+      <span style={{ fontSize: 13, color: name ? 'var(--ds-text, #172B4D)' : 'var(--cp-text-muted)' }}>
+        {name || 'Unassigned'}
+      </span>
+    </button>
+  );
+
+  const picker = open ? createPortal(
+    <div
+      ref={popupRef}
+      style={{
+        position: 'fixed', top: pos.top, left: pos.left, zIndex: 99999,
+        width: 240, maxHeight: 280, overflowY: 'auto',
+        background: 'var(--ds-surface-overlay, #fff)',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+        borderRadius: 4, boxShadow: '0 4px 16px rgba(0,0,0,0.16)',
+        fontFamily: 'var(--cp-font-body)',
+      }}
+    >
+      <div style={{ padding: '8px 8px 4px' }}>
+        <input
+          autoFocus
+          placeholder="Search people…"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          onClick={e => e.stopPropagation()}
+          style={{
+            width: '100%', boxSizing: 'border-box',
+            padding: '6px 8px', fontSize: 13, border: '2px solid var(--ds-border-focused, #0052CC)',
+            borderRadius: 3, outline: 'none', background: 'var(--ds-background-input, #fff)',
+            color: 'var(--ds-text, #172B4D)',
+          }}
+        />
+      </div>
+      {filtered.map(u => (
+        <button
+          key={u.id}
+          onClick={e => { e.stopPropagation(); handleSelect(u.id, u.full_name || u.email); }}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            width: '100%', padding: '7px 10px', border: 'none',
+            background: 'none', cursor: 'pointer', textAlign: 'left',
+          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none'; }}
+        >
+          <Avatar src={u.avatar_url || undefined} name={u.full_name || u.email} size="xsmall" />
+          <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {u.full_name || u.email}
+          </span>
+        </button>
+      ))}
+      {filtered.length === 0 && (
+        <div style={{ padding: '10px 12px', fontSize: 13, color: 'var(--cp-text-muted)' }}>No users found</div>
+      )}
+    </div>,
+    document.body,
+  ) : null;
+
+  return <>{trigger}{picker}</>;
 });
 
 /* ── Date Cell ── */
@@ -148,15 +267,18 @@ export const TypeIconCell = React.memo(function TypeIconCell() {
 
 /* ── Type Cell — Block D (2026-05-01)
    Renders the ticket type as icon + lozenge label. Reads from
-   `request.type` (Feature, Gap, Integration, Data Request, Business
-   Request) — matches the discriminator on mim_business_requests.
-   Falls back to "Business Request" so legacy Catalyst rows render. */
-export const TypeCell = React.memo(function TypeCell({ type }: { type?: string | null }) {
-  const t = type || 'Business Request';
+   `request.request_type` (feature, gap, integration, data_request)
+   and maps to JiraIssueTypeIcon. Falls back to "Business Request"
+   so legacy Catalyst rows without request_type render. */
+export const TypeCell = React.memo(function TypeCell({ requestType }: { requestType?: string | null }) {
+  const displayLabel = requestType
+    ? requestType.charAt(0).toUpperCase() + requestType.slice(1).replace(/_/g, ' ')
+    : 'Business Request';
+  const iconType = requestType ? mapBrTypeToIconType(requestType) : 'business request';
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }} title={t}>
-      <BusinessRequestIcon size={14} />
-      <span style={{ fontSize: 12, color: 'var(--cp-text-secondary)' }}>{t}</span>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }} title={displayLabel}>
+      <JiraIssueTypeIcon type={iconType} size={14} />
+      <span style={{ fontSize: 12, color: 'var(--cp-text-secondary)' }}>{displayLabel}</span>
     </span>
   );
 });

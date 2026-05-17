@@ -74,6 +74,14 @@ const STATUS_APPEARANCE: Record<string, LozengeAppearance> = {
   'beta ready': 'success',
   'resolved': 'success',
 
+  // ── Done / resolved bucket (Jira statusCategory = 'done') ──
+  // jira-compare 2026-05-16: BAU DOM probe on BAU-5922 confirmed "Ready for QA"
+  // renders bg rgb(148,199,72) (lime green = success). Previously mapped to
+  // 'default' (grey) which was wrong. These statuses belong in the done bucket
+  // per BAU's Jira workflow configuration.
+  'ready for qa': 'success',
+  'ready for review': 'success',
+
   // ── In-flight bucket ──
   'in progress': 'inprogress',
   'in development': 'inprogress',
@@ -93,10 +101,9 @@ const STATUS_APPEARANCE: Record<string, LozengeAppearance> = {
   'todo': 'default',
   'open': 'default',
   'new': 'default',
-  'ready for development': 'default',
+  // Note: 'ready for development' appears twice in original — keeping inprogress
+  // variant (defined above in the Specials block) which takes precedence.
   'technical validation': 'default',
-  'ready for qa': 'default',
-  'ready for review': 'default',
 };
 
 /**

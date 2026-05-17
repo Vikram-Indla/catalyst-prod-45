@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import Button from '@atlaskit/button/new';
+import Button, { IconButton } from '@atlaskit/button/new';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
@@ -186,15 +186,15 @@ export function ImportStepSetup({
                   {(file.size / 1024).toFixed(1)} KB
                 </p>
               </div>
-              <Button
+              <IconButton
                 appearance="subtle"
                 onClick={(e) => {
                   e.stopPropagation();
                   onClearFile();
                   setError(null);
                 }}
-                iconBefore={CrossIcon}
-              />
+                icon={CrossIcon}
+              label="" />
             </div>
           )}
           

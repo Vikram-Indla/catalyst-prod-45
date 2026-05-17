@@ -1,4 +1,5 @@
 import { Avatar, Tooltip, type AvatarSize as AdsAvatarSize } from '@/components/ads';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { Bot, CircleUser, Settings } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
@@ -89,7 +90,7 @@ export function CatalystOwnerAvatar({
     type === 'human' ? (
       <span className={cn('inline-flex flex-shrink-0', className)}>
         <Avatar
-          src={avatarUrl}
+          src={resolveAvatarUrl(name) ?? avatarUrl}
           name={name || displayInitials}
           size={adsSizeMap[size]}
         />

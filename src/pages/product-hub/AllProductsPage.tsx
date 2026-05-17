@@ -23,22 +23,21 @@
 import { useMemo, useState, useCallback, useEffect, lazy, Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link as RouterLink } from 'react-router-dom';
-import { Plus } from '@/lib/atlaskit-icons';
+import { Plus, Star, MoreHorizontal } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
-import DynamicTable from '@atlaskit/dynamic-table';
-import EmptyState from '@atlaskit/empty-state';
 import Avatar from '@atlaskit/avatar';
 import Textfield from '@atlaskit/textfield';
 import DropdownMenu, {
   DropdownItem,
   DropdownItemGroup,
 } from '@atlaskit/dropdown-menu';
-import StarIcon from '@atlaskit/icon/glyph/star';
 import StarFilledIcon from '@atlaskit/icon/glyph/star-filled';
-import MoreIcon from '@atlaskit/icon/glyph/more';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { token } from '@atlaskit/tokens';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
+import { ResizableTableHeader } from '@/components/shared/ResizableTableHeader';
+import '@/styles/product-backlog.css';
 
 const CreateProductModal = lazy(() =>
   import('@/components/product-hub/CreateProductModal').then((m) => ({
@@ -61,26 +60,27 @@ interface Product {
 const FAV_STORAGE_KEY = 'product-hub.favorites';
 
 /**
- * Column shape mirrors Jira /jira/projects probe (Lane A):
- *   col 1 — star (no header text)
+ * Column shape mirrors Jira /jira/projects probe (Lane A) and AllProjectsTable:
+ *   col 1 — star (no header text, locked)
  *   col 2 — Name
  *   col 3 — Key
  *   col 4 — Type
  *   col 5 — Lead
  *   col 6 — Category
- *   col 7 — ⋯ actions (no header text)
+ *   col 7 — ⋯ actions (no header text, locked)
+ *
+ * Uses ResizableTableHeader + useTableColumns to match AllProjectsTable
+ * drag-and-resize behaviour (design-critique 2026-05-16).
  */
-const HEAD = {
-  cells: [
-    { key: 'star',     content: '',         isSortable: false, width: 4 },
-    { key: 'name',     content: 'Name',     isSortable: true,  width: 28 },
-    { key: 'code',     content: 'Key',      isSortable: true,  width: 10 },
-    { key: 'type',     content: 'Type',     isSortable: false, width: 18 },
-    { key: 'lead',     content: 'Lead',     isSortable: false, width: 18 },
-    { key: 'category', content: 'Category', isSortable: false, width: 16 },
-    { key: 'actions',  content: '',         isSortable: false, width: 6 },
-  ],
-};
+const PRODUCT_COLUMNS: TColDef[] = [
+  { key: 'star',     label: '',         defaultWidth: 36,  minWidth: 36,  locked: true },
+  { key: 'name',     label: 'Name',     defaultWidth: 280, minWidth: 160 },
+  { key: 'code',     label: 'Key',      defaultWidth: 90,  minWidth: 60 },
+  { key: 'type',     label: 'Type',     defaultWidth: 160, minWidth: 100 },
+  { key: 'lead',     label: 'Lead',     defaultWidth: 180, minWidth: 120 },
+  { key: 'category', label: 'Category', defaultWidth: 220, minWidth: 100 },
+  { key: 'actions',  label: '',         defaultWidth: 40,  minWidth: 40,  locked: true },
+];
 
 function loadFavorites(): Set<string> {
   try {
@@ -106,6 +106,12 @@ export default function AllProductsPage() {
   const [favorites, setFavorites] = useState<Set<string>>(() => loadFavorites());
   const [filterType, setFilterType] = useState<string | null>(null);
   const [filterLead, setFilterLead] = useState<string | null>(null);
+
+  // Resizable / drag-reorder columns — matches AllProjectsTable pattern
+  const {
+    orderedColumns, columnWidths, dragKey, dragOverKey,
+    onResizeStart, onDragStart, onDragOver, onDragEnd,
+  } = useTableColumns('products', PRODUCT_COLUMNS);
 
   useEffect(() => {
     saveFavorites(favorites);
@@ -166,24 +172,19 @@ export default function AllProductsPage() {
     });
   }, [products, searchQuery, favorites, filterLead, filterType]);
 
-  const rows = useMemo(() => {
-    return filteredProducts.map((p) => {
-      const isFav = favorites.has(p.id);
-      return {
-        key: p.id,
-        cells: [
-          /* col 1 — star toggle */
-          {
-            key: 'star',
-            content: (
+  // Cell renderer — one function per column key, returns <td> content
+  const renderCell = useCallback((colKey: string, p: Product) => {
+    const isFav = favorites.has(p.id);
+    switch (colKey) {
+      case 'star':
+        return (
+          <td key={colKey} style={{ width: columnWidths['star'] || 36, overflow: 'visible', textOverflow: 'clip' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <button
                 type="button"
                 aria-label={isFav ? 'Unstar product' : 'Star product'}
                 aria-pressed={isFav}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleFavorite(p.id);
-                }}
+                onClick={(e) => { e.stopPropagation(); toggleFavorite(p.id); }}
                 style={{
                   background: 'transparent',
                   border: 'none',
@@ -193,135 +194,111 @@ export default function AllProductsPage() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   borderRadius: 3,
-                  color: isFav
-                    ? token('color.icon.warning')
-                    : token('color.icon.subtle'),
+                  color: isFav ? token('color.icon.warning') : token('color.icon.subtle'),
+                  outline: 'none',
                 }}
               >
                 {isFav ? (
                   <StarFilledIcon label="" size="small" />
                 ) : (
-                  <StarIcon label="" size="small" />
+                  <Star size={14} fill="none" />
                 )}
               </button>
-            ),
-          },
-          /* col 2 — name (icon + anchor → drilldown) */
-          {
-            key: 'name',
-            content: (
+            </div>
+          </td>
+        );
+
+      case 'name':
+        return (
+          <td key={colKey}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
+              <span
+                aria-hidden="true"
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: 3,
+                  background: p.color || token('color.background.brand.bold'),
+                  color: token('color.text.inverse'),
+                  fontSize: 11,
+                  fontWeight: 700,
+                  fontFamily: 'var(--cp-font-mono)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                {p.code.slice(0, 2)}
+              </span>
               <RouterLink
                 to={`/product-hub/${p.code}/backlog`}
+                title={p.name}
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  textDecoration: 'none',
+                  fontSize: 14,
+                  fontWeight: 400,
                   color: token('color.link'),
+                  fontFamily: 'var(--cp-font-body)',
+                  textDecoration: 'none',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  flex: 1,
+                  minWidth: 0,
                 }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.textDecoration =
-                    'underline';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.textDecoration =
-                    'none';
-                }}
+                onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
               >
-                <span
-                  aria-hidden="true"
-                  style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: 3,
-                    background: p.color || token('color.background.brand.bold'),
-                    color: token('color.text.inverse'),
-                    fontSize: 11,
-                    fontWeight: 700,
-                    fontFamily: 'var(--cp-font-mono)',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  {p.code.slice(0, 2)}
-                </span>
-                <span
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 500,
-                  }}
-                >
-                  {p.name}
-                </span>
+                {p.name}
               </RouterLink>
-            ),
-          },
-          /* col 3 — key (plain text, no anchor; Name is the click target) */
-          {
-            key: 'code',
-            content: (
-              <span
-                style={{
-                  fontFamily: 'var(--cp-font-mono)',
-                  fontSize: 12,
-                  fontWeight: 500,
-                  color: token('color.text.subtle'),
-                }}
-              >
-                {p.code}
-              </span>
-            ),
-          },
-          /* col 4 — type (lozenge; placeholder text matching Jira's
-                     "Company-managed software" / "Team-managed business" pattern) */
-          {
-            key: 'type',
-            content: (
-              <span
-                style={{ fontSize: 13, color: token('color.text.subtle') }}
-              >
-                Product line
-              </span>
-            ),
-          },
-          /* col 5 — lead (avatar + name) */
-          {
-            key: 'lead',
-            content: p.owner_id ? (
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                }}
-              >
+            </div>
+          </td>
+        );
+
+      case 'code':
+        return (
+          <td key={colKey}>
+            <span
+              style={{
+                fontFamily: 'var(--cp-font-mono)',
+                fontSize: 12,
+                fontWeight: 500,
+                color: token('color.text.subtle'),
+                letterSpacing: '0.02em',
+              }}
+            >
+              {p.code}
+            </span>
+          </td>
+        );
+
+      case 'type':
+        return (
+          <td key={colKey}>
+            <span style={{ fontSize: 13, color: token('color.text.subtle') }}>
+              Product line
+            </span>
+          </td>
+        );
+
+      case 'lead':
+        return (
+          <td key={colKey}>
+            {p.owner_id ? (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <Avatar size="small" />
-                <span
-                  style={{
-                    fontSize: 13,
-                    color: token('color.text'),
-                  }}
-                >
-                  Owner
-                </span>
+                <span style={{ fontSize: 13, color: token('color.text') }}>Owner</span>
               </span>
             ) : (
-              <span
-                style={{
-                  fontSize: 13,
-                  color: token('color.text.subtlest'),
-                }}
-              >
-                Unassigned
-              </span>
-            ),
-          },
-          /* col 6 — category (description first 30 chars or em-dash) */
-          {
-            key: 'category',
-            content: p.description ? (
+              <span style={{ fontSize: 13, color: token('color.text.subtlest') }}>—</span>
+            )}
+          </td>
+        );
+
+      case 'category':
+        return (
+          <td key={colKey}>
+            {p.description ? (
               <span
                 style={{
                   fontSize: 13,
@@ -329,7 +306,7 @@ export default function AllProductsPage() {
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
-                  display: 'inline-block',
+                  display: 'block',
                   maxWidth: '100%',
                 }}
                 title={p.description}
@@ -337,59 +314,51 @@ export default function AllProductsPage() {
                 {p.description}
               </span>
             ) : (
-              <span
-                style={{
-                  fontSize: 13,
-                  color: token('color.text.subtlest'),
-                }}
-              >
-                —
-              </span>
-            ),
-          },
-          /* col 7 — ⋯ actions menu */
-          {
-            key: 'actions',
-            content: (
-              <DropdownMenu
-                trigger={({ triggerRef, ...triggerProps }) => (
-                  <button
-                    {...triggerProps}
-                    ref={triggerRef}
-                    type="button"
-                    aria-label={`More actions for ${p.name}`}
-                    style={{
-                      background: 'transparent',
-                      border: 'none',
-                      padding: 4,
-                      cursor: 'pointer',
-                      borderRadius: 3,
-                      color: token('color.icon.subtle'),
-                    }}
-                  >
-                    <MoreIcon label="" size="small" />
-                  </button>
-                )}
-                placement="bottom-end"
-              >
-                <DropdownItemGroup>
-                  <DropdownItem href={`/product-hub/${p.code}/backlog`}>
-                    Open backlog
-                  </DropdownItem>
-                  <DropdownItem href={`/product-hub/${p.code}/dashboard`}>
-                    Open dashboard
-                  </DropdownItem>
-                  <DropdownItem href={`/product-hub/${p.code}/settings`}>
-                    Settings
-                  </DropdownItem>
-                </DropdownItemGroup>
-              </DropdownMenu>
-            ),
-          },
-        ],
-      };
-    });
-  }, [filteredProducts, favorites, toggleFavorite]);
+              <span style={{ fontSize: 13, color: token('color.text.subtlest') }}>—</span>
+            )}
+          </td>
+        );
+
+      case 'actions':
+        return (
+          <td key={colKey} style={{ textAlign: 'center' }}>
+            <DropdownMenu
+              trigger={({ triggerRef, ...triggerProps }) => (
+                <button
+                  {...triggerProps}
+                  ref={triggerRef}
+                  type="button"
+                  aria-label={`More actions for ${p.name}`}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    padding: 4,
+                    cursor: 'pointer',
+                    borderRadius: 3,
+                    color: token('color.icon.subtle'),
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <MoreHorizontal size={16} />
+                </button>
+              )}
+              placement="bottom-end"
+            >
+              <DropdownItemGroup>
+                <DropdownItem href={`/product-hub/${p.code}/backlog`}>Open backlog</DropdownItem>
+                <DropdownItem href={`/product-hub/${p.code}/dashboard`}>Open dashboard</DropdownItem>
+                <DropdownItem href={`/product-hub/${p.code}/settings`}>Settings</DropdownItem>
+              </DropdownItemGroup>
+            </DropdownMenu>
+          </td>
+        );
+
+      default:
+        return <td key={colKey} />;
+    }
+  }, [favorites, toggleFavorite, columnWidths]);
 
   return (
     <div style={{ padding: '24px 32px', maxWidth: 1400 }}>
@@ -567,38 +536,80 @@ export default function AllProductsPage() {
         )}
       </div>
 
+      {/* Table — ResizableTableHeader + useTableColumns matching AllProjectsTable */}
       <div style={{ marginTop: 12 }}>
         {error ? (
-          <EmptyState
-            header="Couldn't load products"
-            description={
-              <span>
-                Could not query <code>public.products</code>. Check the browser
-                console for the Supabase error code.
-              </span>
-            }
-          />
+          <div style={{ padding: '40px 0', textAlign: 'center' }}>
+            <p style={{ fontSize: 14, color: token('color.text.danger') }}>
+              Could not load products — check browser console for the Supabase error.
+            </p>
+          </div>
+        ) : isLoading ? (
+          <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-10 bg-white dark:!bg-[var(--ds-surface,#0A0A0A)]">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 16 }} className="animate-pulse">
+                  <div style={{ width: 24, height: 24, borderRadius: 3, background: 'var(--ds-background-neutral, #F4F5F7)' }} />
+                  <div style={{ flex: 1, height: 14, borderRadius: 4, background: 'var(--ds-background-neutral, #F4F5F7)', maxWidth: '60%' }} />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div style={{ padding: '60px 0', textAlign: 'center' }}>
+            <p style={{ fontSize: 14, color: token('color.text.subtlest') }}>
+              {searchQuery ? `No products match "${searchQuery}"` : 'No products yet. Create one to get started.'}
+            </p>
+          </div>
         ) : (
-          <DynamicTable
-            head={HEAD}
-            rows={rows}
-            isLoading={isLoading}
-            loadingSpinnerSize="large"
-            emptyView={
-              <EmptyState
-                header="No products found"
-                description={
-                  searchQuery
-                    ? 'Try adjusting your search.'
-                    : 'Create a product to get started.'
-                }
-              />
-            }
-            rowsPerPage={20}
-            defaultPage={1}
-            defaultSortKey="name"
-            defaultSortOrder="ASC"
-          />
+          <div
+            className="overflow-x-auto"
+            style={{
+              borderRadius: 8,
+              border: `1px solid ${token('color.border')}`,
+              background: token('elevation.surface'),
+            }}
+          >
+            <table className="pb-table" style={{ minWidth: 760, tableLayout: 'fixed', width: '100%' }}>
+              <colgroup>
+                {orderedColumns.map(c => (
+                  <col key={c.key} style={{ width: columnWidths[c.key] || c.defaultWidth }} />
+                ))}
+              </colgroup>
+              <thead>
+                <tr className="group/thead">
+                  {orderedColumns.map(c => (
+                    <ResizableTableHeader
+                      key={c.key}
+                      colKey={c.key}
+                      label={c.label}
+                      width={columnWidths[c.key] || c.defaultWidth}
+                      locked={c.locked}
+                      isDragging={dragKey === c.key}
+                      isDragOver={dragOverKey === c.key}
+                      onResizeStart={onResizeStart}
+                      onDragStart={onDragStart}
+                      onDragOver={onDragOver}
+                      onDragEnd={onDragEnd}
+                      sortDirection={null}
+                      onSort={undefined}
+                    />
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filteredProducts.map(p => (
+                  <tr
+                    key={p.id}
+                    className="group"
+                    style={{ height: 48, cursor: 'default' }}
+                  >
+                    {orderedColumns.map(c => renderCell(c.key, p))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 

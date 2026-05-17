@@ -119,12 +119,25 @@ function SidebarMemberRow({
   );
 }
 
+// ─── Section label (used by both "Your view" and "Team members") ─────────────
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{
+      fontSize: 10, fontWeight: 600,
+      color: token('color.text.subtlest', '#8590A2'),
+      letterSpacing: '0.05em',
+      textTransform: 'uppercase' as const,
+    }}>
+      {children}
+    </div>
+  );
+}
+
 // ─── Sidebar container ────────────────────────────────────────────────────────
 
 function SidebarRoster({
-  myName, team, selectedId, onSelect,
+  team, selectedId, onSelect,
 }: {
-  myName?: string;
   team: TeamResource[];
   selectedId: string | null;
   onSelect: (id: string | null) => void;
@@ -143,7 +156,12 @@ function SidebarRoster({
     <div
       data-testid="r360-roster-sidebar"
       style={{
-        width: 200, flexShrink: 0,
+        // Widened 200 → 220 (design-critique 2026-05-17 H6 P1) — at 200px
+        // names like "Ayaz Muhammad" and "Divyam Kshatriya" were forced to
+        // truncate to "Ayaz Muhamm…" / "Divyam Kshatri…". The extra 20px
+        // fits the longest BAU-team display names without ellipsis while
+        // keeping the sidebar comfortably inside the 1200px viewport.
+        width: 220, flexShrink: 0,
         borderInlineEnd: `1px solid ${token('color.border', '#091E4224')}`,
         display: 'flex', flexDirection: 'column',
         position: 'sticky',
@@ -153,21 +171,18 @@ function SidebarRoster({
         // No overflowY here — only the list section below scrolls
       }}
     >
-      {/* Fixed header — never scrolls, always visible */}
+      {/* ── Team members (header + search, then scrollable list) ─────────────
+          The "Your view / Me" tile was removed 2026-05-17 — the detail panel
+          header (right side: avatar + name + role + active/stale badge) is
+          already the identity indicator. Re-stating "Me" in the picker was
+          redundant. When the user is viewing a teammate, a small "← My view"
+          link appears at the top of the list as the return affordance. */}
       <div style={{
         flexShrink: 0,
         padding: '12px 12px 8px',
-        borderBottom: `1px solid ${token('color.border', '#091E4224')}`,
         background: token('elevation.surface', '#FFFFFF'),
       }}>
-        <div style={{
-          fontSize: 10, fontWeight: 600,
-          color: token('color.text.subtlest', '#8590A2'),
-          letterSpacing: '0.05em',
-          marginBottom: 8,
-        }}>
-          Team
-        </div>
+        <SectionLabel>Team members</SectionLabel>
         <input
           type="text"
           placeholder="Search…"
@@ -177,6 +192,7 @@ function SidebarRoster({
           onBlur={() => setFocused(false)}
           style={{
             width: '100%',
+            marginTop: 8,
             padding: '5px 8px',
             fontSize: 12,
             border: `2px solid ${focused ? token('color.border.focused', '#388BFF') : token('color.border.input', '#8590A2')}`,
@@ -190,18 +206,34 @@ function SidebarRoster({
         />
       </div>
 
-      {/* Scrollable member list */}
+      {/* Scrollable team list */}
       <div style={{ overflowY: 'auto', flex: 1, padding: '4px 12px 12px 8px', display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {/* Me row — always shown, unaffected by search */}
-        <SidebarMemberRow
-          name="Me"
-          sublabel={myName ?? undefined}
-          active={selectedId === null}
-          onClick={() => onSelect(null)}
-          isMe
-        />
+        {/* "← My view" return link — only shown when viewing a teammate. */}
+        {selectedId !== null && (
+          <button
+            type="button"
+            onClick={() => onSelect(null)}
+            style={{
+              all: 'unset',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '6px 10px',
+              marginBottom: 6,
+              borderRadius: 4,
+              cursor: 'pointer',
+              fontSize: 12,
+              fontWeight: 500,
+              color: token('color.text.brand', '#0052CC'),
+              background: 'transparent',
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4'); }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+          >
+            ← My view
+          </button>
+        )}
 
-        {/* Filtered team members */}
         {filtered.map(r => (
           <SidebarMemberRow
             key={r.id}
@@ -221,6 +253,17 @@ function SidebarRoster({
             textAlign: 'center' as const,
           }}>
             No match
+          </div>
+        )}
+
+        {!search.trim() && filtered.length === 0 && (
+          <div style={{
+            padding: '12px',
+            fontSize: 12,
+            color: token('color.text.subtlest', '#8590A2'),
+            textAlign: 'center' as const,
+          }}>
+            No team members yet
           </div>
         )}
       </div>
@@ -354,13 +397,16 @@ export default function R360Panel() {
       {useSidebar ? (
         /* ── Sidebar roster (wide viewport OR large team) ── */
         <SidebarRoster
-          myName={user?.email ?? undefined}
           team={teamResources}
           selectedId={selectedId}
           onSelect={handleSelect}
         />
       ) : hasTeam ? (
-        /* ── Narrow pill strip — only for small teams (≤ MAX_PILLS_TEAM) ── */
+        // Narrow pill strip — only for small teams (≤ MAX_PILLS_TEAM).
+        // "Me" pill removed 2026-05-17 — the R360MemberDetail header is the
+        // identity indicator (avatar + name + role). When viewing a teammate,
+        // a "← My view" pill renders at the start of the strip as the return
+        // affordance.
         <div
           role="tablist"
           aria-label="Team member view"
@@ -371,12 +417,13 @@ export default function R360Panel() {
             marginBottom: 8,
           }}
         >
-          <MemberPill
-            label="Me"
-            sublabel="My view"
-            active={selectedId === null}
-            onClick={() => handleSelect(null)}
-          />
+          {selectedId !== null && (
+            <MemberPill
+              label="← My view"
+              active={false}
+              onClick={() => handleSelect(null)}
+            />
+          )}
           {teamResources.map(r => (
             <MemberPill
               key={r.id}

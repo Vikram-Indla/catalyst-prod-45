@@ -20,8 +20,9 @@ const IMPROVE_INSTRUCTIONS: Record<string, string> = {
     "Add edge cases and failure conditions to acceptance criteria",
 };
 
-const AI_GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
-const DEFAULT_MODEL = "google/gemini-3-flash-preview";
+const AI_GATEWAY_URL =
+  "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+const DEFAULT_MODEL = "gemini-2.5-flash";
 
 // Best-effort audit logger. Never throws — a logging failure must not fail
 // the request. Scoped to the deployed ai_governance_audit_log table.
@@ -69,11 +70,14 @@ serve(async (req) => {
       user_draft,
     } = body;
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) {
       return new Response(
-        JSON.stringify({ error: "LOVABLE_API_KEY is not configured" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        JSON.stringify({ error: "GEMINI_API_KEY is not configured" }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -87,8 +91,10 @@ serve(async (req) => {
         ? sibling_summaries.slice(0, 20)
         : [];
       const draft = typeof user_draft === "string" ? user_draft.trim() : "";
-      const parentSum = typeof parent_summary === "string" ? parent_summary : "";
-      const parentType = typeof parent_type === "string" ? parent_type : "Story";
+      const parentSum =
+        typeof parent_summary === "string" ? parent_summary : "";
+      const parentType =
+        typeof parent_type === "string" ? parent_type : "Story";
 
       const prompt = `You help a product team add subtasks / child work items inside an enterprise portfolio-management tool used by the Saudi Ministry of Industry. Output ONLY valid JSON. No markdown, no preamble, no explanation.
 
@@ -106,7 +112,7 @@ Return JSON only: {"suggestions": ["...", "...", "..."]}`;
       const aiResp = await fetch(AI_GATEWAY_URL, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${GEMINI_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -129,19 +135,35 @@ Return JSON only: {"suggestions": ["...", "...", "..."]}`;
           await logGovernance({
             admin_jwt: null,
             action: "predict_subtask_titles",
-            payload: { parent_summary: parentSum, parent_type: parentType, user_draft: draft },
+            payload: {
+              parent_summary: parentSum,
+              parent_type: parentType,
+              user_draft: draft,
+            },
             status: "error",
             error_message: "rate_limit_429",
           });
           return new Response(
-            JSON.stringify({ error: "Rate limits exceeded, please try again later.", suggestions: [] }),
-            { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+            JSON.stringify({
+              error: "Rate limits exceeded, please try again later.",
+              suggestions: [],
+            }),
+            {
+              status: 429,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            },
           );
         }
         if (aiResp.status === 402) {
           return new Response(
-            JSON.stringify({ error: "Payment required, please add funds.", suggestions: [] }),
-            { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+            JSON.stringify({
+              error: "Payment required, please add funds.",
+              suggestions: [],
+            }),
+            {
+              status: 402,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            },
           );
         }
         const t = await aiResp.text();
@@ -155,7 +177,10 @@ Return JSON only: {"suggestions": ["...", "...", "..."]}`;
         });
         return new Response(
           JSON.stringify({ error: "AI gateway error", suggestions: [] }),
-          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          },
         );
       }
 
@@ -201,7 +226,10 @@ Return JSON only: {"suggestions": ["...", "...", "..."]}`;
     //   direction: 'en_to_ar' | 'ar_to_en'
     // ─────────────────────────────────────────────────────────────
     if (improve_type === "translate_text") {
-      const { text, direction } = body as { text: string; direction: "en_to_ar" | "ar_to_en" };
+      const { text, direction } = body as {
+        text: string;
+        direction: "en_to_ar" | "ar_to_en";
+      };
       if (!text?.trim()) {
         return new Response(JSON.stringify({ translation: "" }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -215,11 +243,11 @@ Return JSON only: {"suggestions": ["...", "...", "..."]}`;
       const aiResp = await fetch(AI_GATEWAY_URL, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${GEMINI_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash-lite",
+          model: "gemini-2.5-flash-lite",
           messages: [
             {
               role: "system",
@@ -237,14 +265,23 @@ Return JSON only: {"suggestions": ["...", "...", "..."]}`;
       if (!aiResp.ok) {
         const t = await aiResp.text();
         console.error("translate_text gateway error:", aiResp.status, t);
-        return new Response(JSON.stringify({ error: "Translation failed", translation: "" }), {
-          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return new Response(
+          JSON.stringify({ error: "Translation failed", translation: "" }),
+          {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          },
+        );
       }
 
       const aiData = await aiResp.json();
       const translation = (aiData.choices?.[0]?.message?.content ?? "").trim();
-      await logGovernance({ admin_jwt: null, action: "translate_text", payload: { direction, char_count: text.length }, status: "ok" });
+      await logGovernance({
+        admin_jwt: null,
+        action: "translate_text",
+        payload: { direction, char_count: text.length },
+        status: "ok",
+      });
       return new Response(JSON.stringify({ translation }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -263,20 +300,19 @@ Return JSON only: {"suggestions": ["...", "...", "..."]}`;
 
     const PER_TYPE_FOCUS: Record<string, string> = {
       Story:
-        "User-narrative form (\"As a [user], I want [action], so that [benefit]\") with Given/When/Then acceptance criteria. Keep scope to ONE persona × ONE goal.",
-      Epic:
-        "Outcome-focused. Lead with the measurable business outcome / KPI uplift. Bound scope (in / out). Name the success criteria a steering committee would sign off on.",
+        'User-narrative form ("As a [user], I want [action], so that [benefit]") with Given/When/Then acceptance criteria. Keep scope to ONE persona × ONE goal.',
+      Epic: "Outcome-focused. Lead with the measurable business outcome / KPI uplift. Bound scope (in / out). Name the success criteria a steering committee would sign off on.",
       Feature:
         "Functional-scope shape: capability statement, user impact, primary dependencies, target release. Avoid implementation detail.",
-      Task:
-        "Concrete deliverable, single-owner action, crisp definition-of-done. Keep it tactical — no narrative.",
+      Task: "Concrete deliverable, single-owner action, crisp definition-of-done. Keep it tactical — no narrative.",
       "QA Bug":
         "Reproduction steps (numbered), expected vs actual behaviour, environment (browser / OS / build), severity rationale. Steps must be deterministic.",
-      Bug: // legacy synonym for QA Bug
-        "Reproduction steps (numbered), expected vs actual behaviour, environment (browser / OS / build), severity rationale. Steps must be deterministic.",
+      // legacy synonym for QA Bug
+      Bug: "Reproduction steps (numbered), expected vs actual behaviour, environment (browser / OS / build), severity rationale. Steps must be deterministic.",
       "Production Incident":
         "Impact statement (who / how many / dollar magnitude), MTTR target, root-cause hypothesis, mitigation step list. Treat this as an active incident write-up.",
-      Incident: // legacy synonym
+      // legacy synonym
+      Incident:
         "Impact statement (who / how many / dollar magnitude), MTTR target, root-cause hypothesis, mitigation step list. Treat this as an active incident write-up.",
       Subtask:
         "Single concrete action, time-boxed (≤ 1 day), aligned to the parent's intent. No sub-narrative.",
@@ -320,7 +356,7 @@ Return JSON only: {"suggestions": ["...", "...", "..."]}`;
       const issueType: string = body.issue_type ?? "Default";
       const subInstruction =
         IMPROVE_INSTRUCTIONS[body.improve_sub_type ?? "improve_clarify"] ??
-          IMPROVE_INSTRUCTIONS.improve_clarify;
+        IMPROVE_INSTRUCTIONS.improve_clarify;
       const typeFocus = focusFor(issueType);
       const focusText = focus_hint ? `\nUser hint: ${focus_hint}` : "";
       // Sanity cap on attachment URLs — protects the gateway from
@@ -329,12 +365,14 @@ Return JSON only: {"suggestions": ["...", "...", "..."]}`;
       const MAX_ATTACHMENTS = 5;
       const attachmentUrls: string[] = Array.isArray(body.attachment_urls)
         ? body.attachment_urls
-            .filter((u: unknown) => typeof u === "string" && /^https?:\/\//.test(u as string))
+            .filter(
+              (u: unknown) =>
+                typeof u === "string" && /^https?:\/\//.test(u as string),
+            )
             .slice(0, MAX_ATTACHMENTS)
         : [];
 
-      const userPromptText =
-        `You are a senior business analyst writing requirements for an enterprise portfolio management platform used by the Saudi Ministry of Industry. Write in English. Output a single Markdown document — NO JSON, no code fences, no preamble.
+      const userPromptText = `You are a senior business analyst writing requirements for an enterprise portfolio management platform used by the Saudi Ministry of Industry. Write in English. Output a single Markdown document — NO JSON, no code fences, no preamble.
 
 Work item type: ${issueType}
 Type-specific focus: ${typeFocus}
@@ -374,7 +412,7 @@ Begin immediately with the "## Description" heading. No preamble.`;
       const aiResp = await fetch(AI_GATEWAY_URL, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${GEMINI_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -400,18 +438,41 @@ Begin immediately with the "## Description" heading. No preamble.`;
       if (!aiResp.ok || !aiResp.body) {
         const status = aiResp.status;
         const errBody = aiResp.body ? await aiResp.text() : "";
-        console.error("improve_description_v2 (stream) gateway error:", status, errBody);
+        console.error(
+          "improve_description_v2 (stream) gateway error:",
+          status,
+          errBody,
+        );
         await logGovernance({
           admin_jwt: null,
           action: "improve_description_v2_stream",
-          payload: { issue_type: issueType, has_attachments: attachmentUrls.length > 0 },
+          payload: {
+            issue_type: issueType,
+            has_attachments: attachmentUrls.length > 0,
+          },
           status: "error",
           error_message: `gateway_${status}`,
         });
-        const code = status === 429 ? "rate_limited" : status === 402 ? "payment_required" : "gateway_error";
+        const code =
+          status === 429
+            ? "rate_limited"
+            : status === 402
+              ? "payment_required"
+              : "gateway_error";
         return new Response(
-          JSON.stringify({ error: code, message: status === 429 ? "Rate limits exceeded, please try again later." : status === 402 ? "Payment required, please add funds." : "AI gateway error" }),
-          { status, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          JSON.stringify({
+            error: code,
+            message:
+              status === 429
+                ? "Rate limits exceeded, please try again later."
+                : status === 402
+                  ? "Payment required, please add funds."
+                  : "AI gateway error",
+          }),
+          {
+            status,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          },
         );
       }
 
@@ -461,7 +522,7 @@ Begin immediately with the "## Description" heading. No preamble.`;
                       const msg =
                         typeof parsed.error === "string"
                           ? parsed.error
-                          : parsed.error?.message ?? "Upstream AI error";
+                          : (parsed.error?.message ?? "Upstream AI error");
                       writeEvent({ type: "error", message: String(msg) });
                       upstreamErrored = true;
                       break;
@@ -551,7 +612,7 @@ Begin immediately with the "## Description" heading. No preamble.`;
       const issueType: string = body.issue_type ?? "Default";
       const subInstruction =
         IMPROVE_INSTRUCTIONS[body.improve_sub_type ?? "improve_clarify"] ??
-          IMPROVE_INSTRUCTIONS.improve_clarify;
+        IMPROVE_INSTRUCTIONS.improve_clarify;
       const typeFocus = focusFor(issueType);
       const focusText = focus_hint ? `\nUser hint: ${focus_hint}` : "";
 
@@ -571,13 +632,17 @@ Return JSON: {"description": "...", "acceptance_criteria": "..."}`;
       const aiResp = await fetch(AI_GATEWAY_URL, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${GEMINI_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           model: DEFAULT_MODEL,
           messages: [
-            { role: "system", content: "You are a senior business analyst. Return only valid JSON. No markdown fences." },
+            {
+              role: "system",
+              content:
+                "You are a senior business analyst. Return only valid JSON. No markdown fences.",
+            },
             { role: "user", content: prompt },
           ],
           temperature: 0.4,
@@ -587,14 +652,35 @@ Return JSON: {"description": "...", "acceptance_criteria": "..."}`;
 
       if (!aiResp.ok) {
         if (aiResp.status === 429) {
-          return new Response(JSON.stringify({ error: "Rate limits exceeded, please try again later." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+          return new Response(
+            JSON.stringify({
+              error: "Rate limits exceeded, please try again later.",
+            }),
+            {
+              status: 429,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            },
+          );
         }
         if (aiResp.status === 402) {
-          return new Response(JSON.stringify({ error: "Payment required, please add funds." }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+          return new Response(
+            JSON.stringify({ error: "Payment required, please add funds." }),
+            {
+              status: 402,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            },
+          );
         }
         const t = await aiResp.text();
-        console.error("improve_description_v2 gateway error:", aiResp.status, t);
-        return new Response(JSON.stringify({ error: "AI gateway error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        console.error(
+          "improve_description_v2 gateway error:",
+          aiResp.status,
+          t,
+        );
+        return new Response(JSON.stringify({ error: "AI gateway error" }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       const aiData = await aiResp.json();
@@ -609,10 +695,15 @@ Return JSON: {"description": "...", "acceptance_criteria": "..."}`;
       await logGovernance({
         admin_jwt: null,
         action: "improve_description_v2",
-        payload: { issue_type: issueType, sub_type: body.improve_sub_type ?? "improve_clarify" },
+        payload: {
+          issue_type: issueType,
+          sub_type: body.improve_sub_type ?? "improve_clarify",
+        },
         status: "ok",
       });
-      return new Response(JSON.stringify(parsed), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify(parsed), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -623,33 +714,50 @@ Return JSON: {"description": "...", "acceptance_criteria": "..."}`;
     // ─────────────────────────────────────────────────────────────
     if (improve_type === "summarize_comments") {
       const issueType: string = body.issue_type ?? "Default";
-      const comments: Array<{ author?: string; created_at?: string; body?: string }> =
-        Array.isArray(body.comments) ? body.comments : [];
+      const comments: Array<{
+        author?: string;
+        created_at?: string;
+        body?: string;
+      }> = Array.isArray(body.comments) ? body.comments : [];
       if (comments.length === 0) {
-        return new Response(JSON.stringify({ summary: "" }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        return new Response(JSON.stringify({ summary: "" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       const tonePerType: Record<string, string> = {
-        Story: "Decision-focused. What decisions were made, what's pending, what's blocking the user-narrative.",
+        Story:
+          "Decision-focused. What decisions were made, what's pending, what's blocking the user-narrative.",
         Epic: "Strategic. Surface scope shifts, KPI changes, steering-committee notes.",
-        Feature: "Roadmap-focused. Surface release-impact, dependency changes, scope movement.",
+        Feature:
+          "Roadmap-focused. Surface release-impact, dependency changes, scope movement.",
         Task: "Progress-focused. State, blockers, next-step.",
-        "QA Bug": "Triage-focused. Reproduction status, severity changes, who's investigating.",
+        "QA Bug":
+          "Triage-focused. Reproduction status, severity changes, who's investigating.",
         Bug: "Triage-focused. Reproduction status, severity changes, who's investigating.",
-        "Production Incident": "Incident-management voice. Timeline of events, mitigation status, action items.",
-        Incident: "Incident-management voice. Timeline of events, mitigation status, action items.",
+        "Production Incident":
+          "Incident-management voice. Timeline of events, mitigation status, action items.",
+        Incident:
+          "Incident-management voice. Timeline of events, mitigation status, action items.",
         Subtask: "Progress-focused. State, blockers, next-step.",
-        "Business Request": "Stakeholder-focused. Surface stakeholder positions, decisions, sign-off status.",
-        "Business Gap": "Stakeholder-focused. Surface stakeholder positions, decisions, sign-off status.",
-        "API Requirement": "Contract-focused. Surface API shape changes, breaking-change risks, integration questions.",
-        "Change Request": "Change-control-focused. Surface CAB sign-offs, rollback considerations.",
+        "Business Request":
+          "Stakeholder-focused. Surface stakeholder positions, decisions, sign-off status.",
+        "Business Gap":
+          "Stakeholder-focused. Surface stakeholder positions, decisions, sign-off status.",
+        "API Requirement":
+          "Contract-focused. Surface API shape changes, breaking-change risks, integration questions.",
+        "Change Request":
+          "Change-control-focused. Surface CAB sign-offs, rollback considerations.",
         Default: "Neutral. Surface key points, decisions, blockers.",
       };
       const tone = tonePerType[issueType] ?? tonePerType.Default;
 
       const commentText = comments
         .slice(-30) // last 30 comments
-        .map((c, i) => `[${i + 1}] ${c.author ?? "(unknown)"} @ ${c.created_at ?? ""}:\n${(c.body ?? "").slice(0, 2000)}`)
+        .map(
+          (c, i) =>
+            `[${i + 1}] ${c.author ?? "(unknown)"} @ ${c.created_at ?? ""}:\n${(c.body ?? "").slice(0, 2000)}`,
+        )
         .join("\n\n");
 
       const prompt = `Summarize the comment thread on this work item. Output ONLY valid JSON with one key "summary". No markdown.
@@ -668,13 +776,17 @@ Return JSON: {"summary": "..."}`;
       const aiResp = await fetch(AI_GATEWAY_URL, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${GEMINI_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           model: DEFAULT_MODEL,
           messages: [
-            { role: "system", content: "You are an expert technical writer. Return only valid JSON. No markdown fences." },
+            {
+              role: "system",
+              content:
+                "You are an expert technical writer. Return only valid JSON. No markdown fences.",
+            },
             { role: "user", content: prompt },
           ],
           temperature: 0.3,
@@ -683,9 +795,28 @@ Return JSON: {"summary": "..."}`;
       });
 
       if (!aiResp.ok) {
-        if (aiResp.status === 429) return new Response(JSON.stringify({ error: "Rate limits exceeded, please try again later." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-        if (aiResp.status === 402) return new Response(JSON.stringify({ error: "Payment required, please add funds." }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-        return new Response(JSON.stringify({ error: "AI gateway error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        if (aiResp.status === 429)
+          return new Response(
+            JSON.stringify({
+              error: "Rate limits exceeded, please try again later.",
+            }),
+            {
+              status: 429,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            },
+          );
+        if (aiResp.status === 402)
+          return new Response(
+            JSON.stringify({ error: "Payment required, please add funds." }),
+            {
+              status: 402,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            },
+          );
+        return new Response(JSON.stringify({ error: "AI gateway error" }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       const aiData = await aiResp.json();
@@ -698,8 +829,15 @@ Return JSON: {"summary": "..."}`;
       } catch {
         summary = rawText.replace(/```json|```/g, "").trim();
       }
-      await logGovernance({ admin_jwt: null, action: "summarize_comments", payload: { issue_type: issueType, comment_count: comments.length }, status: "ok" });
-      return new Response(JSON.stringify({ summary }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      await logGovernance({
+        admin_jwt: null,
+        action: "summarize_comments",
+        payload: { issue_type: issueType, comment_count: comments.length },
+        status: "ok",
+      });
+      return new Response(JSON.stringify({ summary }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -711,7 +849,8 @@ Return JSON: {"summary": "..."}`;
     if (improve_type === "suggest_child_issues") {
       const parentType: string = body.parent_type ?? body.issue_type ?? "Story";
       const parentSum: string = body.parent_summary ?? body.issue_summary ?? "";
-      const parentDesc: string = body.parent_description ?? body.current_description ?? "";
+      const parentDesc: string =
+        body.parent_description ?? body.current_description ?? "";
 
       const childTypeByParent: Record<string, string> = {
         Epic: "Story",
@@ -749,13 +888,17 @@ Return JSON: {"suggestions": [{"title": "...", "description": "...", "type": "${
       const aiResp = await fetch(AI_GATEWAY_URL, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${GEMINI_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           model: DEFAULT_MODEL,
           messages: [
-            { role: "system", content: "You are a senior business analyst. Return only valid JSON. No markdown fences." },
+            {
+              role: "system",
+              content:
+                "You are a senior business analyst. Return only valid JSON. No markdown fences.",
+            },
             { role: "user", content: prompt },
           ],
           temperature: 0.5,
@@ -764,14 +907,44 @@ Return JSON: {"suggestions": [{"title": "...", "description": "...", "type": "${
       });
 
       if (!aiResp.ok) {
-        if (aiResp.status === 429) return new Response(JSON.stringify({ error: "Rate limits exceeded, please try again later.", suggestions: [] }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-        if (aiResp.status === 402) return new Response(JSON.stringify({ error: "Payment required, please add funds.", suggestions: [] }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-        return new Response(JSON.stringify({ error: "AI gateway error", suggestions: [] }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        if (aiResp.status === 429)
+          return new Response(
+            JSON.stringify({
+              error: "Rate limits exceeded, please try again later.",
+              suggestions: [],
+            }),
+            {
+              status: 429,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            },
+          );
+        if (aiResp.status === 402)
+          return new Response(
+            JSON.stringify({
+              error: "Payment required, please add funds.",
+              suggestions: [],
+            }),
+            {
+              status: 402,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            },
+          );
+        return new Response(
+          JSON.stringify({ error: "AI gateway error", suggestions: [] }),
+          {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          },
+        );
       }
 
       const aiData = await aiResp.json();
       const rawText = aiData.choices?.[0]?.message?.content ?? "{}";
-      let suggestions: Array<{ title: string; description: string; type: string }> = [];
+      let suggestions: Array<{
+        title: string;
+        description: string;
+        type: string;
+      }> = [];
       try {
         const clean = rawText.replace(/```json|```/g, "").trim();
         const parsed = JSON.parse(clean);
@@ -780,7 +953,10 @@ Return JSON: {"suggestions": [{"title": "...", "description": "...", "type": "${
             .filter((s: any) => s && typeof s.title === "string")
             .map((s: any) => ({
               title: String(s.title).trim().slice(0, 160),
-              description: typeof s.description === "string" ? s.description.trim().slice(0, 4000) : "",
+              description:
+                typeof s.description === "string"
+                  ? s.description.trim().slice(0, 4000)
+                  : "",
               type: typeof s.type === "string" ? s.type : childType,
             }))
             .slice(0, 7);
@@ -788,14 +964,26 @@ Return JSON: {"suggestions": [{"title": "...", "description": "...", "type": "${
       } catch {
         suggestions = [];
       }
-      await logGovernance({ admin_jwt: null, action: "suggest_child_issues", payload: { parent_type: parentType, child_type: childType, count: suggestions.length }, status: "ok" });
-      return new Response(JSON.stringify({ suggestions }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      await logGovernance({
+        admin_jwt: null,
+        action: "suggest_child_issues",
+        payload: {
+          parent_type: parentType,
+          child_type: childType,
+          count: suggestions.length,
+        },
+        status: "ok",
+      });
+      return new Response(JSON.stringify({ suggestions }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // ─────────────────────────────────────────────────────────────
     // Default branch: existing story-improvement contract (unchanged)
     // ─────────────────────────────────────────────────────────────
-    const instruction = IMPROVE_INSTRUCTIONS[improve_type] ?? "Improve and clarify";
+    const instruction =
+      IMPROVE_INSTRUCTIONS[improve_type] ?? "Improve and clarify";
     const focusText = focus_hint ? `\nFocus: ${focus_hint}` : "";
 
     const prompt = `You are a senior business analyst writing requirements for an enterprise portfolio management platform used by the Saudi Ministry of Industry. Write in English. Be precise, professional, and structured. Output ONLY valid JSON with keys "description" and "acceptance_criteria". No markdown fences, no preamble.
@@ -811,7 +999,7 @@ Return JSON: {"description": "...", "acceptance_criteria": "..."}`;
     const response = await fetch(AI_GATEWAY_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${GEMINI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -832,22 +1020,30 @@ Return JSON: {"description": "...", "acceptance_criteria": "..."}`;
     if (!response.ok) {
       if (response.status === 429) {
         return new Response(
-          JSON.stringify({ error: "Rate limits exceeded, please try again later." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          JSON.stringify({
+            error: "Rate limits exceeded, please try again later.",
+          }),
+          {
+            status: 429,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          },
         );
       }
       if (response.status === 402) {
         return new Response(
           JSON.stringify({ error: "Payment required, please add funds." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          {
+            status: 402,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          },
         );
       }
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
-      return new Response(
-        JSON.stringify({ error: "AI gateway error" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+      return new Response(JSON.stringify({ error: "AI gateway error" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const aiData = await response.json();
@@ -870,7 +1066,10 @@ Return JSON: {"description": "...", "acceptance_criteria": "..."}`;
       JSON.stringify({
         error: e instanceof Error ? e.message : "Unknown error",
       }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
 });

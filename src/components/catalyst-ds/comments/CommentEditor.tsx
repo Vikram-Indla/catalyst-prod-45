@@ -286,7 +286,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                 rows={isExpanded ? 4 : 2}
                 className={cn(
                   'w-full resize-none border-0 bg-transparent px-3 py-2.5',
-                  'text-[13px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]',
+                  'text-[14px] text-[var(--ds-text,#292A2E)] dark:text-[var(--ds-text,#EDEDED)]',
                   'placeholder:text-[#7A869A] dark:placeholder:text-[var(--ds-text-subtlest,#878787)]',
                   'focus:outline-none focus:ring-0',
                   'transition-all duration-150'

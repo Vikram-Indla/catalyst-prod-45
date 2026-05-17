@@ -54,7 +54,7 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
   return (
     <div ref={ref} style={{ position: 'relative', flexShrink: 0 }}>
       <button onClick={() => setOpen(o => !o)} style={{
-        height: 36, padding: '0 10px', border: open ? '2px solid #4C9AFF' : '1px solid #DFE1E6',
+        height: 36, padding: '0 10px', border: open ? '2px solid var(--ds-border-focused, #4C9AFF)' : '1px solid var(--ds-border, #DFE1E6)',
         borderRadius: 3, fontSize: 14, fontFamily: 'inherit', background: 'var(--ds-surface, #fff)', cursor: 'pointer',
         display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ds-text, #172B4D)', minWidth: 160,
         transition: 'border-color 0.15s',
@@ -65,7 +65,7 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
       {open && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 2px)', left: 0, minWidth: 200,
-          background: 'var(--ds-surface, #fff)', border: '1px solid #DFE1E6', borderRadius: 4,
+          background: 'var(--ds-surface, #fff)', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4,
           boxShadow: '0 4px 8px rgba(9,30,66,.25)', zIndex: 60, overflow: 'hidden',
           maxHeight: 320, overflowY: 'auto',
         }}>
@@ -74,7 +74,7 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
               style={{
                 display: 'flex', alignItems: 'center', height: 36, padding: '0 12px',
                 cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)',
-                background: opt === value ? '#DEEBFF' : 'transparent',
+                background: opt === value ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
               }}
               onMouseEnter={e => { if (opt !== value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
               onMouseLeave={e => { if (opt !== value) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
@@ -215,7 +215,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
   };
 
   return (
-    <div style={{ padding: '12px 0', borderTop: '1px solid #DFE1E6' }}>
+    <div style={{ padding: '12px 0', borderTop: '1px solid var(--ds-border, #DFE1E6)' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 8 }}>
         <LinkTypeDropdown value={linkType} onChange={setLinkType} />
         {/* Multi-select input area */}
@@ -234,7 +234,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
             return (
               <span key={item.item_key} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4, height: 24,
-                padding: '0 6px', background: 'var(--ds-surface-sunken, #F4F5F7)', borderRadius: 3, border: '1px solid #DFE1E6',
+                padding: '0 6px', background: 'var(--ds-surface-sunken, #F4F5F7)', borderRadius: 3, border: '1px solid var(--ds-border, #DFE1E6)',
                 fontSize: 12, fontWeight: 500, color: 'var(--ds-text, #172B4D)', whiteSpace: 'nowrap',
               }}>
                 <span dangerouslySetInnerHTML={{ __html: icon }} style={{ display: 'flex', width: 14, height: 14 }} />
@@ -269,7 +269,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
 
       {/* Search results dropdown */}
       {showDropdown && filteredResults.length > 0 && (
-        <div ref={dropdownRef} style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid #DFE1E6', borderRadius: 3, background: 'var(--ds-surface, #fff)', marginBottom: 8, boxShadow: '0 4px 8px rgba(9,30,66,.13)' }}>
+        <div ref={dropdownRef} style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3, background: 'var(--ds-surface, #fff)', marginBottom: 8, boxShadow: '0 4px 8px rgba(9,30,66,.13)' }}>
           <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             {search.trim() ? 'Search results' : 'Recently viewed'}
           </div>
@@ -298,9 +298,9 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <button
           onClick={onCreateNew}
-          style={{ display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'none', cursor: 'pointer', fontSize: 14, color: '#44546F', fontFamily: 'inherit', fontWeight: 400, padding: 0, textDecoration: 'none' }}
-          onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = 'var(--ds-text, #172B4D)'; }}
-          onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = '#44546F'; }}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text-subtle, #44546F)', fontFamily: 'inherit', fontWeight: 400, padding: 0, textDecoration: 'none' }}
+          onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = 'var(--ds-text, #292A2E)'; }}
+          onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = 'var(--ds-text-subtle, #44546F)'; }}
         >
           <AddIcon label="" /> Create linked work item
         </button>
@@ -507,7 +507,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
       {!isLoading && Object.entries(grouped).map(([type, typeLinks]) => (
         <div key={type} style={{ marginBottom: 8 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', padding: '6px 0 4px', textTransform: 'lowercase' }}>{type}</div>
-          <div style={{ border: '1px solid #DFE1E6', borderRadius: 3, overflow: 'hidden' }}>
+          <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3, overflow: 'hidden' }}>
             {(typeLinks as any[]).map((link: any) => {
               const target = link.target;
               const avatarColor = target.assignee_display_name ? getAvatarColor(target.assignee_display_name) : '#8993A4';
@@ -516,7 +516,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
               return (
                 <div key={link.id} style={{
                   display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 12px',
-                  borderBottom: '1px solid #F4F5F7', transition: 'background 0.12s',
+                  borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)', transition: 'background 0.12s',
                 }}
                   onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #FAFBFC)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -534,7 +534,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                         navigate(`/issue/${target.issue_key}`);
                       }
                     }}
-                    style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 12, fontWeight: 600, color: '#0052CC', flexShrink: 0, cursor: 'pointer', textDecoration: 'none' }}
+                    style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 12, fontWeight: 600, color: 'var(--ds-link, #0052CC)', flexShrink: 0, cursor: 'pointer', textDecoration: 'none' }}
                     onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                     onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                   >{target.issue_key}</span>
@@ -553,14 +553,14 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                     </div>
                   ) : (
                     <div style={{
-                      width: 28, height: 28, borderRadius: '50%', border: '2px dashed #DFE1E6',
+                      width: 28, height: 28, borderRadius: '50%', border: '2px dashed var(--ds-border, #DFE1E6)',
                       flexShrink: 0,
                     }} />
                   )}
                   {/* Drag handle — orange "=" icon (Jira parity) */}
                   <span style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    width: 24, height: 24, color: '#FF991F', flexShrink: 0, cursor: 'grab',
+                    width: 24, height: 24, color: 'var(--ds-icon-warning, #FF991F)', flexShrink: 0, cursor: 'grab',
                   }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                       <rect x="4" y="8" width="16" height="2.5" rx="1" fill="currentColor"/>

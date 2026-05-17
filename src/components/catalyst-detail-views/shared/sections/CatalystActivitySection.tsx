@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { ActivityPanel } from '@/components/catalyst-ds';
 import type { CdsComment, CdsActivityItem, CdsUser, CdsQuickReply, JiraUserMap } from '@/components/catalyst-ds';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 interface CatalystActivitySectionProps {
   itemId: string;
@@ -34,7 +35,7 @@ function mapComment(raw: any): CdsComment {
         || profile?.email
         || raw.jira_author_display_name
         || (isJira ? 'Jira User' : 'Unknown'),
-      avatarUrl: profile?.avatar_url || raw.jira_author_avatar_url || null,
+      avatarUrl: resolveAvatarUrl(profile?.full_name ?? raw.jira_author_display_name) ?? profile?.avatar_url ?? raw.jira_author_avatar_url ?? null,
       email: profile?.email,
     },
     content: raw.body || '',
@@ -60,7 +61,7 @@ function mapActivity(raw: any): CdsActivityItem {
       name: profile?.full_name
         || raw.jira_author_display_name
         || (isJira ? 'Jira' : 'System'),
-      avatarUrl: profile?.avatar_url || raw.jira_author_avatar_url || null,
+      avatarUrl: resolveAvatarUrl(profile?.full_name ?? raw.jira_author_display_name) ?? profile?.avatar_url ?? raw.jira_author_avatar_url ?? null,
     },
     timestamp: raw.created_at,
     description: type === 'create' ? 'created this item' : undefined,
@@ -261,7 +262,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
   const handleDelete = useCallback((id: string) => deleteMutation.mutateAsync(id), [deleteMutation]);
 
   return (
-    <div style={{ borderTop: '1px solid #EBECF0', paddingTop: 20, marginTop: 8 }}>
+    <div style={{ borderTop: '1px solid var(--ds-border-subtle, #EBECF0)', paddingTop: 20, marginTop: 8 }}>
       <ActivityPanel
         comments={mappedComments}
         historyItems={mappedHistory}

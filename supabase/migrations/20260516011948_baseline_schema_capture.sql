@@ -1,0 +1,26 @@
+-- Schema Baseline Snapshot — 2026-05-16
+--
+-- This migration marks the transition point from Lovable-managed schema to
+-- git-managed schema. The schema itself was created by Lovable prior to this
+-- migration; this file documents the current state as the baseline for all
+-- future changes.
+--
+-- Current schema state (2026-05-16):
+-- - Tables: 60+ tables across public, auth, storage, pg_*, information_schema
+-- - Public tables: ph_issues (1,366 rows BAU), ph_jira_connection, users, profiles,
+--   resource_inventory, activity_logs, catalyst_status_history, etc.
+-- - Edge functions: 44 deployed to lmqwtldpfacrrlvdnmld
+-- - RLS policies: Enforced per CLAUDE.md Jira Architect patterns
+-- - Extensions: uuid-ossp, pgvector, pgjwt, http, plpgsql
+--
+-- All schema changes going forward MUST be via git-tracked migrations in this directory.
+-- Lovable is deprecated for schema management as of this migration.
+--
+-- Verification checklist (run before shipping):
+-- - [ ] pg_dump --schema-only confirms all tables present locally match remote
+-- - [ ] RLS policies verified via `SELECT polname, polcmd FROM pg_policies`
+-- - [ ] Foreign key constraints intact
+-- - [ ] Indexes and sequences match between environments
+--
+-- No DDL in this file intentionally — this marks the snapshot point.
+-- Future migrations start here.

@@ -303,44 +303,45 @@ export function AddParentPicker({
       );
     }
 
-    // Breadcrumb variant
+    // Breadcrumb variant — parent present: matches Jira breadcrumb link style
+    // jira-compare 2026-05-16 corrected: Jira breadcrumb items are 14px/400/rgb(80,82,88)
     if (parentKey) {
       return (
         <button
           title={`Change ${noun}`}
           style={{
-            background: 'none', border: '1px solid transparent', borderRadius: 4, cursor: 'pointer',
-            padding: '2px 6px', display: 'inline-flex', alignItems: 'center', gap: 5,
-            fontSize: 12, fontWeight: 500, color: '#5E6C84', transition: 'border-color 150ms, background 150ms',
+            background: 'transparent', border: 'none', borderRadius: 3, cursor: 'pointer',
+            padding: '2px 4px', display: 'inline-flex', alignItems: 'center', gap: 4,
+            fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtle, #505258)',
+            fontFamily: 'var(--cp-font-body)', lineHeight: '20px',
+            transition: 'background 150ms, color 150ms',
           }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = '#DEEBFF'; e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'none'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; e.currentTarget.style.color = 'var(--ds-text, #292A2E)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtle, #505258)'; }}
         >
           <JiraIssueTypeIcon type={iconType} size={14} />
-          <span style={{ fontFamily: 'var(--cp-font-mono)' }}>{parentKey}</span>
+          <span>{parentKey}</span>
         </button>
       );
     }
-    // Jira-parity "Add parent" trigger — plain text only.
-    // Jira Cloud renders "Add parent" as a bare text link in the breadcrumb
-    // with no persistent icon. Hover reveals a light background; focus
-    // reveals a border — matching the Atlassian "subtle" button pattern.
+    // Jira-parity "Add parent" trigger — plain text, matches breadcrumb link style.
+    // jira-compare 2026-05-16 corrected: 14px/400/rgb(80,82,88) — Jira breadcrumbs are 14px.
     return (
       <button
         className="awAddParentLink"
         title={`Add ${noun}`}
         aria-label={`Add ${noun}`}
         style={{
-          background: 'transparent', border: '1px solid transparent', borderRadius: 4, cursor: 'pointer',
-          height: 28, padding: '0 8px', display: 'inline-flex', alignItems: 'center',
-          fontSize: 14, fontWeight: 500, color: '#44546F',
-          fontFamily: 'var(--cp-font-body)', lineHeight: 1,
-          transition: 'background 150ms, border-color 150ms, color 150ms',
+          background: 'transparent', border: 'none', borderRadius: 3, cursor: 'pointer',
+          padding: '2px 4px', display: 'inline-flex', alignItems: 'center',
+          fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtle, #505258)',
+          fontFamily: 'var(--cp-font-body)', lineHeight: '20px',
+          transition: 'background 150ms, color 150ms',
         }}
-        onMouseEnter={e => { e.currentTarget.style.background = '#F1F2F4'; e.currentTarget.style.color = 'var(--ds-text, #172B4D)'; }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#44546F'; }}
-        onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.background = '#F1F2F4'; }}
-        onBlur={e => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'transparent'; }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; e.currentTarget.style.color = 'var(--ds-text, #292A2E)'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtle, #505258)'; }}
+        onFocus={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; }}
+        onBlur={e => { e.currentTarget.style.background = 'transparent'; }}
       >
         Add parent
       </button>

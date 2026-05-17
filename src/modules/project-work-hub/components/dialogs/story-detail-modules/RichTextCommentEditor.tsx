@@ -161,7 +161,7 @@ export function RichTextCommentEditor({
     const chip = document.createElement('span');
     chip.contentEditable = 'false';
     chip.setAttribute('data-mention-id', member.id);
-    chip.style.cssText = 'background:#DEEBFF;color:#0747A6;padding:2px 6px;border-radius:3px;font-weight:500;font-size:13px;cursor:default;display:inline;';
+    chip.style.cssText = 'background:var(--ds-background-information,#DEEBFF);color:var(--ds-link-pressed,#0747A6);padding:2px 6px;border-radius:3px;font-weight:500;font-size:13px;cursor:default;display:inline;';
     chip.textContent = `@${member.full_name}`;
 
     const afterNode = document.createTextNode(after || '\u00A0');
@@ -201,15 +201,15 @@ export function RichTextCommentEditor({
 
   const toolbarBtnStyle: React.CSSProperties = {
     background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px',
-    borderRadius: 3, color: '#42526E', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    borderRadius: 3, color: 'var(--ds-text-subtle, #42526E)', display: 'flex', alignItems: 'center', justifyContent: 'center',
   };
 
   return (
     <div style={{ position: 'relative' }}>
       <div style={{
-        border: `1px solid ${isFocused ? '#4C9AFF' : 'var(--ds-border, #DFE1E6)'}`,
+        border: `1px solid ${isFocused ? 'var(--ds-border-focused, #4C9AFF)' : 'var(--ds-border, #DFE1E6)'}`,
         borderRadius: 6, overflow: 'hidden',
-        boxShadow: isFocused ? '0 0 0 1px #4C9AFF' : 'none',
+        boxShadow: isFocused ? '0 0 0 1px var(--ds-border-focused, #4C9AFF)' : 'none',
         transition: 'border-color 0.15s, box-shadow 0.15s',
       }}>
         {/* Toolbar */}
@@ -218,20 +218,20 @@ export function RichTextCommentEditor({
           borderBottom: '1px solid #F4F5F7', background: 'var(--ds-surface-sunken, #FAFBFC)', flexWrap: 'wrap',
         }}>
           <button style={toolbarBtnStyle} onClick={() => execCmd('bold')} title="Bold"
-            onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           ><TextBoldIcon label="Bold" /></button>
           <button style={toolbarBtnStyle} onClick={() => execCmd('italic')} title="Italic"
-            onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           ><TextItalicIcon label="Italic" /></button>
           <button style={toolbarBtnStyle} onClick={() => execCmd('underline')} title="Underline"
-            onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           ><TextUnderlineIcon label="Underline" /></button>
           <div style={{ width: 1, height: 16, background: 'var(--ds-border, #DFE1E6)', margin: '0 4px' }} />
           <button style={toolbarBtnStyle} onClick={() => execCmd('insertUnorderedList')} title="Bullet list"
-            onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           ><ListBulletedIcon label="Bullet list" /></button>
           <button style={toolbarBtnStyle} onClick={() => {
@@ -240,23 +240,23 @@ export function RichTextCommentEditor({
             input.onchange = async () => { if (input.files?.[0]) await insertImage(input.files[0]); };
             input.click();
           }} title="Insert image"
-            onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           ><ImageIcon label="Insert image" /></button>
           <button style={toolbarBtnStyle} onClick={() => {
             const url = prompt('Enter link URL:');
             if (url) execCmd('createLink', url);
           }} title="Insert link"
-            onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           ><LinkIcon label="Insert link" /></button>
           <div style={{ width: 1, height: 16, background: 'var(--ds-border, #DFE1E6)', margin: '0 4px' }} />
           <button style={toolbarBtnStyle} onClick={() => execCmd('undo')} title="Undo"
-            onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           ><UndoIcon label="Undo" /></button>
           <button style={toolbarBtnStyle} onClick={() => execCmd('redo')} title="Redo"
-            onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           ><RedoIcon label="Redo" /></button>
         </div>
@@ -296,14 +296,14 @@ export function RichTextCommentEditor({
                 style={{
                   width: '100%', padding: '8px 12px', border: 'none', textAlign: 'left', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--ds-text, #172B4D)',
-                  background: idx === mentionIndex ? '#DEEBFF' : 'transparent',
+                  background: idx === mentionIndex ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
                 }}
                 onMouseEnter={() => setMentionIndex(idx)}
               >
                 {m.avatar_url ? (
                   <img src={m.avatar_url} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover' }} />
                 ) : (
-                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#0747A6', color: 'var(--ds-surface, #FFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--ds-background-brand-bold, #0747A6)', color: 'var(--ds-surface, #FFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>
                     {m.full_name?.slice(0, 2).toUpperCase()}
                   </div>
                 )}
@@ -325,19 +325,19 @@ export function RichTextCommentEditor({
           disabled={isEmpty || isSubmitting}
           style={{
             padding: '6px 16px', borderRadius: 4, border: 'none', cursor: isEmpty || isSubmitting ? 'not-allowed' : 'pointer',
-            background: isEmpty || isSubmitting ? 'var(--ds-surface-sunken, #F4F5F7)' : '#0052CC', color: isEmpty || isSubmitting ? '#A5ADBA' : 'var(--ds-surface, #FFF)',
+            background: isEmpty || isSubmitting ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--ds-background-brand-bold, #0052CC)', color: isEmpty || isSubmitting ? 'var(--ds-text-disabled, #A5ADBA)' : 'var(--ds-surface, #FFF)',
             fontSize: 14, fontWeight: 600, transition: 'background 0.15s',
           }}
-          onMouseEnter={e => { if (!isEmpty && !isSubmitting) e.currentTarget.style.background = '#0747A6'; }}
-          onMouseLeave={e => { if (!isEmpty && !isSubmitting) e.currentTarget.style.background = '#0052CC'; }}
+          onMouseEnter={e => { if (!isEmpty && !isSubmitting) e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #0747A6)'; }}
+          onMouseLeave={e => { if (!isEmpty && !isSubmitting) e.currentTarget.style.background = 'var(--ds-background-brand-bold, #0052CC)'; }}
         >Save</button>
         <button
           onClick={handleCancel}
           style={{
             padding: '6px 16px', borderRadius: 4, border: 'none', cursor: 'pointer',
-            background: 'transparent', color: '#42526E', fontSize: 14, fontWeight: 500,
+            background: 'transparent', color: 'var(--ds-text-subtle, #42526E)', fontSize: 14, fontWeight: 500,
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
         >Cancel</button>
       </div>

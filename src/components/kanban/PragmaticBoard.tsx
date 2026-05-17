@@ -300,11 +300,13 @@ interface PragmaticColumnProps extends CardActions {
   selectedId?: string | null;
   focusedId?: string | null;
   cardColorMode?: CardColorMode;
+  /** When true and issueIds is empty, render pulse skeleton cards instead of "No items" */
+  isLoading?: boolean;
 }
 
 const PragmaticColumn = memo(function PragmaticColumn({
   column, issueIds, issuesById, avatarsByName, onCardClick, d, tk,
-  selectedId, focusedId, cardColorMode, ...actions
+  selectedId, focusedId, cardColorMode, isLoading, ...actions
 }: PragmaticColumnProps) {
   const bodyRef = useRef<HTMLDivElement>(null);
   const meatballRef = useRef<HTMLButtonElement>(null);
@@ -559,7 +561,20 @@ const PragmaticColumn = memo(function PragmaticColumn({
           borderRadius: '0 0 6px 6px',
         }}
       >
-        {issueIds.length === 0 && (
+        {issueIds.length === 0 && isLoading && (
+          // Skeleton cards — shown while initial data loads so board structure
+          // is visible immediately (Jira parity: column chrome at T=0, cards hydrate)
+          <div className="flex flex-col" style={{ gap: 4 }}>
+            {[72, 56, 88].map((h, i) => (
+              <div key={i} className="animate-pulse" style={{
+                height: h, borderRadius: 4,
+                background: 'var(--cp-bg-elevated, #FFFFFF)',
+                boxShadow: tk.cardShadowRest,
+              }} />
+            ))}
+          </div>
+        )}
+        {issueIds.length === 0 && !isLoading && (
           <div className="flex flex-col items-center justify-center" style={{
             minHeight: 100, color: tk.textDisabled, fontSize: 12, gap: 6,
             fontFamily: 'var(--cp-font-body)',
@@ -692,6 +707,8 @@ export interface PragmaticBoardProps extends CardActions {
   tk: KanbanThemeTokens;
   selectedId?: string | null;
   focusedId?: string | null;
+  /** Pass-through to columns: shows pulse skeleton cards while data loads */
+  isLoading?: boolean;
   /**
    * Optional swimlane resolver. When set, the board renders one
    * "lane band" per distinct value returned by `swimlaneOf(issue)`,
@@ -727,7 +744,7 @@ export interface PragmaticBoardProps extends CardActions {
 export function PragmaticBoard({
   columns, colMap, issuesById, avatarsByName, onCardClick,
   d, tk, selectedId, focusedId, onDrop, swimlaneOf, swimlaneLabel,
-  cardColorMode,
+  cardColorMode, isLoading,
   ...actions
 }: PragmaticBoardProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -912,6 +929,7 @@ export function PragmaticBoard({
           selectedId={selectedId}
           focusedId={focusedId}
           cardColorMode={cardColorMode}
+          isLoading={isLoading}
           {...actions}
         />
       ))}

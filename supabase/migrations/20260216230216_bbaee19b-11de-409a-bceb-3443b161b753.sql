@@ -1,6 +1,6 @@
 
 -- 1. business_owners lookup table
-CREATE TABLE public.business_owners (
+CREATE TABLE IF NOT EXISTS public.business_owners (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
   is_active BOOLEAN NOT NULL DEFAULT true,
@@ -9,11 +9,13 @@ CREATE TABLE public.business_owners (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 ALTER TABLE public.business_owners ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Anyone can read business_owners" ON public.business_owners;
 CREATE POLICY "Anyone can read business_owners" ON public.business_owners FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Authenticated users can manage business_owners" ON public.business_owners;
 CREATE POLICY "Authenticated users can manage business_owners" ON public.business_owners FOR ALL USING (auth.uid() IS NOT NULL);
 
 -- 2. business_requests (core demand table — 60+ fields)
-CREATE TABLE public.business_requests (
+CREATE TABLE IF NOT EXISTS public.business_requests (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   request_key TEXT,
   title TEXT NOT NULL,
@@ -125,23 +127,33 @@ CREATE TABLE public.business_requests (
 );
 
 ALTER TABLE public.business_requests ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Anyone can read business_requests" ON public.business_requests;
 CREATE POLICY "Anyone can read business_requests" ON public.business_requests FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Authenticated users can insert business_requests" ON public.business_requests;
 CREATE POLICY "Authenticated users can insert business_requests" ON public.business_requests FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+DROP POLICY IF EXISTS "Authenticated users can update business_requests" ON public.business_requests;
 CREATE POLICY "Authenticated users can update business_requests" ON public.business_requests FOR UPDATE USING (auth.uid() IS NOT NULL);
+DROP POLICY IF EXISTS "Authenticated users can delete business_requests" ON public.business_requests;
 CREATE POLICY "Authenticated users can delete business_requests" ON public.business_requests FOR DELETE USING (auth.uid() IS NOT NULL);
 
 -- Indexes for performance
-CREATE INDEX idx_business_requests_process_step ON public.business_requests (process_step);
-CREATE INDEX idx_business_requests_deleted_at ON public.business_requests (deleted_at);
-CREATE INDEX idx_business_requests_department_id ON public.business_requests (department_id);
-CREATE INDEX idx_business_requests_product_id ON public.business_requests (product_id);
-CREATE INDEX idx_business_requests_rank ON public.business_requests (rank);
+CREATE INDEX IF NOT EXISTS idx_business_requests_process_step ON public.business_requests (process_step);
+CREATE INDEX IF NOT EXISTS idx_business_requests_deleted_at ON public.business_requests (deleted_at);
+CREATE INDEX IF NOT EXISTS idx_business_requests_department_id ON public.business_requests (department_id);
+CREATE INDEX IF NOT EXISTS idx_business_requests_product_id ON public.business_requests (product_id);
+CREATE INDEX IF NOT EXISTS idx_business_requests_rank ON public.business_requests (rank);
 
 -- Enable realtime
-ALTER PUBLICATION supabase_realtime ADD TABLE public.business_requests;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'business_requests'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.business_requests;
+  END IF;
+END $$;
 
 -- 3. business_request_audit_logs
-CREATE TABLE public.business_request_audit_logs (
+CREATE TABLE IF NOT EXISTS public.business_request_audit_logs (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   business_request_id UUID NOT NULL REFERENCES public.business_requests(id) ON DELETE CASCADE,
   actor_id UUID,
@@ -153,11 +165,13 @@ CREATE TABLE public.business_request_audit_logs (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 ALTER TABLE public.business_request_audit_logs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Anyone can read audit logs" ON public.business_request_audit_logs;
 CREATE POLICY "Anyone can read audit logs" ON public.business_request_audit_logs FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Authenticated users can insert audit logs" ON public.business_request_audit_logs;
 CREATE POLICY "Authenticated users can insert audit logs" ON public.business_request_audit_logs FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
 
 -- 4. business_request_links
-CREATE TABLE public.business_request_links (
+CREATE TABLE IF NOT EXISTS public.business_request_links (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   business_request_id UUID NOT NULL REFERENCES public.business_requests(id) ON DELETE CASCADE,
   linked_item_id UUID NOT NULL,
@@ -166,7 +180,9 @@ CREATE TABLE public.business_request_links (
   created_by UUID
 );
 ALTER TABLE public.business_request_links ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Anyone can read request links" ON public.business_request_links;
 CREATE POLICY "Anyone can read request links" ON public.business_request_links FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Authenticated users can manage request links" ON public.business_request_links;
 CREATE POLICY "Authenticated users can manage request links" ON public.business_request_links FOR ALL USING (auth.uid() IS NOT NULL);
 
 -- Auto-update updated_at trigger for business_requests
@@ -178,6 +194,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SET search_path = public;
 
+DROP TRIGGER IF EXISTS update_business_requests_updated_at ON public.business_requests;
 CREATE TRIGGER update_business_requests_updated_at
   BEFORE UPDATE ON public.business_requests
   FOR EACH ROW

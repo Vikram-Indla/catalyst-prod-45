@@ -22,7 +22,7 @@ CREATE TYPE ra_compliance_framework AS ENUM ('dga', 'nca', 'babok');
 -- =====================================================
 
 CREATE TABLE ra_user_roles (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     role ra_user_role DEFAULT 'user',
     created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -86,7 +86,7 @@ $$;
 -- =====================================================
 
 CREATE TABLE ra_generations (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     generation_number SERIAL,
     display_id TEXT GENERATED ALWAYS AS ('GEN-' || LPAD(generation_number::TEXT, 4, '0')) STORED,
     title TEXT NOT NULL,
@@ -128,7 +128,7 @@ CREATE INDEX idx_ra_generations_program ON ra_generations(program_id);
 -- =====================================================
 
 CREATE TABLE ra_generated_items (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     generation_id UUID NOT NULL REFERENCES ra_generations(id) ON DELETE CASCADE,
     item_type ra_item_type NOT NULL,
     item_number SERIAL,
@@ -157,7 +157,7 @@ CREATE INDEX idx_ra_items_parent ON ra_generated_items(parent_id);
 -- =====================================================
 
 CREATE TABLE ra_templates (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
     template_type ra_template_type NOT NULL,
     description TEXT,
@@ -177,7 +177,7 @@ CREATE INDEX idx_ra_templates_type ON ra_templates(template_type);
 -- =====================================================
 
 CREATE TABLE ra_compliance_rules (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     framework ra_compliance_framework NOT NULL,
     rule_code TEXT NOT NULL,
     rule_name TEXT NOT NULL,
@@ -197,7 +197,7 @@ CREATE INDEX idx_ra_compliance_framework ON ra_compliance_rules(framework);
 -- =====================================================
 
 CREATE TABLE ra_glossary_terms (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     english_term TEXT NOT NULL,
     arabic_translation TEXT NOT NULL,
     category TEXT DEFAULT 'General',
@@ -215,7 +215,7 @@ CREATE INDEX idx_ra_glossary_category ON ra_glossary_terms(category);
 -- =====================================================
 
 CREATE TABLE ra_ai_settings (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     ai_model TEXT DEFAULT 'claude-3.5-sonnet',
     temperature DECIMAL(3,2) DEFAULT 0.7,
     max_tokens INTEGER DEFAULT 4000,
@@ -236,7 +236,7 @@ CREATE TABLE ra_ai_settings (
 -- =====================================================
 
 CREATE TABLE ra_analytics_daily (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     date DATE NOT NULL UNIQUE,
     generations_count INTEGER DEFAULT 0,
     items_generated INTEGER DEFAULT 0,
@@ -253,7 +253,7 @@ CREATE INDEX idx_ra_analytics_date ON ra_analytics_daily(date DESC);
 -- =====================================================
 
 CREATE TABLE ra_audit_log (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES auth.users(id),
     action TEXT NOT NULL,
     entity_type TEXT NOT NULL,

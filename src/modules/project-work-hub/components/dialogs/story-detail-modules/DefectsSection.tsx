@@ -211,7 +211,7 @@ export function DefectsSection({
             {creating && (
               <div style={{
                 display: 'flex', alignItems: 'center',
-                border: '2px solid #4C9AFF', borderRadius: 3, marginTop: 4,
+                border: '2px solid var(--ds-border-focused, #4C9AFF)', borderRadius: 3, marginTop: 4,
                 background: 'var(--ds-surface, #fff)', overflow: 'hidden',
               }}>
                 <input
@@ -231,14 +231,14 @@ export function DefectsSection({
                     color: 'var(--ds-text, #172B4D)', fontFamily: 'inherit', background: 'transparent',
                   }}
                 />
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0 8px', borderLeft: '1px solid #DFE1E6' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0 8px', borderLeft: '1px solid var(--ds-border, #DFE1E6)' }}>
                   <button
                     onClick={() => { if (draftSummary.trim()) createMutation.mutate(draftSummary); }}
                     disabled={!draftSummary.trim() || createMutation.isPending}
                     title="Create (Enter)"
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      width: 28, height: 28, border: '1px solid #DFE1E6', borderRadius: 3,
+                      width: 28, height: 28, border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
                       background: 'var(--ds-surface-sunken, #F4F5F7)',
                       cursor: draftSummary.trim() ? 'pointer' : 'not-allowed',
                       color: 'var(--ds-text-subtlest, #6B778C)',

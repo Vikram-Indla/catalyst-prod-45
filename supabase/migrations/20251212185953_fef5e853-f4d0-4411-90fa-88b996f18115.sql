@@ -16,19 +16,22 @@ WHERE id = '00000000-0000-0000-0000-000000000001'
 AND key = 'DEFAULT';
 
 -- Store old key in aliases for backward compatibility
+-- Guards against missing parent rows on fresh installs
 INSERT INTO program_key_aliases (program_id, old_key)
 SELECT 'b2c3d4e5-f6a7-8901-bcde-f12345678901', 'DTPROGRAM'
-WHERE NOT EXISTS (
-  SELECT 1 FROM program_key_aliases 
-  WHERE program_id = 'b2c3d4e5-f6a7-8901-bcde-f12345678901' 
+WHERE EXISTS (SELECT 1 FROM programs WHERE id = 'b2c3d4e5-f6a7-8901-bcde-f12345678901')
+AND NOT EXISTS (
+  SELECT 1 FROM program_key_aliases
+  WHERE program_id = 'b2c3d4e5-f6a7-8901-bcde-f12345678901'
   AND old_key = 'DTPROGRAM'
 );
 
 INSERT INTO program_key_aliases (program_id, old_key)
 SELECT '00000000-0000-0000-0000-000000000001', 'DEFAULT'
-WHERE NOT EXISTS (
-  SELECT 1 FROM program_key_aliases 
-  WHERE program_id = '00000000-0000-0000-0000-000000000001' 
+WHERE EXISTS (SELECT 1 FROM programs WHERE id = '00000000-0000-0000-0000-000000000001')
+AND NOT EXISTS (
+  SELECT 1 FROM program_key_aliases
+  WHERE program_id = '00000000-0000-0000-0000-000000000001'
   AND old_key = 'DEFAULT'
 );
 

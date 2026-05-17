@@ -55,7 +55,7 @@ export function CatalystQuickActions({
     return () => document.removeEventListener('mousedown', h);
   }, [showMenu]);
 
-  const textColor = 'rgb(41, 42, 46)';
+  const textColor = 'var(--ds-text, #292A2E)';
   const hoverBg = 'rgba(11, 18, 14, 0.06)';
   const borderColor = 'rgba(11, 18, 14, 0.14)';
 
@@ -72,15 +72,14 @@ export function CatalystQuickActions({
   const primary = filtered.filter(i => i.section === 'primary');
   const secondary = filtered.filter(i => i.section === 'secondary');
 
-  /* Jira-parity (2026-04-19 revert): in the "+ and Sparkle" layout above
-     the description, Jira renders a NAKED + icon chip (no "Add" text).
-     The label would be visual noise against the unified icon pair.
-     The AI sparkle chip mirrors the same dimensions for visual balance.
-     A11y is preserved via aria-label + aria-haspopup + aria-expanded. */
+  /* jira-compare 2026-05-16: Jira's Add button is a transparent/borderless
+     icon button. DOM probe: bg rgba(0,0,0,0), border none, borderRadius 3px,
+     padding 6px 0px, height 32px, color rgb(80,82,88). The previous bordered
+     chip style (bg #FAFBFC, border 1px #DFE1E6, radius 4px) was not Jira-parity. */
   const btnStyle: React.CSSProperties = {
-    width: 28, height: 28, border: '1px solid #DFE1E6', background: 'var(--ds-surface-sunken, #FAFBFC)',
-    borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-    color: '#44546F', transition: 'background 0.15s, border-color 0.15s, color 0.15s',
+    width: 32, height: 32, border: 'none', background: 'transparent',
+    borderRadius: 3, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    color: 'var(--ds-text-subtle, #505258)', transition: 'background 0.15s, color 0.15s',
   };
 
   const itemStyle: React.CSSProperties = {
@@ -97,8 +96,8 @@ export function CatalystQuickActions({
         <button
           onClick={() => setShowMenu(!showMenu)}
           style={btnStyle}
-          onMouseEnter={e => { e.currentTarget.style.background = '#EBECF0'; e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.color = 'var(--ds-text, #172B4D)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #FAFBFC)'; e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)'; e.currentTarget.style.color = '#44546F'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; e.currentTarget.style.color = 'var(--ds-text, #292A2E)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtle, #505258)'; }}
           aria-haspopup="menu"
           aria-expanded={showMenu}
           aria-label="Add"
@@ -108,7 +107,10 @@ export function CatalystQuickActions({
         </button>
 
         {showMenu && (
-          <div style={{
+          <div
+            role="menu"
+            aria-label="Add options"
+            style={{
             position: 'absolute', left: 0, top: 34, background: 'var(--ds-surface, #FFFFFF)', borderRadius: 4,
             boxShadow: 'rgba(30,31,33,0.15) 0px 8px 12px, rgba(30,31,33,0.31) 0px 0px 1px',
             width: 266, zIndex: 400, padding: 0,
@@ -133,7 +135,7 @@ export function CatalystQuickActions({
 
             {/* Primary */}
             {primary.length > 0 && primary.map(item => (
-              <button key={item.id} onClick={item.action} style={itemStyle}
+              <button key={item.id} role="menuitem" onClick={item.action} style={itemStyle}
                 onMouseEnter={e => (e.currentTarget.style.background = hoverBg)}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
@@ -149,7 +151,7 @@ export function CatalystQuickActions({
 
             {/* Secondary */}
             {secondary.length > 0 && secondary.map(item => (
-              <button key={item.id} onClick={item.action} style={itemStyle}
+              <button key={item.id} role="menuitem" onClick={item.action} style={itemStyle}
                 onMouseEnter={e => (e.currentTarget.style.background = hoverBg)}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >

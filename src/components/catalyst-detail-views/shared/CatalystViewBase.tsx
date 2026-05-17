@@ -158,7 +158,8 @@ export function CatalystViewBase({
   // jira-compare 2026-05-10: re-probed BAU-5736. Modal split: left ~70% / right ~30%.
   // jira-compare 2026-05-11 DC4: panel mode body = 560px; 285px sidebar left only 269px
   // for content — too narrow. 220px gives 334px left panel at 560px body — acceptable.
-  const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 220 : 285);
+  // 313px matches Jira's right rail width (probed 2026-05-15). Panel mode stays at 220.
+  const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 220 : 313);
   const isDraggingRef = useRef(false);
 
   /* G4: Track recently visited issues in localStorage (catalyst-recent-issues).
@@ -296,7 +297,7 @@ export function CatalystViewBase({
     width: '100%', height: '100%', background: 'var(--ds-surface, #FFFFFF)',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
     animation: 'cv-panel-in 200ms ease-out',
-    borderLeft: '1px solid #DFE1E6',
+    borderLeft: '1px solid var(--ds-border, #DFE1E6)',
   } : {
     width: 1100, maxWidth: '95vw', minHeight: 600, maxHeight: 'calc(100vh - 80px)',
     background: 'var(--ds-surface, #FFFFFF)', borderRadius: 8,
@@ -307,7 +308,7 @@ export function CatalystViewBase({
 
   const hoverBtn: React.CSSProperties = {
     background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px',
-    borderRadius: 4, color: '#42526E', fontSize: 13, fontWeight: 500, display: 'flex', alignItems: 'center',
+    borderRadius: 4, color: 'var(--ds-text-subtle, #42526E)', fontSize: 13, fontWeight: 500, display: 'flex', alignItems: 'center',
     gap: 6, transition: 'background 0.15s', fontFamily: 'var(--cp-font-body)',
   };
 
@@ -384,7 +385,7 @@ export function CatalystViewBase({
           display: 'flex', alignItems: 'center',
           justifyContent: 'space-between',
           padding: '10px 20px', minHeight: 44, flexShrink: 0,
-          borderBottom: '1px solid #EBECF0',
+          borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)',
           ...((!panelMode && !fullPageMode) ? {} : {
             position: 'sticky',
             top: 0,
@@ -566,7 +567,7 @@ export function CatalystViewBase({
               Panel/modal modes keep overflow-y:auto for independent column scroll. */}
           <div className="cv-drawer-left" data-sdm-scope style={{
             flex: 1, padding: '20px 24px 32px 24px',
-            borderRight: '1px solid #EBECF0', minWidth: 0, minHeight: 0,
+            borderRight: '1px solid var(--ds-border-subtle, #EBECF0)', minWidth: 0, minHeight: 0,
             // fullPageMode: cap field rows at ~780px (matches modal left-panel width
             // at 1100px total minus ~320px sidebar). Without this, fields like
             // Priority and Severity stretch to fill the full viewport width.

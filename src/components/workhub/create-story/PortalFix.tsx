@@ -123,7 +123,11 @@ export function ModalDialog({ children, onClose, width = 'medium' }: ModalDialog
             justifyContent: 'center',
             padding: fullscreen ? '5vh 5vw' : '32px 16px',
           }}
-          onMouseDown={(e) => { if (e.target === e.currentTarget) onClose?.(); }}
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget && !(e as any).target.closest('[role="listbox"], [role="menu"], [data-rbd-draggable-id]')) {
+              onClose?.();
+            }
+          }}
         >
           <div
             role="dialog"

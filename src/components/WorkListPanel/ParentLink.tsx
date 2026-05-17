@@ -39,7 +39,7 @@ export const ParentLink = memo(function ParentLink({
           flexShrink: 0,
         }}
       >
-        <JiraIssueTypeIcon issueType={parentType} size={16} />
+        <JiraIssueTypeIcon type={parentType} size={16} />
       </div>
 
       <button

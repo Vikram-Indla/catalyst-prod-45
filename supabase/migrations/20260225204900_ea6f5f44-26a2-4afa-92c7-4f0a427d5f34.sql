@@ -2,6 +2,11 @@
 -- ═══════════════════════════════════════════════════════════
 -- POPULATE BAU DASHBOARD — 3 MONTHS REAL JIRA DATA
 -- ═══════════════════════════════════════════════════════════
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM ph_projects WHERE id = '5a29da54-ea64-471d-907e-eeefe96c982e') THEN
+    RAISE NOTICE 'BAU project not found, skipping BAU dashboard seed data';
+    RETURN;
+  END IF;
 
 -- STEP 1: Create active releases
 INSERT INTO ph_releases (id, name, title, status, target_date, project_id)
@@ -199,3 +204,5 @@ FROM generate_series(1, 6) gs;
 UPDATE ph_releases SET status = 'in_progress'
 WHERE project_id = '5a29da54-ea64-471d-907e-eeefe96c982e'
   AND name IN ('Refactor-Senaei 3.0-19 Feb 26', 'NDS-Sprint 3.3-12 Feb 26');
+
+END $$;

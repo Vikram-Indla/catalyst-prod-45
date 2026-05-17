@@ -60,7 +60,7 @@ describe('InviteAcceptPage', () => {
     render(<InviteAcceptPage />);
     expect(screen.getByLabelText(/full name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/^password/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/confirm password/i)).toBeInTheDocument();
+    expect(screen.getByLabelText('Confirm Password')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /accept/i })).toBeInTheDocument();
   });
 
@@ -71,7 +71,7 @@ describe('InviteAcceptPage', () => {
 
     fireEvent.change(screen.getByLabelText(/full name/i), { target: { value: 'Jane Doe' } });
     fireEvent.change(screen.getByLabelText(/^password/i), { target: { value: 'MyP@ssw0rd' } });
-    fireEvent.change(screen.getByLabelText(/confirm password/i), { target: { value: 'MyP@ssw0rd' } });
+    fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'MyP@ssw0rd' } });
     fireEvent.click(screen.getByRole('button', { name: /accept/i }));
 
     await waitFor(() => {
@@ -91,7 +91,7 @@ describe('InviteAcceptPage', () => {
 
     fireEvent.change(screen.getByLabelText(/full name/i), { target: { value: 'Jane Doe' } });
     fireEvent.change(screen.getByLabelText(/^password/i), { target: { value: 'MyP@ssw0rd' } });
-    fireEvent.change(screen.getByLabelText(/confirm password/i), { target: { value: 'MyP@ssw0rd' } });
+    fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'MyP@ssw0rd' } });
     fireEvent.click(screen.getByRole('button', { name: /accept/i }));
 
     await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/'));
@@ -104,7 +104,7 @@ describe('InviteAcceptPage', () => {
 
     fireEvent.change(screen.getByLabelText(/full name/i), { target: { value: 'Jane Doe' } });
     fireEvent.change(screen.getByLabelText(/^password/i), { target: { value: 'MyP@ssw0rd' } });
-    fireEvent.change(screen.getByLabelText(/confirm password/i), { target: { value: 'MyP@ssw0rd' } });
+    fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'MyP@ssw0rd' } });
     fireEvent.click(screen.getByRole('button', { name: /accept/i }));
 
     await waitFor(() => {

@@ -450,7 +450,7 @@ function renderMenuItem(
       aria-current={active ? 'page' : undefined}
       className="group w-full flex items-center border-none cursor-pointer transition-all relative"
       style={{
-        height: '32px',
+        height: '44px',
         padding: expanded ? '0 12px' : '0',
         gap: '8px',
         marginBottom: '0',

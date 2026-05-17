@@ -47,8 +47,8 @@ export function KeyDetailsFieldRow({
     <div style={{ padding: '6px 0' }}>
       <Inline space="space.250" alignBlock={alignBlock}>
         <span style={{
-          fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258',
-          minWidth: 96, flexShrink: 0,
+          fontSize: 14, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text-subtle, #505258)',
+          minWidth: 120, flexShrink: 0,
         }}>{label}</span>
         <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
       </Inline>
@@ -122,7 +122,7 @@ export function CatalystKeyDetails({
             transform: collapsed ? 'rotate(0deg)' : 'rotate(90deg)',
           }}
         >
-          <ChevronRightIcon label="" primaryColor="#5E6C84" size="small" />
+          <ChevronRightIcon label="" primaryColor="var(--ds-icon-subtle, #5E6C84)" size="small" />
         </span>
         {/* jira-compare 2026-05-11 re-probe: canonical Jira section header is
             16px/653/20px/rgb(41,42,46) — measured on the innermost text node of

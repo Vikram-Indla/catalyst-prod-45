@@ -20,12 +20,12 @@
  *
  * Canonical — do NOT fork this for per-surface variants.
  */
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/ads';
 import { IssueIcon } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
 import { ProjectAvatar } from '@/components/icons';
-import Tooltip from '@atlaskit/tooltip';
+
 
 export interface TicketBreadcrumbsProps {
   /** Used to build the parent-navigation href when `onParentClick` isn't set. */
@@ -78,16 +78,6 @@ export function TicketBreadcrumbs({
   middleSlot,
   projectHref,
 }: TicketBreadcrumbsProps) {
-  // B1: copy-to-clipboard state for key chip
-  const [copied, setCopied] = useState(false);
-  const handleCopyKey = () => {
-    if (!itemKey) return;
-    navigator.clipboard.writeText(itemKey).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    });
-  };
-
   const isEpic = (itemType || '').toLowerCase().includes('epic');
   const hasSlot = middleSlot !== undefined;
   const showParent = !hasSlot && Boolean(parentKey);
@@ -143,23 +133,17 @@ export function TicketBreadcrumbs({
     });
   }
 
-  // Crumb 2 — current issue (terminal). B1: clicking the key copies it.
+  // Crumb 2 — current issue (terminal). Jira-parity: clicking the key
+  // navigates to the full-page issue view (/issue/:issueKey).
   items.push({
     key: 'current',
     text: (
-      <Tooltip content={copied ? 'Copied!' : 'Click to copy key'} position="bottom">
-        <span
-          role="button"
-          tabIndex={0}
-          onClick={handleCopyKey}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleCopyKey(); }}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap', cursor: 'pointer' }}
-        >
-          <IssueIcon type={itemType} size={14} />
-          <span>{itemKey ?? '—'}</span>
-        </span>
-      </Tooltip>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
+        <IssueIcon type={itemType} size={14} />
+        <span>{itemKey ?? '—'}</span>
+      </span>
     ),
+    href: itemKey ? `/issue/${itemKey}` : undefined,
     ariaLabel: itemKey ?? 'Current issue',
     isCurrent: true,
   });
@@ -184,6 +168,15 @@ export function TicketBreadcrumbs({
           align-items: center;
           line-height: 1;
         }
+        /* Reset the @atlaskit/breadcrumbs li > span wrapper that inherits
+           16px/500 from the ADS Breadcrumbs component defaults. Without this
+           the middleSlot (AddParentPicker) appears visually bolder/larger
+           than the other breadcrumb items. */
+        .tk-breadcrumbs li > span {
+          font-size: 14px;
+          font-weight: 400;
+          color: var(--ds-text-subtle, #505258);
+        }
         .tk-breadcrumbs a,
         .tk-breadcrumbs button,
         .tk-breadcrumbs [aria-current="page"] {
@@ -193,10 +186,17 @@ export function TicketBreadcrumbs({
           font-family: var(--cp-font-body);
           font-size: 14px;
           font-weight: 400;
-          color: var(--ds-text-subtle, #42526E);
+          color: var(--ds-text-subtle, #505258);
           line-height: 20px;
           padding: 2px 4px;
           border-radius: 3px;
+        }
+        /* jira-compare 2026-05-16 re-probe (corrected): Jira breadcrumb items
+           are 14px/400/rgb(80,82,88) — grey at rest for ALL items including
+           anchor links. No blue link colour at rest (muted text is Jira UX). */
+        .tk-breadcrumbs a:hover {
+          color: var(--ds-link, #1868DB);
+          text-decoration: underline;
         }
         .tk-breadcrumbs button {
           background: transparent;

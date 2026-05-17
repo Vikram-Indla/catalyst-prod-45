@@ -1,4 +1,8 @@
-import { useState, useEffect, useRef, lazy, Suspense, ComponentType, useSyncExternalStore } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense, ComponentType, useSyncExternalStore, useCallback } from 'react';
+import AkFlag, { FlagGroup } from '@atlaskit/flag';
+import InfoIcon from '@atlaskit/icon/core/information-circle';
+import { token } from '@atlaskit/tokens';
+import { consumeLastLoginDisplay } from '@/hooks/useSessionPersistence';
 import { Menu } from '@/lib/atlaskit-icons';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
@@ -76,6 +80,7 @@ const TaskHubSidebar = lazyWithRetry(() => import('./TaskHubSidebar').then(m => 
 const TestHubSidebar = lazyWithRetry(() => import('./TestHubSidebar').then(m => ({ default: m.TestHubSidebar })), 'TestHubSidebar');
 
 const ProjectHubSidebar = lazyWithRetry(() => import('./ProjectHubSidebar').then(m => ({ default: m.ProjectHubSidebar })), 'ProjectHubSidebar');
+const ProductHubSidebar = lazyWithRetry(() => import('./ProductHubSidebar').then(m => ({ default: m.ProductHubSidebar })), 'ProductHubSidebar');
 const WikiSidebar = lazyWithRetry(() => import('./WikiSidebar').then(m => ({ default: m.WikiSidebar })), 'WikiSidebar');
 // C1 · Personal command center on / (Home). Replaces the empty 240px rail
 // users were seeing on Home with @atlaskit/side-navigation sections for
@@ -291,6 +296,9 @@ function CatalystShellContent() {
   // Check if on TestHub route
   const isTestHubRoute = location.pathname.startsWith('/testhub');
 
+  // Check if on ProductHub V5 route (/product-hub/*)
+  const isProductHubRoute = location.pathname.startsWith('/product-hub');
+
   // Check if on ProjectHub V5 route (/project-hub/*)
   const isProjectHubRoute = location.pathname.startsWith('/project-hub');
   const isProjectHubAllWorkRoute = /\/project-hub\/[^/]+\/allwork(\/|$|\?)/.test(location.pathname);
@@ -387,7 +395,8 @@ function CatalystShellContent() {
   // Spaces page, not Jira's hub canvas.
   const isWhiteCanvasRoute =
     location.pathname === '/project-hub/projects' ||
-    location.pathname === '/project/all-projects';
+    location.pathname === '/project/all-projects' ||
+    location.pathname === '/product-hub/products';
 
   const shouldWrapHubSurface = isHubSurfaceRoute && !isSelfFramedRoute && !isWhiteCanvasRoute;
   const isDarkTheme = useIsDarkTheme();
@@ -484,6 +493,18 @@ function CatalystShellContent() {
     if (isWikiRoute) {
       return (
         <WikiSidebar
+          expanded={true}
+          onToggle={cycleSidebarState}
+        />
+      );
+    }
+
+    // ProductHub V5 sidebar (/product-hub/*) — checked before isProductRoute so
+    // /product-hub/* doesn't fall through to ProductRoomSidebar (which gates on
+    // isModuleEnabled('PRODUCT') and may return null).
+    if (isProductHubRoute) {
+      return (
+        <ProductHubSidebar
           expanded={true}
           onToggle={cycleSidebarState}
         />
@@ -826,12 +847,60 @@ function CatalystShellContent() {
   );
 }
 
+function formatLastLogin(iso: string): string {
+  try {
+    const d = new Date(iso);
+    return d.toLocaleString(undefined, {
+      weekday: 'short', month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+    });
+  } catch {
+    return iso;
+  }
+}
+
+function LastLoginFlag() {
+  const [lastLoginAt, setLastLoginAt] = useState<string | null>(null);
+  const [visible, setVisible] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const val = consumeLastLoginDisplay();
+    if (val) {
+      setLastLoginAt(val);
+      setVisible(true);
+      timerRef.current = setTimeout(() => setVisible(false), 6000);
+    }
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, []);
+
+  const dismiss = useCallback(() => setVisible(false), []);
+
+  if (!visible || !lastLoginAt) return null;
+
+  return (
+    <div style={{ position: 'fixed', bottom: 24, left: 24, zIndex: 9999 }}>
+      <FlagGroup onDismissed={dismiss}>
+        <AkFlag
+          id="last-login-flag"
+          appearance="info"
+          icon={<InfoIcon label="" color={token('color.icon.information', '#0055CC')} />}
+          title="Welcome back"
+          description={`You last signed in on ${formatLastLogin(lastLoginAt)}`}
+          actions={[{ content: 'Dismiss', onClick: dismiss }]}
+        />
+      </FlagGroup>
+    </div>
+  );
+}
+
 export function CatalystShell() {
   const pendingItem = useGlobalSearchStore(s => s.pendingItem);
   const clearDetail = useGlobalSearchStore(s => s.clearDetail);
 
   return (
     <CatalystContextProvider>
+      <LastLoginFlag />
       <CatalystShellContent />
       {/* GlobalSearch is rendered inside CatalystHeader as the anchored search trigger */}
       {/* Global CatalystDetailRouter — opened from GlobalSearch, Notifications, ForYou, etc. */}

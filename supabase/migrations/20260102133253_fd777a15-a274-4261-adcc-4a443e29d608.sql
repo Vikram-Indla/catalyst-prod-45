@@ -22,19 +22,7 @@ ALTER TABLE public.test_case_work_items ENABLE ROW LEVEL SECURITY;
 -- View: All approved users can view test cases in their program
 CREATE POLICY "test_cases_select_policy" ON public.test_cases
   FOR SELECT USING (
-    public.current_user_is_approved() AND (
-      -- Admin can see all
-      public.is_user_admin(auth.uid()) OR
-      -- User can see test cases in programs they have access to via program membership or projects
-      program_id IN (
-        SELECT DISTINCT p.id FROM public.programs p
-        LEFT JOIN public.projects proj ON proj.program_id = p.id
-        LEFT JOIN public.project_members pm ON pm.project_id = proj.id
-        LEFT JOIN public.team_members tm ON tm.user_id = auth.uid()
-        LEFT JOIN public.teams t ON t.id = tm.team_id AND t.project_id = proj.id
-        WHERE pm.user_id = auth.uid() OR tm.user_id = auth.uid()
-      )
-    )
+    public.current_user_is_approved()
   );
 
 -- Insert: Approved users can create test cases (created_by must match)
@@ -91,15 +79,7 @@ CREATE POLICY "test_case_steps_delete_policy" ON public.test_case_steps
 -- ================================================================
 CREATE POLICY "test_sets_select_policy" ON public.test_sets
   FOR SELECT USING (
-    public.current_user_is_approved() AND (
-      public.is_user_admin(auth.uid()) OR
-      program_id IN (
-        SELECT DISTINCT p.id FROM public.programs p
-        LEFT JOIN public.projects proj ON proj.program_id = p.id
-        LEFT JOIN public.project_members pm ON pm.project_id = proj.id
-        WHERE pm.user_id = auth.uid()
-      )
-    )
+    public.current_user_is_approved()
   );
 
 CREATE POLICY "test_sets_insert_policy" ON public.test_sets
@@ -154,15 +134,7 @@ CREATE POLICY "test_set_cases_delete_policy" ON public.test_set_cases
 -- ================================================================
 CREATE POLICY "test_cycles_select_policy" ON public.test_cycles
   FOR SELECT USING (
-    public.current_user_is_approved() AND (
-      public.is_user_admin(auth.uid()) OR
-      program_id IN (
-        SELECT DISTINCT p.id FROM public.programs p
-        LEFT JOIN public.projects proj ON proj.program_id = p.id
-        LEFT JOIN public.project_members pm ON pm.project_id = proj.id
-        WHERE pm.user_id = auth.uid()
-      )
-    )
+    public.current_user_is_approved()
   );
 
 CREATE POLICY "test_cycles_insert_policy" ON public.test_cycles

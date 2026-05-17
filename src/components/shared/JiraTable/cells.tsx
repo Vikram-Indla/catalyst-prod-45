@@ -74,8 +74,6 @@ export function makeDragHandleCell(isDragEnabled: () => boolean) {
           justifyContent: 'center',
           width: 20,
           height: 20,
-          opacity: 0,
-          transition: 'opacity 200ms',
           cursor: 'grab',
           color: token('color.text.subtle', '#42526E'),
         }}
@@ -245,12 +243,19 @@ export function makeKeyCell(
    *
    * `getHref` lets the caller supply the link URL (e.g. `?selectedIssue=<id>`
    * or `/project-hub/:key/allwork?issue=<key>`). Defaults to `#` when omitted.
+   *
+   * `getIcon` (2026-05-17 jira-compare): when provided, the cell renders a
+   * leading icon before the key, matching Jira's "Work" column where the
+   * type glyph sits in the same cell as the key. Use this to retire a
+   * standalone __type column for icon-only parity surfaces.
    */
   onOpen?: (row: any) => void,
   getHref?: (row: any) => string,
+  getIcon?: (row: any) => React.ReactNode,
 ) {
   return function KeyCell({ row, isFocused }: CellProps<any>) {
     const key = getKey(row);
+    const icon = getIcon ? getIcon(row) : null;
     // When focused (detail panel open): block + 100% width so the blue border
     // spans the full column cell width — matching Jira's full-width selection
     // indicator on the open-detail row's key cell.
@@ -282,9 +287,10 @@ export function makeKeyCell(
       cursor: 'pointer',
       textDecoration: 'underline',
     };
+    let keyNode: React.ReactNode;
     if (onOpen) {
       const href = getHref ? getHref(row) : '#';
-      return (
+      keyNode = (
         <a
           data-jira-table-row-open
           href={href}
@@ -300,15 +306,25 @@ export function makeKeyCell(
           {key || '—'}
         </a>
       );
+    } else {
+      keyNode = (
+        <span
+          data-jira-table-row-open
+          style={sharedStyle}
+        >
+          {key || '—'}
+        </span>
+      );
     }
-    return (
-      <span
-        data-jira-table-row-open
-        style={sharedStyle}
-      >
-        {key || '—'}
-      </span>
-    );
+    if (icon) {
+      return (
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>{icon}</span>
+          {keyNode}
+        </span>
+      );
+    }
+    return keyNode;
   };
 }
 
@@ -376,11 +392,12 @@ export type LozengeAppearance =
 // 2026-05-10 via DOM probe — bg returned rgba(0,0,0,0)). Same fix pattern
 // already applied to status dropdown dots.
 const LOZENGE_BG: Record<LozengeAppearance, string> = {
-  success:    'rgb(148, 199, 72)',    // #94C748 — Jira done category
-  inprogress: 'rgb(102, 157, 241)',   // #669DF1 — Jira in-progress category
-  default:    'rgb(220, 223, 228)',   // #DCDFE4 — Jira to-do category
+  // 2026-05-16 DOM probe corrections:
+  success:    'rgb(179, 223, 114)',   // #B3DF72 — Jira done category (was #94C748 — wrong)
+  inprogress: 'rgb(143, 184, 246)',   // #8FB8F6 — Jira in-progress category (was #669DF1 — wrong)
+  default:    'rgb(221, 222, 225)',   // #DDDEE1 — Jira to-do category
   moved:      'rgb(243, 214, 100)',
-  removed:    'rgb(255, 143, 115)',
+  removed:    'rgb(221, 222, 225)',   // Treat removed same as default (grey), not red
   new:        'rgb(184, 172, 246)',
 };
 const LOZENGE_FG = 'rgb(41, 42, 46)';
@@ -404,11 +421,12 @@ export function StatusPill({
       maxWidth: '200px',
     }}>
       <span style={{
-        fontSize: '14px',
-        fontWeight: 400,
+        // 2026-05-16: corrected to match Jira list DOM probe (11px/653/uppercase)
+        fontSize: '11px',
+        fontWeight: 653,
         lineHeight: '16px',
         color: LOZENGE_FG,
-        textTransform: 'none',
+        textTransform: 'uppercase',
         letterSpacing: '0.165px',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -477,16 +495,24 @@ export function makeStatusEditCell<T>(opts: {
         <button
           ref={triggerRef}
           type="button"
-          data-jira-table-editor
+          data-jira-cell-editor
           onClick={handleOpen}
           style={{
-            background: 'transparent', border: 'none', padding: 0,
+            background: 'transparent', border: 'none', padding: '2px 4px',
+            margin: '-2px -4px', borderRadius: 3,
             cursor: editable ? 'pointer' : 'default',
+            fontFamily: 'inherit',
+            display: 'inline-flex', alignItems: 'center', gap: 2,
           }}
         >
           <StatusPill appearance={opts.appearanceFor(status)}>
             {status ?? '—'}
           </StatusPill>
+          {editable && (
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden style={{ flexShrink: 0, opacity: 0.55, marginLeft: 1 }}>
+              <path d="M1 2.5L4 5.5L7 2.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          )}
         </button>
         {open && typeof document !== 'undefined' && ReactDOM.createPortal(
           <div
@@ -855,8 +881,13 @@ export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
 // or detail panel. Matches Jira's list column display.
 export function makeFixVersionsCell(getFixVersions: (row: any) => string[] | null | undefined) {
   return function FixVersionsCell({ row }: CellProps<any>) {
-    const versions = getFixVersions(row);
-    if (!versions || versions.length === 0) {
+    const raw = getFixVersions(row);
+    // Normalise: Jira stores fix_versions as JSON array of {id,name,...} objects.
+    // Extract .name (or coerce to string) so we never pass an object to React.
+    const versions = raw
+      ? (raw as any[]).map(v => (typeof v === 'string' ? v : (v?.name ?? String(v)))).filter(Boolean)
+      : [];
+    if (versions.length === 0) {
       return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
     }
     // jira-compare 2026-05-12 (Item 9): Jira renders each fix-version value

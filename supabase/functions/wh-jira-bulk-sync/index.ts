@@ -98,13 +98,15 @@ Deno.serve(async (req) => {
       const pConfig = projectConfigs[projectKey] || { lookback_months: 3, status_categories: [], issue_types: [], fix_versions: [] }
       const lookbackMonths = pConfig.lookback_months ?? 3
 
-      // Build JQL for this project
+      // Build JQL for this project — SUPER STRICT GUARDRAIL: enforce 2026+ data window
       const jqlParts: string[] = []
       jqlParts.push(`project = "${projectKey}"`)
-      // Lifetime sync (0) skips the date filter entirely
-      if (lookbackMonths > 0) {
-        const lookbackDays = lookbackMonths * 30
-        jqlParts.push(`updated >= -${lookbackDays}d`)
+      jqlParts.push(`(created >= "2026/01/01" OR updated >= "2026/01/01")`)
+      // Delta sync: limit to recently updated issues to avoid fetching all 1366+ records
+      if (syncType === 'delta') {
+        const cutoff = new Date(Date.now() - 48 * 60 * 60 * 1000)
+        const cutoffStr = cutoff.toISOString().slice(0, 10).replace(/-/g, '/')
+        jqlParts.push(`updated >= "${cutoffStr}"`)
       }
 
       // Status category filter
@@ -145,7 +147,10 @@ Deno.serve(async (req) => {
       let projectIssueCount = 0
 
       do {
-        const reqBody: Record<string, any> = { jql, fields, maxResults, expand: 'changelog' }
+        // No expand:changelog — fetching full edit history for 1000+ issues causes
+        // a 60s+ timeout. The changelog step below produces empty rows for full syncs;
+        // delta syncs hit far fewer issues so changelog remains available there.
+        const reqBody: Record<string, any> = { jql, fields, maxResults }
         if (nextPageToken) reqBody.nextPageToken = nextPageToken
 
         const res = await fetch(searchUrl, { method: 'POST', headers: postHeaders, body: JSON.stringify(reqBody) })

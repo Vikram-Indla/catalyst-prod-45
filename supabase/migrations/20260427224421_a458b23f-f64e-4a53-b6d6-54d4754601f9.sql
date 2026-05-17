@@ -16,6 +16,12 @@ DECLARE
   s_on_hold uuid;
   s_canceled uuid;
 BEGIN
+  -- Skip if the scheme doesn't exist (it may have been seeded with a different UUID)
+  IF NOT EXISTS (SELECT 1 FROM catalyst_workflow_schemes WHERE id = v_scheme_id) THEN
+    RAISE NOTICE 'Workflow scheme % not found, skipping rebuild.', v_scheme_id;
+    RETURN;
+  END IF;
+
   -- Wipe existing transitions + statuses for this scheme
   DELETE FROM catalyst_workflow_transitions WHERE scheme_id = v_scheme_id;
   DELETE FROM catalyst_workflow_statuses    WHERE scheme_id = v_scheme_id;

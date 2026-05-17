@@ -6,6 +6,24 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-hub-signature-256",
 };
 
+/** SUPER STRICT GUARDRAIL — Reject issues created/updated before 2026 */
+function isOutside2026Window(created: string | null, updated: string | null): { rejected: boolean; reason?: string } {
+  const CUTOFF = new Date("2026-01-01T00:00:00Z").getTime();
+  const createdTime = created ? new Date(created).getTime() : null;
+  const updatedTime = updated ? new Date(updated).getTime() : null;
+
+  // Reject if BOTH created and updated are before 2026-01-01
+  if (createdTime !== null && updatedTime !== null) {
+    if (createdTime < CUTOFF && updatedTime < CUTOFF) {
+      return {
+        rejected: true,
+        reason: `data outside 2026 window (created: ${created}, updated: ${updated})`
+      };
+    }
+  }
+  return { rejected: false };
+}
+
 /** Convert Atlassian Document Format (ADF) to plain text */
 function adfToPlainText(node: any): string {
   if (!node) return "";
@@ -268,6 +286,18 @@ Deno.serve(async (req) => {
 
     // 6. Process by event type
     const fields = issue.fields || {};
+
+    // 6a. SUPER STRICT GUARDRAIL — check 2026 data window
+    const timestampCheck = isOutside2026Window(fields.created, fields.updated);
+    if (timestampCheck.rejected) {
+      console.log(`[2026-GUARD] Webhook rejected for key: ${jiraKey} — ${timestampCheck.reason}`);
+      await writeLog("rejected", 0, `2026-guard: ${timestampCheck.reason}`);
+      await releaseLock();
+      return new Response(
+        JSON.stringify({ ok: false, reason: "data outside 2026 window", key: jiraKey }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     if (eventType === "jira:issue_created" || eventType === "jira:issue_updated") {
       // Resolve assignee

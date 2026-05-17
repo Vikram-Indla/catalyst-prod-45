@@ -13,6 +13,7 @@
 import { lazy, Suspense, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { useIssueDocumentTitle } from '@/hooks/useIssueDocumentTitle';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
@@ -21,6 +22,7 @@ interface ResolvedIssue {
   issue_type: string;
   project_key: string;
   issue_key: string;
+  summary: string | null;
 }
 
 export default function BacklogDetailPage() {
@@ -30,6 +32,16 @@ export default function BacklogDetailPage() {
   const [issue, setIssue] = useState<ResolvedIssue | null>(null);
   const [loading, setLoading] = useState(true);
   const [debugInfo, setDebugInfo] = useState('');
+
+  // jira-compare 2026-05-16: dynamic document.title parity with Jira
+  // ("[BAU-5922] Server error... · Catalyst" instead of "Backlog · Catalyst")
+  useIssueDocumentTitle({
+    issueKey,
+    summary: issue?.summary,
+    isLoading: loading,
+    isError: false,
+    isNotFound: !loading && !issue,
+  });
 
   // Store scroll position before navigating away
   useEffect(() => {
@@ -79,6 +91,7 @@ export default function BacklogDetailPage() {
             issue_type: data.issue_type,
             project_key: data.project_key,
             issue_key: data.issue_key,
+            summary: data.summary ?? null,
           });
           setDebugInfo('');
           setLoading(false);
@@ -88,7 +101,7 @@ export default function BacklogDetailPage() {
         // Fallback: catalyst_issues (in-app created items)
         const catRes = await (supabase as any)
           .from('catalyst_issues')
-          .select('id, issue_type, issue_key, project_id, projects(key)')
+          .select('id, issue_type, issue_key, project_id, summary, projects(key)')
           .eq('issue_key', issueKey)
           .maybeSingle();
         if (cancelled) return;
@@ -99,6 +112,7 @@ export default function BacklogDetailPage() {
             issue_type: catRow.issue_type,
             project_key: catRow.projects?.key ?? projectKey ?? '',
             issue_key: catRow.issue_key,
+            summary: catRow.summary ?? null,
           });
           setDebugInfo('');
           setLoading(false);
@@ -160,6 +174,30 @@ export default function BacklogDetailPage() {
 
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      {/* Jira-parity: plain "← Back" link above the detail view, navigates back to backlog list */}
+      <div style={{ flexShrink: 0, padding: '8px 24px', background: 'var(--ds-surface, #FFFFFF)' }}>
+        <button
+          onClick={handleClose}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            fontSize: 14,
+            fontWeight: 400,
+            color: 'var(--ds-text-subtle, #505258)',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Back
+        </button>
+      </div>
       <div style={{ flex: 1, minHeight: 0 }}>
         <Suspense fallback={null}>
           <CatalystDetailRouter

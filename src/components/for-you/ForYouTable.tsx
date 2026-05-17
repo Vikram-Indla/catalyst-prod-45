@@ -261,7 +261,7 @@ export function CatalystTable({
                       <div onClick={e => e.stopPropagation()} style={{ display: 'inline-flex' }}>
                         <Checkbox checked={isSelected} onCheckedChange={(v) => handleSelectItem(item.id, !!v)} />
                       </div>
-                      <JiraIssueTypeIcon issueType={item.issueType} size={16} />
+                      <JiraIssueTypeIcon type={item.issueType} size={16} />
                       <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>{item.key}</span>
                       {(item.attachmentCount ?? 0) > 0 && (
                         <Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, #94A3B8)', transform: 'rotate(-45deg)' }} />
@@ -352,7 +352,7 @@ export function CatalystTable({
         return (
           <td key={colKey} style={{ width: columnWidths.type, overflow: 'visible', textOverflow: 'clip' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <JiraIssueTypeIcon issueType={item.issueType} size={16} />
+              <JiraIssueTypeIcon type={item.issueType} size={16} />
             </div>
           </td>
         );

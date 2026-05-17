@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, Lozenge } from '@/components/ads';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   User, Users, Search, X, Check, Circle, Plus, Loader2 
@@ -181,7 +182,7 @@ export function AssignModal({
               {selectedOwnerData ? (
                 <div className="flex items-center justify-between p-3 rounded-lg border bg-[rgba(37,99,235,0.12)] border-[var(--ds-text-brand,#2563eb)]">
                   <div className="flex items-center gap-3">
-                    <Avatar src={selectedOwnerData.avatar_url || undefined} name={selectedOwnerData.full_name} size="small" />
+                    <Avatar src={resolveAvatarUrl(selectedOwnerData.full_name) ?? selectedOwnerData.avatar_url ?? undefined} name={selectedOwnerData.full_name} size="small" />
                     <div>
                       <div className="font-medium text-sm">{selectedOwnerData.full_name}</div>
                       {selectedOwnerData.role && (
@@ -246,7 +247,7 @@ export function AssignModal({
                           )}
                         >
                           <div className="flex items-center gap-3">
-                            <Avatar src={member.avatar_url || undefined} name={member.full_name} size="small" />
+                            <Avatar src={resolveAvatarUrl(member.full_name) ?? member.avatar_url ?? undefined} name={member.full_name} size="small" />
                             <div>
                               <div className="font-medium text-sm">{member.full_name}</div>
                               {member.role && (
@@ -284,7 +285,7 @@ export function AssignModal({
                         className="flex items-center justify-between p-2.5 rounded-lg border bg-muted/30"
                       >
                         <div className="flex items-center gap-3">
-                          <Avatar src={member.avatar_url || undefined} name={member.full_name} size="xsmall" />
+                          <Avatar src={resolveAvatarUrl(member.full_name) ?? member.avatar_url ?? undefined} name={member.full_name} size="xsmall" />
                           <div>
                             <div className="font-medium text-sm">{member.full_name}</div>
                             {member.role && (
@@ -346,7 +347,7 @@ export function AssignModal({
                             <Check className="h-3 w-3 text-[var(--ds-text-brand,#2563eb)]" />
                           )}
                         </div>
-                        <Avatar src={member.avatar_url || undefined} name={member.full_name} size="xsmall" />
+                        <Avatar src={resolveAvatarUrl(member.full_name) ?? member.avatar_url ?? undefined} name={member.full_name} size="xsmall" />
                         <div>
                           <div className="font-medium text-sm">{member.full_name}</div>
                           {member.role && (

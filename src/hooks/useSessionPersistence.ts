@@ -7,6 +7,8 @@ import { useLocation } from 'react-router-dom';
 
 const LAST_ROUTE_KEY = 'catalyst_last_route';
 const EXCLUDED_ROUTES = ['/auth', '/submit-request', '/'];
+const LAST_LOGIN_KEY = 'catalyst_last_login';
+const LAST_LOGIN_DISPLAY_KEY = 'catalyst_last_login_display';
 
 /**
  * Sanitizes a URL path to prevent encoding issues
@@ -54,11 +56,12 @@ export function useTrackLastRoute() {
 }
 
 /**
- * Gets the default home route after login
- * Always returns /home - session persistence is disabled for login redirect
+ * Gets the default home route after login.
+ * Returns /for-you — the canonical landing route inside CatalystShell.
+ * /home redirects to / which causes a double-hop blank-page race on first load.
  */
 export function getLastRoute(): string {
-  return '/home';
+  return '/for-you';
 }
 
 /**
@@ -66,4 +69,33 @@ export function getLastRoute(): string {
  */
 export function clearLastRoute() {
   localStorage.removeItem(LAST_ROUTE_KEY);
+}
+
+/**
+ * Called just before sign-in. Captures the previous login timestamp so it
+ * can be displayed as a "You last signed in on…" Flag after redirect.
+ */
+export function captureLastLoginForDisplay() {
+  const prev = localStorage.getItem(LAST_LOGIN_KEY);
+  if (prev) {
+    localStorage.setItem(LAST_LOGIN_DISPLAY_KEY, prev);
+  }
+}
+
+/**
+ * Called after successful sign-in. Records current time as the new last-login
+ * baseline for the next session.
+ */
+export function storeCurrentLoginTime() {
+  localStorage.setItem(LAST_LOGIN_KEY, new Date().toISOString());
+}
+
+/**
+ * Reads and clears the pending last-login display value. Returns null if
+ * this is the user's first ever sign-in (no baseline to show).
+ */
+export function consumeLastLoginDisplay(): string | null {
+  const val = localStorage.getItem(LAST_LOGIN_DISPLAY_KEY);
+  if (val) localStorage.removeItem(LAST_LOGIN_DISPLAY_KEY);
+  return val;
 }

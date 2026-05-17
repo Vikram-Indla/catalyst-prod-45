@@ -10,6 +10,8 @@ const atlaskitStubs = {
   "@atlaskit/editor-core": path.resolve(__dirname, "./src/test/__stubs__/atlaskit-editor-core.ts"),
   "@atlaskit/adf-utils/traverse": path.resolve(__dirname, "./src/test/__stubs__/atlaskit-adf-utils-traverse.ts"),
   "@atlaskit/adf-utils/types": path.resolve(__dirname, "./src/test/__stubs__/atlaskit-adf-utils-types.ts"),
+  "react-intl-next": path.resolve(__dirname, "./src/test/__stubs__/react-intl-next.ts"),
+  "@atlaskit/platform-feature-flags": path.resolve(__dirname, "./src/test/__stubs__/atlaskit-platform-feature-flags.ts"),
 };
 
 export default defineConfig({

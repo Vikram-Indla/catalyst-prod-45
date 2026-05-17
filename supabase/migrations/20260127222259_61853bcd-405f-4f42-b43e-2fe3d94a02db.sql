@@ -1,5 +1,5 @@
 -- Create business_lines table for product lines
-CREATE TABLE public.business_lines (
+CREATE TABLE IF NOT EXISTS public.business_lines (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   key TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL,
@@ -15,27 +15,32 @@ CREATE TABLE public.business_lines (
 ALTER TABLE public.business_lines ENABLE ROW LEVEL SECURITY;
 
 -- Allow public read access (product lines are not user-specific)
+DROP POLICY IF EXISTS "Anyone can read business lines" ON public.business_lines;
 CREATE POLICY "Anyone can read business lines"
   ON public.business_lines FOR SELECT
   USING (true);
 
 -- Only authenticated users can manage business lines
+DROP POLICY IF EXISTS "Authenticated users can insert business lines" ON public.business_lines;
 CREATE POLICY "Authenticated users can insert business lines"
   ON public.business_lines FOR INSERT
   TO authenticated
   WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Authenticated users can update business lines" ON public.business_lines;
 CREATE POLICY "Authenticated users can update business lines"
   ON public.business_lines FOR UPDATE
   TO authenticated
   USING (true);
 
+DROP POLICY IF EXISTS "Authenticated users can delete business lines" ON public.business_lines;
 CREATE POLICY "Authenticated users can delete business lines"
   ON public.business_lines FOR DELETE
   TO authenticated
   USING (true);
 
 -- Add updated_at trigger
+DROP TRIGGER IF EXISTS update_business_lines_updated_at ON public.business_lines;
 CREATE TRIGGER update_business_lines_updated_at
   BEFORE UPDATE ON public.business_lines
   FOR EACH ROW

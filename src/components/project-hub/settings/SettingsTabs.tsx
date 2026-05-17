@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
 
 const TABS = [
-  'General', 'Members', 'Workflow', 'Types', 'Labels', 'Components', 'Integration', 'Notifications',
+  'General', 'Members', 'Workflow', 'Types', 'Layout', 'Screens', 'Fields',
 ] as const;
 
 export type SettingsTab = typeof TABS[number];

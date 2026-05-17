@@ -37,11 +37,11 @@ interface DisplayProps {
 /* ------------------------------------------------------------------ */
 
 const VALUE_STYLE: React.CSSProperties = {
-  fontSize: 14, lineHeight: '20px', color: '#292A2E',
+  fontSize: 14, lineHeight: '20px', color: 'var(--ds-text, #292A2E)',
   fontFamily: 'inherit',
 };
 const EMPTY_STYLE: React.CSSProperties = {
-  fontSize: 14, lineHeight: '20px', color: '#6B6E76',
+  fontSize: 14, lineHeight: '20px', color: 'var(--ds-text-subtle, #6B6E76)',
   fontFamily: 'inherit',
 };
 

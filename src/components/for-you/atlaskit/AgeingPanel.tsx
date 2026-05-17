@@ -1,41 +1,17 @@
 /**
  * AgeingPanel — For You / Ageing tab.
  *
- * Styling contract (April 2026 /design-critique pass):
- * ───────────────────────────────────────────────────
- *   Same row primitive as every other For You tab. No filter pills, no
- *   metric strip, no governance banner, no AI-Cleanup CTA — those
- *   surfaces live in the governance dashboard and distract from the
- *   "Hey, these are breaching your SLA" signal the For You page is
- *   supposed to carry. This panel renders a grouped list of ForYouRows
- *   with SLA-breach headings and nothing else.
+ * Grouping: 3 age brackets (Cooper goal-centric + Raskin Hick's Law, 2026-05-16)
+ *   🔴 90+ days · 🟠 60-90 days · 🟡 30-60 days
  *
- *   The old AgeingTab component is still shipped for the notifications
- *   drawer (which has its own chrome needs), so we don't delete it — we
- *   just stop wrapping it here.
+ * Filter: exclude items updated within the last 21 days — those are
+ * being actively worked on and are false positives in a "stale" panel.
  *
- * Data source
- * ───────────
- *   `useAgeingItems()` already filters to `assignee_account_id = me` at
- *   the SQL layer (see src/hooks/useAgeingItems.ts Step B). The returned
- *   AgeingItem shape is a superset of what we need — we map it to
- *   WorkItem and route through ForYouRow.
+ * Each row has a hover-reveal 3-dot menu (Reassign · Archive · Escalate).
  *
- * SLA grouping
- * ────────────
- *   AgeingTab buckets by days_open (1 week / 1 month / 1-3 months / 3+).
- *   That's chronological, not SLA-aware. The redesign groups by
- *   SLA breach state using the per-issue-type thresholds:
- *     Production Incident  → 1 day
- *     QA Bug               → 3 days
- *     Sub-task             → 5 days
- *     Story                → 10 days
- *     Feature              → 15 days
- *   Items past their threshold go into "Overdue SLA", the rest bucket by
- *   age (this week / this month / older) so the user's eye lands on the
- *   breaches first.
+ * Data source: useAgeingItems() — filters to assignee_account_id = me.
  */
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { token } from '@atlaskit/tokens';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import Spinner from '@atlaskit/spinner';
@@ -46,60 +22,54 @@ import { text } from '@/lib/typography';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import type { WorkItem, HubType, WorkMode, WorkGroup } from '@/hooks/useForYouData';
 
-// ─── SLA thresholds (mirrors AgeingTab) ─────────────────────────────────────
-// Jira's "days in current status" thresholds keyed by normalised item type.
-// Everything past its threshold bucketed into "Overdue SLA".
-const SLA_THRESHOLDS: Record<string, number> = {
-  'Production Incident': 1,
-  'QA Bug': 3,
-  'Sub-task': 5,
-  'Story': 10,
-  'Feature': 15,
+// ─── Age bracket config ───────────────────────────────────────────────────────
+type AgeBracket = 'ninetyPlus' | 'sixtyNinety' | 'thirtySixty';
+
+const BRACKET_LABELS: Record<AgeBracket, string> = {
+  ninetyPlus:   '🔴 90+ days — critical',
+  sixtyNinety:  '🟠 60–90 days',
+  thirtySixty:  '🟡 30–60 days',
 };
 
-function normaliseItemType(raw: string): string {
-  const v = (raw || '').toLowerCase();
-  if (v.includes('incident')) return 'Production Incident';
-  if (v.includes('bug')) return 'QA Bug';
-  if (v.includes('sub')) return 'Sub-task';
-  if (v.includes('feature') || v.includes('new feature')) return 'Feature';
-  return 'Story';
+const BRACKET_ORDER: AgeBracket[] = ['ninetyPlus', 'sixtyNinety', 'thirtySixty'];
+
+function bracketFor(daysOpen: number): AgeBracket | null {
+  if (daysOpen >= 90) return 'ninetyPlus';
+  if (daysOpen >= 60) return 'sixtyNinety';
+  if (daysOpen >= 30) return 'thirtySixty';
+  return null; // < 30 days: not stale enough to surface
+}
+
+// A-3: exclude items updated within 21 days (actively worked on = false positive)
+const STALE_DAYS = 21;
+function isStale(a: AgeingItem): boolean {
+  if (!a.jira_updated_at) return true;
+  const daysSinceUpdate = (Date.now() - new Date(a.jira_updated_at).getTime()) / 86_400_000;
+  return daysSinceUpdate >= STALE_DAYS;
 }
 
 // ─── Row mapping ────────────────────────────────────────────────────────────
 function formatRelative(dateStr: string): string {
   if (!dateStr) return '—';
-  const now = Date.now();
-  const then = new Date(dateStr).getTime();
-  const diffMs = now - then;
+  const diffMs = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diffMs / 60000);
   if (mins < 1) return 'just now';
-  if (mins === 1) return '1 minute ago';
-  if (mins < 60) return `${mins} minutes ago`;
+  if (mins < 60) return `${mins}m ago`;
   const hours = Math.floor(mins / 60);
-  if (hours === 1) return '1 hour ago';
-  if (hours < 24) return `${hours} hours ago`;
+  if (hours < 24) return `${hours}h ago`;
   const days = Math.floor(hours / 24);
   if (days === 1) return 'yesterday';
-  if (days < 7) return `${days} days ago`;
-  const weeks = Math.floor(days / 7);
-  return weeks === 1 ? '1 week ago' : `${weeks} weeks ago`;
+  if (days < 7) return `${days}d ago`;
+  return `${Math.floor(days / 7)}w ago`;
 }
 
 function initials(name: string): string {
-  return (name || '')
-    .split(/\s+/)
-    .map(p => p[0])
-    .filter(Boolean)
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
+  return (name || '').split(/\s+/).map(p => p[0]).filter(Boolean).join('').toUpperCase().slice(0, 2);
 }
 
 function ageingToWorkItem(a: AgeingItem): WorkItem {
   const assigneeName = a.assignee_display_name || 'Unassigned';
   return {
-    // CatalystDetailRouter resolves by issue_key (text), not UUID.
     id: a.issue_key,
     key: a.issue_key,
     summary: a.summary,
@@ -132,165 +102,182 @@ function ageingToWorkItem(a: AgeingItem): WorkItem {
   };
 }
 
-// ─── Section heading — identical to AssignedPanel.SectionHeading ────────────
+// ─── Section heading ─────────────────────────────────────────────────────────
 function SectionHeading({ label, count }: { label: string; count: number }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: token('space.100', '8px'),
-        paddingInline: token('space.150', '12px'),
-        paddingBlockStart: token('space.200', '16px'),
-        paddingBlockEnd: token('space.100', '8px'),
-      }}
-    >
-      <span
-        style={{
-          font: `500 14px/20px "Inter", system-ui, sans-serif`,
-          letterSpacing: 'normal',
-          color: text.subtlest,
-          textTransform: 'none',
-        }}
-      >
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: token('space.100', '8px'),
+      paddingInline: token('space.150', '12px'),
+      paddingBlockStart: token('space.200', '16px'),
+      paddingBlockEnd: token('space.100', '8px'),
+    }}>
+      <span style={{
+        font: `500 14px/20px "Inter", system-ui, sans-serif`,
+        letterSpacing: 'normal', color: text.subtlest, textTransform: 'none',
+      }}>
         {label}
       </span>
-      <span
-        style={{
-          font: `400 12px/16px "Inter", system-ui, sans-serif`,
-          color: text.subtle,
-          backgroundColor: token('elevation.surface.sunken', '#F7F8F9'),
-          paddingInline: token('space.075', '6px'),
-          borderRadius: 999,
-        }}
-      >
+      <span style={{
+        font: `400 12px/16px "Inter", system-ui, sans-serif`,
+        color: text.subtle,
+        backgroundColor: token('elevation.surface.sunken', '#F7F8F9'),
+        paddingInline: token('space.075', '6px'), borderRadius: 999,
+      }}>
         {count}
       </span>
     </div>
   );
 }
 
-// ─── Bucketing — age-first ───────────────────────────────────────────────────
-// Primary grouping is by calendar age so users see the distribution at a
-// glance. SLA breach is surfaced per-row as a suggestion string — keeps the
-// governance signal without collapsing everything into one "Overdue SLA" pile.
-type AgeingBucket = 'thisWeek' | 'thisMonth' | 'twoMonths' | 'threeMonths' | 'sixMonths' | 'sixPlus';
+// ─── A-4: Hover-reveal 3-dot menu ────────────────────────────────────────────
+type MenuAction = 'reassign' | 'archive' | 'escalate';
 
-const BUCKET_LABELS: Record<AgeingBucket, string> = {
-  thisWeek:    'This week (1–7 days)',
-  thisMonth:   'This month (8–30 days)',
-  twoMonths:   '1–2 months',
-  threeMonths: '2–3 months',
-  sixMonths:   '3–6 months',
-  sixPlus:     '6+ months — archive candidates',
-};
-
-const BUCKET_ORDER: AgeingBucket[] = ['thisWeek', 'thisMonth', 'twoMonths', 'threeMonths', 'sixMonths', 'sixPlus'];
-
-function bucketFor(a: AgeingItem): AgeingBucket {
-  if (a.days_open <= 7)   return 'thisWeek';
-  if (a.days_open <= 30)  return 'thisMonth';
-  if (a.days_open <= 60)  return 'twoMonths';
-  if (a.days_open <= 90)  return 'threeMonths';
-  if (a.days_open <= 180) return 'sixMonths';
-  return 'sixPlus';
+interface DotMenuProps {
+  onAction: (action: MenuAction) => void;
 }
 
-// SLA breach indicator shown as a subtle row suggestion so the user sees
-// which items are past their type-specific threshold within each age bucket.
-function slaSuggestion(a: AgeingItem): string | undefined {
-  const type = normaliseItemType(a.issue_type);
-  const threshold = SLA_THRESHOLDS[type] ?? 10;
-  if (a.days_open <= threshold) return undefined;
-  const overBy = a.days_open - threshold;
-  return `SLA overdue by ${overBy}d (${type} limit: ${threshold}d)`;
-}
+function ThreeDotMenu({ onAction }: DotMenuProps) {
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-// ─── AI Archive Banner ───────────────────────────────────────────────────────
-// Shown above 6+ month items. Uses ADS color.background.warning.subtle so it
-// reads as "caution / action needed" without being alarming. The CTA copies
-// the Jira inline-message pattern (icon + text + link).
-function AiArchiveBanner({ count }: { count: number }) {
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 10,
-        marginInline: token('space.150', '12px'),
-        marginBlockEnd: token('space.100', '8px'),
-        padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
-        borderRadius: 6,
-        background: token('color.background.warning.subtle', '#FFF7D6'),
-        border: `1px solid ${token('color.border.warning', '#F8E6A0')}`,
-      }}
-    >
-      {/* Sparkle — signals AI involvement */}
-      <span style={{ fontSize: 14, flexShrink: 0 }}>✦</span>
-      <span
-        style={{
-          flex: 1,
-          font: `400 12px/16px "Inter", system-ui, sans-serif`,
-          color: token('color.text.warning', '#A54800'),
-        }}
-      >
-        {count} {count === 1 ? 'item has' : 'items have'} been open 6+ months.
-        {' '}AI suggests these are archive candidates — no recent activity detected.
-      </span>
+    <div ref={menuRef} style={{ position: 'relative', flexShrink: 0 }}>
       <button
         type="button"
-        onClick={() => {
-          // Bulk archive is a destructive multi-item action — requires a
-          // dedicated confirmation flow. For now, open a Jira filter for
-          // these items so the user can review before bulk-transitioning.
-          // Wire to bulk-status when that flow is built (Row 19 deferred).
-        }}
+        aria-label="More actions"
+        onClick={e => { e.stopPropagation(); setOpen(o => !o); }}
         style={{
-          flexShrink: 0,
-          background: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          font: `600 12px/16px "Inter", system-ui, sans-serif`,
-          color: token('color.text.warning', '#A54800'),
-          padding: `${token('space.025', '2px')} ${token('space.050', '4px')}`,
-          borderRadius: 3,
-          textDecoration: 'underline',
-          textDecorationColor: 'transparent',
-          transition: 'text-decoration-color 150ms cubic-bezier(0.15, 1, 0.3, 1)',
+          width: 28, height: 28,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          background: open ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)') : 'transparent',
+          border: 'none', borderRadius: 4, cursor: 'pointer',
+          color: token('color.icon.subtle', '#6B778C'),
+          transition: 'background-color 150ms cubic-bezier(0.15, 1, 0.3, 1)',
+          padding: 0,
         }}
-        onMouseEnter={e => { e.currentTarget.style.textDecorationColor = 'currentColor'; }}
-        onMouseLeave={e => { e.currentTarget.style.textDecorationColor = 'transparent'; }}
+        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
+        onMouseLeave={e => { if (!open) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
       >
-        Review
+        {/* ⋯ vertical ellipsis — 3 dots */}
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <circle cx="8" cy="3" r="1.2" /><circle cx="8" cy="8" r="1.2" /><circle cx="8" cy="13" r="1.2" />
+        </svg>
       </button>
+      {open && (
+        <div
+          role="menu"
+          style={{
+            position: 'absolute', right: 0, top: 32, zIndex: 9999,
+            background: token('elevation.surface.overlay', '#FFFFFF'),
+            border: `1px solid ${token('color.border', '#DCDFE4')}`,
+            borderRadius: 8,
+            boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+            minWidth: 160, padding: '4px 0',
+          }}
+        >
+          {[
+            { id: 'reassign' as MenuAction, label: 'Reassign' },
+            { id: 'archive' as MenuAction, label: 'Move to Archive' },
+            { id: 'escalate' as MenuAction, label: 'Escalate' },
+          ].map(opt => (
+            <button
+              key={opt.id}
+              role="menuitem"
+              type="button"
+              onClick={e => { e.stopPropagation(); setOpen(false); onAction(opt.id); }}
+              style={{
+                display: 'block', width: '100%', textAlign: 'left',
+                padding: '8px 16px', background: 'transparent', border: 'none',
+                font: `400 14px/20px "Inter", system-ui, sans-serif`,
+                color: token('color.text', '#292A2E'), cursor: 'pointer',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
-// ─── Component ──────────────────────────────────────────────────────────────
+// ─── Row wrapper: ForYouRow + hover-reveal 3-dot menu ────────────────────────
+function AgeingRow({ item, onSelect, suggestion }: {
+  item: WorkItem;
+  onSelect: (item: WorkItem) => void;
+  suggestion?: string;
+}) {
+  const [hovered, setHovered] = useState(false);
+
+  const handleAction = (action: MenuAction) => {
+    // Actions are affordances — no backend wiring yet (deferred per handover).
+    // They are surfaced so users can see the intent. Escalate could open a Jira
+    // deep-link; Reassign and Archive need confirmation flows (Row 19 deferred).
+    console.log('[AgeingPanel] action:', action, item.key);
+  };
+
+  return (
+    <div
+      style={{ position: 'relative', display: 'flex', alignItems: 'center' }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <ForYouRow item={item} onSelect={onSelect} suggestion={suggestion} />
+      </div>
+      {/* 3-dot menu sits in the row's right gutter, z-index above row hover bg */}
+      <div style={{
+        position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)',
+        opacity: hovered ? 1 : 0,
+        transition: 'opacity 150ms cubic-bezier(0.15, 1, 0.3, 1)',
+        pointerEvents: hovered ? 'auto' : 'none',
+        zIndex: 1,
+      }}>
+        <ThreeDotMenu onAction={handleAction} />
+      </div>
+    </div>
+  );
+}
+
+// ─── Component ───────────────────────────────────────────────────────────────
 export default function AgeingPanel() {
   const { data: ageingItems, isLoading, isError } = useAgeingItems();
 
   const grouped = useMemo(() => {
     if (!ageingItems) return [];
-    const buckets = new Map<AgeingBucket, AgeingItem[]>();
-    for (const a of ageingItems) {
-      const b = bucketFor(a);
+    // A-3: filter out items updated within the past 21 days
+    const staleItems = ageingItems.filter(isStale);
+
+    const buckets = new Map<AgeBracket, AgeingItem[]>();
+    for (const a of staleItems) {
+      const b = bracketFor(a.days_open);
+      if (!b) continue; // < 30 days: not stale enough
       if (!buckets.has(b)) buckets.set(b, []);
       buckets.get(b)!.push(a);
     }
-    // Within each bucket, sort most-aged first.
     for (const list of buckets.values()) {
       list.sort((x, y) => y.days_open - x.days_open);
     }
-    return BUCKET_ORDER
-      .map(b => ({ bucket: b, label: BUCKET_LABELS[b], items: buckets.get(b) ?? [] }))
+    return BRACKET_ORDER
+      .map(b => ({ bracket: b, label: BRACKET_LABELS[b], items: buckets.get(b) ?? [] }))
       .filter(g => g.items.length > 0);
   }, [ageingItems]);
 
   const handleSelect = (item: WorkItem) => {
     useGlobalSearchStore.getState().openDetail({
-      // item.id is now mapped to a.issue_key in ageingToWorkItem — pass directly.
       id: item.id,
       itemType: item.issueType,
       projectKey: item.projectKey,
@@ -312,34 +299,35 @@ export default function AgeingPanel() {
     return (
       <ForYouEmptyState
         title="Couldn't load ageing items"
-        description="There was a problem reading your assigned work from the governance view. Try reloading the page."
+        description="There was a problem reading your assigned work. Try reloading the page."
       />
     );
   }
 
-  if (!ageingItems || ageingItems.length === 0) {
+  if (!grouped.length) {
     return (
       <ForYouEmptyState
-        title="No ageing items assigned to you"
-        description="Every work item assigned to you is within its SLA window. Clean inbox."
+        title="No stalled work — you're on top of things"
+        description="Items updated in the last 21 days or open fewer than 30 days are filtered out. Nothing left to chase."
       />
     );
   }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      {grouped.map(({ bucket, label, items }) => (
-        <div key={bucket}>
+      {grouped.map(({ bracket, label, items }) => (
+        <div key={bracket}>
           <SectionHeading label={label} count={items.length} />
-          {bucket === 'sixPlus' && (
-            <AiArchiveBanner count={items.length} />
-          )}
           {items.map(a => (
-            <ForYouRow
+            <AgeingRow
               key={a.id}
               item={ageingToWorkItem(a)}
               onSelect={handleSelect}
-              suggestion={slaSuggestion(a)}
+              suggestion={
+                a.days_open >= 90
+                  ? `Open ${a.days_open}d — consider reassigning or closing`
+                  : undefined
+              }
             />
           ))}
         </div>

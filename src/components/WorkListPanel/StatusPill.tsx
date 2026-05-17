@@ -16,7 +16,7 @@ import React, { memo } from 'react';
 
 export interface StatusPillProps {
   status: string;
-  statusCategory: 'todo' | 'inprogress' | 'done' | 'default';
+  statusCategory: 'todo' | 'inprogress' | 'done' | 'default' | 'removed' | 'success' | string;
 }
 
 const categoryColors: Record<
@@ -28,11 +28,13 @@ const categoryColors: Record<
     text: '#172B4D',
   },
   inprogress: {
-    bg: '#669DF1',
+    // Jira DOM probe 2026-05-16: rgb(143,184,246) = #8FB8F6
+    bg: '#8FB8F6',
     text: '#FFFFFF',
   },
   done: {
-    bg: '#94C748',
+    // Jira DOM probe 2026-05-16: rgb(179,223,114) = #B3DF72
+    bg: '#B3DF72',
     text: '#172B4D',
   },
   default: {
@@ -45,7 +47,7 @@ export const StatusPill = memo(function StatusPill({
   status,
   statusCategory,
 }: StatusPillProps) {
-  const colors = categoryColors[statusCategory];
+  const colors = categoryColors[statusCategory as keyof typeof categoryColors] ?? categoryColors.default;
 
   return (
     <span

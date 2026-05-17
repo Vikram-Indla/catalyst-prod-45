@@ -140,8 +140,54 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
+    <div
+      className="min-h-screen flex flex-col items-center justify-center p-4"
+      style={{ background: 'var(--ds-surface-sunken, #F4F5F7)' }}
+    >
+      {/* Catalyst branding header */}
+      <div className="flex flex-col items-center mb-8">
+        <svg
+          width={48}
+          height={48}
+          viewBox="0 0 512 512"
+          xmlns="http://www.w3.org/2000/svg"
+          role="img"
+          aria-label="Catalyst"
+          style={{ borderRadius: 12, marginBottom: 12 }}
+        >
+          <rect width="512" height="512" rx="129.62" fill="#1868DB" />
+          <g transform="translate(256 256) scale(0.95) translate(-256 -256)">
+            <path
+              d="M421.802 200.297V93.9736H259.279L233.457 127.39L210.674 93.9736H154.474C39.037 223.992 106.375 363.833 154.474 417.501H421.802V309.659H279.025L236.495 374.972C170.878 271.686 209.155 173.97 236.495 138.022L279.025 200.297H421.802Z"
+              fill="white"
+            />
+          </g>
+        </svg>
+        <span
+          style={{
+            fontSize: 22,
+            fontWeight: 700,
+            color: 'var(--ds-text, #172B4D)',
+            letterSpacing: '-0.3px',
+            fontFamily: 'var(--cp-font-body, system-ui, sans-serif)',
+          }}
+        >
+          Catalyst
+        </span>
+        <span
+          style={{
+            fontSize: 12,
+            fontWeight: 500,
+            color: 'var(--ds-text-subtlest, #6B778C)',
+            marginTop: 2,
+            fontFamily: 'var(--cp-font-body, system-ui, sans-serif)',
+          }}
+        >
+          Enterprise Program Intelligence
+        </span>
+      </div>
+
+      <Card className="w-full max-w-md" style={{ boxShadow: '0 1px 3px 0 rgba(0,0,0,0.08), 0 4px 16px 0 rgba(0,0,0,0.06)' }}>
           {pageState === 'loading' && (
             <>
               <CardHeader className="text-center">
@@ -286,6 +332,18 @@ export default function ResetPassword() {
             </>
           )}
         </Card>
-      </div>
+
+      {/* Watermark footer */}
+      <p
+        style={{
+          marginTop: 24,
+          fontSize: 12,
+          color: 'var(--ds-text-subtlest, #6B778C)',
+          fontFamily: 'var(--cp-font-body, system-ui, sans-serif)',
+        }}
+      >
+        © {new Date().getFullYear()} Catalyst · Secure password management
+      </p>
+    </div>
   );
 }

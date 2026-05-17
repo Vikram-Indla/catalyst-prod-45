@@ -20,16 +20,19 @@ vi.mock('@/hooks/useForYouData', () => ({
     activeTab: 'r360',
     setActiveTab: vi.fn(),
     tabCounts: { recommended: 0, assigned: 0, starred: 0, r360: 0, ageing: 0, 'ai-theme': 0 },
+    workItems: [],
     visibleItems: [],
     isLoading: false,
     hasMore: false,
     loadMore: vi.fn(),
     toggleStar: vi.fn(),
+    trackView: vi.fn(),
     handleSelect: vi.fn(),
     recommendedMentions: [],
     recommendedComments: [],
     currentUserName: 'Vikram',
     allUserProjects: [],
+    user: null,
     searchQuery: '',
     setSearchQuery: vi.fn(),
     inlineFilters: {},
@@ -57,19 +60,23 @@ vi.mock('@/components/for-you/atlaskit/ForYouTabs', () => ({
 
 vi.mock('@atlaskit/tokens', () => ({ token: (_: string, fb: string) => fb }));
 
+vi.mock('@/lib/auth', () => ({
+  useAuth: () => ({ user: { id: 'test-user', email: 'test@test.com' }, session: null, loading: false }),
+}));
+
 import ForYouPage from '../ForYouPage.atlaskit';
 
 describe('ForYouPage — R360 full-screen mode', () => {
   it('hides the RecommendedProjectsStrip when r360 tab is active', () => {
     render(<MemoryRouter><ForYouPage /></MemoryRouter>);
-    const strip = screen.getByTestId('recommended-strip');
-    // Must be hidden — either aria-hidden or style display:none
-    const style = strip.closest('[data-r360-fullscreen]') ||
+    // Strip must not be in the DOM (conditionally not rendered) OR be hidden
+    const strip = screen.queryByTestId('recommended-strip');
+    const isHidden = strip === null ||
       strip.getAttribute('aria-hidden') === 'true' ||
-      (strip as HTMLElement).style.display === 'none' ||
+      (strip as HTMLElement).style?.display === 'none' ||
       !!strip.closest('[style*="display: none"]') ||
       !!strip.closest('[hidden]');
-    expect(style).toBeTruthy();
+    expect(isHidden).toBeTruthy();
   });
 
   it('sets data-r360-fullscreen on the panel container when r360 is active', () => {

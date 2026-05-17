@@ -77,7 +77,7 @@ function ActivityPanel({
     { key: 'all', label: 'All' },
     { key: 'comments', label: 'Comments' },
     { key: 'history', label: 'History' },
-    { key: 'worklog', label: 'Worklog' },
+    { key: 'worklog', label: 'Work log' },
   ];
 
   const mergedAll = useMemo(() => {
@@ -107,12 +107,12 @@ function ActivityPanel({
         {/* jira-compare 2026-05-11 re-probe: canonical 16/653/20px/rgb(41,42,46)
             (live DOM BAU-5814 Story + QA Bug exemplars). Corrects 2026-05-08
             14/600 lesson which measured wrapper levels. */}
-        <h3
+        <h2
           className="text-[var(--ds-text,#292A2E)] dark:text-[var(--ds-text,#EDEDED)]"
           style={{ margin: 0, fontSize: 16, fontWeight: 653, lineHeight: '20px', fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}
         >
           Activity
-        </h3>
+        </h2>
       </div>
 
       <div className="flex items-center justify-between mb-4">
@@ -123,10 +123,15 @@ function ActivityPanel({
               type="button"
               onClick={() => setActiveTab(tab.key)}
               className={cn(
-                'px-3 py-1.5 rounded text-[13px] font-medium transition-colors duration-150',
+                /* jira-compare 2026-05-16 (corrected): Jira Activity tabs are 14px/400, NOT 13px/500.
+                   TreeWalker probe on BAU-1919: fontSize=14px, fontWeight=400 on all tab elements.
+                   Selected tab: borderBottom="0px none" on the tab element itself — active state
+                   is conveyed purely by bg=rgb(233,242,254) on parent + color=rgb(24,104,219) on tab.
+                   The prior 'border-b border-[#1868DB]' was incorrect — removed. */
+                'px-3 py-1.5 rounded text-[14px] font-normal transition-colors duration-150',
                 activeTab === tab.key
-                  ? 'bg-[#DEEBFF] text-[#0747A6] dark:bg-[#1C3A5C] dark:text-[#4C9AFF]'
-                  : 'text-[var(--ds-text-subtlest,#6B778C)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
+                  ? 'bg-[#E9F2FE] text-[#1868DB] dark:bg-[#1C3A5C] dark:text-[#4C9AFF]'
+                  : 'text-[var(--ds-text-subtle,#505258)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
               )}
             >
               {tab.label}
@@ -138,7 +143,7 @@ function ActivityPanel({
           <button
             type="button"
             onClick={() => setSortOpen(!sortOpen)}
-            className="flex items-center gap-1 text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:text-[var(--ds-text,#172B4D)] dark:hover:text-[var(--ds-text,#EDEDED)] transition-colors"
+            className="flex items-center gap-1 text-[14px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:text-[var(--ds-text,#172B4D)] dark:hover:text-[var(--ds-text,#EDEDED)] transition-colors"
           >
             {sortOrder === 'newest' ? 'Newest first' : 'Oldest first'}
             <ChevronDown className="h-3.5 w-3.5" />
@@ -157,9 +162,9 @@ function ActivityPanel({
                       setSortOpen(false);
                     }}
                     className={cn(
-                      'w-full text-left px-3 py-1.5 text-[13px] transition-colors',
+                      'w-full text-left px-3 py-1.5 text-[14px] transition-colors',
                       order === sortOrder
-                        ? 'bg-[#DEEBFF] text-[#0747A6] dark:bg-[#1C3A5C] dark:text-[#4C9AFF]'
+                        ? 'bg-[#E9F2FE] text-[#1868DB] dark:bg-[#1C3A5C] dark:text-[#4C9AFF]'
                         : 'text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
                     )}
                   >
@@ -246,7 +251,7 @@ function ActivityPanel({
                           <textarea
                             value={editValue}
                             onChange={(e) => setEditValue(e.target.value)}
-                            className="w-full resize-none border-0 bg-transparent text-[13px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] focus:outline-none focus:ring-0 min-h-[60px]"
+                            className="w-full resize-none border-0 bg-transparent text-[14px] text-[var(--ds-text,#292A2E)] dark:text-[var(--ds-text,#EDEDED)] focus:outline-none focus:ring-0 min-h-[60px]"
                             autoFocus
                             onKeyDown={(e) => {
                               if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
@@ -327,7 +332,7 @@ function ActivityPanel({
                 type="button"
                 onClick={onLoadMoreHistory}
                 disabled={isLoadingMoreHistory}
-                className="text-[13px] font-medium text-[#0747A6] dark:text-[#4C9AFF] hover:underline disabled:opacity-50"
+                className="text-[14px] font-medium text-[#1868DB] dark:text-[#4C9AFF] hover:underline disabled:opacity-50"
               >
                 {isLoadingMoreHistory ? 'Loading...' : 'Load more activity'}
               </button>

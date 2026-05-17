@@ -98,21 +98,17 @@ serve(async (req) => {
     console.log(`[jira-sync] ${activeJiraProjects.length} active projects`);
 
     // 5. UPSERT projects (never delete)
-    const defaultProgramId = "00000000-0000-0000-0000-000000000001";
     const colors = ["#2563EB", "#7C3AED", "#0D9488", "#D97706", "#EF4444", "#059669", "#8B5CF6", "#EC4899", "#F59E0B", "#06B6D4"];
 
-    const projectRows = activeJiraProjects.map((jp: any, idx: number) => {
+    const projectRows = activeJiraProjects.map((jp: any) => {
       const counts = countMap[jp.key] || { total: 0, todo: 0, in_progress: 0, done: 0, epics: 0, stories: 0, tasks: 0 };
       const completion = counts.total > 0 ? Math.round((counts.done / counts.total) * 100) : 0;
       return {
         name: jp.name, key: jp.key, description: jp.description ?? null,
-        program_id: defaultProgramId, status: "active",
+        status: "active",
         status_category: counts.in_progress > 0 ? "in_progress" : counts.done > counts.todo ? "done" : "todo",
         health_status: "on_track",
-        project_type: jp.projectTypeKey === "business" ? "kanban" : "scrum",
-        category: jp.projectTypeKey ?? "software",
         avatar_url: jp.avatarUrls?.["48x48"] ?? null,
-        color: colors[idx % colors.length],
         total_epics: counts.epics, total_stories: counts.stories, total_tasks: counts.tasks,
         work_items_todo: counts.todo, work_items_in_progress: counts.in_progress, work_items_done: counts.done,
         completion_percentage: completion,
@@ -127,14 +123,31 @@ serve(async (req) => {
     if (insertErr) throw new Error(`Failed to upsert projects: ${insertErr.message}`);
     console.log(`[jira-sync] Upserted ${inserted?.length ?? 0} projects`);
 
+    // Also upsert into ph_jira_projects (read by useForYouData for project name resolution)
+    const phJiraProjectRows = activeJiraProjects.map((jp: any) => ({
+      jira_project_id: jp.id ?? jp.key,
+      project_key: jp.key,
+      name: jp.name,
+      description: jp.description ?? null,
+      avatar_url: jp.avatarUrls?.["48x48"] ?? null,
+      is_active: true,
+      last_synced_at: new Date().toISOString(),
+    }));
+    if (phJiraProjectRows.length > 0) {
+      const { error: phjErr } = await supabase
+        .from("ph_jira_projects")
+        .upsert(phJiraProjectRows, { onConflict: "jira_project_id" });
+      if (phjErr) console.error("[jira-sync] ph_jira_projects upsert error:", phjErr.message);
+      else console.log(`[jira-sync] Upserted ${phJiraProjectRows.length} ph_jira_projects rows`);
+    }
+
     // Also upsert into ph_projects
     const { data: anyUser } = await supabase.from("profiles").select("id").limit(1).single();
     const systemUserId = anyUser?.id ?? "00000000-0000-0000-0000-000000000000";
 
     const phProjectRows = activeJiraProjects.map((jp: any, idx: number) => ({
       key: jp.key, name: jp.name, description: jp.description ?? "",
-      department: "Technology", status: "active",
-      color: colors[idx % colors.length], created_by: systemUserId,
+      department: "Technology", status: "active", created_by: systemUserId,
     }));
 
     const { data: phInserted, error: phErr } = await supabase

@@ -43,7 +43,12 @@ interface RecommendedProjectsStripProps {
 
 export default function RecommendedProjectsStrip({ projects, maxCards = 3 }: RecommendedProjectsStripProps) {
   const navigate = useNavigate();
-  const { recentLocations } = useRecentProjects(16);
+  // Strip caps at 3 cards; we only need the top-3 recency signal. The previous
+  // 16-row fetch was a 5x over-fetch that hit the recent-projects endpoint on
+  // every navigation. We still pad slightly above `maxCards` so a "stale"
+  // last-visited project doesn't push live projects off the strip when there
+  // are ties — but 6 is plenty for a 3-card cap.
+  const { recentLocations } = useRecentProjects(Math.max(maxCards * 2, 6));
 
   // Sort by most-recently-visited project first, fall back to alpha for ties
   // and unvisited projects. Takes the max visitedAt across all sections of the

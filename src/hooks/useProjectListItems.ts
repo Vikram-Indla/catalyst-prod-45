@@ -4,6 +4,7 @@
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/lib/auth';
 import type { WorkItem, WorkItemType, WorkItemStatus, WorkItemPriority } from '@/types/workItem.types';
 
 /* ── helpers ── */
@@ -179,6 +180,7 @@ async function fetchAllPhIssues(
 
 /* ── List view: all items for a project ── */
 export function useProjectListItems(projectKey: string | undefined) {
+  const { user } = useAuth();
   return useQuery({
     queryKey: ['project-list-items-v2', projectKey],
     queryFn: async (): Promise<WorkItem[]> => {
@@ -190,7 +192,10 @@ export function useProjectListItems(projectKey: string | undefined) {
       );
       return rows.map(mapPhIssue);
     },
-    enabled: !!projectKey,
+    // Gate on user: prevents anon-role refetch racing Supabase session restore
+    // on hard refresh. Without this, stale cache fires as anon → RLS returns 0
+    // (wh_issues_select is authenticated-only) → overwrites 1366-row cache.
+    enabled: !!projectKey && !!user,
     staleTime: 30_000,
   });
 }
@@ -207,6 +212,7 @@ export function useProjectListItems(projectKey: string | undefined) {
    issues lost Epic/Feature/Task/older Story rows because the top-N most
    recently created Defect rows filled the response. */
 export function useProjectAllWorkItems(projectKey: string | undefined) {
+  const { user } = useAuth();
   return useQuery({
     queryKey: ['project-all-work-items-v3', projectKey],
     queryFn: async (): Promise<WorkItem[]> => {
@@ -218,13 +224,15 @@ export function useProjectAllWorkItems(projectKey: string | undefined) {
       );
       return rows.map(mapPhIssue);
     },
-    enabled: !!projectKey,
+    // Gate on user: same auth-race fix as useProjectListItems above.
+    enabled: !!projectKey && !!user,
     staleTime: 30_000,
   });
 }
 
 /* ── Children for expand (by parent_key) ── */
 export function useWorkItemChildren(parentKey: string | undefined, enabled: boolean) {
+  const { user } = useAuth();
   return useQuery({
     queryKey: ['work-item-children-v2', parentKey],
     queryFn: async (): Promise<WorkItem[]> => {
@@ -241,13 +249,14 @@ export function useWorkItemChildren(parentKey: string | undefined, enabled: bool
 
       return (data ?? []).map(mapPhIssue);
     },
-    enabled: enabled && !!parentKey,
+    enabled: enabled && !!parentKey && !!user,
     staleTime: 30_000,
   });
 }
 
 /* ── Single work item (detail panel) ── */
 export function useWorkItem(itemId: string | undefined) {
+  const { user } = useAuth();
   return useQuery({
     queryKey: ['work-item-detail', itemId],
     queryFn: async (): Promise<WorkItem | null> => {
@@ -262,13 +271,14 @@ export function useWorkItem(itemId: string | undefined) {
       if (!data) return null;
       return mapPhIssue(data);
     },
-    enabled: !!itemId,
+    enabled: !!itemId && !!user,
     staleTime: 15_000,
   });
 }
 
 /* ── Search ── */
 export function useSearchWorkItems(projectKey: string | undefined, query: string) {
+  const { user } = useAuth();
   return useQuery({
     queryKey: ['work-items-search', projectKey, query],
     queryFn: async (): Promise<WorkItem[]> => {
@@ -286,7 +296,7 @@ export function useSearchWorkItems(projectKey: string | undefined, query: string
 
       return (data ?? []).map(mapPhIssue);
     },
-    enabled: !!projectKey && query.length >= 2,
+    enabled: !!projectKey && query.length >= 2 && !!user,
     staleTime: 5_000,
   });
 }
