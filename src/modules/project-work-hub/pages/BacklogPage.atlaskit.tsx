@@ -131,6 +131,8 @@ import type {
 import {
   DndContext,
   DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
   closestCenter,
 } from '@dnd-kit/core';
 import {
@@ -150,57 +152,26 @@ const AkChevronsRightIcon = () => (
 
 /**
  * DragHandleCell — useSortable hook for row ranking.
- * Called for each BacklogItem row; returns a draggable span with visual feedback.
  *
- * 2026-05-17 jira-compare cycle 2 (design-critique H1 P0): The transform that
- * dnd-kit produces during drag was being applied to the handle <span> itself,
- * but the handle lives inside a <td style={{ overflow: 'hidden' }}> in
- * JiraTable.tsx — so any movement was clipped immediately and the user saw
- * nothing happen ("can hold the handle but cannot move the row"). Fix: keep
- * useSortable bound to the handle (so dnd-kit picks up the listeners) but
- * imperatively walk up to the parent <tr> and apply the transform there
- * via useEffect, since the canonical JiraTable's TR rendering doesn't expose
- * a ref forwarding hook today. The whole row visually slides during drag,
- * matching Jira's pattern, and the td overflow clip no longer blocks the
- * visual feedback because TR is outside the td chain.
+ * 2026-05-17 jira-compare cycle 2 (revision 3): TR-transform hack reverted.
+ * Trying to apply dnd-kit's transform to the parent <tr> via closest('tr')
+ * was the wrong layer — TRs inside table-layout: fixed have inconsistent
+ * transform behavior across browsers AND setNodeRef remained on the handle
+ * so verticalListSortingStrategy never saw the actual rows. The canonical
+ * fix is DragOverlay — a portal-mounted ghost that follows the cursor,
+ * independent of any table clipping. The handle stays as the sortable item;
+ * the overlay (rendered in BacklogPage's DndContext) gives the visual
+ * feedback; original row stays put; drop persists. Cleaner, more reliable.
  */
 function DragHandleCell({ row }: { row: BacklogItem }) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({ id: row.id });
-  const handleRef = useRef<HTMLSpanElement | null>(null);
-
-  // Combined ref: feeds both dnd-kit's setNodeRef and our local handleRef
-  // so the useEffect below can walk up to the row's <tr>.
-  const combinedRef = useCallback((el: HTMLSpanElement | null) => {
-    handleRef.current = el;
-    setNodeRef(el);
-  }, [setNodeRef]);
-
-  // Hoist the transform from the handle to the parent <tr>.
-  useEffect(() => {
-    const tr = handleRef.current?.closest('tr') as HTMLTableRowElement | null;
-    if (!tr) return;
-    if (isDragging && transform) {
-      tr.style.transform = CSS.Transform.toString(transform);
-      tr.style.transition = 'transform 200ms ease-out';
-      tr.style.zIndex = '10';
-      tr.style.position = 'relative';
-      tr.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04))';
-      tr.style.boxShadow = '0 2px 8px rgba(9,30,66,0.15)';
-    } else {
-      tr.style.transform = '';
-      tr.style.transition = '';
-      tr.style.zIndex = '';
-      tr.style.position = '';
-      tr.style.background = '';
-      tr.style.boxShadow = '';
-    }
-  }, [transform, isDragging]);
+  const { attributes, listeners, setNodeRef, isDragging } = useSortable({ id: row.id });
 
   return (
     <span
-      ref={combinedRef}
+      ref={setNodeRef}
       className="jira-drag-handle"
       aria-hidden
+      style={{ opacity: isDragging ? 0.4 : 1 }}
       {...attributes}
       {...listeners}
     >
@@ -700,6 +671,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   const [filterValue, setFilterValue] = useState<JiraFilterValue>(emptyFilterValue);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => parseSet(searchParams.get('expanded')));
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  // 2026-05-17 jira-compare cycle 2 (rev 3): track the row currently being
+  // dragged so the DragOverlay portal can render a ghost preview that
+  // follows the cursor. Cleared on drag end / cancel.
+  const [activeDragRow, setActiveDragRow] = useState<BacklogItem | null>(null);
   // Default sort — Key ASC matches Jira's default "Rank" ordering which
   // surfaces oldest issues (BAU-310 first). Updated DESC was incorrect —
   // live probe 2026-05-04 shows Jira BAU list starts at BAU-310, not newest.
@@ -2878,7 +2853,15 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
           <DndContext
             collisionDetection={closestCenter}
+            onDragStart={(event: DragStartEvent) => {
+              // Capture the row being dragged so DragOverlay can render
+              // a portal-mounted ghost that follows the cursor.
+              const row = sortedRows.find((r) => r.id === event.active.id) ?? null;
+              setActiveDragRow(row);
+            }}
+            onDragCancel={() => setActiveDragRow(null)}
             onDragEnd={async (event: DragEndEvent) => {
+              setActiveDragRow(null);
               const { active, over } = event;
               if (!over || active.id === over.id || !projectKey) return;
 
@@ -3227,6 +3210,70 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             }
           />
             </SortableContext>
+            {/* 2026-05-17 jira-compare cycle 2 (rev 3): DragOverlay portal.
+                Renders a ghost preview of the row being dragged. Portal-
+                mounted at document.body so it follows the cursor regardless
+                of the table's overflow:hidden clipping. Shows type icon,
+                key, and summary in a card-like wrapper with shadow. */}
+            <DragOverlay dropAnimation={{ duration: 200, easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)' }}>
+              {activeDragRow ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '8px 12px',
+                    background: token('elevation.surface.overlay', '#FFFFFF'),
+                    border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    borderRadius: 4,
+                    boxShadow: token('elevation.shadow.overlay', '0 8px 24px rgba(9,30,66,0.15)'),
+                    opacity: 0.96,
+                    cursor: 'grabbing',
+                    maxWidth: 600,
+                    fontSize: 14,
+                    fontFamily: 'inherit',
+                  }}
+                >
+                  <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
+                    {activeDragRow.type === 'initiative' ? (
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: 16,
+                          height: 16,
+                          borderRadius: 3,
+                          background: '#904EE2',
+                          color: 'var(--ds-text-inverse, #FFFFFF)',
+                          fontSize: 10,
+                          fontWeight: 700,
+                        }}
+                      >
+                        I
+                      </span>
+                    ) : (
+                      <JiraIssueTypeIcon
+                        type={
+                          activeDragRow.type === 'epic' ? 'Epic'
+                          : activeDragRow.type === 'feature' ? 'Feature'
+                          : activeDragRow.type === 'bug' ? 'QA Bug'
+                          : activeDragRow.type === 'incident' ? 'Production Incident'
+                          : 'Story'
+                        }
+                        size={16}
+                      />
+                    )}
+                  </span>
+                  <span style={{ color: token('color.link', '#0C66E4'), textDecoration: 'underline', fontWeight: 500, flexShrink: 0 }}>
+                    {activeDragRow.key || '—'}
+                  </span>
+                  <span style={{ color: token('color.text', '#172B4D'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                    {activeDragRow.title}
+                  </span>
+                </div>
+              ) : null}
+            </DragOverlay>
           </DndContext>
           </div>
         </div>
