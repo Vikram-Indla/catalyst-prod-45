@@ -5,6 +5,33 @@ This document enforces that **any structural or behavioral change to a canonical
 
 ---
 
+## Discoverability surface: `/admin/components` (shipped 2026-05-17)
+
+The component library is now browseable at **`/admin/components`** under the new **Design system** admin pocket (which also consolidates `/admin/icons` + `/admin/avatars`).
+
+| Tab | What it surfaces |
+|---|---|
+| **Inventory** | 10 canonical entries seeded from this file + auto-discovered Atlaskit + internal primitives (~504 atlaskit + ~3,292 internal observed). Side-nav by category (atoms / molecules / organisms / pages / patterns), spec card on the right with file path, JSDoc, feature flags, ADS origin link, live preview (light + dark), and consumer file list. |
+| **Banned** | All 8 permanently-banned items (MDT Ref, Service Now#, Assessment Feature, Story Points, Development, Automation, AI Sparkles, Notion) with CLAUDE.md anchor + live-reference count (green ✓ at 0, red ⚠ INVESTIGATE otherwise). |
+| **Violations** | Live scan of ADS-compliance defects (`scripts/scan-ads-violations.ts`) — hand-rolled dropdowns, deprecated shim imports, banned imports, primitive duplication. Sortable by severity (P0/P1/P2) and category. Each row is a VS Code deep link. |
+| **Cascade** | Pick a component + change kind (patch/minor/major) → see every consumer that will be affected. Tick off as reviewed. Copy a markdown checklist into the PR description. Cascade discipline = Rule 2's "audit impact across all consumers" rule, mechanized. |
+
+**Data sources:**
+- `src/registry/components.registry.ts` — curated source of truth (10 canonical + 8 banned). **Hand-edit to add a new canonical component.**
+- `src/registry/usage-map.generated.ts` — AST scan output. Run `npm run scan:components` after touching imports.
+- `src/registry/ads-violations.generated.ts` — violation scan output. Run `npm run scan:ads-violations` after a fix.
+
+**Cascade-change protocol enshrined:**
+1. Bump the component's `version` in `components.registry.ts` (patch/minor/major per the kind of change).
+2. Open `/admin/components` → Cascade tab → pick the component → pick the change kind.
+3. Tick every consumer as you review them.
+4. Click "Copy markdown checklist" → paste into your PR description.
+5. Reviewer verifies the checklist matches the diff before approving.
+
+v2 candidates (logged in [active/preflight-handover-2026-05-17-admin-components-v1.md](active/preflight-handover-2026-05-17-admin-components-v1.md)): props-knobs sandbox · Storybook embed · Chromatic visual regression · ts-morph codemod path · build-time `npm run scan:components` in CI · component telemetry.
+
+---
+
 ## Core Governance Rules (2026-05-17)
 
 ### Rule 1: Feature Flags Declare Intent
