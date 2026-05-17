@@ -1,332 +1,265 @@
-import { useState, useCallback } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import '@/components/project-hub/shared/phStyles.css';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { Plus } from '@/lib/atlaskit-icons';
+import { typedQuery } from '@/integrations/supabase/client';
 import { WorkItemTypeIcon } from '@/components/icons';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { StatusRow } from './workflow/StatusRow';
-import { AddStatusModal } from './workflow/AddStatusModal';
-import { EditStatusModal } from './workflow/EditStatusModal';
-import { DeleteStatusModal } from './workflow/DeleteStatusModal';
-import { CopyWorkflowSection } from './workflow/CopyWorkflowSection';
-import { CategoryLegend } from './workflow/CategoryLegend';
+import { ExternalLink } from 'lucide-react';
 
 interface WorkflowTabProps {
   projectId: string;
 }
 
-interface WorkTypeWorkflow {
+// Only these 4 types are in scope for BAU project settings
+const IN_SCOPE_TYPES = ['Story', 'Epic', 'Feature', 'Sub-task', 'QA Bug'] as const;
+
+interface AdminScheme {
+  id: string;
+  name: string;
+  issue_type: string;
+}
+
+interface AdminStatus {
+  id: string;
+  scheme_id: string;
+  name: string;
+  slug: string;
+  category: 'todo' | 'in_progress' | 'done';
+  color: string;
+  position: number;
+  is_initial: boolean;
+  is_final: boolean;
+}
+
+interface WorkTypeRow {
   id: string;
   name: string;
   icon: string;
   workflow_name: string | null;
-  position: number;
 }
 
-interface WorkflowStatus {
-  id: string;
-  name: string;
-  color: string;
-  category: string;
-  position: number;
-  is_default: boolean | null;
-  project_id: string;
-}
+const CATEGORY_LABEL: Record<string, { label: string; bg: string; text: string }> = {
+  todo:        { label: 'To Do',       bg: '#F1F5F9', text: '#475569' },
+  in_progress: { label: 'In Progress', bg: '#EFF6FF', text: '#1D4ED8' },
+  done:        { label: 'Done',        bg: '#F0FDF4', text: '#16A34A' },
+};
+
+const ICON_MAP: Record<string, string> = {
+  'Story':    'story',
+  'Epic':     'epic',
+  'Feature':  'feature',
+  'Sub-task': 'subtask',
+  'QA Bug':   'bug',
+};
 
 export function WorkflowTab({ projectId }: WorkflowTabProps) {
-  const queryClient = useQueryClient();
-  const queryKey = ['ph-workflow-statuses', projectId];
-
+  // Fetch in-scope work types for this project
   const { data: workTypes = [] } = useQuery({
-    queryKey: ['ph-work-types-workflow', projectId],
+    queryKey: ['ph-work-types-settings', projectId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_work_types')
-        .select('id,name,icon,workflow_name,position')
+      const { data, error } = await typedQuery('ph_work_types')
+        .select('id,name,icon,workflow_name')
         .eq('project_id', projectId)
+        .in('name', IN_SCOPE_TYPES as unknown as string[])
         .order('position');
       if (error) throw new Error(error.message);
-      return (data || []) as WorkTypeWorkflow[];
+      return (data || []) as WorkTypeRow[];
     },
     enabled: !!projectId,
   });
 
-  const [addOpen, setAddOpen] = useState(false);
-  const [editStatus, setEditStatus] = useState<WorkflowStatus | null>(null);
-  const [deleteStatus, setDeleteStatus] = useState<WorkflowStatus | null>(null);
-  const [actionLoading, setActionLoading] = useState(false);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
-  );
-
-  const { data: statuses = [], isLoading } = useQuery({
-    queryKey,
+  // Fetch admin workflow schemes for in-scope types
+  const { data: schemes = [] } = useQuery({
+    queryKey: ['catalyst-workflow-schemes-settings'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_workflow_statuses')
-        .select('*')
-        .eq('project_id', projectId)
-        .order('position');
+      const { data, error } = await typedQuery('catalyst_workflow_schemes')
+        .select('id,name,issue_type')
+        .in('issue_type', IN_SCOPE_TYPES as unknown as string[])
+        .eq('is_active', true)
+        .eq('is_default', true);
       if (error) throw new Error(error.message);
-      return (data || []) as WorkflowStatus[];
+      return (data || []) as AdminScheme[];
     },
-    enabled: !!projectId,
   });
 
-  const invalidate = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey });
-  }, [queryClient, queryKey]);
-
-  // Drag end — reorder
-  const handleDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = statuses.findIndex(s => s.id === active.id);
-    const newIndex = statuses.findIndex(s => s.id === over.id);
-    if (oldIndex === -1 || newIndex === -1) return;
-
-    const reordered = [...statuses];
-    const [moved] = reordered.splice(oldIndex, 1);
-    reordered.splice(newIndex, 0, moved);
-
-    // Optimistic update
-    queryClient.setQueryData(queryKey, reordered.map((s, i) => ({ ...s, position: i })));
-
-    // Batch update positions
-    try {
-      const updates = reordered.map((s, i) => ({ id: s.id, position: i }));
-      for (const u of updates) {
-        const { error } = await supabase
-          .from('ph_workflow_statuses')
-          .update({ position: u.position })
-          .eq('id', u.id);
-        if (error) throw new Error(error.message);
-      }
-    } catch (err: any) {
-      toast.error('Failed to reorder');
-      invalidate();
-    }
-  };
-
-  // Add status
-  const handleAdd = async (data: { name: string; category: string; color: string }) => {
-    setActionLoading(true);
-    try {
-      const maxPos = statuses.length > 0 ? Math.max(...statuses.map(s => s.position)) : -1;
-      const { error } = await supabase
-        .from('ph_workflow_statuses')
-        .insert({
-          project_id: projectId,
-          name: data.name,
-          color: data.color,
-          category: data.category,
-          position: maxPos + 1,
-          is_default: false,
-        });
+  // Fetch statuses for all schemes in one query
+  const schemeIds = schemes.map(s => s.id);
+  const { data: allStatuses = [], isLoading } = useQuery({
+    queryKey: ['catalyst-workflow-statuses-settings', schemeIds],
+    queryFn: async () => {
+      if (!schemeIds.length) return [];
+      const { data, error } = await typedQuery('catalyst_workflow_statuses')
+        .select('id,scheme_id,name,slug,category,color,position,is_initial,is_final')
+        .in('scheme_id', schemeIds)
+        .eq('is_active', true)
+        .order('position');
       if (error) throw new Error(error.message);
-      toast.success('Status added');
-      invalidate();
-      setAddOpen(false);
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to add status');
-    } finally {
-      setActionLoading(false);
-    }
-  };
+      return (data || []) as AdminStatus[];
+    },
+    enabled: schemeIds.length > 0,
+  });
 
-  // Edit status
-  const handleEdit = async (data: { id: string; name: string; category: string; color: string }) => {
-    setActionLoading(true);
-    try {
-      const { error } = await supabase
-        .from('ph_workflow_statuses')
-        .update({ name: data.name, color: data.color, category: data.category })
-        .eq('id', data.id);
-      if (error) throw new Error(error.message);
-      toast.success('Status updated');
-      invalidate();
-      setEditStatus(null);
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to update status');
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  // Delete status
-  const handleDelete = async (targetStatusId?: string) => {
-    if (!deleteStatus) return;
-    if (deleteStatus.is_default) {
-      toast.error('Cannot delete the default status.');
-      setDeleteStatus(null);
-      return;
-    }
-    setActionLoading(true);
-    try {
-      // Attempt to migrate items (ph_work_items may not exist yet)
-      if (targetStatusId) {
-        try {
-          await supabase
-            .from('ph_work_items' as any)
-            .update({ status_id: targetStatusId } as any)
-            .eq('status_id', deleteStatus.id);
-        } catch {
-          // Table may not exist yet — ignore
-        }
-      }
-
-      const { error } = await supabase
-        .from('ph_workflow_statuses')
-        .delete()
-        .eq('id', deleteStatus.id);
-      if (error) throw new Error(error.message);
-      toast.success('Status deleted');
-      invalidate();
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to delete status');
-    } finally {
-      setActionLoading(false);
-      setDeleteStatus(null);
-    }
-  };
-
-  // Get item count (always 0 in Phase 1)
-  const getItemCount = (_statusId: string) => 0;
-
-  // Group work types by workflow_name
-  const workflowGroups = workTypes.reduce<Map<string, WorkTypeWorkflow[]>>((acc, t) => {
-    const key = t.workflow_name ?? 'Default Workflow';
-    if (!acc.has(key)) acc.set(key, []);
-    acc.get(key)!.push(t);
+  // Build lookup: issue_type → scheme, statuses
+  const schemeByType = Object.fromEntries(schemes.map(s => [s.issue_type, s]));
+  const statusesByScheme = allStatuses.reduce<Record<string, AdminStatus[]>>((acc, s) => {
+    if (!acc[s.scheme_id]) acc[s.scheme_id] = [];
+    acc[s.scheme_id].push(s);
     return acc;
-  }, new Map());
+  }, {});
+
+  // Render in declared IN_SCOPE_TYPES order; fall back to project workTypes order
+  const orderedTypes = IN_SCOPE_TYPES
+    .map(typeName => workTypes.find(wt => wt.name === typeName))
+    .filter(Boolean) as WorkTypeRow[];
 
   return (
     <div className="space-y-5">
-      {/* Workflow Scheme — per issue type mapping */}
-      <div className="ph-card" style={{ padding: 0, overflow: 'hidden' }}>
-        <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--divider)', background: 'var(--ds-surface-sunken,#F8FAFC)' }}>
-          <h3 className="ph-card-title" style={{ marginBottom: 2 }}>Workflow Scheme</h3>
-          <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: 0 }}>
-            Each work type uses a named workflow. Types sharing a workflow share the same status transitions.
-          </p>
-        </div>
-
-        {/* Column headers */}
-        <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', padding: '0 20px', borderBottom: '1px solid var(--divider)', background: 'var(--ds-surface-sunken,#F8FAFC)' }}>
-          {['Work type', 'Workflow'].map(h => (
-            <div key={h} style={{ padding: '7px 8px 7px 0', fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--fg-3)' }}>
-              {h}
-            </div>
-          ))}
-        </div>
-
-        {workTypes.map((t, i) => (
-          <div
-            key={t.id}
-            style={{
-              display: 'grid', gridTemplateColumns: '220px 1fr', padding: '0 20px',
-              borderBottom: i < workTypes.length - 1 ? '1px solid var(--divider)' : 'none',
-              transition: 'background 80ms',
-            }}
-            onMouseEnter={e => e.currentTarget.style.background = 'var(--ds-surface-sunken,#F8FAFC)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '11px 8px 11px 0' }}>
-              <WorkItemTypeIcon type={t.icon} size={16} />
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>{t.name}</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', padding: '11px 8px 11px 0' }}>
-              <span style={{ fontSize: 13, color: 'var(--ds-text-subtle,#64748B)' }}>{t.workflow_name ?? '—'}</span>
-            </div>
+      {/* Header card */}
+      <div className="ph-card" style={{ padding: '14px 20px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+          <div>
+            <h3 className="ph-card-title" style={{ marginBottom: 4 }}>Workflow Scheme</h3>
+            <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: 0 }}>
+              Workflows are managed globally in Admin. Each work type uses a named workflow that defines its status pipeline and allowed transitions.
+            </p>
           </div>
-        ))}
+          <a
+            href="/admin/workflows"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+              fontSize: 12, fontWeight: 600, color: 'var(--ds-link, #0C66E4)',
+              textDecoration: 'none', whiteSpace: 'nowrap', paddingTop: 2,
+            }}
+            onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+            onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+          >
+            <ExternalLink size={12} />
+            Manage in Admin
+          </a>
+        </div>
       </div>
 
-      {/* Workflow Editor Card */}
-      <div className="ph-card">
-        <h3 className="ph-card-title">Workflow</h3>
-        <p style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 4, marginBottom: 16 }}>
-          Drag to reorder statuses. New items start at the Default status. Done items count toward progress %.
-        </p>
+      {/* Per-type workflow cards */}
+      {isLoading ? (
+        <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 13, color: 'var(--fg-4)' }}>
+          Loading workflows…
+        </div>
+      ) : (
+        orderedTypes.map(wt => {
+          const scheme = schemeByType[wt.name];
+          const statuses = scheme ? (statusesByScheme[scheme.id] || []) : [];
+          const iconKey = ICON_MAP[wt.name] || wt.icon;
 
-        {isLoading ? (
-          <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 13, color: 'var(--fg-4)' }}>Loading...</div>
-        ) : statuses.length === 0 ? (
-          <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 13, color: 'var(--fg-4)' }}>No statuses configured</div>
-        ) : (
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext items={statuses.map(s => s.id)} strategy={verticalListSortingStrategy}>
-              <div className="space-y-0.5">
-                {statuses.map(s => (
-                  <StatusRow
-                    key={s.id}
-                    id={s.id}
-                    name={s.name}
-                    color={s.color}
-                    category={s.category}
-                    isDefault={s.is_default ?? false}
-                    itemCount={getItemCount(s.id)}
-                    onEdit={() => setEditStatus(s)}
-                    onDelete={() => setDeleteStatus(s)}
-                  />
-                ))}
+          return (
+            <div key={wt.id} className="ph-card" style={{ padding: 0, overflow: 'hidden' }}>
+              {/* Type header */}
+              <div
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '12px 20px',
+                  borderBottom: statuses.length > 0 ? '1px solid var(--divider)' : 'none',
+                  background: 'var(--ds-surface-sunken,#F8FAFC)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <WorkItemTypeIcon type={iconKey} size={16} />
+                  <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--fg-1)' }}>{wt.name}</span>
+                  {scheme && (
+                    <span style={{
+                      fontSize: 11, color: 'var(--fg-3)',
+                      background: 'var(--ds-background-neutral,#F1F5F9)',
+                      padding: '1px 8px', borderRadius: 10,
+                      border: '1px solid var(--divider)',
+                    }}>
+                      {scheme.name}
+                    </span>
+                  )}
+                </div>
+                <a
+                  href="/admin/workflows"
+                  style={{
+                    fontSize: 11, color: 'var(--ds-link, #0C66E4)',
+                    textDecoration: 'none', fontWeight: 500,
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                  onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+                >
+                  Edit in Admin →
+                </a>
               </div>
-            </SortableContext>
-          </DndContext>
-        )}
 
-        {/* Add Status button */}
-        <button
-          onClick={() => setAddOpen(true)}
-          className="flex items-center gap-1.5 mt-3 hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors"
-          style={{
-            height: 50, padding: '0 14px', fontSize: 13, fontWeight: 500,
-            color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,
-            background: 'transparent', cursor: 'pointer',
-          }}
-        >
-          <Plus size={14} />
-          Add Status
-        </button>
+              {/* Status pipeline */}
+              {statuses.length === 0 ? (
+                <div style={{ padding: '16px 20px', fontSize: 13, color: 'var(--fg-4)' }}>
+                  No workflow configured — set up in Admin
+                </div>
+              ) : (
+                <div style={{ padding: '16px 20px' }}>
+                  {/* Category columns */}
+                  {(['todo', 'in_progress', 'done'] as const).map(cat => {
+                    const catStatuses = statuses.filter(s => s.category === cat);
+                    if (!catStatuses.length) return null;
+                    const meta = CATEGORY_LABEL[cat];
+                    return (
+                      <div key={cat} style={{ marginBottom: 12 }}>
+                        <div style={{
+                          display: 'inline-flex', alignItems: 'center',
+                          fontSize: 10, fontWeight: 700, letterSpacing: '0.06em',
+                          textTransform: 'uppercase', color: meta.text,
+                          background: meta.bg, borderRadius: 4,
+                          padding: '2px 8px', marginBottom: 8,
+                        }}>
+                          {meta.label}
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                          {catStatuses.map((s, i) => (
+                            <div
+                              key={s.id}
+                              style={{
+                                display: 'flex', alignItems: 'center', gap: 6,
+                                padding: '5px 10px',
+                                background: s.is_initial ? '#EFF6FF' : s.is_final ? '#F0FDF4' : 'var(--ds-surface-sunken,#F8FAFC)',
+                                border: `1px solid ${s.is_initial ? '#BFDBFE' : s.is_final ? '#BBF7D0' : 'var(--divider)'}`,
+                                borderRadius: 6, fontSize: 12, fontWeight: 500,
+                                color: 'var(--fg-1)',
+                              }}
+                            >
+                              <span style={{
+                                width: 8, height: 8, borderRadius: '50%',
+                                background: s.color, flexShrink: 0,
+                                border: '1px solid rgba(0,0,0,0.1)',
+                              }} />
+                              {s.name}
+                              {s.is_initial && (
+                                <span style={{ fontSize: 9, fontWeight: 700, color: '#1D4ED8', letterSpacing: '0.04em' }}>
+                                  START
+                                </span>
+                              )}
+                              {s.is_final && (
+                                <span style={{ fontSize: 9, fontWeight: 700, color: '#16A34A', letterSpacing: '0.04em' }}>
+                                  END
+                                </span>
+                              )}
+                              {i < catStatuses.length - 1 && (
+                                <span style={{ color: 'var(--fg-4)', fontSize: 10, marginLeft: 2 }}>→</span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })
+      )}
 
-        {/* Copy Workflow */}
-        <CopyWorkflowSection projectId={projectId} onCopied={invalidate} />
-      </div>
-
-      {/* Category Legend */}
-      <CategoryLegend />
-
-      {/* Modals */}
-      <AddStatusModal open={addOpen} onClose={() => setAddOpen(false)} onSubmit={handleAdd} loading={actionLoading} />
-      <EditStatusModal open={!!editStatus} status={editStatus} onClose={() => setEditStatus(null)} onSubmit={handleEdit} loading={actionLoading} />
-      <DeleteStatusModal
-        open={!!deleteStatus}
-        statusName={deleteStatus?.name || ''}
-        itemCount={deleteStatus ? getItemCount(deleteStatus.id) : 0}
-        otherStatuses={statuses.filter(s => s.id !== deleteStatus?.id).map(s => ({ id: s.id, name: s.name, color: s.color }))}
-        onClose={() => setDeleteStatus(null)}
-        onConfirm={handleDelete}
-        loading={actionLoading}
-      />
+      {/* Footnote */}
+      <p style={{ fontSize: 11, color: 'var(--fg-4)', margin: 0, paddingTop: 4 }}>
+        Workflow statuses and transitions are maintained in{' '}
+        <a href="/admin/workflows" style={{ color: 'var(--ds-link, #0C66E4)' }}>Admin → Workflows</a>.
+        Changes apply to all projects using these workflows.
+      </p>
     </div>
   );
 }

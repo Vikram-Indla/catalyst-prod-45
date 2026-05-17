@@ -15,15 +15,15 @@ BEGIN
   SELECT id INTO v_pid FROM ph_projects WHERE key = 'BAU' LIMIT 1;
   IF v_pid IS NULL THEN RETURN; END IF;
 
-  UPDATE ph_work_types SET workflow_name = 'Sectorial Story Workflow',  field_config = 'Senaei 2.0 Field Config', screen_name = 'Master Story Scheme'       WHERE project_id = v_pid AND name = 'Story';
-  UPDATE ph_work_types SET workflow_name = 'Software Simplified',       field_config = 'Default',               screen_name = 'SPN: Epic Screen'             WHERE project_id = v_pid AND name = 'Epic';
-  UPDATE ph_work_types SET workflow_name = 'Senaei 2.0 Story',          field_config = 'Default',               screen_name = 'Feature'                      WHERE project_id = v_pid AND name = 'Feature';
-  UPDATE ph_work_types SET workflow_name = 'Senaei 2.0 Story',          field_config = 'Default',               screen_name = 'Change Request'               WHERE project_id = v_pid AND name = 'Business Request';
-  UPDATE ph_work_types SET workflow_name = 'Revamp Defect 6.0',         field_config = 'Default',               screen_name = 'Revamp QA Bug Scheme'         WHERE project_id = v_pid AND name = 'QA Bug';
-  UPDATE ph_work_types SET workflow_name = 'Revamp Defect 6.0',         field_config = 'Senaei 2.0 Field Config', screen_name = 'Revamp production'          WHERE project_id = v_pid AND name = 'Production Incident';
-  UPDATE ph_work_types SET workflow_name = 'Senaei 2.0 Story',          field_config = 'Default',               screen_name = 'SCN: Kanban Default'          WHERE project_id = v_pid AND name = 'Change Request';
-  UPDATE ph_work_types SET workflow_name = 'Business Gap',              field_config = 'Default',               screen_name = 'Change Request'               WHERE project_id = v_pid AND name = 'Business Gap';
-  UPDATE ph_work_types SET workflow_name = 'Software Simplified',       field_config = 'Default',               screen_name = 'SCN: Kanban Default'          WHERE project_id = v_pid AND name = 'Sub-task';
+  UPDATE ph_work_types SET workflow_name = 'Story Workflow',        field_config = 'Default',               screen_name = 'Master Story Scheme'  WHERE project_id = v_pid AND name = 'Story';
+  UPDATE ph_work_types SET workflow_name = 'Standard Workflow',     field_config = 'Default',               screen_name = 'SPN: Epic Screen'     WHERE project_id = v_pid AND name = 'Epic';
+  UPDATE ph_work_types SET workflow_name = 'Feature Workflow',      field_config = 'Default',               screen_name = 'Feature'              WHERE project_id = v_pid AND name = 'Feature';
+  UPDATE ph_work_types SET workflow_name = 'Feature Workflow',      field_config = 'Default',               screen_name = 'Change Request'       WHERE project_id = v_pid AND name = 'Business Request';
+  UPDATE ph_work_types SET workflow_name = 'Defect Workflow',       field_config = 'Default',               screen_name = 'Revamp QA Bug Scheme' WHERE project_id = v_pid AND name = 'QA Bug';
+  UPDATE ph_work_types SET workflow_name = 'Defect Workflow',       field_config = 'Default',               screen_name = 'Revamp production'    WHERE project_id = v_pid AND name = 'Production Incident';
+  UPDATE ph_work_types SET workflow_name = 'Feature Workflow',      field_config = 'Default',               screen_name = 'SCN: Kanban Default'  WHERE project_id = v_pid AND name = 'Change Request';
+  UPDATE ph_work_types SET workflow_name = 'Business Gap Workflow',  field_config = 'Default',               screen_name = 'Change Request'       WHERE project_id = v_pid AND name = 'Business Gap';
+  UPDATE ph_work_types SET workflow_name = 'Standard Workflow',     field_config = 'Default',               screen_name = 'SCN: Kanban Default'  WHERE project_id = v_pid AND name = 'Sub-task';
 END;
 $$;
 
