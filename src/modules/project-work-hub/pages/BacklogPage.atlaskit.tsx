@@ -19,11 +19,7 @@ import ReactDOM from 'react-dom';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-<<<<<<< Updated upstream
-import { useAuth } from '@/hooks/useAuth';
-=======
 import { useAuth } from '@/lib/auth';
->>>>>>> Stashed changes
 import { useCreateCatyConversation } from '@/hooks/useCatyAI';
 
 import EmptyState from '@atlaskit/empty-state';
@@ -457,15 +453,11 @@ export default function NativeBacklogPage() {
 
 /* ─── The canonical page ───────────────────────────────────────────────── */
 
-<<<<<<< Updated upstream
 export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, baseUrl }: { projectId: string; projectKey: string; assigneeIds?: string[]; displayName?: string; baseUrl?: string }) {
-=======
-function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey: string }) {
   // May 12, 2026 (Phase 1.3): CATY hooks for Ask CATY toolbar button.
   const { user } = useAuth();
   const createConversation = useCreateCatyConversation();
 
->>>>>>> Stashed changes
   // Apr 27, 2026 (L50): canonical Project Hub page-title pattern is
   // `{Project Name} {Hub Function}` — e.g. "Senaei BAU Backlog". Falls
   // back to the project key while the name is loading. Same pattern
