@@ -62,29 +62,73 @@ export default function PublishTab() {
     [],
   );
   const [selectedId, setSelectedId] = useState<string>(auditable[0]?.id ?? '');
+  const [routeDraft, setRouteDraft] = useState<string>('');
   const entry = auditable.find(e => e.id === selectedId);
-  const liveConfig = entry ? configs?.[entry.id] : undefined;
+  // v3: configs is keyed by (component_id → route → config). Drill in by
+  // the route the admin is editing right now (defaults to '' = global).
+  const liveConfig = entry ? configs?.[entry.id]?.[routeDraft] : undefined;
 
   const [versionDraft, setVersionDraft] = useState('');
   const [flagsDraft, setFlagsDraft] = useState<FlagDraft>({});
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Sync local draft state when selection or live config changes.
+  // Sync local draft state when selection, route, or live config changes.
+  // The route is part of the dependency tuple because switching from
+  // "Global" to "/backlog" should reload the form against the new row.
   useEffect(() => {
     if (!entry) return;
     setVersionDraft(liveConfig?.active_version ?? entry.version);
     setFlagsDraft({ ...flagDefaults(entry), ...(liveConfig?.feature_flags ?? {}) });
     setNotes('');
-  }, [entry?.id, liveConfig?.applied_at]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [entry?.id, routeDraft, liveConfig?.applied_at]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const componentOptions = auditable.map(e => ({
     label: `${e.name} (registry v${e.version})`,
     value: e.id,
   }));
 
+  /**
+   * Curated route options. Substring matches against `window.location.pathname`
+   * at runtime — `'/backlog'` matches `/project-hub/BAU/backlog`,
+   * `/project-hub/INV/backlog/BAU-5717`, etc. Empty string is the global
+   * fallback. "Custom..." switches the picker to a free-text Textfield.
+   */
+  const PREDEFINED_ROUTES: Array<{ label: string; value: string }> = [
+    { label: 'Global (all routes)', value: '' },
+    { label: '/backlog (all project backlogs)', value: '/backlog' },
+    { label: '/allwork (all-work tables)', value: '/allwork' },
+    { label: '/board (kanban boards)', value: '/board' },
+    { label: '/dashboard (project dashboards)', value: '/dashboard' },
+    { label: '/for-you (For You home)', value: '/for-you' },
+    { label: '/incidents (incident list)', value: '/incidents' },
+    { label: '/admin/ (admin pages)', value: '/admin/' },
+    { label: '/project-hub/ (any project)', value: '/project-hub/' },
+  ];
+  const routeIsPredefined = PREDEFINED_ROUTES.some(r => r.value === routeDraft);
+  const [routeIsCustom, setRouteIsCustom] = useState(false);
+
+  // Surface ALL existing route scopes for the selected component so an
+  // admin can quickly jump back to one that's already published, even if
+  // it's not in the predefined list above.
+  const existingRoutesForEntry = entry ? Object.keys(configs?.[entry.id] ?? {}) : [];
+  const existingRouteOptions = existingRoutesForEntry
+    .filter(r => !PREDEFINED_ROUTES.some(p => p.value === r))
+    .map(r => ({ label: `${r} (published)`, value: r }));
+
+  const routeOptions = [
+    ...PREDEFINED_ROUTES,
+    ...existingRouteOptions,
+    { label: 'Custom…', value: '__custom__' },
+  ];
+
   function toggleFlag(name: string, value: boolean) {
     setFlagsDraft(prev => ({ ...prev, [name]: value }));
+  }
+
+  function routeLabel(route: string): string {
+    if (route === '') return 'global';
+    return route;
   }
 
   async function publish() {
@@ -93,16 +137,22 @@ export default function PublishTab() {
     try {
       const { error } = await (supabase as any)
         .from('component_config')
-        .upsert({
-          component_id: entry.id,
-          active_version: versionDraft || entry.version,
-          feature_flags: flagsDraft,
-          applied_at: new Date().toISOString(),
-          notes: notes || null,
-        });
+        .upsert(
+          {
+            component_id: entry.id,
+            route: routeDraft,
+            active_version: versionDraft || entry.version,
+            feature_flags: flagsDraft,
+            applied_at: new Date().toISOString(),
+            notes: notes || null,
+          },
+          { onConflict: 'component_id,route' },
+        );
       if (error) throw error;
       await queryClient.invalidateQueries({ queryKey: COMPONENT_CONFIG_QUERY_KEY });
-      toast.success(`Published ${entry.name} v${versionDraft || entry.version}`);
+      toast.success(
+        `Published ${entry.name} v${versionDraft || entry.version} (${routeLabel(routeDraft)})`,
+      );
       setNotes('');
     } catch (e: unknown) {
       toast.error(`Publish failed: ${(e as Error).message ?? 'unknown error'}`);
@@ -115,13 +165,17 @@ export default function PublishTab() {
     if (!entry) return;
     setSubmitting(true);
     try {
+      // v3: reset only the route the admin is currently editing. Other route
+      // scopes for this component stay published. To wipe every scope, the
+      // admin resets each one in turn.
       const { error } = await (supabase as any)
         .from('component_config')
         .delete()
-        .eq('component_id', entry.id);
+        .eq('component_id', entry.id)
+        .eq('route', routeDraft);
       if (error) throw error;
       await queryClient.invalidateQueries({ queryKey: COMPONENT_CONFIG_QUERY_KEY });
-      toast.success(`Reset ${entry.name} to registry default`);
+      toast.success(`Reset ${entry.name} (${routeLabel(routeDraft)}) to registry default`);
     } catch (e: unknown) {
       toast.error(`Reset failed: ${(e as Error).message ?? 'unknown error'}`);
     } finally {
@@ -157,9 +211,14 @@ export default function PublishTab() {
         </p>
       </div>
 
-      <SectionMessage appearance="information" title="Global publish only in v2">
-        Per-route scoping ("enable on /backlog but not /allwork") is on the v3
-        roadmap. Today every published change applies platform-wide.
+      <SectionMessage appearance="information" title="Per-route scoping (v3)">
+        Routes are substring patterns matched against{' '}
+        <code>window.location.pathname</code> at runtime. Empty (Global) is the
+        fallback when no specific route matches. The longest matching route
+        wins per (component, pathname). For example, publishing on{' '}
+        <code>/backlog</code> applies to every backlog under{' '}
+        <code>/project-hub/*/backlog</code> but leaves <code>/allwork</code>{' '}
+        untouched.
       </SectionMessage>
 
       <div
@@ -170,27 +229,94 @@ export default function PublishTab() {
           alignItems: 'start',
         }}
       >
-        <div>
-          <label
-            style={{
-              fontSize: 11,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
-              color: token('color.text.subtle', '#44546F'),
-              display: 'block',
-              marginBottom: token('space.075', '6px'),
-            }}
-          >
-            Component
-          </label>
-          <Select
-            inputId="publish-component-picker"
-            options={componentOptions}
-            value={componentOptions.find(o => o.value === selectedId) ?? null}
-            onChange={opt => opt && setSelectedId((opt as { value: string }).value)}
-            isDisabled={submitting}
-          />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.200', '16px') }}>
+          <div>
+            <label
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+                color: token('color.text.subtle', '#44546F'),
+                display: 'block',
+                marginBottom: token('space.075', '6px'),
+              }}
+            >
+              Component
+            </label>
+            <Select
+              inputId="publish-component-picker"
+              options={componentOptions}
+              value={componentOptions.find(o => o.value === selectedId) ?? null}
+              onChange={opt => opt && setSelectedId((opt as { value: string }).value)}
+              isDisabled={submitting}
+            />
+          </div>
+
+          <div>
+            <label
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+                color: token('color.text.subtle', '#44546F'),
+                display: 'block',
+                marginBottom: token('space.075', '6px'),
+              }}
+            >
+              Route scope
+            </label>
+            {routeIsCustom || (!routeIsPredefined && routeDraft !== '') ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.075', '6px') }}>
+                <Textfield
+                  value={routeDraft}
+                  onChange={e => setRouteDraft((e.target as HTMLInputElement).value)}
+                  placeholder="/your/path or empty for global"
+                  isDisabled={submitting}
+                />
+                <Button
+                  appearance="subtle"
+                  spacing="compact"
+                  onClick={() => {
+                    setRouteIsCustom(false);
+                    setRouteDraft('');
+                  }}
+                  isDisabled={submitting}
+                >
+                  Back to predefined routes
+                </Button>
+              </div>
+            ) : (
+              <Select
+                inputId="publish-route-picker"
+                options={routeOptions}
+                value={routeOptions.find(o => o.value === routeDraft) ?? routeOptions[0]}
+                onChange={opt => {
+                  const v = (opt as { value: string } | null)?.value ?? '';
+                  if (v === '__custom__') {
+                    setRouteIsCustom(true);
+                    setRouteDraft('');
+                  } else {
+                    setRouteIsCustom(false);
+                    setRouteDraft(v);
+                  }
+                }}
+                isDisabled={submitting}
+              />
+            )}
+            <div
+              style={{
+                marginTop: token('space.050', '4px'),
+                fontSize: 11,
+                color: token('color.text.subtle', '#44546F'),
+              }}
+            >
+              {routeDraft === ''
+                ? 'Global — applies whenever no more-specific route matches.'
+                : `Applies whenever pathname contains "${routeDraft}".`}
+            </div>
+          </div>
         </div>
 
         {entry && (
@@ -204,8 +330,11 @@ export default function PublishTab() {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: token('space.150', '12px'), flexWrap: 'wrap' }}>
               <span style={{ fontWeight: 600, fontSize: 16 }}>{entry.name}</span>
+              <Lozenge appearance={routeDraft === '' ? 'default' : 'inprogress'}>
+                {routeDraft === '' ? 'Global scope' : `Scope: ${routeDraft}`}
+              </Lozenge>
               {liveConfig ? (
-                <Lozenge appearance="inprogress">
+                <Lozenge appearance="success">
                   Published v{liveConfig.active_version}
                 </Lozenge>
               ) : (
@@ -214,7 +343,7 @@ export default function PublishTab() {
               <span style={{ fontSize: 12, color: token('color.text.subtle', '#44546F') }}>
                 {liveConfig?.applied_at
                   ? `Applied ${new Date(liveConfig.applied_at).toLocaleString()}`
-                  : 'No runtime override active'}
+                  : 'No runtime override at this scope'}
               </span>
             </div>
 
@@ -361,14 +490,14 @@ export default function PublishTab() {
                 onClick={publish}
                 isDisabled={submitting || isLoading || !versionDraft}
               >
-                Publish v{versionDraft || entry.version}
+                Publish v{versionDraft || entry.version} ({routeLabel(routeDraft)})
               </Button>
               <Button
                 appearance="warning"
                 onClick={reset}
                 isDisabled={submitting || !liveConfig}
               >
-                Reset to registry default
+                Reset {routeLabel(routeDraft)} to registry default
               </Button>
             </div>
           </div>

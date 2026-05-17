@@ -19,9 +19,26 @@ import { describe, it, expect } from 'vitest';
 
 const MIGRATIONS_DIR = resolve(__dirname, '..', '..', '..', 'supabase', 'migrations');
 
+function findMigrationFiles(): string[] {
+  return readdirSync(MIGRATIONS_DIR)
+    .filter(f => f.includes('component_config'))
+    .sort()
+    .map(f => resolve(MIGRATIONS_DIR, f));
+}
+
+/**
+ * Concatenated SQL of every migration touching `component_config*`. Lets
+ * contract checks assert across the full migration chain rather than the
+ * single-most-recent file — so a v3+ ALTER migration doesn't break a v2
+ * CREATE-TABLE invariant assertion. Each migration adds, never removes.
+ */
+function concatenatedSql(): string {
+  return findMigrationFiles().map(f => readFileSync(f, 'utf8')).join('\n');
+}
+
 function findMigration(): string | null {
-  const files = readdirSync(MIGRATIONS_DIR).filter(f => f.includes('component_config'));
-  return files.length > 0 ? resolve(MIGRATIONS_DIR, files[files.length - 1]) : null;
+  const files = findMigrationFiles();
+  return files.length > 0 ? files[0] : null;
 }
 
 describe('component_config migration — contract', () => {
@@ -32,8 +49,7 @@ describe('component_config migration — contract', () => {
   });
 
   it('declares component_config table with required columns', () => {
-    const file = findMigration()!;
-    const sql = readFileSync(file, 'utf8');
+    const sql = concatenatedSql();
     expect(sql).toMatch(/CREATE TABLE\s+(?:IF NOT EXISTS\s+)?(?:public\.)?component_config/i);
     expect(sql).toMatch(/component_id\s+TEXT\s+(?:NOT NULL\s+)?(?:UNIQUE|PRIMARY KEY)/i);
     expect(sql).toMatch(/active_version\s+TEXT\s+NOT NULL/i);
@@ -43,30 +59,26 @@ describe('component_config migration — contract', () => {
   });
 
   it('declares component_config_history table with required columns', () => {
-    const file = findMigration()!;
-    const sql = readFileSync(file, 'utf8');
+    const sql = concatenatedSql();
     expect(sql).toMatch(/CREATE TABLE\s+(?:IF NOT EXISTS\s+)?(?:public\.)?component_config_history/i);
     expect(sql).toMatch(/action\s+TEXT\s+NOT NULL/i);
     expect(sql).toMatch(/CHECK\s*\(\s*action\s+IN/i);
   });
 
   it('enables RLS on both tables (CLAUDE.md mandate — RLS in same migration as DDL)', () => {
-    const file = findMigration()!;
-    const sql = readFileSync(file, 'utf8');
+    const sql = concatenatedSql();
     expect(sql).toMatch(/ALTER TABLE\s+(?:public\.)?component_config\s+ENABLE ROW LEVEL SECURITY/i);
     expect(sql).toMatch(/ALTER TABLE\s+(?:public\.)?component_config_history\s+ENABLE ROW LEVEL SECURITY/i);
   });
 
   it('declares CREATE POLICY for admin SELECT + INSERT + UPDATE on component_config', () => {
-    const file = findMigration()!;
-    const sql = readFileSync(file, 'utf8');
+    const sql = concatenatedSql();
     expect(sql).toMatch(/CREATE POLICY[^;]*?ON\s+(?:public\.)?component_config[^;]*?FOR\s+SELECT/is);
     expect(sql).toMatch(/CREATE POLICY[^;]*?ON\s+(?:public\.)?component_config[^;]*?FOR\s+(INSERT|ALL)/is);
   });
 
   it('declares history trigger on component_config writes', () => {
-    const file = findMigration()!;
-    const sql = readFileSync(file, 'utf8');
+    const sql = concatenatedSql();
     expect(sql).toMatch(/CREATE OR REPLACE FUNCTION[^;]*?component_config_history/is);
     expect(sql).toMatch(/CREATE TRIGGER[^;]*?ON\s+(?:public\.)?component_config/is);
   });
