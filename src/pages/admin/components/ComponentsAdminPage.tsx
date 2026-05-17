@@ -44,7 +44,10 @@ import {
   usageMapStats,
   getAllConsumersByName,
 } from '@/registry/usage-map.generated';
+import { adsViolationsStats } from '@/registry/ads-violations.generated';
 import ComponentSpecCard from './ComponentSpecCard';
+import ADSViolationsPanel from './ADSViolationsPanel';
+import CascadeImpactPanel from './CascadeImpactPanel';
 
 const CATEGORY_LABELS: Record<ComponentCategory, string> = {
   atom: 'Atoms',
@@ -361,7 +364,7 @@ export default function ComponentsAdminPage() {
           <TabList>
             <Tab>Inventory ({registryStats.canonical + registryStats.deprecated})</Tab>
             <Tab>Banned ({registryStats.banned})</Tab>
-            <Tab>Violations</Tab>
+            <Tab>Violations ({adsViolationsStats.total})</Tab>
             <Tab>Cascade</Tab>
           </TabList>
           <TabPanel>
@@ -371,10 +374,10 @@ export default function ComponentsAdminPage() {
             <BannedPane />
           </TabPanel>
           <TabPanel>
-            <PlaceholderPane step={9} title="ADS Violations" />
+            <ADSViolationsPanel />
           </TabPanel>
           <TabPanel>
-            <PlaceholderPane step={11} title="Cascade Impact" />
+            <CascadeImpactPanel />
           </TabPanel>
         </Tabs>
       </div>
