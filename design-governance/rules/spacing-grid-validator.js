@@ -10,7 +10,8 @@ class SpacingGridValidator {
   constructor() {
     this.violations = [];
     this.validSpacings = ['4px', '8px', '16px', '24px', '32px', '0px', '0'];
-    this.spacingProperties = ['padding', 'margin', 'gap', 'gutter'];
+    this.validSpacingsRem = ['0.25rem', '0.5rem', '1rem', '1.5rem', '2rem']; // 4/8/16/24/32 in rem
+    this.spacingProperties = ['padding', 'margin', 'gap', 'gutter', 'inset', 'top', 'bottom', 'left', 'right'];
   }
 
   scanFile(filePath) {
@@ -89,4 +90,4 @@ class SpacingGridValidator {
   }
 }
 
-module.exports = SpacingGridValidator;
+export default SpacingGridValidator;

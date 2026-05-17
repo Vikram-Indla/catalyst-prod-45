@@ -11,8 +11,26 @@ class ADSTokenScanner {
     this.violations = [];
     this.rawHexPattern = /#(?:[0-9a-fA-F]{3}){1,2}\b/g;
     this.hardcodedPxPattern = /:\s*(\d+)px\b/g;
-    this.tailwindPattern = /text-slate-|bg-slate-|border-slate-/g;
-    this.bannedComponents = ['react-select', 'react-modal', 'react-dropdown'];
+    this.tailwindPattern = /text-slate-|bg-slate-|border-slate-|text-red-|bg-blue-|text-green-|border-gray-/g;
+    this.bannedComponents = [
+      'react-select',
+      'react-modal',
+      'react-dropdown',
+      'react-datepicker',
+      'rc-select',
+      'antd',
+      'material-ui',
+      'chakra-ui'
+    ];
+    this.bannedFields = [
+      'StoryPoints',
+      'MDTRef',
+      'AssessmentFeature',
+      'ServiceNow',
+      'CatalystStoryPoints',
+      'CatalystMDTRef',
+      'CatalystAssessment'
+    ];
   }
 
   scanFile(filePath) {
@@ -74,6 +92,32 @@ class ADSTokenScanner {
           });
         }
       });
+
+      // Check for banned field components
+      this.bannedFields.forEach(banned => {
+        if ((line.includes(`<${banned}`) || line.includes(`import ${banned}`) || line.includes(`.${banned}`)) && !line.trim().startsWith('//')) {
+          this.violations.push({
+            file: filePath,
+            line: index + 1,
+            type: 'BANNED_FIELD',
+            content: line.trim(),
+            fix: `${banned} is permanently banned from Catalyst. Remove or replace with approved field.`
+          });
+        }
+      });
+
+      // Check for hand-rolled menus/dropdowns (menuitem without aria-role)
+      if ((line.includes('onClick') && line.includes('menu')) && !line.includes('@atlaskit/dropdown-menu')) {
+        if (line.includes('useState') || line.includes('showMenu') || line.includes('toggleMenu')) {
+          this.violations.push({
+            file: filePath,
+            line: index + 1,
+            type: 'HAND_ROLLED_MENU',
+            content: line.trim(),
+            fix: 'Use @atlaskit/dropdown-menu instead of hand-rolled menu implementation'
+          });
+        }
+      }
     });
   }
 
@@ -116,4 +160,4 @@ class ADSTokenScanner {
   }
 }
 
-module.exports = ADSTokenScanner;
+export default ADSTokenScanner;

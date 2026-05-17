@@ -4,6 +4,107 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## 🎯 DESIGN SYSTEM GUARDRAIL — ENFORCED AT CI GATE (Non-Negotiable)
+
+**All code generation in Catalyst MUST respect the Atlassian Design System v4 as the exclusive design system.** This guardrail is enforced at three points:
+
+### Immediate Requirements
+1. **Use `@atlaskit/*` components exclusively**
+   - ✅ `@atlaskit/button`, `@atlaskit/dropdown-menu`, `@atlaskit/select`, `@atlaskit/modal-dialog`, `@atlaskit/textfield`, `@atlaskit/modal-dialog`, `@atlaskit/tabs`
+   - ❌ NO `react-select`, `react-modal`, `react-dropdown`, hand-rolled menus/dropdowns/modals
+
+2. **Use `var(--ds-*)` ADS tokens exclusively**
+   - ✅ `var(--ds-text)`, `var(--ds-background-information)`, `var(--ds-border-neutral)`, etc.
+   - ❌ NO hardcoded hex colors (`#FF0000`), NO Tailwind classes (`text-slate-500`), NO raw RGB values
+
+3. **Use spacing grid: 4px / 8px / 16px / 24px / 32px only**
+   - ✅ `padding: 8px`, `margin: 16px`, `gap: 4px`
+   - ❌ NO arbitrary px values (`padding: 12px`, `margin: 18px`, `gap: 6px`)
+
+4. **Use sentence-case labels only**
+   - ✅ "Create new issue", "Edit assignment"
+   - ❌ NO `text-transform: uppercase` on any labels
+
+5. **Never render permanently banned fields/components**
+   - ❌ Story Points, MDT Ref, Assessment Feature, Service Now#
+   - ❌ Standalone Type column (type icon goes INSIDE Key cell)
+   - ❌ Category column, Space URL column, Templates column
+
+### Enforcement Points
+
+**1. CI Gate (GitHub Actions) — BLOCKS PRs**
+- On every push/PR to main, `.github/workflows/design-system-audit.yml` runs `node design-governance/rules/audit.js src/`
+- If violations found → workflow fails, PR merge is BLOCKED
+- Exit code 1 = violations detected → cannot merge
+- Exit code 0 = clean → can proceed
+
+**2. Pre-Commit Hook (Local)**
+- `.husky/pre-commit` runs audit locally before commit
+- Informational only (does not block commits), but violations are flagged
+
+**3. CLI Tool (Developer)**
+- Run before committing: `node design-governance/cli/index.js audit src/`
+- Shows all violations with file, line, type, and fix suggestion
+
+### Before Writing Component Code
+
+**Every Claude session (and every developer) MUST follow this sequence:**
+
+1. **Check if @atlaskit/* has the primitive**
+   ```bash
+   # Get canonical ADS setup
+   node design-governance/cli/index.js info
+   ```
+   - If the primitive exists in Atlaskit, use it
+   - If it doesn't exist, ask Vikram before rolling your own
+
+2. **Check ADS tokens for colors/spacing**
+   - Theme colors: `var(--ds-background-information)`, `var(--ds-text-danger)`, etc.
+   - Spacing: 4/8/16/24/32px only
+   - Never use custom hex or Tailwind
+
+3. **Write component using ONLY Atlaskit + ADS tokens**
+   - Example:
+   ```tsx
+   // ✅ CORRECT
+   import Button from '@atlaskit/button';
+   
+   <Button appearance="primary" onClick={handleClick}>
+     Create issue
+   </Button>
+   
+   // ❌ WRONG
+   import { Button as UIButton } from 'react-ui-lib';  // NOT Atlaskit
+   <UIButton style={{ color: '#FF0000' }}>Create issue</UIButton>  // Hardcoded hex
+   ```
+
+4. **Validate immediately**
+   ```bash
+   node design-governance/cli/index.js audit src/components/MyComponent.tsx
+   ```
+   - If violations → regenerate with fixes
+   - If clean → proceed to commit
+
+5. **Commit only after audit passes**
+   - Pre-commit hook will verify again
+   - If it fails, fix and recommit
+
+### What Happens If Violations Ship
+
+- ✅ Local pre-commit hook catches them (informational warning)
+- ✅ GitHub Actions CI detects them and fails the PR
+- ✅ PR cannot merge until violations are fixed
+- ❌ Violations are never allowed on main
+
+### Design System Files
+
+- **Policy**: `design-governance/GOVERNANCE_POLICY.md` — master policy document
+- **Audit Rules**: `design-governance/rules/audit.js` + `ads-token-scanner.js`, `typography-enforcer.js`, `spacing-grid-validator.js`
+- **CLI Tool**: `design-governance/cli/index.js` — run `node design-governance/cli/index.js [command]`
+- **Rollout Plan**: `design-governance/reports/ROLLOUT_PLAN.md` — developer checklist and timeline
+
+---
+
 ## 2026-05-17 — Jira packs Type icon INSIDE the "Work" column; no standalone Type column in Jira's list view
 **Surface:** UWVTable (`/project-hub/:key/allwork`), IncidentListPage (`/incidents`), BacklogPage (`/project-hub/:key/backlog`)
 **Pattern:** Live Jira BAU list screenshot (2026-05-17) showed ONE combined "Work" column rendering `[type icon][BAU-key][summary text]` in a single cell — NO standalone Type column. Catalyst had standalone Type columns in 3 surfaces: `id: '__type'` (width 3) in `UWVTable.tsx:162`, `id: '__type'` (width 4) in `IncidentListPage.tsx:104`, and `id: 'type'` (width 4, label `'Type'`) in `BacklogPage.atlaskit.tsx:1784`. An earlier 2026-04-27 audit note claimed Jira HAS a Type column header (`data-key=issuetype, ~110px`); that audit's reading was either wrong or Jira's UI changed — the 2026-05-17 screenshot is the current ground truth. A pre-existing handover proposed deleting `__type` from "all 7 JiraTable consumers" but the grep showed `__type` exists in only 2 of 7 — the handover's surface mapping was inaccurate. Always re-probe before applying a handover.

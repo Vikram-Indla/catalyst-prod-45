@@ -72,6 +72,40 @@ class TypographyEnforcer {
           fix: 'Use ADS typography token or named size from ads-config.json'
         });
       }
+
+      // Check for hardcoded fontWeight (should use 400/500/600/700 only)
+      if (line.includes('fontWeight:') && !line.includes('var(')) {
+        const match = line.match(/fontWeight:\s*['"]?(\d+)['"]?/);
+        if (match) {
+          const weight = parseInt(match[1]);
+          if (![300, 400, 500, 600, 700, 900].includes(weight)) {
+            this.violations.push({
+              file: filePath,
+              line: index + 1,
+              type: 'INVALID_FONTWEIGHT',
+              content: line.trim(),
+              expected: 'fontWeight should be 300, 400, 500, 600, 700, or 900',
+              fix: 'Use valid ADS font weight: fontWeight: 400 (normal), 500 (medium), 600 (semibold), 700 (bold)'
+            });
+          }
+        }
+      }
+
+      // Check for banned font families
+      if ((line.includes('fontFamily') || line.includes('font-family')) && !line.includes('var(')) {
+        const bannedFonts = ['Arial', 'Helvetica', 'Georgia', 'Times New Roman', 'Courier'];
+        for (const font of bannedFonts) {
+          if (line.includes(`'${font}'`) || line.includes(`"${font}"`)) {
+            this.violations.push({
+              file: filePath,
+              line: index + 1,
+              type: 'BANNED_FONT_FAMILY',
+              content: line.trim(),
+              fix: 'Use system fonts or Atlassian Sans from ADS; remove hardcoded font-family'
+            });
+          }
+        }
+      }
     });
   }
 
@@ -118,4 +152,4 @@ class TypographyEnforcer {
   }
 }
 
-module.exports = TypographyEnforcer;
+export default TypographyEnforcer;
