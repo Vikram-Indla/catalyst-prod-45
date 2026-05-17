@@ -191,7 +191,7 @@ const CANONICAL: ComponentRegistryEntry[] = [
     origin: 'catalyst-ds',
     status: 'canonical',
     version: '1.2.0',
-    file_path: 'src/components/catalyst-ds/status/CatalystStatusPill.tsx',
+    file_path: 'src/components/catalyst-detail-views/shared/sections/CatalystStatusPill.tsx',
     jsdoc_excerpt:
       'Header-rendered status button. data-testid="catalyst-status-pill-trigger". Exact-hex DOM-probed values (Jira parity overrides ADS tokens here per CLAUDE.md 2026-05-05).',
     dark_light_supported: true,
