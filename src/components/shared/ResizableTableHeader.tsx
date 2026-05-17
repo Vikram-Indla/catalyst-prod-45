@@ -24,6 +24,17 @@ interface Props {
   onSort?: (colKey: string) => void;
   className?: string;
   children?: React.ReactNode;
+  /**
+   * Hide the GripVertical drag grip in the header. Drag-to-reorder STILL
+   * works — when this flag is set, the entire `<th>` becomes the drag handle
+   * (grab cursor on hover, drag fires the same `onDragStart` callback). This
+   * removes the visual noise while preserving the reorder functionality
+   * (design-critique 2026-05-17 — Projects table directive: grip is "ugly",
+   * but drag must still happen).
+   * Defaults to `false` so every other table using this primitive keeps its
+   * current grip-based drag UX.
+   */
+  hideDragHandle?: boolean;
 }
 
 export function ResizableTableHeader({
@@ -31,15 +42,29 @@ export function ResizableTableHeader({
   onResizeStart, onDragStart, onDragOver, onDragEnd,
   sortDirection, onSort,
   className, children,
+  hideDragHandle = false,
 }: Props) {
   const thRef = useRef<HTMLTableCellElement>(null);
   const isSorted = sortDirection != null;
   const canSort = !!onSort && !!label;
 
+  // When the grip is hidden, the entire <th> becomes the drag handle so
+  // drag-to-reorder still works without the visual grip icon. The resize
+  // handle (right-edge 6px) keeps its own onMouseDown which stopPropagates,
+  // so resize and reorder don't conflict.
+  const thIsDraggable = hideDragHandle && !locked;
+
   return (
     <th
       ref={thRef}
-      style={{ width, minWidth: width, position: 'relative', color: isSorted ? 'var(--ds-text-brand, #2563EB)' : undefined }}
+      draggable={thIsDraggable || undefined}
+      onDragStart={thIsDraggable ? e => {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', colKey);
+        if (thRef.current) e.dataTransfer.setDragImage(thRef.current, 0, 0);
+        onDragStart(colKey);
+      } : undefined}
+      style={{ width, minWidth: width, position: 'relative', color: isSorted ? 'var(--ds-text-brand, #2563EB)' : undefined, cursor: thIsDraggable ? 'grab' : undefined }}
       className={cn(
         'select-none',
         isDragging && 'opacity-40',
@@ -69,7 +94,7 @@ export function ResizableTableHeader({
         style={{ cursor: canSort ? 'pointer' : undefined }}
         onClick={canSort ? () => onSort(colKey) : undefined}
       >
-        {!locked && (
+        {!locked && !hideDragHandle && (
           <span
             draggable
             onDragStart={e => {
