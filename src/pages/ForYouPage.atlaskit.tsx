@@ -211,6 +211,10 @@ export default function ForYouPageAtlaskit() {
       onSelect: handleSelect,
       onToggleStar: toggleStar,
     };
+    // `onSwitchTab` lets empty states route the user to a tab with content
+    // (design-critique 2026-05-17 — Cooper goal-directed: empty states must
+    // provide a recovery path, not be dead ends).
+    const onSwitchTab = handleTabChange;
     switch (activeTab) {
       // AI Theme and Ageing own their own data pipelines — the generic
       // {items, onSelect, onToggleStar} row-feed props don't apply. Their
@@ -223,12 +227,12 @@ export default function ForYouPageAtlaskit() {
       case 'ageing':      return <AgeingPanel />;
       // R360 owns its own data pipeline — no row-feed props.
       case 'r360':        return <R360Panel />;
-      case 'recommended': return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} />;
+      case 'recommended': return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} />;
       case 'assigned':    return <AssignedPanel    {...panelProps} />;
-      case 'starred':     return <StarredPanel     {...panelProps} />;
-      default:            return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} />;
+      case 'starred':     return <StarredPanel     {...panelProps} onSwitchTab={onSwitchTab} />;
+      default:            return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} onSwitchTab={onSwitchTab} />;
     }
-  }, [activeTab, visibleItems, isLoading, handleSelect, toggleStar, recommendedMentions, recommendedComments, currentUserName, allUserProjects]);
+  }, [activeTab, visibleItems, isLoading, handleSelect, toggleStar, recommendedMentions, recommendedComments, currentUserName, allUserProjects, handleTabChange]);
 
   // AI Theme and Ageing render their own vertical lists/grids internally —
   // neither shares the client-side pagination window that the row-feed tabs

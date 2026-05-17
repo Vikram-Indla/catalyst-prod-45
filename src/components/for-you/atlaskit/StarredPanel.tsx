@@ -16,14 +16,21 @@
 import React from 'react';
 import { token } from '@atlaskit/tokens';
 import ForYouRow from './ForYouRow';
-import { ForYouEmptyState, GroupHeading, groupByRecency } from './helpers';
-import type { WorkItem } from '@/hooks/useForYouData';
+import { ForYouEmptyState, GroupHeading, groupByRecency, StarSparkleArt } from './helpers';
+import type { WorkItem, TabType } from '@/hooks/useForYouData';
 
 interface StarredPanelProps {
   items: WorkItem[];
   isLoading: boolean;
   onSelect: (item: WorkItem) => void;
   onToggleStar: (id: string) => void;
+  /**
+   * Lets the empty state route the user to a tab where they can actually
+   * star something. design-critique 2026-05-17 — Cooper goal-directed:
+   * empty states without a recovery path are dead ends. Optional so existing
+   * tests that mount StarredPanel directly don't need to pass it.
+   */
+  onSwitchTab?: (tab: TabType) => void;
 }
 
 function StarredSkeletonLine({ width = '100%', height = 12 }: { width?: string | number; height?: number }) {
@@ -76,7 +83,7 @@ function StarredPanelSkeleton() {
   );
 }
 
-export default function StarredPanel({ items, isLoading, onSelect, onToggleStar }: StarredPanelProps) {
+export default function StarredPanel({ items, isLoading, onSelect, onToggleStar, onSwitchTab }: StarredPanelProps) {
   if (isLoading) return <StarredPanelSkeleton />;
 
   if (items.length === 0) {
@@ -84,6 +91,12 @@ export default function StarredPanel({ items, isLoading, onSelect, onToggleStar 
       <ForYouEmptyState
         title="No starred items yet"
         description="Star a work item to keep it close. Starred items appear here and in your sidebar."
+        renderImage={() => <StarSparkleArt />}
+        // Primary action routes the user to a tab with content where they
+        // can actually star something. Without it the Starred tab is a
+        // dead end (Cooper goal-directed P0, design-critique 2026-05-17).
+        primaryActionText={onSwitchTab ? 'Browse assigned work' : undefined}
+        onPrimaryAction={onSwitchTab ? () => onSwitchTab('assigned') : undefined}
       />
     );
   }

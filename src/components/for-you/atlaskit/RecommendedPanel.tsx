@@ -53,13 +53,13 @@ import EmojiAddIcon from '@atlaskit/icon/glyph/emoji-add';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { toast } from 'sonner';
 import ForYouRow from './ForYouRow';
-import { ForYouEmptyState, GroupHeading, groupByRecency } from './helpers';
+import { ForYouEmptyState, GroupHeading, groupByRecency, MentionSparkleArt } from './helpers';
 import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { useWorkItemComments } from '@/hooks/useWorkItemComments';
 import { useCommentReactions } from '@/hooks/useCommentReactions';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
-import type { WorkItem, RecommendedMention, RecommendedComment } from '@/hooks/useForYouData';
+import type { WorkItem, RecommendedMention, RecommendedComment, TabType } from '@/hooks/useForYouData';
 
 interface RecommendedPanelProps {
   items: WorkItem[];
@@ -74,6 +74,13 @@ interface RecommendedPanelProps {
    * `resolveAvatarUrl()` chokepoint as every other avatar in the app.
    */
   currentUserName?: string;
+  /**
+   * Lets the empty state route the user to a tab with content. Without this
+   * the Recommended empty state is a dead end (Cooper goal-directed P0,
+   * design-critique 2026-05-17). Optional so existing tests that mount
+   * RecommendedPanel directly don't need to pass it.
+   */
+  onSwitchTab?: (tab: TabType) => void;
 }
 
 // ─── Dismiss persistence ────────────────────────────────────────────────────
@@ -172,6 +179,7 @@ export default function RecommendedPanel({
   onSelect,
   onToggleStar,
   currentUserName,
+  onSwitchTab,
 }: RecommendedPanelProps) {
   // Index items by issueKey so a mention / comment card can hand back the
   // same WorkItem object when opening the detail panel.
@@ -242,6 +250,11 @@ export default function RecommendedPanel({
       <ForYouEmptyState
         title="Nothing recommended yet"
         description="When teammates mention you or comment on your work, recommendations will show here."
+        renderImage={() => <MentionSparkleArt />}
+        // Send the user to Assigned where they always have work — gives them
+        // a path out of the dead end (design-critique 2026-05-17, Cooper P0).
+        primaryActionText={onSwitchTab ? 'See assigned work' : undefined}
+        onPrimaryAction={onSwitchTab ? () => onSwitchTab('assigned') : undefined}
       />
     );
   }
