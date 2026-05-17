@@ -93,10 +93,9 @@ const CANONICAL: ComponentRegistryEntry[] = [
       'Jira-parity list table. Sort, group, bulk-select, inline edit, column reorder/resize, sticky footer create. All cross-cutting behaviour controlled via feature-flag props (Rule 1).',
     dark_light_supported: true,
     feature_flags: [
-      { name: 'enableGroupCreateButton', default: false, description: 'Render + button in group headers; pair with renderGroupInlineRow.' },
-      { name: 'enableStickyCreateFooter', default: false, description: 'Sticky inline-create row pinned to the table bottom.' },
-      { name: 'enableBulkSelect', default: true, description: 'Multi-row checkbox + BulkFooterBar.' },
-      { name: 'enableColumnReorder', default: true, description: 'Drag-drop column ordering with localStorage persistence.' },
+      { name: 'enableGroupCreateButton', default: false, description: 'Render + button in group headers; pair with renderGroupInlineRow. Publishable via /admin/components.' },
+      { name: 'enableStickyCreateFooter', default: false, description: 'Sticky inline-create row pinned to the table bottom. Publishable via /admin/components.' },
+      { name: 'enableColumnReorder', default: false, description: 'Drag-drop column ordering with localStorage persistence. Publishable via /admin/components.' },
     ],
     tags: ['table', 'list', 'backlog', 'crud'],
   },
