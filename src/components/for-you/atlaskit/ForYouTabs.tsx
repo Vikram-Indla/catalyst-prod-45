@@ -189,6 +189,12 @@ function TabButton({
             height: 16,
             padding: `0 ${token('space.050', '4px')}`,
             borderRadius: 999,
+            // Ageing badge keeps the danger-red treatment regardless of
+            // whether its parent tab is selected — the SLA-risk signal
+            // must not disappear when the user clicks the Ageing pill.
+            // Previously the selected branch overrode the danger bg with
+            // neutral, dropping the visual warning at the exact moment the
+            // user landed on the tab.
             background: isAgeingBadge
               ? token('color.background.danger', '#FFECEB')
               : isActive

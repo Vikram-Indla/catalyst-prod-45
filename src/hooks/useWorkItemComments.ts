@@ -136,6 +136,10 @@ export function useWorkItemComments(entityType: string, entityId: string) {
     comments,
     isLoading,
     createComment: createComment.mutate,
+    // Awaitable form — callers that need to surface errors (e.g. inline reply
+    // composers) should use this instead of `createComment`, which is fire-
+    // and-forget and swallows failures into the mutation's onError handler.
+    createCommentAsync: createComment.mutateAsync,
     updateComment: updateComment.mutate,
     deleteComment: deleteComment.mutate,
     isCreating: createComment.isPending,
