@@ -243,12 +243,19 @@ export function makeKeyCell(
    *
    * `getHref` lets the caller supply the link URL (e.g. `?selectedIssue=<id>`
    * or `/project-hub/:key/allwork?issue=<key>`). Defaults to `#` when omitted.
+   *
+   * `getIcon` (2026-05-17 jira-compare): when provided, the cell renders a
+   * leading icon before the key, matching Jira's "Work" column where the
+   * type glyph sits in the same cell as the key. Use this to retire a
+   * standalone __type column for icon-only parity surfaces.
    */
   onOpen?: (row: any) => void,
   getHref?: (row: any) => string,
+  getIcon?: (row: any) => React.ReactNode,
 ) {
   return function KeyCell({ row, isFocused }: CellProps<any>) {
     const key = getKey(row);
+    const icon = getIcon ? getIcon(row) : null;
     // When focused (detail panel open): block + 100% width so the blue border
     // spans the full column cell width — matching Jira's full-width selection
     // indicator on the open-detail row's key cell.
@@ -280,9 +287,10 @@ export function makeKeyCell(
       cursor: 'pointer',
       textDecoration: 'underline',
     };
+    let keyNode: React.ReactNode;
     if (onOpen) {
       const href = getHref ? getHref(row) : '#';
-      return (
+      keyNode = (
         <a
           data-jira-table-row-open
           href={href}
@@ -298,15 +306,25 @@ export function makeKeyCell(
           {key || '—'}
         </a>
       );
+    } else {
+      keyNode = (
+        <span
+          data-jira-table-row-open
+          style={sharedStyle}
+        >
+          {key || '—'}
+        </span>
+      );
     }
-    return (
-      <span
-        data-jira-table-row-open
-        style={sharedStyle}
-      >
-        {key || '—'}
-      </span>
-    );
+    if (icon) {
+      return (
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>{icon}</span>
+          {keyNode}
+        </span>
+      );
+    }
+    return keyNode;
   };
 }
 

@@ -40,7 +40,6 @@ import {
   makeKeyCell,
   makeAssigneeCell,
   makeDateCell,
-  makeTypeIconCell,
 } from '@/components/shared/JiraTable';
 import type { Column } from '@/components/shared/JiraTable';
 
@@ -101,29 +100,24 @@ export default function IncidentListPage() {
   // and do not participate in user-driven column reorder.
   const columns: Column<IncidentRow>[] = useMemo(() => [
     {
-      id: '__type',
-      label: '',
-      width: 4,
-      alwaysVisible: true,
-      // Single-icon column for incidents — every row is the same icon
-      // family. Use type_icon_url when the hook supplies one; fall back
-      // to the same orange production-incident SVG used pre-migration.
-      cell: makeTypeIconCell((row: any) => row.type_icon_url ? (
-        <img src={row.type_icon_url} alt="" loading="lazy" style={{ width: 14, height: 14, flexShrink: 0 }} />
-      ) : (
-        <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-          <path fill="#FF5630" fillRule="evenodd" d="M4.78545267,10 L11.2145473,10 L10.5007848,8 L5.49921516,8 L4.78545267,10 Z M4,11 C3.44771525,11 3,11.4477153 3,12 L3,13 L13,13 L13,12 C13,11.4477153 12.5522847,11 12,11 L4,11 Z M5.8560964,7 L10.1439036,7 L8.94181993,3.63169838 C8.8409899,3.34916733 8.61864892,3.12682636 8.33611787,3.02599632 C7.81596508,2.84036355 7.24381284,3.1115456 7.05818007,3.63169838 L5.8560964,7 Z M2,0 L14,0 C15.1045695,-2.02906125e-16 16,0.8954305 16,2 L16,14 C16,15.1045695 15.1045695,16 14,16 L2,16 C0.8954305,16 1.3527075e-16,15.1045695 0,14 L0,2 C-1.3527075e-16,0.8954305 0.8954305,2.02906125e-16 2,0 Z"/>
-        </svg>
-      )),
-    },
-    {
       id: 'incident_key',
       label: 'Key',
       width: 8,
       sortable: true,
       defaultVisible: true,
       accessor: (r: any) => r.incident_key,
-      cell: makeKeyCell((r: any) => r.incident_key),
+      cell: makeKeyCell(
+        (r: any) => r.incident_key,
+        undefined,
+        undefined,
+        (row: any) => row.type_icon_url ? (
+          <img src={row.type_icon_url} alt="" loading="lazy" style={{ width: 14, height: 14, flexShrink: 0 }} />
+        ) : (
+          <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+            <path fill="#FF5630" fillRule="evenodd" d="M4.78545267,10 L11.2145473,10 L10.5007848,8 L5.49921516,8 L4.78545267,10 Z M4,11 C3.44771525,11 3,11.4477153 3,12 L3,13 L13,13 L13,12 C13,11.4477153 12.5522847,11 12,11 L4,11 Z M5.8560964,7 L10.1439036,7 L8.94181993,3.63169838 C8.8409899,3.34916733 8.61864892,3.12682636 8.33611787,3.02599632 C7.81596508,2.84036355 7.24381284,3.1115456 7.05818007,3.63169838 L5.8560964,7 Z M2,0 L14,0 C15.1045695,-2.02906125e-16 16,0.8954305 16,2 L16,14 C16,15.1045695 15.1045695,16 14,16 L2,16 C0.8954305,16 1.3527075e-16,15.1045695 0,14 L0,2 C-1.3527075e-16,0.8954305 0.8954305,2.02906125e-16 2,0 Z"/>
+          </svg>
+        ),
+      ),
     },
     {
       id: 'title',

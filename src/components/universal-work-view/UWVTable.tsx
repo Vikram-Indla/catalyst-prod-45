@@ -23,7 +23,6 @@ import {
   makeDateCell,
   makeCommentsCell,
   makeParentCell,
-  makeTypeIconCell,
   makeCaretCell,
 } from '@/components/shared/JiraTable';
 import type { Column, RowGroup } from '@/components/shared/JiraTable';
@@ -159,23 +158,18 @@ export function UWVTable({
         }),
       },
       {
-        id: '__type',
-        label: '',
-        width: 3,
-        align: 'center',
-        alwaysVisible: true,
-        cell: makeTypeIconCell((r: UWVItem) => (
-          <JiraIssueTypeIcon type={jiraIconType(r.issueType)} size={16} />
-        )),
-      },
-      {
         id: 'key',
         label: 'Key',
         width: 9,
         sortable: true,
         defaultVisible: true,
         accessor: (r) => r.key,
-        cell: makeKeyCell((r: UWVItem) => r.key),
+        cell: makeKeyCell(
+          (r: UWVItem) => r.key,
+          undefined,
+          undefined,
+          (r: UWVItem) => <JiraIssueTypeIcon type={jiraIconType(r.issueType)} size={16} />,
+        ),
       },
       {
         id: 'summary',
