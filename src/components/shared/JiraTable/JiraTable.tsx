@@ -132,6 +132,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     rowsPerPage = 25,
     page,
     onPageChange,
+    showRowCount = true,
+    totalRowCount,
     focusedRowId: focusedRowIdProp,
     onFocusedRowChange,
     onEscape,
@@ -1902,6 +1904,35 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               disabled={current >= totalPages}
               style={pageBtnStyle(current >= totalPages)}
             >Next ›</button>
+          </div>
+        );
+      })()}
+
+      {/* Row-count footer — renders "{N} of {Total} items" (or just "{N} items"
+          when totalRowCount is omitted). Hidden when grouping is active
+          (groups have their own row counts) or when data is empty.
+          2026-05-17 jira-compare: parity with Jira's "50 of 1000+" footer. */}
+      {showRowCount && !groups && data && data.length > 0 && !onPageChange && (() => {
+        const visible = data.length;
+        const total = totalRowCount ?? visible;
+        const label = visible === total
+          ? `${visible} item${visible === 1 ? '' : 's'}`
+          : `${visible} of ${total} items`;
+        return (
+          <div
+            data-testid="jira-table-row-count"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '8px 12px',
+              borderTop: '1px solid #DFE1E6',
+              fontSize: 12,
+              color: 'var(--ds-text-subtle, #505258)',
+              background: 'var(--ds-surface, #FFFFFF)',
+            }}
+          >
+            {label}
           </div>
         );
       })()}

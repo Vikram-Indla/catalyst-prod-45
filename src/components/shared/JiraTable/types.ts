@@ -133,6 +133,16 @@ export interface JiraTableProps<TRow> {
   rowsPerPage?: number;
   page?: number;
   onPageChange?: (next: number) => void;
+  /**
+   * Row-count footer (2026-05-17 jira-compare): when data.length > 0 and
+   * not grouping, renders a small "{N} of {Total} items" indicator at the
+   * bottom of the table. Mirrors Jira's "50 of 1000+" list footer.
+   * - `showRowCount` defaults to `true`.
+   * - `totalRowCount` is the un-filtered total. When omitted, falls back
+   *   to data.length so the indicator reads "{N} items".
+   */
+  showRowCount?: boolean;
+  totalRowCount?: number;
   /** Currently-focused row key (keyboard nav). */
   focusedRowId?: string;
   /** Called when keyboard nav moves focus. Parent may persist or scroll. */
