@@ -484,8 +484,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // position (left of Search in the list toolbar). On click: creates a
   // CATY conversation scoped to this project, then navigates to /caty
   // with the conversation id passed via URLSearchParams.
-  const { user } = useAuth();
-  const createCatyConversation = useCreateCatyConversation();
+  // 2026-05-17: useAuth + useCreateCatyConversation already declared at
+  // the top of the component body (lines ~458-459) for the CATY hook
+  // setup; reuse those bindings here instead of re-declaring.
+  const createCatyConversation = createConversation;
   const handleAskCaty = useCallback(async () => {
     if (!user?.id || !projectId) return;
     try {
