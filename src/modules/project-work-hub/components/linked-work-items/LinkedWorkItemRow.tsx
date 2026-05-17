@@ -17,7 +17,7 @@
  */
 import React from 'react';
 import Lozenge from '@atlaskit/lozenge';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import CloseIcon from '@atlaskit/icon/core/close';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { WORK_ITEM_ICONS } from '../dialogs/story-detail-modules/constants';
@@ -94,10 +94,10 @@ export function LinkedWorkItemRow({
 
       <span className="lwi-row__assignee">
         {target.assignee_display_name ? (
-          <Avatar
+          <CatalystAvatar
             size="small"
             name={target.assignee_display_name}
-            src={resolveAvatarUrl(target.assignee_display_name) ?? undefined /* §19 chokepoint: never pass external URL */}
+            src={resolveAvatarUrl(target.assignee_display_name) /* §19 chokepoint: never pass external URL */}
             borderColor="transparent"
           />
         ) : (

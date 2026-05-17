@@ -19,7 +19,7 @@
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { IconButton } from '@atlaskit/button/new';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Tooltip from '@atlaskit/tooltip';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { useCatalystWatchers } from './hooks/useCatalystWatchers';
@@ -156,7 +156,7 @@ export function WatchersChip({ issueKey }: Props) {
                   padding: '6px 16px', fontSize: 13,
                   color: 'var(--ds-text, #172B4D)',
                 }}>
-                  <Avatar size="small" name={w.full_name ?? w.email ?? 'Unknown'} src={resolveAvatarUrl(w.full_name ?? w.email) ?? w.avatar_url ?? undefined} />
+                  <CatalystAvatar size="small" name={w.full_name ?? w.email ?? 'Unknown'} src={resolveAvatarUrl(w.full_name ?? w.email) ?? w.avatar_url} />
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {w.full_name ?? w.email ?? 'Unknown'}
                   </span>

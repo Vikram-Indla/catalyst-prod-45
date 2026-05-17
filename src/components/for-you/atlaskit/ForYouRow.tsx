@@ -43,7 +43,7 @@
  */
 import React, { memo, useCallback, useState, type KeyboardEvent, type MouseEvent } from 'react';
 import { token } from '@atlaskit/tokens';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import Lozenge from '@atlaskit/lozenge';
 import Tooltip from '@atlaskit/tooltip';
 import { Star, StarOff } from '@/lib/atlaskit-icons';
@@ -66,6 +66,14 @@ interface ForYouRowProps {
    * actionable intent. Omit for all other tabs — they stay unchanged.
    */
   suggestion?: string;
+  /**
+   * 2026-05-17 jira-compare — Jira's /jira/for-you "Assigned to me" tab
+   * renders rows as `[icon] {summary} / {Type · Key · Project} ... [LOZENGE →]`
+   * with NO avatar, NO star, NO updatedAt visible. `variant="jira-assigned"`
+   * is the strict Jira clone used by AssignedPanel. Other tabs keep the
+   * default feed layout (avatar + star + relative time + inline lozenge).
+   */
+  variant?: 'default' | 'jira-assigned';
 }
 
 // ─── Status → Atlaskit Lozenge mapping ───────────────────────────────────────
@@ -103,7 +111,8 @@ function statusToAppearance(status: string, category?: string): LozengeAppearanc
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, hideProject = false, suggestion }: ForYouRowProps) {
+function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, hideProject = false, suggestion, variant = 'default' }: ForYouRowProps) {
+  const isJiraAssigned = variant === 'jira-assigned';
   const avatarUrl = resolveAvatarUrl(item.assignee.name) || undefined;
   const isStarred = !!item.starred;
   const [isActive, setIsActive] = useState(false);
@@ -141,10 +150,15 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
         display: 'flex',
         alignItems: 'center',
         gap: token('space.200', '16px'),
-        height: 56,
+        // 2026-05-17 LIVE Jira probe: row is 62px tall, padding 12/16,
+        // gap 16px, border-radius 8px, NO border-bottom. Earlier I added a
+        // 1px border-bottom + radius 0 based on the static screenshot — the
+        // live DOM has neither.
+        height: isJiraAssigned ? 62 : 56,
         paddingInline: token('space.200', '16px'),
         paddingBlock: token('space.150', '12px'),
         borderRadius: 8,
+        borderBottom: 'none',
         cursor: 'pointer',
         backgroundColor: isActive
           ? token('elevation.surface.hovered', 'rgba(9,30,66,0.06)')
@@ -161,19 +175,36 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
         minWidth: 0,
       }}
     >
-      {/* Left — work item type icon, no background tile (Jira parity) */}
-      <div style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-        <JiraIssueTypeIcon type={item.issueType ?? 'Task'} size={20} />
-      </div>
+      {/* Left — work item type icon.
+          jira-assigned variant: 32x32 rounded grey tile (border-radius 25%)
+          containing the type icon. Confirmed via 2026-05-17 LIVE Jira DOM
+          probe: tile bg `rgba(5,21,36,0.06)`, dimensions 32px square.
+          Default variant: 20px naked icon (legacy compact rail layout). */}
+      {isJiraAssigned ? (
+        <div style={{
+          width: 32,
+          height: 32,
+          borderRadius: '25%',
+          backgroundColor: token('color.background.neutral', 'rgba(5,21,36,0.06)'),
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0,
+        }}>
+          <JiraIssueTypeIcon type={item.issueType ?? 'Task'} size={20} />
+        </div>
+      ) : (
+        <div style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <JiraIssueTypeIcon type={item.issueType ?? 'Task'} size={20} />
+        </div>
+      )}
 
       {/* Main body */}
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: token('space.025', '2px') }}>
         <div
           style={{
-            // Jira renders the For You row summary at 14/400, NOT 500.
-            // The earlier 500 made Catalyst rows read one weight heavier
-            // than the Jira reference.
-            font: `400 14px/20px "Inter", system-ui, sans-serif`,
+            // 2026-05-17 LIVE Jira probe: title is 500/14/20 (NOT 400).
+            // A prior comment claimed 400 was correct — live DOM disproves
+            // that. The user-visible weight in Jira's For You is medium 500.
+            font: `${isJiraAssigned ? 500 : 400} 14px/20px var(--ds-font-family-body, "Inter"), system-ui, sans-serif`,
             color: token('color.text', '#292A2E'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -184,6 +215,30 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
           {item.summary || item.key}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flexWrap: 'wrap' }}>
+          {isJiraAssigned && item.issueType && (
+            // Jira's /jira/for-you Assigned tab renders the issuetype NAME as
+            // the leading meta token: "Epic · MWR-754 · MIM Website Revamp".
+            <span
+              style={{
+                font: `400 12px/16px "Inter", system-ui, sans-serif`,
+                color: token('color.text.subtlest', '#626F86'),
+                letterSpacing: 0,
+              }}
+            >
+              {item.issueType}
+            </span>
+          )}
+          {isJiraAssigned && item.issueType && (
+            <span
+              aria-hidden="true"
+              style={{
+                font: `400 12px/16px "Inter", system-ui, sans-serif`,
+                color: token('color.text.subtlest', '#626F86'),
+              }}
+            >
+              ·
+            </span>
+          )}
           <span
             style={{
               // Key is the primary identifier — render at color.text.subtle
@@ -213,7 +268,10 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
               </span>
             </Tooltip>
           )}
-          {item.status && (
+          {/* Inline lozenge + updatedAt — DEFAULT VARIANT ONLY.
+              Jira-assigned variant moves the lozenge to the trailing slot
+              (right-edge, marginLeft:auto) per /jira/for-you DOM. */}
+          {!isJiraAssigned && item.status && (
             // data-cp-lozenge-jira-parity: activates the index.css override that
             // strips text-transform:uppercase + letter-spacing from Atlaskit's
             // inner label span (jira-compare 2026-04-28 lesson).
@@ -221,14 +279,16 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
               <Lozenge appearance={statusToAppearance(item.status, item.statusCategory)}>{item.status}</Lozenge>
             </span>
           )}
-          <span
-            style={{
-              font: `400 12px/16px "Inter", system-ui, sans-serif`,
-              color: token('color.text.subtlest', '#626F86'),
-            }}
-          >
-            · {item.updatedAt}
-          </span>
+          {!isJiraAssigned && (
+            <span
+              style={{
+                font: `400 12px/16px "Inter", system-ui, sans-serif`,
+                color: token('color.text.subtlest', '#626F86'),
+              }}
+            >
+              · {item.updatedAt}
+            </span>
+          )}
           {suggestion && (
             // AI Recap meta fragment: 12/16/400, color.text.subtle (same as
             // meta siblings), max-width to prevent the row pushing wider
@@ -253,26 +313,83 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
         </div>
       </div>
 
-      {/* Trailing: assignee + star (star omitted when caller passes no onToggleStar) */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flexShrink: 0 }}>
-        <Tooltip content={item.assignee.name}>
-          <span>
-            <Avatar size="small" src={avatarUrl} name={item.assignee.name} />
-          </span>
-        </Tooltip>
-        {onToggleStar && (
-          <StarButton
-            isStarred={isStarred}
-            alwaysVisible={alwaysShowStar || isStarred || isActive}
-            onClick={handleStarClick}
-          />
-        )}
-      </div>
+      {/* Trailing slot
+          ───────────────
+          jira-assigned variant: status Lozenge right-aligned, NO avatar, NO star
+          (matches /jira/for-you Assigned tab DOM 2026-05-17).
+          default variant: assignee Avatar + star (star omitted when no onToggleStar). */}
+      {isJiraAssigned ? (
+        item.status && <JiraForYouLozenge status={item.status} statusCategory={item.statusCategory} />
+      ) : (
+        <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flexShrink: 0 }}>
+          <Tooltip content={item.assignee.name}>
+            <span>
+              <CatalystAvatar size="small" src={avatarUrl} name={item.assignee.name} />
+            </span>
+          </Tooltip>
+          {onToggleStar && (
+            <StarButton
+              isStarred={isStarred}
+              alwaysVisible={alwaysShowStar || isStarred || isActive}
+              onClick={handleStarClick}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
 export default memo(ForYouRowImpl);
+
+// ─── Jira For You Lozenge ────────────────────────────────────────────────────
+// 2026-05-17 — Catalyst's Atlaskit Lozenge v11 renders `appearance="default"`
+// non-bold as `rgba(5,21,36,0.06)` (6% translucent dark overlay) with
+// `color.text.subtle` (medium grey) text. That looks washed out — user
+// flagged "very light, no contrast".
+//
+// LIVE Jira DOM probe of /jira/for-you (2026-05-17) shows Jira uses a newer
+// theme:
+//   • Default (To Do family):  bg `rgb(221, 222, 225)` SOLID grey, dark text
+//   • In Progress family:      bg `rgb(143, 184, 246)` SOLID light blue, dark text
+//   • Done family:             bg `rgb(186, 240, 199)` SOLID light green, dark text
+//   • Inner text: `653 11px/16px Atlassian Sans` UPPERCASE, ls 0.165px
+//
+// We inline-style the exact two-span structure Jira uses so the contrast
+// matches pixel-for-pixel, bypassing Atlaskit v11's translucent default.
+function JiraForYouLozenge({ status, statusCategory }: { status: string; statusCategory?: string }) {
+  const ap = statusToAppearance(status, statusCategory);
+  const bg = ap === 'inprogress'
+    ? 'rgb(143, 184, 246)'
+    : ap === 'success'
+    ? 'rgb(186, 240, 199)'
+    : ap === 'moved'
+    ? 'rgb(254, 222, 164)' // amber for moved/on-hold
+    : ap === 'removed'
+    ? 'rgb(255, 198, 188)' // soft red for blocked/removed
+    : 'rgb(221, 222, 225)'; // default — Jira's actual SOLID grey
+  return (
+    <span style={{
+      flexShrink: 0,
+      display: 'inline-flex',
+      alignItems: 'center',
+      backgroundColor: bg,
+      padding: '0px 4px',
+      borderRadius: 3,
+      height: 20,
+    }}>
+      <span style={{
+        font: `653 11px/16px var(--ds-font-family-body, "Inter"), system-ui, sans-serif`,
+        color: 'rgb(41, 42, 46)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.165px',
+        padding: '2px',
+      }}>
+        {status}
+      </span>
+    </span>
+  );
+}
 
 // ─── Star button ─────────────────────────────────────────────────────────────
 

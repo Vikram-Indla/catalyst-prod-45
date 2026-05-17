@@ -8,7 +8,7 @@
 import React from 'react';
 import { ChevronDown, ChevronRight } from '@/lib/atlaskit-icons';
 import Checkbox from '@atlaskit/checkbox';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { resolveAvatarUrl } from '@/lib/avatars';
@@ -247,10 +247,10 @@ function renderCell(
       }
       return (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
-          <Avatar
+          <CatalystAvatar
             appearance="circle"
             size="small"
-            src={resolveAvatarUrl(display) ?? item.assigneeAvatar ?? undefined}
+            src={resolveAvatarUrl(display) ?? item.assigneeAvatar}
             name={display}
           />
           <span

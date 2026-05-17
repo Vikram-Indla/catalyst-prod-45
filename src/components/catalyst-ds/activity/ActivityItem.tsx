@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { ArrowRight, Plus, Pencil, Trash2, Zap } from '@/lib/atlaskit-icons';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { formatDistanceToNow } from 'date-fns';
 import type { CdsActivityItem, CdsActivityAction, CdsAppearance } from '../types';
 import { Lozenge } from '../status/Lozenge';
@@ -91,7 +91,7 @@ function ActivityItemDisplay({ item, jiraUserMap, className }: ActivityItemProps
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <Avatar size="xsmall" name={actor.name} src={actor.avatarUrl ?? undefined} />
+          <CatalystAvatar size="xsmall" name={actor.name} src={actor.avatarUrl} />
           <span className="text-[13px] font-semibold text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]">
             {actor.name}
           </span>

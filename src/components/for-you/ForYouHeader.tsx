@@ -1,38 +1,31 @@
 /**
- * For You Page Header - Title + subtitle
- * MARAM V3.1 · fy- ring-fenced · Theme-aware
+ * For You Page Header — Jira parity (2026-05-17 jira-compare).
  *
- * Apr 2026: Intelligence button removed — its functionality (department
- * picker → DepartmentIntelligenceOverlay) is now hosted by the top-nav
- * "Ask Caty" pill, scoped to the /for-you route only.
+ * Jira's /jira/for-you page heading is `24px / 600 / 28px`, sentence-case
+ * ("For you", not "For You"), no subtitle.
  *
- * Responsive: title 22→18 and subtitle hidden at mobile (<768) to reclaim
- * vertical space on phones. Breakpoint via useNavBreakpoint (shared hook).
+ * @atlaskit/heading `size="large"` resolves to `--ds-font-heading-large`,
+ * which in this theme renders at 24/500 — half a weight step too light.
+ * Probe 2026-05-17 confirmed 500, not 600. We render an inline <h1> with
+ * explicit weight 600 so the heading reads at Jira's actual on-screen weight.
  */
 
-import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
+import { token } from '@atlaskit/tokens';
 
 export function ForYouHeader() {
-  const { isMobile } = useNavBreakpoint();
-
   return (
     <header className="fy-header" style={{
-      display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20,
+      display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+      marginBottom: 16,
     }}>
-      <div>
-        <h1 style={{
-          fontFamily: 'var(--cp-font-heading)', fontSize: isMobile ? 18 : 22, fontWeight: 700,
-          color: 'var(--cp-t1)', letterSpacing: '-0.025em', margin: 0,
-        }}>
-          For You
-        </h1>
-        {/* Subtitle hidden at mobile — title alone carries context; saves vertical space */}
-        {!isMobile && (
-          <p style={{ fontSize: 13, color: 'var(--cp-t3)', marginTop: 2 }}>
-            Your work across all projects and hubs
-          </p>
-        )}
-      </div>
+      <h1 style={{
+        margin: 0,
+        font: '600 24px/28px var(--ds-font-family-body, "Inter", system-ui, sans-serif)',
+        letterSpacing: 'normal',
+        color: token('color.text', '#172B4D'),
+      }}>
+        For you
+      </h1>
     </header>
   );
 }
