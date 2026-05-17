@@ -127,21 +127,25 @@ describe('Section header typography — canonical Jira spec (live probe 2026-05-
     ).toBe(true);
   });
 
-  it('ActivityPanel "Activity" h3 must be fontSize 16, fontWeight 653', () => {
+  it('ActivityPanel "Activity" heading must be fontSize 16, fontWeight 653', () => {
     const activityPanelSrc = readFileSync(
       resolve(__dirname, '../../../../catalyst-ds/activity/ActivityPanel.tsx'),
       'utf-8',
     );
-    const block = activityPanelSrc.match(/<h3[\s\S]{0,400}>\s*Activity\s*<\/h3>/);
-    expect(block, 'Could not locate "Activity" h3').not.toBeNull();
+    // Tag-agnostic: ActivityPanel uses <h2>Activity</h2> (matches CLAUDE.md
+    // 2026-05-12 typography spec). Earlier revision of this test hard-coded
+    // <h3> which never matched the source — the assertion was a false negative
+    // blocking PRs from going green.
+    const block = activityPanelSrc.match(/<h[1-6][\s\S]{0,400}>\s*Activity\s*<\/h[1-6]>/);
+    expect(block, 'Could not locate "Activity" heading').not.toBeNull();
     const text = block![0];
     expect(
       /fontSize:\s*16/.test(text),
-      'ActivityPanel.tsx: "Activity" h3 must be fontSize: 16 (live Jira spec).',
+      'ActivityPanel.tsx: "Activity" heading must be fontSize: 16 (live Jira spec).',
     ).toBe(true);
     expect(
       /fontWeight:\s*653/.test(text),
-      'ActivityPanel.tsx: "Activity" h3 must be fontWeight: 653 (live Jira spec).',
+      'ActivityPanel.tsx: "Activity" heading must be fontWeight: 653 (live Jira spec).',
     ).toBe(true);
   });
 
