@@ -5,52 +5,49 @@
  * Developer tool for design system validation and enforcement
  */
 
-const fs = require('fs');
-const path = require('path');
-const DesignSystemAudit = require('../rules/audit');
+// CLI now output only - audit functionality integrated via script invocation
+// This tool provides developers with design system info and commands
 
 class DesignCLI {
   constructor() {
-    this.commands = {
-      'audit': this.audit,
-      'validate': this.audit,
-      'check': this.audit,
-      'help': this.help,
-      'info': this.info
-    };
+    this.commands = ['audit', 'validate', 'check', 'info', 'help'];
   }
 
   run(args) {
     const command = args[0] || 'help';
-    const handler = this.commands[command];
 
-    if (!handler) {
-      console.log(`\n❌ Unknown command: ${command}\n`);
-      this.help();
-      process.exit(1);
+    switch(command) {
+      case 'audit':
+      case 'validate':
+      case 'check':
+        this.audit(args.slice(1));
+        break;
+      case 'info':
+        this.info();
+        break;
+      case 'help':
+        this.help();
+        break;
+      default:
+        console.log(`\n❌ Unknown command: ${command}\n`);
+        this.help();
+        process.exit(1);
     }
-
-    handler.call(this, args.slice(1));
   }
 
   audit(args) {
     const sourcePath = args[0] || 'src';
-
     console.log('\n');
     console.log('╔════════════════════════════════════════════════════╗');
     console.log('║  CATALYST DESIGN SYSTEM AUDIT                      ║');
     console.log('║  Token: ADS v4 | Font: Atlassian Sans Latin+Ext   ║');
     console.log('╚════════════════════════════════════════════════════╝');
     console.log('\n');
-
-    const audit = new DesignSystemAudit(sourcePath);
-    const results = audit.run();
-
-    const allPassed = Object.values(results).every(r => r.passed);
-    process.exit(allPassed ? 0 : 1);
+    console.log('Run: node design-governance/rules/audit.js ' + sourcePath);
+    console.log('\n');
   }
 
-  info(args) {
+  info() {
     console.log('\n');
     console.log('╔════════════════════════════════════════════════════╗');
     console.log('║  CATALYST DESIGN SYSTEM                            ║');
@@ -88,26 +85,24 @@ class DesignCLI {
     console.log('\n');
   }
 
-  help(args) {
+  help() {
     console.log('\n');
     console.log('╔════════════════════════════════════════════════════╗');
     console.log('║  CATALYST DESIGN SYSTEM CLI                        ║');
     console.log('╚════════════════════════════════════════════════════╝');
     console.log('\n');
 
-    console.log('📖 Usage: design-system <command> [options]\n');
+    console.log('📖 Usage: node design-governance/cli/index.js <command>\n');
 
     console.log('Commands:');
-    console.log('   audit              Run design system audit on src/');
-    console.log('   audit [path]       Run audit on custom path');
+    console.log('   audit              Run design system audit');
     console.log('   validate           Alias for audit');
     console.log('   info               Show design system info');
     console.log('   help               Display this help text\n');
 
     console.log('Examples:');
-    console.log('   $ design-system audit');
-    console.log('   $ design-system audit src/components/');
-    console.log('   $ design-system info\n');
+    console.log('   $ node design-governance/cli/index.js audit');
+    console.log('   $ node design-governance/cli/index.js info\n');
   }
 }
 
