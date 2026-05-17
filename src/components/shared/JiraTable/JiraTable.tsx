@@ -44,6 +44,7 @@ import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import ArrowUpIcon from '@atlaskit/icon/glyph/arrow-up';
 import ArrowDownIcon from '@atlaskit/icon/glyph/arrow-down';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { useComponentConfig } from '@/registry/useComponentConfig';
 import PlusIcon from '@atlaskit/icon/core/add';
 import SearchIcon from '@atlaskit/icon/core/search';
 import ResetIcon from '@atlaskit/icon/core/refresh';
@@ -147,22 +148,37 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     onColumnVisibilityChange,
     collapsedGroups,
     onToggleGroup,
-    enableGroupCreateButton = false,
+    enableGroupCreateButton: enableGroupCreateButtonProp,
     onAddToGroup,
     renderGroupInlineRow,
     getRowHasChildren,
     expandedRowIds,
     onToggleRowExpanded,
     contextMenuActions,
-    enableColumnReorder = false,
+    enableColumnReorder: enableColumnReorderProp,
     columnOrder: columnOrderProp,
     onColumnOrderChange,
     enableVirtualization = false,
-    enableStickyCreateFooter = false,
+    enableStickyCreateFooter: enableStickyCreateFooterProp,
     stickyCreateFooter,
     initialColumnWidths,
     onColumnWidthsChange,
   } = props;
+
+  // ── v2 publish/cascade hook (PR-2, 2026-05-17) ──────────────────────────
+  // The runtime config resolver decides which feature-flag value wins:
+  //   1. caller prop  →  2. component_config runtime override  →  3. registry default
+  // This lets /admin/components publish flag changes that propagate to every
+  // JiraTable consumer that DOESN'T explicitly pass the prop. Consumers that
+  // DO pass a prop still win — explicit intent is preserved.
+  const resolvedConfig = useComponentConfig('jira-table', {
+    enableGroupCreateButton: enableGroupCreateButtonProp,
+    enableStickyCreateFooter: enableStickyCreateFooterProp,
+    enableColumnReorder: enableColumnReorderProp,
+  });
+  const enableGroupCreateButton = Boolean(resolvedConfig.flags.enableGroupCreateButton);
+  const enableStickyCreateFooter = Boolean(resolvedConfig.flags.enableStickyCreateFooter);
+  const enableColumnReorder = Boolean(resolvedConfig.flags.enableColumnReorder);
 
   // Right-click context menu state — one menu at a time, anchored to cursor.
   const [ctxMenu, setCtxMenu] = useState<{ row: TRow; x: number; y: number } | null>(null);
