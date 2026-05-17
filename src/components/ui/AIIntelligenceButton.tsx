@@ -1,8 +1,17 @@
 /**
- * AIIntelligenceButton — Blue-to-purple gradient pill
- * Platform standard: gradient bg, white text, pill shape, Zap icon
+ * AIIntelligenceButton — ADS brand-blue pill that opens the Catalyst AI
+ * (CATY) intelligence panel for the current context. Pairs with the
+ * sparkle / "Ask Caty" affordances elsewhere in the app so every AI
+ * surface reads as the same entity.
+ *
+ * Tooltip default: "Ask Caty about this view". Override with `tooltip`
+ * when the calling surface has a more specific framing (e.g. "Ask Caty
+ * about Vikram's week"). Design-critique 2026-05-17 H10 P1 — "Intelligence"
+ * alone failed the "what does this button do?" test; the tooltip resolves
+ * it without changing the visible label.
  */
 import React from 'react';
+import Tooltip from '@atlaskit/tooltip';
 import { Zap } from '@/lib/atlaskit-icons';
 
 export interface AIIntelligenceButtonProps {
@@ -11,6 +20,8 @@ export interface AIIntelligenceButtonProps {
   onClick: () => void;
   className?: string;
   disabled?: boolean;
+  /** Hover/keyboard-focus tooltip. Defaults to "Ask Caty about this view". */
+  tooltip?: string;
 }
 
 export function AIIntelligenceButton({
@@ -19,12 +30,14 @@ export function AIIntelligenceButton({
   onClick,
   className,
   disabled = false,
+  tooltip = 'Ask Caty about this view',
 }: AIIntelligenceButtonProps) {
-  return (
+  const button = (
     <button
       onClick={disabled ? undefined : onClick}
       className={className}
       disabled={disabled}
+      aria-label={tooltip}
       style={{
         background: disabled
           ? 'var(--ds-text-subtlest, #94A3B8)'
@@ -58,4 +71,6 @@ export function AIIntelligenceButton({
       {label}
     </button>
   );
+
+  return tooltip ? <Tooltip content={tooltip}>{button}</Tooltip> : button;
 }

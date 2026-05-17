@@ -156,7 +156,12 @@ function SidebarRoster({
     <div
       data-testid="r360-roster-sidebar"
       style={{
-        width: 200, flexShrink: 0,
+        // Widened 200 → 220 (design-critique 2026-05-17 H6 P1) — at 200px
+        // names like "Ayaz Muhammad" and "Divyam Kshatriya" were forced to
+        // truncate to "Ayaz Muhamm…" / "Divyam Kshatri…". The extra 20px
+        // fits the longest BAU-team display names without ellipsis while
+        // keeping the sidebar comfortably inside the 1200px viewport.
+        width: 220, flexShrink: 0,
         borderInlineEnd: `1px solid ${token('color.border', '#091E4224')}`,
         display: 'flex', flexDirection: 'column',
         position: 'sticky',
