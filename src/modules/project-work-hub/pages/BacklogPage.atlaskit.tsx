@@ -74,7 +74,6 @@ import { Fieldset, Label } from '@atlaskit/form';
 
 import {
   JiraTable,
-  makeCheckboxCell,
   makeKeyCell,
   makeCommentsCell,
   makeDateCell,
@@ -1761,25 +1760,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       hidden: sortKey !== DEFAULT_SORT_KEY || sortDir !== DEFAULT_SORT_DIR || (groupBy !== null && groupBy !== 'none'),
       cell: ({ row }) => <DragHandleCell row={row} />,
     },
-    {
-      id: '__checkbox',
-      label: '',
-      width: 4,
-      align: 'center' as const,
-      alwaysVisible: true,
-      cell: makeCheckboxCell({
-        isChecked: (row: BacklogItem) => selectedIds.has(row.id),
-        onChange: (row: BacklogItem, checked: boolean) => {
-          const next = new Set(selectedIds);
-          if (checked) {
-            next.add(row.id);
-          } else {
-            next.delete(row.id);
-          }
-          setSelectedIds(next);
-        },
-      }),
-    },
+    // 2026-05-17 jira-compare cycle 2: redundant __checkbox column removed.
+    // JiraTable auto-prepends a __select column when selectable={true} —
+    // having both rendered as an empty column 2 visible to Vikram. Now the
+    // canonical's __select is the only selection column, fed by the same
+    // selection / onSelectionChange props (lines ~3031-3033).
     {
       id: 'key',
       label: 'Key',
