@@ -134,6 +134,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     onPageChange,
     showRowCount = true,
     totalRowCount,
+    renderRowDragHandle,
+    rowDragHandleHidden,
     focusedRowId: focusedRowIdProp,
     onFocusedRowChange,
     onEscape,
@@ -539,6 +541,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid table tbody > tr:hover .jira-drag-handle {
         visibility: visible;
       }
+      /* 2026-05-17 jira-compare cycle 2: row-level drag handle overlay.
+         Absolute-positioned outside the column flow (anchored to the row
+         __select cell). Hidden at rest, visible on row hover. */
+      .jira-table-grid table tbody > tr:hover .jira-row-drag-handle {
+        visibility: visible;
+      }
       /* Row menu: hidden by default, visible on row hover. */
       .jira-table-grid table tbody > tr:hover .jira-row-menu-trigger {
         opacity: 1;
@@ -833,6 +841,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid table tbody > tr:hover .jira-drag-handle {
         visibility: visible;
       }
+      /* 2026-05-17 jira-compare cycle 2: row-level drag handle overlay
+         hover-reveal (dark-mode block; mirrors light-mode rule above). */
+      .jira-table-grid table tbody > tr:hover .jira-row-drag-handle {
+        visibility: visible;
+      }
       /* 2026-05-12 Jira parity: row hover reveals ↗ open + add child buttons
          on the right edge of the Summary cell. Pattern mirrors .jira-drag-handle:
          visibility: hidden at rest (set inline), flip to visible on tr:hover. */
@@ -1009,13 +1022,37 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       const rowCells: Array<{ key: string; content: React.ReactNode; colSpan?: number }> = [];
 
       if (selectable) {
+        const dragHandleNode =
+          renderRowDragHandle && !rowDragHandleHidden ? renderRowDragHandle(row) : null;
         rowCells.push({
           key: `${id}-select`,
           content: (
             <span
               data-jira-table-editor // marker: click shouldn't trigger row navigation
               onClick={(e) => e.stopPropagation()}
+              style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}
             >
+              {/* 2026-05-17 jira-compare cycle 2: row-level drag handle overlay.
+                  Absolute-positioned to the left of the checkbox so the handle
+                  appears OUTSIDE the column flow on row-hover — matches Jira's
+                  grip-on-row pattern. Caller (BacklogPage) wires dnd-kit inside
+                  the returned node. */}
+              {dragHandleNode && (
+                <span
+                  className="jira-row-drag-handle"
+                  style={{
+                    position: 'absolute',
+                    left: -18,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    visibility: 'hidden',
+                    pointerEvents: 'auto',
+                  }}
+                  aria-hidden
+                >
+                  {dragHandleNode}
+                </span>
+              )}
               <AkCheckbox
                 isChecked={isSelected}
                 onChange={(e) => {

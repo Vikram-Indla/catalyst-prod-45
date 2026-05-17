@@ -143,6 +143,19 @@ export interface JiraTableProps<TRow> {
    */
   showRowCount?: boolean;
   totalRowCount?: number;
+  /**
+   * Row-level drag handle (2026-05-17 jira-compare cycle 2): when set, the
+   * canonical renders the returned node as an absolute-positioned overlay
+   * anchored to the row's left edge — outside the column flow — matching
+   * Jira's grip-on-row-hover pattern. Avoids the wasted-column-width cost
+   * of a dedicated __drag column.
+   * - `renderRowDragHandle(row)` returns the handle JSX. Caller wires
+   *   dnd-kit (or equivalent) inside the returned node.
+   * - `rowDragHandleHidden` mirrors the Jira behavior of hiding the
+   *   handle when a non-default sort or grouping is active.
+   */
+  renderRowDragHandle?: (row: TRow) => ReactNode;
+  rowDragHandleHidden?: boolean;
   /** Currently-focused row key (keyboard nav). */
   focusedRowId?: string;
   /** Called when keyboard nav moves focus. Parent may persist or scroll. */

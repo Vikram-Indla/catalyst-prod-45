@@ -1743,23 +1743,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // Type col cell renderer instead (matches Jira's inline expand pattern).
   // F9 (iter-9): Type col widened from width:3 (~40px) to width:9 (~108px).
   const columns = useMemo<Column<BacklogItem>[]>(() => ([
-    {
-      // Jira-parity: 16px-wide drag-handle column at the leftmost position.
-      // Shows a 6-dot grip icon on row hover; invisible at rest.
-      // CSS in JiraTable.tsx (`.jira-drag-handle`) handles visibility.
-      // 2026-05-12: functional DnD with @dnd-kit/sortable. DragHandleCell
-      // uses useSortable hook to track drag state and apply transform.
-      // Visibility gate: drag handle shows in the default sort state only
-      // (sortKey=DEFAULT_SORT_KEY AND sortDir=DEFAULT_SORT_DIR AND no grouping).
-      // Any column sort deviation or grouping hides it — matches Jira behavior.
-      id: '__drag',
-      label: '',
-      width: 3,
-      align: 'center' as const,
-      alwaysVisible: true,
-      hidden: sortKey !== DEFAULT_SORT_KEY || sortDir !== DEFAULT_SORT_DIR || (groupBy !== null && groupBy !== 'none'),
-      cell: ({ row }) => <DragHandleCell row={row} />,
-    },
+    // 2026-05-17 jira-compare cycle 2 (design-critique H8 P0): __drag
+    // column removed entirely. Drag handle now renders as a row-level
+    // absolute-positioned overlay on the __select cell via JiraTable's
+    // renderRowDragHandle prop (wired below at the JiraTable call site).
+    // Matches Jira's grip-on-row-hover pattern; eliminates the wasted
+    // ~36px empty column 2 that Vikram flagged.
     // 2026-05-17 jira-compare cycle 2: redundant __checkbox column removed.
     // JiraTable auto-prepends a __select column when selectable={true} —
     // having both rendered as an empty column 2 visible to Vikram. Now the
@@ -3016,6 +3005,12 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             selectable
             selection={selectedIds}
             onSelectionChange={setSelectedIds}
+            renderRowDragHandle={(row) => <DragHandleCell row={row} />}
+            rowDragHandleHidden={
+              sortKey !== DEFAULT_SORT_KEY ||
+              sortDir !== DEFAULT_SORT_DIR ||
+              (groupBy !== null && groupBy !== 'none')
+            }
             sortKey={sortKey || undefined}
             sortOrder={sortDir || undefined}
             onSortChange={(k, ord) => {
