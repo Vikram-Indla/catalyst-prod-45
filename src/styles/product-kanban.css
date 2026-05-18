@@ -394,7 +394,7 @@
   transition: background 0.15s;
   overflow: hidden;
 }
-.pk-column-collapsed:hover { background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9)); }
+.pk-column-collapsed:hover { background: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))); }
 .pk-column-collapsed-name {
   writing-mode: vertical-rl;
   text-orientation: mixed;

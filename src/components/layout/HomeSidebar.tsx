@@ -58,7 +58,7 @@ function SkeletonRowTitle() {
         height: 12,
         width: '70%',
         borderRadius: 4,
-        background: 'var(--ds-background-neutral, var(--cp-bg-sunken, #F1F5F9))',
+        background: 'var(--ds-background-neutral, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
         opacity: 0.8,
       }}
       aria-hidden="true"

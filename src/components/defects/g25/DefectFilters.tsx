@@ -221,7 +221,7 @@ export function DefectFilters({ filters, onChange, users, projects }: Props) {
               >
                 <div className="flex items-center gap-2 w-full">
                   {filters.assignedTo === 'unassigned' ? <Check className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" /> : <span className="w-3.5 flex-shrink-0" />}
-                  <div style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', border: '1px solid rgba(15,23,42,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: '1px solid rgba(15,23,42,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <UserRound size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
                   </div>
                   Unassigned

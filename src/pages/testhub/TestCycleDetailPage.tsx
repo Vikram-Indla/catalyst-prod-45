@@ -63,7 +63,7 @@ const statusConfig: Record<string, { label: string; color: string; bg: string }>
 };
 
 const executionStatusConfig: Record<string, { label: string; color: string; bg: string; Icon: any }> = {
-  not_run: { label: 'Not Run', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', Icon: Clock },
+  not_run: { label: 'Not Run', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', Icon: Clock },
   passed: { label: 'Passed', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', Icon: CheckCircle2 },
   failed: { label: 'Failed', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', Icon: XCircle },
   blocked: { label: 'Blocked', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', Icon: AlertTriangle },
@@ -120,7 +120,7 @@ const CycleDefectsPanel = ({ cycleId, isDark }: { cycleId?: string; isDark: bool
           {defects.map((d: any) => {
             const sc = defectStatusColors[d.status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' };
             return (
-              <tr key={d.id} style={{ height: 36, maxHeight: 36, borderBottom: `0.75px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}` }}>
+              <tr key={d.id} style={{ height: 36, maxHeight: 36, borderBottom: `0.75px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}` }}>
                 <td style={{ padding: '0 12px' }}>
                   <span onClick={() => navigate(`/testhub/defects/${d.id}`)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>{d.defect_key}</span>
                 </td>
@@ -131,7 +131,7 @@ const CycleDefectsPanel = ({ cycleId, isDark }: { cycleId?: string; isDark: bool
                 <td style={{ padding: '0 12px', fontSize: 13, color: 'var(--cp-text-secondary, #475569)', textTransform: 'capitalize' as const }}>{d.severity ?? '—'}</td>
                 <td style={{ padding: '0 12px' }}>
                   {d.link_source === 'auto_execution' && (
-                    <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 6px', borderRadius: 3, backgroundColor: 'var(--cp-bg-page, var(--cp-bg-sunken, #F1F5F9))', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Auto</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 6px', borderRadius: 3, backgroundColor: 'var(--cp-bg-page, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Auto</span>
                   )}
                   {d.link_source === 'auto_jira' && (
                     <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 6px', borderRadius: 3, backgroundColor: '#DEEBFF', color: '#0747A6' }}>Jira</span>
@@ -638,7 +638,7 @@ export default function TestCycleDetailPage() {
                     const priority = priorityConfig[ctc.test_case?.priority?.name?.toLowerCase() || ''] ?? priorityConfig.medium;
                     const isSelected = selectedTestCaseIds.has(ctc.id);
                     return (
-                      <tr key={ctc.id} style={{ borderBottom: index < filteredTestCases.length - 1 ? `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}` : 'none', backgroundColor: isSelected ? ('var(--cp-primary-light, #EFF6FF)') : 'transparent' }}>
+                      <tr key={ctc.id} style={{ borderBottom: index < filteredTestCases.length - 1 ? `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}` : 'none', backgroundColor: isSelected ? ('var(--cp-primary-light, #EFF6FF)') : 'transparent' }}>
                         {/* Checkbox Cell */}
                         {canEdit && (
                           <td style={{ padding: '14px 16px', textAlign: 'center' }}>

@@ -35,18 +35,18 @@ interface EnvironmentSummary {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  development: { label: 'Development', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
-  testing: { label: 'Testing', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
-  staging: { label: 'Staging', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
-  uat: { label: 'UAT', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
-  production: { label: 'Production', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
-  other: { label: 'Other', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
+  development: { label: 'Development', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' },
+  testing: { label: 'Testing', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' },
+  staging: { label: 'Staging', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' },
+  uat: { label: 'UAT', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' },
+  production: { label: 'Production', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' },
+  other: { label: 'Other', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   active: { label: 'Active', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: Power },
   maintenance: { label: 'Maintenance', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', icon: Wrench },
-  inactive: { label: 'Inactive', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: Power },
+  inactive: { label: 'Inactive', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', icon: Power },
   deprecated: { label: 'Deprecated', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--ds-surface-sunken, #F8FAFC)', icon: XCircle },
 };
 
@@ -54,7 +54,7 @@ const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string; 
   healthy: { label: 'Healthy', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
   degraded: { label: 'Degraded', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', icon: AlertTriangle },
   down: { label: 'Down', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', icon: XCircle },
-  unknown: { label: 'Unknown', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: HelpCircle },
+  unknown: { label: 'Unknown', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', icon: HelpCircle },
 };
 
 export default function EnvironmentsListPage() {
@@ -289,7 +289,7 @@ export default function EnvironmentsListPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 12, fontWeight: 600, color: '#6366F1', backgroundColor: '#EEF2FF', padding: '4px 10px', borderRadius: 6 }}>{env.env_key}</span>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #475569)', backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '0 6px', borderRadius: 4, height: 20, display: 'inline-flex', alignItems: 'center', textTransform: 'uppercase' as const }}>{type.label}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #475569)', backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '0 6px', borderRadius: 4, height: 20, display: 'inline-flex', alignItems: 'center', textTransform: 'uppercase' as const }}>{type.label}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: health.color, backgroundColor: health.bg, padding: '4px 8px', borderRadius: 6 }}>
                     <HealthIcon size={12} /> {health.label}
@@ -301,7 +301,7 @@ export default function EnvironmentsListPage() {
                     <ExternalLink size={14} /> {env.url}
                   </div>
                 )}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}` }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: status.color }}>
                     <StatusIcon size={14} /> {status.label}
                   </div>

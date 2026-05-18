@@ -478,7 +478,7 @@ export default function TestHubDocsPage() {
               { label: 'Execution & Runs', color: '#FFE4E6', textColor: '#9F1239' },
               { label: 'Defects', color: '#FCE7F3', textColor: '#9D174D' },
               { label: 'Releases / Gates', color: '#CCFBF1', textColor: '#134E4A' },
-              { label: 'Reports / AI', color: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', textColor: 'var(--ds-text-subtle, #475569)' },
+              { label: 'Reports / AI', color: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', textColor: 'var(--ds-text-subtle, #475569)' },
             ].map((item, i, arr) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{

@@ -92,7 +92,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
             {search && (
               <button
                 onClick={() => onSearchChange('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center rounded-full hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center rounded-full hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"
               >
                 <CrossIconCore label="" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
               </button>
@@ -134,7 +134,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
           <div ref={filterRef} className="relative">
             <button
               onClick={() => setFilterOpen(!filterOpen)}
-              className={`h-[30px] px-2.5 flex items-center gap-1.5 text-[11px] font-medium rounded-md border hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] transition-colors ${hasActiveFilters ? 'bg-[var(--cp-blue-wash)]' : ''}`}
+              className={`h-[30px] px-2.5 flex items-center gap-1.5 text-[11px] font-medium rounded-md border hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors ${hasActiveFilters ? 'bg-[var(--cp-blue-wash)]' : ''}`}
               style={{
                 borderColor: hasActiveFilters ? 'var(--cp-blue)' : 'var(--divider)',
                 color: hasActiveFilters ? 'var(--cp-blue)' : 'var(--fg-2)',
@@ -168,7 +168,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
           <div ref={groupRef} className="relative">
             <button
               onClick={() => setGroupOpen(!groupOpen)}
-              className="h-[30px] px-2.5 flex items-center gap-1.5 text-[11px] font-medium rounded-md border hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] transition-colors"
+              className="h-[30px] px-2.5 flex items-center gap-1.5 text-[11px] font-medium rounded-md border hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors"
               style={{ borderColor: 'var(--divider)', color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)' }}
             >
               Group: {GROUP_OPTIONS.find(o => o.value === groupBy)?.label}
@@ -198,7 +198,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
           <div ref={colRef} className="relative">
             <button
               onClick={() => setColSettingsOpen(!colSettingsOpen)}
-              className="h-[30px] w-[30px] flex items-center justify-center rounded-md border hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] transition-colors"
+              className="h-[30px] w-[30px] flex items-center justify-center rounded-md border hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors"
               style={{ borderColor: 'var(--divider)', color: 'var(--fg-3)' }}
               title="Column settings"
             >

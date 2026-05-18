@@ -51,7 +51,7 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
       }}
     >
       {/* Search */}
-      <div style={{ padding: '8px 10px', borderBottom: '1px solid var(--cp-bg-sunken, #F1F5F9)', display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ padding: '8px 10px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', display: 'flex', alignItems: 'center', gap: 6 }}>
         <Search size={14} color="var(--fg-4)" />
         <input
           ref={inputRef}

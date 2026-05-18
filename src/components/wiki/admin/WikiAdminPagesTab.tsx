@@ -112,7 +112,7 @@ export function WikiAdminPagesTab() {
                         {isStale && <span style={{ marginInlineStart: 6, fontSize: 10, padding: '1px 6px', borderRadius: 4, background: 'rgba(217,119,6,0.1)', color: '#9A5402', fontWeight: 700 }}>⚠ STALE</span>}
                       </td>
                       <td style={{ padding: '8px 12px' }}>
-                        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, padding: '2px 6px', borderRadius: 4, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{p.domain_code ?? '—'}</span>
+                        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, padding: '2px 6px', borderRadius: 4, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{p.domain_code ?? '—'}</span>
                       </td>
                       <td style={{ padding: '8px 12px' }}><PageStatusLoz status={p.status} /></td>
                       <td style={{ padding: '8px 12px', fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: isLowConf ? 'var(--sem-danger)' : 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', fontWeight: isLowConf ? 700 : 400 }}>

@@ -97,7 +97,7 @@ export function ProductScopedPageHeader({ product, activeView, stats }: Props) {
       value: stats.overdue,
       icon: AlertTriangle,
       color: overdueDanger ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
-      bg: overdueDanger ? 'var(--ds-background-danger, #FEF2F2)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
+      bg: overdueDanger ? 'var(--ds-background-danger, #FEF2F2)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
       accent: '',
     },
     {
@@ -163,7 +163,7 @@ export function ProductScopedPageHeader({ product, activeView, stats }: Props) {
       {/* View switcher — RouterLinks so middle-click + Cmd-click open new tabs. */}
       <div
         className="flex items-center gap-0.5 p-1 rounded-lg"
-        style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', width: 'fit-content', marginBottom: 12 }}
+        style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', width: 'fit-content', marginBottom: 12 }}
         role="tablist"
         aria-label="Product views"
       >

@@ -128,7 +128,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
 
         {/* Bell */}
         <button
-          className="flex items-center justify-center rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
+          className="flex items-center justify-center rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
           style={{ width: 32, height: 32, border: 'none', background: 'transparent', cursor: 'pointer' }}
           title="Notifications"
         >
@@ -137,7 +137,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
 
         {/* Settings */}
         <button
-          className="flex items-center justify-center rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
+          className="flex items-center justify-center rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
           style={{ width: 32, height: 32, border: 'none', background: 'transparent', cursor: 'pointer' }}
           title="Settings"
         >

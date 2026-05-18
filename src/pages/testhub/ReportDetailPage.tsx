@@ -48,7 +48,7 @@ export default function ReportDetailPage() {
   const pageBg = 'var(--cp-bg-page, #F8FAFC)';
   const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)';
   const borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))';
-  const borderSubtle = 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))';
+  const borderSubtle = 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))';
   const textPrimary = 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))';
   const textSecondary = 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
   const textMuted = 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
@@ -265,7 +265,7 @@ export default function ReportDetailPage() {
                         <td style={{ padding: '12px 8px' }}>
                           <span style={{
                             fontSize: 11, fontWeight: 500, padding: '3px 8px', borderRadius: 4,
-                            backgroundColor: tc.status === 'passed' ? ('var(--cp-success-light, #ECFDF5)') : tc.status === 'failed' ? ('var(--cp-danger-light, #FEF2F2)') : ('var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'),
+                            backgroundColor: tc.status === 'passed' ? ('var(--cp-success-light, #ECFDF5)') : tc.status === 'failed' ? ('var(--cp-danger-light, #FEF2F2)') : ('var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'),
                             color: tc.status === 'passed' ? 'var(--quality-high, #059669)' : tc.status === 'failed' ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : textSecondary,
                           }}>
                             {tc.status || 'Not Run'}

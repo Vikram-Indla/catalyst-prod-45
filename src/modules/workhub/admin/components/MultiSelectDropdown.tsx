@@ -134,7 +134,7 @@ export function MultiSelectDropdown({
             boxShadow: '0 8px 24px rgba(0,0,0,.12)', zIndex: 9999, overflow: 'hidden',
           }}>
             {/* Search */}
-            <div style={{ padding: '8px 10px', borderBottom: '1px solid var(--cp-bg-sunken, #F1F5F9)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ padding: '8px 10px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <SearchIcon label="" size="small" />
               <input
                 ref={searchRef}
@@ -150,7 +150,7 @@ export function MultiSelectDropdown({
             </div>
 
             {/* Select All / Deselect All */}
-            <div style={{ padding: '6px 10px', borderBottom: '1px solid var(--cp-bg-sunken, #F1F5F9)', display: 'flex', gap: '12px' }}>
+            <div style={{ padding: '6px 10px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', display: 'flex', gap: '12px' }}>
               <button
                 onClick={() => onChange(filtered.map(o => o.value))}
                 style={{ fontSize: '10px', color: accentColor, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontWeight: 600 }}

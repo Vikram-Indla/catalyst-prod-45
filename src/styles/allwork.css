@@ -1124,7 +1124,7 @@
   color: #0C66E4;
 }
 .awTypeBadgeWorklog {
-  background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
+  background: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
   color: var(--ds-text-subtle, #475569);
 }
 
@@ -1382,7 +1382,7 @@
 .sp-count {
   display: inline-flex; align-items: center; justify-content: center;
   min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
-  background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9)); color: #505258; font-size: 11px; font-weight: 600; line-height: 1;
+  background: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))); color: #505258; font-size: 11px; font-weight: 600; line-height: 1;
   margin-left: 4px;
 }
 
@@ -1591,7 +1591,7 @@
   display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 12px;
 }
 .sp-skeleton-pulse {
-  border-radius: 4px; background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
+  border-radius: 4px; background: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
   animation: sp-pulse 1.5s ease-in-out infinite;
 }
 @keyframes sp-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }

@@ -728,7 +728,7 @@ export default function CleanupPage() {
                            </span>
                            <span style={{
                              fontSize: 11, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
-                             background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+                             background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                              padding: '2px 8px', borderRadius: 20,
                            }}>
                              {items.length}
@@ -766,7 +766,7 @@ export default function CleanupPage() {
                         <div
                           key={item.id}
                           style={{
-                            padding: '12px 16px', borderBottom: '0.75px solid var(--cp-bg-sunken, #F1F5F9)',
+                            padding: '12px 16px', borderBottom: '0.75px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
                             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', transition: 'background 150ms',
                           }}
                           onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F8FAFC)')}
@@ -900,7 +900,7 @@ export default function CleanupPage() {
                         <div style={{
                           padding: '16px', textAlign: 'center',
                           fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                          borderBottom: '0.75px solid var(--cp-bg-sunken, #F1F5F9)',
+                          borderBottom: '0.75px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
                         }}>
                           No items in this category
                         </div>
@@ -967,7 +967,7 @@ export default function CleanupPage() {
                   className="disabled:opacity-100"
                   style={{
                     height: 32, fontSize: 12, fontWeight: 700,
-                    background: selected.size > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
+                    background: selected.size > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
                     color: selected.size > 0 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
                     border: selected.size > 0 ? 'none' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                     cursor: selected.size === 0 ? 'not-allowed' : 'pointer',
@@ -1063,7 +1063,7 @@ export default function CleanupPage() {
                             key={item.id}
                             onClick={() => handleOpenDetailList(item, idx)}
                             style={{
-                              height: 44, borderBottom: '1px solid var(--cp-bg-sunken, #F1F5F9)', cursor: 'pointer',
+                              height: 44, borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', cursor: 'pointer',
                               background: isSelected ? 'rgba(37,99,235,0.04)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                               borderLeft: isSelected ? '2px solid #2563EB' : '2px solid transparent',
                               transition: 'background .1s',
@@ -1232,7 +1232,7 @@ export default function CleanupPage() {
                             <td style={{ padding: '8px 8px', width: 110 }}>
                               <span style={{
                                 display: 'inline-block', fontSize: 11, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
-                                background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+                                background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                                 padding: '2px 8px', borderRadius: 20, whiteSpace: 'nowrap',
                                 maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis',
                               }}>
@@ -1345,7 +1345,7 @@ export default function CleanupPage() {
                   : 0;
 
                 return (
-                  <tr key={entry.id} style={{ borderBottom: '0.75px solid var(--cp-bg-sunken, #F1F5F9)', height: 36 }}>
+                  <tr key={entry.id} style={{ borderBottom: '0.75px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', height: 36 }}>
                     <td style={{ padding: '8px 12px' }}>
                       <span style={{
                         fontFamily: 'var(--cp-font-mono)',
@@ -1440,7 +1440,7 @@ export default function CleanupPage() {
               </div>
             ))}
 
-            <div style={{ height: 1, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', margin: '16px 0' }} />
+            <div style={{ height: 1, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', margin: '16px 0' }} />
 
             {/* Section 2 — Reporters */}
             <div style={{
@@ -1466,7 +1466,7 @@ export default function CleanupPage() {
                   {reporters.map((r, idx) => (
                     <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                       <div style={{
-                        width: 28, height: 28, borderRadius: '50%', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
+                        width: 28, height: 28, borderRadius: '50%', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                       }}>
                         <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>{initials(r.name)}</span>
@@ -1483,7 +1483,7 @@ export default function CleanupPage() {
               );
             })()}
 
-            <div style={{ height: 1, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', margin: '16px 0' }} />
+            <div style={{ height: 1, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', margin: '16px 0' }} />
 
             {/* Section 3 — Closure reason */}
             <div style={{

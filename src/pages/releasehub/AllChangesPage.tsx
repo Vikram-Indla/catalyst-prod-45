@@ -156,7 +156,7 @@ export default function AllChangesPage() {
         <div className="rounded overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
             <thead>
-              <tr style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
+              <tr style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}>
                 <th className="w-[40px] px-3 py-0 h-[50px] text-center">
                   <input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleAll} className="rounded" />
                 </th>
@@ -221,7 +221,7 @@ function KanbanView({ changes, onSelect, isDark }: { changes: any[]; onSelect: (
       {columns.map(col => {
         const items = changes.filter((c: any) => c.status === col.key);
         return (
-          <div key={col.key} className="rounded-lg" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', minHeight: 200 }}>
+          <div key={col.key} className="rounded-lg" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', minHeight: 200 }}>
             <div className="px-3 py-2 flex items-center gap-2">
               <span className="text-[11px] font-bold uppercase tracking-[0.06em]" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{col.label}</span>
               <span className="text-[10px] font-bold rounded-full px-1.5" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>{items.length}</span>

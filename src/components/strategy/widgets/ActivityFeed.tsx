@@ -59,7 +59,7 @@ export function ActivityFeed() {
             borderRadius: 6,
             margin: '0 -4px',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--exec-bg-hover, var(--cp-bg-sunken, #F1F5F9))'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--exec-bg-hover, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
           <div

@@ -88,7 +88,7 @@ export default function IncidentAnalyticsPage() {
               {analytics.bySeverity.map(([sev, count]) => (
                 <div key={sev} className="flex items-center gap-2">
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', width: 40 }}>{sev}</span>
-                  <div className="flex-1" style={{ height: 16, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', borderRadius: 4, overflow: 'hidden' }}>
+                  <div className="flex-1" style={{ height: 16, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${(count / maxCount(analytics.bySeverity)) * 100}%`, backgroundColor: SEV_BAR_COLORS[sev] || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 2 }} />
                   </div>
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', width: 24, textAlign: 'right' }}>{count}</span>
@@ -104,7 +104,7 @@ export default function IncidentAnalyticsPage() {
               {analytics.byStatus.map(([status, count]) => (
                 <div key={status} className="flex items-center gap-2">
                   <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', width: 80, textTransform: 'capitalize' }}>{status.replace(/_/g, ' ')}</span>
-                  <div className="flex-1" style={{ height: 16, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', borderRadius: 4, overflow: 'hidden' }}>
+                  <div className="flex-1" style={{ height: 16, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${(count / maxCount(analytics.byStatus)) * 100}%`, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 2 }} />
                   </div>
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', width: 24, textAlign: 'right' }}>{count}</span>
@@ -120,7 +120,7 @@ export default function IncidentAnalyticsPage() {
               {analytics.byAssignee.slice(0, 8).map(([name, count]) => (
                 <div key={name} className="flex items-center gap-2">
                   <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', width: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
-                  <div className="flex-1" style={{ height: 16, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', borderRadius: 4, overflow: 'hidden' }}>
+                  <div className="flex-1" style={{ height: 16, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${(count / maxCount(analytics.byAssignee)) * 100}%`, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 2 }} />
                   </div>
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', width: 24, textAlign: 'right' }}>{count}</span>
@@ -131,7 +131,7 @@ export default function IncidentAnalyticsPage() {
 
           {/* Resolution Trend Placeholder */}
           <div className="p-4 flex items-center justify-center" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, minHeight: 180 }}>
-            <div className="text-center" style={{ backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', borderRadius: 6, padding: '24px 32px', border: '1px solid rgba(15,23,42,0.08)' }}>
+            <div className="text-center" style={{ backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 6, padding: '24px 32px', border: '1px solid rgba(15,23,42,0.08)' }}>
               <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>[Chart] Resolution Trend over time</p>
             </div>
           </div>

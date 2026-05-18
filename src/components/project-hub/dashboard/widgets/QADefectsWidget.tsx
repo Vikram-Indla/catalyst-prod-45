@@ -248,7 +248,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         <div className="p-4 animate-pulse">
           <div
             className="h-20 rounded"
-            style={{ background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, #F1F5F9)') }}
+            style={{ background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))') }}
           />
         </div>
       ) : !defects?.length ? (

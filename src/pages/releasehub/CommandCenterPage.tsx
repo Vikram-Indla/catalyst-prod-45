@@ -28,7 +28,7 @@ function KPICard({ label, value, delta, deltaLabel, color, icon: Icon, loading, 
         <div>
           <p className="text-[12px] font-medium uppercase tracking-[0.04em]" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{label}</p>
           {loading ? (
-            <div className="h-9 w-16 rounded animate-pulse mt-2" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }} />
+            <div className="h-9 w-16 rounded animate-pulse mt-2" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }} />
           ) : (
             <p className="text-[32px] mt-1" style={{ fontFamily: RH.fontDisplay, fontWeight: 700, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>{value}</p>
           )}
@@ -318,7 +318,7 @@ export default function CommandCenterPage() {
                       <td className="px-3" style={{ fontFamily: RH.fontMono, fontWeight: 650 }}>{r.chg_count || chgCount}</td>
                       <td className="px-3" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{r.target_date ? format(new Date(r.target_date), 'MMM d') : '—'}</td>
                       <td className="px-3">
-                        <div className="w-20 h-2 rounded-full overflow-hidden" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
+                        <div className="w-20 h-2 rounded-full overflow-hidden" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}>
                           <div className="h-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] rounded-full" style={{ width: `${Math.min(100, (chgCount > 0 ? 60 : 20))}%` }} />
                         </div>
                       </td>
@@ -381,15 +381,15 @@ export default function CommandCenterPage() {
           {!coreDataReady ? (
             <>
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-8 w-14 rounded animate-pulse" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }} />
-                <div className="flex-1 h-1.5 rounded-full" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }} />
+                <div className="h-8 w-14 rounded animate-pulse" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }} />
+                <div className="flex-1 h-1.5 rounded-full" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 {[1,2,3,4].map(i => (
                   <div key={i} className="rounded-[6px] p-3" style={{ border: `0.75px solid ${'var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'}`, borderLeft: `4px solid ${'var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'}` }}>
-                    <div className="h-3 w-20 rounded animate-pulse mb-2" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }} />
-                    <div className="h-5 w-10 rounded animate-pulse mb-1" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }} />
-                    <div className="h-2.5 w-24 rounded animate-pulse" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }} />
+                    <div className="h-3 w-20 rounded animate-pulse mb-2" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }} />
+                    <div className="h-5 w-10 rounded animate-pulse mb-1" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }} />
+                    <div className="h-2.5 w-24 rounded animate-pulse" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }} />
                   </div>
                 ))}
               </div>
@@ -409,7 +409,7 @@ export default function CommandCenterPage() {
                 >
                   {computed.readinessScore}%
                 </span>
-                <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
+                <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}>
                   <div
                     className="h-full rounded-full transition-all"
                     style={{
@@ -473,7 +473,7 @@ export default function CommandCenterPage() {
           ) : (
             <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
               <thead>
-                <tr style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
+                <tr style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}>
                   {['CHANGE', 'GATE', 'APPROVER', 'STATUS'].map(h => (
                     <th key={h} className="text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 50, padding: '8px 12px', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{h}</th>
                   ))}

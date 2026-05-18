@@ -64,7 +64,7 @@ export function ChgDrawer({ change: c, onClose }: Props) {
                 <RiskBadge risk={mapRisk(c.risk_level)} />
                 <SourceBadge source={c.source} />
               </div>
-              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]"><X size={14} /></button>
+              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"><X size={14} /></button>
             </div>
             <h2 className="text-[18px] font-extrabold mb-3" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>{c.title}</h2>
             <div className="flex items-center gap-2 mb-4">
@@ -89,7 +89,7 @@ export function ChgDrawer({ change: c, onClose }: Props) {
                   <React.Fragment key={s}>
                     {i > 0 && <div className={`flex-1 h-0.5 ${isDone || isCurrent ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]' : 'bg-[rgba(15,23,42,0.12)]'}`} />}
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 ${
-                      isDone ? 'bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white' : isCurrent ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white' : 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] border border-[rgba(15,23,42,0.12)]'
+                      isDone ? 'bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white' : isCurrent ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white' : 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] border border-[rgba(15,23,42,0.12)]'
                     }`}>
                       {isDone ? '✓' : isCurrent ? '●' : i + 1}
                     </div>
@@ -110,7 +110,7 @@ export function ChgDrawer({ change: c, onClose }: Props) {
               <button key={tab} onClick={() => setActiveTab(tab)}
                 className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]' : 'border-transparent text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] hover:text-[var(--ds-text-subtle,#475569)]'}`}>
                 {tab}
-                {tab === 'Work Items' && workItems.length > 0 && <span className="ml-1 text-[10px] font-bold bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtle,#475569)] px-1 rounded">{workItems.length}</span>}
+                {tab === 'Work Items' && workItems.length > 0 && <span className="ml-1 text-[10px] font-bold bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtle,#475569)] px-1 rounded">{workItems.length}</span>}
               </button>
             ))}
           </div>
@@ -263,7 +263,7 @@ function SignoffsTab({ changeId }: { changeId: string }) {
               status === 'approved' ? 'bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white' :
               status === 'pending' ? 'bg-[#0C66E4] text-white' :
               status === 'rejected' ? 'bg-[var(--ds-background-danger,#FEF2F2)] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]' :
-              'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]'
+              'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]'
             }`}>
               {status === 'approved' ? '✓' : status === 'rejected' ? '✕' : status === 'pending' ? i + 1 : '🔒'}
             </div>

@@ -70,7 +70,7 @@ export default function TriageQueuePage() {
         <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
             <thead>
-              <tr style={{ background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
+              <tr style={{ background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}>
                 {['KEY', 'TITLE', 'RISK', 'SOURCE', 'DATE', 'AI RECOMMENDATION', 'ACTIONS'].map(h => (
                   <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">{h}</th>
                 ))}

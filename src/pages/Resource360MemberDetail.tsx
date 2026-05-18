@@ -65,7 +65,7 @@ const BoardSkeleton = () => (
 
 /** Ring skeleton */
 const RingSkeleton = () => (
-  <div style={{ position: 'relative', minHeight: 640, background: 'radial-gradient(circle, var(--ds-surface, #FFF), var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 12, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+  <div style={{ position: 'relative', minHeight: 640, background: 'radial-gradient(circle, var(--ds-surface, #FFF), var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))))', borderRadius: 12, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
     <div className="r3-skeleton" style={{ width: 96, height: 96, borderRadius: '50%' }} />
   </div>
 );
@@ -152,7 +152,7 @@ const Resource360MemberDetail: React.FC = () => {
                 to={`/resource360/members/${m.id}`}
                 style={{
                   fontSize: 11, padding: '3px 10px', borderRadius: 6, textDecoration: 'none',
-                  background: m.id === memberId ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
+                  background: m.id === memberId ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
                   color: m.id === memberId ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
                   fontWeight: m.id === memberId ? 600 : 400,
                 }}

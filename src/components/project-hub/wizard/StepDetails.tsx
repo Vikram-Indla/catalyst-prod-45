@@ -307,7 +307,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
                     key={p.id}
                     type="button"
                     onClick={() => { onChange({ ...data, lead_id: p.id }); setShowLeadPicker(false); setLeadFilter(''); }}
-                    className="flex items-center gap-2 px-2.5 py-2 rounded-md text-sm hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] w-full text-left"
+                    className="flex items-center gap-2 px-2.5 py-2 rounded-md text-sm hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] w-full text-left"
                   >
                     {p.avatar_url ? (
                       <img src={p.avatar_url} alt="" className="rounded-full" style={{ width: 24, height: 24, objectFit: 'cover' }} />

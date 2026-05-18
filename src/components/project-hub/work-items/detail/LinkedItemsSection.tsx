@@ -168,7 +168,7 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
             <LinkIcon size={16} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
             <span className="text-[14px] font-semibold" style={{ color: 'var(--fg-1)' }}>Link Work Item</span>
           </div>
-          <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]">
+          <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]">
             <X size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
           </button>
         </div>

@@ -19,7 +19,7 @@ const VARIANT_CLASSES = {
 export function EmptyState({ icon: Icon = Package, title, subtitle, actions, className = '' }: Props) {
   return (
     <div className={`flex flex-col items-center justify-center py-12 ${className}`} aria-live="polite">
-      <div className="w-12 h-12 rounded-xl bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] flex items-center justify-center mb-4">
+      <div className="w-12 h-12 rounded-xl bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] flex items-center justify-center mb-4">
         <Icon size={24} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
       </div>
       <h3 className="text-[14px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: RH.ink2 }}>{title}</h3>

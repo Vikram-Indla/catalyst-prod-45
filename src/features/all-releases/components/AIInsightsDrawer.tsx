@@ -28,7 +28,7 @@ function InsightItem({ insight, onActionClick }: { insight: AIReleaseInsight; on
     },
     warning: {
       icon: <WarningIcon label="" size="small" primaryColor="currentColor" />,
-      bg: 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] border-[rgba(15,23,42,0.12)]',
+      bg: 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] border-[rgba(15,23,42,0.12)]',
     },
     positive: {
       icon: <CheckCircleIcon label="" size="small" primaryColor="currentColor" />,

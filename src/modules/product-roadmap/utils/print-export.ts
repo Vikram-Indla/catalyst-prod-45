@@ -39,7 +39,7 @@ export function doPrintExport(items: RoadmapDemand[]) {
       <td style="font-weight:500">${item.priority_tier || '—'}</td>
       <td>
         <div style="display:flex;align-items:center;gap:6px">
-          <div style="flex:1;height:4px;background:var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));border-radius:999px;overflow:hidden;min-width:50px">
+          <div style="flex:1;height:4px;background:var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));border-radius:999px;overflow:hidden;min-width:50px">
             <div style="width:${item.progress}%;height:100%;background:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));border-radius:999px"></div>
           </div>
           <span style="font-size:11px;font-weight:600;color:var(--cp-ink-2, var(--cp-ink-2, #334155));min-width:32px">${item.progress}%</span>

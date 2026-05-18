@@ -181,7 +181,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
             </div>
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', border: '0.75px solid rgba(15,23,42,0.12)',
+              background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: '0.75px solid rgba(15,23,42,0.12)',
               borderRadius: 12, padding: '2px 10px',
               fontSize: 11, fontWeight: 500, color: 'var(--fg-3)',
               fontFamily: 'var(--cp-font-body)',

@@ -134,7 +134,7 @@ export default function MyTestScopePage() {
             My Test Scope
           </h1>
           <span style={{
-            fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
+            fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
             padding: '2px 10px', borderRadius: 12,
           }}>
             {filteredItems.length} items
@@ -161,7 +161,7 @@ export default function MyTestScopePage() {
             style={{
               height: 32, padding: '0 14px', border: 'none', borderRadius: 6,
               fontSize: 13, fontWeight: 500, cursor: 'pointer',
-              backgroundColor: statusFilter === tab.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
+              backgroundColor: statusFilter === tab.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
               color: statusFilter === tab.key ? 'var(--ds-surface, #FFF)' : 'var(--ds-text-subtle, #475569)',
               transition: 'all 0.15s',
             }}

@@ -260,7 +260,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
           </div>
           <button
             onClick={handleClose}
-            className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] transition-colors"
+            className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors"
             style={{ color: 'var(--fg-4)' }}
           >
             <X size={16} />
@@ -335,7 +335,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                   {PRIORITIES.map(p => (
                     <button
                       key={p.value}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] transition-colors"
+                      className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors"
                       style={{ color: 'var(--fg-2)' }}
                       onClick={() => { setPriority(p.value); setPriorityOpen(false); }}
                     >
@@ -375,7 +375,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                   </div>
                   <div className="overflow-y-auto flex-1">
                     <button
-                      className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]"
+                      className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"
                       style={{ color: 'var(--fg-4)' }}
                       onClick={() => { setAssigneeId(null); setAssigneeOpen(false); setAssigneeSearch(''); }}
                     >
@@ -384,7 +384,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                     {filteredProfiles.map(p => (
                       <button
                         key={p.id}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-left"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-left"
                         style={{ color: 'var(--fg-2)' }}
                         onClick={() => { setAssigneeId(p.id); setAssigneeOpen(false); setAssigneeSearch(''); }}
                       >
@@ -434,7 +434,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                     return (
                       <button
                         key={lb.id}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"
                         style={{ color: 'var(--fg-2)' }}
                         onClick={() => {
                           setSelectedLabels(prev =>
@@ -487,7 +487,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
               {releaseOpen && (
                 <FixedDropdown maxHeight={200} onClick={e => e.stopPropagation()}>
                   <button
-                    className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]"
+                    className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"
                     style={{ color: 'var(--fg-4)' }}
                     onClick={() => { setReleaseId(null); setReleaseOpen(false); }}
                   >
@@ -496,7 +496,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                   {releases.map(r => (
                     <button
                       key={r.id}
-                      className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-left"
+                      className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-left"
                       style={{ color: 'var(--fg-2)' }}
                       onClick={() => { setReleaseId(r.id); setReleaseOpen(false); }}
                     >
@@ -541,7 +541,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                 </div>
                 <div className="overflow-y-auto flex-1">
                   <button
-                    className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]"
+                    className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"
                     style={{ color: 'var(--fg-4)' }}
                     onClick={() => { setParentId(null); setParentOpen(false); setParentSearch(''); }}
                   >
@@ -550,7 +550,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                   {filteredParents.map(p => (
                     <button
                       key={p.id}
-                      className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-left"
+                      className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-left"
                       style={{ color: 'var(--fg-2)' }}
                       onClick={() => { setParentId(p.id); setParentOpen(false); setParentSearch(''); }}
                     >
@@ -580,7 +580,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
           <div className="flex items-center gap-2">
             <button
               onClick={handleClose}
-              className="px-3.5 py-1.5 text-[12px] font-medium rounded-md hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] transition-colors"
+              className="px-3.5 py-1.5 text-[12px] font-medium rounded-md hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors"
               style={{ color: 'var(--fg-3)' }}
             >
               Cancel

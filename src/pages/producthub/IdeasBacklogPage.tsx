@@ -212,7 +212,7 @@ export default function IdeasBacklogPage() {
           <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: '6px', border: `1px solid ${dk.border}`, overflow: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ height: '50px', background: 'var(--cp-bg-page, var(--cp-bg-sunken, #F1F5F9))' }}>
+                <tr style={{ height: '50px', background: 'var(--cp-bg-page, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}>
                   <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
                     <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
                   </th>
@@ -262,12 +262,12 @@ export default function IdeasBacklogPage() {
                         </div>
                       </td>
                       <td style={{ padding: '8px 12px' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: '11px', fontWeight: 500, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', color: dk.t2, border: `1px solid ${dk.border}` }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: '11px', fontWeight: 500, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: dk.t2, border: `1px solid ${dk.border}` }}>
                           {(idea.idea_type || 'Feature').substring(0, 7)}
                         </span>
                       </td>
                       <td style={{ padding: '8px 12px' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, minWidth: 26, padding: '0 4px', borderRadius: 4, fontSize: '11px', fontWeight: 650, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', color: dk.t2, border: `1px solid ${dk.border}` }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, minWidth: 26, padding: '0 4px', borderRadius: 4, fontSize: '11px', fontWeight: 650, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: dk.t2, border: `1px solid ${dk.border}` }}>
                           {idea.priority || 'P2'}
                         </span>
                       </td>

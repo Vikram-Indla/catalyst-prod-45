@@ -43,7 +43,7 @@ export function CreateChgModal({ onClose }: Props) {
       <div className="relative bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl shadow-2xl w-[520px] max-h-[85vh] overflow-y-auto" style={{ borderRadius: 8 }} onClick={e => e.stopPropagation()}>
         <div className="sticky top-0 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] z-10 flex items-center justify-between px-6 py-4 border-b border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
           <h2 className="text-[16px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>New Change</h2>
-          <button onClick={onClose} className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]"><X size={14} /></button>
+          <button onClick={onClose} className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"><X size={14} /></button>
         </div>
         <div className="p-6 space-y-4">
           {error && <div className="px-3 py-2 rounded-md bg-[var(--ds-background-danger,#FEF2F2)] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] text-[12px] font-medium">{error}</div>}

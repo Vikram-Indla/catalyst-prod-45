@@ -136,7 +136,7 @@ export function ExecutionViewMode({
                 failed:  { text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', border: '#FECACA' },
                 blocked: { text: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', border: '#FED7AA' },
                 skipped: { text: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, #F8FAFC)', border: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' },
-                not_run: { text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', border: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' },
+                not_run: { text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' },
               };
               const colors = stepColors[step.status] || stepColors.not_run;
               return (

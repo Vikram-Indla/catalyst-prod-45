@@ -7,7 +7,7 @@
   /* ─── V12 Design Tokens ─── */
   --cp-bg-page: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --cp-bg-surface: var(--ds-surface-sunken, #F8FAFC);
-  --cp-bg-sunken: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
+  --cp-bg-sunken: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
   --cp-bg-elevated: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 
   --cp-text-primary: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));

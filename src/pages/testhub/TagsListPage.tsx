@@ -170,7 +170,7 @@ export default function TagsListPage() {
                     onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'; e.currentTarget.style.boxShadow = 'none'; }}>
                     <span style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: tag.color, flexShrink: 0 }} />
                     <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{tag.name}</span>
-                    <span style={{ fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '2px 6px', borderRadius: 4 }}>{tag.usage_count}</span>
+                    <span style={{ fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '2px 6px', borderRadius: 4 }}>{tag.usage_count}</span>
                     <div style={{ display: 'flex', gap: 4, marginLeft: 4 }}>
                       <button onClick={(e) => { e.stopPropagation(); setEditingTag(tag); setShowCreateModal(true); }}
                         style={{ width: 24, height: 24, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

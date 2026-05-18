@@ -15,8 +15,8 @@ import { useTheme } from '@/hooks/useTheme';
 import { format } from 'date-fns';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  planning: { label: 'Planning', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: Clock },
-  planned: { label: 'Planned', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: Clock },
+  planning: { label: 'Planning', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', icon: Clock },
+  planned: { label: 'Planned', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', icon: Clock },
   development: { label: 'Development', color: '#8B5CF6', bg: '#F5F3FF', icon: Settings2 },
   testing: { label: 'Testing', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', icon: Beaker },
   uat: { label: 'UAT', color: '#EA580C', bg: '#FFF7ED', icon: Monitor },
@@ -163,7 +163,7 @@ function OverviewTab({ release, isDark }: { release: any; isDark: boolean }) {
         </p>
 
         <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '24px 0 12px' }}>Test Progress</h3>
-        <div style={{ height: 10, backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', borderRadius: 6, overflow: 'hidden', marginBottom: 8 }}>
+        <div style={{ height: 10, backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 6, overflow: 'hidden', marginBottom: 8 }}>
           {release.test_cases_total > 0 && (
             <div style={{
               display: 'flex', height: '100%',
@@ -243,7 +243,7 @@ function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isL
               <tr
                 key={c.id}
                 onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
-                style={{ borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}`, cursor: 'pointer' }}
+                style={{ borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}`, cursor: 'pointer' }}
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--cp-bg-page, #F8FAFC)')}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = '')}
               >

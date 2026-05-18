@@ -98,7 +98,7 @@ export function Drawer({ isOpen, onClose, title, width = 480, children }: Drawer
               color: 'var(--catalyst-text-tertiary, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
               transition: 'background 150ms',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--catalyst-bg-hover, var(--cp-bg-sunken, #F1F5F9))'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--catalyst-bg-hover, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           >
             <X size={16} />

@@ -90,7 +90,7 @@ export const adsTokens = {
     hubPage:  { cp: '--cp-bg-hub-page', light: '#FFFFFF', dark: '#1F1F21', atlaskit: '' } satisfies AdsToken,
     surface:  { cp: '--cp-bg-surface',  light: '#FFFFFF', dark: '#242528', atlaskit: 'elevation.surface' } satisfies AdsToken,
     overlay:  { cp: '--cp-bg-overlay',  light: '#F8FAFC', dark: '#1F1F1F', atlaskit: 'elevation.surface.overlay' } satisfies AdsToken,
-    inset:    { cp: '--cp-bg-inset',    light: 'var(--cp-bg-sunken, #F1F5F9)', dark: '#111111', atlaskit: 'color.background.neutral.subtle' } satisfies AdsToken,
+    inset:    { cp: '--cp-bg-inset',    light: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', dark: '#111111', atlaskit: 'color.background.neutral.subtle' } satisfies AdsToken,
     hover:    { cp: '--cp-interact-hover',    light: 'rgba(0,0,0,0.04)', dark: '#1F1F1F', atlaskit: 'color.background.neutral.hovered' } satisfies AdsToken,
     // 2026-05-01 — RCA fix for blue tint on Atlaskit Editor canvas in dark mode.
     // Previously dark = rgba(37,99,235,0.14) which painted Editor's "selected"
@@ -109,7 +109,7 @@ export const adsTokens = {
   },
   border: {
     default: { cp: '--cp-border-default', light: 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', dark: '#2E2E2E', atlaskit: 'color.border' } satisfies AdsToken,
-    subtle:  { cp: '--cp-border-subtle',  light: 'var(--cp-bg-sunken, #F1F5F9)', dark: '#292929', atlaskit: 'color.border.accent.gray' } satisfies AdsToken,
+    subtle:  { cp: '--cp-border-subtle',  light: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', dark: '#292929', atlaskit: 'color.border.accent.gray' } satisfies AdsToken,
     strong:  { cp: '--cp-border-strong',  light: '#CBD5E1', dark: '#454545', atlaskit: 'color.border.bold' } satisfies AdsToken,
     focus:   { cp: '--cp-border-focus',   light: '#2563EB', dark: '#2563EB', atlaskit: 'color.border.focused' } satisfies AdsToken,
   },

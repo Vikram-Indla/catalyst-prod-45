@@ -169,7 +169,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
       {/* Search suggestions */}
       {searchSuggestions.length > 0 && (
         <div className="mx-4 mb-3 rounded-lg overflow-hidden border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-transparent">
-          <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,#878787)] bg-[var(--ds-surface-sunken,#F8FAFC)] dark:bg-transparent border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ padding: '6px 12px', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,#878787)] bg-[var(--ds-surface-sunken,#F8FAFC)] dark:bg-transparent border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ padding: '6px 12px', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Add from directory
           </div>
           {searchSuggestions.map(u => (

@@ -42,7 +42,7 @@ export default function CommitteeQueuePage() {
           {/* Header */}
           <div className="grid items-center" style={{
             gridTemplateColumns: '120px 1fr 70px 100px 80px 160px 80px 100px',
-            backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
+            backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
             height: 50,
             borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)',
           }}>

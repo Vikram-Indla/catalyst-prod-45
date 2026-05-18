@@ -165,7 +165,7 @@ export function ChannelBadges({ channels }: ChannelBadgesProps) {
       {active.map(({ key, label, Icon }) => (
         <div
           key={key}
-          className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]"
+          className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]"
         >
           <span style={{ color: 'var(--ds-text-subtle, #475569)', display: 'flex' }}>
             <Icon label="" size="small" />

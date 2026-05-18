@@ -151,7 +151,7 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
               style={{
                 height: 36,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, #F1F5F9)'),
+                background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'),
               }}
             />
           ))}

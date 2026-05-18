@@ -5,10 +5,10 @@
 
 .strategy-room {
   /* ── Surfaces ── */
-  --catalyst-bg-app: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
+  --catalyst-bg-app: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
   --catalyst-bg-surface-0: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --catalyst-bg-surface-1: var(--ds-surface-sunken, #F8FAFC);
-  --catalyst-bg-surface-2: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
+  --catalyst-bg-surface-2: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
   --catalyst-bg-surface-3: var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   --catalyst-bg-hover: rgba(0,0,0,0.04);
   --catalyst-bg-active: rgba(0,0,0,0.06);

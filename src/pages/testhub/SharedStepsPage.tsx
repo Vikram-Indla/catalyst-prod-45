@@ -290,7 +290,7 @@ export default function SharedStepsPage() {
         }}>
           {/* Sidebar Header */}
           <div style={{
-            padding: '16px 16px 12px', borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}`,
+            padding: '16px 16px 12px', borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}`,
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           }}>
             <h2 style={{
@@ -319,7 +319,7 @@ export default function SharedStepsPage() {
               isDark={isDark}
             />
 
-            <div style={{ height: 1, backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', margin: '8px 0' }} />
+            <div style={{ height: 1, backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', margin: '8px 0' }} />
 
             {categories.map(cat => (
               <CategorySidebarItem
@@ -336,7 +336,7 @@ export default function SharedStepsPage() {
           </div>
 
           {/* Sidebar Footer */}
-          <div style={{ padding: '12px 16px', borderTop: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}`, fontSize: 12, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
+          <div style={{ padding: '12px 16px', borderTop: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}`, fontSize: 12, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
             {categories.length} categories
           </div>
         </div>
@@ -399,7 +399,7 @@ export default function SharedStepsPage() {
                   }}
                 >
                   <div style={{
-                    padding: '12px 16px', borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}`,
+                    padding: '12px 16px', borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}`,
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                   }}>
                     <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)' }}>Filter by Category</span>
@@ -437,7 +437,7 @@ export default function SharedStepsPage() {
                       );
                     })}
                   </div>
-                  <div style={{ padding: '8px 12px', borderTop: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}` }}>
+                  <div style={{ padding: '8px 12px', borderTop: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}` }}>
                     <button onClick={() => setIsFilterOpen(false)} style={{
                       width: '100%', height: 50,
                       background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
@@ -583,7 +583,7 @@ export default function SharedStepsPage() {
                           key={step.id}
                           onClick={() => setViewStep(step)}
                           style={{
-                            borderBottom: index < sharedSteps.length - 1 ? `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}` : 'none',
+                            borderBottom: index < sharedSteps.length - 1 ? `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}` : 'none',
                             cursor: 'pointer', transition: 'background-color 0.15s',
                           }}
                           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--cp-bg-page, #F8FAFC)'}
@@ -601,7 +601,7 @@ export default function SharedStepsPage() {
                             {step.category ? (
                               <span style={{
                                 display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px',
-                                backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', borderRadius: 4, fontSize: 11,
+                                backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 4, fontSize: 11,
                                 fontWeight: 600, color: 'var(--cp-text-secondary, #374151)',
                               }}>
                                 {step.category.name}
@@ -624,7 +624,7 @@ export default function SharedStepsPage() {
                               onClick={(e) => { e.stopPropagation(); navigate(`/testhub/shared-steps/${step.id}`); }}
                               style={{
                                 padding: '2px 8px', borderRadius: 12, fontSize: 12, fontWeight: 600,
-                                backgroundColor: step.usage_count > 0 ? ('var(--cp-success-light, #F0FDF4)') : ('var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'),
+                                backgroundColor: step.usage_count > 0 ? ('var(--cp-success-light, #F0FDF4)') : ('var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'),
                                 color: step.usage_count > 0 ? 'var(--quality-high, #059669)' : ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'),
                                 border: 'none', cursor: 'pointer',
                               }}
@@ -739,7 +739,7 @@ function CategorySidebarItem({ label, icon, count, isSelected, selectedColor, on
     >
       <div style={{
         width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-        backgroundColor: isSelected ? `${selectedColor}25` : ('var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'),
+        backgroundColor: isSelected ? `${selectedColor}25` : ('var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'),
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
         {icon}
@@ -754,7 +754,7 @@ function CategorySidebarItem({ label, icon, count, isSelected, selectedColor, on
       <span style={{
         fontSize: 12, fontWeight: 500, padding: '2px 8px', borderRadius: 12, flexShrink: 0,
         color: isSelected ? selectedColor : ('var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'),
-        backgroundColor: isSelected ? `${selectedColor}20` : ('var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'),
+        backgroundColor: isSelected ? `${selectedColor}20` : ('var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'),
       }}>
         {count}
       </span>
@@ -798,7 +798,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
         {cat && (
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px',
-              backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', borderRadius: 4, fontSize: 11,
+              backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 4, fontSize: 11,
               fontWeight: 600, color: 'var(--cp-text-secondary, #374151)', fontFamily: 'var(--cp-font-body)',
             }}>
               {cat.name}
@@ -836,7 +836,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
               <MenuButton icon={<Eye size={14} />} label="View" onClick={() => { onView(); setMenuOpen(false); }} />
               <MenuButton icon={<Pencil size={14} />} label="Edit" onClick={() => { onEdit(); setMenuOpen(false); }} />
               <MenuButton icon={<Copy size={14} />} label="Duplicate" onClick={() => { onDuplicate(); setMenuOpen(false); }} />
-              <div style={{ height: 1, backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', margin: '4px 0' }} />
+              <div style={{ height: 1, backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', margin: '4px 0' }} />
               <MenuButton icon={<Trash2 size={14} />} label="Delete" onClick={() => { onDelete(); setMenuOpen(false); }} danger />
             </div>
           )}
@@ -874,10 +874,10 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
 
       {/* Variables */}
       {variables.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, paddingTop: 12, borderTop: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}` }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, paddingTop: 12, borderTop: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}` }}>
           {variables.map((v, i) => (
             <span key={i} style={{
-              padding: '2px 8px', backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', borderRadius: 4,
+              padding: '2px 8px', backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 4,
               fontFamily: 'monospace', fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
             }}>
               {`{{${v.name}}}`}

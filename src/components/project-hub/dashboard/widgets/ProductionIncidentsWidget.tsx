@@ -258,7 +258,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
         <div className="p-4 animate-pulse">
           <div
             className="h-24 rounded"
-            style={{ background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, #F1F5F9)') }}
+            style={{ background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))') }}
           />
         </div>
       ) : !incidents?.length ? (

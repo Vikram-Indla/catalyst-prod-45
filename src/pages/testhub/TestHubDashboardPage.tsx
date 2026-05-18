@@ -358,7 +358,7 @@ export default function TestHubDashboardPage() {
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>Execution status</span>
             <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{totalAll} total</span>
           </div>
-          <div style={{ display: 'flex', height: 8, borderRadius: 4, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', gap: 1, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', height: 8, borderRadius: 4, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', gap: 1, overflow: 'hidden' }}>
             {execSegments.map(seg => (
               seg.pct > 0 && (
                 <div key={seg.label} style={{
@@ -403,7 +403,7 @@ export default function TestHubDashboardPage() {
                        style={{
                          display: 'grid', gridTemplateColumns: '90px 1fr 100px 130px',
                          alignItems: 'center', height: 50, padding: '0 16px',
-                         cursor: 'pointer', borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}`,
+                         cursor: 'pointer', borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}`,
                        }}>
                        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
                          {cycle.cycle_key}
@@ -412,7 +412,7 @@ export default function TestHubDashboardPage() {
                          {cycle.name}
                        </span>
                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                         <div style={{ flex: 1, height: 4, borderRadius: 4, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', overflow: 'hidden' }}>
+                         <div style={{ flex: 1, height: 4, borderRadius: 4, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', overflow: 'hidden' }}>
                            <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 4, transition: 'width 400ms ease-out' }} />
                          </div>
                          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', minWidth: 32, textAlign: 'right' }}>{pct}%</span>
@@ -449,7 +449,7 @@ export default function TestHubDashboardPage() {
              {/* Header: Top Failing Tests */}
              <div style={{
                padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-               borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}`, flexShrink: 0,
+               borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}`, flexShrink: 0,
              }}>
                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                  <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>Top Failing Tests</span>
@@ -478,7 +478,7 @@ export default function TestHubDashboardPage() {
                          style={{
                            display: 'grid', gridTemplateColumns: '72px 1fr 60px 64px',
                            alignItems: 'center', height: 50, padding: '0 16px',
-                           cursor: 'pointer', borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}`,
+                           cursor: 'pointer', borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}`,
                          }}>
                          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
                            {test.case_key}
@@ -514,7 +514,7 @@ export default function TestHubDashboardPage() {
                }}>
                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                    <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>Defects</span>
-                   <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '2px 8px', borderRadius: 10 }}>
+                   <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '2px 8px', borderRadius: 10 }}>
                      {defectStats?.total_defects ?? 0}
                    </span>
                  </div>
@@ -531,7 +531,7 @@ export default function TestHubDashboardPage() {
                  ].map((d, i) => (
                    <div key={d.label} style={{
                      textAlign: 'center', padding: '12px 8px',
-                     borderRight: i < 3 ? `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}` : 'none',
+                     borderRight: i < 3 ? `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}` : 'none',
                    }}>
                      <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', lineHeight: 1 }}>{d.value}</div>
                      <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: 4 }}>{d.label}</div>
@@ -563,7 +563,7 @@ export default function TestHubDashboardPage() {
                 </div>
               ) : (
                 attentionItems.map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', borderTop: i > 0 ? `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}` : 'none' }}>
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', borderTop: i > 0 ? `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}` : 'none' }}>
                     <div style={{
                       width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       background: item.danger ? ('var(--cp-danger-light, #FEF2F2)') : ('var(--cp-warning-light, #FFFBEB)'),
@@ -584,7 +584,7 @@ export default function TestHubDashboardPage() {
               background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 8,
               flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden',
             }}>
-              <div style={{ padding: '12px 16px', borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}`, flexShrink: 0 }}>
+              <div style={{ padding: '12px 16px', borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}`, flexShrink: 0 }}>
                 <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>Activity</span>
               </div>
                <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
@@ -606,7 +606,7 @@ export default function TestHubDashboardPage() {
                        return (
                          <div key={a.id} style={{
                            display: 'flex', alignItems: 'flex-start', gap: 8,
-                           padding: '8px 16px', borderTop: i > 0 ? `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}` : 'none',
+                           padding: '8px 16px', borderTop: i > 0 ? `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}` : 'none',
                          }}>
                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: dotColor, marginTop: 6, flexShrink: 0 }} />
                            <div style={{ flex: 1, minWidth: 0 }}>
@@ -630,7 +630,7 @@ export default function TestHubDashboardPage() {
                  )}
                </div>
                {/* Quick Actions — pinned bottom */}
-               <div style={{ display: 'flex', gap: 8, padding: '10px 16px', paddingRight: '80px', borderTop: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}`, flexShrink: 0 }}>
+               <div style={{ display: 'flex', gap: 8, padding: '10px 16px', paddingRight: '80px', borderTop: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}`, flexShrink: 0 }}>
                  <QuickBtn label="New case" onClick={() => navigate('/testhub/repository')} />
                  <QuickBtn label="Start cycle" onClick={() => navigate('/testhub/cycles')} />
                  <QuickBtn label="Report" onClick={() => navigate('/testhub/reports')} />
@@ -703,11 +703,11 @@ function Card({ title, badge, badgeDanger, badgeColor, onViewAll, children, styl
   style?: React.CSSProperties;
 }) {
   const { isDark } = useTheme();
-  const bg = badgeDanger ? ('var(--cp-danger-light, #FEF2F2)') : ('var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))');
+  const bg = badgeDanger ? ('var(--cp-danger-light, #FEF2F2)') : ('var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))');
   const color = badgeDanger ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : badgeColor || ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))');
   return (
     <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 8, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0, ...style }}>
-      <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}`, flexShrink: 0 }}>
+      <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}`, flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{title}</span>
           {badge && (

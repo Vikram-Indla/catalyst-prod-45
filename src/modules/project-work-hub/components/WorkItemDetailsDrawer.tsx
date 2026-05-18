@@ -364,7 +364,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] text-[#6B7280] dark:text-[#9C8E7E]">Jira Issue</span>
                       <span
-                        className="font-mono text-[12px] px-2 py-0.5 rounded bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[#1E293B] dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[#E2D5C3]"
+                        className="font-mono text-[12px] px-2 py-0.5 rounded bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[#1E293B] dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[#E2D5C3]"
                         style={{ borderRadius: 4 }}
                       >
                         {jiraData.jira_key || jiraData.item_key || '—'}

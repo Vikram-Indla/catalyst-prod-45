@@ -490,7 +490,7 @@ export default function ReqAssistLibrary() {
                             ) : (
                               <span style={{
                                 display: 'inline-flex', alignItems: 'center', padding: '1px 6px',
-                                background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', borderRadius: 4,
+                                background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 4,
                                 fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontFamily: 'var(--cp-font-body)',
                               }}>Uncategorised</span>
                             );
@@ -978,7 +978,7 @@ const TICKET_TYPE_STYLES: Record<string, { bg: string; color: string; label: str
   subtask: { bg: '#FEF3C7', color: '#92400E', label: 'SUBTASK' },
   story:   { bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', label: 'STORY' },
   epic:    { bg: '#F3E8FF', color: '#6B21A8', label: 'EPIC' },
-  task:    { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: 'var(--ds-text-subtle, #475569)', label: 'TASK' },
+  task:    { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--ds-text-subtle, #475569)', label: 'TASK' },
 };
 
 function TicketTypeBadge({ type }: { type: string | null | undefined }) {

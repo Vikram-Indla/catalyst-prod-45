@@ -41,7 +41,7 @@ export function RoadmapListPanel({
         </span>
         <span
           style={{
-            fontSize: 10, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
+            fontSize: 10, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
             borderRadius: 12, padding: '2px 7px', fontFamily: 'var(--cp-font-mono)',
           }}
         >
@@ -55,7 +55,7 @@ export function RoadmapListPanel({
   const renderAddRow = () => (
     <button
       className="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors hover:bg-blue-50"
-      style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderTop: '1px solid var(--cp-bg-sunken, #F1F5F9)' }}
+      style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderTop: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}
     >
       <Plus className="w-4 h-4" />
       Add Business Request to Roadmap
@@ -73,7 +73,7 @@ export function RoadmapListPanel({
               const typeKey = group.key;
               const color = TYPE_COLORS[typeKey] || group.color || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
               return (
-                <div key={group.key} style={{ borderBottom: '1px solid var(--cp-bg-sunken, #F1F5F9)' }}>
+                <div key={group.key} style={{ borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
                   <button
                     onClick={() => onToggleGroup?.(group.key)}
                     className="w-full flex items-center gap-2 px-4 py-2 transition-colors hover:bg-gray-50"

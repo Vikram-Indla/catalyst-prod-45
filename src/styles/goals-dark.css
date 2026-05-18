@@ -32,9 +32,9 @@
   color: var(--ds-text-subtlest, #878787) !important;
 }
 
-/* ── Theme Row (sunken var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9)) bg) ── */
+/* ── Theme Row (sunken var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) bg) ── */
 [data-theme="dark"] .goals-tree-container div[style*="background: rgb(241, 245, 249)"],
-[data-theme="dark"] .goals-tree-container div[style*="background: var(--cp-bg-sunken, #F1F5F9)"],
+[data-theme="dark"] .goals-tree-container div[style*="background: var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))"],
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(241, 245, 249)"][style*="borderLeft"] {
   background: var(--ds-surface-overlay, #1F1F1F) !important;
   border-bottom-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
@@ -174,7 +174,7 @@
 
 /* ── Goal Key / KR Key badges (F1F5F9 bg) ── */
 [data-theme="dark"] [data-goals-page] span[style*="background: rgb(241, 245, 249)"][style*="fontFamily"],
-.dark [data-goals-page] span[style*="background: var(--cp-bg-sunken, #F1F5F9)"][style*="fontFamily"] , [data-theme="dark"] [data-goals-page] span[style*="background: var(--cp-bg-sunken, #F1F5F9)"][style*="fontFamily"] {
+.dark [data-goals-page] span[style*="background: var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))"][style*="fontFamily"] , [data-theme="dark"] [data-goals-page] span[style*="background: var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))"][style*="fontFamily"] {
   background: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   color: var(--ds-text-subtlest, #878787) !important;
 }
@@ -210,7 +210,7 @@
 }
 /* Draft/Not Started/Cancelled — grey lozenges */
 [data-theme="dark"] [data-goals-page] span[style*="background: rgb(241, 245, 249)"][style*="borderRadius: 99"],
-.dark [data-goals-page] span[style*="background: var(--cp-bg-sunken, #F1F5F9)"][style*="borderRadius: 99"] , [data-theme="dark"] [data-goals-page] span[style*="background: var(--cp-bg-sunken, #F1F5F9)"][style*="borderRadius: 99"] {
+.dark [data-goals-page] span[style*="background: var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))"][style*="borderRadius: 99"] , [data-theme="dark"] [data-goals-page] span[style*="background: var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))"][style*="borderRadius: 99"] {
   background: var(--cp-bg-surface, #242528) !important;
   color: #B8BCC8 !important;
 }
@@ -287,7 +287,7 @@
 [data-theme="dark"] [data-goals-page] [style*="border: 1px solid rgb(226, 232, 240)"],
 [data-theme="dark"] [data-goals-page] [style*="border: 1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))"],
 [data-theme="dark"] [data-goals-page] [style*="borderBottom: 1px solid rgb(241, 245, 249)"],
-[data-theme="dark"] [data-goals-page] [style*="borderBottom: 1px solid var(--cp-bg-sunken, #F1F5F9)"],
+[data-theme="dark"] [data-goals-page] [style*="borderBottom: 1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))"],
 [data-theme="dark"] [data-goals-page] [style*="borderBottom: 2px solid rgb(226, 232, 240)"],
 [data-theme="dark"] [data-goals-page] [style*="borderBottom: 2px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))"],
 [data-theme="dark"] [data-goals-page] [style*="borderTop: 1px solid rgb(226, 232, 240)"] {

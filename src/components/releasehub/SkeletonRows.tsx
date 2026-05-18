@@ -51,7 +51,7 @@ export function SkeletonRows({ count = 3, variant = 'table' }: Props) {
   return (
     <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-lg border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="flex items-center gap-4 px-4 h-9 border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] dark:border-[var(--ds-border,#292929)] last:border-0">
+        <div key={i} className="flex items-center gap-4 px-4 h-9 border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] dark:border-[var(--ds-border,#292929)] last:border-0">
           <div className="h-3 w-20 bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:bg-[var(--ds-border,#292929)] rounded animate-pulse" />
           <div className="h-3 w-32 bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:bg-[var(--ds-border,#292929)] rounded animate-pulse flex-1" />
           <div className="h-4 w-16 bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:bg-[var(--ds-border,#292929)] rounded animate-pulse" />

@@ -508,7 +508,7 @@
 
 [data-sdm-scope] .sdm-skeleton-pulse {
   border-radius: 3px;
-  background: linear-gradient(90deg, var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) 25%, var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9)) 50%, var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) 75%);
+  background: linear-gradient(90deg, var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) 25%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 50%, var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) 75%);
   background-size: 200% 100%;
   animation: sdm-shimmer 1.4s ease-in-out infinite;
 }

@@ -298,12 +298,12 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
               {/* Flags */}
               <div className="flex items-center gap-1 shrink-0">
                 {s.is_initial && (
-                  <span className="px-1.5 py-0.5 text-[10px] bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtle,#475569)] rounded border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
+                  <span className="px-1.5 py-0.5 text-[10px] bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtle,#475569)] rounded border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
                     START
                   </span>
                 )}
                 {s.is_final && (
-                  <span className="px-1.5 py-0.5 text-[10px] bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtle,#475569)] rounded border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
+                  <span className="px-1.5 py-0.5 text-[10px] bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtle,#475569)] rounded border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
                     END
                   </span>
                 )}
@@ -358,7 +358,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                   'px-2 h-7 text-[10px] font-medium uppercase tracking-wider rounded border transition-colors shrink-0',
                   ((s as WorkflowStatus & { is_active?: boolean }).is_active ?? true)
                     ? 'bg-[#ECFDF5] text-[#065F46] border-[#A7F3D0]'
-                    : 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]',
+                    : 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]',
                 )}
                 title="Toggle whether this status renders as a kanban column"
               >
@@ -370,7 +370,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 <button
                   onClick={() => handleToggleFlag(s.id, 'is_initial', s.is_initial)}
                   className={cn(
-                    'p-1 rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] transition-colors',
+                    'p-1 rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors',
                     s.is_initial ? 'text-[var(--ds-text,var(--cp-ink-1, #0F172A))]' : 'text-[var(--ds-text-disabled,#CBD5E1)]'
                   )}
                   title="Set as initial status"
@@ -380,7 +380,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 <button
                   onClick={() => handleToggleFlag(s.id, 'is_final', s.is_final)}
                   className={cn(
-                    'p-1 rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] transition-colors',
+                    'p-1 rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors',
                     s.is_final ? 'text-[var(--ds-text,var(--cp-ink-1, #0F172A))]' : 'text-[var(--ds-text-disabled,#CBD5E1)]'
                   )}
                   title="Set as final status"
@@ -508,7 +508,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                         key={to.id}
                         className={cn(
                           'border-b border-r border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] px-2 py-2 text-center',
-                          from.id === to.id ? 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]' : ''
+                          from.id === to.id ? 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]' : ''
                         )}
                       >
                         {from.id === to.id ? (

@@ -25,7 +25,7 @@ const headerStyle: React.CSSProperties = {
 };
 
 const cellStyle: React.CSSProperties = {
-  height: 50, padding: '8px 12px', borderBottom: '1px solid var(--cp-bg-sunken, #F1F5F9)',
+  height: 50, padding: '8px 12px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
   verticalAlign: 'middle', whiteSpace: 'nowrap',
 };
 
@@ -86,7 +86,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                 <td style={cellStyle}>
                   {idea.team ? (
                     <span style={{
-                      fontSize: 10, fontWeight: 600, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
+                      fontSize: 10, fontWeight: 600, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
                       color: 'var(--fg-2)', padding: '2px 6px', borderRadius: 4,
                     }}>{idea.team}</span>
                   ) : <span style={{ color: 'var(--ds-text-disabled, #CBD5E1)' }}>—</span>}

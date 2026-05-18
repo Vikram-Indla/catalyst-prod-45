@@ -73,7 +73,7 @@ export const TEST_RESULT_STYLES: Record<TestResult, React.CSSProperties> = {
   failed:  { background: 'var(--ds-background-danger, #FFEDEB)', color: 'var(--ds-text-danger, #BF2600)' },
   blocked: { background: 'var(--ds-background-warning, #FFF0B3)', color: 'var(--ds-text-warning, #974F0C)' },
   skipped: { background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
-  not_run: { background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: 'var(--ds-text-subtlest, #6B778C)' },
+  not_run: { background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--ds-text-subtlest, #6B778C)' },
 };
 
 export const LINK_TYPE_LABELS: Record<string, string> = {
@@ -91,7 +91,7 @@ export const LINK_TYPE_STYLES: Record<string, React.CSSProperties> = {
   'relates to':     { background: 'var(--ds-background-warning, #FFF0B3)', color: 'var(--ds-text-warning, #974F0C)' },
   relates_to:       { background: 'var(--ds-background-warning, #FFF0B3)', color: 'var(--ds-text-warning, #974F0C)' },
   duplicates:       { background: 'var(--ds-background-danger, #FFEDEB)', color: 'var(--ds-text-danger, #BF2600)' },
-  'is duplicated by': { background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: 'var(--ds-text-subtlest, #6B778C)' },
+  'is duplicated by': { background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--ds-text-subtlest, #6B778C)' },
   clones:           { background: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' },
   'is cloned by':   { background: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' },
 };

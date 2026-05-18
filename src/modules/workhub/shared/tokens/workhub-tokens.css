@@ -3,7 +3,7 @@
   /* Surfaces */
   --wh-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --wh-sf: var(--ds-surface-sunken, #F8FAFC);
-  --wh-sf2: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
+  --wh-sf2: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
   --wh-sf3: var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   --wh-bdr: var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
 

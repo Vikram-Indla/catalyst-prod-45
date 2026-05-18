@@ -184,9 +184,9 @@ export function ReleaseDrawer({ release, onClose }: Props) {
               <SourceBadge source={release.source || 'catalyst'} />
             </div>
             <div className="flex items-center gap-1.5">
-              <button className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]"><Download size={14} /></button>
-              <button className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]"><RefreshCw size={14} /></button>
-              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]"><XIcon size={14} /></button>
+              <button className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"><Download size={14} /></button>
+              <button className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"><RefreshCw size={14} /></button>
+              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"><XIcon size={14} /></button>
             </div>
           </div>
           <h2 className="text-[18px] font-extrabold mb-2" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>{release.name}</h2>
@@ -225,7 +225,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
                 </button>
                 <button
                   onClick={() => setEditingDate(false)}
-                  className="w-6 h-6 flex items-center justify-center rounded border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]"
+                  className="w-6 h-6 flex items-center justify-center rounded border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"
                   title="Cancel"
                 >
                   <X size={11} />
@@ -244,7 +244,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
                 <Pencil size={11} className="opacity-0 group-hover:opacity-100 transition-opacity" />
               </button>
             )}
-            <span className="text-[11px] font-bold text-[var(--ds-text,var(--cp-ink-1, #0F172A))] bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] px-1.5 py-0.5 rounded">{relChanges.length} CHGs</span>
+            <span className="text-[11px] font-bold text-[var(--ds-text,var(--cp-ink-1, #0F172A))] bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] px-1.5 py-0.5 rounded">{relChanges.length} CHGs</span>
             <span className="text-[11px] font-bold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] bg-[var(--ds-background-selected,#EFF6FF)] px-1.5 py-0.5 rounded">{testCycles.length} cycles</span>
           </div>
         </div>
@@ -255,7 +255,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
             <button key={tab} onClick={() => setActiveTab(tab)}
               className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]' : 'border-transparent text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] hover:text-[var(--ds-text-subtle,#475569)]'}`}>
               {tab}
-              {tab === 'Changes' && <span className="ml-1 text-[10px] font-bold bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtle,#475569)] px-1 rounded">{relChanges.length}</span>}
+              {tab === 'Changes' && <span className="ml-1 text-[10px] font-bold bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtle,#475569)] px-1 rounded">{relChanges.length}</span>}
               {tab === 'Test Cycles' && <span className="ml-1 text-[10px] font-bold bg-[var(--ds-background-selected,#EFF6FF)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] px-1 rounded">{testCycles.length}</span>}
             </button>
           ))}
@@ -473,7 +473,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
             <div className="max-h-[300px] overflow-auto text-[13px] text-[var(--ds-text,var(--cp-ink-1, #0F172A))] leading-relaxed whitespace-pre-wrap" style={{ fontFamily: RH.fontBody }}>
               {generatedNotes}
             </div>
-            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]">
+            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]">
               <button
                 onClick={handleCopy}
                 className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[12px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none"
@@ -603,7 +603,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
                   <StatusLozenge status={cycle?.status || 'not_started'} />
                   <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">{passCount}/{totalCases} cases</span>
                 </div>
-                <div className="w-full h-2 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] rounded-full overflow-hidden">
                   <div className="h-full bg-[var(--sem-success)] rounded-full" style={{ width: `${passRate}%` }} />
                 </div>
                 {atRisk && <CatalystAIChip label="test cycle at risk — recommend pause release" className="mt-2" />}
@@ -644,7 +644,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
             })}
           </div>
           <DialogFooter>
-            <button onClick={() => setShowLinkModal(false)} className="h-8 px-4 rounded-md text-[13px] font-medium text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]">Close</button>
+            <button onClick={() => setShowLinkModal(false)} className="h-8 px-4 rounded-md text-[13px] font-medium text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]">Close</button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -690,7 +690,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 ${
               status === 'approved' ? 'bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white' :
               status === 'pending' ? 'bg-[#0C66E4] text-white' :
-              'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]'
+              'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]'
             }`}>
               {status === 'approved' ? '✓' : status === 'pending' ? i + 1 : '🔒'}
             </div>
@@ -728,10 +728,10 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
       <div className="space-y-4">
         {[1, 2, 3].map(i => (
           <div key={i} className="flex gap-3 animate-pulse">
-            <div className="w-7 h-7 rounded-full bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] flex-shrink-0" />
+            <div className="w-7 h-7 rounded-full bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] flex-shrink-0" />
             <div className="flex-1 space-y-2">
-              <div className="h-3 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] rounded w-3/4" />
-              <div className="h-2.5 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] rounded w-1/2" />
+              <div className="h-3 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] rounded w-3/4" />
+              <div className="h-2.5 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] rounded w-1/2" />
             </div>
           </div>
         ))}

@@ -96,7 +96,7 @@ export default function ReleaseComparePage() {
                   </thead>
                   <tbody>
                     {comparisonRows.map(row => (
-                      <tr key={row.label} className="border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] h-9">
+                      <tr key={row.label} className="border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] h-9">
                         <td className="px-3 py-0 font-semibold text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">{row.label}</td>
                         {selectedReleases.map((r: any, i: number) => (
                           <td key={r.id} className="px-3 py-0">

@@ -162,7 +162,7 @@ export default function ItemsByStatusWidget({
               style={{
                 height: 24,
                 borderRadius: 4,
-                background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, #F1F5F9)'),
+                background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'),
               }}
             />
           ))}
