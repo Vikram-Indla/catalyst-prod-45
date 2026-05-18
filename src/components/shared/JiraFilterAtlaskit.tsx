@@ -343,7 +343,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
                       cursor: 'pointer',
                     }}
                     onMouseEnter={(e) => {
-                      if (!selected) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
+                      if (!selected) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)';
                     }}
                     onMouseLeave={(e) => {
                       if (!selected) (e.currentTarget as HTMLElement).style.background = 'transparent';

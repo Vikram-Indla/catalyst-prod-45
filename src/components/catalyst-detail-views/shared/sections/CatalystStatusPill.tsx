@@ -234,7 +234,7 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
                           textAlign: 'left',
                         }}
                         onMouseEnter={(e) => {
-                          if (!isActive) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
+                          if (!isActive) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)';
                         }}
                         onMouseLeave={(e) => {
                           if (!isActive) e.currentTarget.style.background = 'transparent';
@@ -287,7 +287,7 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
                     fontSize: 14, color: token('color.text', '#292A2E'),
                     textAlign: 'left',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                 >
                   <span style={{ fontSize: 12, color: token('color.text.subtle', '#505258') }}>{icon}</span>

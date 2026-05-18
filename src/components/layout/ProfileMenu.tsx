@@ -155,7 +155,7 @@ export function ProfileMenu() {
             gap: 12,
             padding: '12px 14px',
             borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-            background: token('elevation.surface.sunken', '#F4F5F7'),
+            background: 'var(--ds-surface-sunken, #F4F5F7)',
           }}
         >
           <span

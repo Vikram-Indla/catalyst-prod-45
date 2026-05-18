@@ -131,7 +131,7 @@ export function StatusPopover({ status, onChange, children, showActive = true }:
                         background: active ? token('color.background.selected', '#E9F2FF') : 'transparent',
                         border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left',
                       }}
-                      onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+                      onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)'; }}
                       onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'transparent'; }}
                       onClick={() => {
                         onChange(s, group.category as 'todo' | 'in_progress' | 'done');

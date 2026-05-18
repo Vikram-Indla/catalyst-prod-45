@@ -154,7 +154,7 @@ export default function ForYouPageAtlaskit() {
   const handleTabChange = useCallback((tab: TabType) => {
     setActiveTab(tab);
     try { localStorage.setItem(FOR_YOU_TAB_KEY, tab); } catch { /* no-op */ }
-    navigate(`/for-you/${tab}`, { replace: true });
+    navigate(`/home/${tab}`, { replace: true });
     setVisibleCount(PAGE_SIZE); // reset pagination when switching tabs
   }, [setActiveTab, navigate]);
 

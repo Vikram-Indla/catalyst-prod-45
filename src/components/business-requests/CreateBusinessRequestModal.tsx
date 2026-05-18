@@ -554,7 +554,7 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
       {files.length > 0 && (
         <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
           {files.map((f, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', background: token('color.background.neutral', '#F4F5F7'), borderRadius: 3, fontSize: 12, fontFamily: 'var(--cp-font-body)' }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', background: 'var(--ds-background-neutral, #F4F5F7)', borderRadius: 3, fontSize: 12, fontFamily: 'var(--cp-font-body)' }}>
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                 <path d="M9 1.5H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5.5L9 1.5z" stroke={token('color.text.brand', '#1868DB')} strokeWidth="1.2" fill="none"/>
                 <path d="M9 1.5V5.5h4" stroke={token('color.text.brand', '#1868DB')} strokeWidth="1.2" fill="none"/>
@@ -594,7 +594,7 @@ function TranslateButton({ loading, label, onClick }: { loading: boolean; label:
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: loading ? token('color.background.neutral', '#F4F5F7') : token('color.background.neutral', '#F4F5F7'),
+        background: loading ? 'var(--ds-background-neutral, #F4F5F7)' : 'var(--ds-background-neutral, #F4F5F7)',
         border: `1px solid ${token('color.border', '#DFE1E6')}`,
         borderRadius: 3,
         cursor: loading ? 'default' : 'pointer',
@@ -603,7 +603,7 @@ function TranslateButton({ loading, label, onClick }: { loading: boolean; label:
         outline: 'none',
       }}
       onMouseEnter={e => { if (!loading) e.currentTarget.style.background = token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)'); }}
-      onMouseLeave={e => { e.currentTarget.style.background = token('color.background.neutral', '#F4F5F7'); }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-background-neutral, #F4F5F7)'; }}
     >
       {loading ? (
         <Spinner size="small" />
@@ -1096,7 +1096,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
                     </p>
                     <div style={{
                       padding: 12,
-                      background: token('color.background.neutral', '#F4F5F7'),
+                      background: 'var(--ds-background-neutral, #F4F5F7)',
                       borderRadius: 3,
                       fontFamily: 'var(--cp-font-body)',
                       fontSize: 14,

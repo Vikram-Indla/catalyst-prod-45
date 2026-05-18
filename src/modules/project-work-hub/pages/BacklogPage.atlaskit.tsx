@@ -5677,7 +5677,7 @@ function BottomCreateRow({
           }}
           onMouseEnter={(e) => {
             (e.currentTarget as HTMLElement).style.background =
-              token('color.background.neutral.subtle.hovered', '#F4F5F7');
+              'var(--ds-background-neutral-subtle-hovered, #F4F5F7)';
           }}
           onMouseLeave={(e) => {
             (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -5881,7 +5881,7 @@ function InlineCreateRow({
           cursor: 'pointer', fontFamily: 'inherit',
         }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
+          (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)';
           (e.currentTarget as HTMLElement).style.borderColor = token('color.border', '#DFE1E6');
         }}
         onMouseLeave={(e) => {
@@ -6356,7 +6356,7 @@ function BulkMenuItem({ onClick, children }: { onClick: () => void; children: Re
         fontFamily: 'inherit',
         borderRadius: 3,
       }}
-      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
+      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)')}
       onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
     >
       {children}
@@ -6426,7 +6426,7 @@ function EditBacklogItemModal({
                 borderRadius: 3,
                 fontSize: 14,
                 fontFamily: 'inherit',
-                background: isJiraSynced ? token('color.background.neutral.subtle.hovered', '#F4F5F7') : token('elevation.surface', '#FFFFFF'),
+                background: isJiraSynced ? 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)' : token('elevation.surface', '#FFFFFF'),
                 color: token('color.text', '#292A2E'),
               }}
             >

@@ -121,7 +121,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
                     height: 14,
                     width: `${w}%`,
                     borderRadius: 4,
-                    background: token('color.background.neutral', '#F4F5F7'),
+                    background: 'var(--ds-background-neutral, #F4F5F7)',
                   }}
                 />
               ))}

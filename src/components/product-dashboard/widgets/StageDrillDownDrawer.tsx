@@ -321,7 +321,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
                   alignItems: 'center',
                   gap: 4,
                   padding: '3px 8px',
-                  background: token('color.background.neutral', '#F4F5F7'),
+                  background: 'var(--ds-background-neutral, #F4F5F7)',
                   borderRadius: 12,
                   fontSize: 12,
                   color: token('color.text', '#172B4D'),

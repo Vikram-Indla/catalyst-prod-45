@@ -13,7 +13,7 @@ export function DashboardWorkflowPath() {
         style={{
           height: 32,
           borderRadius: 4,
-          background: token('color.background.neutral', '#F4F5F7'),
+          background: 'var(--ds-background-neutral, #F4F5F7)',
           animation: 'pulse 1.5s ease-in-out infinite',
         }}
       />

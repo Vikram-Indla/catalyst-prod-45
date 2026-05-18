@@ -108,17 +108,17 @@ interface HubEntry {
 }
 
 const HUBS: HubEntry[] = [
-  { key: 'home',     label: 'Home',     href: '/for-you',                    section: 'discover',   tone: 'blue',    shortcut: '1' },
-  { key: 'strategy', label: 'Strategy', href: '/strategyhub',                section: 'discover',   tone: 'purple',  shortcut: '2' },
-  { key: 'ideation', label: 'Ideation', href: '/ideation/backlog',           section: 'discover',   tone: 'orange',  shortcut: '3' },
-  { key: 'product',  label: 'Product',  href: '/product-hub',                section: 'build_ship', tone: 'teal',    shortcut: '4' },
-  { key: 'project',  label: 'Project',  href: '/project-hub',                section: 'build_ship', tone: 'green',   shortcut: '5' },
-  { key: 'release',  label: 'Release',  href: '/release-hub/command-center', section: 'build_ship', tone: 'magenta', shortcut: '6' },
-  { key: 'test',     label: 'Test',     href: '/testhub/dashboard',          section: 'build_ship', tone: 'lime',    shortcut: '7' },
-  { key: 'incident', label: 'Incident', href: '/incident-hub',               section: 'build_ship', tone: 'red',     shortcut: '8' },
-  { key: 'task',     label: 'Task',     href: '/taskhub/boards',             section: 'build_ship', tone: 'yellow',  shortcut: '9' },
-  { key: 'plan',     label: 'Plan',     href: '/planhub',                    section: 'build_ship', tone: 'gray',    shortcut: '0' },
-  { key: 'wiki',     label: 'Wiki',     href: '/wiki',                       section: 'knowledge',  tone: 'gray',    shortcut: '-' },
+  { key: 'home',     label: 'Home',     href: '/home',                   section: 'discover',   tone: 'blue',    shortcut: '1' },
+  { key: 'strategy', label: 'Strategy', href: '/strategy',               section: 'discover',   tone: 'purple',  shortcut: '2' },
+  { key: 'ideation', label: 'Ideation', href: '/ideation/backlog',       section: 'discover',   tone: 'orange',  shortcut: '3' },
+  { key: 'product',  label: 'Product',  href: '/product',                section: 'build_ship', tone: 'teal',    shortcut: '4' },
+  { key: 'project',  label: 'Project',  href: '/project',                section: 'build_ship', tone: 'green',   shortcut: '5' },
+  { key: 'release',  label: 'Release',  href: '/release/command-center', section: 'build_ship', tone: 'magenta', shortcut: '6' },
+  { key: 'test',     label: 'Test',     href: '/test/dashboard',         section: 'build_ship', tone: 'lime',    shortcut: '7' },
+  { key: 'incident', label: 'Incident', href: '/incident',               section: 'build_ship', tone: 'red',     shortcut: '8' },
+  { key: 'task',     label: 'Task',     href: '/task/boards',            section: 'build_ship', tone: 'yellow',  shortcut: '9' },
+  { key: 'plan',     label: 'Plan',     href: '/plan',                   section: 'build_ship', tone: 'gray',    shortcut: '0' },
+  { key: 'wiki',     label: 'Wiki',     href: '/wiki',                   section: 'knowledge',  tone: 'gray',    shortcut: '-' },
 ];
 
 const SECTIONS: { key: SectionKey; title: string }[] = [
@@ -220,7 +220,7 @@ export function HubSwitcher() {
 
   const shortcutNavigate = useCallback(
     (href: string) => {
-      if (href !== '/for-you') {
+      if (href !== '/home') {
         setSidebarHidden(false);
         setSidebarExpanded(true);
         setSidebarPinned(true);
@@ -247,7 +247,7 @@ export function HubSwitcher() {
     e.preventDefault();
     recordRecentHub(hub.key);
     setOpen(false);
-    if (hub.href !== '/for-you') {
+    if (hub.href !== '/home') {
       setSidebarHidden(false);
       setSidebarExpanded(true);
       setSidebarPinned(true);

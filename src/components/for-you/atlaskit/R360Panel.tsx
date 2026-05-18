@@ -316,8 +316,8 @@ function MemberPill({
 function R360Skeleton() {
   return (
     <div style={{ padding: '24px 0' }}>
-      <div style={{ height: 120, borderRadius: 8, marginBottom: 16, background: token('color.background.neutral', '#F4F5F7'), animation: 'pulse 1.5s ease-in-out infinite' }} />
-      <div style={{ height: 400, borderRadius: 8, background: token('color.background.neutral', '#F4F5F7'), animation: 'pulse 1.5s ease-in-out infinite' }} />
+      <div style={{ height: 120, borderRadius: 8, marginBottom: 16, background: 'var(--ds-background-neutral, #F4F5F7)', animation: 'pulse 1.5s ease-in-out infinite' }} />
+      <div style={{ height: 400, borderRadius: 8, background: 'var(--ds-background-neutral, #F4F5F7)', animation: 'pulse 1.5s ease-in-out infinite' }} />
     </div>
   );
 }

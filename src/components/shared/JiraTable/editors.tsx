@@ -163,7 +163,7 @@ function MenuItemBtn({
         borderRadius: 3,
         outline: 'none',
       }}
-      onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+      onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)'; }}
       onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
     >
       {children}
@@ -1119,7 +1119,7 @@ export function makeRowActionsCell<T>({
               opacity: 0,
               transition: 'opacity 100ms',
             }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)')}
             onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
           >
             <AkMoreIcon label="" size="small" />
@@ -1265,7 +1265,7 @@ export function makeDateEditCell<T>({
                   textAlign: 'left',
                   borderRadius: 3,
                 }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)'; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
                 Clear date
@@ -1304,7 +1304,7 @@ export function makeLabelsEditCell<T>({
                   alignItems: 'center',
                   padding: '1px 6px',
                   borderRadius: 3,
-                  background: token('color.background.neutral', '#F4F5F7'),
+                  background: 'var(--ds-background-neutral, #F4F5F7)',
                   color: token('color.text', '#172B4D'),
                   fontSize: 12,
                   whiteSpace: 'nowrap',
@@ -1391,7 +1391,7 @@ function LabelsPopoverContent<T>({ row, labels, onChange, close }: {
               gap: 4,
               padding: '2px 6px',
               borderRadius: 3,
-              background: token('color.background.neutral', '#F4F5F7'),
+              background: 'var(--ds-background-neutral, #F4F5F7)',
               color: token('color.text', '#172B4D'),
               fontSize: 12,
             }}

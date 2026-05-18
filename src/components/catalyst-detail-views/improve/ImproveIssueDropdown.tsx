@@ -209,7 +209,7 @@ export function ImproveIssueDropdown({
               data-testid="catalyst-improve-issue-dropdown.improve-description"
               onClick={() => openMode('description')}
               style={itemStyle}
-              onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)')}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
               <WandIcon size="small" primaryColor={token('color.icon.subtle', '#6B6E76')} />
@@ -222,7 +222,7 @@ export function ImproveIssueDropdown({
               data-testid="catalyst-improve-issue-dropdown.summarize-comments"
               onClick={() => openMode('summarize')}
               style={itemStyle}
-              onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)')}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
               <CommentIcon size="small" primaryColor={token('color.icon.subtle', '#6B6E76')} />
@@ -236,7 +236,7 @@ export function ImproveIssueDropdown({
                 data-testid="catalyst-improve-issue-dropdown.suggest-child-issues"
                 onClick={() => openMode('children')}
                 style={itemStyle}
-                onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)')}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
                 <ListBulletedIcon size="small" primaryColor={token('color.icon.subtle', '#6B6E76')} />
@@ -250,7 +250,7 @@ export function ImproveIssueDropdown({
               data-testid="catalyst-improve-issue-dropdown.suggest-related-issues"
               onClick={() => openMode('similar')}
               style={itemStyle}
-              onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)')}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
               <SearchIcon size="small" primaryColor={token('color.icon.subtle', '#6B6E76')} />

@@ -304,7 +304,7 @@ export function BrAttachmentsSection({ request }: Props) {
             flex: 1,
             height: 4,
             borderRadius: 4,
-            background: token('color.background.neutral', '#F4F5F7'),
+            background: 'var(--ds-background-neutral, #F4F5F7)',
             overflow: 'hidden',
           }}
         >

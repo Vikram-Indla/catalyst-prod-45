@@ -216,7 +216,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
                 }}
                 onMouseEnter={(e) => {
                   if (!isCurrent) (e.currentTarget as HTMLElement).style.background =
-                    isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : '#F4F5F7';
+                    isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : 'var(--ds-background-neutral-subtle, #F4F5F7)';
                 }}
                 onMouseLeave={(e) => {
                   if (!isCurrent) (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -331,7 +331,7 @@ function RecentsSection({ productId, expanded }: RecentsSectionProps) {
               }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLElement).style.background =
-                  isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : '#F4F5F7';
+                  isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : 'var(--ds-background-neutral-subtle, #F4F5F7)';
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLElement).style.background = 'transparent';

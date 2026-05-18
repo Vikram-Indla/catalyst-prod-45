@@ -123,10 +123,7 @@ export function makeRowMenuCell({
               transition: 'opacity 120ms ease, background 100ms ease',
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.background = token(
-                'color.background.neutral.subtle.hovered',
-                '#F4F5F7'
-              );
+              (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)';
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -211,7 +208,7 @@ export function makeCaretCell({
           cursor: 'pointer',
           padding: 0,
         }}
-        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
+        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)')}
         onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
       >
         {expanded ? <AkChevronDownIcon label="" size="small" /> : <AkChevronRightIcon label="" size="small" />}

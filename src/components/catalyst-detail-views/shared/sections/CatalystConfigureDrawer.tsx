@@ -133,7 +133,7 @@ export function CatalystConfigureDrawer({
           {pinnedFields.length === 0 ? (
             <div style={{
               padding: '12px 16px',
-              background: token('color.background.neutral', '#F4F5F7'),
+              background: 'var(--ds-background-neutral, #F4F5F7)',
               borderRadius: 4,
               fontSize: 14,
               color: token('color.text.subtlest', '#6B778C'),
@@ -183,7 +183,7 @@ export function CatalystConfigureDrawer({
             {visibleFields.filter((f) => !pinnedFields.includes(f.id)).length === 0 && (
               <div style={{
                 padding: '12px 16px',
-                background: token('color.background.neutral', '#F4F5F7'),
+                background: 'var(--ds-background-neutral, #F4F5F7)',
                 borderRadius: 4,
                 fontSize: 14,
                 color: token('color.text.subtlest', '#6B778C'),
@@ -217,11 +217,11 @@ function FieldConfigRow({
         justifyContent: 'space-between',
         padding: '10px 12px',
         borderRadius: 4,
-        background: token('color.background.neutral', '#F4F5F7'),
+        background: 'var(--ds-background-neutral, #F4F5F7)',
         transition: 'background 0.1s',
       }}
       onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.hovered', '#EBECF0'); }}
-      onMouseLeave={(e) => { e.currentTarget.style.background = token('color.background.neutral', '#F4F5F7'); }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral, #F4F5F7)'; }}
     >
       <span style={{
         fontSize: 14,

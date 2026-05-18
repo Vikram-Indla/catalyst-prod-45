@@ -357,7 +357,7 @@ export default function TimeInStatusFullscreenModal({
                       <tr
                         key={r.issue_key}
                         style={{ height: ROW_HEIGHT }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle', '#F4F5F7'))}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F4F5F7)')}
                         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                       >
                         <td

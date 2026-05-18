@@ -73,7 +73,7 @@ function TypePill({ label }: { label: string }) {
         fontSize: 11,
         lineHeight: '16px',
         fontWeight: 500,
-        background: token('color.background.neutral.subtle', '#F4F5F7'),
+        background: 'var(--ds-background-neutral-subtle, #F4F5F7)',
         color: token('color.text.subtle', '#44546F'),
       }}
     >
@@ -119,7 +119,7 @@ export function RecentReleasesWidget() {
         style={{
           height: 200,
           borderRadius: 8,
-          background: token('color.background.neutral', '#F4F5F7'),
+          background: 'var(--ds-background-neutral, #F4F5F7)',
           boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
         }}
       />

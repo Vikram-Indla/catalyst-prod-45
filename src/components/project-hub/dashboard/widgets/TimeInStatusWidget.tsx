@@ -407,7 +407,7 @@ export default function TimeInStatusWidget({
                     })
                   }
                   style={{ height: ROW_HEIGHT, cursor: 'pointer' }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle', '#F4F5F7'))}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle, #F4F5F7)')}
                   onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                 >
                   {/* Frozen left cell */}

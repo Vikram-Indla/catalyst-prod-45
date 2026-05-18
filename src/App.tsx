@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { AdsThemeProvider } from "@/theme/ads";
 import { AuthProvider } from "./lib/auth";
@@ -83,21 +83,66 @@ const S = ({ children }: { children: React.ReactNode }) => (
 );
 
 /**
- * Block A rule 1 (2026-05-01) — canonical URL prefix is `/product-hub`.
- * Legacy `/producthub/*` redirects here so bookmarks/links keep working.
- * react-router v6 Navigate doesn't support splat substitution in `to`, so
- * we resolve the new path imperatively from useLocation().
+ * Route taxonomy (2026-05-18) — canonical URL prefixes match HubSwitcher labels.
+ *
+ *   /home, /strategy, /ideation, /product, /project, /release,
+ *   /test, /incident, /task, /plan, /wiki, /admin
+ *
+ * Legacy prefixes (/for-you, /product-hub, /project-hub, /release-hub,
+ * /incident-hub, /strategyhub, /testhub, /taskhub, /planhub, /producthub,
+ * /projecthub, /releasehub) are 301-redirected via these helpers.
+ * All preserve search + hash.
  */
-function ProducthubLegacyRedirect() {
+function LegacyRedirect({ from, to }: { from: RegExp; to: string }) {
   const location = useLocation();
-  const newPath = location.pathname.replace(/^\/producthub/, '/product-hub');
+  const newPath = location.pathname.replace(from, to);
   return <Navigate to={newPath + location.search + location.hash} replace />;
 }
 
+function ForYouLegacyRedirect() {
+  return <LegacyRedirect from={/^\/for-you/} to="/home" />;
+}
+
+function ProducthubLegacyRedirect() {
+  return <LegacyRedirect from={/^\/producthub/} to="/product" />;
+}
+
+function ProductHubLegacyRedirect() {
+  return <LegacyRedirect from={/^\/product-hub/} to="/product" />;
+}
+
+function ProjectHubLegacyRedirect() {
+  return <LegacyRedirect from={/^\/project-hub/} to="/project" />;
+}
+
+function ReleaseHubLegacyRedirect() {
+  return <LegacyRedirect from={/^\/release-hub/} to="/release" />;
+}
+
+function StrategyhubLegacyRedirect() {
+  return <LegacyRedirect from={/^\/strategyhub/} to="/strategy" />;
+}
+
+function TesthubLegacyRedirect() {
+  return <LegacyRedirect from={/^\/testhub/} to="/test" />;
+}
+
+function IncidentHubLegacyRedirect() {
+  return <LegacyRedirect from={/^\/incident-hub/} to="/incident" />;
+}
+
+function TaskhubLegacyRedirect() {
+  return <LegacyRedirect from={/^\/taskhub/} to="/task" />;
+}
+
+function PlanhubLegacyRedirect() {
+  return <LegacyRedirect from={/^\/planhub/} to="/plan" />;
+}
+
 function IssueRedirectToBrowse() {
+  const { issueKey } = useParams<{ issueKey: string }>();
   const location = useLocation();
-  const newPath = location.pathname.replace(/^\/issue\//, '/browse/');
-  return <Navigate to={newPath + location.search + location.hash} replace />;
+  return <Navigate to={`/browse/${issueKey ?? ''}${location.search}${location.hash}`} replace />;
 }
 
 
@@ -155,36 +200,65 @@ function App() {
                 <Route path="/invite/accept" element={<S><InviteAcceptPage /></S>} />
                 <Route path="/deactivated" element={<S><DeactivatedPage /></S>} />
 
-                {/* Block A rule 1 (2026-05-01) — canonical URL prefix is
-                    `/product-hub`. Legacy `/producthub/*` redirects via
-                    ProducthubLegacyRedirect (preserves search + hash).
-                    Mounted OUTSIDE the protected shell so we escape the
-                    CatalystShell re-render loop that was causing Navigate to
-                    fire repeatedly without ever committing the URL change. */}
+                {/* ── Legacy route redirects (mounted OUTSIDE protected shell) ──
+                    CatalystShell's re-render loop prevents Navigate from
+                    committing when redirects live inside the shell. All legacy
+                    prefix redirects must live here. */}
+
+                {/* Legacy /for-you → /home */}
+                <Route path="/for-you" element={<ForYouLegacyRedirect />} />
+                <Route path="/for-you/*" element={<ForYouLegacyRedirect />} />
+
+                {/* Legacy /producthub → /product */}
                 <Route path="/producthub" element={<ProducthubLegacyRedirect />} />
                 <Route path="/producthub/*" element={<ProducthubLegacyRedirect />} />
 
-                {/* Block D (2026-05-01) — canonical /product-hub root lands on
-                    /product-hub/products (the workstream listing). Mounted
-                    OUTSIDE the protected shell for the same reason as the
-                    legacy redirects above: CatalystShell's re-render loop
-                    fires Navigate without committing the URL change when
-                    redirects live inside the shell. */}
-                <Route path="/product-hub" element={<Navigate to="/product-hub/products" replace />} />
+                {/* Legacy /product-hub → /product */}
+                <Route path="/product-hub" element={<ProductHubLegacyRedirect />} />
+                <Route path="/product-hub/*" element={<ProductHubLegacyRedirect />} />
 
-                {/* Same pattern for /project-hub — CatalystShell re-render loop
-                    prevents Navigate from committing when the redirect lives
-                    inside the shell. Mirror the /product-hub treatment above. */}
-                <Route path="/project-hub" element={<Navigate to="/project-hub/projects" replace />} />
+                {/* Legacy /project-hub → /project */}
+                <Route path="/project-hub" element={<ProjectHubLegacyRedirect />} />
+                <Route path="/project-hub/*" element={<ProjectHubLegacyRedirect />} />
 
-                {/* Protected shell with minimal routes */}
+                {/* Legacy /release-hub → /release */}
+                <Route path="/release-hub" element={<ReleaseHubLegacyRedirect />} />
+                <Route path="/release-hub/*" element={<ReleaseHubLegacyRedirect />} />
+
+                {/* Legacy /strategyhub → /strategy */}
+                <Route path="/strategyhub" element={<StrategyhubLegacyRedirect />} />
+                <Route path="/strategyhub/*" element={<StrategyhubLegacyRedirect />} />
+
+                {/* Legacy /testhub → /test */}
+                <Route path="/testhub" element={<TesthubLegacyRedirect />} />
+                <Route path="/testhub/*" element={<TesthubLegacyRedirect />} />
+
+                {/* Legacy /incident-hub → /incident */}
+                <Route path="/incident-hub" element={<IncidentHubLegacyRedirect />} />
+                <Route path="/incident-hub/*" element={<IncidentHubLegacyRedirect />} />
+
+                {/* Legacy /taskhub → /task */}
+                <Route path="/taskhub" element={<TaskhubLegacyRedirect />} />
+                <Route path="/taskhub/*" element={<TaskhubLegacyRedirect />} />
+
+                {/* Legacy /planhub → /plan */}
+                <Route path="/planhub" element={<PlanhubLegacyRedirect />} />
+                <Route path="/planhub/*" element={<PlanhubLegacyRedirect />} />
+
+                {/* Legacy /issue/:key → /browse/:key */}
+                <Route path="/issue/:issueKey" element={<IssueRedirectToBrowse />} />
+                <Route path="/project/:key/issue/:issueKey" element={<IssueRedirectToBrowse />} />
+
+                {/* Canonical root redirects — /product and /project bare paths
+                    land on their listing pages */}
+                <Route path="/product" element={<Navigate to="/product/products" replace />} />
+                <Route path="/project" element={<Navigate to="/project/projects" replace />} />
 
                 {/* Protected shell with minimal routes */}
                 <Route element={<ProtectedRoute><S><CatalystShell /></S></ProtectedRoute>}>
                   <Route index element={<S><ForYouPage /></S>} />
-                  <Route path="for-you" element={<S><ForYouPage /></S>} />
-                  <Route path="for-you/:tab" element={<S><ForYouPage /></S>} />
-                  <Route path="home" element={<Navigate to="/" replace />} />
+                  <Route path="home" element={<S><ForYouPage /></S>} />
+                  <Route path="home/:tab" element={<S><ForYouPage /></S>} />
 
                   {/* Admin routes — always available for incremental publishing control */}
                   <Route path="/admin" element={<S><AdminLayout /></S>}>
@@ -202,8 +276,7 @@ function App() {
                   {/* Universal issue resolver — Jira-parity /browse/:key canonical */}
                   <Route path="/browse/:issueKey" element={<S><IssueFullPage /></S>} />
 
-                  {/* Legacy /issue/:key — 301 to /browse/:key */}
-                  <Route path="/issue/:issueKey" element={<IssueRedirectToBrowse />} />
+                  {/* Legacy /issue/:key — redirect moved OUTSIDE shell (see above) */}
 
                   {/* All other routes — only when ENABLE_FULL_APP=true */}
                   {FullAppRoutes && (

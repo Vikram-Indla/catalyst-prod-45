@@ -215,7 +215,7 @@ export function WorkflowViewerModal({
                 <div style={{
                   marginBottom: 20,
                   padding: '10px 14px',
-                  background: token('color.background.neutral', '#F4F5F7'),
+                  background: 'var(--ds-background-neutral, #F4F5F7)',
                   borderRadius: 6,
                   fontSize: 13,
                   color: token('color.text.subtle', '#505258'),
@@ -293,7 +293,7 @@ export function WorkflowViewerModal({
                     }}>
                       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                         <thead>
-                          <tr style={{ background: token('color.background.neutral', '#F4F5F7') }}>
+                          <tr style={{ background: 'var(--ds-background-neutral, #F4F5F7)' }}>
                             <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: token('color.text', '#292A2E'), borderBottom: `1px solid ${token('color.border', '#DFE1E6')}` }}>Action</th>
                             <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: token('color.text', '#292A2E'), borderBottom: `1px solid ${token('color.border', '#DFE1E6')}` }}>From</th>
                             <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: token('color.text', '#292A2E'), borderBottom: `1px solid ${token('color.border', '#DFE1E6')}` }}>→ To</th>

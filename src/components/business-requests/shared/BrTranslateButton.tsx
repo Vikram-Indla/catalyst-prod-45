@@ -39,7 +39,7 @@ export function BrTranslateButton({ loading, label, onClick }: BrTranslateButton
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: token('color.background.neutral', '#F4F5F7'),
+        background: 'var(--ds-background-neutral, #F4F5F7)',
         border: `1px solid ${token('color.border', '#DFE1E6')}`,
         borderRadius: 3,
         cursor: loading ? 'default' : 'pointer',
@@ -56,7 +56,7 @@ export function BrTranslateButton({ loading, label, onClick }: BrTranslateButton
         }
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.background = token('color.background.neutral', '#F4F5F7');
+        e.currentTarget.style.background = 'var(--ds-background-neutral, #F4F5F7)';
       }}
     >
       {loading ? (
