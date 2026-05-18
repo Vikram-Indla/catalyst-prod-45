@@ -1,6 +1,6 @@
 export const R360 = {
   primary: 'var(--ds-text-brand, #2563EB)', primaryHover: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', primaryLight: 'var(--ds-background-selected, #EFF6FF)', primaryDark: '#1E3A5F',
-  success: 'var(--ds-text-success, #16A34A)', successLight: '#F0FDF4', successText: '#14532D',
+  success: 'var(--ds-text-success, var(--cp-success, #16A34A))', successLight: '#F0FDF4', successText: '#14532D',
   warning: 'var(--ds-text-warning, #D97706)', warningLight: '#FFFBEB', warningText: '#78350F',
   danger: 'var(--ds-text-danger, #EF4444)', dangerLight: 'var(--ds-background-danger, #FEF2F2)', dangerText: '#7F1D1D',
   teal: 'var(--cp-teal-60, #0D9488)', tealLight: '#F0FDFA', tealText: '#134E4A',
@@ -25,9 +25,9 @@ export const R360_STATUS_MAP: Record<string, StatusDisplay> = {
   'ToDo':           { category:'to_do',       label:'To Do',       color:'#78350F', bg:'#FFFBEB', dot:'var(--ds-text-warning, #D97706)' },
   'Technical validation': { category:'in_progress', label:'Validation', color:'#1E3A5F', bg:'var(--ds-background-selected, #EFF6FF)', dot:'var(--ds-text-brand, #2563EB)' },
   'Ready for Development': { category:'to_do', label:'Ready',      color:'#78350F', bg:'#FFFBEB', dot:'var(--ds-text-warning, #D97706)' },
-  'Done':           { category:'done',        label:'Done',        color:'#14532D', bg:'#F0FDF4', dot:'var(--ds-text-success, #16A34A)' },
-  'Closed':         { category:'done',        label:'Done',        color:'#14532D', bg:'#F0FDF4', dot:'var(--ds-text-success, #16A34A)' },
-  'Resolved':       { category:'done',        label:'Done',        color:'#14532D', bg:'#F0FDF4', dot:'var(--ds-text-success, #16A34A)' },
+  'Done':           { category:'done',        label:'Done',        color:'#14532D', bg:'#F0FDF4', dot:'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  'Closed':         { category:'done',        label:'Done',        color:'#14532D', bg:'#F0FDF4', dot:'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  'Resolved':       { category:'done',        label:'Done',        color:'#14532D', bg:'#F0FDF4', dot:'var(--ds-text-success, var(--cp-success, #16A34A))' },
   'Blocked':        { category:'blocked',     label:'Blocked',     color:'#7F1D1D', bg:'var(--ds-background-danger, #FEF2F2)', dot:'var(--ds-text-danger, #EF4444)' },
   'hold':           { category:'blocked',     label:'On Hold',     color:'#7F1D1D', bg:'var(--ds-background-danger, #FEF2F2)', dot:'var(--ds-text-danger, #EF4444)' },
   'Hold':           { category:'blocked',     label:'On Hold',     color:'#7F1D1D', bg:'var(--ds-background-danger, #FEF2F2)', dot:'var(--ds-text-danger, #EF4444)' },
@@ -41,6 +41,6 @@ export const R360_DEPT_COLORS: Record<string, string> = {
 };
 
 export const R360_PROJECT_COLORS: Record<string, string> = {
-  BAU:'var(--ds-text-brand, #2563EB)', SEN:'var(--ds-text-warning, #D97706)', FAC:'var(--ds-text-success, #16A34A)', OPS:'var(--cp-teal-60, #0D9488)', SUP:'var(--ds-text-subtlest, #64748B)',
-  LND:'var(--cp-purple-60, #7C3AED)', COM:'var(--cp-teal-60, #0D9488)', IN:'var(--ds-text-warning, #D97706)', DET:'var(--ds-text-danger, #EF4444)', ICP:'var(--ds-text-success, #16A34A)',
+  BAU:'var(--ds-text-brand, #2563EB)', SEN:'var(--ds-text-warning, #D97706)', FAC:'var(--ds-text-success, var(--cp-success, #16A34A))', OPS:'var(--cp-teal-60, #0D9488)', SUP:'var(--ds-text-subtlest, #64748B)',
+  LND:'var(--cp-purple-60, #7C3AED)', COM:'var(--cp-teal-60, #0D9488)', IN:'var(--ds-text-warning, #D97706)', DET:'var(--ds-text-danger, #EF4444)', ICP:'var(--ds-text-success, var(--cp-success, #16A34A))',
 };

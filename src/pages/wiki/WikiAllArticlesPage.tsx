@@ -180,9 +180,9 @@ export default function WikiAllArticlesPage() {
           (articles ?? []).length === 0 ? <div style={{ padding: 32, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #64748B)', fontSize: 12 }}>No articles found.</div> :
           (articles ?? []).map((a: any) => {
             const conf = Math.round((a.ai_confidence ?? 0) * 100);
-            const confColor = conf >= 90 ? 'var(--ds-text-success, #16A34A)' : conf >= 70 ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, #D97706)';
+            const confColor = conf >= 90 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : conf >= 70 ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, #D97706)';
             const verStatus = a.verification_status || 'unverified';
-            const verBadge = verStatus === 'verified' ? { bg: 'rgba(22,163,74,0.08)', color: 'var(--ds-text-success, #16A34A)', label: 'Verified' }
+            const verBadge = verStatus === 'verified' ? { bg: 'rgba(22,163,74,0.08)', color: 'var(--ds-text-success, var(--cp-success, #16A34A))', label: 'Verified' }
               : verStatus === 'needs_review' ? { bg: 'rgba(217,119,6,0.08)', color: 'var(--ds-text-warning, #D97706)', label: 'Review' }
               : { bg: 'rgba(100,116,139,0.08)', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #64748B)', label: 'Unverified' };
             const isSelected = selected.has(a.id);

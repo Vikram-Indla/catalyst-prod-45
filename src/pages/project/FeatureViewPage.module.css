@@ -230,7 +230,7 @@
 
 .statusDone {
   background: rgba(22, 163, 74, 0.12);
-  color: var(--ds-text-success, #16A34A);
+  color: var(--ds-text-success, var(--cp-success, #16A34A));
   border-color: rgba(22, 163, 74, 0.24);
 }
 
@@ -372,7 +372,7 @@
 
 .healthGreen {
   background: rgba(22, 163, 74, 0.12);
-  color: var(--ds-text-success, #16A34A);
+  color: var(--ds-text-success, var(--cp-success, #16A34A));
 }
 
 .healthAmber,
@@ -717,7 +717,7 @@
 
 .statusPillDone {
   background: rgba(22, 163, 74, 0.12);
-  color: var(--ds-text-success, #16A34A);
+  color: var(--ds-text-success, var(--cp-success, #16A34A));
 }
 
 /* Linked Items (matches TSX .linked-items) */
@@ -1270,7 +1270,7 @@
 
 .storyStatusDone {
   background: rgba(22, 163, 74, 0.15);
-  color: var(--ds-text-success, #16A34A);
+  color: var(--ds-text-success, var(--cp-success, #16A34A));
 }
 
 .storyStatusInProgress {

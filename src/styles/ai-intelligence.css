@@ -18,7 +18,7 @@
   --rai-primary-bg: var(--ds-background-selected, #EFF6FF);
   --rai-teal: var(--cp-teal-60, #0D9488);
   --rai-teal-bg: #F0FDFA;
-  --rai-success: var(--ds-text-success, #16A34A);
+  --rai-success: var(--ds-text-success, var(--cp-success, #16A34A));
   --rai-success-bg: #F0FDF4;
   --rai-warning: var(--ds-text-warning, #D97706);
   --rai-warning-bg: #FFFBEB;

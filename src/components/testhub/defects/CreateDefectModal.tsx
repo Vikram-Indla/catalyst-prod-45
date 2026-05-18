@@ -25,7 +25,7 @@ const SEVERITY_OPTIONS = [
   { value: 'critical', label: 'Critical', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', desc: 'System crash, data loss', mapped: 'CRITICAL' as DefectSeverity },
   { value: 'high', label: 'High', color: '#EA580C', desc: 'Major feature broken', mapped: 'MAJOR' as DefectSeverity },
   { value: 'medium', label: 'Medium', color: 'var(--ds-text-warning, #D97706)', desc: 'Feature partially works', mapped: 'MINOR' as DefectSeverity },
-  { value: 'low', label: 'Low', color: 'var(--ds-text-success, #16A34A)', desc: 'Minor/cosmetic issue', mapped: 'TRIVIAL' as DefectSeverity },
+  { value: 'low', label: 'Low', color: 'var(--ds-text-success, var(--cp-success, #16A34A))', desc: 'Minor/cosmetic issue', mapped: 'TRIVIAL' as DefectSeverity },
 ];
 
 const PRIORITY_OPTIONS = [

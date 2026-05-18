@@ -9,7 +9,7 @@ function issueTypeToLevel(type: string): { level: number; name: string; color: s
     case 'Epic':
       return { level: 1, name: 'Epic', color: '#2563EB', colorText: '#1D4ED8' };
     case 'Story':
-      return { level: 3, name: 'Story', color: '#16A34A', colorText: '#15803D' };
+      return { level: 3, name: 'Story', color: 'var(--cp-success, #16A34A)', colorText: '#15803D' };
     case 'Sub-task':
       return { level: 4, name: 'Sub-task', color: '#64748B', colorText: '#475569' };
     case 'QA Bug':
@@ -34,7 +34,7 @@ function issueTypeToLevel(type: string): { level: number; name: string; color: s
 function statusCategoryToColors(category: string): { color: string; colorText: string; isTerminal: boolean } {
   switch (category) {
     case 'Done':
-      return { color: '#16A34A', colorText: '#15803D', isTerminal: true };
+      return { color: 'var(--cp-success, #16A34A)', colorText: '#15803D', isTerminal: true };
     case 'In Progress':
       return { color: '#2563EB', colorText: '#1D4ED8', isTerminal: false };
     case 'To Do':

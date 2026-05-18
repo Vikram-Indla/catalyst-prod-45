@@ -163,8 +163,8 @@ export default function RequirementsListPage() {
               <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '8px 0 0' }}>{requirements.length}</p>
             </div>
             <div style={{ backgroundColor: '#F0FDF4', borderRadius: 12, padding: 20, border: '1px solid #BBF7D0' }}>
-              <p style={{ fontSize: 12, color: 'var(--ds-text-success, #16A34A)', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Fully Covered</p>
-              <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-success, #16A34A)', margin: '8px 0 0' }}>{fullyCount}</p>
+              <p style={{ fontSize: 12, color: 'var(--ds-text-success, var(--cp-success, #16A34A))', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Fully Covered</p>
+              <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-success, var(--cp-success, #16A34A))', margin: '8px 0 0' }}>{fullyCount}</p>
             </div>
             <div style={{ backgroundColor: '#FFFBEB', borderRadius: 12, padding: 20, border: '1px solid #FDE68A' }}>
               <p style={{ fontSize: 12, color: 'var(--ds-text-warning, #D97706)', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Partially Covered</p>

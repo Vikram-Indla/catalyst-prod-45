@@ -477,7 +477,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 <span className="jus-field-val" style={mkFieldVal(isDark)}>
                   {user.last_synced_at ? (
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--ds-text-success, #16A34A)', display: 'inline-block' }} />
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success, #16A34A))', display: 'inline-block' }} />
                       {formatDate(user.last_synced_at)}
                     </span>
                   ) : (
@@ -587,8 +587,8 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: '4px',
                     padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500,
-                    border: `1px solid ${isInactive ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))'}`,
-                    color: isInactive ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
+                    border: `1px solid ${isInactive ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))'}`,
+                    color: isInactive ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
                     background: T.surface, cursor: toggling ? 'not-allowed' : 'pointer',
                   }}
                 >

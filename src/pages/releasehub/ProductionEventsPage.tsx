@@ -37,7 +37,7 @@ function getDotStyle(event: any) {
   const type = event.event_type?.toUpperCase() || 'DEPLOYMENT';
   const result = event.deployment_result?.toUpperCase();
 
-  let borderColor = 'var(--ds-text-success, #16A34A)';
+  let borderColor = 'var(--ds-text-success, var(--cp-success, #16A34A))';
   let size = 16;
 
   if (type === 'ROLLBACK' || result === 'ROLLED_BACK') {

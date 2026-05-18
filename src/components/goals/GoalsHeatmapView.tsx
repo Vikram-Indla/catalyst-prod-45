@@ -36,7 +36,7 @@ function getCellStyle(avgPct: number, isDark = false) {
     return { bg: 'rgba(239,68,68,0.20)', text: 'var(--ds-border-danger, #FCA5A5)', border: '3px solid rgba(239,68,68,0.4)' };
   }
   if (avgPct >= 80) return { bg: 'rgba(22, 163, 74, 0.20)', text: '#15803D', border: 'none' };
-  if (avgPct >= 60) return { bg: 'rgba(22, 163, 74, 0.12)', text: 'var(--ds-text-success, #16A34A)', border: 'none' };
+  if (avgPct >= 60) return { bg: 'rgba(22, 163, 74, 0.12)', text: 'var(--ds-text-success, var(--cp-success, #16A34A))', border: 'none' };
   if (avgPct >= 40) return { bg: 'rgba(217, 119, 6, 0.12)', text: '#B45309', border: '3px solid rgba(217,119,6,0.3)' };
   if (avgPct >= 20) return { bg: 'rgba(239, 68, 68, 0.12)', text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', border: '3px solid rgba(239,68,68,0.3)' };
   return { bg: 'rgba(239, 68, 68, 0.20)', text: 'var(--ds-text-danger, #991B1B)', border: '3px solid rgba(239,68,68,0.4)' };
@@ -49,7 +49,7 @@ function getThemeDotColor(goals: Goal[]): string {
   const hasAtRisk = goals.some(g => g.status === 'at_risk');
   if (hasOffTrack || avgProgress < 40) return 'var(--ds-text-danger, #EF4444)';
   if (hasAtRisk || avgProgress < 60) return 'var(--ds-text-warning, #D97706)';
-  return 'var(--ds-text-success, #16A34A)';
+  return 'var(--ds-text-success, var(--cp-success, #16A34A))';
 }
 
 export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }: GoalsHeatmapViewProps) {

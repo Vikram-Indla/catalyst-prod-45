@@ -36,7 +36,7 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 
 /* ── Stats Config ── */
 const STATS_CONFIG = [
-  { key: 'jiraSynced',   dot: 'var(--ds-text-success, #16A34A)', label: 'Jira Synced',    sub: 'from last sync' },
+  { key: 'jiraSynced',   dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', label: 'Jira Synced',    sub: 'from last sync' },
   { key: 'catalystOnly', dot: 'var(--cp-purple-60, #7C3AED)', label: 'Catalyst Only',  sub: 'Not in Jira' },
   { key: 'proxyAuth',    dot: 'var(--ds-text-brand, #2563EB)', label: 'Proxy Auth',     sub: 'Jira password active' },
   { key: 'conflicts',    dot: 'var(--ds-text-warning, #D97706)', label: 'Conflicts',      sub: 'Needs resolution' },
@@ -67,7 +67,7 @@ const AVATAR_COLORS = [
 const HEADERS = ['User / Jira Identity', 'Auth Mode', 'Projects & Permissions', 'Synced At', 'Last Jira Login', 'Last in Catalyst', 'Status', ''];
 
 const PERM_DOT: Record<string, string> = {
-  full: 'var(--ds-text-success, #16A34A)',
+  full: 'var(--ds-text-success, var(--cp-success, #16A34A))',
   edit: 'var(--ds-text-brand, #2563EB)',
   view: '#9CA3AF',
 };
@@ -741,7 +741,7 @@ const JiraUserSync: React.FC = () => {
                         <span style={{ fontSize: '11px', fontStyle: 'italic', color: 'var(--cp-text-muted, #94A3B8)' }}>Not synced</span>
                       ) : (
                         <div className="flex items-center gap-1">
-                          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--ds-text-success, #16A34A)', flexShrink: 0 }} />
+                          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success, #16A34A))', flexShrink: 0 }} />
                           <span style={{ fontSize: '11px', fontFamily: 'var(--cp-font-mono)', whiteSpace: 'nowrap', color: 'var(--cp-text-tertiary, #64748B)' }}>{formatSyncDate(user.last_synced_at)}</span>
                         </div>
                       )}
@@ -775,8 +775,8 @@ const JiraUserSync: React.FC = () => {
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
                           padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500,
                           background: 'var(--cp-bg-elevated, #FFFFFF)',
-                          border: `1px solid ${user.is_active_in_catalyst ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-success, #16A34A)'}`,
-                          color: user.is_active_in_catalyst ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-success, #16A34A)',
+                          border: `1px solid ${user.is_active_in_catalyst ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-success, var(--cp-success, #16A34A))'}`,
+                          color: user.is_active_in_catalyst ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-success, var(--cp-success, #16A34A))',
                           cursor: togglingId === user.id ? 'not-allowed' : 'pointer',
                           opacity: togglingId === user.id ? 0.6 : undefined, whiteSpace: 'nowrap',
                         }}>

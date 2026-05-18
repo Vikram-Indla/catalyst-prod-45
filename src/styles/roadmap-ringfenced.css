@@ -42,9 +42,9 @@
   --roadmap-type-entity-light:      rgba(217, 119, 6, 0.12);
 
   /* Improvement = Success Green */
-  --roadmap-type-improvement:       var(--cp-success-60);    /* var(--ds-text-success, #16A34A) */
+  --roadmap-type-improvement:       var(--cp-success-60);    /* var(--ds-text-success, var(--cp-success, #16A34A)) */
   --roadmap-type-improvement-bg:    #F0FDF4;
-  --roadmap-type-improvement-bar:   linear-gradient(135deg, var(--ds-text-success, #16A34A), #15803D);
+  --roadmap-type-improvement-bar:   linear-gradient(135deg, var(--ds-text-success, var(--cp-success, #16A34A)), #15803D);
   --roadmap-type-improvement-hover: #15803D;
   --roadmap-type-improvement-light: rgba(22, 163, 74, 0.12);
 

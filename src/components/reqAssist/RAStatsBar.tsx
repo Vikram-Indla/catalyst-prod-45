@@ -130,7 +130,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
           )}
           <span style={labelStyle}>BRDS PROCESSED</span>
           <div style={{ width: '100%', height: 4, background: 'var(--ds-border, #E5E7EB)', borderRadius: 4, marginTop: 8 }}>
-            <div style={{ width: `${brdPct}%`, height: 4, borderRadius: 4, background: 'linear-gradient(90deg, var(--ds-text-success, #16A34A), var(--ds-text-success, #22C55E))', transition: 'width 400ms ease' }} />
+            <div style={{ width: `${brdPct}%`, height: 4, borderRadius: 4, background: 'linear-gradient(90deg, var(--ds-text-success, var(--cp-success, #16A34A)), var(--ds-text-success, #22C55E))', transition: 'width 400ms ease' }} />
           </div>
           <span style={{ fontSize: 11, color: 'var(--sem-success)', fontFamily: 'var(--cp-font-body)', marginTop: 4 }}>Pipeline stage: Complete</span>
         </div>
@@ -275,7 +275,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
 function activityDotColor(eventType: string): string {
   if (eventType === 'index_start' || eventType === 'index_complete') return 'var(--cp-teal-60, #0D9488)';
   if (eventType === 'import') return 'var(--ds-text-brand, #2563EB)';
-  if (eventType === 'epic_generated' || eventType === 'published') return 'var(--ds-text-success, #16A34A)';
+  if (eventType === 'epic_generated' || eventType === 'published') return 'var(--ds-text-success, var(--cp-success, #16A34A))';
   if (eventType === 'uat_generated') return 'var(--cp-teal-60, #0D9488)';
   return 'var(--ds-text-subtlest, #94A3B8)';
 }

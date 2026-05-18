@@ -69,7 +69,7 @@ const TOKENS = `
   --srd-bdr:#E4E4E7; --srd-bdr-s:#D4D4D8;
   --srd-blue:var(--ds-text-brand, #2563EB); --srd-blue-h:var(--ds-background-brand-bold-hovered, #1D4ED8); --srd-blue-bg:var(--ds-background-selected, #EFF6FF); --srd-blue-bdr:#BFDBFE;
   --srd-teal:var(--cp-teal-60, #0D9488); --srd-teal-t:#0A8277; --srd-teal-bg:#F0FDFA;
-  --srd-green:var(--ds-text-success, #16A34A); --srd-green-t:#11853D; --srd-green-bg:#F0FDF4;
+  --srd-green:var(--ds-text-success, var(--cp-success, #16A34A)); --srd-green-t:#11853D; --srd-green-bg:#F0FDF4;
   --srd-red:var(--ds-text-danger, var(--cp-danger, #DC2626)); --srd-red-t:#D92525; --srd-red-bg:var(--ds-background-danger, #FEF2F2);
   --srd-purple:var(--ds-text-brand, #2563EB);
   --srd-ai:var(--ds-text-brand, #2563EB); --srd-ai-d:#1E40AF; --srd-ai-bg:var(--ds-background-selected, #EFF6FF); --srd-ai-bdr:#93C5FD;

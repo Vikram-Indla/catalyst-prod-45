@@ -22,7 +22,7 @@ const AVATAR_COLORS = [
   '#6366F1', // indigo
   'var(--cp-teal-60, #0D9488)', // teal
   'var(--ds-text-warning, #D97706)', // amber
-  'var(--ds-text-success, #16A34A)', // green
+  'var(--ds-text-success, var(--cp-success, #16A34A))', // green
   '#0891B2', // cyan
   'var(--ds-text-danger, var(--cp-danger, #DC2626))', // red
   'var(--ds-text-subtle, #334155)', // slate

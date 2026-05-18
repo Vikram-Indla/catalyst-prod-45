@@ -31,8 +31,8 @@ const LABEL_STYLE: React.CSSProperties = {
 
 function statusBadge(status: string) {
   const map: Record<string, { dot: string; bg: string; text: string; label: string }> = {
-    active:      { dot: 'var(--ds-text-success, #16A34A)', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'Active' },
-    on_track:    { dot: 'var(--ds-text-success, #16A34A)', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'On Track' },
+    active:      { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'Active' },
+    on_track:    { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'On Track' },
     completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Completed' },
     achieved:    { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Achieved' },
     at_risk:     { dot: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', label: 'At Risk' },
@@ -51,7 +51,7 @@ function statusBadge(status: string) {
 }
 
 function progressBar(pct: number, height = 8) {
-  const color = pct >= 60 ? 'var(--ds-text-success, #16A34A)' : pct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--sem-danger)';
+  const color = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--sem-danger)';
   return (
     <div style={{ width: '100%', height, background: 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
       <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 4, transition: 'width 300ms' }} />
@@ -140,12 +140,12 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
   if (!isOpen) return null;
 
   const confPct = goal ? (typeof goal.confidence_level === 'number' ? (goal.confidence_level <= 1 ? Math.round(goal.confidence_level * 100) : Math.round(goal.confidence_level)) : 0) : 0;
-  const confColor = confPct >= 60 ? 'var(--ds-text-success, #16A34A)' : confPct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--sem-danger)';
+  const confColor = confPct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : confPct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--sem-danger)';
   const daysToDeadline = goal?.target_date ? Math.ceil((new Date(goal.target_date).getTime() - Date.now()) / 86400000) : null;
 
   // Status dot color
   const statusDotColor = goal ? ({
-    active: 'var(--ds-text-success, #16A34A)', on_track: 'var(--ds-text-success, #16A34A)', completed: '#4F46E5',
+    active: 'var(--ds-text-success, var(--cp-success, #16A34A))', on_track: 'var(--ds-text-success, var(--cp-success, #16A34A))', completed: '#4F46E5',
     at_risk: 'var(--ds-text-warning, #D97706)', off_track: 'var(--sem-danger)', draft: 'var(--ds-text-subtlest, #94A3B8)',
   }[goal.status] || 'var(--ds-text-subtlest, #94A3B8)') : 'var(--ds-text-subtlest, #94A3B8)';
 
@@ -391,7 +391,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
   })() : '—';
 
   const pct = Math.round(goal.progress_pct || 0);
-  const pctColor = pct >= 60 ? 'var(--ds-text-success, #16A34A)' : pct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--sem-danger)';
+  const pctColor = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--sem-danger)';
 
   const fields = [
     { label: 'Status', value: statusBadge(goal.status) },
@@ -488,7 +488,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       {krs.map(kr => {
         const pct = computeKRProgress(kr);
-        const pctColor = pct >= 60 ? 'var(--ds-text-success, #16A34A)' : pct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--sem-danger)';
+        const pctColor = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--sem-danger)';
         return (
           <div key={kr.id} className="kr-detail-card" style={{
             background: 'var(--cp-bg-elevated, #FFFFFF)', border: '1px solid var(--divider)', borderRadius: 8,

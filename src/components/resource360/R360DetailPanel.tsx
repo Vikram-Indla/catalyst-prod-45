@@ -50,18 +50,18 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'In UAT':               { dot: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT' },
   'UAT Ready':            { dot: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready' },
   // ── Green: Done ──
-  'Done':                 { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Closed':               { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Resolved':             { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Ready for Production': { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Ready Prod' },
-  'Beta Ready':           { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Beta Ready' },
-  'Production Ready':     { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Prod Ready' },
-  'Monitor':              { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Monitor' },
-  'Released':             { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Released' },
-  'Verified':             { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Verified' },
-  'Approved':             { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Approved' },
-  'Complete':             { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Complete' },
-  'Completed':            { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Complete' },
+  'Done':                 { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Closed':               { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Resolved':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Ready for Production': { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Ready Prod' },
+  'Beta Ready':           { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Beta Ready' },
+  'Production Ready':     { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Prod Ready' },
+  'Monitor':              { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Monitor' },
+  'Released':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Released' },
+  'Verified':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Verified' },
+  'Approved':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Approved' },
+  'Complete':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Complete' },
+  'Completed':            { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Complete' },
   // ── Red: Blocked / Rejected ──
   'Blocked':              { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: 'Blocked' },
   'Rejected':             { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: 'Rejected' },
@@ -69,7 +69,7 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
 };
 
 // Category-level fallbacks (Jira always provides these)
-const CAT_DONE       = { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done' };
+const CAT_DONE       = { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done' };
 const CAT_INPROGRESS = { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' };
 const CAT_TODO       = { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' };
 
@@ -93,9 +93,9 @@ function resolveStatus(item: any) {
   return CAT_TODO;
 }
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, #D97706)', FAC: 'var(--ds-text-success, #16A34A)', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, #64748B)', LND: 'var(--cp-purple-60, #7C3AED)' };
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, #D97706)', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, #64748B)', LND: 'var(--cp-purple-60, #7C3AED)' };
 const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, #64748B)';
-const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, #16A34A)' : d <= 14 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
+const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
 const ageLabel = (d: number) => d === 0 ? 'Today' : d === 1 ? '1d ago' : `${d}d ago`;
 
 interface Props {

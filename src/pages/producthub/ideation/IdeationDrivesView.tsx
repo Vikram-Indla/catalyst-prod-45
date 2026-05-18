@@ -169,7 +169,7 @@ export default function IdeationDrivesView() {
               }}>
                 <div style={{
                   width: `${Math.min(pct, 100)}%`, height: '100%',
-                  background: pct >= 100 ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-brand, #2563EB)',
+                  background: pct >= 100 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-brand, #2563EB)',
                   borderRadius: 4,
                   transition: 'width 0.3s',
                   minWidth: pct > 0 ? 4 : 0,

@@ -66,7 +66,7 @@ function getStatusStyleFallback(statusName: string, statusCategory?: string): St
   if (lower === 'in uat' || lower === 'uat ready')
     return { dot: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', text: '#4C1D95', category: 'started' };
   if (lower === 'done' || lower === 'closed' || lower === 'resolved' || lower === 'ready for production' || lower === 'beta ready')
-    return { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', text: '#14532D', category: 'completed' };
+    return { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', text: '#14532D', category: 'completed' };
   if (lower === 'blocked')
     return { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', text: '#7F1D1D', category: 'blocked' };
   if (lower === 're-open' || lower === 'reopen')
@@ -80,7 +80,7 @@ function getStatusStyleFallback(statusName: string, statusCategory?: string): St
   if (statusCategory) {
     const catLower = statusCategory.toLowerCase();
     if (catLower === 'done' || catLower === 'complete')
-      return { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', text: '#14532D', category: 'completed' };
+      return { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', text: '#14532D', category: 'completed' };
     if (catLower === 'in progress' || catLower === 'indeterminate')
       return { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E3A5F', category: 'started' };
     if (catLower === 'to do' || catLower === 'new')
@@ -108,7 +108,7 @@ export function getPriorityColor(priority: string): string {
 
 /** Age color */
 export function getAgeColor(ageDays: number): string {
-  if (ageDays <= 7) return 'var(--ds-text-success, #16A34A)';
+  if (ageDays <= 7) return 'var(--ds-text-success, var(--cp-success, #16A34A))';
   if (ageDays <= 14) return 'var(--ds-text-warning, #D97706)';
   return 'var(--ds-text-danger, #EF4444)';
 }

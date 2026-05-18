@@ -29,7 +29,7 @@ export const PRIORITY_COLORS: Record<string, { color: string; bg: string; label:
 
 // ── Status Colors ──
 export const STATUS_COLORS: Record<string, { color: string; bg: string; label: string }> = {
-  Active:    { color: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', label: 'Active' },
+  Active:    { color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', label: 'Active' },
   Planned:   { color: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', label: 'Planned' },
   Completed: { color: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', label: 'Completed' },
   Cancelled: { color: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', label: 'Cancelled' },

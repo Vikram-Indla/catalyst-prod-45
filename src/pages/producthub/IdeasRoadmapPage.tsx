@@ -113,7 +113,7 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
     <div onClick={onClick} style={{
       background: 'var(--cp-bg-elevated, #FFFFFF)',
       border: `1px solid ${isDark ? 'var(--ds-border-bold, #454545)' : dk.border}`,
-      borderLeft: isConverted ? '3px solid #16A34A' : `1px solid ${dk.border}`,
+      borderLeft: isConverted ? '3px solid var(--cp-success, #16A34A)' : `1px solid ${dk.border}`,
       borderRadius: '6px',
       padding: '12px', marginBottom: '8px', cursor: 'pointer',
       transition: 'box-shadow 150ms ease, transform 150ms ease',

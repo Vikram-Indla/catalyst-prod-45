@@ -559,7 +559,7 @@ export default function FeatureFlagsPage() {
                 className="h-full rounded-full"
                 style={{
                   width: stats.total > 0 ? `${(stats.enabled / stats.total) * 100}%` : '0%',
-                  background: 'var(--ds-text-success, #16A34A)',
+                  background: 'var(--ds-text-success, var(--cp-success, #16A34A))',
                   transition: 'width 300ms ease-out',
                 }}
               />
@@ -582,7 +582,7 @@ export default function FeatureFlagsPage() {
                 height: 50,
                 padding: '0 14px',
                 borderRadius: 6,
-                background: 'var(--ds-text-success, #16A34A)',
+                background: 'var(--ds-text-success, var(--cp-success, #16A34A))',
                 fontFamily: 'var(--cp-font-body)',
                 fontSize: 13,
                 fontWeight: 600,
@@ -590,7 +590,7 @@ export default function FeatureFlagsPage() {
                 transition: 'background 120ms ease',
               }}
               onMouseEnter={(e) => { if (!allEnabled) (e.currentTarget.style.background = '#15803D'); }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--ds-text-success, #16A34A)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--ds-text-success, var(--cp-success, #16A34A))'; }}
             >
               {bulkMutation.isPending ? <Spinner size="small" /> : <CheckMarkIcon label="" size="small" />}
               Enable All

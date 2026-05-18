@@ -82,7 +82,7 @@ export const THEME_COLORS: Record<string, string> = {
   'Digital Transformation': '#2563EB',
   'Workforce Development': 'var(--cp-teal-60, #0D9488)',
   'Supply Chain Excellence': '#D97706',
-  'Sustainability & ESG': '#16A34A',
+  'Sustainability & ESG': 'var(--cp-success, #16A34A)',
 };
 
 export const WORKSTREAM_COLORS: Record<string, string> = {

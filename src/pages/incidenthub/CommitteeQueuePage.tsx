@@ -100,7 +100,7 @@ export default function CommitteeQueuePage() {
                     <div style={{
                       height: '100%',
                       width: `${progress * 100}%`,
-                      backgroundColor: progress >= 0.6 ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-warning, #D97706)',
+                      backgroundColor: progress >= 0.6 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-warning, #D97706)',
                       borderRadius: 4,
                       transition: 'width 400ms ease',
                     }} />

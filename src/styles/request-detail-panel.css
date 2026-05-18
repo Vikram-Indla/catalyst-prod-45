@@ -26,7 +26,7 @@
   --idp-primary-bg: var(--ds-background-selected, #EFF6FF);
   --idp-teal: var(--cp-teal-60, #0D9488);
   --idp-teal-bg: #F0FDFA;
-  --idp-success: var(--ds-text-success, #16A34A);
+  --idp-success: var(--ds-text-success, var(--cp-success, #16A34A));
   --idp-success-bg: #F0FDF4;
   --idp-warning: var(--ds-text-warning, #D97706);
   --idp-warning-bg: #FFFBEB;

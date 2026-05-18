@@ -299,9 +299,9 @@ export default function ReqAssistGenerate() {
           {/* Qualify pass */}
           {qualifyResult && qualifyResult.qualified && (
             <div style={{ marginTop: 12, padding: '14px 16px', background: '#F0FDF4', border: '0.75px solid #DCFCE7', borderRadius: 6, display: 'flex', gap: 10 }}>
-              <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--ds-background-success, #DCFCE7)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={12} color="var(--ds-text-success, #16A34A)" /></div>
+              <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--ds-background-success, #DCFCE7)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={12} color="var(--ds-text-success, var(--cp-success, #16A34A))" /></div>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-success, #16A34A)', fontFamily: 'var(--cp-font-body)' }}>✓ Qualified — Score {qualifyResult.score}/100</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-success, var(--cp-success, #16A34A))', fontFamily: 'var(--cp-font-body)' }}>✓ Qualified — Score {qualifyResult.score}/100</div>
                 {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: '#166534', margin: '4px 0 0', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>• {r}</p>)}
                 <p style={{ fontSize: 11, color: 'var(--cp-text-tertiary, #64748B)', margin: '6px 0 0', fontFamily: 'var(--cp-font-body)' }}>
                   Domain: {qualifyResult.domain_detected} · ~{qualifyResult.requirement_count_estimate} requirements · {qualifyResult.language.toUpperCase()}

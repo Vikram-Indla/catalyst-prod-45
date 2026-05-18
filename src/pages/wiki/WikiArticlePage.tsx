@@ -630,7 +630,7 @@ export default function WikiArticlePage() {
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <button onClick={() => handleFeedback(true)} style={{
                   fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 6,
-                  border: '1px solid rgba(22,163,74,0.3)', background: isDark ? 'rgba(22,163,74,0.12)' : '#F0FDF4', color: 'var(--ds-text-success, #16A34A)',
+                  border: '1px solid rgba(22,163,74,0.3)', background: isDark ? 'rgba(22,163,74,0.12)' : '#F0FDF4', color: 'var(--ds-text-success, var(--cp-success, #16A34A))',
                   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
                 }}><ThumbsUp size={13} /> Yes</button>
                 <button onClick={() => handleFeedback(false)} style={{

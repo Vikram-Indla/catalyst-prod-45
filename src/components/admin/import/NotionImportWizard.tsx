@@ -93,7 +93,7 @@ function WizardStepper({ step }: { step: number }) {
             <div className="flex items-center gap-2">
               <div className={`
                 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-200
-                ${done ? 'bg-[var(--ds-text-success,#16A34A)] text-white' : ''}
+                ${done ? 'bg-[var(--ds-text-success,var(--cp-success, #16A34A))] text-white' : ''}
                 ${active ? 'bg-[var(--ds-text-brand,#2563EB)] text-white ring-2 ring-[var(--ds-text-brand,#2563EB)]/30 ring-offset-1' : ''}
                 ${!done && !active ? 'bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtlest,#94A3B8)]' : ''}
               `}>
@@ -106,7 +106,7 @@ function WizardStepper({ step }: { step: number }) {
               </span>
             </div>
             {i < steps.length - 1 && (
-              <div className={`w-8 h-px mx-2 ${done ? 'bg-[var(--ds-text-success,#16A34A)]' : 'bg-[var(--ds-border,#E2E8F0)]'}`} />
+              <div className={`w-8 h-px mx-2 ${done ? 'bg-[var(--ds-text-success,var(--cp-success, #16A34A))]' : 'bg-[var(--ds-border,#E2E8F0)]'}`} />
             )}
           </div>
         );
@@ -369,7 +369,7 @@ export function NotionImportWizard() {
                   </p>
                 </div>
                 <div className="flex gap-2 text-[11px]">
-                  <span className="px-2 py-1 rounded bg-[var(--ds-background-success,#DCFCE7)] text-[var(--ds-text-success,#16A34A)] font-semibold">{mappedCount} mapped</span>
+                  <span className="px-2 py-1 rounded bg-[var(--ds-background-success,#DCFCE7)] text-[var(--ds-text-success,var(--cp-success, #16A34A))] font-semibold">{mappedCount} mapped</span>
                   <span className="px-2 py-1 rounded bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtlest,#94A3B8)] font-semibold">{skippedCount} skipped</span>
                 </div>
               </div>
@@ -472,7 +472,7 @@ export function NotionImportWizard() {
                   </p>
                   <div className="flex justify-center gap-2 text-[12px] font-medium">
                     {importResult.imported > 0 && (
-                      <span className="px-2.5 py-1 rounded-full bg-[var(--ds-background-success,#DCFCE7)] text-[var(--ds-text-success,#16A34A)]">{importResult.imported} imported</span>
+                      <span className="px-2.5 py-1 rounded-full bg-[var(--ds-background-success,#DCFCE7)] text-[var(--ds-text-success,var(--cp-success, #16A34A))]">{importResult.imported} imported</span>
                     )}
                     {importResult.skipped > 0 && (
                       <span className="px-2.5 py-1 rounded-full bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtlest,#64748B)]">{importResult.skipped} skipped</span>

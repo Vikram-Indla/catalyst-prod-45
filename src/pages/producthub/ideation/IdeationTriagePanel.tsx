@@ -19,11 +19,11 @@ interface Props {
 }
 
 const DOT_COLORS: Record<string, string> = {
-  'Fast-Track': 'var(--ds-text-success, #16A34A)', 'Merge': 'var(--ds-text-brand, #2563EB)', 'Investigate': 'var(--ds-text-warning, #D97706)', 'Defer': 'var(--ds-text-subtlest, #94A3B8)',
+  'Fast-Track': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Merge': 'var(--ds-text-brand, #2563EB)', 'Investigate': 'var(--ds-text-warning, #D97706)', 'Defer': 'var(--ds-text-subtlest, #94A3B8)',
 };
 
 const CATEGORY_TEXT_COLORS: Record<string, string> = {
-  'FAST-TRACK RECOMMENDED': 'var(--ds-text-success, #16A34A)', 'MERGE CANDIDATES': 'var(--ds-text-brand, #2563EB)',
+  'FAST-TRACK RECOMMENDED': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'MERGE CANDIDATES': 'var(--ds-text-brand, #2563EB)',
   'NEEDS INVESTIGATION': 'var(--ds-text-warning, #D97706)', 'RECOMMENDED TO DEFER': 'var(--ds-text-subtlest, #64748B)',
 };
 

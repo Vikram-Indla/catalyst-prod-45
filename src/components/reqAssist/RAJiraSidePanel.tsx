@@ -452,7 +452,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                       <div style={{
                         flex: 1, height: 0, marginTop: -18,
                         borderTop: step.state === 'complete' && stepsRaw[i + 1].state === 'complete'
-                          ? '2px solid #16A34A'
+                          ? '2px solid var(--cp-success, #16A34A)'
                           : step.state === 'complete'
                             ? (isDark ? '2px dashed #292929' : '2px dashed #CBD5E1')
                             : (isDark ? '2px dashed #1A1A1A' : '2px dashed #E5E7EB'),
@@ -626,7 +626,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               <SectionHeader>Document Content</SectionHeader>
               {brdData.raw_text && (
                 <button onClick={handleCopy} style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center' }}>
-                  {copied ? <Check size={14} color="var(--ds-text-success, #16A34A)" /> : <Copy size={14} color="var(--fg-4)" />}
+                  {copied ? <Check size={14} color="var(--ds-text-success, var(--cp-success, #16A34A))" /> : <Copy size={14} color="var(--fg-4)" />}
                 </button>
               )}
             </div>

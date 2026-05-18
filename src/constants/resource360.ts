@@ -68,7 +68,7 @@ export const R360_TOKENS = {
   primaryHover: 'var(--ds-background-brand-bold-hovered, #1D4ED8)',
   primaryLight: 'var(--ds-background-selected, #EFF6FF)',
   primaryDark: '#1E3A5F',
-  success: 'var(--ds-text-success, #16A34A)',
+  success: 'var(--ds-text-success, var(--cp-success, #16A34A))',
   successLight: '#F0FDF4',
   successText: '#14532D',
   warning: 'var(--ds-text-warning, #D97706)',
@@ -100,7 +100,7 @@ export const R360_STATUS_STYLES: Record<string, {
   'ToDo':        { color: '#78350F', bg: '#FFFBEB', dot: 'var(--ds-text-warning, #D97706)', label: 'ToDo' },
   'In Progress': { color: '#1E3A5F', bg: 'var(--ds-background-selected, #EFF6FF)', dot: 'var(--ds-text-brand, #2563EB)', label: 'In Progress' },
   'In Review':   { color: '#134E4A', bg: '#F0FDFA', dot: 'var(--cp-teal-60, #0D9488)', label: 'In Review' },
-  'Done':        { color: '#14532D', bg: '#F0FDF4', dot: 'var(--ds-text-success, #16A34A)', label: 'Done' },
+  'Done':        { color: '#14532D', bg: '#F0FDF4', dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', label: 'Done' },
   'Blocked':     { color: '#7F1D1D', bg: 'var(--ds-background-danger, #FEF2F2)', dot: 'var(--ds-text-danger, #EF4444)', label: 'Blocked' },
   'Re-Open':     { color: '#78350F', bg: '#FFFBEB', dot: 'var(--ds-text-warning, #D97706)', label: 'Re-Open' },
 };
@@ -109,7 +109,7 @@ export const R360_STATUS_STYLES: Record<string, {
 export const R360_PROJECT_COLORS: Record<string, string> = {
   BAU: 'var(--ds-text-brand, #2563EB)',
   SEN: 'var(--ds-text-warning, #D97706)',
-  FAC: 'var(--ds-text-success, #16A34A)',
+  FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))',
   OPS: 'var(--cp-teal-60, #0D9488)',
   SUP: 'var(--ds-text-subtlest, #64748B)',
   LND: 'var(--cp-purple-60, #7C3AED)',

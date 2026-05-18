@@ -72,7 +72,7 @@ export const LK: DarkTokens = {
 
   blue:      'var(--cp-blue-text, #2563EB)',
   blueKey:   'var(--cp-blue-text, #2563EB)',
-  green:     'var(--cp-ok, #16A34A)',
+  green:     'var(--cp-ok, var(--cp-success, #16A34A))',
   greenText: 'var(--cp-ok, #11853D)',
 
   shadow:     'var(--cp-shadow-xs, 0 1px 3px rgba(0,0,0,0.06))',

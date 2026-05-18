@@ -87,7 +87,7 @@ export default function IdeasThemePage() {
               const converted = themeConvertedMap[theme.theme] || 0;
               const convRate = theme.idea_count > 0 ? Math.round((converted / theme.idea_count) * 100) : 0;
               const progressPct = theme.idea_count > 0 ? (converted / theme.idea_count) * 100 : 0;
-              const barColor = convRate >= 100 ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-brand, #2563EB)';
+              const barColor = convRate >= 100 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-brand, #2563EB)';
               return (
                 <div key={theme.theme} onClick={() => navigate(`/product/ideas/backlog?theme=${encodeURIComponent(theme.theme)}`)}
                   style={{

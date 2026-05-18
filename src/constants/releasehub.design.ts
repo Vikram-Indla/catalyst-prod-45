@@ -18,7 +18,7 @@ export const RH = {
   primaryDark: 'var(--ds-background-brand-bold-hovered, #1D4ED8)',
   primaryLt: 'var(--ds-background-selected, #EFF6FF)',
   teal: 'var(--cp-teal-60, #0D9488)',
-  success: 'var(--ds-text-success, #16A34A)',
+  success: 'var(--ds-text-success, var(--cp-success, #16A34A))',
   successBg: 'var(--cp-lozenge-green-bg, #1B7F37)',
   warning: 'var(--ds-text-warning, #D97706)',
   danger: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
@@ -130,7 +130,7 @@ export const SECTION_ACCENT: Record<string, string> = {
   today: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
   this_week: 'var(--ds-text-brand, #2563EB)',
   upcoming: 'var(--cp-teal-60, #0D9488)',
-  future: 'var(--ds-text-success, #16A34A)',
+  future: 'var(--ds-text-success, var(--cp-success, #16A34A))',
 };
 
 export const CATEGORIES = ['Landing Page', 'Senaei BAU', 'MIM Website', 'Mobile App', 'Tohammena', 'Data & AI'];

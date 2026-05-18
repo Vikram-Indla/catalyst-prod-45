@@ -354,7 +354,7 @@ const DomainCard = React.memo(({ d, Icon, navigate, isDark }: { d: any; Icon: Re
   const [hovered, setHovered] = useState(false);
   const tagStyle = TAG_STYLES[d.tag] || TAG_STYLES.SUPPORT;
   const dc = DOMAIN_COLORS[d.domain_code] || { bg: 'var(--ds-surface-sunken, #F1F5F9)', fg: 'var(--ds-text-subtlest, #64748B)' };
-  const coverageColor = d.coverage_percent >= 80 ? 'var(--ds-text-success, #16A34A)' : d.coverage_percent >= 60 ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, #D97706)';
+  const coverageColor = d.coverage_percent >= 80 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d.coverage_percent >= 60 ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, #D97706)';
 
   return (
     <div onClick={() => navigate(`/wiki/domains/${d.domain_code}`)} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
@@ -400,7 +400,7 @@ DomainCard.displayName = 'DomainCard';
 /* ── Learning Path Card ── */
 const LearningPathCard = React.memo(({ p, navigate, isDark }: { p: any; navigate: any; isDark?: boolean }) => {
   const pct = p.article_count > 0 ? Math.round((p.completedCount / p.article_count) * 100) : 0;
-  const diffColor = p.difficulty === 'beginner' ? 'var(--ds-text-success, #16A34A)' : p.difficulty === 'intermediate' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, #D97706)';
+  const diffColor = p.difficulty === 'beginner' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : p.difficulty === 'intermediate' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, #D97706)';
   return (
     <div onClick={() => navigate(`/wiki/learning-paths/${p.id}`)} style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', transition: 'border-color 120ms, box-shadow 120ms', cursor: 'pointer' }}
       onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.08)'; }}
@@ -436,13 +436,13 @@ const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDa
 
   const verStatus = a.verification_status || 'unverified';
   const verBadge = verStatus === 'verified'
-    ? { bg: 'rgba(22,163,74,0.08)', color: 'var(--ds-text-success, #16A34A)', label: 'Verified' }
+    ? { bg: 'rgba(22,163,74,0.08)', color: 'var(--ds-text-success, var(--cp-success, #16A34A))', label: 'Verified' }
     : verStatus === 'needs_review'
     ? { bg: 'rgba(217,119,6,0.08)', color: 'var(--ds-text-warning, #D97706)', label: 'Needs Review' }
     : { bg: isDark ? 'rgba(107,101,96,0.15)' : 'rgba(100,116,139,0.08)', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #64748B)', label: 'Unverified' };
 
   const conf = Math.round((a.ai_confidence ?? 0) * 100);
-  const confColor = conf >= 90 ? 'var(--ds-text-success, #16A34A)' : conf >= 70 ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, #D97706)';
+  const confColor = conf >= 90 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : conf >= 70 ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, #D97706)';
   const tags = (a.tags ?? []).slice(0, 3);
 
   return (

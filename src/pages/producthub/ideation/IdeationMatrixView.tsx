@@ -17,8 +17,8 @@ interface DotData {
 
 // V12 bubble colors — submitted = slate, NOT primary blue
 const STATUS_BUBBLE_COLORS: Record<string, string> = {
-  'converted':    'var(--ds-text-success, #16A34A)',
-  'approved':     'var(--ds-text-success, #16A34A)',
+  'converted':    'var(--ds-text-success, var(--cp-success, #16A34A))',
+  'approved':     'var(--ds-text-success, var(--cp-success, #16A34A))',
   'under_review': 'var(--cp-purple-60, #7C3AED)',  // AI-enriched marker ✓
   'submitted':    'var(--ds-text-subtlest, #64748B)',  // neutral slate — not primary blue
   'rejected':     'var(--ds-text-danger, var(--cp-danger, #DC2626))',
@@ -30,7 +30,7 @@ function getBubbleColor(status: string): string {
 }
 
 const QUADRANTS = [
-  { top: 0, left: 0, label: 'QUICK WINS', bg: '#F0FDF4', labelColor: 'var(--ds-text-success, #16A34A)' },
+  { top: 0, left: 0, label: 'QUICK WINS', bg: '#F0FDF4', labelColor: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
   { top: 0, left: '50%', label: 'BIG BETS', bg: 'var(--ds-background-selected, #EFF6FF)', labelColor: 'var(--ds-text-brand, #2563EB)' },
   { top: '50%', left: 0, label: 'FILL-INS', bg: 'var(--ds-surface-sunken, #F8FAFC)', labelColor: 'var(--ds-text-subtlest, #64748B)' },
   { top: '50%', left: '50%', label: 'MONEY PIT', bg: 'var(--ds-background-danger, #FEF2F2)', labelColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
@@ -184,7 +184,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', marginTop: '16px',
       }}>
         {[
-          { color: 'var(--ds-text-success, #16A34A)', label: 'Approved / Converted' },
+          { color: 'var(--ds-text-success, var(--cp-success, #16A34A))', label: 'Approved / Converted' },
           { color: 'var(--cp-purple-60, #7C3AED)', label: 'Under Review (AI-enriched)' },
           { color: 'var(--ds-text-subtlest, #64748B)', label: 'Submitted' },
           { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Rejected' },

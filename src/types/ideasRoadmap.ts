@@ -13,7 +13,7 @@ export const MILESTONE_CONFIGS: MilestoneConfig[] = [
   { key: 'dev',  label: 'DEV',  fullLabel: 'Development',  color: '#22C55E' },
   { key: 'uat',  label: 'UAT',  fullLabel: 'User Acceptance Testing', color: '#F97316' },
   { key: 'beta', label: 'β',    fullLabel: 'Beta',         color: '#14B8A6' },
-  { key: 'prod', label: 'PROD', fullLabel: 'Production',   color: '#16A34A' },
+  { key: 'prod', label: 'PROD', fullLabel: 'Production',   color: 'var(--cp-success, #16A34A)' },
 ];
 
 export type RoadmapQuarter = 'Q1' | 'Q2' | 'Q3' | 'Q4' | null;

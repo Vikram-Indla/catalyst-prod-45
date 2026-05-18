@@ -70,7 +70,7 @@ export default function IncidentAnalyticsPage() {
             { label: 'Avg Resolution', value: '\u2014', accent: 'var(--ds-text-brand, #2563EB)' },
             { label: 'SLA Breach Rate', value: incidents ? `${Math.round((incidents.filter(i => i.resolution_breached).length / Math.max(incidents.length, 1)) * 100)}%` : '0%', accent: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
             { label: 'Total Incidents', value: stats.total, accent: 'var(--ds-text, #0F172A)' },
-            { label: 'MTTR', value: '\u2014', accent: 'var(--ds-text-success, #16A34A)' },
+            { label: 'MTTR', value: '\u2014', accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
           ].map(s => (
             <div key={s.label} className="p-3" style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
               <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--ds-text-subtlest, #64748B)', marginBottom: 4 }}>{s.label}</div>

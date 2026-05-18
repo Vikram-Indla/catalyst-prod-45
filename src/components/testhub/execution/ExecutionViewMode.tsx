@@ -126,13 +126,13 @@ export function ExecutionViewMode({
           ) : (
             executionHistory.step_results.map((step, i) => {
               const stepColors: Record<string, { text: string; bg: string; border: string }> = isDark ? {
-                passed:  { text: 'var(--ds-text-success, #16A34A)', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.3)' },
+                passed:  { text: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.3)' },
                 failed:  { text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' },
                 blocked: { text: 'var(--ds-text-warning, #D97706)', bg: 'rgba(251,191,36,0.12)', border: 'rgba(251,191,36,0.3)' },
                 skipped: { text: 'var(--ds-text-subtlest, #878787)', bg: 'var(--ds-surface-raised, #1A1A1A)', border: 'var(--ds-border, #2E2E2E)' },
                 not_run: { text: 'var(--ds-text-subtlest, #878787)', bg: 'var(--ds-surface-raised, #1A1A1A)', border: 'var(--ds-border, #2E2E2E)' },
               } : {
-                passed:  { text: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', border: '#BBF7D0' },
+                passed:  { text: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', border: '#BBF7D0' },
                 failed:  { text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', border: '#FECACA' },
                 blocked: { text: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', border: '#FED7AA' },
                 skipped: { text: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, #F8FAFC)', border: 'var(--ds-border, #E2E8F0)' },

@@ -187,7 +187,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         </span>
         <span style={{
           fontSize: '11px', fontWeight: 600,
-          color: idea.votes > 0 ? 'var(--ds-text-success, #16A34A)' : idea.votes < 0 ? 'var(--ds-text-danger, #EF4444)' : dk.t3,
+          color: idea.votes > 0 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : idea.votes < 0 ? 'var(--ds-text-danger, #EF4444)' : dk.t3,
           fontFamily: 'var(--cp-font-mono)',
         }}>
           ▲ {idea.votes}

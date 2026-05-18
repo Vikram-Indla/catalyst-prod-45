@@ -48,7 +48,7 @@ const STATUS_OPTIONS = [
 ];
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  on_track: { label: 'On Track', color: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4' },
+  on_track: { label: 'On Track', color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4' },
   at_risk: { label: 'At Risk', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB' },
   off_track: { label: 'Off Track', color: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)' },
 };
@@ -56,7 +56,7 @@ const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string }
 const STATUS_PILL: Record<string, { color: string; bg: string }> = {
   Planned: { color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', bg: '#DBEAFE' },
   Active: { color: '#0F766E', bg: '#F0FDFA' },
-  Completed: { color: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4' },
+  Completed: { color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4' },
   Cancelled: { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)' },
   'On Hold': { color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB' },
   'Under Review': { color: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF' },

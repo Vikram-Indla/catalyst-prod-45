@@ -67,7 +67,7 @@ function isAgeing(text: string): { value: string; color: string } | null {
   if (!match) return null;
   const num = parseFloat(match[1]);
   const unit = match[2].toLowerCase();
-  let color = 'var(--ds-text-success, #16A34A)';
+  let color = 'var(--ds-text-success, var(--cp-success, #16A34A))';
   if (unit.startsWith('d')) {
     color = num > 3 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-warning, #D97706)';
   } else if ((unit === 'h' || unit === 'hr' || unit === 'hrs') && num > 12) {

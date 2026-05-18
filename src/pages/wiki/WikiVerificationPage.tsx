@@ -88,7 +88,7 @@ export default function WikiVerificationPage() {
         {isLoading ? <div style={{ padding: 32, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #64748B)', fontSize: 12 }}>Loading...</div> :
           (queue ?? []).length === 0 ? (
             <div style={{ padding: 48, textAlign: 'center' }}>
-              <ShieldCheck size={32} style={{ color: 'var(--ds-text-success, #16A34A)', margin: '0 auto 12px' }} />
+              <ShieldCheck size={32} style={{ color: 'var(--ds-text-success, var(--cp-success, #16A34A))', margin: '0 auto 12px' }} />
               <div style={{ fontSize: 14, fontWeight: 600, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, #0F172A)' }}>All clear!</div>
               <div style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #64748B)', marginTop: 4 }}>No articles pending review.</div>
             </div>
@@ -114,7 +114,7 @@ export default function WikiVerificationPage() {
                 <span style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)' }}>{a.author_name || '—'}</span>
                 <span style={{
                   fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 500,
-                  color: stale ? 'var(--ds-text-warning, #D97706)' : fresh >= 80 ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-subtlest, #64748B)',
+                  color: stale ? 'var(--ds-text-warning, #D97706)' : fresh >= 80 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-subtlest, #64748B)',
                 }}>{fresh}%</span>
                 <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)' }}>
                   {new Date(a.updated_at).toLocaleDateString()}

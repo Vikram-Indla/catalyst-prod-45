@@ -98,7 +98,7 @@ export default function ProjectBoardPage() {
 
   const statCards = [
     { label: 'Total Issues', value: stats.total, icon: BarChart3, color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', accent: '' },
-    { label: 'Completed', value: stats.completed, icon: CheckCircle2, color: 'var(--ds-text-success, #16A34A)', bg: 'var(--ds-background-success, #DCFCE7)', accent: '' },
+    { label: 'Completed', value: stats.completed, icon: CheckCircle2, color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DCFCE7)', accent: '' },
     { label: 'In Progress', value: stats.inProgress, icon: Clock, color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', accent: '' },
     { label: 'Overdue', value: stats.overdue, icon: AlertTriangle, color: stats.overdue > 0 ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, #94A3B8)', bg: stats.overdue > 0 ? 'var(--ds-background-danger, #FEF2F2)' : 'var(--ds-surface-sunken, #F1F5F9)', accent: '' },
     { label: 'AI Features', value: '0%', icon: Sparkles, color: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', accent: 'var(--cp-purple-60, #7C3AED)' },

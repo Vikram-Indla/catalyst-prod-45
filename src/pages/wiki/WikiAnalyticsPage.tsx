@@ -8,7 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 const DOMAIN_COLORS: Record<string, string> = {
-  D1: 'var(--ds-text-brand, #2563EB)', D2: 'var(--cp-teal-60, #0D9488)', D3: 'var(--ds-text-warning, #D97706)', D4: 'var(--ds-text-success, #16A34A)',
+  D1: 'var(--ds-text-brand, #2563EB)', D2: 'var(--cp-teal-60, #0D9488)', D3: 'var(--ds-text-warning, #D97706)', D4: 'var(--ds-text-success, var(--cp-success, #16A34A))',
   D5: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', D6: '#0891B2', D7: 'var(--ds-text-subtlest, #64748B)', D8: '#4F46E5', D9: '#CA8A04',
 };
 
@@ -76,7 +76,7 @@ export default function WikiAnalyticsPage() {
       const counts: Record<string, number> = { verified: 0, needs_review: 0, unverified: 0 };
       (data ?? []).forEach((a: any) => { counts[a.verification_status || 'unverified']++; });
       return [
-        { name: 'Verified', value: counts.verified, fill: 'var(--ds-text-success, #16A34A)' },
+        { name: 'Verified', value: counts.verified, fill: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
         { name: 'Needs Review', value: counts.needs_review, fill: 'var(--ds-text-warning, #D97706)' },
         { name: 'Unverified', value: counts.unverified, fill: 'var(--ds-text-subtlest, #94A3B8)' },
       ];
@@ -173,7 +173,7 @@ export default function WikiAnalyticsPage() {
             </div>
             {(topArticles ?? []).map((a: any) => {
               const conf = Math.round((a.ai_confidence ?? 0) * 100);
-              const confColor = conf >= 90 ? 'var(--ds-text-success, #16A34A)' : conf >= 70 ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, #D97706)';
+              const confColor = conf >= 90 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : conf >= 70 ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, #D97706)';
               return (
                 <div key={a.id} onClick={() => navigate(`/wiki/${a.slug}`)} style={{
                   display: 'grid', gridTemplateColumns: '1fr 60px 60px 60px',

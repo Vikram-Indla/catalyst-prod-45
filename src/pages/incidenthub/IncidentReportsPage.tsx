@@ -97,7 +97,7 @@ export default function IncidentReportsPage() {
                 { label: 'Open', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', count: incidents?.filter(i => i.status === 'open').length || 0 },
                 { label: 'Triage', color: 'var(--ds-text-warning, #D97706)', count: incidents?.filter(i => i.status === 'triage').length || 0 },
                 { label: 'In Progress', color: 'var(--ds-text-brand, #2563EB)', count: incidents?.filter(i => i.status === 'in_progress').length || 0 },
-                { label: 'Resolved', color: 'var(--ds-text-success, #16A34A)', count: incidents?.filter(i => i.status === 'resolved').length || 0 },
+                { label: 'Resolved', color: 'var(--ds-text-success, var(--cp-success, #16A34A))', count: incidents?.filter(i => i.status === 'resolved').length || 0 },
               ].map(s => (
                 <div key={s.label} className="flex items-center gap-2 p-3 flex-1" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }}>
                   <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: s.color }} />

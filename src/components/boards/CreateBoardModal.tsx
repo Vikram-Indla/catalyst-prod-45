@@ -27,7 +27,7 @@ const SWIMLANE_OPTIONS: { value: SwimlaneType; label: string; desc: string }[] =
 ];
 
 const COLOR_SWATCHES = [
-  'var(--ds-text-brand, #2563EB)', 'var(--ds-text-success, #16A34A)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, #D97706)', 'var(--cp-teal-60, #0D9488)', '#525252', '#0284C7',
+  'var(--ds-text-brand, #2563EB)', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, #D97706)', 'var(--cp-teal-60, #0D9488)', '#525252', '#0284C7',
 ];
 
 const VISIBILITY_OPTIONS: { value: BoardVisibility; label: string; desc: string; warning?: boolean }[] = [

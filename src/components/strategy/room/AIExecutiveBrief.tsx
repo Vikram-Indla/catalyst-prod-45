@@ -26,7 +26,7 @@ const TOKENS = `
   --sri-bdr:#E4E4E7; --sri-bdr-s:#D4D4D8;
   --sri-ai:var(--ds-text-brand, #2563EB); --sri-ai-d:#1E40AF; --sri-ai-bg:var(--ds-background-selected, #EFF6FF);
   --sri-ai-bg2:#DBEAFE; --sri-ai-bdr:#93C5FD; --sri-ai-m:var(--ds-text-brand, #3B82F6);
-  --sri-green:var(--ds-text-success, #16A34A); --sri-green-t:#11853D; --sri-green-bg:#F0FDF4;
+  --sri-green:var(--ds-text-success, var(--cp-success, #16A34A)); --sri-green-t:#11853D; --sri-green-bg:#F0FDF4;
   --sri-teal-t:#0A8277;
   --sri-red:var(--ds-text-danger, var(--cp-danger, #DC2626)); --sri-red-t:#D92525; --sri-red-bg:var(--ds-background-danger, #FEF2F2);
   --sri-r:4px; --sri-r2:6px; --sri-r3:8px; --sri-r4:12px; --sri-pill:9999px;

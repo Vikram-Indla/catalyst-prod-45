@@ -80,7 +80,7 @@ export function ProductScopedPageHeader({ product, activeView, stats }: Props) {
       label: 'Completed',
       value: stats.completed,
       icon: CheckCircle2,
-      color: 'var(--ds-text-success, #16A34A)',
+      color: 'var(--ds-text-success, var(--cp-success, #16A34A))',
       bg: 'var(--ds-background-success, #DCFCE7)',
       accent: '',
     },

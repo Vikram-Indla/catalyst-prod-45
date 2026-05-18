@@ -32,7 +32,7 @@ function computeThemes(ideas: Idea[]) {
   });
   const sorted = Object.entries(map).sort((a, b) => b[1] - a[1]);
   const max = sorted[0]?.[1] || 1;
-  const colors = ['var(--ds-text-brand, #2563EB)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-success, #16A34A)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, #EF4444)', '#EC4899', '#6366F1'];
+  const colors = ['var(--ds-text-brand, #2563EB)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, #EF4444)', '#EC4899', '#6366F1'];
   return sorted.slice(0, 8).map(([name, count], i) => ({
     name, count, pct: Math.round((count / max) * 100),
     trend: i < 2 ? '↑ trending' : i < 4 ? '→ stable' : '↑ new',
@@ -134,7 +134,7 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
         {[
           { value: String(duplicates.length), label: `idea pairs with keyword overlap`, title: 'DUPLICATE SIGNALS', valueColor: 'var(--ds-text-warning, #D97706)' },
           { value: String(themes.length), label: 'themes identified from backlog', title: 'THEMES DISCOVERED', valueColor: 'var(--ds-text-brand, #2563EB)' },
-          { value: `${conversionRate}%`, label: `${converted} of ${total} ideas converted`, title: 'CONVERSION RATE', valueColor: 'var(--ds-text-success, #16A34A)' },
+          { value: `${conversionRate}%`, label: `${converted} of ${total} ideas converted`, title: 'CONVERSION RATE', valueColor: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
           { value: String(underReview), label: `ideas pending review`, title: 'UNDER REVIEW', valueColor: 'var(--cp-teal-60, #0D9488)' },
         ].map(s => (
           <div key={s.title} style={{
@@ -221,7 +221,7 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
             {[
               { name: 'Under Review', count: underReview, color: 'var(--ds-text-warning, #D97706)' },
-              { name: 'Converted', count: converted, color: 'var(--ds-text-success, #16A34A)' },
+              { name: 'Converted', count: converted, color: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
               { name: 'Submitted', count: submitted, color: 'var(--ds-text-brand, #2563EB)' },
             ].map(p => (
               <div key={p.name} style={{

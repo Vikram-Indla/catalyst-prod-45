@@ -30,7 +30,7 @@ function exactDateTime(iso?: string | null): string {
 }
 
 const DOT_COLORS: Record<SyncStatus, string> = {
-  synced: 'var(--ds-text-success, #16A34A)',
+  synced: 'var(--ds-text-success, var(--cp-success, #16A34A))',
   stale: 'var(--ds-text-warning, #D97706)',
   conflict: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
   syncing: 'var(--ds-text-brand, #2563EB)',

@@ -13,7 +13,7 @@ import type { RoadmapDemand, TimelineConfig } from '../types/roadmap';
 import { addMonths } from 'date-fns';
 import { User } from '@/lib/atlaskit-icons';
 
-const AVATAR_COLORS = ['var(--ds-text-brand, #2563EB)', '#6366F1', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-success, #16A34A)', '#0891B2', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-subtle, #334155)'];
+const AVATAR_COLORS = ['var(--ds-text-brand, #2563EB)', '#6366F1', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-success, var(--cp-success, #16A34A))', '#0891B2', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-subtle, #334155)'];
 
 function hashColor(name: string): string {
   let hash = 0;

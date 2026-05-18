@@ -294,7 +294,7 @@
   font-size: var(--rh-type-body-sm);
   font-weight: 600;
   color: var(--ds-surface, #FFFFFF);
-  background: linear-gradient(135deg, var(--rh-success), var(--ds-text-success, #16A34A));
+  background: linear-gradient(135deg, var(--rh-success), var(--ds-text-success, var(--cp-success, #16A34A)));
   border: none;
   border-radius: var(--rh-radius-md);
   cursor: pointer;

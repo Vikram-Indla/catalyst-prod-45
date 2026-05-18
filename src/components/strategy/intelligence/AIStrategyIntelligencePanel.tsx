@@ -202,7 +202,7 @@ function StatusBanner({ status, health, confidence, label }: {
   health?: number; confidence?: number; label?: string;
 }) {
   const config = {
-    on_track: { text: 'ON TRACK', color: 'var(--ds-text-success, #16A34A)' },
+    on_track: { text: 'ON TRACK', color: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
     at_risk:  { text: 'AT RISK',  color: 'var(--ds-text-warning, #D97706)' },
     critical: { text: 'CRITICAL', color: 'var(--ds-text-danger, #EF4444)' },
   }[status];
@@ -225,7 +225,7 @@ function StatusBanner({ status, health, confidence, label }: {
 }
 
 function StatusDot({ status }: { status: 'on_track' | 'at_risk' | 'critical' }) {
-  const color = status === 'on_track' ? 'var(--ds-text-success, #16A34A)' : status === 'at_risk' ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
+  const color = status === 'on_track' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : status === 'at_risk' ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
   return <div className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />;
 }
 

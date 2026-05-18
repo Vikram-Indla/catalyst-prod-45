@@ -32,7 +32,7 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
   const isFailed = ps === 'failed';
   const pct = epicCount > 0 ? 100 : (STAGE_PROGRESS[ps] ?? 0);
 
-  const barColor = isComplete ? 'var(--ds-text-success, #16A34A)' : isFailed ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-brand, #2563EB)';
+  const barColor = isComplete ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : isFailed ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-brand, #2563EB)';
 
   let labelText = '';
   let labelColor = 'var(--ds-text-subtlest, #64748B)';
@@ -43,13 +43,13 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
   } else if (isComplete) {
     if (epicCount > 0) {
       labelText = 'Complete';
-      labelColor = 'var(--ds-text-success, #16A34A)';
+      labelColor = 'var(--ds-text-success, var(--cp-success, #16A34A))';
     } else {
       const parts: string[] = [];
       if (artifactCounts?.epics) parts.push(`E·${artifactCounts.epics}`);
       if (artifactCounts?.uat) parts.push(`U·${artifactCounts.uat}`);
       labelText = parts.length > 0 ? parts.join(' ') : 'Complete';
-      labelColor = 'var(--ds-text-success, #16A34A)';
+      labelColor = 'var(--ds-text-success, var(--cp-success, #16A34A))';
     }
   } else if (isFailed) {
     labelText = 'Failed';

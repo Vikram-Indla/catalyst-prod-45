@@ -22,11 +22,11 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string; a
   'Code Review':          { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review',   accent: 'var(--cp-teal-60, #0D9488)' },
   'In UAT':               { dot: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT',     accent: 'var(--cp-purple-60, #7C3AED)' },
   'UAT Ready':            { dot: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready',  accent: 'var(--cp-purple-60, #7C3AED)' },
-  'Done':                 { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, #16A34A)' },
-  'Closed':               { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, #16A34A)' },
-  'Resolved':             { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, #16A34A)' },
-  'Ready for Production': { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, #16A34A)' },
-  'Beta Ready':           { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, #16A34A)' },
+  'Done':                 { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  'Closed':               { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  'Resolved':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  'Ready for Production': { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  'Beta Ready':           { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
   'Blocked':              { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: 'Blocked',     accent: 'var(--ds-text-danger, #EF4444)' },
   'Rejected':             { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: 'Rejected',    accent: 'var(--ds-text-danger, #EF4444)' },
 };
@@ -65,11 +65,11 @@ function JiraIcon({ type }: { type: string }) {
 }
 
 // ═══ HELPERS ═══
-const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, #16A34A)' : d <= 14 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
+const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
 const trunc = (s: string, l: number) => s && s.length > l ? s.slice(0, l) + '…' : s || '';
 const ageLabel = (d: number) => d === 0 ? 'Today' : d === 1 ? '1d ago' : `${d}d ago`;
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, #D97706)', FAC: 'var(--ds-text-success, #16A34A)', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, #64748B)', LND: 'var(--cp-purple-60, #7C3AED)' };
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, #D97706)', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, #64748B)', LND: 'var(--cp-purple-60, #7C3AED)' };
 const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, #64748B)';
 
 const SPOTS = [
@@ -279,7 +279,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             }}
           >
             <div style={{
-              width: '48px', height: '48px', borderRadius: '50%', background: 'var(--ds-text-success, #16A34A)', color: 'var(--ds-text-inverse, #FFFFFF)',
+              width: '48px', height: '48px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success, #16A34A))', color: 'var(--ds-text-inverse, #FFFFFF)',
               fontSize: '18px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: showDone
                 ? '0 0 0 3px rgba(22,163,74,.25), 0 2px 8px rgba(22,163,74,.3)'
@@ -313,7 +313,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <div style={{
-                    width: '22px', height: '22px', borderRadius: '50%', background: 'var(--ds-text-success, #16A34A)',
+                    width: '22px', height: '22px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success, #16A34A))',
                     color: 'var(--ds-surface, #FFF)', fontSize: '12px', fontWeight: 700,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>✓</div>
@@ -348,12 +348,12 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                     {/* Green check circle */}
                     <div style={{
                       width: '22px', height: '22px', borderRadius: '50%',
-                      background: '#F0FDF4', border: '1.5px solid #16A34A',
+                      background: '#F0FDF4', border: '1.5px solid var(--cp-success, #16A34A)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       flexShrink: 0, marginTop: '1px',
                     }}>
                       <svg width="12" height="12" viewBox="0 0 12 12">
-                        <path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="var(--ds-text-success, #16A34A)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="var(--ds-text-success, var(--cp-success, #16A34A))" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
 
@@ -368,7 +368,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                         </span>
                         <span style={{
                           fontSize: '10px', fontWeight: 700, padding: '1px 5px',
-                          borderRadius: '4px', color: 'var(--ds-surface, #FFF)', background: 'var(--ds-text-success, #16A34A)',
+                          borderRadius: '4px', color: 'var(--ds-surface, #FFF)', background: 'var(--ds-text-success, var(--cp-success, #16A34A))',
                         }}>
                           DONE
                         </span>

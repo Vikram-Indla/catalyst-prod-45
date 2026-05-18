@@ -180,7 +180,7 @@
   position: absolute; right: 20px; top: 50%; transform: translateY(-50%); z-index: 6; text-align: center;
 }
 .r3-completed-circle {
-  width: 48px; height: 48px; border-radius: 50%; background: var(--ds-text-success, #16A34A);
+  width: 48px; height: 48px; border-radius: 50%; background: var(--ds-text-success, var(--cp-success, #16A34A));
   color: var(--ds-surface, #fff); font-size: 18px; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 2px 8px rgba(22,163,74,.3);
@@ -205,7 +205,7 @@
 }
 .r3-status-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 .r3-age { font-variant-numeric: tabular-nums; font-weight: 600; }
-.r3-age--green { color: var(--ds-text-success, #16A34A); }
+.r3-age--green { color: var(--ds-text-success, var(--cp-success, #16A34A)); }
 .r3-age--amber { color: var(--ds-text-warning, #D97706); }
 .r3-age--red { color: var(--ds-text-danger, #EF4444); }
 .r3-type-badge {

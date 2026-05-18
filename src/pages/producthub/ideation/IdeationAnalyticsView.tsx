@@ -18,12 +18,12 @@ const FUNNEL_ORDER: { key: string; label: string; color: string }[] = [
   { key: 'draft', label: 'Draft', color: 'var(--ds-text-subtlest, #94A3B8)' },
   { key: 'submitted', label: 'Submitted', color: 'var(--ds-text-brand, #2563EB)' },
   { key: 'under_review', label: 'Under Review', color: 'var(--ds-text-warning, #D97706)' },
-  { key: 'approved', label: 'Approved', color: 'var(--ds-text-success, #16A34A)' },
+  { key: 'approved', label: 'Approved', color: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
   { key: 'converted', label: 'Converted', color: 'var(--cp-teal-60, #0D9488)' },
   { key: 'rejected', label: 'Rejected', color: 'var(--ds-text-danger, #EF4444)' },
 ];
 
-const DEPT_COLORS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, #D97706)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-success, #16A34A)', 'var(--ds-text-danger, #EF4444)', 'var(--ds-text-subtlest, #94A3B8)', '#0F766E', '#6366F1', 'var(--ds-text-danger, var(--cp-danger, #DC2626))'];
+const DEPT_COLORS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, #D97706)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--ds-text-danger, #EF4444)', 'var(--ds-text-subtlest, #94A3B8)', '#0F766E', '#6366F1', 'var(--ds-text-danger, var(--cp-danger, #DC2626))'];
 
 function getInitials(name: string): string {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
@@ -90,7 +90,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
     });
     const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
     const max = sorted.length > 0 ? sorted[0][1] : 1;
-    const colors = ['var(--cp-teal-60, #0D9488)', 'var(--ds-text-brand, #2563EB)', 'var(--ds-text-warning, #D97706)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-success, #16A34A)'];
+    const colors = ['var(--cp-teal-60, #0D9488)', 'var(--ds-text-brand, #2563EB)', 'var(--ds-text-warning, #D97706)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-success, var(--cp-success, #16A34A))'];
     return sorted.map(([name, count], idx) => ({
       name,
       initials: getInitials(name),
@@ -128,7 +128,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
     { label: 'AVG IMPACT SCORE', value: stats.avgImpact.toFixed(2), color: 'var(--ds-text-brand, #2563EB)', sub: 'across all ideas', subColor: dk.t3, icon: BarChart3, iconBg: 'var(--cp-primary-light, #EFF6FF)', iconColor: 'var(--ds-text-brand, #2563EB)' },
     { label: 'CONVERSION RATE', value: `${stats.convRate.toFixed(1)}%`, color: dk.greenText, sub: `${stats.converted} ideas → requests`, subColor: dk.greenText, icon: RefreshCw, iconBg: 'var(--cp-success-light, #F0FDFA)', iconColor: 'var(--cp-teal-60, #0D9488)' },
     { label: 'AI COVERAGE', value: `${stats.aiPct}%`, color: 'var(--ds-text-brand, #3B82F6)', sub: `${stats.aiReady} of ${stats.total} enriched`, subColor: dk.t3, icon: Sparkles, iconBg: 'var(--cp-primary-light, #EFF6FF)', iconColor: 'var(--ds-text-brand, #3B82F6)' },
-    { label: 'PIPELINE VALUE', value: String(stats.pipeline), color: dk.greenText, sub: 'Active ideas in pipeline', subColor: dk.greenText, icon: Rocket, iconBg: 'var(--cp-success-light, #F0FDF4)', iconColor: 'var(--ds-text-success, #16A34A)' },
+    { label: 'PIPELINE VALUE', value: String(stats.pipeline), color: dk.greenText, sub: 'Active ideas in pipeline', subColor: dk.greenText, icon: Rocket, iconBg: 'var(--cp-success-light, #F0FDF4)', iconColor: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
   ];
 
   return (
@@ -252,7 +252,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
                     padding: '2px 8px', borderRadius: '20px',
                     fontSize: '11px', fontWeight: 600,
                   }}>
-                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--ds-text-success, #16A34A)' }} />
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success, #16A34A))' }} />
                     {t.status}
                   </span>
                 </div>

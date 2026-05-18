@@ -25,7 +25,7 @@ const TEMP_MOCK_FEED: FeedItem[] = [
   },
   {
     initials: 'SR', color: '#1E40AF',
-    text: <><strong>Sara Al-Rashid</strong> completed STEM scholarship pipeline quarterly review — <strong style={{ color: 'var(--ds-text-success, #16A34A)' }}>on track</strong></>,
+    text: <><strong>Sara Al-Rashid</strong> completed STEM scholarship pipeline quarterly review — <strong style={{ color: 'var(--ds-text-success, var(--cp-success, #16A34A))' }}>on track</strong></>,
     time: '5 hours ago',
   },
   {

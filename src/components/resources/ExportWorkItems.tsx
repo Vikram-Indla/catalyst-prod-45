@@ -533,7 +533,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexShrink: 0, transition: 'all 150ms',
                   }}>
-                    {checked && <Check size={12} strokeWidth={3} color="var(--ds-text-success, #16A34A)" />}
+                    {checked && <Check size={12} strokeWidth={3} color="var(--ds-text-success, var(--cp-success, #16A34A))" />}
                   </div>
                   <span style={{ fontSize: 13, fontWeight: 500, color: dk ? 'var(--ds-text, #EDEDED)' : '#1e293b', flex: 1 }}>{opt.label}</span>
                   {opt.isCurrent && (

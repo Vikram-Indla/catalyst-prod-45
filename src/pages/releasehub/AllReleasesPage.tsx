@@ -70,7 +70,7 @@ export default function AllReleasesPage() {
   const accentColor = (status: string) => {
     const s = mapStatus(status);
     if (s === 'in_progress') return 'var(--ds-text-brand, #2563EB)';
-    if (s === 'released') return 'var(--ds-text-success, #16A34A)';
+    if (s === 'released') return 'var(--ds-text-success, var(--cp-success, #16A34A))';
     if (s === 'planning') return 'var(--ds-text-inverse, #FFFFFF)';
     return 'rgba(15,23,42,0.12)';
   };

@@ -266,7 +266,7 @@ export default function IncidentListPage() {
             { label: 'High (SEV-2)', value: stats.sev2, accent: 'var(--ds-text-warning, #D97706)' },
             { label: 'Active Incidents', value: stats.active, accent: 'var(--cp-text-link, #2563EB)' },
             { label: 'Committee Pending', value: stats.committeePending, accent: textSecondary },
-            { label: 'Resolved (7d)', value: stats.resolvedWeek, accent: 'var(--ds-text-success, #16A34A)' },
+            { label: 'Resolved (7d)', value: stats.resolvedWeek, accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
           ].map(s => (
             <div key={s.label} className="p-3" style={{ backgroundColor: surfaceBg, border: `1px solid ${borderColor}`, borderRadius: 6 }}>
               <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: textSecondary, marginBottom: 4 }}>{s.label}</div>

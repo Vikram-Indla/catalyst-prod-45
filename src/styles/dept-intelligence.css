@@ -23,7 +23,7 @@
   --di-primary-bg: var(--ds-background-selected, #EFF6FF);
   --di-teal: var(--cp-teal-60, #0D9488);
   --di-teal-bg: #F0FDFA;
-  --di-success: var(--ds-text-success, #16A34A);
+  --di-success: var(--ds-text-success, var(--cp-success, #16A34A));
   --di-success-bg: #F0FDF4;
   --di-warning: var(--ds-text-warning, #D97706);
   --di-warning-bg: #FFFBEB;
@@ -470,7 +470,7 @@
 .role-po   .di-role-icon { background: #F0FDFA; color: var(--cp-teal-60, #0D9488); }
 .role-ux   .di-role-icon { background: #FCE7F3; color: #DB2777; }
 .role-mgmt .di-role-icon { background: #FFFBEB; color: var(--ds-text-warning, #D97706); }
-.role-devops .di-role-icon { background: #F0FDF4; color: var(--ds-text-success, #16A34A); }
+.role-devops .di-role-icon { background: #F0FDF4; color: var(--ds-text-success, var(--cp-success, #16A34A)); }
 .dark .role-dev  .di-role-icon , [data-theme="dark"] .role-dev  .di-role-icon { background: rgba(59,130,246,0.10); color: var(--ds-text-brand, #60A5FA); }
 .dark .role-qa   .di-role-icon , [data-theme="dark"] .role-qa   .di-role-icon { background: rgba(74,222,128,0.10); color: #4ADE80; }
 .dark .role-po   .di-role-icon , [data-theme="dark"] .role-po   .di-role-icon { background: rgba(13,148,136,0.10); color: #2DD4BF; }

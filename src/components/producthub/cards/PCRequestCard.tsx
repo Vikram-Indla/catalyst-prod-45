@@ -28,7 +28,7 @@ interface PCRequestCardProps {
 const STATUS_PILL_STYLES: Record<string, { color: string; bg: string; border: string }> = {
   new: { color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', border: 'rgba(37,99,235,0.2)' },
   new_demand: { color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', border: 'rgba(37,99,235,0.2)' },
-  portfolio_review: { color: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', border: 'rgba(22,163,74,0.2)' },
+  portfolio_review: { color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', border: 'rgba(22,163,74,0.2)' },
   under_review: { color: '#8B5CF6', bg: '#F5F3FF', border: 'rgba(139,92,246,0.2)' },
   technical_validation: { color: '#A855F7', bg: '#FAF5FF', border: 'rgba(168,85,247,0.2)' },
   estimate: { color: '#6366F1', bg: '#EEF2FF', border: 'rgba(99,102,241,0.2)' },
@@ -39,7 +39,7 @@ const STATUS_PILL_STYLES: Record<string, { color: string; bg: string; border: st
   on_hold: { color: '#6B7280', bg: '#F9FAFB', border: 'rgba(107,114,128,0.2)' },
   implementation_review: { color: '#F97316', bg: '#FFF7ED', border: 'rgba(249,115,22,0.2)' },
   in_support: { color: '#10B981', bg: '#ECFDF5', border: 'rgba(16,185,129,0.2)' },
-  done: { color: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', border: 'rgba(22,163,74,0.2)' },
+  done: { color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', border: 'rgba(22,163,74,0.2)' },
   cancelled: { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', border: 'rgba(220,38,38,0.2)' },
 };
 

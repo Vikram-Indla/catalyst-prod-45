@@ -109,7 +109,7 @@ export default function SignOffQueuePage() {
                       {isWaiting ? (
                         <div className="flex items-center gap-1.5">
                           <button onClick={e => { e.stopPropagation(); setActionModal({ signoff: so, action: 'approve' }); }}
-                            className="h-7 px-2.5 rounded-[4px] bg-[var(--ds-text-success,#16A34A)] text-white text-[11px] font-bold hover:bg-[#15803D]">Approve</button>
+                            className="h-7 px-2.5 rounded-[4px] bg-[var(--ds-text-success,var(--cp-success, #16A34A))] text-white text-[11px] font-bold hover:bg-[#15803D]">Approve</button>
                           <button onClick={e => { e.stopPropagation(); setActionModal({ signoff: so, action: 'reject' }); }}
                             className="h-7 px-2.5 rounded-[4px] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] text-[11px] font-bold hover:bg-[var(--ds-background-danger,#FEF2F2)]" style={{ border: '0.75px solid #FCA5A5' }}>Reject</button>
                         </div>
@@ -151,7 +151,7 @@ export default function SignOffQueuePage() {
           <DialogFooter>
             <button onClick={() => { setActionModal(null); setComment(''); }} className="h-9 px-4 rounded-[6px] text-[13px] font-medium" style={{ color: 'var(--cp-text-secondary, #475569)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : undefined }}>Cancel</button>
             <button onClick={handleAction} disabled={approveSignoff.isPending || rejectSignoff.isPending}
-              className={`h-9 px-4 rounded-[6px] text-[13px] font-semibold text-white disabled:opacity-50 ${actionModal?.action === 'approve' ? 'bg-[var(--ds-text-success,#16A34A)] hover:bg-[#15803D]' : 'bg-[var(--ds-text-danger,var(--cp-danger, #DC2626))] hover:bg-[#B91C1C]'}`}>
+              className={`h-9 px-4 rounded-[6px] text-[13px] font-semibold text-white disabled:opacity-50 ${actionModal?.action === 'approve' ? 'bg-[var(--ds-text-success,var(--cp-success, #16A34A))] hover:bg-[#15803D]' : 'bg-[var(--ds-text-danger,var(--cp-danger, #DC2626))] hover:bg-[#B91C1C]'}`}>
               {actionModal?.action === 'approve' ? 'Approve' : 'Reject'}
             </button>
           </DialogFooter>

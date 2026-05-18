@@ -14,9 +14,9 @@ const STATUS_GROUPS = [
   {
     group: 'Planning',
     items: [
-      { value: 'demand_approved', label: 'Demand Approved', color: 'var(--ds-text-success, #16A34A)' },
-      { value: 'analysis', label: 'Analysis', color: 'var(--ds-text-success, #16A34A)' },
-      { value: 'ready_for_development', label: 'Ready for Dev', color: 'var(--ds-text-success, #16A34A)' },
+      { value: 'demand_approved', label: 'Demand Approved', color: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+      { value: 'analysis', label: 'Analysis', color: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+      { value: 'ready_for_development', label: 'Ready for Dev', color: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
     ],
   },
   {
@@ -31,7 +31,7 @@ const STATUS_GROUPS = [
     group: 'Closure',
     items: [
       { value: 'in_support', label: 'In Support', color: 'var(--cp-purple-60, #7C3AED)' },
-      { value: 'done', label: 'Done', color: 'var(--ds-text-success, #16A34A)' },
+      { value: 'done', label: 'Done', color: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
       { value: 'cancelled', label: 'Cancelled', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
     ],
   },

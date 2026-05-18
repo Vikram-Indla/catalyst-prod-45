@@ -23,7 +23,7 @@
   --cp-primary-5: var(--ds-background-selected, #EFF6FF);
 
   --cp-teal-60: var(--cp-teal-60, #0D9488);
-  --cp-success-60: var(--ds-text-success, #16A34A);
+  --cp-success-60: var(--ds-text-success, var(--cp-success, #16A34A));
   --cp-success-10: var(--ds-background-success, #DCFCE7);
   --cp-warning-60: var(--ds-text-warning, #D97706);
   --cp-warning-10: #FEF3C7;

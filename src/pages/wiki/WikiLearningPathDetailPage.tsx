@@ -11,7 +11,7 @@ const F = {
   mono: "'JetBrains Mono', monospace",
 };
 
-const DIFF_COLORS: Record<string, string> = { beginner: 'var(--ds-text-success, #16A34A)', intermediate: 'var(--ds-text-brand, #2563EB)', advanced: 'var(--ds-text-warning, #D97706)' };
+const DIFF_COLORS: Record<string, string> = { beginner: 'var(--ds-text-success, var(--cp-success, #16A34A))', intermediate: 'var(--ds-text-brand, #2563EB)', advanced: 'var(--ds-text-warning, #D97706)' };
 
 export default function WikiLearningPathDetailPage() {
   const { pathId } = useParams<{ pathId: string }>();
@@ -148,14 +148,14 @@ export default function WikiLearningPathDetailPage() {
           <p style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)', lineHeight: 1.5, maxWidth: 600 }}>{path.description}</p>
         </div>
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
-          <div style={{ fontFamily: F.mono, fontSize: 24, fontWeight: 700, color: pct === 100 ? 'var(--ds-text-success, #16A34A)' : (isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, #0F172A)') }}>{pct}%</div>
+          <div style={{ fontFamily: F.mono, fontSize: 24, fontWeight: 700, color: pct === 100 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : (isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, #0F172A)') }}>{pct}%</div>
           <div style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)' }}>Complete</div>
         </div>
       </div>
 
       {/* Progress bar */}
       <div style={{ height: 6, borderRadius: 4, background: isDark ? 'var(--ds-border, #292929)' : 'var(--ds-border, #E2E8F0)', marginBottom: 32 }}>
-        <div style={{ height: '100%', borderRadius: 4, background: pct === 100 ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-brand, #2563EB)', width: `${pct}%`, transition: 'width 400ms' }} />
+        <div style={{ height: '100%', borderRadius: 4, background: pct === 100 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-brand, #2563EB)', width: `${pct}%`, transition: 'width 400ms' }} />
       </div>
 
       {/* Article list */}
@@ -200,7 +200,7 @@ export default function WikiLearningPathDetailPage() {
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}
               >
                 {isComplete
-                  ? <CheckCircle2 size={18} style={{ color: 'var(--ds-text-success, #16A34A)' }} />
+                  ? <CheckCircle2 size={18} style={{ color: 'var(--ds-text-success, var(--cp-success, #16A34A))' }} />
                   : <Circle size={18} style={{ color: 'var(--ds-text-disabled, #CBD5E1)' }} />
                 }
               </button>

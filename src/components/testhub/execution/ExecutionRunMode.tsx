@@ -338,7 +338,7 @@ export function ExecutionRunMode({
           {steps.length > 0 && !fastTrackMode && (() => {
             const isDisabled = !anyStepMarked || isSubmitting;
             const statusColors: Record<string, { bg: string; text: string }> = {
-              passed:  { bg: 'var(--ds-text-success, #16A34A)', text: 'var(--ds-text-inverse, #FFFFFF)' },
+              passed:  { bg: 'var(--ds-text-success, var(--cp-success, #16A34A))', text: 'var(--ds-text-inverse, #FFFFFF)' },
               failed:  { bg: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', text: 'var(--ds-text-inverse, #FFFFFF)' },
               blocked: { bg: 'var(--ds-text-warning, #D97706)', text: 'var(--ds-text-inverse, #FFFFFF)' },
               skipped: { bg: 'var(--ds-text-subtle, #475569)', text: 'var(--ds-text-inverse, #FFFFFF)' },

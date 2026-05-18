@@ -20,7 +20,7 @@ export function deriveHealthStatus(theme: StrategicTheme): HealthStatus {
 // ═══ STATUS CONFIG — Light / Dark ═══
 type StatusStyle = { label: string; bg: string; text: string; dot: string };
 export const STATUS_CONFIG: Record<HealthStatus, StatusStyle> = {
-  on_track:  { label: 'On Track',  bg: 'rgba(220,252,231,0.7)',  text: '#15803d', dot: 'var(--ds-text-success, #16A34A)' },
+  on_track:  { label: 'On Track',  bg: 'rgba(220,252,231,0.7)',  text: '#15803d', dot: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
   at_risk:   { label: 'At Risk',   bg: 'rgba(254,243,199,0.6)',  text: '#92400E', dot: 'var(--ds-text-warning, #D97706)' },
   off_track: { label: 'Off Track', bg: 'rgba(254,226,226,0.6)',  text: 'var(--ds-text-danger, #991B1B)', dot: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
   planned:   { label: 'Planned',   bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtle, #475569)', dot: 'var(--ds-text-subtlest, #94A3B8)' },
@@ -29,7 +29,7 @@ export const STATUS_CONFIG: Record<HealthStatus, StatusStyle> = {
 };
 
 export const STATUS_CONFIG_DARK: Record<HealthStatus, StatusStyle> = {
-  on_track:  { label: 'On Track',  bg: '#182820', text: '#86EFAC', dot: 'var(--ds-text-success, #16A34A)' },
+  on_track:  { label: 'On Track',  bg: '#182820', text: '#86EFAC', dot: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
   at_risk:   { label: 'At Risk',   bg: '#2A2418', text: '#FBBF24', dot: 'var(--ds-text-warning, #D97706)' },
   off_track: { label: 'Off Track', bg: '#2A1C1E', text: 'var(--ds-border-danger, #FCA5A5)', dot: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
   planned:   { label: 'Planned',   bg: 'var(--ds-surface-raised, #1A1A1A)', text: '#B8BCC8', dot: 'var(--ds-text-subtlest, #94A3B8)' },
@@ -94,7 +94,7 @@ export const THEME_COLORS = [
 
 // ═══ PROGRESS BAR COLOR ═══
 export function getProgressColor(pct: number): string {
-  if (pct >= 60) return 'var(--ds-text-success, #16A34A)';
+  if (pct >= 60) return 'var(--ds-text-success, var(--cp-success, #16A34A))';
   if (pct >= 40) return 'var(--ds-text-warning, #D97706)';
   return 'var(--ds-text-danger, #EF4444)';
 }

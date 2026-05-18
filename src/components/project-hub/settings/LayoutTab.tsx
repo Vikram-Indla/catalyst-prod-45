@@ -44,7 +44,7 @@ function VisibilityDot({ visible, required }: { visible: boolean; required: bool
     <span
       style={{
         display: 'inline-block', width: 7, height: 7, borderRadius: '50%',
-        background: visible ? '#16A34A' : '#CBD5E1',
+        background: visible ? 'var(--cp-success, #16A34A)' : '#CBD5E1',
         marginLeft: 4, flexShrink: 0,
       }}
       title={visible ? 'Visible' : 'Hidden'}
