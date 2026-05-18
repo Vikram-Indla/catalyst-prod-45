@@ -1,10 +1,15 @@
 #!/bin/sh
 
 # Pre-commit hook: Design System Audit
-# Runs before every commit to validate design system compliance
+# 1) Self-test verifies the scanners themselves haven't regressed.
+# 2) Audit runs against src/ and reports the count.
+# Both are informational locally. CI gates them as blocking.
 
-echo "🔍 Running Design System Audit..."
+echo "🧪 Audit self-test (verifies scanners catch what they claim)…"
+node design-governance/scripts/self-test.mjs 2>&1 | tail -5 || true
 
+echo ""
+echo "🔍 Running Design System Audit…"
 node design-governance/rules/audit.js src 2>&1 | grep -E "^(✅|⚠️|❌)" || true
 
 # Note: This hook is informational - it does not block commits

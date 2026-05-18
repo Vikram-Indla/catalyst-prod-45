@@ -51,14 +51,23 @@ class TypographyEnforcer {
         }
       });
 
-      // Check for text-transform: uppercase (banned)
-      if (line.includes('text-transform') && line.includes('uppercase')) {
+      // Check for text-transform: uppercase (banned) — supports BOTH
+      // CSS kebab-case (`text-transform: uppercase`) AND React inline
+      // camelCase (`textTransform: 'uppercase'`) AND Tailwind className
+      // `uppercase`. Sentence-case is the only allowed label form per
+      // CLAUDE.md.
+      const hasInlineUppercase =
+        (line.includes('text-transform') || line.includes('textTransform')) &&
+        line.includes('uppercase');
+      const hasTailwindUppercase =
+        /className\s*=\s*[{"'][^"'}]*\buppercase\b/.test(line);
+      if (hasInlineUppercase || hasTailwindUppercase) {
         this.violations.push({
           file: filePath,
           line: index + 1,
           type: 'UPPERCASE_LABEL',
           content: line.trim(),
-          fix: 'Remove text-transform: uppercase; use sentence-case in label strings'
+          fix: 'Remove text-transform/uppercase utility; use sentence-case in label strings'
         });
       }
 

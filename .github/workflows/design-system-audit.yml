@@ -28,12 +28,23 @@ jobs:
         with:
           node-version: '18'
       
+      - name: Verify audit itself works (self-test)
+        run: |
+          echo "🧪 Running audit self-test (19 known-good/bad fixtures)..."
+          node design-governance/scripts/self-test.mjs
+          SELF_TEST_EXIT=$?
+          if [ $SELF_TEST_EXIT -ne 0 ]; then
+            echo "❌ AUDIT REGRESSION: the audit itself is broken. Fix design-governance/rules/ BEFORE merging anything."
+            exit 1
+          fi
+          echo "✅ Audit self-test passed — scanners working as advertised."
+
       - name: Run Design System Audit
         run: |
           echo "🎯 Auditing design system compliance..."
           node design-governance/rules/audit.js src/
           AUDIT_EXIT_CODE=$?
-          
+
           if [ $AUDIT_EXIT_CODE -ne 0 ]; then
             echo "❌ Design system violations detected. Merge BLOCKED until violations are fixed."
             exit 1

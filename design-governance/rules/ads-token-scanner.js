@@ -11,7 +11,47 @@ class ADSTokenScanner {
     this.violations = [];
     this.rawHexPattern = /#(?:[0-9a-fA-F]{3}){1,2}\b/g;
     this.hardcodedPxPattern = /:\s*(\d+)px\b/g;
-    this.tailwindPattern = /text-slate-|bg-slate-|border-slate-|text-red-|bg-blue-|text-green-|border-gray-/g;
+
+    // Tailwind utility classes. ALL must be replaced by ADS tokens or
+    // inline ADS-styled props. Catches the full surface area, not just
+    // colors. We match these only inside className="…" / className={…}
+    // strings — bare identifiers in code (e.g. a JS variable called
+    // `text-sm`) are ignored by anchoring on className context.
+    //
+    // Categories:
+    //  - color:        text-{slate,red,green,blue,gray,yellow,orange,indigo,…}-{50..950}
+    //                  bg-{slate,red,green,blue,gray,…}-{50..950}
+    //                  border-{slate,red,green,blue,gray,…}-{50..950}
+    //  - typography:   text-{xs,sm,base,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl}
+    //                  font-{thin,extralight,light,normal,medium,semibold,bold,extrabold,black}
+    //                  uppercase / lowercase / capitalize / italic / not-italic
+    //                  tracking-* / leading-*
+    //  - spacing:      p-* / px-* / py-* / pt-* / pb-* / pl-* / pr-*
+    //                  m-* / mx-* / my-* / mt-* / mb-* / ml-* / mr-*
+    //                  gap-* / gap-x-* / gap-y-* / space-x-* / space-y-*
+    //  - layout chrome rounded-* / shadow-* / border / border-* (sides only)
+    //
+    // The "size N" tail can be a digit, fraction (1/2), or arbitrary
+    // bracket value ([14px]).
+    this.tailwindUtilityRegex = /className\s*=\s*[{"']([^"'}]*?)["'}]/g;
+    this.tailwindBannedTokens = [
+      // typography
+      /\btext-(?:xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl)\b/,
+      /\bfont-(?:thin|extralight|light|normal|medium|semibold|bold|extrabold|black)\b/,
+      /\b(?:uppercase|lowercase|capitalize|italic|not-italic)\b/,
+      /\btracking-(?:tighter|tight|normal|wide|wider|widest|\[[^\]]+\])\b/,
+      /\bleading-(?:none|tight|snug|normal|relaxed|loose|\d+|\[[^\]]+\])\b/,
+      // color
+      /\btext-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}\b/,
+      /\bbg-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|white|black)(?:-\d{2,3})?\b/,
+      /\bborder-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}\b/,
+      // spacing
+      /\b[pm](?:[xytlbr])?-(?:\d+|\d+\.\d+|\[[^\]]+\])\b/,
+      /\b(?:gap|space)(?:-[xy])?-(?:\d+|\[[^\]]+\])\b/,
+      // chrome
+      /\brounded(?:-(?:none|sm|md|lg|xl|2xl|3xl|full))?\b/,
+      /\bshadow(?:-(?:sm|md|lg|xl|2xl|inner|none))?\b/,
+    ];
     this.bannedComponents = [
       'react-select',
       'react-modal',
@@ -93,15 +133,29 @@ class ADSTokenScanner {
         }
       }
 
-      // Check for Tailwind spacing classes
-      if (this.tailwindPattern.test(line)) {
-        this.violations.push({
-          file: filePath,
-          line: index + 1,
-          type: 'TAILWIND_CLASS',
-          content: line.trim(),
-          fix: 'Replace with @atlaskit/* component or ADS token'
-        });
+      // Check for banned Tailwind utility classes inside className="…".
+      // Only fires when the violating token is part of a className context —
+      // strings elsewhere are ignored. Each className string is checked
+      // independently so we can pinpoint the exact violating token.
+      const matches = [...line.matchAll(this.tailwindUtilityRegex)];
+      for (const m of matches) {
+        const classes = m[1];
+        for (const rule of this.tailwindBannedTokens) {
+          const hit = classes.match(rule);
+          if (hit) {
+            this.violations.push({
+              file: filePath,
+              line: index + 1,
+              type: 'TAILWIND_CLASS',
+              content: line.trim(),
+              tokenFound: hit[0],
+              fix: `Replace Tailwind utility "${hit[0]}" with ADS token or inline style: fontSize/fontWeight/padding/margin/color from ADS tokens (var(--ds-*)).`
+            });
+            // Only report the first hit per className= to avoid spam — the
+            // developer will see the offending block and clean all utilities.
+            break;
+          }
+        }
       }
 
       // Check for banned component imports

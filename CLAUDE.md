@@ -1036,3 +1036,46 @@ When adding a new admin-facing table, the SELECT policy can be permissive (`TO a
 **Remaining work flagged for follow-up:** 599 real violations across 25+ admin files. Top offenders: ComponentsAdminPage (118 — much of it intentional preview-gallery hex; should add `// ads-scanner:ignore-next-line` marker support), AdminAccessPage (48), JiraUserSync (44), CatalystFeaturesBoard (25), workflows pages (~37 combined). Each file needs the same Jira-token sweep applied to UserAccessPage: 24/653 H1, sentence-case 12/653 column headers, 14/400 cells, var() fallbacks, no Tailwind utilities on chrome.
 
 **Severity:** P0 (the governance system was non-functional; every merge since the audit was wired had unchecked design drift).
+
+---
+
+## 2026-05-19 — Double `<AdminLayout>` mount produced double sidebar on every /admin/* route registered in FullAppRoutes
+
+**Surface:** /admin/user-access, /admin/resource-assignments, every admin route that lives in FullAppRoutes (~25 routes)
+**Pattern:** App.tsx (lines 191-198) defined `<Route path="/admin" element={<AdminLayout/>}>` with 6 children (overview / design-system / feature-flags / catalyst-features / workflows). FullAppRoutes (line 851) defined ANOTHER `<Route path="/admin" element={<AdminLayout/>}>` with ~25 other admin children. When the user navigated to a route owned by FullAppRoutes (e.g. `/admin/user-access`), React Router matched App.tsx's `/admin` parent first → rendered AdminLayout with no matching child (Outlet stayed empty), then fell through to `/*` → mounted FullAppRoutes → which rendered its OWN AdminLayout INSIDE the first one. Result: two sidebars stacked.
+
+**Why design-system showed one sidebar but user-access showed two:** design-system was in App.tsx's 6-route block (matched the outer wrapper, content rendered, no fallthrough). user-access was in FullAppRoutes' block (no match in App.tsx → fallthrough → second wrapper).
+
+**Fix:** Removed the entire `<Route path="/admin">` block from App.tsx. Added the 4 unique routes (design-system, catalyst-features, workflows, overview was already covered) into FullAppRoutes' admin block. Cleaned the dead lazy imports. Result: ONE `<Route path="/admin" element={<AdminLayout/>}>` declaration for every admin route, ONE sidebar.
+
+**Rule:** Never declare `<Route path="/admin">` (or any parent route) in two places. Pick a single source of truth — preferably the catch-all router (FullAppRoutes) — and consolidate every child route there. Before adding a new admin route, grep both App.tsx and FullAppRoutes for any existing `path="/admin"` parent block; there must be exactly one.
+
+**Severity:** P0 (layout was visibly broken on every admin page mounted from FullAppRoutes).
+
+---
+
+## 2026-05-19 — Design-system audit had blind spots for Tailwind utility classes; extended to comprehensive coverage + added self-test
+
+**Surface:** `design-governance/rules/ads-token-scanner.js`, `typography-enforcer.js`; new `design-governance/scripts/self-test.mjs`
+**Pattern:** After the silent-pass and var() fallback fixes brought admin violations from 1541 → 599, Vikram asked "how do I know how much fraud is still uncovered?" The answer was: a LOT. The scanner only checked a sliver of Tailwind tokens (`text-slate-*`, `bg-slate-*`, `border-gray-*`, `text-red-*`). It was blind to:
+- Typography utilities: `text-xs/sm/base/lg/xl/2xl/.../9xl`, `font-thin/light/normal/medium/semibold/bold/extrabold/black`, `italic/uppercase/lowercase/capitalize`, `tracking-*`, `leading-*`
+- Spacing utilities: `p-*/px-*/py-*/pt-*/pb-*/pl-*/pr-*`, `m-*` analogues, `gap-*`, `space-x-*/space-y-*`
+- Chrome utilities: `rounded-*`, `shadow-*`
+- Full color palette: only the named colors had partial coverage
+- camelCase inline uppercase: `textTransform: 'uppercase'` (React inline style) was missed because the enforcer only checked the kebab-case `text-transform`
+
+**Fix:**
+1. **ads-token-scanner.js**: replaced narrow `tailwindPattern` with a comprehensive `tailwindBannedTokens` array covering every Tailwind utility category (typography, spacing, color, chrome). Only matches inside `className="…"` / `className={…}` so bare identifiers in code are ignored. Per-className-string scan with per-rule match — pinpoints the exact violating token.
+2. **typography-enforcer.js**: UPPERCASE_LABEL rule now matches BOTH `text-transform: uppercase` (CSS kebab-case) AND `textTransform: 'uppercase'` (React inline camelCase) AND `className=".. uppercase .."` (Tailwind utility).
+3. **NEW `design-governance/scripts/self-test.mjs`**: 19 fixtures covering every audit rule. Each fixture has `code` (a single line of TSX) and `expect` (list of `{scanner, type}` violations it MUST produce, or `[]` for clean code). The script writes each fixture to a temp file, runs all three scanners against it, and asserts that the observed violations exactly match the expected set. Exits non-zero on any mismatch — wired into both pre-commit (informational) and CI (blocking). This is the second line of defence: if the audit ever silently passes a known-bad sample again, the self-test catches the audit-tool regression BEFORE bad code can ship.
+
+**Numbers after the extension:**
+- src/pages/admin: 599 (token-only coverage) → **1310 real violations** (+711 newly detected — these were shipping un-flagged for months)
+- Audit self-test: 19/19 pass
+- Biggest deltas: ResourceAssignments 73 → 104, FeatureFlagsPage 17 → 54, ThemeStatuses/ProcessSteps/FeatureStatuses/EpicStatuses each +11
+
+**Rule:** Every time a NEW failure mode is discovered (something the audit didn't catch), add a fixture to `self-test.mjs` BEFORE fixing the rule. The fixture proves the rule fires correctly and pins the rule against future regression. The fixture set should grow monotonically — every new audit lesson lands as a fixture so the audit's claimed surface is provable, not asserted.
+
+**How to see uncovered fraud:** `node design-governance/rules/audit.js src/` shows the current count. `node design-governance/scripts/self-test.mjs` proves every documented rule still fires. When the count goes UP after a scanner change without a corresponding code change, the scanner just caught something new — investigate and decide whether the new finding is a bug or a fixture to add.
+
+**Severity:** P0 (~62% of admin design drift was invisible to the audit until this extension).
