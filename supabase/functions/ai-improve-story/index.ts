@@ -417,6 +417,7 @@ Begin immediately with the "## Description" heading. No preamble.`;
         },
         body: JSON.stringify({
           model: DEFAULT_MODEL,
+          reasoning_effort: "none",
           messages: [
             {
               role: "system",
@@ -426,9 +427,6 @@ Begin immediately with the "## Description" heading. No preamble.`;
             { role: "user", content: userContent },
           ],
           temperature: 0.4,
-          // 2000 (vs the legacy 1500) gives complex Epics enough room
-          // for a narrative description + Given/When/Then AC without
-          // the AI getting cut off mid-sentence at the limit.
           max_tokens: 2000,
           stream: true,
         }),

@@ -17,17 +17,23 @@
  * discard response? No / Yes"). Yes → abort fetch, call onCancel.
  * No → resume.
  */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 // `/caty.svg` lives in `public/` — Vite serves it at site root, so the
 // string literal is the production path. Avoids a bundle round-trip
 // for what is a small static asset that may be swapped behind the
 // scenes (brand refresh, dark/light variants, etc.).
-const catalystAiLogo = '/caty.svg';
-import { fetchFunction } from '@/integrations/supabase/functionsRouter';
-import { supabase } from '@/integrations/supabase/client';
-import './caty-streaming-overlay.css';
+const catalystAiLogo = "/caty.svg";
+import { fetchFunction } from "@/integrations/supabase/functionsRouter";
+import { supabase } from "@/integrations/supabase/client";
+import "./caty-streaming-overlay.css";
 
-type Phase = 'analyzing' | 'streaming' | 'stopped' | 'done' | 'errored';
+type Phase = "analyzing" | "streaming" | "stopped" | "done" | "errored";
 
 export interface CatyStreamingOverlayProps {
   /** Issue key the AI is improving — used as the React key + cancel routing. */
@@ -52,16 +58,25 @@ export interface CatyStreamingOverlayProps {
 }
 
 /** Splits the AI output into two sections by `## Description` / `## Acceptance criteria` headings. */
-function splitImproveOutput(md: string): { description: string; acceptanceCriteria: string } {
+function splitImproveOutput(md: string): {
+  description: string;
+  acceptanceCriteria: string;
+} {
   const acIdx = md.search(/^##\s+Acceptance criteria\s*$/im);
   if (acIdx === -1) {
     return {
-      description: md.replace(/^##\s+Description\s*\n+/im, '').trim(),
-      acceptanceCriteria: '',
+      description: md.replace(/^##\s+Description\s*\n+/im, "").trim(),
+      acceptanceCriteria: "",
     };
   }
-  const descPart = md.slice(0, acIdx).replace(/^##\s+Description\s*\n+/im, '').trim();
-  const acPart = md.slice(acIdx).replace(/^##\s+Acceptance criteria\s*\n+/im, '').trim();
+  const descPart = md
+    .slice(0, acIdx)
+    .replace(/^##\s+Description\s*\n+/im, "")
+    .trim();
+  const acPart = md
+    .slice(acIdx)
+    .replace(/^##\s+Acceptance criteria\s*\n+/im, "")
+    .trim();
   return { description: descPart, acceptanceCriteria: acPart };
 }
 
@@ -72,11 +87,11 @@ export function CatyStreamingOverlay({
   currentDescription,
   currentAcceptanceCriteria,
   attachmentUrls,
-  improveSubType = 'improve_clarify',
+  improveSubType = "improve_clarify",
   onApply,
   onCancel,
 }: CatyStreamingOverlayProps) {
-  const [phase, setPhase] = useState<Phase>('analyzing');
+  const [phase, setPhase] = useState<Phase>("analyzing");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const abortRef = useRef<AbortController | null>(null);
@@ -92,8 +107,8 @@ export function CatyStreamingOverlay({
   // every char received from the stream. The typewriter renders OUT of
   // this; on Accept we read FROM this so we don't have to wait for the
   // typewriter to finish draining.
-  const charBufferRef = useRef<string>('');
-  const fullTextRef = useRef<string>('');
+  const charBufferRef = useRef<string>("");
+  const fullTextRef = useRef<string>("");
   const streamingTextRef = useRef<HTMLSpanElement>(null);
   const typewriterTimerRef = useRef<number | null>(null);
   const streamCompleteRef = useRef<boolean>(false);
@@ -110,7 +125,7 @@ export function CatyStreamingOverlay({
     if (buf.length === 0) {
       if (streamCompleteRef.current) {
         stopTypewriter();
-        setPhase('done');
+        setPhase("done");
       }
       return;
     }
@@ -119,21 +134,14 @@ export function CatyStreamingOverlay({
       // commit). Hold the buffer; next tick will catch up.
       return;
     }
-    // Adaptive drain — when the AI gets ahead of the typewriter (long
-    // burst arrives faster than 1 char per 18ms), accelerate so we
-    // never fall further than ~200 chars behind. Keeps the feel
-    // ChatGPT-smooth without ever stalling visibly.
-    const drainRate = buf.length > 200 ? 5 : buf.length > 50 ? 2 : 1;
-    const chunk = buf.slice(0, drainRate);
-    charBufferRef.current = buf.slice(drainRate);
+    const chunk = buf.slice(0, 1);
+    charBufferRef.current = buf.slice(1);
     streamingTextRef.current.appendChild(document.createTextNode(chunk));
   }, [stopTypewriter]);
 
   const startTypewriter = useCallback(() => {
     if (typewriterTimerRef.current !== null) return;
-    // 18ms ≈ 55Hz. Combined with the adaptive drain rate, this gives
-    // ~55 chars/sec at the slow end and ~275 chars/sec at the fast end.
-    typewriterTimerRef.current = window.setInterval(tickTypewriter, 18);
+    typewriterTimerRef.current = window.setInterval(tickTypewriter, 10);
   }, [tickTypewriter]);
 
   const enqueueDelta = useCallback(
@@ -143,7 +151,7 @@ export function CatyStreamingOverlay({
       // Phase flip happens once on first delta; React re-renders to
       // mount the streaming-text span. From then on the typewriter
       // owns DOM mutation directly.
-      setPhase((p) => (p === 'analyzing' ? 'streaming' : p));
+      setPhase((p) => (p === "analyzing" ? "streaming" : p));
       startTypewriter();
     },
     [startTypewriter],
@@ -155,7 +163,7 @@ export function CatyStreamingOverlay({
     // typewriter drain naturally and finalize from there.
     if (charBufferRef.current.length === 0) {
       stopTypewriter();
-      setPhase('done');
+      setPhase("done");
     }
   }, [stopTypewriter]);
 
@@ -167,7 +175,7 @@ export function CatyStreamingOverlay({
     const buf = charBufferRef.current;
     if (buf && streamingTextRef.current) {
       streamingTextRef.current.appendChild(document.createTextNode(buf));
-      charBufferRef.current = '';
+      charBufferRef.current = "";
     }
   }, []);
 
@@ -189,7 +197,7 @@ export function CatyStreamingOverlay({
     abortRef.current?.abort();
     stopTypewriter();
     flushBufferedChars();
-    setPhase('stopped');
+    setPhase("stopped");
   }, [stopTypewriter, flushBufferedChars]);
 
   // Kick off the streaming request once on mount.
@@ -205,31 +213,31 @@ export function CatyStreamingOverlay({
         const { data: sessionData } = await supabase.auth.getSession();
         const accessToken = sessionData?.session?.access_token ?? null;
 
-        const res = await fetchFunction('ai-improve-story', {
-          method: 'POST',
+        const res = await fetchFunction("ai-improve-story", {
+          method: "POST",
           accessToken,
-          headers: { 'Content-Type': 'application/json' },
+          headers: { "Content-Type": "application/json" },
           signal: ctrl.signal,
           body: JSON.stringify({
-            improve_type: 'improve_description_v2',
+            improve_type: "improve_description_v2",
             stream: true,
             improve_sub_type: improveSubType,
-            issue_type: issueType ?? 'Default',
-            issue_summary: issueSummary ?? '',
-            current_description: currentDescription ?? '',
-            current_ac: currentAcceptanceCriteria ?? '',
+            issue_type: issueType ?? "Default",
+            issue_summary: issueSummary ?? "",
+            current_description: currentDescription ?? "",
+            current_ac: currentAcceptanceCriteria ?? "",
             attachment_urls: attachmentUrls,
           }),
         });
 
         if (!res.ok || !res.body) {
-          const text = await res.text().catch(() => '');
+          const text = await res.text().catch(() => "");
           throw new Error(text || `AI request failed (${res.status})`);
         }
 
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
-        let lineBuffer = '';
+        let lineBuffer = "";
 
         while (!cancelled) {
           const { value, done } = await reader.read();
@@ -238,29 +246,34 @@ export function CatyStreamingOverlay({
 
           // NDJSON: one JSON object per line
           let nlIdx;
-          while ((nlIdx = lineBuffer.indexOf('\n')) !== -1) {
+          while ((nlIdx = lineBuffer.indexOf("\n")) !== -1) {
             const line = lineBuffer.slice(0, nlIdx).trim();
             lineBuffer = lineBuffer.slice(nlIdx + 1);
             if (!line) continue;
             try {
               const evt = JSON.parse(line);
-              if (evt.type === 'text' && typeof evt.delta === 'string') {
+              if (evt.type === "text" && typeof evt.delta === "string") {
                 enqueueDelta(evt.delta);
-              } else if (evt.type === 'done') {
+              } else if (evt.type === "done") {
                 // Server's full_text wins as the canonical accumulator
                 // — covers the rare case where individual deltas had
                 // a hiccup but the server has the complete result.
                 // Display keeps draining whatever's already in the
                 // typewriter buffer; markStreamComplete flips to
                 // `done` phase once that buffer drains.
-                if (typeof evt.full_text === 'string' && evt.full_text.length > 0) {
+                if (
+                  typeof evt.full_text === "string" &&
+                  evt.full_text.length > 0
+                ) {
                   fullTextRef.current = evt.full_text;
                 }
                 markStreamComplete();
-              } else if (evt.type === 'error') {
+              } else if (evt.type === "error") {
                 stopTypewriter();
-                setErrorMessage(typeof evt.message === 'string' ? evt.message : 'AI error');
-                setPhase('errored');
+                setErrorMessage(
+                  typeof evt.message === "string" ? evt.message : "AI error",
+                );
+                setPhase("errored");
               }
             } catch {
               // Malformed line — ignore, keep streaming
@@ -268,9 +281,13 @@ export function CatyStreamingOverlay({
           }
         }
       } catch (err: unknown) {
-        if (cancelled || (err instanceof DOMException && err.name === 'AbortError')) return;
-        setErrorMessage(err instanceof Error ? err.message : 'Stream failed');
-        setPhase('errored');
+        if (
+          cancelled ||
+          (err instanceof DOMException && err.name === "AbortError")
+        )
+          return;
+        setErrorMessage(err instanceof Error ? err.message : "Stream failed");
+        setPhase("errored");
       }
     })();
 
@@ -289,10 +306,10 @@ export function CatyStreamingOverlay({
   // listener (CLAUDE.md 2026-05-08 pattern).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return;
+      if (e.key !== "Escape") return;
       e.stopPropagation();
       e.preventDefault();
-      if (phase === 'errored' || phase === 'stopped' || phase === 'done') {
+      if (phase === "errored" || phase === "stopped" || phase === "done") {
         // Already terminal — Esc just closes.
         onCancel();
         return;
@@ -300,8 +317,8 @@ export function CatyStreamingOverlay({
       // Mid-stream — halt immediately and flip to the Keep/Discard prompt.
       handleStopRequest();
     };
-    document.addEventListener('keydown', onKey, true);
-    return () => document.removeEventListener('keydown', onKey, true);
+    document.addEventListener("keydown", onKey, true);
+    return () => document.removeEventListener("keydown", onKey, true);
   }, [phase, onCancel, handleStopRequest]);
 
   const handleAccept = useCallback(() => {
@@ -315,9 +332,9 @@ export function CatyStreamingOverlay({
   }, [onApply]);
 
   const mutedSnapshot = useMemo(() => {
-    const desc = (currentDescription ?? '').trim();
-    const ac = (currentAcceptanceCriteria ?? '').trim();
-    if (!desc && !ac) return '(no existing description)';
+    const desc = (currentDescription ?? "").trim();
+    const ac = (currentAcceptanceCriteria ?? "").trim();
+    if (!desc && !ac) return "(no existing description)";
     if (!ac) return desc;
     return `${desc}\n\n## Acceptance criteria\n${ac}`;
   }, [currentDescription, currentAcceptanceCriteria]);
@@ -328,14 +345,14 @@ export function CatyStreamingOverlay({
   //   streaming → streaming text in normal colour ABOVE the muted snapshot
   //   done      → streaming text in normal colour, snapshot hidden
   //   errored   → error message + close button
-  const showSnapshot = phase === 'analyzing' || phase === 'streaming';
+  const showSnapshot = phase === "analyzing" || phase === "streaming";
 
   return (
     <div
       data-testid="caty-streaming-overlay"
       style={{
-        position: 'relative',
-        padding: '8px 0',
+        position: "relative",
+        padding: "8px 0",
         minHeight: 80,
       }}
     >
@@ -345,24 +362,25 @@ export function CatyStreamingOverlay({
           every chunk. The wrapper div + caret stay in React's hands.
           Mounted as soon as we leave the analyzing phase so the ref
           is available to the typewriter timer. */}
-      {(phase === 'streaming' || phase === 'done') && (
+      {(phase === "streaming" || phase === "done") && (
         <div
           style={{
             fontSize: 14,
-            lineHeight: '24px',
-            color: 'var(--ds-text, #292A2E)',
-            whiteSpace: 'pre-wrap',
-            fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
-            marginBottom: phase === 'streaming' && showSnapshot ? 12 : 0,
+            lineHeight: "24px",
+            color: "var(--ds-text, #292A2E)",
+            whiteSpace: "pre-wrap",
+            fontFamily:
+              '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
+            marginBottom: phase === "streaming" && showSnapshot ? 12 : 0,
           }}
         >
           <span ref={streamingTextRef} />
-          {phase === 'streaming' && (
+          {phase === "streaming" && (
             <span
               aria-hidden="true"
               style={{
-                display: 'inline-block',
-                verticalAlign: 'text-bottom',
+                display: "inline-block",
+                verticalAlign: "text-bottom",
                 marginLeft: 4,
                 width: 14,
                 height: 14,
@@ -375,7 +393,7 @@ export function CatyStreamingOverlay({
                 width={14}
                 height={14}
                 className="caty-pulse"
-                style={{ display: 'block' }}
+                style={{ display: "block" }}
               />
             </span>
           )}
@@ -385,27 +403,28 @@ export function CatyStreamingOverlay({
       {/* Muted snapshot of the original — visible during analyzing + streaming */}
       {showSnapshot && (
         <div
-          aria-hidden={phase === 'streaming'}
+          aria-hidden={phase === "streaming"}
           style={{
             fontSize: 14,
-            lineHeight: '24px',
-            whiteSpace: 'pre-wrap',
-            fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
-            color: 'var(--ds-text-disabled, #8993A4)',
+            lineHeight: "24px",
+            whiteSpace: "pre-wrap",
+            fontFamily:
+              '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
+            color: "var(--ds-text-disabled, #8993A4)",
             opacity: 0.65,
           }}
         >
           {mutedSnapshot}
-          {phase === 'analyzing' && (
+          {phase === "analyzing" && (
             <span
               className="caty-pulse"
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
+                display: "inline-flex",
+                alignItems: "center",
                 gap: 6,
                 marginTop: 12,
                 paddingLeft: 0,
-                color: 'var(--ds-text-subtle, #6B6E76)',
+                color: "var(--ds-text-subtle, #6B6E76)",
                 fontSize: 13,
                 fontWeight: 500,
               }}
@@ -416,7 +435,7 @@ export function CatyStreamingOverlay({
                 width={16}
                 height={16}
                 className="caty-pulse"
-                style={{ display: 'inline-block', verticalAlign: 'middle' }}
+                style={{ display: "inline-block", verticalAlign: "middle" }}
               />
               Caty is analyzing
             </span>
@@ -425,30 +444,35 @@ export function CatyStreamingOverlay({
       )}
 
       {/* Error pane */}
-      {phase === 'errored' && (
+      {phase === "errored" && (
         <div
           role="alert"
           style={{
-            display: 'flex',
-            alignItems: 'center',
+            display: "flex",
+            alignItems: "center",
             gap: 12,
             padding: 12,
             borderRadius: 6,
-            background: 'var(--ds-background-danger, #FFECEB)',
-            color: 'var(--ds-text-danger, #AE2A19)',
+            background: "var(--ds-background-danger, #FFECEB)",
+            color: "var(--ds-text-danger, #AE2A19)",
             fontSize: 13,
           }}
         >
           <span style={{ flex: 1 }}>
-            {errorMessage ?? 'Caty couldn’t finish — please try again.'}
+            {errorMessage ?? "Caty couldn’t finish — please try again."}
           </span>
           <button
             type="button"
             onClick={onCancel}
             style={{
-              border: 'none', background: 'transparent', cursor: 'pointer',
-              fontSize: 13, fontWeight: 500, padding: '4px 10px', borderRadius: 3,
-              color: 'var(--ds-text-danger, #AE2A19)',
+              border: "none",
+              background: "transparent",
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 500,
+              padding: "4px 10px",
+              borderRadius: 3,
+              color: "var(--ds-text-danger, #AE2A19)",
             }}
           >
             Close
@@ -457,11 +481,11 @@ export function CatyStreamingOverlay({
       )}
 
       {/* Done state — accept / discard */}
-      {phase === 'done' && (
+      {phase === "done" && (
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
+            display: "flex",
+            justifyContent: "flex-end",
             gap: 8,
             marginTop: 12,
           }}
@@ -470,14 +494,15 @@ export function CatyStreamingOverlay({
             type="button"
             onClick={onCancel}
             style={{
-              border: '1px solid var(--ds-border, #DFE1E6)',
-              background: 'var(--ds-surface, #FFFFFF)',
-              cursor: 'pointer',
-              fontSize: 13, fontWeight: 500,
-              padding: '6px 14px',
+              border: "1px solid var(--ds-border, #DFE1E6)",
+              background: "var(--ds-surface, #FFFFFF)",
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 500,
+              padding: "6px 14px",
               borderRadius: 3,
-              color: 'var(--ds-text, #292A2E)',
-              fontFamily: 'inherit',
+              color: "var(--ds-text, #292A2E)",
+              fontFamily: "inherit",
             }}
           >
             Discard
@@ -486,14 +511,15 @@ export function CatyStreamingOverlay({
             type="button"
             onClick={handleAccept}
             style={{
-              border: 'none',
-              background: 'var(--ds-background-brand-bold, #0C66E4)',
-              color: 'white',
-              cursor: 'pointer',
-              fontSize: 13, fontWeight: 500,
-              padding: '6px 14px',
+              border: "none",
+              background: "var(--ds-background-brand-bold, #0C66E4)",
+              color: "white",
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 500,
+              padding: "6px 14px",
               borderRadius: 3,
-              fontFamily: 'inherit',
+              fontFamily: "inherit",
             }}
           >
             Accept
@@ -505,50 +531,55 @@ export function CatyStreamingOverlay({
           the post-stop "Keep / Discard" prompt. Done state hides it
           (the inline Accept/Discard at the bottom of the doc takes
           over for a natural completion). */}
-      {(phase === 'analyzing' || phase === 'streaming' || phase === 'stopped') && (
+      {(phase === "analyzing" ||
+        phase === "streaming" ||
+        phase === "stopped") && (
         <div
           className="caty-pill-enter"
           style={{
-            position: 'fixed',
+            position: "fixed",
             bottom: 24,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            display: 'inline-flex',
-            alignItems: 'center',
+            left: "50%",
+            transform: "translateX(-50%)",
+            display: "inline-flex",
+            alignItems: "center",
             gap: 12,
-            padding: '8px 16px',
-            background: 'rgba(41, 42, 46, 0.96)',
-            color: 'rgba(206, 207, 210, 1)',
+            padding: "8px 16px",
+            background: "rgba(41, 42, 46, 0.96)",
+            color: "rgba(206, 207, 210, 1)",
             borderRadius: 12,
-            border: '1px solid rgba(255, 255, 255, 0.10)',
-            boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35), 0 4px 8px rgba(0, 0, 0, 0.18)',
+            border: "1px solid rgba(255, 255, 255, 0.10)",
+            boxShadow:
+              "0 12px 32px rgba(0, 0, 0, 0.35), 0 4px 8px rgba(0, 0, 0, 0.18)",
             zIndex: 1000,
             fontSize: 13,
-            fontFamily: 'inherit',
-            whiteSpace: 'nowrap',
-            pointerEvents: 'auto',
+            fontFamily: "inherit",
+            whiteSpace: "nowrap",
+            pointerEvents: "auto",
           }}
         >
-          {phase === 'stopped' ? (
+          {phase === "stopped" ? (
             <>
               <img
                 src={catalystAiLogo}
                 alt=""
                 width={16}
                 height={16}
-                style={{ display: 'inline-block' }}
+                style={{ display: "inline-block" }}
               />
               <span>Keep what Caty wrote, or discard?</span>
               <button
                 type="button"
                 onClick={onCancel}
                 style={{
-                  border: 'none',
-                  background: 'transparent',
-                  cursor: 'pointer',
-                  color: 'rgba(206, 207, 210, 1)',
-                  fontSize: 13, fontWeight: 500, padding: '4px 10px',
-                  fontFamily: 'inherit',
+                  border: "none",
+                  background: "transparent",
+                  cursor: "pointer",
+                  color: "rgba(206, 207, 210, 1)",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  padding: "4px 10px",
+                  fontFamily: "inherit",
                 }}
               >
                 Discard
@@ -557,12 +588,15 @@ export function CatyStreamingOverlay({
                 type="button"
                 onClick={handleAccept}
                 style={{
-                  border: '1px solid rgba(132, 169, 255, 0.85)',
-                  background: 'rgba(132, 169, 255, 0.18)',
-                  color: 'rgba(206, 207, 210, 1)',
-                  cursor: 'pointer',
-                  fontSize: 13, fontWeight: 600, padding: '4px 12px', borderRadius: 4,
-                  fontFamily: 'inherit',
+                  border: "1px solid rgba(132, 169, 255, 0.85)",
+                  background: "rgba(132, 169, 255, 0.18)",
+                  color: "rgba(206, 207, 210, 1)",
+                  cursor: "pointer",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  padding: "4px 12px",
+                  borderRadius: 4,
+                  fontFamily: "inherit",
                 }}
               >
                 Keep
@@ -575,19 +609,25 @@ export function CatyStreamingOverlay({
                 alt=""
                 width={16}
                 height={16}
-                className={phase === 'analyzing' ? 'caty-pulse' : ''}
-                style={{ display: 'inline-block' }}
+                className={phase === "analyzing" ? "caty-pulse" : ""}
+                style={{ display: "inline-block" }}
               />
               <span>
-                {phase === 'analyzing' ? 'Caty is analyzing' : 'Caty is editing'}
+                {phase === "analyzing"
+                  ? "Caty is analyzing"
+                  : "Caty is editing"}
               </span>
               <span
                 style={{
-                  display: 'inline-flex', alignItems: 'center',
-                  fontSize: 11, padding: '1px 6px', borderRadius: 3,
-                  border: '1px solid rgba(255, 255, 255, 0.18)',
-                  color: 'rgba(150, 153, 158, 1)',
-                  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, monospace',
+                  display: "inline-flex",
+                  alignItems: "center",
+                  fontSize: 11,
+                  padding: "1px 6px",
+                  borderRadius: 3,
+                  border: "1px solid rgba(255, 255, 255, 0.18)",
+                  color: "rgba(150, 153, 158, 1)",
+                  fontFamily:
+                    "ui-monospace, SFMono-Regular, Menlo, Monaco, monospace",
                 }}
               >
                 Esc
@@ -598,18 +638,26 @@ export function CatyStreamingOverlay({
                 aria-label="Stop"
                 title="Stop"
                 style={{
-                  width: 22, height: 22, borderRadius: 4,
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  border: 'none',
-                  background: 'rgba(255, 86, 48, 0.92)',
-                  cursor: 'pointer',
+                  width: 22,
+                  height: 22,
+                  borderRadius: 4,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: "none",
+                  background: "rgba(255, 86, 48, 0.92)",
+                  cursor: "pointer",
                   padding: 0,
                   flexShrink: 0,
                 }}
               >
                 <span
                   style={{
-                    width: 8, height: 8, borderRadius: 1, background: 'white', display: 'inline-block',
+                    width: 8,
+                    height: 8,
+                    borderRadius: 1,
+                    background: "white",
+                    display: "inline-block",
                   }}
                 />
               </button>
