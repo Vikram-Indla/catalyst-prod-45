@@ -232,7 +232,7 @@ export function RoadmapSidePanel({
                       transition: 'border-color 150ms',
                     }}
                     onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)')}
-                    onBlur={e => (e.currentTarget.style.borderColor = 'var(--bd-default, #E2E8F0)')}
+                    onBlur={e => (e.currentTarget.style.borderColor = 'var(--bd-default, var(--cp-border, #E2E8F0))')}
                   />
                   {milestones[m.key] && (
                     <button

@@ -71,7 +71,7 @@ export function WorkflowTab({ projectId: _ }: WorkflowTabProps) {
             style={{
               display: 'flex', alignItems: 'center', gap: 2,
               background: 'var(--ds-surface-sunken, #F8FAFC)',
-              border: '1px solid var(--ds-border, #E2E8F0)',
+              border: '1px solid var(--ds-border, var(--cp-border, #E2E8F0))',
               borderRadius: 6, padding: 2,
             }}
           >
@@ -99,13 +99,13 @@ export function WorkflowTab({ projectId: _ }: WorkflowTabProps) {
       <div
         style={{
           background: '#fff',
-          border: '1px solid var(--ds-border, #E2E8F0)',
+          border: '1px solid var(--ds-border, var(--cp-border, #E2E8F0))',
           borderRadius: 8,
           overflow: 'hidden',
         }}
       >
         <Tabs value={activeType} onValueChange={setActiveType} className="w-full">
-          <div style={{ borderBottom: '1px solid var(--ds-border, #E2E8F0)', paddingLeft: 16 }}>
+          <div style={{ borderBottom: '1px solid var(--ds-border, var(--cp-border, #E2E8F0))', paddingLeft: 16 }}>
             <TabsList className="bg-transparent h-10 gap-0 p-0">
               {ISSUE_TYPES.map(t => (
                 <TabsTrigger

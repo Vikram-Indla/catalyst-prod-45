@@ -132,7 +132,7 @@ export function SidebarProjectNav({
 
   return (
     <div
-      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-r border-[var(--ds-border,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)]"
+      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-r border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)]"
       style={{
         width: collapsed ? 56 : 220,
         transition: 'width 200ms ease',

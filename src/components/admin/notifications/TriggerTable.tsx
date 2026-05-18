@@ -162,9 +162,9 @@ function CategoryAccordion({
 
       {/* ── Expanded Content ─────────────────────────────────────── */}
       {isExpanded && (
-        <div className="border-t border-[var(--bd-default,#E2E8F0)]">
+        <div className="border-t border-[var(--bd-default,var(--cp-border, #E2E8F0))]">
           {/* Column Headers */}
-          <div className="grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 py-2 bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-[var(--bd-default,#E2E8F0)]">
+          <div className="grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 py-2 bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-[var(--bd-default,var(--cp-border, #E2E8F0))]">
             <div className="flex items-center justify-center">
               <input
                 type="checkbox"

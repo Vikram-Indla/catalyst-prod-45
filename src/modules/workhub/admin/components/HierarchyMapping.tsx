@@ -113,7 +113,7 @@ export function HierarchyMapping() {
 
       {/* Card 1: Hierarchy Levels */}
       <div style={{
-        background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
+        background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 8,
         padding: 20, marginBottom: 16, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
@@ -136,7 +136,7 @@ export function HierarchyMapping() {
               onDrop={handleDrop}
               onDragEnd={() => { dragItem.current = null; dragOver.current = null }}
               style={{
-                background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 6,
+                background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 6,
                 padding: '10px 14px', marginBottom: 4, display: 'flex', alignItems: 'center',
                 gap: 12, cursor: 'grab', transition: 'box-shadow .15s',
               }}
@@ -157,7 +157,7 @@ export function HierarchyMapping() {
 
       {/* Card 2: Type Mapping */}
       <div style={{
-        background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
+        background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 8,
         padding: 20, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
       }}>
         <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: '0 0 16px' }}>
@@ -183,7 +183,7 @@ export function HierarchyMapping() {
                       padding: '5px 12px', borderRadius: 6, fontSize: 11, border: '1px solid',
                       cursor: 'pointer', transition: 'all .15s', fontWeight: isOn ? 600 : 400,
                       background: isOn ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface, #fff)',
-                      borderColor: isOn ? '#BFDBFE' : 'var(--bd-default, #E2E8F0)',
+                      borderColor: isOn ? '#BFDBFE' : 'var(--bd-default, var(--cp-border, #E2E8F0))',
                       color: isOn ? 'var(--ds-background-brand-bold-hovered, #1D4ED8)' : 'var(--ds-text-subtle, #334155)',
                     }}
                   >
@@ -211,7 +211,7 @@ export function HierarchyMapping() {
             onClick={handleReset}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-              background: 'var(--bg-1, #F8FAFC)', color: 'var(--ds-text-subtle, #334155)', border: '1px solid var(--bd-default, #E2E8F0)', cursor: 'pointer',
+              background: 'var(--bg-1, #F8FAFC)', color: 'var(--ds-text-subtle, #334155)', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', cursor: 'pointer',
             }}
           >
             Reset to Default

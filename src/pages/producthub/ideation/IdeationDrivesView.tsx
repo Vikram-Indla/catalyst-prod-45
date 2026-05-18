@@ -80,7 +80,7 @@ export default function IdeationDrivesView() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
             <h2 style={{ fontSize: '22px', fontWeight: 800, color: 'var(--cp-text-primary, #0F172A)', letterSpacing: '-0.5px', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>Ideas Themes</h2>
             <span style={{
-              background: 'var(--ds-surface-sunken, #F8FAFC)', border: '1px solid #E2E8F0', borderRadius: '12px',
+              background: 'var(--ds-surface-sunken, #F8FAFC)', border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: '12px',
               padding: '1px 7px', fontSize: '11px', fontWeight: 600,
               fontFamily: MONO, color: 'var(--ds-text-subtlest, #94A3B8)',
             }}>{drives.length}</span>
@@ -119,7 +119,7 @@ export default function IdeationDrivesView() {
         const IconComponent = getDriveIcon(drive.title);
         return (
           <div key={drive.id} style={{
-            background: 'var(--cp-bg-elevated, #FFFFFF)', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: '6px',
+            background: 'var(--cp-bg-elevated, #FFFFFF)', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', borderRadius: '6px',
             padding: '20px', marginBottom: '16px',
           }}>
             {/* Title + Icon + Status */}
@@ -127,7 +127,7 @@ export default function IdeationDrivesView() {
               {/* V12: Lucide icon container */}
               <div style={{
                 width: 36, height: 50, borderRadius: 8,
-                background: 'var(--cp-bg-sunken, #F1F5F9)', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                background: 'var(--cp-bg-sunken, #F1F5F9)', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexShrink: 0, color: 'var(--cp-text-secondary, #475569)',
               }}>
@@ -165,7 +165,7 @@ export default function IdeationDrivesView() {
               <div style={{
                 flex: 1, height: 6, borderRadius: 4,
                 background: 'var(--ds-surface-sunken, #F1F5F9)', overflow: 'hidden',
-                border: '1px solid #E2E8F0',
+                border: '1px solid var(--cp-border, #E2E8F0)',
               }}>
                 <div style={{
                   width: `${Math.min(pct, 100)}%`, height: '100%',

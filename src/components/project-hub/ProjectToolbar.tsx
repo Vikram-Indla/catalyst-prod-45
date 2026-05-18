@@ -28,7 +28,7 @@ export function ProjectToolbar({
     return () => clearTimeout(t);
   }, [localSearch, onSearchChange]);
 
-  const borderColor = 'var(--cp-border, #E2E8F0)';
+  const borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))';
   const surfaceBg = 'var(--cp-bg-elevated, #FFFFFF)';
   const textColor = 'var(--cp-text-primary, #0F172A)';
   const mutedColor = 'var(--cp-text-muted, #94A3B8)';

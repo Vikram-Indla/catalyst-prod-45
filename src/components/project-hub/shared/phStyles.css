@@ -17,7 +17,7 @@
 /* Card enterprise styling override */
 .ph-card {
   background: var(--ds-text-inverse, #FFFFFF);
-  border: 1px solid var(--ds-border, #E2E8F0);
+  border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0));
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1);

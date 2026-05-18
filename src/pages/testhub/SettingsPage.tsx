@@ -144,7 +144,7 @@ export default function SettingsPage() {
   const pageBg = 'var(--cp-bg-page, #F8FAFC)';
   const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)';
   const elevatedBg = 'var(--cp-bg-sunken, #F1F5F9)';
-  const borderColor = 'var(--cp-border, #E2E8F0)';
+  const borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))';
   const textPrimary = 'var(--cp-text-primary, #0F172A)';
   const textSecondary = 'var(--cp-text-tertiary, #64748B)';
   const textMuted = 'var(--cp-text-muted, #94A3B8)';

@@ -135,14 +135,14 @@ export function ExecutionViewMode({
                 passed:  { text: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', border: '#BBF7D0' },
                 failed:  { text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', border: '#FECACA' },
                 blocked: { text: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', border: '#FED7AA' },
-                skipped: { text: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, #F8FAFC)', border: 'var(--ds-border, #E2E8F0)' },
-                not_run: { text: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', border: 'var(--ds-border, #E2E8F0)' },
+                skipped: { text: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, #F8FAFC)', border: 'var(--ds-border, var(--cp-border, #E2E8F0))' },
+                not_run: { text: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', border: 'var(--ds-border, var(--cp-border, #E2E8F0))' },
               };
               const colors = stepColors[step.status] || stepColors.not_run;
               return (
                 <div key={i} style={{
                   padding: '12px 16px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-                  border: `0.75px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 6,
+                  border: `0.75px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 6,
                   borderLeft: `3px solid ${colors.border}`,
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>

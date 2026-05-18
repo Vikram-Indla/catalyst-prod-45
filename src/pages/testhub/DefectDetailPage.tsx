@@ -175,7 +175,7 @@ export default function DefectDetailPage() {
         <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Description</CardTitle></CardHeader>
         <CardContent>
           {defect.source_test_run_id ? (
-            <div style={{ background: 'var(--ds-surface-sunken, #F8FAFC)', border: '1px solid #E2E8F0', borderRadius: 6, padding: '12px 14px' }}>
+            <div style={{ background: 'var(--ds-surface-sunken, #F8FAFC)', border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6, padding: '12px 14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                 <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--ds-text-subtlest, #64748B)' }}>
                   Execution Evidence
@@ -189,7 +189,7 @@ export default function DefectDetailPage() {
               </p>
             </div>
           ) : defect.jira_source ? (
-            <div style={{ background: 'var(--ds-surface-sunken, #F8FAFC)', border: '1px solid #E2E8F0', borderRadius: 6, padding: '12px 14px' }}>
+            <div style={{ background: 'var(--ds-surface-sunken, #F8FAFC)', border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6, padding: '12px 14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                 <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--ds-text-subtlest, #64748B)' }}>
                   Jira Description

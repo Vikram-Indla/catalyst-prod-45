@@ -144,7 +144,7 @@ export function WiringAudit() {
     <div
       style={{
         margin: "24px 0",
-        border: "1.5px solid var(--bd-default, #E2E8F0)",
+        border: "1.5px solid var(--bd-default, var(--cp-border, #E2E8F0))",
         borderRadius: 8,
         backgroundColor: "var(--ds-surface-sunken, #FAFBFC)",
         padding: 20,
@@ -194,8 +194,8 @@ export function WiringAudit() {
             alignItems: "center",
             gap: 8,
             padding: "6px 0",
-            borderTop: i === 0 ? "1px solid var(--bd-default, #E2E8F0)" : "none",
-            borderBottom: "1px solid var(--bd-default, #E2E8F0)",
+            borderTop: i === 0 ? "1px solid var(--bd-default, var(--cp-border, #E2E8F0))" : "none",
+            borderBottom: "1px solid var(--bd-default, var(--cp-border, #E2E8F0))",
             fontSize: 12,
             fontFamily: 'var(--cp-font-body)',
           }}

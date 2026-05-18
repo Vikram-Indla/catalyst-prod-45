@@ -21,7 +21,7 @@ function timeAgo(d: string) {
 /* ── Skeleton ── */
 const Sk = ({ w, h, style, isDark }: { w: string | number; h: number; style?: React.CSSProperties; isDark?: boolean }) => (
   <div style={{
-    width: w, height: h, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, #E2E8F0)',
+    width: w, height: h, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, var(--cp-border, #E2E8F0))',
     animation: 'pulse 1.5s ease-in-out infinite', ...style,
   }} />
 );

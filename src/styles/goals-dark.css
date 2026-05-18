@@ -157,16 +157,16 @@
 
 /* ── Progress bar tracks ── */
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(226, 232, 240)"][style*="borderRadius: 3"],
-[data-theme="dark"] [data-goals-page] div[style*="background: #E2E8F0"][style*="borderRadius: 3"],
+[data-theme="dark"] [data-goals-page] div[style*="background: var(--cp-border, #E2E8F0)"][style*="borderRadius: 3"],
 [data-theme="dark"] [data-goals-page] div[role="progressbar"][style*="background: rgb(226, 232, 240)"] {
   background: var(--ds-border, #2E2E2E) !important;
 }
 
 /* ── Connector lines ── */
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(226, 232, 240)"][style*="width: 1"],
-[data-theme="dark"] [data-goals-page] div[style*="background: #E2E8F0"][style*="width: 1"],
+[data-theme="dark"] [data-goals-page] div[style*="background: var(--cp-border, #E2E8F0)"][style*="width: 1"],
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(226, 232, 240)"][style*="height: 1"],
-.dark [data-goals-page] div[style*="background: #E2E8F0"][style*="height: 1"] , [data-theme="dark"] [data-goals-page] div[style*="background: #E2E8F0"][style*="height: 1"] {
+.dark [data-goals-page] div[style*="background: var(--cp-border, #E2E8F0)"][style*="height: 1"] , [data-theme="dark"] [data-goals-page] div[style*="background: var(--cp-border, #E2E8F0)"][style*="height: 1"] {
   background: var(--ds-border, #2E2E2E) !important;
 }
 
@@ -282,11 +282,11 @@
 
 /* ── Border color overrides ── */
 [data-theme="dark"] [data-goals-page] [style*="border: 1px solid rgb(226, 232, 240)"],
-[data-theme="dark"] [data-goals-page] [style*="border: 1px solid #E2E8F0"],
+[data-theme="dark"] [data-goals-page] [style*="border: 1px solid var(--cp-border, #E2E8F0)"],
 [data-theme="dark"] [data-goals-page] [style*="borderBottom: 1px solid rgb(241, 245, 249)"],
 [data-theme="dark"] [data-goals-page] [style*="borderBottom: 1px solid #F1F5F9"],
 [data-theme="dark"] [data-goals-page] [style*="borderBottom: 2px solid rgb(226, 232, 240)"],
-[data-theme="dark"] [data-goals-page] [style*="borderBottom: 2px solid #E2E8F0"],
+[data-theme="dark"] [data-goals-page] [style*="borderBottom: 2px solid var(--cp-border, #E2E8F0)"],
 [data-theme="dark"] [data-goals-page] [style*="borderTop: 1px solid rgb(226, 232, 240)"] {
   border-color: var(--ds-border, #2E2E2E) !important;
 }

@@ -101,7 +101,7 @@ function ChangeTypeBadge({ type }: { type: string }) {
       fontSize: 10, fontWeight: 600, letterSpacing: '0.04em',
       textTransform: 'uppercase',
       background: 'var(--cp-hover, #F1F5F9)', color: 'var(--cp-t2, #475569)',
-      border: '1px solid var(--cp-bd, #E2E8F0)',
+      border: '1px solid var(--cp-bd, var(--cp-border, #E2E8F0))',
     }}>
       {label}
     </span>
@@ -199,7 +199,7 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
       onClick={onClick}
       style={{
         padding: '4px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-        border: `1px solid ${active ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-bd, #E2E8F0)'}`,
+        border: `1px solid ${active ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-bd, var(--cp-border, #E2E8F0))'}`,
         background: active ? 'rgba(37,99,235,0.08)' : 'transparent',
         color: active ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-t2, #475569)',
         cursor: 'pointer', transition: 'all 150ms',
@@ -270,7 +270,7 @@ export default function JiraActivitySyncPage() {
       {/* ── Header ─────────────────────────────────── */}
       <div style={{
         height: 52, minHeight: 52, display: 'flex', alignItems: 'center',
-        padding: '0 24px', borderBottom: '1px solid var(--cp-bd, #E2E8F0)',
+        padding: '0 24px', borderBottom: '1px solid var(--cp-bd, var(--cp-border, #E2E8F0))',
         gap: 16,
       }}>
         <h1 style={{
@@ -285,7 +285,7 @@ export default function JiraActivitySyncPage() {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             padding: '6px 14px', borderRadius: 6, fontSize: 13, fontWeight: 600,
-            border: '1px solid var(--cp-bd, #E2E8F0)',
+            border: '1px solid var(--cp-bd, var(--cp-border, #E2E8F0))',
             background: 'var(--cp-bg, #FFFFFF)', color: 'var(--cp-t1, #0F172A)',
             cursor: 'pointer',
           }}
@@ -298,7 +298,7 @@ export default function JiraActivitySyncPage() {
       {/* ── Toolbar ────────────────────────────────── */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12, padding: '12px 24px',
-        borderBottom: '1px solid var(--cp-bd, #E2E8F0)', flexWrap: 'wrap',
+        borderBottom: '1px solid var(--cp-bd, var(--cp-border, #E2E8F0))', flexWrap: 'wrap',
       }}>
         {/* Search */}
         <div style={{ position: 'relative', width: 260 }}>
@@ -317,7 +317,7 @@ export default function JiraActivitySyncPage() {
           <FilterPill label="↑ Outbound" active={dirFilter === 'outbound'} onClick={() => setDirFilter('outbound')} />
         </div>
 
-        <div style={{ width: 1, height: 20, background: 'var(--cp-bd, #E2E8F0)' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--cp-bd, var(--cp-border, #E2E8F0))' }} />
 
         {/* Status filters */}
         <div style={{ display: 'flex', gap: 4 }}>
@@ -328,7 +328,7 @@ export default function JiraActivitySyncPage() {
       </div>
 
       {/* ── Summary bar ─────────────────────────────── */}
-      <div style={{ padding: '10px 24px', borderBottom: '1px solid var(--cp-bd, #E2E8F0)' }}>
+      <div style={{ padding: '10px 24px', borderBottom: '1px solid var(--cp-bd, var(--cp-border, #E2E8F0))' }}>
         <SummaryStats items={rawItems} />
       </div>
 
@@ -350,7 +350,7 @@ export default function JiraActivitySyncPage() {
         ) : (
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid var(--cp-bd, #E2E8F0)' }}>
+                <tr style={{ borderBottom: '1px solid var(--cp-bd, var(--cp-border, #E2E8F0))' }}>
                   {columns.map(col => (
                     <th key={col.key} style={{
                       padding: '10px 12px', textAlign: 'left', fontSize: 11, fontWeight: 600,
@@ -369,7 +369,7 @@ export default function JiraActivitySyncPage() {
                   <tr
                     key={item.id}
                     style={{
-                      borderBottom: '0.75px solid var(--cp-bd, #E2E8F0)',
+                      borderBottom: '0.75px solid var(--cp-bd, var(--cp-border, #E2E8F0))',
                       height: 40, transition: 'background 150ms',
                     }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-hover, rgba(0,0,0,0.02))')}
@@ -496,7 +496,7 @@ export default function JiraActivitySyncPage() {
 
       {/* ── Footer ──────────────────────────────────── */}
       <div style={{
-        padding: '8px 24px', borderTop: '1px solid var(--cp-bd, #E2E8F0)',
+        padding: '8px 24px', borderTop: '1px solid var(--cp-bd, var(--cp-border, #E2E8F0))',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         fontSize: 12, color: 'var(--cp-t3, #94A3B8)',
       }}>

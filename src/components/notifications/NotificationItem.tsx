@@ -158,7 +158,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
       return (
         <div style={{
           width: 36, height: 36, borderRadius: '50%',
-          background: 'var(--cp-bg-sunken, #E2E8F0)',
+          background: 'var(--cp-bg-sunken, var(--cp-border, #E2E8F0))',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0,
         }}>

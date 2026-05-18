@@ -72,7 +72,7 @@ function LinkedIssueRow({
         {onUnlink && (
           <button
             onClick={(e) => { e.stopPropagation(); onUnlink(); }}
-            className={cn('p-1 rounded transition-colors', isDark ? 'hover:bg-[var(--ds-border,#292929)] text-[var(--ds-text-subtlest,#878787)]' : 'hover:bg-[var(--ds-border,#E2E8F0)] text-[var(--ds-text-accent-gray,#505258)]')}
+            className={cn('p-1 rounded transition-colors', isDark ? 'hover:bg-[var(--ds-border,#292929)] text-[var(--ds-text-subtlest,#878787)]' : 'hover:bg-[var(--ds-border,var(--cp-border, #E2E8F0))] text-[var(--ds-text-accent-gray,#505258)]')}
           >
             <Trash2 className="w-3 h-3" />
           </button>

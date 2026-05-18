@@ -86,13 +86,13 @@ export function IssueCenterPanel({ issueKey, item, parentItem, loading = false }
       <>
         <div className="awHeader">
           <div className="awCenterHeader">
-            <div style={{ width: 80, height: 12, borderRadius: 3, background: 'var(--ds-border, #E2E8F0)', marginBottom: 8 }} />
-            <div style={{ width: '60%', height: 18, borderRadius: 3, background: 'var(--ds-border, #E2E8F0)' }} />
+            <div style={{ width: 80, height: 12, borderRadius: 3, background: 'var(--ds-border, var(--cp-border, #E2E8F0))', marginBottom: 8 }} />
+            <div style={{ width: '60%', height: 18, borderRadius: 3, background: 'var(--ds-border, var(--cp-border, #E2E8F0))' }} />
           </div>
         </div>
         <div className="awBody" style={{ padding: 16 }}>
           {[1,2,3].map(i => (
-            <div key={i} style={{ width: `${80 - i * 15}%`, height: 14, borderRadius: 3, background: 'var(--ds-border, #E2E8F0)', marginBottom: 10 }} />
+            <div key={i} style={{ width: `${80 - i * 15}%`, height: 14, borderRadius: 3, background: 'var(--ds-border, var(--cp-border, #E2E8F0))', marginBottom: 10 }} />
           ))}
         </div>
       </>

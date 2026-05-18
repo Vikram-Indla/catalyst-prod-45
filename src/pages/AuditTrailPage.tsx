@@ -58,7 +58,7 @@ function restoreStatus(entry: AuditEntry): { label: string; bg: string; color: s
   }
   const deadline = new Date(entry.restore_deadline);
   if (deadline < new Date()) {
-    return { label: 'EXPIRED', bg: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, #64748B)', border: 'var(--ds-border, #E2E8F0)' };
+    return { label: 'EXPIRED', bg: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, #64748B)', border: 'var(--ds-border, var(--cp-border, #E2E8F0))' };
   }
   const daysLeft = Math.max(0, Math.ceil((deadline.getTime() - Date.now()) / 86400_000));
   return { label: `RESTORABLE \u00B7 ${daysLeft}d left`, bg: '#FFFBEB', color: '#92400E', border: '#FCD34D' };
@@ -150,7 +150,7 @@ export default function AuditTrailPage() {
     }}>
       {/* PAGE HEADER */}
       <div style={{
-        background: 'var(--ds-surface, #ffffff)', borderBottom: '1px solid #E2E8F0',
+        background: 'var(--ds-surface, #ffffff)', borderBottom: '1px solid var(--cp-border, #E2E8F0)',
         padding: '16px 24px', display: 'flex', alignItems: 'center',
         justifyContent: 'space-between', flexShrink: 0,
       }}>
@@ -186,7 +186,7 @@ export default function AuditTrailPage() {
 
       {/* FILTER BAR */}
       <div style={{
-        background: 'var(--ds-surface, #ffffff)', borderBottom: '1px solid #E2E8F0',
+        background: 'var(--ds-surface, #ffffff)', borderBottom: '1px solid var(--cp-border, #E2E8F0)',
         padding: '12px 24px', display: 'flex', gap: 12, alignItems: 'center',
         flexShrink: 0, flexWrap: 'wrap',
       }}>
@@ -194,7 +194,7 @@ export default function AuditTrailPage() {
           value={statusFilter}
           onValueChange={(v) => { setStatusFilter(v as any); setPage(0); }}
         >
-          <SelectTrigger style={{ width: 160, height: 36, fontSize: 13, border: '1px solid #E2E8F0', borderRadius: 6, background: 'var(--ds-surface, #ffffff)' }}>
+          <SelectTrigger style={{ width: 160, height: 36, fontSize: 13, border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6, background: 'var(--ds-surface, #ffffff)' }}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent style={{ background: 'var(--ds-surface, #ffffff)' }}>
@@ -208,7 +208,7 @@ export default function AuditTrailPage() {
           value={categoryFilter !== null ? String(categoryFilter) : 'all'}
           onValueChange={(v) => { setCategoryFilter(v === 'all' ? null : Number(v)); setPage(0); }}
         >
-          <SelectTrigger style={{ width: 180, height: 36, fontSize: 13, border: '1px solid #E2E8F0', borderRadius: 6, background: 'var(--ds-surface, #ffffff)' }}>
+          <SelectTrigger style={{ width: 180, height: 36, fontSize: 13, border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6, background: 'var(--ds-surface, #ffffff)' }}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent style={{ background: 'var(--ds-surface, #ffffff)' }}>
@@ -225,7 +225,7 @@ export default function AuditTrailPage() {
             value={dateFrom}
             onChange={e => { setDateFrom(e.target.value); setPage(0); }}
             style={{
-              height: 36, fontSize: 13, border: '1px solid #E2E8F0',
+              height: 36, fontSize: 13, border: '1px solid var(--cp-border, #E2E8F0)',
               borderRadius: 6, padding: '0 10px', background: 'var(--ds-surface, #ffffff)',
               color: 'var(--ds-text, #0F172A)', fontFamily: 'var(--cp-font-body)',
             }}
@@ -236,7 +236,7 @@ export default function AuditTrailPage() {
             value={dateTo}
             onChange={e => { setDateTo(e.target.value); setPage(0); }}
             style={{
-              height: 36, fontSize: 13, border: '1px solid #E2E8F0',
+              height: 36, fontSize: 13, border: '1px solid var(--cp-border, #E2E8F0)',
               borderRadius: 6, padding: '0 10px', background: 'var(--ds-surface, #ffffff)',
               color: 'var(--ds-text, #0F172A)', fontFamily: 'var(--cp-font-body)',
             }}
@@ -256,7 +256,7 @@ export default function AuditTrailPage() {
       {/* STATS STRIP */}
       <div style={{
         display: 'flex', gap: 32, padding: '12px 24px',
-        borderBottom: '1px solid #E2E8F0', background: 'var(--ds-surface, #ffffff)', flexShrink: 0,
+        borderBottom: '1px solid var(--cp-border, #E2E8F0)', background: 'var(--ds-surface, #ffffff)', flexShrink: 0,
       }}>
         {[
           { label: 'TOTAL CLOSED', value: stats.totalClosed },
@@ -284,12 +284,12 @@ export default function AuditTrailPage() {
       {/* TABLE */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px 0' }}>
         <div style={{
-          background: 'var(--ds-surface, #ffffff)', border: '1px solid #E2E8F0',
+          background: 'var(--ds-surface, #ffffff)', border: '1px solid var(--cp-border, #E2E8F0)',
           borderRadius: 6, overflow: 'hidden',
         }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ background: 'var(--ds-surface-sunken, #F8FAFC)', borderBottom: '1px solid #E2E8F0' }}>
+              <tr style={{ background: 'var(--ds-surface-sunken, #F8FAFC)', borderBottom: '1px solid var(--cp-border, #E2E8F0)' }}>
                 {['ITEM', 'CATEGORY', 'CLOSED BY', 'CLOSED', 'REASON', 'RESTORE STATUS', 'RESTORED BY'].map(h => (
                   <th key={h} style={{
                     padding: '10px 12px', fontSize: 11, fontWeight: 500,
@@ -351,7 +351,7 @@ export default function AuditTrailPage() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <div style={{
                           width: 24, height: 24, borderRadius: '50%',
-                          background: 'var(--ds-border, #E2E8F0)', display: 'flex',
+                          background: 'var(--ds-border, var(--cp-border, #E2E8F0))', display: 'flex',
                           alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                         }}>
                           <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
@@ -407,7 +407,7 @@ export default function AuditTrailPage() {
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                             <div style={{
                               width: 24, height: 24, borderRadius: '50%',
-                              background: 'var(--ds-border, #E2E8F0)', display: 'flex',
+                              background: 'var(--ds-border, var(--cp-border, #E2E8F0))', display: 'flex',
                               alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                             }}>
                               <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
@@ -439,7 +439,7 @@ export default function AuditTrailPage() {
       {/* PAGINATION */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '12px 24px', background: 'var(--ds-surface, #ffffff)', borderTop: '1px solid #E2E8F0',
+        padding: '12px 24px', background: 'var(--ds-surface, #ffffff)', borderTop: '1px solid var(--cp-border, #E2E8F0)',
         flexShrink: 0,
       }}>
         <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)' }}>

@@ -421,7 +421,7 @@ export default function TestHubDocsPage() {
       <div style={{
         padding: '24px 32px',
         backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-        borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+        borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -462,7 +462,7 @@ export default function TestHubDocsPage() {
         <div style={{
           backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
           borderRadius: 12,
-          border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+          border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
           padding: 24,
           marginBottom: 24,
         }}>
@@ -510,7 +510,7 @@ export default function TestHubDocsPage() {
                 style={{
                   backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
                   borderRadius: 12,
-                  border: `1px solid ${isOpen ? section.color + '40' : 'var(--cp-border, #E2E8F0)'}`,
+                  border: `1px solid ${isOpen ? section.color + '40' : 'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
                   overflow: 'hidden',
                   transition: 'border-color 0.2s',
                 }}
@@ -568,7 +568,7 @@ export default function TestHubDocsPage() {
                       fontSize: 12,
                       lineHeight: 1.6,
                       overflowX: 'auto',
-                      border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                      border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
                       color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : undefined,
                     }}>
                       {getMarkdownSection(section.id)}

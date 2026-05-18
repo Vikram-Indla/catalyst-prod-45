@@ -321,7 +321,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="animate-pulse" style={{
               height: i === 0 ? 48 : 14, width: i === 0 ? 48 : `${70 + (i * 10)}%`,
-              borderRadius: i === 0 ? '50%' : 3, background: 'var(--cp-border, #E2E8F0)',
+              borderRadius: i === 0 ? '50%' : 3, background: 'var(--cp-border, var(--cp-border, #E2E8F0))',
               marginBottom: i === 0 ? 12 : 10,
             }} />
           ))}

@@ -17,7 +17,7 @@
   --idp-surface-tertiary: var(--ds-surface-sunken, #F1F5F9);
 
   /* BORDERS */
-  --idp-border: var(--ds-border, #E2E8F0);
+  --idp-border: var(--ds-border, var(--cp-border, #E2E8F0));
   --idp-border-strong: var(--ds-text-disabled, #CBD5E1);
 
   /* SEMANTIC — FILLS (dots, bars, accents — NOT text) */

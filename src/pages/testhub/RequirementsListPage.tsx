@@ -158,7 +158,7 @@ export default function RequirementsListPage() {
         const noneCount = requirements.filter(r => r.linked_test_count === 0).length;
         return (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-            <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
+            <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)' }}>
               <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Total Requirements</p>
               <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '8px 0 0' }}>{requirements.length}</p>
             </div>
@@ -189,7 +189,7 @@ export default function RequirementsListPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
               width: '100%', height: 44, padding: '0 14px 0 44px',
-              border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined,
+              border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined,
             }}
           />
         </div>
@@ -219,7 +219,7 @@ export default function RequirementsListPage() {
         </Select>
         {hasActiveFilters && (
           <button onClick={clearFilters}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 14, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
@@ -235,13 +235,13 @@ export default function RequirementsListPage() {
           <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-brand, #2563EB)' }} />
         </div>
       ) : filteredRequirements.length === 0 ? (
-        <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
+        <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)' }}>
           <FileCheck size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
           <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, #64748B)', margin: 0 }}>No requirements found</p>
           <p style={{ fontSize: 14, color: 'var(--cp-text-muted, #94A3B8)', margin: '8px 0 0' }}>Add requirements to track test coverage</p>
         </div>
       ) : (
-        <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 8, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', overflow: 'hidden' }}>
+        <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 8, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
@@ -249,7 +249,7 @@ export default function RequirementsListPage() {
                   <th key={h} style={{
                     height: 50, padding: '8px 12px', textAlign: 'left',
                     fontSize: 10.5, fontWeight: 600, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase',
-                    borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #E2E8F0', backgroundColor: 'var(--cp-bg-page, #F8FAFC)',
+                    borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid var(--cp-border, #E2E8F0)', backgroundColor: 'var(--cp-bg-page, #F8FAFC)',
                   }}>{h}</th>
                 ))}
               </tr>
@@ -263,7 +263,7 @@ export default function RequirementsListPage() {
 
                 return (
                   <tr key={req.id} onClick={() => navigate(`/testhub/requirements/${req.id}`)}
-                    style={{ cursor: 'pointer', height: 50, maxHeight: 50, borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #E2E8F0' }}
+                    style={{ cursor: 'pointer', height: 50, maxHeight: 50, borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid var(--cp-border, #E2E8F0)' }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--cp-interact-hover, rgba(0,0,0,0.04))'; }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}>
                     <td style={{ padding: '8px 12px', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>{req.req_key}</td>

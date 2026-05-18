@@ -206,12 +206,12 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     style={{
                       width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       borderRadius: '8px', cursor: 'pointer',
-                      border: isSelected ? '1.5px solid #2563EB' : `1.5px solid ${'var(--cp-border-strong, #E2E8F0)'}`,
+                      border: isSelected ? '1.5px solid #2563EB' : `1.5px solid ${'var(--cp-border-strong, var(--cp-border, #E2E8F0))'}`,
                       background: isSelected ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, #FFFFFF)'),
                       transition: 'all 150ms ease',
                     }}
                     onMouseEnter={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = 'var(--cp-border-strong, #CBD5E1)'; e.currentTarget.style.background = 'var(--cp-bg-page, #F8FAFC)'; } }}
-                    onMouseLeave={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = 'var(--cp-border-strong, #E2E8F0)'; e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)'; } }}
+                    onMouseLeave={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = 'var(--cp-border-strong, var(--cp-border, #E2E8F0))'; e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)'; } }}
                   >
                     <Icon size={20} strokeWidth={1.75} color={isSelected ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-secondary, #334155)')} />
                   </button>
@@ -238,7 +238,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                       fontSize: '13px', fontWeight: isSelected ? 600 : 500,
                       border: isSelected
                         ? (isActive ? '1.5px solid var(--cp-success, #16A34A)' : `1.5px solid ${'var(--cp-border-strong, #CBD5E1)'}`)
-                        : `1.5px solid ${'var(--cp-border-strong, #E2E8F0)'}`,
+                        : `1.5px solid ${'var(--cp-border-strong, var(--cp-border, #E2E8F0))'}`,
                       background: isSelected
                         ? (isActive ? ('var(--cp-success-light, #F0FDF4)') : ('var(--cp-bg-page, #F8FAFC)'))
                         : ('var(--cp-bg-elevated, #FFFFFF)'),
@@ -354,7 +354,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
 
         {/* Footer */}
         <div style={{
-          paddingTop: '20px', borderTop: `1px solid ${'var(--cp-border, #E2E8F0)'}`, marginTop: '24px',
+          paddingTop: '20px', borderTop: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, marginTop: '24px',
           display: 'flex', justifyContent: 'flex-end', gap: '10px',
         }}>
           <button

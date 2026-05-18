@@ -124,7 +124,7 @@
 #r360-root .r3-week-strip-bar-track {
   width: 120px !important;
   height: 6px !important;
-  background: var(--ds-border, #E2E8F0) !important;
+  background: var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   border-radius: 4px !important;
   overflow: hidden !important;
 }
@@ -232,7 +232,7 @@
 #r360-root .r3-day-cell-minibar {
   width: 40px !important;
   height: 4px !important;
-  background: var(--ds-border, #E2E8F0) !important;
+  background: var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   border-radius: 4px !important;
   overflow: hidden !important;
 }
@@ -263,7 +263,7 @@
 /* ─── PROFILE HEADER ─── */
 #r360-root .r3-profile-card {
   background: var(--ds-text-inverse, #FFFFFF) !important;
-  border: 1px solid var(--ds-border, #E2E8F0) !important;
+  border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   border-radius: 12px !important;
   padding: 20px 24px !important;
 }
@@ -273,7 +273,7 @@
   height: 48px !important;
   border-radius: 50% !important;
   object-fit: cover !important;
-  border: 2px solid var(--ds-border, #E2E8F0) !important;
+  border: 2px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
 }
 
 #r360-root .r3-avatar-fallback {
@@ -308,7 +308,7 @@
 #r360-root .r3-kpi-card {
   padding: 12px 16px !important;
   border-radius: 8px !important;
-  border: 1px solid var(--ds-border, #E2E8F0) !important;
+  border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   min-width: 100px !important;
 }
 #r360-root .r3-kpi-card.warn {
@@ -316,7 +316,7 @@
   background: #FFFBEB !important;
 }
 #r360-root .r3-kpi-card.neutral {
-  border-color: var(--ds-border, #E2E8F0) !important;
+  border-color: var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   background: var(--ds-surface-sunken, #F8FAFC) !important;
 }
 #r360-root .r3-kpi-value {
@@ -385,7 +385,7 @@
   font-weight: 500 !important;
   padding: 6px 14px !important;
   border-radius: 6px !important;
-  border: 1px solid var(--ds-border, #E2E8F0) !important;
+  border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   cursor: pointer !important;
   transition: all 0.15s !important;
 }
@@ -401,14 +401,14 @@
   justify-content: space-between !important;
   padding: 10px 20px !important;
   background: var(--ds-text-inverse, #FFFFFF) !important;
-  border: 1px solid var(--ds-border, #E2E8F0) !important;
+  border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   border-radius: 12px !important;
 }
 
 #r360-root .r3-week-arrow {
   width: 28px !important;
   height: 28px !important;
-  border: 1px solid var(--ds-border, #E2E8F0) !important;
+  border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   border-radius: 6px !important;
   display: flex !important;
   align-items: center !important;
@@ -429,7 +429,7 @@
   padding: 4px 12px !important;
   border-radius: 6px !important;
   cursor: pointer !important;
-  border: 1px solid var(--ds-border, #E2E8F0) !important;
+  border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   background: var(--ds-text-inverse, #FFFFFF) !important;
   color: var(--ds-text-subtlest, #64748B) !important;
   transition: all 0.15s !important;
@@ -465,7 +465,7 @@
   top: 0 !important;
   bottom: 0 !important;
   width: 2px !important;
-  background: var(--ds-border, #E2E8F0) !important;
+  background: var(--ds-border, var(--cp-border, #E2E8F0)) !important;
 }
 
 #r360-root .r3-date-dot {
@@ -489,7 +489,7 @@
 
 #r360-root .r3-chrono-card {
   background: var(--ds-text-inverse, #FFFFFF) !important;
-  border: 1px solid var(--ds-border, #E2E8F0) !important;
+  border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   border-radius: 8px !important;
   padding: 10px 14px !important;
   cursor: pointer !important;
@@ -541,7 +541,7 @@
   min-width: 1100px !important;
   background: var(--ds-text-inverse, #FFFFFF) !important;
   border-radius: 12px !important;
-  border: 1px solid var(--ds-border, #E2E8F0) !important;
+  border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   overflow: visible !important;
   padding-right: 60px !important; /* D-R1: clearance for completed badge */
 }
@@ -626,7 +626,7 @@
   font-size: 11px !important;
   font-weight: 500 !important;
   background: var(--ds-surface-sunken, #F8FAFC) !important;
-  border: 1px solid var(--ds-border, #E2E8F0) !important;
+  border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   border-radius: 12px !important;
   padding: 2px 8px !important;
   color: var(--ds-text-subtle, #334155) !important;
@@ -675,7 +675,7 @@
 
 #r360-root .r3-board-card {
   background: var(--ds-text-inverse, #FFFFFF) !important;
-  border: 1px solid var(--ds-border, #E2E8F0) !important;
+  border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   border-radius: 8px !important;
   padding: 12px !important;
   margin-bottom: 8px !important;
@@ -710,7 +710,7 @@
 
 #r360-root .r3-panel-header {
   padding: 16px 20px !important;
-  border-bottom: 1px solid var(--ds-border, #E2E8F0) !important;
+  border-bottom: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   background: var(--ds-text-inverse, #FFFFFF) !important;
   position: sticky !important;
   top: 0 !important;
@@ -720,7 +720,7 @@
 #r360-root .r3-panel-close-btn {
   width: 28px !important;
   height: 28px !important;
-  border: 1px solid var(--ds-border, #E2E8F0) !important;
+  border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   border-radius: 6px !important;
   display: flex !important;
   align-items: center !important;
@@ -738,14 +738,14 @@
 #r360-root .r3-meta-grid {
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
-  border: 1px solid var(--ds-border, #E2E8F0) !important;
+  border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   border-radius: 8px !important;
   overflow: hidden !important;
 }
 #r360-root .r3-meta-cell {
   padding: 10px 14px !important;
-  border-bottom: 1px solid var(--ds-border, #E2E8F0) !important;
-  border-right: 1px solid var(--ds-border, #E2E8F0) !important;
+  border-bottom: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
+  border-right: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
 }
 #r360-root .r3-meta-cell:nth-child(even) {
   border-right: none !important;
@@ -773,7 +773,7 @@
   align-items: center !important;
   gap: 8px !important;
   padding: 8px 12px !important;
-  border: 1px solid var(--ds-border, #E2E8F0) !important;
+  border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   border-radius: 8px !important;
   background: var(--ds-text-inverse, #FFFFFF) !important;
   font-size: 12px !important;
@@ -921,7 +921,7 @@
 #r360-root .r3-from-tag.neutral {
   background: var(--ds-surface-sunken, #F1F5F9) !important;
   color: var(--ds-text-subtlest, #64748B) !important;
-  border: 1px solid var(--ds-border, #E2E8F0) !important;
+  border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
 }
 #r360-root .r3-from-tag.amber {
   background: #FFFBEB !important;
@@ -982,7 +982,7 @@
 /* Skeleton pulse */
 #r360-root .r3-skeleton {
   animation: r3Pulse 1.5s ease-in-out infinite !important;
-  background: var(--ds-border, #E2E8F0) !important;
+  background: var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   border-radius: 4px !important;
 }
 
@@ -1542,9 +1542,9 @@
 .dark #r360-root [style*="background:#F8FAFC"] {
   background: var(--cp-bg-surface, #242528) !important;
 }
-.dark #r360-root [style*="border: 1px solid #E2E8F0"],
-.dark #r360-root [style*="border-color: #E2E8F0"],
-.dark #r360-root [style*="border-color:#E2E8F0"] {
+.dark #r360-root [style*="border: 1px solid var(--cp-border, #E2E8F0)"],
+.dark #r360-root [style*="border-color: var(--cp-border, #E2E8F0)"],
+.dark #r360-root [style*="border-color:var(--cp-border, #E2E8F0)"] {
   border-color: var(--ds-border, #2E2E2E) !important;
 }
 .dark #r360-root [style*="color: #0F172A"],
@@ -1583,10 +1583,10 @@
 /* Light-mode border colors → ADS borders */
 .dark #r360-root [style*="border-bottom: 1px solid #F1F5F9"],
 .dark #r360-root [style*="border-top: 1px solid #F1F5F9"],
-.dark #r360-root [style*="border: 1px solid #E2E8F0"],
-.dark #r360-root [style*="border-bottom: 1px solid #E2E8F0"],
+.dark #r360-root [style*="border: 1px solid var(--cp-border, #E2E8F0)"],
+.dark #r360-root [style*="border-bottom: 1px solid var(--cp-border, #E2E8F0)"],
 .dark #r360-root [style*="borderBottom: 1px solid #F1F5F9"],
-.dark #r360-root [style*="border-color: #E2E8F0"] {
+.dark #r360-root [style*="border-color: var(--cp-border, #E2E8F0)"] {
   border-color: var(--ds-border, #2E2E2E) !important;
 }
 
@@ -1613,7 +1613,7 @@
 }
 
 /* Divider lines using light-mode colors */
-.dark #r360-root [style*="background: #E2E8F0"],
+.dark #r360-root [style*="background: var(--cp-border, #E2E8F0)"],
 .dark #r360-root [style*="background: #F1F5F9"] {
   background: var(--ds-border, #2E2E2E) !important;
 }

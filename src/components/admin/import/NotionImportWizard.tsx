@@ -66,7 +66,7 @@ function StatPill({ icon: Icon, label, value, color = 'var(--ds-text-brand, #256
   icon: any; label: string; value: string | number; color?: string;
 }) {
   return (
-    <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-[var(--ds-surface-sunken,#F8FAFC)] border border-[var(--ds-border,#E2E8F0)]">
+    <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-[var(--ds-surface-sunken,#F8FAFC)] border border-[var(--ds-border,var(--cp-border, #E2E8F0))]">
       <Icon className="h-3.5 w-3.5 shrink-0" style={{ color }} />
       <span className="text-[10px] uppercase tracking-wider font-semibold text-[var(--ds-text-subtlest,#94A3B8)]">{label}</span>
       <span className="text-[13px] font-semibold text-[var(--ds-text,#0F172A)]">{value}</span>
@@ -106,7 +106,7 @@ function WizardStepper({ step }: { step: number }) {
               </span>
             </div>
             {i < steps.length - 1 && (
-              <div className={`w-8 h-px mx-2 ${done ? 'bg-[var(--ds-text-success,var(--cp-success, #16A34A))]' : 'bg-[var(--ds-border,#E2E8F0)]'}`} />
+              <div className={`w-8 h-px mx-2 ${done ? 'bg-[var(--ds-text-success,var(--cp-success, #16A34A))]' : 'bg-[var(--ds-border,var(--cp-border, #E2E8F0))]'}`} />
             )}
           </div>
         );
@@ -198,7 +198,7 @@ export function NotionImportWizard() {
   return (
     <div className="flex flex-col h-full">
       {/* ─── Header Bar ─── */}
-      <div className="h-14 flex items-center justify-between border-b border-[var(--ds-border,#E2E8F0)] px-6 shrink-0 bg-white">
+      <div className="h-14 flex items-center justify-between border-b border-[var(--ds-border,var(--cp-border, #E2E8F0))] px-6 shrink-0 bg-white">
         <div className="flex items-center gap-3">
           <div className="w-7 h-7 rounded-md bg-[var(--ds-text,#0F172A)] flex items-center justify-center">
             <DatabaseIcon label="" size="small" />
@@ -224,7 +224,7 @@ export function NotionImportWizard() {
                 </p>
               </div>
 
-              <div className="bg-white border border-[var(--ds-border,#E2E8F0)] rounded-lg overflow-hidden">
+              <div className="bg-white border border-[var(--ds-border,var(--cp-border, #E2E8F0))] rounded-lg overflow-hidden">
                 {/* Token */}
                 <div className="px-4 pt-3.5 pb-3 border-b border-[var(--ds-surface-sunken,#F1F5F9)]">
                   <label htmlFor="notion-token" style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, #0F172A)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
@@ -322,11 +322,11 @@ export function NotionImportWizard() {
                 <StatPill icon={BoardsIcon} label="Target" value={projectName} />
               </div>
 
-              <div className="bg-white border border-[var(--ds-border,#E2E8F0)] rounded-lg overflow-hidden">
+              <div className="bg-white border border-[var(--ds-border,var(--cp-border, #E2E8F0))] rounded-lg overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-[var(--ds-border,#E2E8F0)] bg-[var(--ds-surface-sunken,#F8FAFC)]">
+                      <tr className="border-b border-[var(--ds-border,var(--cp-border, #E2E8F0))] bg-[var(--ds-surface-sunken,#F8FAFC)]">
                         <th className="text-left px-3 py-2 font-semibold text-[10px] uppercase tracking-wider text-[var(--ds-text-subtlest,#64748B)] w-8">#</th>
                         {notionProps.map(p => (
                           <th key={p.id} className="text-left px-3 py-2 font-semibold text-[10px] uppercase tracking-wider text-[var(--ds-text-subtlest,#64748B)] whitespace-nowrap">
@@ -374,8 +374,8 @@ export function NotionImportWizard() {
                 </div>
               </div>
 
-              <div className="bg-white border border-[var(--ds-border,#E2E8F0)] rounded-lg overflow-hidden">
-                <div className="flex items-center px-4 py-2 bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-[var(--ds-border,#E2E8F0)]">
+              <div className="bg-white border border-[var(--ds-border,var(--cp-border, #E2E8F0))] rounded-lg overflow-hidden">
+                <div className="flex items-center px-4 py-2 bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-[var(--ds-border,var(--cp-border, #E2E8F0))]">
                   <span className="flex-1 text-[10px] uppercase tracking-wider font-semibold text-[var(--ds-text-subtlest,#64748B)]">Notion Column</span>
                   <ArrowRightIcon label="" size="small" />
                   <span className="w-44 text-[10px] uppercase tracking-wider font-semibold text-[var(--ds-text-subtlest,#64748B)] text-right">Catalyst Field</span>
@@ -421,7 +421,7 @@ export function NotionImportWizard() {
 
               {!importResult ? (
                 <>
-                  <div className="bg-white border border-[var(--ds-border,#E2E8F0)] rounded-lg overflow-hidden">
+                  <div className="bg-white border border-[var(--ds-border,var(--cp-border, #E2E8F0))] rounded-lg overflow-hidden">
                     {[
                       { label: 'Source', value: dbTitle, icon: DatabaseIcon },
                       { label: 'Rows', value: String(notionRows.length), icon: DatabaseIcon },
@@ -459,7 +459,7 @@ export function NotionImportWizard() {
                   )}
                 </>
               ) : (
-                <div className="bg-white border border-[var(--ds-border,#E2E8F0)] rounded-lg p-6 text-center space-y-4">
+                <div className="bg-white border border-[var(--ds-border,var(--cp-border, #E2E8F0))] rounded-lg p-6 text-center space-y-4">
                   <div className={`mx-auto w-12 h-12 rounded-full flex items-center justify-center ${
                     importResult.failed > 0 && importResult.imported === 0 ? 'bg-[#FEE2E2]' : 'bg-[var(--ds-background-success,#DCFCE7)]'
                   }`}>
@@ -492,7 +492,7 @@ export function NotionImportWizard() {
       </div>
 
       {/* ─── Sticky Footer ─── */}
-      <div className="shrink-0 border-t border-[var(--ds-border,#E2E8F0)] bg-white px-6 py-3">
+      <div className="shrink-0 border-t border-[var(--ds-border,var(--cp-border, #E2E8F0))] bg-white px-6 py-3">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <Button
             appearance="subtle"

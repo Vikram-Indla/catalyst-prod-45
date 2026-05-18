@@ -54,7 +54,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
       }}
       onMouseLeave={e => {
         if (!isDark) e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,.04)';
-        e.currentTarget.style.borderColor = 'var(--cp-border, #E2E8F0)';
+        e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))';
         setMoveOpen(false);
       }}
     >
@@ -172,7 +172,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
             beta: { bg: isDark ? 'rgba(13,148,136,0.15)' : '#CCFBF1', text: 'var(--cp-teal-60, #0F766E)', border: isDark ? 'rgba(13,148,136,0.25)' : '#5EEAD4' },
             prod: { bg: isDark ? 'rgba(22,163,74,0.15)' : '#D1FAE5', text: 'var(--cp-success-text, #065F46)', border: isDark ? 'rgba(22,163,74,0.25)' : '#6EE7B7' },
           };
-          const unsetStyle = { bg: 'var(--cp-bg-page, #F1F5F9)', text: 'var(--cp-border-strong, #CBD5E1)', border: 'var(--cp-border, #E2E8F0)' };
+          const unsetStyle = { bg: 'var(--cp-bg-page, #F1F5F9)', text: 'var(--cp-border-strong, #CBD5E1)', border: 'var(--cp-border, var(--cp-border, #E2E8F0))' };
           const style = isSet ? CHIP_STYLES[m.key] : unsetStyle;
           return (
             <span key={m.key} style={{
@@ -220,7 +220,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
           onMouseLeave={e => {
             e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)';
             e.currentTarget.style.color = 'var(--cp-text-tertiary, #64748B)';
-            e.currentTarget.style.borderColor = 'var(--cp-border, #E2E8F0)';
+            e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))';
           }}
         >
           → Init

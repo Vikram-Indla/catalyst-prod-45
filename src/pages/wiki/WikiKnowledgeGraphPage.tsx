@@ -183,7 +183,7 @@ export default function WikiKnowledgeGraphPage() {
         {tooltip && (
           <div style={{
             position: 'absolute', left: tooltip.x + 12, top: tooltip.y - 8,
-            background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 6,
+            background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6,
             padding: '8px 12px', boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.1)',
             pointerEvents: 'none', zIndex: 10, fontSize: 12, maxWidth: 200,
           }}>

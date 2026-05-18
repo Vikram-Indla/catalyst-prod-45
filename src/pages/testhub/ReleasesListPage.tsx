@@ -88,7 +88,7 @@ export default function ReleasesListPage() {
             placeholder="Search releases..."
             style={{
               width: '100%', height: 38, paddingLeft: 34, paddingRight: filters.search ? 32 : 12,
-              border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8, fontSize: 13, outline: 'none',
+              border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 8, fontSize: 13, outline: 'none',
             }}
           />
           {filters.search && (
@@ -102,7 +102,7 @@ export default function ReleasesListPage() {
         <select
           value={filters.status}
           onChange={e => setFilters(f => ({ ...f, status: e.target.value }))}
-          style={{ height: 38, padding: '8px 12px', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8, fontSize: 13, color: 'var(--ds-text-subtle, #334155)', background: 'var(--bg-app, #fff)', cursor: 'pointer' }}
+          style={{ height: 38, padding: '8px 12px', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 8, fontSize: 13, color: 'var(--ds-text-subtle, #334155)', background: 'var(--bg-app, #fff)', cursor: 'pointer' }}
         >
           <option value="all">All Statuses</option>
           {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
@@ -114,7 +114,7 @@ export default function ReleasesListPage() {
         <select
           value={filters.health}
           onChange={e => setFilters(f => ({ ...f, health: e.target.value }))}
-          style={{ height: 38, padding: '8px 12px', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8, fontSize: 13, color: 'var(--ds-text-subtle, #334155)', background: 'var(--bg-app, #fff)', cursor: 'pointer' }}
+          style={{ height: 38, padding: '8px 12px', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 8, fontSize: 13, color: 'var(--ds-text-subtle, #334155)', background: 'var(--bg-app, #fff)', cursor: 'pointer' }}
         >
           <option value="all">All Health</option>
           <option value="healthy">Healthy</option>
@@ -125,7 +125,7 @@ export default function ReleasesListPage() {
         <div style={{ flex: 1 }} />
 
         {/* View toggle */}
-        <div style={{ display: 'flex', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 8, overflow: 'hidden' }}>
           <button
             onClick={() => setViewMode('table')}
             style={{
@@ -144,7 +144,7 @@ export default function ReleasesListPage() {
               width: 36, height: 50, border: 'none', cursor: 'pointer',
               backgroundColor: viewMode === 'card' ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface, #fff)',
               color: viewMode === 'card' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #64748B)',
-              borderLeft: '1px solid var(--bd-default, #E2E8F0)',
+              borderLeft: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))',
             }}
           >
             <LayoutGrid style={{ width: 16, height: 16 }} />
@@ -187,10 +187,10 @@ export default function ReleasesListPage() {
 // ===== Table View =====
 function TableView({ releases, navigate }: { releases: Release[]; navigate: any }) {
   return (
-    <div style={{ border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 12, overflow: 'hidden', background: 'var(--bg-app, #fff)' }}>
+    <div style={{ border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 12, overflow: 'hidden', background: 'var(--bg-app, #fff)' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
         <thead>
-          <tr style={{ backgroundColor: 'var(--bg-1, #F8FAFC)', borderBottom: '1px solid var(--bd-default, #E2E8F0)' }}>
+          <tr style={{ backgroundColor: 'var(--bg-1, #F8FAFC)', borderBottom: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))' }}>
             <th style={thStyle}>Version</th>
             <th style={thStyle}>Name</th>
             <th style={thStyle}>Status</th>
@@ -280,12 +280,12 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
             key={r.id}
             onClick={() => navigate(`/testhub/releases/${r.id}`)}
             style={{
-              background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 12,
+              background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 12,
               padding: 20, cursor: 'pointer', transition: 'all 0.2s',
               boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
             }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,99,235,0.1)'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--bd-default, #E2E8F0)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--bd-default, var(--cp-border, #E2E8F0))'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)'; }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
               <div>

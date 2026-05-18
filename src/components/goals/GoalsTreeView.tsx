@@ -257,7 +257,7 @@ export function GoalsTreeView({
   const headerText = isDark ? DK.t3 : 'var(--fg-3)';
   const containerBg = isDark ? 'transparent' : 'var(--bg-app)';
   const themeRowBg = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)';
-  const themeRowHover = 'var(--cp-bg-sunken, #E2E8F0)';
+  const themeRowHover = 'var(--cp-bg-sunken, var(--cp-border, #E2E8F0))';
   const goalRowBg = isDark ? 'transparent' : 'var(--bg-app)';
   const goalRowHover = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--bg-1)';
   const krRowBg = isDark ? '#111111' : 'var(--bg-1)';

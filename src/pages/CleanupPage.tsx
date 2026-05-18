@@ -547,7 +547,7 @@ export default function CleanupPage() {
     }}>
       {/* ═══ PAGE HEADER ═══ */}
       <div style={{
-        background: 'var(--ds-surface, #ffffff)', borderBottom: '1px solid #E2E8F0',
+        background: 'var(--ds-surface, #ffffff)', borderBottom: '1px solid var(--cp-border, #E2E8F0)',
         padding: '12px 24px', display: 'flex', alignItems: 'center', gap: 12,
         flexShrink: 0,
       }}>
@@ -589,7 +589,7 @@ export default function CleanupPage() {
       {/* ═══ TABS + VIEW TOGGLE ═══ */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        background: 'var(--ds-surface, #ffffff)', borderBottom: '1px solid #E2E8F0', flexShrink: 0,
+        background: 'var(--ds-surface, #ffffff)', borderBottom: '1px solid var(--cp-border, #E2E8F0)', flexShrink: 0,
         padding: '0 16px 0 0',
       }}>
         <div style={{ display: 'flex', gap: 0 }}>
@@ -614,7 +614,7 @@ export default function CleanupPage() {
         </div>
 
         {activeTab === 'cleanup' && (
-          <div style={{ display: 'flex', gap: 0, borderRadius: 6, overflow: 'hidden', border: '1px solid #E2E8F0' }}>
+          <div style={{ display: 'flex', gap: 0, borderRadius: 6, overflow: 'hidden', border: '1px solid var(--cp-border, #E2E8F0)' }}>
             {[
               { key: 'group' as const, icon: LayoutGrid, label: 'Group' },
               { key: 'list' as const, icon: ListIcon, label: 'List' },
@@ -644,7 +644,7 @@ export default function CleanupPage() {
           {/* ═══ STATS ROW ═══ */}
           <div style={{
             display: 'flex', gap: 32, padding: '16px 24px',
-            borderBottom: '1px solid #E2E8F0', background: 'var(--ds-surface, #ffffff)', flexShrink: 0,
+            borderBottom: '1px solid var(--cp-border, #E2E8F0)', background: 'var(--ds-surface, #ffffff)', flexShrink: 0,
           }}>
             {[
               { label: 'AI FLAGGED', value: stats.aiFlagged },
@@ -690,7 +690,7 @@ export default function CleanupPage() {
                 <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
                   <div style={{
                     width: 24, height: 24,
-                    border: '2.5px solid #E2E8F0', borderTopColor: 'var(--ds-text-brand, #2563EB)',
+                    border: '2.5px solid var(--cp-border, #E2E8F0)', borderTopColor: 'var(--ds-text-brand, #2563EB)',
                     borderRadius: '50%', animation: 'spin 0.7s linear infinite',
                   }} />
                 </div>
@@ -709,7 +709,7 @@ export default function CleanupPage() {
                          style={{
                            width: '100%', display: 'flex', alignItems: 'center', gap: 8,
                            height: 48, padding: '0 16px',
-                           background: 'var(--ds-surface-sunken, #F8FAFC)', borderBottom: '1px solid #E2E8F0',
+                           background: 'var(--ds-surface-sunken, #F8FAFC)', borderBottom: '1px solid var(--cp-border, #E2E8F0)',
                            fontFamily: 'var(--cp-font-body)',
                          }}
                        >
@@ -728,7 +728,7 @@ export default function CleanupPage() {
                            </span>
                            <span style={{
                              fontSize: 11, color: 'var(--ds-text-subtle, #334155)',
-                             background: 'var(--ds-surface-sunken, #F1F5F9)', border: '1px solid #E2E8F0',
+                             background: 'var(--ds-surface-sunken, #F1F5F9)', border: '1px solid var(--cp-border, #E2E8F0)',
                              padding: '2px 8px', borderRadius: 20,
                            }}>
                              {items.length}
@@ -918,7 +918,7 @@ export default function CleanupPage() {
               {/* Toolbar */}
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 12, padding: '8px 16px',
-                background: 'var(--ds-surface, #ffffff)', borderBottom: '1px solid #E2E8F0', flexShrink: 0,
+                background: 'var(--ds-surface, #ffffff)', borderBottom: '1px solid var(--cp-border, #E2E8F0)', flexShrink: 0,
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Checkbox
@@ -936,7 +936,7 @@ export default function CleanupPage() {
                 </div>
 
                 <Select value={listCatFilter} onValueChange={setListCatFilter}>
-                  <SelectTrigger style={{ height: 32, width: 180, fontSize: 12, border: '1px solid #E2E8F0', borderRadius: 6, background: 'var(--ds-surface, #ffffff)' }}>
+                  <SelectTrigger style={{ height: 32, width: 180, fontSize: 12, border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6, background: 'var(--ds-surface, #ffffff)' }}>
                     <SelectValue placeholder="All categories" />
                   </SelectTrigger>
                   <SelectContent style={{ background: 'var(--ds-surface, #ffffff)' }}>
@@ -948,7 +948,7 @@ export default function CleanupPage() {
                 </Select>
 
                 <Select value={listStatusFilter} onValueChange={setListStatusFilter}>
-                  <SelectTrigger style={{ height: 32, width: 160, fontSize: 12, border: '1px solid #E2E8F0', borderRadius: 6, background: 'var(--ds-surface, #ffffff)' }}>
+                  <SelectTrigger style={{ height: 32, width: 160, fontSize: 12, border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6, background: 'var(--ds-surface, #ffffff)' }}>
                     <SelectValue placeholder="All statuses" />
                   </SelectTrigger>
                   <SelectContent style={{ background: 'var(--ds-surface, #ffffff)' }}>
@@ -969,7 +969,7 @@ export default function CleanupPage() {
                     height: 32, fontSize: 12, fontWeight: 700,
                     background: selected.size > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-surface-sunken, #F1F5F9)',
                     color: selected.size > 0 ? 'var(--ds-surface, #ffffff)' : 'var(--ds-text-subtlest, #94A3B8)',
-                    border: selected.size > 0 ? 'none' : '1px solid #E2E8F0',
+                    border: selected.size > 0 ? 'none' : '1px solid var(--cp-border, #E2E8F0)',
                     cursor: selected.size === 0 ? 'not-allowed' : 'pointer',
                   }}
                   onMouseEnter={e => { if (selected.size > 0) e.currentTarget.style.background = '#B91C1C'; }}
@@ -985,7 +985,7 @@ export default function CleanupPage() {
                   <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
                     <div style={{
                       width: 24, height: 24,
-                      border: '2.5px solid #E2E8F0', borderTopColor: 'var(--ds-text-brand, #2563EB)',
+                      border: '2.5px solid var(--cp-border, #E2E8F0)', borderTopColor: 'var(--ds-text-brand, #2563EB)',
                       borderRadius: '50%', animation: 'spin 0.7s linear infinite',
                     }} />
                   </div>
@@ -1037,7 +1037,7 @@ export default function CleanupPage() {
                         ].map((col, i) => (
                           <th key={i} style={{
                             height: 44, padding: '10px 12px',
-                            background: 'var(--ds-surface-sunken, #F8FAFC)', borderBottom: '1px solid #E2E8F0',
+                            background: 'var(--ds-surface-sunken, #F8FAFC)', borderBottom: '1px solid var(--cp-border, #E2E8F0)',
                             fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #64748B)',
                             textTransform: 'uppercase', letterSpacing: '0.06em',
                             textAlign: (col.align || 'left') as any, whiteSpace: 'nowrap',
@@ -1232,7 +1232,7 @@ export default function CleanupPage() {
                             <td style={{ padding: '8px 8px', width: 110 }}>
                               <span style={{
                                 display: 'inline-block', fontSize: 11, color: 'var(--ds-text-subtle, #334155)',
-                                background: 'var(--ds-surface-sunken, #F1F5F9)', border: '1px solid #E2E8F0',
+                                background: 'var(--ds-surface-sunken, #F1F5F9)', border: '1px solid var(--cp-border, #E2E8F0)',
                                 padding: '2px 8px', borderRadius: 20, whiteSpace: 'nowrap',
                                 maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis',
                               }}>
@@ -1258,7 +1258,7 @@ export default function CleanupPage() {
           {selected.size > 0 && (
             <div style={{
               position: 'fixed', bottom: 0, left: 0, right: 0,
-              background: 'var(--ds-surface, #ffffff)', borderTop: '1px solid #E2E8F0',
+              background: 'var(--ds-surface, #ffffff)', borderTop: '1px solid var(--cp-border, #E2E8F0)',
               padding: '12px 24px', display: 'flex', alignItems: 'center',
               justifyContent: 'space-between', zIndex: 50,
             }}>
@@ -1292,7 +1292,7 @@ export default function CleanupPage() {
                 </Button>
                 <Button
                   variant="outline"
-                  style={{ height: 36, fontSize: 14, background: 'var(--ds-surface, #ffffff)', border: '1px solid #E2E8F0', color: 'var(--ds-text, #0F172A)' }}
+                  style={{ height: 36, fontSize: 14, background: 'var(--ds-surface, #ffffff)', border: '1px solid var(--cp-border, #E2E8F0)', color: 'var(--ds-text, #0F172A)' }}
                   onClick={() => toast.info('Force Close via workflow — coming soon')}
                 >
                   Force Close (via workflow)
@@ -1317,7 +1317,7 @@ export default function CleanupPage() {
         <div style={{ flex: 1, overflowY: 'auto', background: 'var(--ds-surface, #ffffff)' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ background: 'var(--ds-surface-sunken, #F8FAFC)', borderBottom: '1px solid #E2E8F0' }}>
+              <tr style={{ background: 'var(--ds-surface-sunken, #F8FAFC)', borderBottom: '1px solid var(--cp-border, #E2E8F0)' }}>
                 {['KEY', 'SUMMARY', 'CATEGORY', 'CLOSED', 'RESTORE DEADLINE', 'ACTION'].map(h => (
                   <th key={h} style={{
                     padding: '10px 12px', fontSize: 11, fontWeight: 700,
@@ -1416,7 +1416,7 @@ export default function CleanupPage() {
             <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, #64748B)', marginTop: 6, marginBottom: 0 }}>
               These items will be marked Done and locked. Reporters will be notified. A comment will be added to each issue. The action is permanent in the audit trail.
             </p>
-            <div style={{ height: 1, background: 'var(--ds-border, #E2E8F0)', marginTop: 20 }} />
+            <div style={{ height: 1, background: 'var(--ds-border, var(--cp-border, #E2E8F0))', marginTop: 20 }} />
           </div>
 
           {/* BODY */}
@@ -1494,7 +1494,7 @@ export default function CleanupPage() {
             </div>
             <Select value={closureReason} onValueChange={setClosureReason}>
               <SelectTrigger style={{
-                width: '100%', height: 40, border: '1px solid #E2E8F0',
+                width: '100%', height: 40, border: '1px solid var(--cp-border, #E2E8F0)',
                 borderRadius: 6, fontSize: 14, color: 'var(--ds-text, #0F172A)',
                 background: 'var(--ds-surface, #ffffff)', padding: '0 12px',
               }}>
@@ -1510,7 +1510,7 @@ export default function CleanupPage() {
 
           {/* FOOTER */}
           <div style={{
-            padding: '16px 24px', borderTop: '1px solid #E2E8F0',
+            padding: '16px 24px', borderTop: '1px solid var(--cp-border, #E2E8F0)',
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           }}>
             <span
@@ -1524,7 +1524,7 @@ export default function CleanupPage() {
                 onClick={() => setShowForceCloseDialog(false)}
                 style={{
                   height: 36, padding: '0 20px', borderRadius: 6,
-                  background: 'transparent', border: '1px solid #E2E8F0',
+                  background: 'transparent', border: '1px solid var(--cp-border, #E2E8F0)',
                   color: 'var(--ds-text-subtle, #475569)', fontSize: 14, fontWeight: 600, cursor: 'pointer',
                 }}
               >

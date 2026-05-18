@@ -161,7 +161,7 @@ export function RecipientPicker({ trigger, open, onClose, onSave }: RecipientPic
         </DialogHeader>
 
         {/* Trigger info bar */}
-        <div className="flex items-center gap-2 px-3 py-2 bg-[var(--ds-surface-sunken,#F8FAFC)] rounded-md border border-[var(--bd-default,#E2E8F0)]">
+        <div className="flex items-center gap-2 px-3 py-2 bg-[var(--ds-surface-sunken,#F8FAFC)] rounded-md border border-[var(--bd-default,var(--cp-border, #E2E8F0))]">
           <Lozenge appearance="default">
             {trigger.hubSource}
           </Lozenge>
@@ -177,7 +177,7 @@ export function RecipientPicker({ trigger, open, onClose, onSave }: RecipientPic
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md border transition-colors duration-150 text-left ${
                 config[def.key]
                   ? 'bg-[rgba(37,99,235,0.04)] border-[var(--ds-text-brand,#2563EB)]/20'
-                  : 'bg-white border-[var(--bd-default,#E2E8F0)] hover:bg-[rgba(0,0,0,0.02)]'
+                  : 'bg-white border-[var(--bd-default,var(--cp-border, #E2E8F0))] hover:bg-[rgba(0,0,0,0.02)]'
               }`}
             >
               <div className="flex items-center gap-3 min-w-0">

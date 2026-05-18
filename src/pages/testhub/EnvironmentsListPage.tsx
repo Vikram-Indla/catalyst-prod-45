@@ -169,7 +169,7 @@ export default function EnvironmentsListPage() {
       {/* Summary Cards */}
       {summary && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', margin: 0, textTransform: 'uppercase' }}>Total</p>
@@ -219,12 +219,12 @@ export default function EnvironmentsListPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
               width: '100%', height: 44, padding: '0 14px 0 44px',
-              border: `1.5px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined,
+              border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined,
             }}
           />
         </div>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="h-[50px] w-[160px] border-[var(--ds-border,#E2E8F0)] rounded text-[13px]" style={{ fontFamily: 'var(--cp-font-body)' }}>
+          <SelectTrigger className="h-[50px] w-[160px] border-[var(--ds-border,var(--cp-border, #E2E8F0))] rounded text-[13px]" style={{ fontFamily: 'var(--cp-font-body)' }}>
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent>
@@ -237,7 +237,7 @@ export default function EnvironmentsListPage() {
           </SelectContent>
         </Select>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="h-[50px] w-[160px] border-[var(--ds-border,#E2E8F0)] rounded text-[13px]" style={{ fontFamily: 'var(--cp-font-body)' }}>
+          <SelectTrigger className="h-[50px] w-[160px] border-[var(--ds-border,var(--cp-border, #E2E8F0))] rounded text-[13px]" style={{ fontFamily: 'var(--cp-font-body)' }}>
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent>
@@ -249,7 +249,7 @@ export default function EnvironmentsListPage() {
         </Select>
         {hasActiveFilters && (
           <button onClick={clearFilters}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 14, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
@@ -261,7 +261,7 @@ export default function EnvironmentsListPage() {
           <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#6366F1' }} />
         </div>
       ) : filteredEnvironments.length === 0 ? (
-        <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
+        <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
           <Server size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
           <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, #64748B)', margin: 0 }}>No environments found</p>
           <p style={{ fontSize: 14, color: 'var(--cp-text-muted, #94A3B8)', margin: '8px 0 0' }}>Add an environment to get started</p>
@@ -281,10 +281,10 @@ export default function EnvironmentsListPage() {
                 onClick={() => navigate(`/testhub/environments/${env.id}`)}
                 style={{
                   backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, padding: 20,
-                  border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, cursor: 'pointer', transition: 'all 0.15s',
+                  border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, cursor: 'pointer', transition: 'all 0.15s',
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border-strong, #CBD5E1)'; e.currentTarget.style.boxShadow = isDark ? 'none' : '0 4px 12px rgba(0,0,0,0.05)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, #E2E8F0)'; e.currentTarget.style.boxShadow = 'none'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))'; e.currentTarget.style.boxShadow = 'none'; }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

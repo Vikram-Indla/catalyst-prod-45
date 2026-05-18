@@ -29,7 +29,7 @@ export function CircularGauge({ value, size = 100, strokeWidth = 10, color, labe
   return (
     <div className={`inline-flex flex-col items-center ${className}`}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <circle cx={center} cy={center} r={radius} fill="none" stroke="var(--exec-border, var(--bd-default, #E2E8F0))" strokeWidth={strokeWidth} />
+        <circle cx={center} cy={center} r={radius} fill="none" stroke="var(--exec-border, var(--bd-default, var(--cp-border, #E2E8F0)))" strokeWidth={strokeWidth} />
         <circle
           cx={center} cy={center} r={radius} fill="none"
           stroke={fillColor} strokeWidth={strokeWidth} strokeLinecap="round"

@@ -108,7 +108,7 @@ export default function TagsListPage() {
       {/* Stats Cards */}
       {stats && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)' }}>
             <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', margin: 0, textTransform: 'uppercase' }}>Total Tags</p>
             <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '8px 0 0' }}>{stats.total_tags}</p>
           </div>
@@ -116,11 +116,11 @@ export default function TagsListPage() {
             <p style={{ fontSize: 12, color: '#A855F7', margin: 0, textTransform: 'uppercase' }}>In Use</p>
             <p style={{ fontSize: 28, fontWeight: 700, color: '#A855F7', margin: '8px 0 0' }}>{stats.used_tags}</p>
           </div>
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)' }}>
             <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', margin: 0, textTransform: 'uppercase' }}>Categories</p>
             <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '8px 0 0' }}>{stats.categories}</p>
           </div>
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)' }}>
             <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', margin: 0, textTransform: 'uppercase' }}>Most Used</p>
             <p style={{ fontSize: 18, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '8px 0 0' }}>{stats.most_used_tag || '—'}</p>
           </div>
@@ -132,14 +132,14 @@ export default function TagsListPage() {
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
           <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, #94A3B8)' }} />
           <input type="text" placeholder="Search tags..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
+            style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
         </div>
-        <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} style={{ height: 44, padding: '0 36px 0 14px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined, cursor: 'pointer' }}>
+        <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} style={{ height: 44, padding: '0 36px 0 14px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined, cursor: 'pointer' }}>
           <option value="all">All Categories</option>
           {categories.map((cat) => <option key={cat} value={cat!}>{cat}</option>)}
         </select>
         {hasActiveFilters && (
-          <button onClick={clearFilters} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 14, cursor: 'pointer' }}>
+          <button onClick={clearFilters} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
@@ -151,7 +151,7 @@ export default function TagsListPage() {
           <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#EC4899' }} />
         </div>
       ) : filteredTags.length === 0 ? (
-        <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
+        <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)' }}>
           <Tags size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
           <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, #64748B)', margin: 0 }}>No tags found</p>
           <p style={{ fontSize: 14, color: 'var(--cp-text-muted, #94A3B8)', margin: '8px 0 0' }}>Create tags to organize your test assets</p>
@@ -165,9 +165,9 @@ export default function TagsListPage() {
               </h3>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                 {categoryTags.map((tag) => (
-                  <div key={tag.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', cursor: 'pointer' }}
+                  <div key={tag.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', cursor: 'pointer' }}
                     onMouseEnter={(e) => { e.currentTarget.style.borderColor = tag.color; e.currentTarget.style.boxShadow = `0 2px 8px ${tag.color}20`; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, #E2E8F0)'; e.currentTarget.style.boxShadow = 'none'; }}>
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))'; e.currentTarget.style.boxShadow = 'none'; }}>
                     <span style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: tag.color, flexShrink: 0 }} />
                     <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)' }}>{tag.name}</span>
                     <span style={{ fontSize: 11, color: 'var(--cp-text-muted, #94A3B8)', backgroundColor: 'var(--cp-bg-sunken, #F1F5F9)', padding: '2px 6px', borderRadius: 4 }}>{tag.usage_count}</span>

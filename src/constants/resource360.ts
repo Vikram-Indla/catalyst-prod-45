@@ -89,7 +89,7 @@ export const R360_TOKENS = {
   ink4: 'var(--ds-text-subtlest, #64748B)',
   surface: 'var(--bg-1, #F8FAFC)',
   card: 'var(--ds-surface, #FFFFFF)',
-  border: 'var(--bd-default, #E2E8F0)',
+  border: 'var(--bd-default, var(--cp-border, #E2E8F0))',
   borderLt: 'var(--ds-surface-sunken, #F1F5F9)',
 } as const;
 

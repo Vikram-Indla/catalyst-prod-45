@@ -50,9 +50,9 @@ export default function WorkflowAdminPage() {
       }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ds-border,#E2E8F0)]">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ds-border,var(--cp-border, #E2E8F0))]">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[var(--ds-surface-sunken,#F1F5F9)] flex items-center justify-center border border-[var(--ds-border,#E2E8F0)]">
+          <div className="w-9 h-9 rounded-lg bg-[var(--ds-surface-sunken,#F1F5F9)] flex items-center justify-center border border-[var(--ds-border,var(--cp-border, #E2E8F0))]">
             <BoardsIcon label="" size="small" />
           </div>
           <div>
@@ -76,7 +76,7 @@ export default function WorkflowAdminPage() {
           </Button>
 
           {/* View toggle */}
-          <div className="flex items-center gap-1 bg-[var(--ds-surface-sunken,#F8FAFC)] border border-[var(--ds-border,#E2E8F0)] rounded-md p-0.5">
+          <div className="flex items-center gap-1 bg-[var(--ds-surface-sunken,#F8FAFC)] border border-[var(--ds-border,var(--cp-border, #E2E8F0))] rounded-md p-0.5">
             <Button
               appearance="subtle"
               isSelected={viewMode === 'editor'}
@@ -99,7 +99,7 @@ export default function WorkflowAdminPage() {
 
       {/* Issue type tabs */}
       <Tabs value={activeType} onValueChange={setActiveType} className="w-full">
-        <div className="border-b border-[var(--ds-border,#E2E8F0)] px-6">
+        <div className="border-b border-[var(--ds-border,var(--cp-border, #E2E8F0))] px-6">
           <TabsList className="bg-transparent h-10 gap-0 p-0">
             {ISSUE_TYPES.map(t => (
               <TabsTrigger

@@ -684,7 +684,7 @@ export function TestRepositoryPage() {
               style={{
                 width: 40, height: 40, padding: 0,
                 backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0',
+                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)',
                 borderRadius: 8, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s',
               }}
@@ -697,7 +697,7 @@ export function TestRepositoryPage() {
               onClick={() => setIsImportModalOpen(true)}
               style={{
                 height: 40, padding: '0 16px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'var(--cp-font-body)',
+                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 8, fontFamily: 'var(--cp-font-body)',
                 fontSize: 14, fontWeight: 500, color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
               }}
@@ -711,7 +711,7 @@ export function TestRepositoryPage() {
               onClick={() => setIsExportModalOpen(true)}
               style={{
                 height: 40, padding: '0 16px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'var(--cp-font-body)',
+                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 8, fontFamily: 'var(--cp-font-body)',
                 fontSize: 14, fontWeight: 500, color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
               }}
@@ -814,7 +814,7 @@ export function TestRepositoryPage() {
                       height: 32,
                       padding: '8px 12px',
                       backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-                      border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                      border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
                       borderRadius: 6,
                       fontFamily: 'var(--cp-font-body)',
                       fontSize: 13,
@@ -840,7 +840,7 @@ export function TestRepositoryPage() {
                       height: 32,
                       padding: '8px 12px',
                       backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-                      border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                      border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
                       borderRadius: 6,
                       fontFamily: 'var(--cp-font-body)',
                       fontSize: 13,
@@ -862,7 +862,7 @@ export function TestRepositoryPage() {
                       style={{
                         height: 32, padding: '8px 12px',
                         backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-                        border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                        border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
                         borderRadius: 6, fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500,
                         color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', gap: 6,
@@ -874,7 +874,7 @@ export function TestRepositoryPage() {
                     {isBulkAssignOpen && (
                       <div style={{
                         position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 220,
-                        backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`,
+                        backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
                         borderRadius: 8, boxShadow: '0 10px 40px rgba(0,0,0,0.15)', zIndex: 200,
                         maxHeight: 240, overflowY: 'auto', padding: 4,
                       }}>
@@ -901,7 +901,7 @@ export function TestRepositoryPage() {
                       style={{
                         height: 32, padding: '8px 12px',
                         backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-                        border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                        border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
                         borderRadius: 6, fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500,
                         color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', gap: 6,
@@ -913,7 +913,7 @@ export function TestRepositoryPage() {
                     {isBulkTagOpen && (
                       <div style={{
                         position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 220,
-                        backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`,
+                        backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
                         borderRadius: 8, boxShadow: '0 10px 40px rgba(0,0,0,0.15)', zIndex: 200,
                         maxHeight: 240, overflowY: 'auto', padding: 4,
                       }}>
@@ -938,7 +938,7 @@ export function TestRepositoryPage() {
                     style={{
                       height: 32, padding: '8px 12px',
                       backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-                      border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                      border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
                       borderRadius: 6, fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500,
                       color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', gap: 6,
@@ -949,7 +949,7 @@ export function TestRepositoryPage() {
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = 'var(--cp-bg-elevated, #FFFFFF)';
-                      e.currentTarget.style.borderColor = 'var(--cp-border, #E2E8F0)';
+                      e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))';
                     }}
                   >
                     <Trash2 style={{ width: 14, height: 14 }} />

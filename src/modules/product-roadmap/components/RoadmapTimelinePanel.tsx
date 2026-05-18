@@ -118,7 +118,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
             style={{
               minWidth: periodMinWidth,
               width: `${100 / periods.length}%`,
-              borderRight: `1px solid ${isQuarterBoundary ? 'var(--bd-default, #E2E8F0)' : 'var(--ds-surface-sunken, #F1F5F9)'}`,
+              borderRight: `1px solid ${isQuarterBoundary ? 'var(--bd-default, var(--cp-border, #E2E8F0))' : 'var(--ds-surface-sunken, #F1F5F9)'}`,
               background: period.isCurrent ? 'rgba(37,99,235,0.03)' : 'transparent',
             }}
           />
@@ -139,7 +139,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
               {todayPosition !== null && config.showToday && <RoadmapTodayMarker position={todayPosition} />}
               {groups.map(group => (
                 <div key={group.key}>
-                  <div style={{ height: 50, background: 'var(--ds-surface-sunken, #FAFBFC)', borderBottom: '1px solid var(--bd-default, #E2E8F0)' }}>
+                  <div style={{ height: 50, background: 'var(--ds-surface-sunken, #FAFBFC)', borderBottom: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))' }}>
                     <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, #64748B)', paddingLeft: 16, lineHeight: '36px' }}>
                       {group.label}
                     </span>

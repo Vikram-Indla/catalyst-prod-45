@@ -397,7 +397,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                       height: 20, padding: '0 6px', borderRadius: 4,
                       fontSize: '11px', fontWeight: 700,
-                      background: QUARTER_BADGE[quarter]?.bg || 'var(--ds-border, #E2E8F0)',
+                      background: QUARTER_BADGE[quarter]?.bg || 'var(--ds-border, var(--cp-border, #E2E8F0))',
                       color: QUARTER_BADGE[quarter]?.text || 'var(--ds-text-subtlest, #94A3B8)',
                     }}>{quarter} 2026</span>
                   ) : <span style={{ fontSize: '13px', color: dk.t3 }}>—</span>
@@ -448,7 +448,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                   onClick={() => setLocalIsCommitted(!localIsCommitted)}
                   style={{
                     width: '44px', height: '24px', borderRadius: '12px', border: 'none',
-                    backgroundColor: localIsCommitted ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-border-strong, #E2E8F0)'),
+                    backgroundColor: localIsCommitted ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-border-strong, var(--cp-border, #E2E8F0))'),
                     cursor: 'pointer', position: 'relative', transition: 'background 200ms ease',
                   }}
                 >
@@ -526,7 +526,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
               <div key={dim.letter} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
                 <div style={{
                   width: '32px', height: '32px', borderRadius: '50%',
-                  backgroundColor: 'var(--cp-border, #E2E8F0)', color: dk.t2,
+                  backgroundColor: 'var(--cp-border, var(--cp-border, #E2E8F0))', color: dk.t2,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '13px', fontWeight: 700, flexShrink: 0,
                 }}>
@@ -537,7 +537,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                     <span style={{ fontSize: '13px', fontWeight: 500, color: dk.t1 }}>{dim.name}</span>
                     <span style={{ fontSize: '12px', color: dk.t2 }}>{dim.weight}</span>
                   </div>
-                  <div style={{ height: '4px', borderRadius: '4px', backgroundColor: 'var(--cp-border, #E2E8F0)', overflow: 'hidden' }}>
+                  <div style={{ height: '4px', borderRadius: '4px', backgroundColor: 'var(--cp-border, var(--cp-border, #E2E8F0))', overflow: 'hidden' }}>
                     <div style={{
                       height: '100%', width: `${(dim.score / 5) * 100}%`,
                       backgroundColor: dim.score > 0 ? 'var(--ds-text-brand, #2563EB)' : 'transparent',

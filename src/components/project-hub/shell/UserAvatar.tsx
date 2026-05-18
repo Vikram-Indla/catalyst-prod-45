@@ -38,7 +38,7 @@ export function UserAvatar() {
         style={{
           width: size,
           height: size,
-          border: '2px solid #E2E8F0',
+          border: '2px solid var(--cp-border, #E2E8F0)',
           padding: 0,
           cursor: 'pointer',
           background: showImage ? 'transparent' : bg,

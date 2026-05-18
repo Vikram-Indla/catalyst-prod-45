@@ -154,7 +154,7 @@ export default function WikiLearningPathDetailPage() {
       </div>
 
       {/* Progress bar */}
-      <div style={{ height: 6, borderRadius: 4, background: isDark ? 'var(--ds-border, #292929)' : 'var(--ds-border, #E2E8F0)', marginBottom: 32 }}>
+      <div style={{ height: 6, borderRadius: 4, background: isDark ? 'var(--ds-border, #292929)' : 'var(--ds-border, var(--cp-border, #E2E8F0))', marginBottom: 32 }}>
         <div style={{ height: '100%', borderRadius: 4, background: pct === 100 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-brand, #2563EB)', width: `${pct}%`, transition: 'width 400ms' }} />
       </div>
 

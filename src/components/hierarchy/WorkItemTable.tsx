@@ -744,7 +744,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
             height: 36,
             minWidth: 1100,
                 background: 'var(--cp-bg-page, #F8FAFC)',
-                borderBottom: isDark ? '2px solid #2E2E2E' : '2px solid #E2E8F0',
+                borderBottom: isDark ? '2px solid #2E2E2E' : '2px solid var(--cp-border, #E2E8F0)',
           }}
         >
           <div style={{ width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -790,7 +790,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
                 display: 'grid',
                 gridTemplateColumns,
                 alignItems: 'center',
-                borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
                 cursor: 'pointer',
                 background: isChecked ? 'var(--cp-primary-5)' : isSelected ? 'rgba(37, 99, 235, 0.08)' : 'transparent',
               }}

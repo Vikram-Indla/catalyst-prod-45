@@ -225,7 +225,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
                 </button>
                 <button
                   onClick={() => setEditingDate(false)}
-                  className="w-6 h-6 flex items-center justify-center rounded border border-[var(--ds-border,#E2E8F0)] text-[var(--ds-text-subtlest,#64748B)] hover:bg-[var(--ds-surface-sunken,#F1F5F9)]"
+                  className="w-6 h-6 flex items-center justify-center rounded border border-[var(--ds-border,var(--cp-border, #E2E8F0))] text-[var(--ds-text-subtlest,#64748B)] hover:bg-[var(--ds-surface-sunken,#F1F5F9)]"
                   title="Cancel"
                 >
                   <X size={11} />
@@ -439,7 +439,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
       </div>
 
       {/* ── AI Release Notes Panel ── */}
-      <div className="border border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)] rounded-md p-4 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
+      <div className="border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)] rounded-md p-4 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
         <div className="flex justify-between items-center mb-3">
           <span className="inline-flex items-center gap-1 text-[11px] font-bold rounded-full px-2 py-0.5 bg-[#F5F3FF] text-[var(--cp-purple-60, #7C3AED)] border border-[#DDD6FE]">
             ✦ Catalyst AI
@@ -476,7 +476,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
             <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[var(--ds-surface-sunken,#F1F5F9)]">
               <button
                 onClick={handleCopy}
-                className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,#E2E8F0)] text-[12px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 outline-none"
+                className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,var(--cp-border, #E2E8F0))] text-[12px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 outline-none"
               >
                 <Copy size={12} />
                 {copied ? 'Copied!' : 'Copy'}
@@ -497,7 +497,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
             <span className="text-[var(--ds-text-subtle,#475569)]">Could not generate notes.</span>
             <button
               onClick={generateReleaseNotes}
-              className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,#E2E8F0)] text-[12px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 outline-none"
+              className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,var(--cp-border, #E2E8F0))] text-[12px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 outline-none"
             >
               <RefreshCw size={12} /> Try again
             </button>

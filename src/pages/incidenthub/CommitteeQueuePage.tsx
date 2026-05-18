@@ -96,7 +96,7 @@ export default function CommitteeQueuePage() {
                   {item.age_hours ? `${Math.round(item.age_hours)}h` : '\u2014'}
                 </div>
                 <div className="px-3 flex items-center gap-2">
-                  <div style={{ flex: 1, height: 6, borderRadius: 4, backgroundColor: 'var(--cp-bg-sunken, #E2E8F0)', overflow: 'hidden' }}>
+                  <div style={{ flex: 1, height: 6, borderRadius: 4, backgroundColor: 'var(--cp-bg-sunken, var(--cp-border, #E2E8F0))', overflow: 'hidden' }}>
                     <div style={{
                       height: '100%',
                       width: `${progress * 100}%`,

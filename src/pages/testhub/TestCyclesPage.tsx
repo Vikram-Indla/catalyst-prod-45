@@ -71,7 +71,7 @@ export default function TestCyclesPage() {
   const pageBg = 'var(--cp-bg-page, #F8FAFC)';
   const surfaceBg = 'var(--cp-bg-elevated, #FFFFFF)';
   const elevatedBg = 'var(--cp-bg-page, #F8FAFC)';
-  const borderColor = 'var(--cp-border, #E2E8F0)';
+  const borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))';
   const textPrimary = 'var(--cp-text-primary, #0F172A)';
   const textBody = 'var(--cp-text-secondary, #334155)';
   const textSecondary = 'var(--cp-text-tertiary, #64748B)';

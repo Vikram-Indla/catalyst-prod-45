@@ -111,7 +111,7 @@ export function DataScope() {
   )
 
   const cardStyle: React.CSSProperties = {
-    background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
+    background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 8,
     padding: 20, marginBottom: 16, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
   }
 
@@ -155,7 +155,7 @@ export function DataScope() {
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   padding: '10px 16px', borderRadius: 8, border: '1px solid', cursor: 'pointer',
                   background: isOn ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface, #fff)',
-                  borderColor: isOn ? '#BFDBFE' : 'var(--bd-default, #E2E8F0)',
+                  borderColor: isOn ? '#BFDBFE' : 'var(--bd-default, var(--cp-border, #E2E8F0))',
                   opacity: isOn ? 1 : 0.5,
                   transition: 'all .15s',
                 }}
@@ -197,7 +197,7 @@ export function DataScope() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
           <label style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)', width: 260 }}>Default lookback period:</label>
           <select value={lookbackMonths} onChange={(e) => setLookbackMonths(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)', fontSize: 12, width: 150 }}>
+            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', fontSize: 12, width: 150 }}>
             <option value={1}>1 month</option>
             <option value={2}>2 months</option>
             <option value={3}>3 months</option>
@@ -207,7 +207,7 @@ export function DataScope() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
           <label style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)', width: 260 }}>Maximum lookback (hard limit):</label>
           <select value={maxMonths} onChange={(e) => setMaxMonths(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)', fontSize: 12, width: 150 }}>
+            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', fontSize: 12, width: 150 }}>
             <option value={3}>3 months</option>
             <option value={6}>6 months</option>
           </select>
@@ -240,7 +240,7 @@ export function DataScope() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
           <label style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)', width: 260 }}>Mark items stale after:</label>
           <select value={staleThreshold} onChange={(e) => setStaleThreshold(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)', fontSize: 12, width: 150 }}>
+            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', fontSize: 12, width: 150 }}>
             <option value={7}>7 days</option>
             <option value={14}>14 days</option>
             <option value={30}>30 days</option>
@@ -250,7 +250,7 @@ export function DataScope() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
           <label style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)', width: 260 }}>Mark items critical after:</label>
           <select value={criticalThreshold} onChange={(e) => setCriticalThreshold(Number(e.target.value))}
-            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)', fontSize: 12, width: 150 }}>
+            style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', fontSize: 12, width: 150 }}>
             <option value={14}>14 days</option>
             <option value={30}>30 days</option>
             <option value={60}>60 days</option>

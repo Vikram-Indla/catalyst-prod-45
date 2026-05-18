@@ -38,7 +38,7 @@ export function normalisePriority(raw: string | null | undefined): PriorityLevel
   return 'medium'; // default — medium, p3, or anything else
 }
 
-const EMPTY_BAR_LIGHT = 'var(--ds-border, #E2E8F0)';
+const EMPTY_BAR_LIGHT = 'var(--ds-border, var(--cp-border, #E2E8F0))';
 const EMPTY_BAR_DARK  = 'var(--ds-border, #292929)';
 
 interface PriorityBarsProps {

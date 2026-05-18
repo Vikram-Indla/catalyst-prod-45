@@ -30,7 +30,7 @@ function OwnerAvatar({ initials, name }: { initials?: string; name?: string }) {
     return (
       <div
         className="flex-shrink-0 flex items-center justify-center rounded-full"
-        style={{ width: 22, height: 22, background: 'var(--ds-border, #E2E8F0)' }}
+        style={{ width: 22, height: 22, background: 'var(--ds-border, var(--cp-border, #E2E8F0))' }}
         title="Unassigned"
       >
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, #94A3B8)" strokeWidth="2" strokeLinecap="round">

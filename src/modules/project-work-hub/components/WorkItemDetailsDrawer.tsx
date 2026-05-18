@@ -356,7 +356,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
 
               {/* Jira Sync Status */}
               {jiraData?.jira_key && (
-                <div className="border-t border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-surface-raised,#1A1A1A)] pt-4 mt-4">
+                <div className="border-t border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-surface-raised,#1A1A1A)] pt-4 mt-4">
                   <label className="block text-[11px] font-semibold text-[#6B7280] dark:text-[#9C8E7E] uppercase mb-3" style={{ fontWeight: 650 }}>
                     Jira Sync
                   </label>

@@ -21,7 +21,7 @@ function ShimmerBar({ width, height, borderRadius = 4, isDark }: {
       width, height, borderRadius,
       background: isDark
         ? 'linear-gradient(90deg, var(--ds-surface-raised, #1A1A1A) 25%, var(--ds-border, #292929) 50%, var(--ds-surface-raised, #1A1A1A) 75%)'
-        : 'linear-gradient(90deg, var(--ds-surface-sunken, #F1F5F9) 25%, var(--ds-border, #E2E8F0) 50%, var(--ds-surface-sunken, #F1F5F9) 75%)',
+        : 'linear-gradient(90deg, var(--ds-surface-sunken, #F1F5F9) 25%, var(--ds-border, var(--cp-border, #E2E8F0)) 50%, var(--ds-surface-sunken, #F1F5F9) 75%)',
       backgroundSize: '600px 100%',
       animation: 'ageing-shimmer 1.6s infinite linear',
     }} />
@@ -38,13 +38,13 @@ function GroupSkeleton({ label, rowCount, isDark }: {
         <td colSpan={5} style={{
           padding: '8px 14px',
           background: 'var(--cp-bg-page, #F8FAFC)',
-          borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #E2E8F0',
-          borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #E2E8F0',
+          borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid var(--cp-border, #E2E8F0)',
+          borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid var(--cp-border, #E2E8F0)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{
               width: 14, height: 14, borderRadius: 3,
-              background: 'var(--cp-bg-sunken, #E2E8F0)',
+              background: 'var(--cp-bg-sunken, var(--cp-border, #E2E8F0))',
             }} />
             <span style={{
               fontSize: 11, fontWeight: 700, color: 'var(--cp-text-tertiary, #64748B)',

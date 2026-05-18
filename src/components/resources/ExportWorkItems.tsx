@@ -471,7 +471,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
           transition: 'border-color 150ms',
         }}
         onMouseEnter={e => { e.currentTarget.style.borderColor = dk ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)'; }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = dk ? 'var(--ds-border, #2E2E2E)' : 'var(--bd-default, #E2E8F0)'; }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = dk ? 'var(--ds-border, #2E2E2E)' : 'var(--bd-default, var(--cp-border, #E2E8F0))'; }}
       >
         <Download size={14} strokeWidth={2} />
         Export

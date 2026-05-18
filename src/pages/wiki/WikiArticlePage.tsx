@@ -53,7 +53,7 @@ function StatusLozenge({ status }: { status: string }) {
 /* ── Skeleton ── */
 const Sk = ({ w, h, style, isDark }: { w: string | number; h: number; style?: React.CSSProperties; isDark?: boolean }) => (
   <div style={{
-    width: w, height: h, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, #E2E8F0)',
+    width: w, height: h, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, var(--cp-border, #E2E8F0))',
     animation: 'pulse 1.5s ease-in-out infinite', ...style,
   }} />
 );
@@ -106,7 +106,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
       <div style={{ flex: 1, overflowY: 'auto', padding: '12px 0' }}>
         {versions.length === 0 ? (
           <div style={{ padding: '48px 20px', textAlign: 'center' }}>
-            <History size={32} style={{ color: isDark ? 'var(--ds-border, #292929)' : 'var(--ds-border, #E2E8F0)', marginBottom: 12 }} />
+            <History size={32} style={{ color: isDark ? 'var(--ds-border, #292929)' : 'var(--ds-border, var(--cp-border, #E2E8F0))', marginBottom: 12 }} />
             <div style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)' }}>No version history yet</div>
           </div>
         ) : versions.map((v: any, i: number) => (
@@ -393,7 +393,7 @@ export default function WikiArticlePage() {
     { label: 'Stories', value: info.totalStories ? (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11 }}>{info.doneStories ?? 0}/{info.totalStories} done</span>
-        <div style={{ width: 40, height: 3, borderRadius: 4, background: isDark ? 'var(--ds-border, #292929)' : 'var(--ds-border, #E2E8F0)' }}>
+        <div style={{ width: 40, height: 3, borderRadius: 4, background: isDark ? 'var(--ds-border, #292929)' : 'var(--ds-border, var(--cp-border, #E2E8F0))' }}>
           <div style={{ height: '100%', borderRadius: 4, background: 'var(--ds-text-brand, #2563EB)', width: `${info.donePercent ?? 0}%` }} />
         </div>
       </div>
@@ -499,7 +499,7 @@ export default function WikiArticlePage() {
               {authorName ? (
                 <>
                   <div style={{
-                    width: 24, height: 24, borderRadius: '50%', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, #E2E8F0)',
+                    width: 24, height: 24, borderRadius: '50%', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, var(--cp-border, #E2E8F0))',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 10, fontWeight: 700, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)',
                   }}>{authorName.charAt(0).toUpperCase()}</div>

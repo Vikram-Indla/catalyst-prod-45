@@ -37,7 +37,7 @@ const TAG_STYLES: Record<string, { bg: string; color: string }> = {
 
 /* ── Skeleton ── */
 const Skeleton = ({ w, h, style, isDark }: { w: string | number; h: number; style?: React.CSSProperties; isDark?: boolean }) => (
-  <div style={{ width: w, height: h, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, #E2E8F0)', animation: 'pulse 1.5s ease-in-out infinite', ...style }} />
+  <div style={{ width: w, height: h, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, var(--cp-border, #E2E8F0))', animation: 'pulse 1.5s ease-in-out infinite', ...style }} />
 );
 
 /* ── Section Header ── */
@@ -386,7 +386,7 @@ const DomainCard = React.memo(({ d, Icon, navigate, isDark }: { d: any; Icon: Re
         {/* Coverage bar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 10, fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #64748B)' }}>Coverage</span>
-          <div style={{ flex: 1, height: 3, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, #E2E8F0)' }}>
+          <div style={{ flex: 1, height: 3, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, var(--cp-border, #E2E8F0))' }}>
             <div style={{ height: '100%', borderRadius: 4, background: coverageColor, width: `${d.coverage_percent}%`, transition: 'width 600ms' }} />
           </div>
           <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 600, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, #0F172A)' }}>{d.coverage_percent}%</span>
@@ -416,7 +416,7 @@ const LearningPathCard = React.memo(({ p, navigate, isDark }: { p: any; navigate
         <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: diffColor }}>{p.difficulty}</span>
       </div>
       <div style={{ fontSize: 11.5, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #64748B)', marginBottom: 12, lineHeight: 1.4 }}>{p.description}</div>
-      <div style={{ height: 4, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, #E2E8F0)', marginBottom: 8 }}>
+      <div style={{ height: 4, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, var(--cp-border, #E2E8F0))', marginBottom: 8 }}>
         <div style={{ height: '100%', borderRadius: 4, background: 'var(--ds-text-brand, #2563EB)', width: `${pct}%`, transition: 'width 600ms' }} />
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #64748B)' }}>

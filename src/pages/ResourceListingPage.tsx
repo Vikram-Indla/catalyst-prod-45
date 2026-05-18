@@ -76,7 +76,7 @@ function useTokens(dk: boolean) {
     elevatedBg:   dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-surface, #FFFFFF)',
     headerBg:     dk ? '#111111' : 'var(--ds-surface, #FFFFFF)',
     hoverBg:      dk ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--ds-surface-sunken, #F8FAFC)',
-    border:       dk ? 'var(--ds-border, #2E2E2E)' : 'var(--ds-border, #E2E8F0)',
+    border:       dk ? 'var(--ds-border, #2E2E2E)' : 'var(--ds-border, var(--cp-border, #E2E8F0))',
     borderSubtle: dk ? 'var(--ds-border, #292929)' : '#f3f4f6',
     borderInput:  dk ? 'var(--ds-border-bold, #454545)' : '#DDDEE1',
     borderFocus:  'var(--ds-text-brand, #2563EB)',
@@ -98,10 +98,10 @@ function useTokens(dk: boolean) {
     typePillBg:       dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-surface-sunken, #F8FAFC)',
     typePillActiveBg: dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-surface, #FFFFFF)',
     shimmerFrom:  dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-surface-sunken, #F1F5F9)',
-    shimmerMid:   dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-border, #E2E8F0)',
+    shimmerMid:   dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-border, var(--cp-border, #E2E8F0))',
     tooltipBg:    dk ? 'var(--ds-surface-raised, #1A1A1A)' : '#1e293b',
     tooltipText:  dk ? 'var(--ds-text, #EDEDED)' : 'var(--ds-surface-sunken, #f1f5f9)',
-    divider:      dk ? 'var(--ds-border, #292929)' : 'var(--ds-border, #E2E8F0)',
+    divider:      dk ? 'var(--ds-border, #292929)' : 'var(--ds-border, var(--cp-border, #E2E8F0))',
     focusShadow:  dk ? '0 0 0 3px rgba(37,99,235,.2)' : '0 0 0 3px rgba(37,99,235,.1)',
   }), [dk]);
 }

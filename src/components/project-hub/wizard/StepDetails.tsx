@@ -268,7 +268,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
               {selectedLead.avatar_url ? (
                 <img src={selectedLead.avatar_url} alt="" className="rounded-full" style={{ width: 22, height: 22, objectFit: 'cover' }} />
               ) : (
-                <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default,#E2E8F0)] dark:bg-[var(--ds-border,#292929)]" style={{ width: 22, height: 22, fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
+                <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:bg-[var(--ds-border,#292929)]" style={{ width: 22, height: 22, fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
                   {getInitials(selectedLead.display_name)}
                 </div>
               )}
@@ -282,10 +282,10 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
 
         {showLeadPicker && (
           <div
-            className="absolute left-0 right-0 z-50 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)] rounded-lg shadow-lg"
+            className="absolute left-0 right-0 z-50 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)] rounded-lg shadow-lg"
             style={{ top: '100%', marginTop: 4, maxHeight: 260, display: 'flex', flexDirection: 'column' }}
           >
-            <div className="p-2 border-b border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)]">
+            <div className="p-2 border-b border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)]">
               <div className="relative">
                 <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--ds-text-subtlest,#94A3B8)]" />
                 <input
@@ -293,7 +293,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
                   value={leadFilter}
                   onChange={e => setLeadFilter(e.target.value)}
                   placeholder="Search people..."
-                  className="w-full text-[13px] pl-8 pr-3 py-1.5 rounded border border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)] bg-transparent outline-none"
+                  className="w-full text-[13px] pl-8 pr-3 py-1.5 rounded border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)] bg-transparent outline-none"
                   style={{ height: 32, color: 'var(--fg-1)' }}
                 />
               </div>
@@ -312,7 +312,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
                     {p.avatar_url ? (
                       <img src={p.avatar_url} alt="" className="rounded-full" style={{ width: 24, height: 24, objectFit: 'cover' }} />
                     ) : (
-                      <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default,#E2E8F0)] dark:bg-[var(--ds-border,#292929)]" style={{ width: 24, height: 24, fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
+                      <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:bg-[var(--ds-border,#292929)]" style={{ width: 24, height: 24, fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
                         {getInitials(p.display_name)}
                       </div>
                     )}
@@ -350,7 +350,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
       </div>
 
       {/* Jira Link Toggle */}
-      <div className="rounded-lg border border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)] p-4">
+      <div className="rounded-lg border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)] p-4">
         <div className="flex items-center justify-between">
           <div>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Link to Jira project</div>
