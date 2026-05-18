@@ -59,7 +59,7 @@ export function R360StatusLozenge({ status }: { status: string }) {
   let bg = 'var(--ds-border, #DFE1E6)';
   let color = '#42526E';
   if (['done', 'closed', 'completed', 'approved', 'resolved'].includes(s)) {
-    bg = '#1B7F37'; color = 'var(--ds-surface, #FFFFFF)';
+    bg = 'var(--cp-lozenge-green-bg, #1B7F37)'; color = 'var(--ds-surface, #FFFFFF)';
   } else if (['inprogress', 'inreview', 'active', 'started'].includes(s)) {
     bg = '#0C66E4'; color = 'var(--ds-surface, #FFFFFF)';
   }

@@ -688,7 +688,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
         return (
           <div key={s.stage} className="flex items-center gap-3 py-3 border-b border-[rgba(15,23,42,0.06)] last:border-0">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 ${
-              status === 'approved' ? 'bg-[#1B7F37] text-white' :
+              status === 'approved' ? 'bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white' :
               status === 'pending' ? 'bg-[#0C66E4] text-white' :
               'bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtlest,#94A3B8)]'
             }`}>
@@ -708,7 +708,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
             {hasPending && stageSignoffs.filter((so: any) => so.status === 'pending').map((so: any) => (
               <div key={so.id} className="flex items-center gap-2">
                 <button onClick={() => approveSignoff.mutate(so.id, { onSuccess: () => toast.success('Approved') })}
-                  className="h-7 px-3 rounded bg-[#1B7F37] text-white text-[11px] font-bold hover:bg-[#004D33]">Approve</button>
+                  className="h-7 px-3 rounded bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white text-[11px] font-bold hover:bg-[#004D33]">Approve</button>
                 <button onClick={() => rejectSignoff.mutate({ signoffId: so.id, comment: 'Rejected' }, { onSuccess: () => toast.success('Rejected') })}
                   className="h-7 px-3 rounded border border-[var(--ds-border-danger,#FCA5A5)] text-[var(--ds-text-danger,#DC2626)] text-[11px] font-bold hover:bg-[var(--ds-background-danger,#FEF2F2)]">Reject</button>
               </div>

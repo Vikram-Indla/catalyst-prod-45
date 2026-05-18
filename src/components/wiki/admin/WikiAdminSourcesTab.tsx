@@ -178,7 +178,7 @@ function SmBtn({ icon, title, onClick }: { icon: React.ReactElement; title: stri
 
 function DocStatusLoz({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
-    complete: { bg: '#1B7F37', color: '#0D7331' },
+    complete: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: '#0D7331' },
     uploaded: { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
     processing: { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
     parsing: { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },

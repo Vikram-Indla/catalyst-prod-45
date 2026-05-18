@@ -348,7 +348,7 @@ export default function ReqAssistGenerate() {
             {/* Header */}
             <div style={{ padding: '12px 16px', borderBottom: `0.75px solid ${'var(--cp-border, #E2E8F0)'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)', fontFamily: 'var(--cp-font-heading)' }}>Generated BRD</span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', padding: '0 6px', height: 20, borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, background: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)' }}>QUALIFIED</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', padding: '0 6px', height: 20, borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)' }}>QUALIFIED</span>
               <span style={{ fontSize: 11, color: 'var(--cp-text-tertiary, #64748B)', marginLeft: 'auto', fontFamily: 'var(--cp-font-mono)' }}>
                 {genResult.section_count} sections · {genResult.language.toUpperCase()} · {genResult.total_requirements} requirements
               </span>
@@ -431,7 +431,7 @@ export default function ReqAssistGenerate() {
                     </BtnOutline>
                   )}
                   {wikiState === 'success' && (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '8px 16px', borderRadius: 6, background: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)', fontSize: 14, fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '8px 16px', borderRadius: 6, background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)', fontSize: 14, fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
                       <Check size={14} /> In WikiHub
                     </span>
                   )}

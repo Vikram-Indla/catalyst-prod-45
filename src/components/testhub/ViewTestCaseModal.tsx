@@ -116,7 +116,7 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
 // --- STATUS BUTTON COLORS ---
 const STATUS_BTN: Record<string, string> = {
   draft:      '#44546F',
-  ready:      '#1B7F37',
+  ready:      'var(--cp-lozenge-green-bg, #1B7F37)',
   approved:   '#0C66E4',
   deprecated: '#44546F',
 };

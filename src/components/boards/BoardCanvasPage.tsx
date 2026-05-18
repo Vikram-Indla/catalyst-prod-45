@@ -41,7 +41,7 @@ function StatusLozenge({ status }: { status: string }) {
   }
   // Green: done family
   else if (['done','completed','production','prodready','approved','resolved','passed','closed'].includes(s)) {
-    bg = '#1B7F37'; color = 'var(--ds-surface, #FFFFFF)';
+    bg = 'var(--cp-lozenge-green-bg, #1B7F37)'; color = 'var(--ds-surface, #FFFFFF)';
   }
   // Grey: everything else (backlog, todo, onhold, new, waiting, blocked)
   // Blocked gets a red left border accent on grey lozenge

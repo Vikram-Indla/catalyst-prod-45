@@ -8,7 +8,7 @@ function getLozengeStyle(status: string, statusCategory?: string): { bg: string;
   // 1. Prioritise status_category from Jira (eliminates Unknown)
   const cat = (statusCategory || '').toLowerCase().replace(/[_ ]/g, '');
   if (cat === 'done' || cat === 'completed')
-    return { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)', label: (status || 'DONE').toUpperCase() };
+    return { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-text-inverse, #FFFFFF)', label: (status || 'DONE').toUpperCase() };
   if (cat === 'inprogress' || cat === 'indeterminate' || cat === 'started')
     return { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)', label: (status || 'IN PROGRESS').toUpperCase() };
   if (cat === 'new' || cat === 'todo')
@@ -18,7 +18,7 @@ function getLozengeStyle(status: string, statusCategory?: string): { bg: string;
   const s = (status || '').toLowerCase();
   // Green
   if (['done', 'closed', 'resolved', 'ready for production', 'beta ready', 'completed', 'production ready', 'monitor', 'released', 'verified'].some(k => s === k))
-    return { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)', label: status.toUpperCase() };
+    return { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-text-inverse, #FFFFFF)', label: status.toUpperCase() };
   // Blue
   if (['in progress', 'in development', 'under implementation', 'in review', 'in qa', 'ready for qa', 'retest',
        'code review', 'in uat', 'uat ready', 're-open', 'in beta', 'in production', 'in design', 'in requirements',

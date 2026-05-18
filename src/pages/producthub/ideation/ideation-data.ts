@@ -52,7 +52,7 @@ export const STATUS_CONFIG: Record<IdeaStatus, { bg: string; text: string; label
   under_review: { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)', label: 'Under Review' },
   approved:     { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)', label: 'Approved' },
   rejected:     { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E', label: 'Rejected' },
-  converted:    { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)', label: 'Converted' },
+  converted:    { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--ds-text-inverse, #FFFFFF)', label: 'Converted' },
 };
 
 // ─── TYPE CONFIG — ALL NEUTRAL GREY ─────────────────────────────
@@ -127,6 +127,6 @@ export const STATUS_LOZENGE_COLORS: Record<string, { bg: string; text: string }>
   'Under Review':             { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
   'Approved':                 { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
   'Rejected':                 { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' },
-  'Converted':                { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)' },
-  'Converted to Request':  { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  'Converted':                { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  'Converted to Request':  { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--ds-text-inverse, #FFFFFF)' },
 };

@@ -858,7 +858,7 @@
   width: 32px !important;
   height: 32px !important;
   border-radius: 50% !important;
-  background: #1B7F37 !important;
+  background: var(--cp-lozenge-green-bg, #1B7F37) !important;
   color: var(--ds-text-inverse, #FFFFFF) !important;
   display: flex !important;
   align-items: center !important;

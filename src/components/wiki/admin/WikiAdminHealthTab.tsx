@@ -75,7 +75,7 @@ export function WikiAdminHealthTab() {
 
 function HealthLoz({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
-    healthy: { bg: '#1B7F37', color: '#0D7331' },
+    healthy: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: '#0D7331' },
     warning: { bg: 'var(--ds-border, #DFE1E6)', color: '#44546F' },
     critical: { bg: 'var(--ds-border, #DFE1E6)', color: '#44546F' },
   };

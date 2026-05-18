@@ -42,9 +42,9 @@ const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   'Backlog':     { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' },
   'In Progress': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
   'In Review':   { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  'Done':        { bg: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)' },
-  'Resolved':    { bg: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)' },
-  'Closed':      { bg: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)' },
+  'Done':        { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)' },
+  'Resolved':    { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)' },
+  'Closed':      { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)' },
 };
 
 function Lozenge({ label, styles }: { label: string; styles: Record<string, { bg: string; color: string }> }) {

@@ -797,10 +797,10 @@ function StatusBadge({ status, epicCount, pipelineStage }: { status: string; epi
     bg = 'var(--ds-border, #DFE1E6)'; color = '#42526E'; label = 'FAILED';
   } else if (epicCount > 0) {
     // Having epics = document is usable regardless of pipeline_stage
-    bg = '#1B7F37'; color = 'var(--ds-surface, #FFFFFF)'; label = 'READY';
+    bg = 'var(--cp-lozenge-green-bg, #1B7F37)'; color = 'var(--ds-surface, #FFFFFF)'; label = 'READY';
   } else if (ps === 'complete') {
     // pipeline complete but no epics yet → still READY
-    bg = '#1B7F37'; color = 'var(--ds-surface, #FFFFFF)'; label = 'READY';
+    bg = 'var(--cp-lozenge-green-bg, #1B7F37)'; color = 'var(--ds-surface, #FFFFFF)'; label = 'READY';
   } else if (['extract', 'process', 'validate', 'distribute', 'processing'].includes(ps)) {
     bg = '#0C66E4'; color = 'var(--ds-surface, #FFFFFF)'; label = 'PROCESSING';
   } else {
@@ -875,7 +875,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           padding: '0 6px', height: 20, borderRadius: 4,
           fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
           letterSpacing: '0.03em', whiteSpace: 'nowrap',
-          background: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)',
           fontFamily: 'var(--cp-font-body)',
         }}>AI INDEXED</span>
         <button

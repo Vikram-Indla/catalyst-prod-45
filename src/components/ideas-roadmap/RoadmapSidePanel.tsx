@@ -183,7 +183,7 @@ export function RoadmapSidePanel({
           {idea.isCommitted && (
             isConverted(idea.status) ? (
               <div style={{
-                padding: '10px 16px', borderRadius: 6, background: '#1B7F37',
+                padding: '10px 16px', borderRadius: 6, background: 'var(--cp-lozenge-green-bg, #1B7F37)',
                 color: 'var(--bg-app)', fontSize: 13, fontWeight: 650, textAlign: 'center',
                 border: '1px solid #B7EBD1',
               }}>

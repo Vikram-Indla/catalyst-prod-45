@@ -8,13 +8,13 @@ import { EmptyState } from '@/components/releasehub/EmptyState';
 import { format } from 'date-fns';
 
 const EVENT_TYPE_LOZENGE: Record<string, { bg: string; color: string; label: string }> = {
-  DEPLOYMENT: { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)', label: 'DEPLOYMENT' },
+  DEPLOYMENT: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-text-inverse, #FFFFFF)', label: 'DEPLOYMENT' },
   HOTFIX: { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E', label: 'HOTFIX' },
   ROLLBACK: { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #991B1B)', label: 'ROLLBACK' },
 };
 
 const RESULT_BADGE: Record<string, { bg: string; color: string; label: string; icon?: boolean }> = {
-  SUCCESS: { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)', label: 'SUCCESS', icon: true },
+  SUCCESS: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-text-inverse, #FFFFFF)', label: 'SUCCESS', icon: true },
   ROLLED_BACK: { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #991B1B)', label: 'ROLLED BACK' },
   MONITORING: { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)', label: 'MONITORING' },
 };

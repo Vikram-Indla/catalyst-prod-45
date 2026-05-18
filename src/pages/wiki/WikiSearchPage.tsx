@@ -94,7 +94,7 @@ export default function WikiSearchPage() {
   const aiSources = aiResults?.sources ?? [];
 
   const confColor = (c: number) => c >= 90 ? 'var(--ds-surface, #FFFFFF)' : c >= 70 ? 'var(--ds-surface, #FFFFFF)' : isDark ? '#FCD34D' : '#9A5402';
-  const confBg = (c: number) => c >= 90 ? '#1B7F37' : c >= 70 ? '#0C66E4' : isDark ? 'rgba(251,191,36,0.12)' : '#FEF3C7';
+  const confBg = (c: number) => c >= 90 ? 'var(--cp-lozenge-green-bg, #1B7F37)' : c >= 70 ? '#0C66E4' : isDark ? 'rgba(251,191,36,0.12)' : '#FEF3C7';
 
   const borderColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(15,23,42,0.12)';
 
@@ -292,7 +292,7 @@ export default function WikiSearchPage() {
                     ? <Video size={14} style={{ color: 'var(--cp-purple-60, #7C3AED)', flexShrink: 0 }} />
                     : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)', flexShrink: 0 }} />;
                   const verBadge = r.verification_status === 'verified'
-                    ? { bg: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)', label: 'Verified' }
+                    ? { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)', label: 'Verified' }
                     : r.verification_status === 'needs_review'
                     ? { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)', label: 'Review' }
                     : null;

@@ -63,9 +63,9 @@ const STATUS_LOZENGE: Record<string, { bg: string; text: string }> = {
   'Submitted':    { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
   'Under Review': { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
   'In Progress':  { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
-  'Approved':     { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)' },
-  'Converted':    { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)' },
-  'Done':         { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  'Approved':     { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  'Converted':    { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  'Done':         { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--ds-text-inverse, #FFFFFF)' },
 };
 
 function StatusLozenge({ status }: { status: string }) {
@@ -505,7 +505,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px',
                 borderRadius: '4px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
                 ...(impactScore >= 3.5
-                  ? { backgroundColor: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)' }
+                  ? { backgroundColor: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-text-inverse, #FFFFFF)' }
                   : impactScore >= 2.0
                     ? { backgroundColor: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)' }
                     : { backgroundColor: 'var(--ds-border, #DFE1E6)', color: '#42526E' }),

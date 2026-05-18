@@ -69,7 +69,7 @@
   --cp-lz-gy-t:         #42526E;
   --cp-lz-bl-bg:        #0C66E4;
   --cp-lz-bl-t:         var(--ds-surface, #FFFFFF);
-  --cp-lz-gn-bg:        #1B7F37;
+  --cp-lz-gn-bg:        var(--cp-lozenge-green-bg, #1B7F37);
   --cp-lz-gn-t:         var(--ds-surface, #FFFFFF);
   --cp-lz-rd-bg:        #FFEBE6;
   --cp-lz-rd-t:         #BF2600;
@@ -79,7 +79,7 @@
   --status-todo-text:       #42526E;
   --status-inprogress-bg:   #0C66E4;
   --status-inprogress-text: var(--ds-surface, #FFFFFF);
-  --status-done-bg:         #1B7F37;
+  --status-done-bg:         var(--cp-lozenge-green-bg, #1B7F37);
   --status-done-text:       var(--ds-surface, #FFFFFF);
 
   /* Progress */
@@ -170,7 +170,7 @@
   --cp-lz-gy-t:         var(--ds-surface, #FFFFFF);
   --cp-lz-bl-bg:        #0C66E4;
   --cp-lz-bl-t:         var(--ds-surface, #FFFFFF);
-  --cp-lz-gn-bg:        #1B7F37;
+  --cp-lz-gn-bg:        var(--cp-lozenge-green-bg, #1B7F37);
   --cp-lz-gn-t:         var(--ds-surface, #FFFFFF);
   --cp-lz-rd-bg:        #BF2600;
   --cp-lz-rd-t:         var(--ds-surface, #FFFFFF);
@@ -180,7 +180,7 @@
   --status-todo-text:       #D4D4D4;
   --status-inprogress-bg:   #0C66E4;
   --status-inprogress-text: var(--ds-surface, #FFFFFF);
-  --status-done-bg:         #1B7F37;
+  --status-done-bg:         var(--cp-lozenge-green-bg, #1B7F37);
   --status-done-text:       var(--ds-surface, #FFFFFF);
 
   /* Progress */

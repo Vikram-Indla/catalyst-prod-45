@@ -184,7 +184,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
             {[
               { count: todoTasks.length, label: 'To Do', bg: 'var(--ds-border, #DFE1E6)', color: '#44546F' },
               { count: progressTasks.length, label: 'In Progress', bg: '#0C66E4', color: 'var(--bg-app)' },
-              { count: doneTasks.length, label: 'Done', bg: '#1B7F37', color: 'var(--bg-app)' },
+              { count: doneTasks.length, label: 'Done', bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--bg-app)' },
             ].map(s => (
               <span key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <span style={{

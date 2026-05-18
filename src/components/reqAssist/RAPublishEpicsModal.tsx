@@ -23,7 +23,7 @@ interface Props {
 function StatusLozenge({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
     active:    { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)' },
-    completed: { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)' },
+    completed: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-text-inverse, #FFFFFF)' },
     planning:  { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' },
   };
   const m = map[status] ?? map.planning;

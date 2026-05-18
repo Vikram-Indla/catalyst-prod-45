@@ -12,7 +12,7 @@ const MONO = "'JetBrains Mono', monospace";
 const LIFECYCLE_ORDER = ['Draft', 'Submitted', 'Under Review', 'Approved', 'Converted to Request'];
 
 const STATUS_BAR_COLORS: Record<string, string> = {
-  'Draft': 'var(--ds-border, #DFE1E6)', 'Submitted': 'var(--ds-border, #DFE1E6)', 'Under Review': '#0C66E4', 'Approved': '#0C66E4', 'Converted to Request': '#1B7F37',
+  'Draft': 'var(--ds-border, #DFE1E6)', 'Submitted': 'var(--ds-border, #DFE1E6)', 'Under Review': '#0C66E4', 'Approved': '#0C66E4', 'Converted to Request': 'var(--cp-lozenge-green-bg, #1B7F37)',
 };
 const STATUS_TEXT_COLORS: Record<string, string> = {
   'Draft': '#42526E', 'Submitted': '#42526E', 'Under Review': 'var(--ds-text-inverse, #FFFFFF)', 'Approved': 'var(--ds-text-inverse, #FFFFFF)', 'Converted to Request': 'var(--ds-text-inverse, #FFFFFF)',
@@ -160,7 +160,7 @@ export default function IdeasAnalyticsPage() {
                 <span style={{ width: '140px', fontSize: '12px', fontWeight: 600, color: dk.t2, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.theme}</span>
                 <div style={{ flex: 1, height: '20px', background: barTrack, borderRadius: '4px', overflow: 'hidden', position: 'relative' }}>
                   <div style={{ width: `${(t.total / maxConvTheme) * 100}%`, height: '100%', background: isDark ? 'rgba(59,130,246,0.15)' : '#0C66E4', borderRadius: '4px' }} />
-                  <div style={{ position: 'absolute', top: 0, left: 0, width: `${(t.converted / maxConvTheme) * 100}%`, height: '100%', background: 'var(--cp-success, #1B7F37)', borderRadius: '4px' }} />
+                  <div style={{ position: 'absolute', top: 0, left: 0, width: `${(t.converted / maxConvTheme) * 100}%`, height: '100%', background: 'var(--cp-success, var(--cp-lozenge-green-bg, #1B7F37))', borderRadius: '4px' }} />
                 </div>
                 <span style={{ fontFamily: MONO, fontSize: '12px', fontWeight: 700, color: dk.greenText, minWidth: '40px', textAlign: 'right' }}>{t.converted}/{t.total}</span>
               </div>

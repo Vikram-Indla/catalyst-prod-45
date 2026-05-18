@@ -13,7 +13,7 @@ interface CheckResult {
 }
 
 const statusColors: Record<string, { bg: string; fg: string; label: string }> = {
-  pass: { bg: "#1B7F37", fg: "var(--ds-surface, #FFFFFF)", label: "PASS" },
+  pass: { bg: "var(--cp-lozenge-green-bg, #1B7F37)", fg: "var(--ds-surface, #FFFFFF)", label: "PASS" },
   fail: { bg: "#FFEBE6", fg: "#BF2600", label: "FAIL" },
   warn: { bg: "#FFFAE6", fg: "#974F0C", label: "WARN" },
   info: { bg: "#0C66E4", fg: "var(--ds-surface, #FFFFFF)", label: "INFO" },
@@ -262,7 +262,7 @@ export default function RAGAuditPage() {
   const passCount = (layer: number) => results.filter((r) => r.layer === layer && r.status === "pass").length;
   const totalForLayer = (layer: number) => checks.filter((c) => c.layer === layer).length;
   const totalPass = results.filter((r) => r.status === "pass").length;
-  const summaryBg = totalPass >= 22 ? "#1B7F37" : totalPass >= 15 ? "#FFFAE6" : "#FFEBE6";
+  const summaryBg = totalPass >= 22 ? "var(--cp-lozenge-green-bg, #1B7F37)" : totalPass >= 15 ? "#FFFAE6" : "#FFEBE6";
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px", fontFamily: 'var(--cp-font-heading)' }}>

@@ -129,7 +129,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                 <td style={cellStyle}>
                   {isConverted(idea.status) ? (
                     <span style={{
-                      fontSize: 10, fontWeight: 700, background: '#1B7F37', color: 'var(--bg-app)',
+                      fontSize: 10, fontWeight: 700, background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--bg-app)',
                       border: '1px solid #B7EBD1', padding: '2px 6px', borderRadius: 4,
                     }}>✓</span>
                   ) : idea.isCommitted ? (

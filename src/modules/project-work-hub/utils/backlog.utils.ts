@@ -253,7 +253,7 @@ const EPIC_CHIP_PALETTE = [
   { bg: '#FFBDAD', text: '#BF2600', border: '#FF7452' },
   { bg: '#FFE2FE', text: '#6B0089', border: '#D084FF' },
   { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)', border: '#4C9AFF' },
-  { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)', border: '#57D9A3' },
+  { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--ds-text-inverse, #FFFFFF)', border: '#57D9A3' },
   { bg: '#E6FCFF', text: '#006884', border: '#00C7E6' },
   { bg: '#EAE6FF', text: '#403294', border: '#8777D9' },
   { bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtle, #334155)', border: 'var(--ds-text-disabled, #CBD5E1)' },

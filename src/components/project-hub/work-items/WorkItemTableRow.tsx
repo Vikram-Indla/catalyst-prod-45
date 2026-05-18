@@ -27,7 +27,7 @@ function getTypeIcon(typeName: string): string | null {
 function getStatusStyle(category: string): { bg: string; color: string } {
   switch (category) {
     case 'in_progress': return { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)' };
-    case 'done': return { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)' };
+    case 'done': return { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-text-inverse, #FFFFFF)' };
     case 'terminal': return { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' };
     default: return { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' };
   }

@@ -34,7 +34,7 @@ function MetricCard({ label, value, subtitle, icon: Icon, status }: {
   icon: React.ElementType; status: 'good' | 'warn' | 'bad' | 'neutral';
 }) {
   const colors = {
-    good: 'text-white bg-[#1B7F37]',
+    good: 'text-white bg-[var(--cp-lozenge-green-bg, #1B7F37)]',
     warn: 'text-[#FF8B00] bg-[#FFF0B3]',
     bad: 'text-[#BF2600] bg-[#FFEBE6]',
     neutral: 'text-white bg-[#0C66E4]',
@@ -97,7 +97,7 @@ function DiagTable({ headers, rows }: { headers: string[]; rows: React.ReactNode
 
 function StatusBadge({ ok }: { ok: boolean }) {
   return ok
-    ? <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#1B7F37] text-white"><CheckCircle2 className="w-3 h-3" /> EXISTS</span>
+    ? <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white"><CheckCircle2 className="w-3 h-3" /> EXISTS</span>
     : <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#FFEBE6] text-[#BF2600]"><XCircle className="w-3 h-3" /> MISSING</span>;
 }
 

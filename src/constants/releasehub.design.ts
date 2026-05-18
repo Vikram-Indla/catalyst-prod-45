@@ -19,7 +19,7 @@ export const RH = {
   primaryLt: 'var(--ds-background-selected, #EFF6FF)',
   teal: 'var(--cp-teal-60, #0D9488)',
   success: 'var(--ds-text-success, #16A34A)',
-  successBg: '#1B7F37',
+  successBg: 'var(--cp-lozenge-green-bg, #1B7F37)',
   warning: 'var(--ds-text-warning, #D97706)',
   danger: 'var(--ds-text-danger, #DC2626)',
   dangerBg: 'var(--ds-background-danger, #FEF2F2)',
@@ -55,7 +55,7 @@ export const RH = {
 export const LOZENGE = {
   grey:  { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' },
   blue:  { bg: '#0C66E4', text: 'var(--ds-surface, #FFFFFF)' },
-  green: { bg: '#1B7F37', text: 'var(--ds-surface, #FFFFFF)' },
+  green: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--ds-surface, #FFFFFF)' },
 } as const;
 
 type LozengeStyle = { bg: string; text: string };
@@ -111,7 +111,7 @@ export const SOURCE_BADGE: Record<string, { bg: string; text: string }> = {
 
 // Deployment result badges (only shown when status=IN_PRODUCTION)
 export const DEPLOY_RESULT_BADGE: Record<string, { bg: string; text: string }> = {
-  success: { bg: '#1B7F37', text: 'var(--ds-surface, #FFFFFF)' },
+  success: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--ds-surface, #FFFFFF)' },
   rolled_back: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)' },
   monitoring: { bg: '#0C66E4', text: 'var(--ds-surface, #FFFFFF)' },
 };

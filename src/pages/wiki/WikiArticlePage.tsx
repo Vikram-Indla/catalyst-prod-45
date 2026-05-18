@@ -363,7 +363,7 @@ export default function WikiArticlePage() {
   const confColor = conf >= 90 ? 'var(--ds-surface, #FFFFFF)' : conf >= 70 ? 'var(--ds-surface, #FFFFFF)' : '#9A5402';
   const verStatus = (page as any).verification_status || 'unverified';
   const verBadge = verStatus === 'verified'
-    ? { bg: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)', label: 'Verified', icon: <ShieldCheck size={10} /> }
+    ? { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)', label: 'Verified', icon: <ShieldCheck size={10} /> }
     : verStatus === 'needs_review'
     ? { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)', label: 'Needs Review', icon: null }
     : { bg: 'var(--ds-border, #DFE1E6)', color: '#44546F', label: 'Unverified', icon: null };

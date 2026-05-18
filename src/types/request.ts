@@ -126,7 +126,7 @@ export const STATUS_DISPLAY: Record<RequestStatus, { label: string; lozenge: Loz
   on_hold:                 { label: 'On Hold',                lozenge: 'grey',  dot: '#DFE1E6', bg: '#DFE1E6', border: '#DFE1E6', text: '#42526E' },
   implementation_review:   { label: 'Implementation Review',  lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: '#FFFFFF' },
   in_support:              { label: 'In Support',             lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: '#FFFFFF' },
-  done:                    { label: 'Done',                   lozenge: 'green', dot: '#1B7F37', bg: '#1B7F37', border: '#1B7F37', text: '#FFFFFF' },
+  done:                    { label: 'Done',                   lozenge: 'green', dot: 'var(--cp-lozenge-green-bg, #1B7F37)', bg: 'var(--cp-lozenge-green-bg, #1B7F37)', border: 'var(--cp-lozenge-green-bg, #1B7F37)', text: '#FFFFFF' },
   cancelled:               { label: 'Cancelled',              lozenge: 'grey',  dot: '#DFE1E6', bg: '#DFE1E6', border: '#DFE1E6', text: '#42526E' },
 };
 

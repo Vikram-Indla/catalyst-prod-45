@@ -201,7 +201,7 @@ function PagBtn({ disabled, onClick, children }: { disabled: boolean; onClick: (
 
 function PageStatusLoz({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
-    published: { bg: '#1B7F37', color: '#0D7331' },
+    published: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: '#0D7331' },
     draft: { bg: 'var(--ds-border, #DFE1E6)', color: '#44546F' },
     review: { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
     archived: { bg: 'var(--ds-border, #DFE1E6)', color: '#44546F' },

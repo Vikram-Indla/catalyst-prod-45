@@ -66,7 +66,7 @@
   --status-todo-text: #FFFFFF;
   --status-inprogress-bg: #0C66E4;
   --status-inprogress-text: #FFFFFF;
-  --status-done-bg: #1B7F37;
+  --status-done-bg: var(--cp-lozenge-green-bg, #1B7F37);
   --status-done-text: #FFFFFF;
 }
 .dark {
@@ -74,7 +74,7 @@
   --status-todo-text: #FFFFFF;
   --status-inprogress-bg: #0C66E4;
   --status-inprogress-text: #FFFFFF;
-  --status-done-bg: #1B7F37;
+  --status-done-bg: var(--cp-lozenge-green-bg, #1B7F37);
   --status-done-text: #FFFFFF;
 }
 .status-badge-base {
@@ -223,7 +223,7 @@
   --cp-lozenge-grey-text: #42526E;
   --cp-lozenge-blue-bg: #0C66E4;
   --cp-lozenge-blue-text: #FFFFFF;
-  --cp-lozenge-green-bg: #1B7F37;
+  --cp-lozenge-green-bg: var(--cp-lozenge-green-bg, #1B7F37);
   --cp-lozenge-green-text: #FFFFFF;
 
   /* ═══ ProjectHub Work Views — Ringfenced tokens ═══ */
@@ -267,7 +267,7 @@
   --cp-lz-gy-t: #42526E;
   --cp-lz-bl-bg: #0C66E4;
   --cp-lz-bl-t: #FFFFFF;
-  --cp-lz-gn-bg: #1B7F37;
+  --cp-lz-gn-bg: var(--cp-lozenge-green-bg, #1B7F37);
   --cp-lz-gn-t: #FFFFFF;
   --cp-lozenge-green-text: #FFFFFF;
 
@@ -3291,13 +3291,13 @@ input[type="range"]::-moz-range-thumb {
   --cp-interact-selected: #1C2B41;
   --cp-lozenge-blue-bg: #0C66E4;
   --cp-lozenge-blue-text: #FFFFFF;
-  --cp-lozenge-green-bg: #1B7F37;
+  --cp-lozenge-green-bg: var(--cp-lozenge-green-bg, #1B7F37);
   --cp-lozenge-green-text: #FFFFFF;
   --cp-lozenge-grey-bg: #292929;
   --cp-lozenge-grey-text: #D4D4D4;
   --cp-lz-bl-bg: #0C66E4;
   --cp-lz-bl-t: #FFFFFF;
-  --cp-lz-gn-bg: #1B7F37;
+  --cp-lz-gn-bg: var(--cp-lozenge-green-bg, #1B7F37);
   --cp-lz-gn-t: #FFFFFF;
   --cp-lz-gy-bg: #42526E;
   --cp-lz-gy-t: #FFFFFF;
@@ -5849,8 +5849,8 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
    className-agnostic background override on the deepest span layer.
    ────────────────────────────────────────────────────────────────────── */
 .dark [data-cp-lozenge-jira-parity] {
-  --ds-background-success-bold: #1B7F37;
-  --ds-background-success: #1B7F37;
+  --ds-background-success-bold: var(--cp-lozenge-green-bg, #1B7F37);
+  --ds-background-success: var(--cp-lozenge-green-bg, #1B7F37);
   --ds-text-inverse: #FFFFFF;
   --ds-background-warning-bold: #7F4F01;
   --ds-background-warning: #7F4F01;

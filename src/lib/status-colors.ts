@@ -6,7 +6,7 @@
  * GUARDRAIL: 3 colours only. Zero exceptions. Zero overrides.
  *   GREY  → bg:#42526E  text:#FFFFFF  → To Do / Backlog / On Hold
  *   BLUE  → bg:#0C66E4  text:#FFFFFF  → In Progress / In Review / Active
- *   GREEN → bg:#1B7F37  text:#FFFFFF  → Done / Approved / Completed
+ *   GREEN → bg:var(--cp-lozenge-green-bg, #1B7F37)  text:#FFFFFF  → Done / Approved / Completed
  *
  * Usage: import { deriveStatusCategory, STATUS_LOZENGE } from '@/lib/status-colors';
  */
@@ -16,7 +16,7 @@ export type StatusCategory = 'todo' | 'in_progress' | 'done';
 export const STATUS_LOZENGE = {
   todo:        { bg: '#42526E', text: '#FFFFFF' },
   in_progress: { bg: '#0C66E4', text: '#FFFFFF' },
-  done:        { bg: '#1B7F37', text: '#FFFFFF' },
+  done:        { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: '#FFFFFF' },
 } as const;
 
 // ── Normalized status patterns ───────────────────────────────────────────────
