@@ -72,7 +72,7 @@ function AtlaskitFallback({ minHeight = 80 }: { minHeight?: number }) {
   return (
     <div style={{
       minHeight, paddingLeft: 20, display: 'flex', alignItems: 'center',
-      gap: 8, color: 'var(--ds-text-subtlest, #6B778C)',
+      gap: 8, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
     }}>
       <Spinner size="small" label="Loading editor" />
     </div>
@@ -413,7 +413,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
             title="Edit description"
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              padding: '4px 6px', borderRadius: 4, color: 'var(--ds-text-subtlest, #6B778C)',
+              padding: '4px 6px', borderRadius: 4, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
               display: 'flex', alignItems: 'center',
               opacity: hovered ? 1 : 0,
               transition: 'opacity 150ms cubic-bezier(0.15,1,0.3,1), color 150ms cubic-bezier(0.15,1,0.3,1), background 150ms cubic-bezier(0.15,1,0.3,1)',
@@ -424,7 +424,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
               prefetchEpicEditor();
             }}
             onFocus={() => { prefetchEpicEditor(); }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'var(--ds-text-subtlest, #6B778C)'; e.currentTarget.style.background = 'none'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))'; e.currentTarget.style.background = 'none'; }}
           >
             <EditIcon label="Edit description" />
           </button>

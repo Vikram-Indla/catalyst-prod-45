@@ -111,7 +111,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
         {/* Form Content */}
         <div className="px-6 pb-6 space-y-5">
           {/* Required fields notice */}
-          <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)]">
+          <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))]">
             Required fields are marked with an asterisk <span className="text-red-500">*</span>
           </p>
 
@@ -154,7 +154,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
                     )}
                   >
                     {startDate ? format(startDate, "M/d/yyyy") : "Select date"}
-                    <CalendarIcon className="h-4 w-4 text-[var(--ds-text-subtlest,#6B778C)]" />
+                    <CalendarIcon className="h-4 w-4 text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))]" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -187,7 +187,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
                     )}
                   >
                     {releaseDate ? format(releaseDate, "M/d/yyyy") : "Select date"}
-                    <CalendarIcon className="h-4 w-4 text-[var(--ds-text-subtlest,#6B778C)]" />
+                    <CalendarIcon className="h-4 w-4 text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))]" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">

@@ -133,7 +133,7 @@
 
 [data-sdm-scope] .sdm-progress-text {
   font-size: 11px;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   font-family: var(--cp-font-mono);
   white-space: nowrap;
 }
@@ -155,7 +155,7 @@
   border: 1px solid var(--sdm-section-border);
   border-radius: 3px;
   background: transparent;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   font-size: 11px;
   font-family: var(--cp-font-body);
   cursor: pointer;
@@ -348,7 +348,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   padding: 0;
   transition: background 0.12s, color 0.12s;
 }
@@ -472,7 +472,7 @@
 
 [data-sdm-scope] .sdm-child-empty-sub {
   font-size: 13px;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   font-family: var(--cp-font-body);
 }
 
@@ -569,7 +569,7 @@
 }
 
 [data-sdm-scope] .sdm-parent-chevron {
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -658,7 +658,7 @@
   padding: 0 12px;
   cursor: pointer;
   font-size: 13px;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   border-bottom: 1px solid rgba(9, 30, 66, 0.08);
   font-family: var(--cp-font-body);
   transition: background 0.12s;
@@ -736,7 +736,7 @@
 
 [data-sdm-scope] .sdm-ai-field-label {
   font-size: 11px;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   margin-bottom: 4px;
   font-weight: 500;
   font-family: var(--cp-font-body);
@@ -957,7 +957,7 @@
 [data-sdm-scope] .sdm-create-btn.sdm-visibility-btn {
   background: transparent;
   border-color: rgba(9, 30, 66, 0.14);
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
 }
 [data-sdm-scope] .sdm-create-btn.sdm-visibility-btn:hover {
   background: rgba(9, 30, 66, 0.04);
@@ -1138,7 +1138,7 @@
 [data-sdm-scope] .adf-editor-content h3 { font-size: 16px; font-weight: 600; margin: 14px 0 6px; color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))); }
 [data-sdm-scope] .adf-editor-content h4 { font-size: 14px; font-weight: 600; margin: 12px 0 4px; color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))); }
 [data-sdm-scope] .adf-editor-content h5 { font-size: 13px; font-weight: 600; margin: 10px 0 4px; color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))); }
-[data-sdm-scope] .adf-editor-content h6 { font-size: 12px; font-weight: 600; margin: 10px 0 4px; color: var(--ds-text-subtlest, #6B778C); }
+[data-sdm-scope] .adf-editor-content h6 { font-size: 12px; font-weight: 600; margin: 10px 0 4px; color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C)); }
 
 /* ── Panels (info, note, warning, success, error) ── */
 [data-sdm-scope] .adf-panel {
@@ -1277,7 +1277,7 @@
 
 /* ── Media placeholder ── */
 [data-sdm-scope] .adf-media-placeholder {
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   font-style: italic;
 }
 

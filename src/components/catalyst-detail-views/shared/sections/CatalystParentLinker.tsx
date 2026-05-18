@@ -306,13 +306,13 @@ function BusinessRequestParentPicker({
               <SearchIcon size="small" primaryColor="var(--ds-icon-subtle, #5E6C84)" />
               <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search business requests…"
                 style={{ border: 'none', outline: 'none', fontSize: 13, color: 'var(--ds-text, #292A2E)', width: '100%', fontFamily: 'inherit' }} />
-              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', padding: 0 }}><CrossIcon size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" /></button>}
+              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', display: 'flex', padding: 0 }}><CrossIcon size="small" primaryColor="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" /></button>}
             </div>
           </div>
           <div style={{ overflowY: 'auto', maxHeight: 300 }}>
             {renderBrGroup('ACTIVE', active, issue?.parent_key, (key) => updateParent.mutate(key))}
             {renderBrGroup('DONE', done, issue?.parent_key, (key) => updateParent.mutate(key))}
-            {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No matching business requests</div>}
+            {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No matching business requests</div>}
           </div>
           {currentParent && (
             <div style={{ borderTop: '1px solid var(--ds-surface-sunken, #F4F5F7)', padding: '4px 0' }}>
@@ -348,7 +348,7 @@ function renderBrGroup(
   const DONE_STEPS = ['done', 'completed', 'closed', 'cancelled', 'rejected'];
   return (
     <>
-      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
+      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
       {items.map(item => {
         const isSelected = currentParentKey === item.request_key;
         const statusCat = DONE_STEPS.includes(item.process_step?.toLowerCase()) ? 'done' : 
@@ -529,13 +529,13 @@ function SingleParentPicker({
               <SearchIcon size="small" primaryColor="var(--ds-icon-subtle, #5E6C84)" />
               <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
                 style={{ border: 'none', outline: 'none', fontSize: 13, color: 'var(--ds-text, #292A2E)', width: '100%', fontFamily: 'inherit' }} />
-              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', padding: 0 }}><CrossIcon size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" /></button>}
+              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', display: 'flex', padding: 0 }}><CrossIcon size="small" primaryColor="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" /></button>}
             </div>
           </div>
           <div style={{ overflowY: 'auto', maxHeight: 300 }}>
             {renderGroup('ACTIVE', active, issue?.parent_key, (key) => updateParent.mutate(key))}
             {renderGroup('DONE', done, issue?.parent_key, (key) => updateParent.mutate(key))}
-            {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No matching items</div>}
+            {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No matching items</div>}
           </div>
           {(currentParent || hasRawParent) && (
             <div style={{ borderTop: '1px solid var(--ds-surface-sunken, #F4F5F7)', padding: '4px 0' }}>
@@ -692,8 +692,8 @@ function MultiLinkPicker({
                   onClick={() => setShowPicker(!showPicker)}
                 >{link.summary}</span>
                 <StatusLozenge status={link.status} category={link.status_category} />
-                <button onClick={() => removeLink.mutate(link.linkId)} title="Remove link" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex' }}>
-                  <CrossIcon size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" />
+                <button onClick={() => removeLink.mutate(link.linkId)} title="Remove link" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', display: 'flex' }}>
+                  <CrossIcon size="small" primaryColor="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
                 </button>
               </div>
             ))}
@@ -718,13 +718,13 @@ function MultiLinkPicker({
                 <SearchIcon size="small" primaryColor="var(--ds-icon-subtle, #5E6C84)" />
                 <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
                   style={{ border: 'none', outline: 'none', fontSize: 13, color: 'var(--ds-text, #292A2E)', width: '100%', fontFamily: 'inherit' }} />
-                {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', padding: 0 }}><CrossIcon size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" /></button>}
+                {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', display: 'flex', padding: 0 }}><CrossIcon size="small" primaryColor="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" /></button>}
               </div>
             </div>
             <div style={{ overflowY: 'auto', maxHeight: 340 }}>
               {renderGroupMulti('ACTIVE', active, linkedIds, toggleLink)}
               {renderGroupMulti('DONE', done, linkedIds, toggleLink)}
-              {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No matching items</div>}
+              {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No matching items</div>}
             </div>
           </div>,
           document.body,
@@ -746,7 +746,7 @@ function renderGroup(
   if (items.length === 0) return null;
   return (
     <>
-      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
+      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
       {items.map(item => {
         const isSelected = currentParentKey === item.issue_key;
         return (
@@ -778,7 +778,7 @@ function renderGroupMulti(
   if (items.length === 0) return null;
   return (
     <>
-      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
+      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
       {items.map(item => {
         const isLinked = linkedIds.has(item.id);
         return (

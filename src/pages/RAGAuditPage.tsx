@@ -17,14 +17,14 @@ const statusColors: Record<string, { bg: string; fg: string; label: string }> = 
   fail: { bg: "#FFEBE6", fg: "#BF2600", label: "FAIL" },
   warn: { bg: "#FFFAE6", fg: "#974F0C", label: "WARN" },
   info: { bg: "#0C66E4", fg: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))", label: "INFO" },
-  pending: { bg: "var(--ds-surface-sunken, #F4F5F7)", fg: "var(--ds-text-subtlest, #6B778C)", label: "PENDING" },
+  pending: { bg: "var(--ds-surface-sunken, #F4F5F7)", fg: "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))", label: "PENDING" },
   running: { bg: "#0C66E4", fg: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))", label: "RUNNING" },
 };
 
 const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
 function DataTable({ data }: { data: any[] }) {
-  if (!data || data.length === 0) return <span style={{ color: "var(--ds-text-subtlest, #6B778C)", fontSize: 12 }}>No rows</span>;
+  if (!data || data.length === 0) return <span style={{ color: "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))", fontSize: 12 }}>No rows</span>;
   const keys = Object.keys(data[0]);
   return (
     <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, marginTop: 8 }}>

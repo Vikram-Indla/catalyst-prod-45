@@ -86,7 +86,7 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   border-radius: 3px;
   padding: 0;
   transition: background 0.12s, color 0.12s;
@@ -127,7 +127,7 @@
 }
 .sp-progress-label {
   font-size: 12px;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   white-space: nowrap;
   line-height: 1;
 }
@@ -246,7 +246,7 @@
   border: 1px solid transparent;
   background: transparent;
   border-radius: 3px;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   cursor: pointer;
   flex-shrink: 0;
   opacity: 0;
@@ -361,7 +361,7 @@
 .sp-status-chevron-ak {
   display: inline-flex;
   align-items: center;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
 }
 
 /* Row actions trigger (appears on row hover + when popup is open) */
@@ -373,7 +373,7 @@
   height: 24px;
   border: none;
   background: transparent;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   border-radius: 3px;
   cursor: pointer;
   padding: 0;
@@ -424,7 +424,7 @@
 }
 .sp-fixv-more {
   font-size: 11px;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   padding: 0 4px;
   white-space: nowrap;
 }
@@ -522,7 +522,7 @@
 .sp-pop-group-label {
   font-size: 11px;
   font-weight: 700;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   text-transform: uppercase;
   letter-spacing: 0.04em;
   padding: 8px 12px 4px;
@@ -555,7 +555,7 @@
 }
 .sp-pop-hint {
   font-size: 11px;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   padding: 4px 10px 6px;
   line-height: 1.35;
 }
@@ -579,7 +579,7 @@
 .sp-colpicker-title {
   font-size: 11px;
   font-weight: 700;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 8px 12px;
@@ -702,14 +702,14 @@
   border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 3px;
   background: var(--ds-background-neutral, #F4F5F7);
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   cursor: pointer;
 }
 .sp-create-cancel {
   background: none;
   border: none;
   font-size: 13px;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   cursor: pointer;
   font-family: inherit;
 }
@@ -739,7 +739,7 @@
   padding: 6px 10px 4px;
   font-size: 10px;
   font-weight: 700;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -784,7 +784,7 @@
 }
 .sp-empty-sub {
   font-size: 13px;
-  /* jira-compare 2026-05-04: subtlest token — #6B778C (legacy) → #626F86 (ADS current). */
+  /* jira-compare 2026-05-04: subtlest token — var(--cp-text-secondary, #6B778C) (legacy) → #626F86 (ADS current). */
   color: var(--ds-text-subtlest, #626F86);
 }
 /* jira-compare 2026-05-04 (D2): ADS Button defaults — 32px height, 14px/500,
@@ -860,7 +860,7 @@
 .sp-board-count {
   font-size: 11px;
   font-weight: 700;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   padding: 1px 8px;
   border-radius: 9px;

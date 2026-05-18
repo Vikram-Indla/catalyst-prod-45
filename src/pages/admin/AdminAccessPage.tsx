@@ -450,7 +450,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
               {user.full_name || user.email}
             </div>
             {user.full_name && (
-              <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user.email}
               </div>
             )}
@@ -458,7 +458,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
           <button
             onClick={onClose}
             aria-label="Close panel"
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, borderRadius: 4, color: 'var(--ds-text-subtle, #6B778C)', display: 'flex', alignItems: 'center' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, borderRadius: 4, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', display: 'flex', alignItems: 'center' }}
           >
             <CloseIcon label="Close" size="small" />
           </button>
@@ -469,13 +469,13 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
 
           {/* Role */}
           <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 8 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 8 }}>
               Role
             </div>
             {isSuperAdmin ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Lozenge appearance="removed">Super Admin</Lozenge>
-                <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>Cannot be changed here</span>
+                <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))' }}>Cannot be changed here</span>
               </div>
             ) : (
               <Select
@@ -491,7 +491,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
 
           {/* Module access */}
           <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
               Module Access
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 24px' }}>
@@ -521,16 +521,16 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
 
           {/* Account Info */}
           <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
               Account Info
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', rowGap: 8, columnGap: 16, fontSize: 13, alignItems: 'center' }}>
-              <span style={{ color: 'var(--ds-text-subtle, #6B778C)', fontWeight: 500 }}>Status</span>
+              <span style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', fontWeight: 500 }}>Status</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                 {isActive
                   ? <Lozenge appearance="success">Active</Lozenge>
                   : <Lozenge appearance="removed">Suspended</Lozenge>}
-                {isSelf && <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #6B778C)' }}>This is you</span>}
+                {isSelf && <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))' }}>This is you</span>}
                 {canModify && (
                   <button
                     onClick={handleToggleSuspend}
@@ -540,7 +540,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                       border: `1px solid ${isActive ? 'var(--ds-border-danger, #FF8F73)' : 'var(--ds-border, #EBECF0)'}`,
                       borderRadius: 3, cursor: busyAny ? 'not-allowed' : 'pointer',
                       fontSize: 11, fontWeight: 500,
-                      color: isActive ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text-subtle, #6B778C)',
+                      color: isActive ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))',
                       padding: '2px 8px', opacity: busyAny ? 0.5 : 1,
                     }}
                   >
@@ -548,13 +548,13 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                   </button>
                 )}
               </span>
-              <span style={{ color: 'var(--ds-text-subtle, #6B778C)', fontWeight: 500 }}>Joined</span>
+              <span style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', fontWeight: 500 }}>Joined</span>
               <span style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                 {user.created_at
                   ? new Date(user.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
                   : '—'}
               </span>
-              <span style={{ color: 'var(--ds-text-subtle, #6B778C)', fontWeight: 500 }}>Active modules</span>
+              <span style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', fontWeight: 500 }}>Active modules</span>
               <span style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                 {Object.values(moduleAccess).filter(Boolean).length} / {MODULE_ITEMS.length}
               </span>
@@ -564,7 +564,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
           {/* Security — only for non-self, non-super_admin */}
           {canModify && (
             <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
                 Security
               </div>
 
@@ -572,7 +572,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Password reset email</div>
-                  <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>Send a reset link to {user.email}</div>
+                  <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))' }}>Send a reset link to {user.email}</div>
                 </div>
                 <Button
                   appearance="default"
@@ -589,7 +589,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: pwOpen ? 12 : 0 }}>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Set new password</div>
-                    <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>Override password without email</div>
+                    <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))' }}>Override password without email</div>
                   </div>
                   <Button
                     appearance="subtle"
@@ -603,7 +603,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                 {pwOpen && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>
+                      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', marginBottom: 4 }}>
                         New password
                       </label>
                       <div style={{ position: 'relative' }}>
@@ -620,7 +620,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                           style={{
                             position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
                             background: 'none', border: 'none', cursor: 'pointer',
-                            fontSize: 11, color: 'var(--ds-text-subtle, #6B778C)', padding: 0,
+                            fontSize: 11, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', padding: 0,
                           }}
                         >
                           {showPw ? 'Hide' : 'Show'}
@@ -628,7 +628,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                       </div>
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>
+                      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', marginBottom: 4 }}>
                         Confirm password
                       </label>
                       <Textfield
@@ -825,7 +825,7 @@ function PeopleTab() {
               ].map((h, i) => (
                 <th key={i} style={{
                   textAlign: 'left', padding: '8px 12px',
-                  fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)',
+                  fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))',
                   fontSize: 12, width: h.width,
                 }}>
                   {h.label}
@@ -888,7 +888,7 @@ function PeopleTab() {
                     {u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}
                   </td>
                   <td style={{ padding: '10px 4px' }} onClick={e => { e.stopPropagation(); setEditUser(u); }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-text-subtle, #6B778C)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))' }}>
                       <EditIcon label="Edit user" size="small" />
                     </div>
                   </td>
@@ -901,7 +901,7 @@ function PeopleTab() {
 
       {/* Row count */}
       {!isLoading && filtered.length > 0 && (
-        <div style={{ marginTop: 12, fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)', textAlign: 'right' }}>
+        <div style={{ marginTop: 12, fontSize: 12, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', textAlign: 'right' }}>
           {filtered.length === users.length
             ? `${users.length} user${users.length !== 1 ? 's' : ''}`
             : `${filtered.length} of ${users.length} users`}
@@ -985,7 +985,7 @@ function InvitationsTab() {
           <thead>
             <tr style={{ borderBottom: '2px solid var(--ds-border, #EBECF0)' }}>
               {['Email', 'Sent', 'Expires', 'Status', 'Actions'].map(h => (
-                <th key={h} style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', fontSize: 12 }}>{h}</th>
+                <th key={h} style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', fontSize: 12 }}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -1081,7 +1081,7 @@ function EmailLogTab() {
         <thead>
           <tr style={{ borderBottom: '2px solid var(--ds-border, #EBECF0)' }}>
             {['To', 'Subject', 'Status', 'Sent'].map(h => (
-              <th key={h} style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', fontSize: 12 }}>{h}</th>
+              <th key={h} style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', fontSize: 12 }}>{h}</th>
             ))}
           </tr>
         </thead>
@@ -1116,7 +1116,7 @@ export default function AdminAccessPage() {
       <div style={{ padding: '24px 32px', maxWidth: 1100 }}>
         <div style={{ marginBottom: 24 }}>
           <Heading size="large">Access Management</Heading>
-          <p style={{ margin: '4px 0 0', fontSize: 14, color: 'var(--ds-text-subtle, #6B778C)' }}>
+          <p style={{ margin: '4px 0 0', fontSize: 14, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))' }}>
             Manage Catalyst user accounts, send invitations, and review email activity.
           </p>
         </div>

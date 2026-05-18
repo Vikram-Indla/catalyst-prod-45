@@ -50,7 +50,7 @@ export function WorkflowDiagramModal({ workflow, currentStateId, onClose }: Prop
           <WorkflowSvg workflow={workflow} currentStateId={currentStateId} />
 
           {/* Detailed transition table below */}
-          <h4 style={{ fontSize: 12, textTransform: 'uppercase', color: 'var(--ds-text-subtlest, #6B778C)', margin: '24px 0 8px' }}>
+          <h4 style={{ fontSize: 12, textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', margin: '24px 0 8px' }}>
             Transitions
           </h4>
           <TransitionTable workflow={workflow} />
@@ -191,9 +191,9 @@ function TransitionTable({ workflow }: { workflow: Workflow }) {
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
         <thead>
           <tr style={{ background: 'var(--ds-surface-sunken, #F4F5F7)', textAlign: 'left' }}>
-            <th style={{ padding: '8px 12px', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>From</th>
-            <th style={{ padding: '8px 12px', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>Verb</th>
-            <th style={{ padding: '8px 12px', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>To</th>
+            <th style={{ padding: '8px 12px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>From</th>
+            <th style={{ padding: '8px 12px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>Verb</th>
+            <th style={{ padding: '8px 12px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>To</th>
           </tr>
         </thead>
         <tbody>

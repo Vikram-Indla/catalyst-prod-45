@@ -227,7 +227,7 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
             style={{
               padding: '8px 20px', borderRadius: 4, fontSize: 14, fontWeight: 600,
               cursor: 'pointer', border: 'none', color: 'var(--ds-surface, #fff)',
-              background: flagged ? 'var(--ds-text-subtlest, #6B778C)' : '#0C66E4',
+              background: flagged ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' : '#0C66E4',
               opacity: mutation.isPending ? 0.6 : 1,
             }}
           >
@@ -305,7 +305,7 @@ export function CloneWizard({ issueId, issueKey, item, projectKey, onClose }: {
           <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Copy size={20} color="#0C66E4" /> Clone Issue: {issueKey}
           </h2>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}><X size={18} color="var(--ds-text-subtlest, #6B778C)" /></button>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}><X size={18} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" /></button>
         </div>
 
         {/* Step indicator */}
@@ -317,7 +317,7 @@ export function CloneWizard({ issueId, issueKey, item, projectKey, onClose }: {
             }} />
           ))}
         </div>
-        <p style={{ padding: '0 24px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', margin: '0 0 12px' }}>
+        <p style={{ padding: '0 24px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', margin: '0 0 12px' }}>
           Step {step + 1} of {STEPS.length}: {STEPS[step]}
         </p>
 
@@ -381,7 +381,7 @@ export function CloneWizard({ issueId, issueKey, item, projectKey, onClose }: {
                 ['Status', 'To Do (new)'],
               ].map(([label, val]) => (
                 <div key={label as string} style={{ display: 'flex', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
-                  <span style={{ width: 140, fontSize: 13, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>{label}</span>
+                  <span style={{ width: 140, fontSize: 13, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>{label}</span>
                   <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{val}</span>
                 </div>
               ))}
@@ -476,14 +476,14 @@ export function MoveWizard({ issueId, issueKey, item, projectKey, onClose }: {
           <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
             <ArrowRight size={20} color="#0C66E4" /> Move Issue: {issueKey}
           </h2>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}><X size={18} color="var(--ds-text-subtlest, #6B778C)" /></button>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}><X size={18} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" /></button>
         </div>
         <div style={{ padding: '12px 24px', display: 'flex', gap: 8 }}>
           {STEPS.map((_, i) => (
             <div key={i} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= step ? '#0C66E4' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }} />
           ))}
         </div>
-        <p style={{ padding: '0 24px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', margin: '0 0 12px' }}>
+        <p style={{ padding: '0 24px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', margin: '0 0 12px' }}>
           Step {step + 1} of {STEPS.length}: {STEPS[step]}
         </p>
 
@@ -511,7 +511,7 @@ export function MoveWizard({ issueId, issueKey, item, projectKey, onClose }: {
 
           {step === 1 && (
             <div style={{ borderTop: '1px solid #EBECF0' }}>
-              <div style={{ display: 'flex', padding: '8px 0', borderBottom: '1px solid #EBECF0', fontWeight: 700, fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase' }}>
+              <div style={{ display: 'flex', padding: '8px 0', borderBottom: '1px solid #EBECF0', fontWeight: 700, fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase' }}>
                 <span style={{ flex: 1 }}>Field</span>
                 <span style={{ width: 180 }}>Current Value</span>
                 <span style={{ width: 100, textAlign: 'right' }}>Result</span>
@@ -519,7 +519,7 @@ export function MoveWizard({ issueId, issueKey, item, projectKey, onClose }: {
               {fields.map(f => (
                 <div key={f.name} style={{ display: 'flex', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #EBECF0', fontSize: 13 }}>
                   <span style={{ flex: 1, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{f.name}</span>
-                  <span style={{ width: 180, color: 'var(--ds-text-subtlest, #6B778C)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.current || '—'}</span>
+                  <span style={{ width: 180, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.current || '—'}</span>
                   <span style={{ width: 100, textAlign: 'right', fontWeight: 600, color: f.result === 'Dropped' ? '#DE350B' : '#36B37E' }}>{f.result}</span>
                 </div>
               ))}
@@ -531,7 +531,7 @@ export function MoveWizard({ issueId, issueKey, item, projectKey, onClose }: {
               <label style={labelStyle}>Select New Status</label>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
                 <span style={{ padding: '4px 10px', borderRadius: 3, background: '#FFFAE6', border: '1px solid #FFE380', fontSize: 12, fontWeight: 700, textTransform: 'uppercase' as const }}>{item?.status}</span>
-                <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>→</span>
+                <span style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>→</span>
                 <select value={newStatus} onChange={e => setNewStatus(e.target.value)} style={{ ...inputStyle, width: 'auto', minWidth: 180, cursor: 'pointer' }}>
                   {STATUS_OPTION_GROUPS.map(g => (
                     <optgroup key={g.groupLabel} label={g.groupLabel}>
@@ -554,7 +554,7 @@ export function MoveWizard({ issueId, issueKey, item, projectKey, onClose }: {
                 ['Fields Dropped', fields.filter(f => f.result === 'Dropped').map(f => f.name).join(', ') || 'None'],
               ].map(([l, v]) => (
                 <div key={l as string} style={{ display: 'flex', padding: '10px 0', borderBottom: '1px solid #EBECF0' }}>
-                  <span style={{ width: 140, fontSize: 13, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>{l}</span>
+                  <span style={{ width: 140, fontSize: 13, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>{l}</span>
                   <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{v}</span>
                 </div>
               ))}
@@ -608,9 +608,9 @@ export function ArchiveDialog({ issueId, issueKey, onClose }: {
       <div onClick={e => e.stopPropagation()} style={{ ...modalBase, width: 440, padding: '24px 28px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Archive size={20} color="var(--ds-text-subtlest, #6B778C)" /> Archive issue?
+            <Archive size={20} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" /> Archive issue?
           </h2>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}><X size={18} color="var(--ds-text-subtlest, #6B778C)" /></button>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}><X size={18} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" /></button>
         </div>
         <div style={{ background: '#FFFAE6', border: '1px solid #FFE380', borderRadius: 4, padding: '12px 16px', marginBottom: 16, fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
           <strong>{issueKey}</strong> will be hidden from all default views and boards. You can restore it later from the archive.
@@ -657,7 +657,7 @@ export function DeleteDialog({ issueId, issueKey, onClose }: {
           <h2 style={{ fontSize: 20, fontWeight: 700, color: '#DE350B', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Trash2 size={20} color="#DE350B" /> Delete issue?
           </h2>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}><X size={18} color="var(--ds-text-subtlest, #6B778C)" /></button>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}><X size={18} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" /></button>
         </div>
         <div style={{ background: '#FFEBE6', border: '1px solid #FF8F73', borderRadius: 4, padding: '12px 16px', marginBottom: 16, fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
           <AlertTriangle size={16} style={{ marginRight: 6, verticalAlign: 'text-bottom', color: '#DE350B' }} />

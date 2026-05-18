@@ -86,12 +86,12 @@ function CommentThread({
       <div className="mt-4">
         {isLoading ? (
           <div className="text-center py-8">
-            <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">Loading comments...</p>
+            <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]">Loading comments...</p>
           </div>
         ) : sortedComments.length === 0 ? (
           <div className="text-center py-10">
             <MessageSquare className="h-10 w-10 mx-auto mb-3 text-[#C1C7D0] dark:text-[var(--ds-border-bold,#454545)]" />
-            <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">{emptyMessage}</p>
+            <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]">{emptyMessage}</p>
           </div>
         ) : (
           <div className="divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
@@ -126,7 +126,7 @@ function CommentThread({
                         <button
                           type="button"
                           onClick={cancelEdit}
-                          className="text-[12px] font-medium text-[var(--ds-text-subtlest,#6B778C)] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]"
+                          className="text-[12px] font-medium text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]"
                         >
                           Cancel
                         </button>

@@ -871,7 +871,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       /* "Add comment" ghost text — always visible (Jira parity: shown at rest in every row) */
       .jira-table-grid table tbody > tr td [data-jira-cell-ghost] {
         visibility: visible;
-        color: var(--ds-text-subtlest, #6B778C);
+        color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
       }
       /* ─────────────────────────────────────────────────────────────────────
          DARK MODE — Rule 3 paired overrides for !important hex above.
@@ -1383,7 +1383,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                 </span>
               )}
               {g.meta && (
-                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
                   {g.meta}
                 </span>
               )}
@@ -1712,7 +1712,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       )}
                       {cell.content}
                       {meta?.sortable && isSorted && (
-                        <span aria-hidden="true" style={{ display: 'inline-flex', color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0 }}>
+                        <span aria-hidden="true" style={{ display: 'inline-flex', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', flexShrink: 0 }}>
                           {sortOrder === 'ASC'
                             ? <ArrowUpIcon label="" size="small" />
                             : <ArrowDownIcon label="" size="small" />}
@@ -1753,7 +1753,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                               border: 'none',
                               borderRadius: 3,
                               background: showChevron ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))' : 'transparent',
-                              color: col.hasActiveFilter ? 'var(--ds-icon-brand, #0C66E4)' : 'var(--ds-text-subtlest, #6B778C)',
+                              color: col.hasActiveFilter ? 'var(--ds-icon-brand, #0C66E4)' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
                               cursor: 'pointer',
                               flexShrink: 0,
                               opacity: showChevron ? 1 : 0,
@@ -1909,7 +1909,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                         border: 'none',
                         background: 'transparent',
                         cursor: 'text',
-                        color: 'var(--ds-text-subtlest, #6B778C)',
+                        color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
                         fontSize: 14,
                         textAlign: 'left',
                       }}
@@ -2208,7 +2208,7 @@ function ColumnManagerTrigger<TRow>({
           justifyContent: 'center',
           border: 'none',
           background: 'transparent',
-          color: 'var(--ds-text-subtlest, #6B778C)',
+          color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
           cursor: 'pointer',
           borderRadius: 3,
         }}
@@ -2241,7 +2241,7 @@ function ColumnManagerTrigger<TRow>({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 4px 6px' }}>
-            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
               Columns
             </span>
             <button
@@ -2315,7 +2315,7 @@ function ColumnManagerTrigger<TRow>({
               value={search}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
               elemBeforeInput={
-                <span style={{ paddingInlineStart: 8, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', alignItems: 'center' }}>
+                <span style={{ paddingInlineStart: 8, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', display: 'flex', alignItems: 'center' }}>
                   <SearchIcon label="" size="small" />
                 </span>
               }

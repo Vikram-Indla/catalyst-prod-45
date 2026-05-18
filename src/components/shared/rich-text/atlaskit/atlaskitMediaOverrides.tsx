@@ -192,7 +192,7 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
         </svg>
         <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           <span style={{ fontWeight: 500 }}>{filename}</span>
-          <span style={{ color: 'var(--ds-text-subtlest, #6B778C)', marginLeft: 8, fontSize: 12 }}>
+          <span style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginLeft: 8, fontSize: 12 }}>
             hosted on Jira · auth required
           </span>
         </span>

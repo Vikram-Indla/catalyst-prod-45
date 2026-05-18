@@ -127,7 +127,7 @@ function InlineStatusDropdown({ item, onUpdate }: { item: PhIssueRow; onUpdate: 
           {STATUS_OPTION_GROUPS.map(group => (
             <div key={group.groupLabel}>
               <div style={{
-                fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase',
+                fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase',
                 letterSpacing: '0.06em', padding: '8px 12px 4px',
               }}>{group.groupLabel}</div>
               {group.statuses.map(s => {
@@ -171,7 +171,7 @@ function SortableHeader({ label, sortKey, currentSort, currentDir, onSort, align
       onClick={() => onSort(sortKey)}
       style={{
         display: 'flex', alignItems: 'center', gap: 3, background: 'none', border: 'none',
-        cursor: 'pointer', fontSize: 11, fontWeight: 700, color: isActive ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' : 'var(--ds-text-subtlest, #6B778C)',
+        cursor: 'pointer', fontSize: 11, fontWeight: 700, color: isActive ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
         textTransform: 'uppercase', letterSpacing: '0.04em', fontFamily: 'inherit', padding: 0,
         justifyContent: align === 'right' ? 'flex-end' : align === 'center' ? 'center' : 'flex-start',
         width: '100%',
@@ -406,10 +406,10 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
           <button onClick={() => setCreating(true)} title="Create sub-task" style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
-            cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', transition: 'background 0.15s, color 0.15s',
+            cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', transition: 'background 0.15s, color 0.15s',
           }}
             onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; e.currentTarget.style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, #6B778C)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))'; }}
           >
             <AddIcon label="Create sub-task" />
           </button>
@@ -437,7 +437,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
             <div style={{ flex: 1, height: 6, borderRadius: 3, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', overflow: 'hidden' }}>
               <div style={{ width: `${donePercent}%`, height: '100%', borderRadius: 3, background: 'var(--ds-background-success-bold, #36B37E)', transition: 'width 0.3s ease' }} />
             </div>
-            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0, fontWeight: 500 }}>{donePercent}% Done</span>
+            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', flexShrink: 0, fontWeight: 500 }}>{donePercent}% Done</span>
           </div>
         )}
 
@@ -524,7 +524,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   width: 28, height: 28, border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3,
                   background: 'var(--ds-surface-sunken, #F4F5F7)', cursor: draftSummary.trim() ? 'pointer' : 'not-allowed',
-                  color: 'var(--ds-text-subtlest, #6B778C)', opacity: draftSummary.trim() ? 1 : 0.5,
+                  color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', opacity: draftSummary.trim() ? 1 : 0.5,
                 }}
               >
                 {createMutation.isPending ? <Spinner size="small" /> : <ArrowLeftIcon label="Create" size="small" />}
@@ -535,7 +535,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
         {creating && (
           <div style={{ textAlign: 'right', padding: '6px 0 2px' }}>
             <button onClick={() => { setCreating(false); setDraftSummary(''); }}
-              style={{ background: 'none', border: 'none', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', cursor: 'pointer', fontFamily: 'inherit' }}>
+              style={{ background: 'none', border: 'none', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', cursor: 'pointer', fontFamily: 'inherit' }}>
               Cancel
             </button>
           </div>

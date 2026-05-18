@@ -5555,7 +5555,7 @@ input[type="range"]::-moz-range-thumb {
   border-left: 3px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6));
   margin: 8px 0;
   padding: 4px 16px;
-  color: #6B778C;
+  color: var(--cp-text-secondary, #6B778C);
 }
 
 /* ── ADF horizontal rule ── */

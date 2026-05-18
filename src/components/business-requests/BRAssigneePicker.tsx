@@ -114,7 +114,7 @@ export function BRAssigneePicker({ value, saveAs = 'name', onChange, placeholder
                 onMouseLeave={e => { if (value) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
                 <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, border: '1px dashed var(--ds-border-disabled, #C1C7D0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: 'var(--ds-border-disabled, #C1C7D0)' }}>?</div>
-                <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, #6B778C)', flex: 1 }}>Unassigned</span>
+                <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', flex: 1 }}>Unassigned</span>
                 {!value && <CheckmarkSVG />}
               </div>
               {filtered.map(u => {
@@ -137,7 +137,7 @@ export function BRAssigneePicker({ value, saveAs = 'name', onChange, placeholder
                 );
               })}
               {filtered.length === 0 && (
-                <div style={{ padding: '12px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No users found</div>
+                <div style={{ padding: '12px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No users found</div>
               )}
             </div>
           </div>

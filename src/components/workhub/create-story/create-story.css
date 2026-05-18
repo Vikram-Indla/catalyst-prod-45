@@ -74,14 +74,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
 }
 .csHeaderBtn:hover { background: var(--ds-surface-sunken, #F4F5F7); color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))); }
 
 /* Required fields note */
 .csRequiredNote {
   font: 400 13px/18px system-ui, -apple-system, sans-serif;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   padding: 0 24px 12px;
   flex-shrink: 0;
 }
@@ -163,11 +163,11 @@
 .csRequired { color: #DE350B; }
 .csCharCount {
   font: 400 12px/16px system-ui, -apple-system, sans-serif;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
 }
 .csHelpText {
   font: 400 12px/16px system-ui, -apple-system, sans-serif;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   margin-top: 4px;
   margin-bottom: 8px;
 }
@@ -212,7 +212,7 @@
 }
 .csInput:focus { border-color: #0C66E4; }
 .csInput.error { border-color: #DE350B; }
-.csInput::placeholder { color: var(--ds-text-subtlest, #6B778C); }
+.csInput::placeholder { color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C)); }
 
 /* Error text */
 .csErrorText {
@@ -259,7 +259,7 @@
 .csSelectChevron {
   width: 16px;
   height: 16px;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   flex-shrink: 0;
 }
 
@@ -298,7 +298,7 @@
 .csDropdownEmpty {
   padding: 12px;
   text-align: center;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   font-size: 13px;
 }
 .csDropdownSearch {
@@ -372,7 +372,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--ds-text-subtlest, #6B778C);
+  background: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   flex-shrink: 0;
 }
 

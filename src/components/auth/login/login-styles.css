@@ -33,7 +33,7 @@
   --clmp-text1: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   --clmp-text2: var(--ds-text-subtle, var(--cp-text-secondary, #44546F));
   --clmp-text3: var(--ds-text-subtlest, #5E6C84);
-  --clmp-mute:  var(--ds-text-subtlest, #6B778C);
+  --clmp-mute:  var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
 
   --clmp-bg:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --clmp-bg-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
@@ -63,8 +63,8 @@
 
   --clmp-text1: var(--ds-text, #B6C2CF);
   --clmp-text2: var(--ds-text-subtle, #8C9BAB);
-  --clmp-text3: var(--ds-text-subtlest, #6B778C);
-  --clmp-mute:  var(--ds-text-subtlest, #6B778C);
+  --clmp-text3: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+  --clmp-mute:  var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
 
   --clmp-bg:         var(--ds-surface, #1D2125);
   --clmp-bg-surface: var(--ds-surface-overlay, #22272B);
@@ -335,7 +335,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   display: flex;
   align-items: center;
   padding: 0 10px;
@@ -408,7 +408,7 @@
   align-items: center;
   gap: 5px;
   font-size: 11px;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   font-weight: 400;
 }
 .clmp-jira-dot {

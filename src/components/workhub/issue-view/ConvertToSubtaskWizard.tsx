@@ -179,7 +179,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
               <div>
                 <div style={{
                   fontSize: 13, fontWeight: i === step ? 700 : i < step ? 500 : 400,
-                  color: i === step ? '#0C66E4' : i < step ? '#0C66E4' : 'var(--ds-text-subtlest, #6B778C)',
+                  color: i === step ? '#0C66E4' : i < step ? '#0C66E4' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
                   cursor: i < step ? 'pointer' : 'default',
                 }} onClick={() => { if (i < step) setStep(i); }}>
                   {label}
@@ -207,11 +207,11 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
               Convert Issue to Sub-task: {issueKey}
             </h2>
             <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-              <X size={18} color="var(--ds-text-subtlest, #6B778C)" />
+              <X size={18} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
             </button>
           </div>
 
-          <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 20 }}>
+          <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginBottom: 20 }}>
             <strong>Step {step + 1} of {STEPS.length}</strong>: {
               step === 0 ? 'Select the parent issue and sub-task type ...' :
               step === 1 ? 'Select the status of the issue ...' :
@@ -232,13 +232,13 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                     <span style={{ fontSize: 13, fontWeight: 600, color: '#0C66E4' }}>{selectedParentIssue.issue_key}</span>
                     <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', flex: 1 }}>{selectedParentIssue.summary}</span>
                     <button onClick={() => { setSelectedParentId(null); setSelectedParentIssue(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                      <X size={14} color="var(--ds-text-subtlest, #6B778C)" />
+                      <X size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
                     </button>
                   </div>
                 ) : (
                   <div style={{ position: 'relative' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 10px', height: 36, border: '2px solid #4C9AFF', borderRadius: 4 }}>
-                      <Search size={14} color="var(--ds-text-subtlest, #6B778C)" />
+                      <Search size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
                       <input
                         autoFocus
                         value={parentSearch}
@@ -248,13 +248,13 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                         placeholder="Search by key or summary..."
                         style={{ flex: 1, border: 'none', outline: 'none', boxShadow: 'none', fontSize: 13, background: 'transparent' }}
                       />
-                      {searchingParents && <Loader2 size={14} className="animate-spin" style={{ color: 'var(--ds-text-subtlest, #6B778C)' }} />}
+                      {searchingParents && <Loader2 size={14} className="animate-spin" style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }} />}
                     </div>
                     {showDropdown && (
                       <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 2, background: 'var(--ds-surface, #fff)', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 4, boxShadow: '0 8px 16px rgba(9,30,66,.15), 0 0 1px rgba(9,30,66,.31)', zIndex: 10, maxHeight: 280, overflowY: 'auto' }}>
                         {/* Section label */}
                         {parentSearch.trim().length === 0 && parentCandidates.length > 0 && (
-                          <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Recent issues</div>
+                          <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Recent issues</div>
                         )}
                         {parentCandidates.length > 0 ? parentCandidates.map((p: any) => {
                           const cat = (p.status_category ?? '').toLowerCase();
@@ -272,7 +272,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                             </button>
                           );
                         }) : (
-                          <div style={{ padding: '16px 12px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>
+                          <div style={{ padding: '16px 12px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>
                             {searchingParents ? 'Searching...' : 'No matching issues found'}
                           </div>
                         )}
@@ -307,7 +307,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', flexShrink: 0 }}>Select New Status:</div>
                 <span style={{ display: 'inline-block', height: 20, lineHeight: '20px', padding: '0 6px', borderRadius: 3, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', whiteSpace: 'nowrap', flexShrink: 0 }}>{currentStatus}</span>
-                <span style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 16 }}>→</span>
+                <span style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 16 }}>→</span>
                 <Select value={newStatus} onValueChange={setNewStatus}>
                   <SelectTrigger className="w-[200px] bg-white" style={{ fontSize: 13 }}>
                     <SelectValue placeholder="Select status" />
@@ -328,14 +328,14 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
           {/* Step 2: Review fields */}
           {step === 2 && (
             <div style={{ flex: 1 }}>
-              <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 16 }}>All fields will be updated automatically.</p>
+              <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginBottom: 16 }}>All fields will be updated automatically.</p>
             </div>
           )}
 
           {/* Step 3: Confirmation */}
           {step === 3 && (
             <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginBottom: 8 }}>
                 Original Value (before conversion)
               </div>
               <div style={{ borderTop: '1px solid #EBECF0' }}>

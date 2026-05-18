@@ -20,7 +20,7 @@
  *   - `@atlaskit/lozenge`  for Severity colour, Found-in build chip,
  *      Fix-in build chip, Resolution lozenge
  *   - `KeyDetailsFieldRow` for canonical label + value layout
- *   - Muted `#6B778C` inline "None" (Atlaskit `color.text.subtlest`) —
+ *   - Muted `var(--cp-text-secondary, #6B778C)` inline "None" (Atlaskit `color.text.subtlest`) —
  *      replaces the italic placeholder that failed WCAG AA contrast.
  *
  * Data wiring today:
@@ -79,12 +79,12 @@ function severityAppearance(value: string): React.ComponentProps<typeof Lozenge>
   return SEVERITY_APPEARANCE[value.trim().toLowerCase()] ?? 'default';
 }
 
-/* Inline muted empty-state. `color.text.subtlest` equivalent (var(--ds-text-subtlest, #6B778C))
+/* Inline muted empty-state. `color.text.subtlest` equivalent (var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C)))
    hits 4.6:1 on white — the former italic #97A0AF was ~3.2:1 and failed
    WCAG AA for body text. */
 function Empty({ text = 'None' }: { text?: string }) {
   return (
-    <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, #6B778C)' }}>{text}</span>
+    <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>{text}</span>
   );
 }
 

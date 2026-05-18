@@ -292,7 +292,7 @@ export function AddParentPicker({
           style={{
             background: 'none', border: 'none', cursor: 'pointer',
             padding: '4px 8px', display: 'flex', alignItems: 'center', gap: 4,
-            fontSize: 14, color: 'var(--ds-text-subtlest, #6B778C)', borderRadius: 3,
+            fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', borderRadius: 3,
             transition: 'background 150ms',
           }}
           onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
@@ -366,7 +366,7 @@ export function AddParentPicker({
         {!showAllPanel ? (
           <>
             {/* Recent items */}
-            <div style={{ padding: '10px 16px 6px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+            <div style={{ padding: '10px 16px 6px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
               Recent {plural}
             </div>
             <div style={{ maxHeight: 300, overflowY: 'auto' }}>
@@ -387,7 +387,7 @@ export function AddParentPicker({
                 </button>
               ))}
               {recentCandidates.length === 0 && (
-                <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>No {plural} found</div>
+                <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>No {plural} found</div>
               )}
             </div>
             <div style={{ borderTop: '1px solid #EBECF0' }}>
@@ -424,7 +424,7 @@ export function AddParentPicker({
           /* "View all" panel with search */
           <div style={{ padding: '20px 24px' }}>
             <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 8 }}>Change {noun}</div>
-            <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>
+            <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginBottom: 4 }}>
               Select a parent work item. Work items can only belong to one parent at a time.
             </div>
             {parentKey && (
@@ -485,7 +485,7 @@ export function AddParentPicker({
                     </button>
                   ))}
                 {allCandidates.length === 0 && (
-                  <div style={{ padding: '12px 14px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>No {plural} found</div>
+                  <div style={{ padding: '12px 14px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>No {plural} found</div>
                 )}
               </div>
             </div>

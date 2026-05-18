@@ -34,7 +34,7 @@ const SEVERITY_MAP: Record<string, { label: string; bg: string; text: string; bo
   critical: { label: 'CRITICAL', bg: '#FFECEC', text: '#AE2A19', border: '#FFBDAD' },
   high:     { label: 'HIGH',     bg: '#FFF4EC', text: '#974F0C', border: '#FFD2A7' },
   medium:   { label: 'MEDIUM',   bg: 'var(--ds-surface-sunken, #F4F5F7)', text: '#42526E', border: 'var(--ds-border-disabled, #C1C7D0)' },
-  low:      { label: 'LOW',      bg: 'var(--ds-surface-sunken, #F4F5F7)', text: 'var(--ds-text-subtlest, #6B778C)', border: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
+  low:      { label: 'LOW',      bg: 'var(--ds-surface-sunken, #F4F5F7)', text: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', border: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
 };
 
 function SeverityPill({ severity }: { severity: string }) {

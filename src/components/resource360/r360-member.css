@@ -1082,7 +1082,7 @@
 #r360-root .pill-dot {
   width: 8px !important; height: 8px !important; border-radius: 50% !important;
 }
-#r360-root .pill-dot.grey  { background: var(--ds-text-subtlest, #6B778C) !important; }
+#r360-root .pill-dot.grey  { background: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C)) !important; }
 #r360-root .pill-dot.blue  { background: var(--cp-primary-60, #0052CC) !important; }
 #r360-root .pill-dot.green { background: #00875A !important; }
 

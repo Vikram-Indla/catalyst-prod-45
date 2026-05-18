@@ -177,7 +177,7 @@ function getSectionIconComponent(label: string) {
     const Component: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
       <span
         className={className}
-        style={{ display: 'inline-flex', alignItems: 'center', color: 'var(--ds-icon-subtle, #6B778C)', ...style }}
+        style={{ display: 'inline-flex', alignItems: 'center', color: 'var(--ds-icon-subtle, var(--cp-text-secondary, #6B778C))', ...style }}
       >
         <Icon size={16} strokeWidth={1.75} />
       </span>

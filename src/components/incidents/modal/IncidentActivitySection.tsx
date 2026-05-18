@@ -246,7 +246,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="py-10 text-center text-sm text-[var(--ds-text-subtlest,#6B778C)]">
+        <div className="py-10 text-center text-sm text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))]">
           No activity yet.
         </div>
       ) : (
@@ -268,7 +268,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
                     <span className="text-sm text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]">added a comment</span>
                   )}
                 </div>
-                <div className="text-[11px] text-[var(--ds-text-subtlest,#6B778C)] mb-1.5">
+                <div className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] mb-1.5">
                   {formatDistanceToNow(new Date(entry.occurred_at), { addSuffix: true })}
                 </div>
                 {entry.type === 'history' && (entry.old_value || entry.new_value) && (

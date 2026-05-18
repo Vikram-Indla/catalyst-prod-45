@@ -579,7 +579,7 @@ export function CatalystViewBase({
                 <div style={{ height: 20 }} /><Skel w="100%" h={200} />
               </div>
             ) : isNotFound ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60%', gap: 12, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60%', gap: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>
                 <span style={{ fontSize: 32 }}>⚠️</span>
                 <div style={{ fontSize: 16, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Issue not found</div>
                 <div style={{ fontSize: 14 }}>This issue may have been deleted or the key is invalid.</div>

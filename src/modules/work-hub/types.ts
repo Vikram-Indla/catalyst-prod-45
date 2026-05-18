@@ -173,7 +173,7 @@ export const PRIORITY_CONFIG: Record<Priority, { label: string; color: string; i
   HIGH: { label: 'High', color: '#FF7452', icon: 'chevron-up' },
   MEDIUM: { label: 'Medium', color: '#FFAB00', icon: 'minus' },
   LOW: { label: 'Low', color: '#36B37E', icon: 'chevron-down' },
-  LOWEST: { label: 'Lowest', color: 'var(--ds-text-subtlest, #6B778C)', icon: 'chevrons-down' },
+  LOWEST: { label: 'Lowest', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', icon: 'chevrons-down' },
   NONE: { label: 'None', color: '#97A0AF', icon: 'minus' },
 };
 

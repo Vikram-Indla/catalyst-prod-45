@@ -1118,7 +1118,7 @@ export function ViewTestCaseModal({
                       {(localGherkinFeature || localGherkinScenario) && (
                         <div style={{ padding: 12, border: '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 8, background: 'var(--ds-surface-sunken, #FAFBFC)' }}>
                           <div style={{ marginBottom: 10 }}>
-                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Feature</label>
+                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Feature</label>
                             <textarea
                               value={localGherkinFeature}
                               onChange={e => setLocalGherkinFeature(e.target.value)}
@@ -1128,7 +1128,7 @@ export function ViewTestCaseModal({
                             />
                           </div>
                           <div>
-                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Scenario</label>
+                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Scenario</label>
                             <textarea
                               value={localGherkinScenario}
                               onChange={e => setLocalGherkinScenario(e.target.value)}
@@ -1154,7 +1154,7 @@ export function ViewTestCaseModal({
                             </button>
                           </div>
                           <div style={{ marginBottom: 10 }}>
-                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Feature</label>
+                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Feature</label>
                             <textarea
                               value={sc.feature}
                               onChange={e => { const v = e.target.value; setGherkinScenarios(prev => prev.map(s => s.id === sc.id ? { ...s, feature: v } : s)); }}
@@ -1164,7 +1164,7 @@ export function ViewTestCaseModal({
                             />
                           </div>
                           <div>
-                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Scenario</label>
+                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Scenario</label>
                             <textarea
                               value={sc.scenario}
                               onChange={e => { const v = e.target.value; setGherkinScenarios(prev => prev.map(s => s.id === sc.id ? { ...s, scenario: v } : s)); }}
@@ -1180,7 +1180,7 @@ export function ViewTestCaseModal({
                       {addingGherkin ? (
                         <div style={{ padding: 12, border: '1.5px dashed #2563EB', borderRadius: 8, background: 'var(--ds-surface-sunken, #F8FAFC)' }}>
                           <div style={{ marginBottom: 10 }}>
-                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Feature</label>
+                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Feature</label>
                             <textarea
                               value={newGherkinFeature}
                               onChange={e => setNewGherkinFeature(e.target.value)}
@@ -1189,7 +1189,7 @@ export function ViewTestCaseModal({
                             />
                           </div>
                           <div style={{ marginBottom: 10 }}>
-                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Scenario</label>
+                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Scenario</label>
                             <textarea
                               value={newGherkinScenario}
                               onChange={e => setNewGherkinScenario(e.target.value)}

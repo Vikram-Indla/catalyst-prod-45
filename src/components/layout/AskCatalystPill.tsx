@@ -193,7 +193,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
               padding: '8px 12px 6px',
               fontSize: 11,
               fontWeight: 600,
-              color: 'var(--cp-t3, #6B778C)',
+              color: 'var(--cp-t3, var(--cp-text-secondary, #6B778C))',
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
             }}
@@ -236,7 +236,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
                   width: 8,
                   height: 8,
                   borderRadius: '50%',
-                  background: DEPT_COLORS[dept] || 'var(--cp-t3, #6B778C)',
+                  background: DEPT_COLORS[dept] || 'var(--cp-t3, var(--cp-text-secondary, #6B778C))',
                   flexShrink: 0,
                 }}
               />

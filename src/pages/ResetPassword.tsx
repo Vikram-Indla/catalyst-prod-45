@@ -178,7 +178,7 @@ export default function ResetPassword() {
           style={{
             fontSize: 12,
             fontWeight: 500,
-            color: 'var(--ds-text-subtlest, #6B778C)',
+            color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
             marginTop: 2,
             fontFamily: 'var(--cp-font-body, system-ui, sans-serif)',
           }}
@@ -338,7 +338,7 @@ export default function ResetPassword() {
         style={{
           marginTop: 24,
           fontSize: 12,
-          color: 'var(--ds-text-subtlest, #6B778C)',
+          color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
           fontFamily: 'var(--cp-font-body, system-ui, sans-serif)',
         }}
       >

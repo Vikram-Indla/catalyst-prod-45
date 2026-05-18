@@ -164,14 +164,14 @@ export default function ForYouPage() {
         id: 'project', label: 'Project', searchPlaceholder: 'Search project',
         options: projectOptions.map(p => ({
           id: p, label: p,
-          iconNode: <Folder size={14} color="var(--ds-text-subtlest, #6B778C)" strokeWidth={1.5} />,
+          iconNode: <Folder size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" strokeWidth={1.5} />,
         })),
       },
       {
         id: 'hub', label: 'Hub', searchPlaceholder: 'Search hub',
         options: hubOptions.map(h => ({
           id: h, label: h + ' Hub',
-          iconNode: HUB_ICONS[h] || <LayoutGrid size={14} color="var(--ds-text-subtlest, #6B778C)" strokeWidth={2} />,
+          iconNode: HUB_ICONS[h] || <LayoutGrid size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" strokeWidth={2} />,
         })),
       },
       {

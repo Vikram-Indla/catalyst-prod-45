@@ -214,7 +214,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                 borderRadius: '0 10px 10px 0', overflow: 'hidden',
               }}>
                 <Suspense fallback={
-                  <div style={{ padding: 24, color: 'var(--cp-text-tertiary, #6B778C)', fontSize: 14 }}>
+                  <div style={{ padding: 24, color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))', fontSize: 14 }}>
                     Loading…
                   </div>
                 }>
@@ -252,7 +252,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             ) : (
               <div style={{
                 flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'var(--cp-text-tertiary, #6B778C)', fontSize: 14,
+                color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))', fontSize: 14,
                 fontFamily: 'var(--cp-font-body)',
               }}>
                 Select an item to view details

@@ -33,7 +33,7 @@
   margin-bottom: -2px;
   background: none;
   font: 500 14px/20px system-ui, -apple-system, sans-serif;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   cursor: pointer;
   transition: color 150ms, border-color 150ms;
 }
@@ -51,7 +51,7 @@
   border-radius: 3px;
   background: none;
   font: 400 13px/18px system-ui, -apple-system, sans-serif;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   cursor: pointer;
   margin-left: auto;
   white-space: nowrap;
@@ -88,7 +88,7 @@
 .ap-composer-placeholder {
   display: block;
   font: 400 14px/20px system-ui, -apple-system, sans-serif;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   margin-bottom: 8px;
 }
 .ap-quick-templates {
@@ -102,7 +102,7 @@
   border-radius: 12px;
   background: none;
   font: 400 12px/16px system-ui, -apple-system, sans-serif;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   cursor: pointer;
   transition: background 150ms, color 150ms;
 }
@@ -152,7 +152,7 @@
   border-radius: 3px;
   background: none;
   font: 500 14px/20px system-ui, -apple-system, sans-serif;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   cursor: pointer;
   transition: color 150ms;
 }
@@ -171,14 +171,14 @@
   background: none;
   padding: 0;
   font: 400 13px/18px system-ui, -apple-system, sans-serif;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   cursor: pointer;
   transition: color 150ms;
 }
 .ap-quick-link:hover { color: var(--cp-primary-60, #0052CC); }
 .ap-pro-tip {
   font: 400 12px/16px system-ui, -apple-system, sans-serif;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
 }
 .ap-kbd {
   display: inline-block;
@@ -195,7 +195,7 @@
   padding: 20px;
   text-align: center;
   font: 400 13px/18px system-ui;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
 }
 
 /* ── Feed / timeline ── */
@@ -213,7 +213,7 @@
 .ap-timeline-name strong { font-weight: 600; }
 .ap-timeline-time {
   font: 400 12px/16px system-ui, -apple-system, sans-serif;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   margin-top: 2px;
 }
 
@@ -229,7 +229,7 @@
 }
 .ap-loading-inline {
   font: 400 12px/16px system-ui;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
 }
 
 /* History changes */
@@ -269,7 +269,7 @@
 }
 .ap-change-old {
   font: 400 13px/18px system-ui;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
 }
 .ap-change-new {
   font: 500 13px/18px system-ui;
@@ -285,7 +285,7 @@
 .ap-spinner {
   width: 20px;
   height: 20px;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   animation: ap-spin 1s linear infinite;
 }
 @keyframes ap-spin {
@@ -295,7 +295,7 @@
   text-align: center;
   padding: 24px 0;
   font: 400 14px/20px system-ui, -apple-system, sans-serif;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
 }
 
 /* ═══════════════════════════════════════════

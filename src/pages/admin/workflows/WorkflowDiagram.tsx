@@ -560,7 +560,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
         <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginRight: 4 }}>
           {scheme.name}
         </span>
-        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest,#6B778C)', marginRight: 8 }}>
+        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))', marginRight: 8 }}>
           {statuses.length} statuses · {transitions.length} transitions
         </span>
 
@@ -800,7 +800,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
         <div style={{
           fontWeight: 700, fontSize: 10, letterSpacing: '0.06em',
           textTransform: 'uppercase', marginBottom: 2,
-          color: 'var(--ds-text-subtlest,#6B778C)',
+          color: 'var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))',
         }}>Legend</div>
         <LegendRow color="#579DFF" label="To Do / In Progress" />
         <LegendRow color="#22A06B" label="Done" />

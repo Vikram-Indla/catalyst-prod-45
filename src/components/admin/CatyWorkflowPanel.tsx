@@ -165,14 +165,14 @@ function MessageBubble({
           </div>
         )}
         {msg.rejected && (
-          <div style={{ marginTop: 6, fontSize: 11, color: 'var(--ds-text-subtlest,#6B778C)' }}>
+          <div style={{ marginTop: 6, fontSize: 11, color: 'var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))' }}>
             Skipped
           </div>
         )}
       </div>
 
       {/* Role label */}
-      <div style={{ fontSize: 10, color: 'var(--ds-text-subtlest,#6B778C)', marginTop: 2, padding: '0 2px' }}>
+      <div style={{ fontSize: 10, color: 'var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))', marginTop: 2, padding: '0 2px' }}>
         {isUser ? 'You' : 'CATY'}
       </div>
     </div>
@@ -280,7 +280,7 @@ export function CatyWorkflowPanel({
           <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
             Ask CATY
           </div>
-          <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest,#6B778C)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {issueType} Workflow · {statuses.length} statuses
           </div>
         </div>
@@ -297,7 +297,7 @@ export function CatyWorkflowPanel({
             <div style={{ fontSize: 13, color: 'var(--ds-text-subtle,#42526E)', marginBottom: 12, lineHeight: 1.5 }}>
               Describe a workflow change in plain English. I'll propose the exact status and transition edits needed.
             </div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest,#6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
               Examples
             </div>
             {EXAMPLE_PROMPTS.map((p, i) => (
@@ -334,7 +334,7 @@ export function CatyWorkflowPanel({
         {isLoading && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px' }}>
             <Spinner size="small" />
-            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest,#6B778C)' }}>CATY is thinking…</span>
+            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))' }}>CATY is thinking…</span>
           </div>
         )}
 

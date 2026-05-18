@@ -162,12 +162,12 @@ export function SidebarProjectNav({
                 style={{ border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left' }}
               >
                 <div className="min-w-0">
-                  <div className="text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '0.03em', textTransform: 'uppercase' }}>{projectKey}</div>
+                  <div className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '0.03em', textTransform: 'uppercase' }}>{projectKey}</div>
                   <div className="truncate text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 14, fontWeight: 600, fontFamily: 'var(--cp-font-heading)', lineHeight: '18px' }}>
                     {projectName}
                   </div>
                 </div>
-                <ChevronDown size={14} className="flex-shrink-0 text-[var(--ds-text-subtlest,#6B778C)] dark:text-[#7D7D7D]" />
+                <ChevronDown size={14} className="flex-shrink-0 text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[#7D7D7D]" />
               </button>
               <button
                 onClick={onToggle}
@@ -208,10 +208,10 @@ export function SidebarProjectNav({
           style={{
             height: 32, padding: collapsed ? '0' : '0 12px',
             fontSize: 12.5, fontWeight: 500, border: 'none', background: 'transparent',
-            cursor: 'pointer', justifyContent: collapsed ? 'center' : 'flex-start', color: 'var(--ds-text-subtlest, #6B778C)',
+            cursor: 'pointer', justifyContent: collapsed ? 'center' : 'flex-start', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
           }}
         >
-          <ArrowLeft size={14} strokeWidth={1.75} className="text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]" />
+          <ArrowLeft size={14} strokeWidth={1.75} className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]" />
           {!collapsed && <span className="dark:text-[var(--ds-text-subtlest,#878787)]">All Projects</span>}
         </button>
       </div>
@@ -227,7 +227,7 @@ export function SidebarProjectNav({
         <div style={{ height: 1, background: '#EBECF0', margin: '8px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
 
         {!collapsed && (
-          <div className="dark:text-[#7D7D7D]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+          <div className="dark:text-[#7D7D7D]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
             Planning
           </div>
         )}
@@ -238,7 +238,7 @@ export function SidebarProjectNav({
         <div style={{ height: 1, background: '#EBECF0', margin: '10px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
 
         {!collapsed && (
-          <div className="dark:text-[#7D7D7D]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+          <div className="dark:text-[#7D7D7D]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
             Tracking
           </div>
         )}
@@ -249,7 +249,7 @@ export function SidebarProjectNav({
         <div style={{ height: 1, background: '#EBECF0', margin: '10px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
 
         {!collapsed && (
-          <div className="dark:text-[#7D7D7D]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+          <div className="dark:text-[#7D7D7D]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
             AI Intelligence
           </div>
         )}
@@ -268,11 +268,11 @@ export function SidebarProjectNav({
             >
               <ChevronRight
                 size={12}
-                className="text-[var(--ds-text-subtlest,#6B778C)] dark:text-[#7D7D7D]"
+                className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[#7D7D7D]"
                 style={{ transform: recentsExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 150ms ease' }}
               />
-              <Clock size={12} className="text-[var(--ds-text-subtlest,#6B778C)] dark:text-[#7D7D7D]" />
-              <span className="dark:text-[#7D7D7D]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+              <Clock size={12} className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[#7D7D7D]" />
+              <span className="dark:text-[#7D7D7D]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
                 Recents
               </span>
               <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontFamily: 'var(--cp-font-mono)' }}>
@@ -313,7 +313,7 @@ export function SidebarProjectNav({
                     <button
                       className="opacity-0 group-hover:opacity-100 flex items-center justify-center"
                       onClick={(e) => { e.stopPropagation(); removeRecent.mutate(item.id); }}
-                      style={{ width: 18, height: 18, borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer', flexShrink: 0, color: 'var(--cp-text-tertiary, #6B778C)', marginTop: 1 }}
+                      style={{ width: 18, height: 18, borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer', flexShrink: 0, color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))', marginTop: 1 }}
                       title="Remove from recents"
                     >
                       <X size={12} />

@@ -105,7 +105,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
           <div className="flex items-center justify-between px-3 py-2" style={{ borderTop: `1px solid ${dark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
             <button
               onClick={() => onChange({ statuses: [], healths: [] })}
-              style={{ fontSize: 12, color: dark ? '#7D7D7D' : 'var(--ds-text-subtlest, #6B778C)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: 12, color: dark ? '#7D7D7D' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               Clear all
             </button>
@@ -153,7 +153,7 @@ function FilterSection({
         style={{
           fontSize: 10,
           fontWeight: 600,
-          color: dark ? '#7D7D7D' : 'var(--ds-text-subtlest, #6B778C)',
+          color: dark ? '#7D7D7D' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
           marginBottom: 6,
@@ -246,7 +246,7 @@ export function FilterChips({
       ))}
       <button
         onClick={() => onChange({ statuses: [], healths: [] })}
-        style={{ fontSize: 11, color: dark ? '#7D7D7D' : 'var(--ds-text-subtlest, #6B778C)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+        style={{ fontSize: 11, color: dark ? '#7D7D7D' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', background: 'transparent', border: 'none', cursor: 'pointer' }}
       >
         Clear all
       </button>

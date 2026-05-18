@@ -240,7 +240,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
                 <span dangerouslySetInnerHTML={{ __html: icon }} style={{ display: 'flex', width: 14, height: 14 }} />
                 {item.item_key}
                 <button onClick={e => { e.stopPropagation(); removeSelected(item.item_key); }}
-                  style={{ display: 'flex', alignItems: 'center', border: 'none', background: 'none', cursor: 'pointer', padding: 0, color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14, lineHeight: 1 }}
+                  style={{ display: 'flex', alignItems: 'center', border: 'none', background: 'none', cursor: 'pointer', padding: 0, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 14, lineHeight: 1 }}
                 >×</button>
               </span>
             );
@@ -258,10 +258,10 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
           />
           {selectedItems.length > 0 && (
             <button onClick={() => setSelectedItems([])}
-              style={{ display: 'flex', alignItems: 'center', border: 'none', background: 'none', cursor: 'pointer', padding: 0, color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0 }}
+              style={{ display: 'flex', alignItems: 'center', border: 'none', background: 'none', cursor: 'pointer', padding: 0, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', flexShrink: 0 }}
               title="Clear all"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))"/><path d="M8 8l8 8M16 8l-8 8" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth="2" strokeLinecap="round"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))"/><path d="M8 8l8 8M16 8l-8 8" stroke="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" strokeWidth="2" strokeLinecap="round"/></svg>
             </button>
           )}
         </div>
@@ -270,7 +270,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
       {/* Search results dropdown */}
       {showDropdown && filteredResults.length > 0 && (
         <div ref={dropdownRef} style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3, background: 'var(--ds-surface, #fff)', marginBottom: 8, boxShadow: '0 4px 8px rgba(9,30,66,.13)' }}>
-          <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             {search.trim() ? 'Search results' : 'Recently viewed'}
           </div>
           {filteredResults.map((r: any) => {
@@ -319,7 +319,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
           </button>
           <button onClick={onClose} style={{
             height: 32, padding: '0 16px', border: 'none', borderRadius: 3,
-            background: 'transparent', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14,
+            background: 'transparent', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 14,
             cursor: 'pointer', fontFamily: 'inherit',
           }}>Cancel</button>
         </div>
@@ -480,10 +480,10 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
       <button onClick={() => setShowAdd(true)} title="Link issue" style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
-        cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', transition: 'background 0.15s, color 0.15s',
+        cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', transition: 'background 0.15s, color 0.15s',
       }}
         onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; e.currentTarget.style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))'; }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, #6B778C)'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))'; }}
       >
         <AddIcon label="Link issue" />
       </button>
@@ -506,7 +506,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
       {/* Grouped link display — Jira style */}
       {!isLoading && Object.entries(grouped).map(([type, typeLinks]) => (
         <div key={type} style={{ marginBottom: 8 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', padding: '6px 0 4px', textTransform: 'lowercase' }}>{type}</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', padding: '6px 0 4px', textTransform: 'lowercase' }}>{type}</div>
           <div style={{ border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3, overflow: 'hidden' }}>
             {(typeLinks as any[]).map((link: any) => {
               const target = link.target;
@@ -573,10 +573,10 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
-                      cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0, transition: 'color 0.15s',
+                      cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', flexShrink: 0, transition: 'color 0.15s',
                     }}
                     onMouseEnter={e => (e.currentTarget.style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--ds-text-subtlest, #6B778C)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))')}
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                       <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>

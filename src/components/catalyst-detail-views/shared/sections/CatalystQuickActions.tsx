@@ -161,7 +161,7 @@ export function CatalystQuickActions({
             ))}
 
             {filtered.length === 0 && (
-              <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No items match</div>
+              <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No items match</div>
             )}
           </div>
         )}

@@ -425,9 +425,9 @@ export function IssueContentView({
                 <a
                   href={`/project-hub/${projectKey}/allwork`}
                   onClick={e => { e.preventDefault(); e.stopPropagation(); window.location.href = `/project-hub/${projectKey}/allwork`; }}
-                  style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtlest, #6B778C)', textDecoration: 'none', cursor: 'pointer' }}
+                  style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textDecoration: 'none', cursor: 'pointer' }}
                   onMouseEnter={e => { e.currentTarget.style.color = 'var(--cp-primary-60, #0052CC)'; e.currentTarget.style.textDecoration = 'underline'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--ds-text-subtlest, #6B778C)'; e.currentTarget.style.textDecoration = 'none'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))'; e.currentTarget.style.textDecoration = 'none'; }}
                 >
                   {projectKey}
                 </a>
@@ -975,7 +975,7 @@ export function IssueContentView({
                       </span>
                     ))
                   ) : (
-                    <span style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14 }}>None</span>
+                    <span style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 14 }}>None</span>
                   )}
                 </div>
                 {showFixVersionDropdown && (
@@ -988,13 +988,13 @@ export function IssueContentView({
                       />
                     </div>
                     <div style={{ maxHeight: 260, overflowY: 'auto' }}>
-                      {versionsLoading && <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>Loading...</div>}
+                      {versionsLoading && <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>Loading...</div>}
                       {(() => {
                         const filtered = unreleasedVersions.filter(v => v.name.toLowerCase().includes(fixVersionSearch.toLowerCase()));
                         if (filtered.length === 0) return null;
                         return (
                           <>
-                            <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Unreleased</div>
+                            <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Unreleased</div>
                             {filtered.map(v => {
                               const isSel = fixVersionNames.includes(v.name);
                               return (
@@ -1015,7 +1015,7 @@ export function IssueContentView({
                         if (filtered.length === 0) return null;
                         return (
                           <>
-                            <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.03em', borderTop: '1px solid #F4F5F7' }}>Released</div>
+                            <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.03em', borderTop: '1px solid #F4F5F7' }}>Released</div>
                             {filtered.map(v => {
                               const isSel = fixVersionNames.includes(v.name);
                               return (

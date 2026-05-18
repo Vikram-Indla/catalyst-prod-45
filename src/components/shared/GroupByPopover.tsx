@@ -110,7 +110,7 @@ interface GroupByPopoverProps<K extends string> {
 const ADS = {
   text:          'rgb(41, 42, 46)',          /* --ds-text              #292A2E */
   textMuted:     'rgb(80, 82, 88)',           /* --ds-text-subtle       #505258 */
-  textSubtlest:  'rgb(107, 119, 140)',        /* --ds-text-subtlest     #6B778C */
+  textSubtlest:  'rgb(107, 119, 140)',        /* --ds-text-subtlest     var(--cp-text-secondary, #6B778C) */
   border:        'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',                   /* --ds-border                    */
   borderFocus:   '#4C9AFF',                   /* --ds-border-focused            */
   surfaceBg:     '#FFFFFF',

@@ -943,7 +943,7 @@ export default function AtlaskitStoryBacklogPage({
               borderLeft: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
             }}
           >
-            <Suspense fallback={<div style={{ padding: 24, color: 'var(--ds-text-subtlest, #6B778C)' }}>Loading…</div>}>
+            <Suspense fallback={<div style={{ padding: 24, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>Loading…</div>}>
               <CatalystDetailRouter
                 isOpen={true}
                 onClose={closeDetail}
@@ -1077,7 +1077,7 @@ function InlineCreateRow({
           border: '1px dashed transparent',
           borderRadius: 4,
           background: 'transparent',
-          color: 'var(--ds-text-subtlest, #6B778C)',
+          color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
           fontSize: 13,
           fontWeight: 500,
           textAlign: 'left',
@@ -1355,7 +1355,7 @@ function MenuItem({
       onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
       onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
     >
-      {icon && <span style={{ display: 'inline-flex', width: 16, color: active ? '#0C66E4' : 'var(--ds-text-subtlest, #6B778C)' }}>{icon}</span>}
+      {icon && <span style={{ display: 'inline-flex', width: 16, color: active ? '#0C66E4' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>{icon}</span>}
       <span style={{ flex: 1 }}>{children}</span>
     </button>
   );
@@ -1369,7 +1369,7 @@ function MenuLabel({ children }: { children: React.ReactNode }) {
       fontWeight: 700,
       letterSpacing: '0.08em',
       textTransform: 'uppercase',
-      color: 'var(--ds-text-subtlest, #6B778C)',
+      color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
     }}>{children}</div>
   );
 }

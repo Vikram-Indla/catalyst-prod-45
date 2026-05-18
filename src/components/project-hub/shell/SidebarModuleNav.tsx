@@ -65,7 +65,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
           <>
             <div className="my-2 mx-2" style={{ height: 1, backgroundColor: '#EBECF0' }} />
             <div className="pt-1">
-              <div className="text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
+              <div className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
                 Favorites
               </div>
               <div
@@ -73,7 +73,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
                 style={{ padding: '10px 12px' }}
               >
                 <Star size={14} className="text-[#C1C7D0] dark:text-[#7D7D7D] flex-shrink-0" />
-                <span className="text-[var(--ds-text-subtlest,#6B778C)] dark:text-[#7D7D7D]" style={{ fontSize: 12 }}>
+                <span className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[#7D7D7D]" style={{ fontSize: 12 }}>
                   Star projects for quick access
                 </span>
               </div>

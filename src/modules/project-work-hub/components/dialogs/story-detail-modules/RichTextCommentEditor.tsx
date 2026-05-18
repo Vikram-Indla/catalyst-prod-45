@@ -315,7 +315,7 @@ export function RichTextCommentEditor({
       </div>
 
       {uploading && (
-        <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 4 }}>Uploading image…</div>
+        <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginTop: 4 }}>Uploading image…</div>
       )}
 
       {/* Save / Cancel */}

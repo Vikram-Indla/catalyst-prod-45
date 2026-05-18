@@ -578,7 +578,7 @@ export function EditableStoryPoints({ issueId, currentPoints, onUpdate }: {
           <div onClick={() => updateMutation.mutate(null)}
             style={{
               height: 36, padding: '0 12px', display: 'flex', alignItems: 'center',
-              cursor: 'pointer', fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtlest, #6B778C)',
+              cursor: 'pointer', fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
               background: currentPoints == null ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
               borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)',
             }}
@@ -823,11 +823,11 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
             >
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth="2" style={{ flexShrink: 0, opacity: hovered ? 1 : 0, transition: 'opacity 0.15s' }}><path d="M6 9l6 6 6-6"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" strokeWidth="2" style={{ flexShrink: 0, opacity: hovered ? 1 : 0, transition: 'opacity 0.15s' }}><path d="M6 9l6 6 6-6"/></svg>
           </>
         ) : (
           <>
-            <span style={{ flex: 1, fontSize: 14, color: 'var(--ds-text-subtlest, #6B778C)' }}>None</span>
+            <span style={{ flex: 1, fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>None</span>
           </>
         )}
       </div>
@@ -879,7 +879,7 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
                     {/* Line 1: icon + key */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
                       <EpicIconInline />
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 12 }}>{result.issue_key}</span>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 12 }}>{result.issue_key}</span>
                     </div>
                     {/* Line 2: summary */}
                     <div style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', paddingLeft: 22, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -889,10 +889,10 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
                 );
               })}
               {searchResults.length === 0 && search && (
-                <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No epics found for "{search}"</div>
+                <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No epics found for "{search}"</div>
               )}
               {searchResults.length === 0 && !search && (
-                <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No epics available</div>
+                <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No epics available</div>
               )}
             </div>
           </div>

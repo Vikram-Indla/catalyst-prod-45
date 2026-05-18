@@ -185,7 +185,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
 
       <div style={{ maxHeight: 300, overflowY: 'auto', padding: '4px 0' }}>
         {filtered.length === 0 ? (
-          <div style={{ padding: '12px 16px', fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+          <div style={{ padding: '12px 16px', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
             No products found
           </div>
         ) : (
@@ -243,7 +243,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
                   <span style={{ display: 'block', fontWeight: isCurrent ? 600 : 500, fontSize: 13 }}>
                     {p.name}
                   </span>
-                  <span style={{ display: 'block', fontSize: 10, color: 'var(--ds-text-subtlest, #6B778C)', fontFamily: 'var(--cp-font-mono)' }}>
+                  <span style={{ display: 'block', fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontFamily: 'var(--cp-font-mono)' }}>
                     {p.code}
                   </span>
                 </span>
@@ -294,13 +294,13 @@ function RecentsSection({ productId, expanded }: RecentsSectionProps) {
         <ChevronRight
           size={12}
           style={{
-            color: 'var(--ds-text-subtlest, #6B778C)',
+            color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
             transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
             transition: 'transform 150ms ease',
           }}
         />
-        <Clock size={12} style={{ color: 'var(--ds-text-subtlest, #6B778C)' }} />
-        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+        <Clock size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }} />
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
           Recents
         </span>
         <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontFamily: 'var(--cp-font-mono)' }}>
@@ -338,7 +338,7 @@ function RecentsSection({ productId, expanded }: RecentsSectionProps) {
               }}
             >
               {item.entity_key && (
-                <span style={{ fontSize: 10, fontFamily: 'var(--cp-font-mono)', color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0 }}>
+                <span style={{ fontSize: 10, fontFamily: 'var(--cp-font-mono)', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', flexShrink: 0 }}>
                   {item.entity_key}
                 </span>
               )}

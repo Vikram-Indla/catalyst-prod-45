@@ -63,7 +63,7 @@ function LinkAsDropdown({ value, onChange }: { value: string; onChange: (v: stri
         }}
       >
         Link as {value}
-        <ChevronDown size={14} color={open ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text-subtlest, #6B778C)'} />
+        <ChevronDown size={14} color={open ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))'} />
       </button>
       {open && (
         <div style={{
@@ -205,7 +205,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth="1.5" fill="none"/>
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" strokeWidth="1.5" fill="none"/>
           </svg>
           <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Link similar work items</span>
         </div>
@@ -223,7 +223,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
             Show {count} result{count !== 1 ? 's' : ''}
           </button>
         ) : (
-          <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', fontStyle: 'italic' }}>No results found.</span>
+          <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontStyle: 'italic' }}>No results found.</span>
         )}
       </div>
     );
@@ -243,11 +243,11 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth="1.5" fill="none"/>
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" strokeWidth="1.5" fill="none"/>
           </svg>
           <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Link similar work items</span>
         </div>
-        <ChevronDown size={16} color="var(--ds-text-subtlest, #6B778C)" style={{ transform: 'rotate(180deg)' }} />
+        <ChevronDown size={16} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" style={{ transform: 'rotate(180deg)' }} />
       </div>
 
       {/* Content */}
@@ -268,7 +268,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
 
         {/* Empty after filter */}
         {!isError && count === 0 && (
-          <div style={{ padding: '12px 0', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', fontStyle: 'italic' }}>
+          <div style={{ padding: '12px 0', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontStyle: 'italic' }}>
             No similar work items found.
           </div>
         )}
@@ -315,19 +315,19 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <Info size={14} color="var(--ds-text-subtlest, #6B778C)" />
-                  <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>Uses AI. Verify results.</span>
+                  <Info size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
+                  <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>Uses AI. Verify results.</span>
                 </div>
                 <button
                   onClick={e => { e.stopPropagation(); setFeedback('up'); }}
-                  style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 2, color: feedback === 'up' ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text-subtlest, #6B778C)' }}
+                  style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 2, color: feedback === 'up' ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}
                   title="Helpful"
                 >
                   <ThumbsUp size={14} />
                 </button>
                 <button
                   onClick={e => { e.stopPropagation(); setFeedback('down'); }}
-                  style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 2, color: feedback === 'down' ? '#FF5630' : 'var(--ds-text-subtlest, #6B778C)' }}
+                  style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 2, color: feedback === 'down' ? '#FF5630' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}
                   title="Not helpful"
                 >
                   <ThumbsDown size={14} />

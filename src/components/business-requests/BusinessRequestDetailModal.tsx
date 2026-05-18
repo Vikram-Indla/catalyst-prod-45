@@ -478,7 +478,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
             <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               {/* Save indicator */}
               {isSaving && (
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginRight: 8 }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginRight: 8 }}>
                   <Loader2 size={12} className="animate-spin" /> Saving…
                 </span>
               )}
@@ -697,12 +697,12 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
 
               {/* 6. MILESTONES ACCORDION */}
               <CollapsibleSection title="Milestones" defaultOpen={false}>
-                <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>Milestones are managed in the dedicated view.</span>
+                <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>Milestones are managed in the dedicated view.</span>
               </CollapsibleSection>
 
               {/* 7. RISKS ACCORDION */}
               <CollapsibleSection title="Risks" defaultOpen={false}>
-                <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>Risks are managed in the dedicated view.</span>
+                <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>Risks are managed in the dedicated view.</span>
               </CollapsibleSection>
 
               {/* 8. ACTIVITY — Jira-parity tabs */}
@@ -761,7 +761,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                           <div style={{ marginBottom: 4 }}>
                             <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{c.actor_name || 'Unknown'}</span>
                             {' '}
-                            <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>{fmtDate(c.created_at)}</span>
+                            <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>{fmtDate(c.created_at)}</span>
                           </div>
                           <div
                             dangerouslySetInnerHTML={{ __html: c.new_value || '' }}
@@ -793,10 +793,10 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                             <span style={{ fontWeight: 600 }}>{e.actor_name || 'System'}</span>{' '}
                             changed the <span style={{ fontWeight: 600 }}>{e.field_changed}</span>
                           </div>
-                          <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>{fmtDate(e.created_at)}</div>
+                          <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>{fmtDate(e.created_at)}</div>
                           {(e.old_value || e.new_value) && (
                             <div style={{ marginTop: 6, fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', display: 'flex', alignItems: 'center', gap: 8 }}>
-                              <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>{e.old_value || 'None'}</span>
+                              <span style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>{e.old_value || 'None'}</span>
                               <span style={{ color: '#97A0AF' }}>→</span>
                               <span style={{ fontWeight: 500 }}>{e.new_value || 'None'}</span>
                             </div>
@@ -1190,7 +1190,7 @@ function CollapsibleSection({ title, defaultOpen = false, children }: { title: s
 function SidebarField({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.03em', marginBottom: 2 }}>{label}</div>
+      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.03em', marginBottom: 2 }}>{label}</div>
       <div style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 400 }}>{value}</div>
     </div>
   );

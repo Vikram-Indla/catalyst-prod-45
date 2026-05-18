@@ -132,7 +132,7 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
           >
             {/* Search bar */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}` }}>
-              <Search size={14} color="var(--ds-text-subtlest, #6B778C)" />
+              <Search size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
               <input
                 ref={searchRef}
                 type="text"
@@ -159,15 +159,15 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
                 onMouseLeave={(e) => { if (currentAccountId) e.currentTarget.style.background = 'transparent'; }}
                 onClick={() => { onChange({ accountId: null, displayName: null }); setIsOpen(false); }}
               >
-                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
                   <UserX size={12} />
                 </span>
                 <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Unassigned</span>
                 {showActive && !currentAccountId && <Check size={14} color="var(--cp-primary-60, #0052CC)" style={{ marginLeft: 'auto' }} />}
               </button>
 
-              {isLoading && <div style={{ padding: 12, fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>Loading…</div>}
-              {!isLoading && filtered.length === 0 && <div style={{ padding: 12, fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>No matches</div>}
+              {isLoading && <div style={{ padding: 12, fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>Loading…</div>}
+              {!isLoading && filtered.length === 0 && <div style={{ padding: 12, fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>No matches</div>}
 
               {filtered.map((p) => {
                 const active = showActive && p.jira_account_id === currentAccountId;

@@ -46,7 +46,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
         letterSpacing: '-0.01em',
       }}
     >
-      <Icon size={18} strokeWidth={isActive ? 2 : 1.75} style={{ flexShrink: 0, color: isActive ? 'var(--cp-primary-60, #0052CC)' : 'var(--cp-text-tertiary, #6B778C)' }} />
+      <Icon size={18} strokeWidth={isActive ? 2 : 1.75} style={{ flexShrink: 0, color: isActive ? 'var(--cp-primary-60, #0052CC)' : 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))' }} />
       {!collapsed && (
         <>
           <span className="truncate">{label}</span>
@@ -73,7 +73,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
               style={{
                 fontSize: 11,
                 fontWeight: 600,
-                color: 'var(--cp-text-tertiary, #6B778C)',
+                color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))',
                 fontFamily: 'var(--cp-font-mono)',
                 borderRadius: 9999,
                 backgroundColor: 'var(--cp-border, #EBECF0)',

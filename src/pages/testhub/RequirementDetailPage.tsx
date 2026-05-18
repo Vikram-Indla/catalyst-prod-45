@@ -49,7 +49,7 @@ const COVERAGE_CONFIG: Record<string, { label: string; color: string; bg: string
   'Passed':  { label: 'PASSED',  color: '#006644', bg: '#E3FCEF' },
   'Failed':  { label: 'FAILED',  color: '#BF2600', bg: '#FFEBE6' },
   'Blocked': { label: 'BLOCKED', color: '#FF8B00', bg: '#FFFAE6' },
-  'Skipped': { label: 'SKIPPED', color: 'var(--ds-text-subtlest, #6B778C)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
+  'Skipped': { label: 'SKIPPED', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
   'Not Run': { label: 'NOT RUN', color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
 };
 

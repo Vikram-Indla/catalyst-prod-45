@@ -139,7 +139,7 @@ export function WatchersChip({ issueKey }: Props) {
         >
           <div style={{
             padding: '0 16px 8px', fontSize: 11, fontWeight: 600,
-            color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase',
+            color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase',
             letterSpacing: '0.04em',
           }}>
             Watchers

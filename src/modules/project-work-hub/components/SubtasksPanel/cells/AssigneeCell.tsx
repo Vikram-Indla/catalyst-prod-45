@@ -52,7 +52,7 @@ export const AssigneeCell = React.memo(function AssigneeCell({
           borderColor="transparent"
         />
       ) : (
-        <span className="sp-avatar-fallback" style={{ background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+        <span className="sp-avatar-fallback" style={{ background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
           <UserPlusIcon />
         </span>
       )}

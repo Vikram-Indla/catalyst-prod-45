@@ -198,7 +198,7 @@ function PriorityBreakdown() {
     { label: 'High', count: 5, color: '#FF7452' },
     { label: 'Medium', count: 42, color: '#FFAB00' },
     { label: 'Low', count: 8, color: '#36B37E' },
-    { label: 'Lowest', count: 3, color: 'var(--ds-text-subtlest, #6B778C)' },
+    { label: 'Lowest', count: 3, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' },
     { label: 'None', count: 55, color: '#97A0AF' },
   ];
   const maxCount = Math.max(...priorities.map(p => p.count));

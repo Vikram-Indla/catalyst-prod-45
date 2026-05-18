@@ -217,7 +217,7 @@ export default function GadgetSettingsPanel({
       >
         <div>
           <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Gadget settings</div>
-          <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>
+          <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginTop: 2 }}>
             Showing {filter.label}
           </div>
         </div>
@@ -229,7 +229,7 @@ export default function GadgetSettingsPanel({
             background: 'transparent',
             border: 0,
             cursor: 'pointer',
-            color: 'var(--ds-text-subtlest, #6B778C)',
+            color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
             padding: 4,
             borderRadius: 3,
           }}
@@ -242,7 +242,7 @@ export default function GadgetSettingsPanel({
       <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 480, overflowY: 'auto' }}>
         {/* ── DATE RANGE — first field ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)',
+          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
                           display: 'flex', alignItems: 'center', gap: 6 }}>
             Date range
             <span style={{ fontSize: 9, fontWeight: 700, background: '#DEEBFF',
@@ -735,7 +735,7 @@ function MultiSelectGeneric({
                   e.stopPropagation();
                   onChange(value.filter((x) => x !== v));
                 }}
-                style={{ cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)' }}
+                style={{ cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}
               >
                 ×
               </span>

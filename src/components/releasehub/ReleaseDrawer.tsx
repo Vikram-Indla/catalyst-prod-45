@@ -409,7 +409,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
               bgColor = '#FFEBE6'; borderColor = '#FF5630'; labelColor = '#BF2600'; detailColor = '#7A2300';
               Icon = XCircle;
             } else {
-              bgColor = 'var(--ds-surface-sunken, #F4F5F7)'; borderColor = 'var(--ds-border-disabled, #C1C7D0)'; labelColor = '#42526E'; detailColor = 'var(--ds-text-subtlest, #6B778C)';
+              bgColor = 'var(--ds-surface-sunken, #F4F5F7)'; borderColor = 'var(--ds-border-disabled, #C1C7D0)'; labelColor = '#42526E'; detailColor = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))';
               Icon = Minus;
             }
 
@@ -744,7 +744,7 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
       <div className="text-center py-12">
         <Activity size={32} style={{ color: 'var(--ds-border-disabled, #C1C7D0)', margin: '0 auto 12px' }} />
         <p style={{ fontSize: 14, fontWeight: 500, color: '#42526E', marginBottom: 4 }}>No activity yet</p>
-        <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>
+        <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
           Activity will appear here as changes progress through their lifecycle.
         </p>
       </div>
@@ -782,7 +782,7 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
                   </span>
                 </div>
                 {entry.detail && (
-                  <p style={{ fontSize: 11, fontWeight: 400, color: 'var(--ds-text-subtlest, #6B778C)', fontStyle: 'italic', marginTop: 2 }}>
+                  <p style={{ fontSize: 11, fontWeight: 400, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontStyle: 'italic', marginTop: 2 }}>
                     {entry.detail}
                   </p>
                 )}

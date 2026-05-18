@@ -138,9 +138,9 @@ function renderCell(
               }}
             >
               {isExpanded ? (
-                <ChevronDown size={14} color="var(--ds-text-subtlest, #6B778C)" />
+                <ChevronDown size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
               ) : (
-                <ChevronRight size={14} color="var(--ds-text-subtlest, #6B778C)" />
+                <ChevronRight size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
               )}
             </button>
           ) : (

@@ -387,7 +387,7 @@ export function CatalystSidebarDetails({
             {STATUS_OPTION_GROUPS.map(group => (
               <div key={group.category}>
                 <div style={{
-                  fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase',
+                  fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase',
                   letterSpacing: '0.06em', padding: '10px 16px 6px',
                 }}>{group.groupLabel}</div>
                 {group.statuses.map(st => {
@@ -436,7 +436,7 @@ export function CatalystSidebarDetails({
       {pinnedFields.length > 0 && (
         <div style={{ marginBottom: 8 }}>
           <div style={{
-            fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)',
+            fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
             textTransform: 'uppercase', letterSpacing: '0.06em',
             padding: '0 0 6px',
           }}>

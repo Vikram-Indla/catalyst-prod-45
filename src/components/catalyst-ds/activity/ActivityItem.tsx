@@ -97,13 +97,13 @@ function ActivityItemDisplay({ item, jiraUserMap, className }: ActivityItemProps
           </span>
 
           {type === 'create' && (
-            <span className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
+            <span className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
               {description || 'created this item'}
             </span>
           )}
 
           {type === 'update' && fieldChange && (
-            <span className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
+            <span className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
               updated the{' '}
               <span className="font-medium text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
                 {formatFieldName(fieldChange.field)}
@@ -112,12 +112,12 @@ function ActivityItemDisplay({ item, jiraUserMap, className }: ActivityItemProps
           )}
 
           {type === 'delete' && (
-            <span className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
+            <span className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
               {description || 'deleted this item'}
             </span>
           )}
 
-          <span className="text-[12px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">
+          <span className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]">
             {formatRelativeTime(timestamp)}
           </span>
         </div>
@@ -129,31 +129,31 @@ function ActivityItemDisplay({ item, jiraUserMap, className }: ActivityItemProps
                 <Lozenge appearance={statusAppearance(fieldChange.oldValue)}>
                   {formatDisplayValue(fieldChange.oldValue)}
                 </Lozenge>
-                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)] shrink-0" />
+                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)] shrink-0" />
                 <Lozenge appearance={statusAppearance(fieldChange.newValue)}>
                   {formatDisplayValue(fieldChange.newValue)}
                 </Lozenge>
               </div>
             ) : isRich ? (
               <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-start">
-                <div className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] whitespace-pre-wrap break-words">
+                <div className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] whitespace-pre-wrap break-words">
                   {fieldChange.oldValue
                     ? renderJiraContent(fieldChange.oldValue, { userMap: jiraUserMap })
                     : <span className="italic">None</span>}
                 </div>
-                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)] shrink-0 mt-1.5" />
+                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)] shrink-0 mt-1.5" />
                 <div className="text-[13px] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] whitespace-pre-wrap break-words">
                   {fieldChange.newValue
                     ? renderJiraContent(fieldChange.newValue, { userMap: jiraUserMap })
-                    : <span className="italic text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">None</span>}
+                    : <span className="italic text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">None</span>}
                 </div>
               </div>
             ) : (
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] line-through">
+                <span className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] line-through">
                   {normalizeJiraText(fieldChange.oldValue, { userMap: jiraUserMap }) || 'None'}
                 </span>
-                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)] shrink-0" />
+                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)] shrink-0" />
                 <span className="text-[13px] font-medium text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
                   {normalizeJiraText(fieldChange.newValue, { userMap: jiraUserMap }) || 'None'}
                 </span>

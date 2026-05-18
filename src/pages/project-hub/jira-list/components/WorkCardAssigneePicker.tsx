@@ -190,7 +190,7 @@ export function WorkCardAssigneePicker({
                 alignItems: 'center', justifyContent: 'center',
                 fontSize: 16, color: 'var(--ds-border-disabled, #C1C7D0)',
               }}>?</div>
-              <span style={{ fontSize: 14, color: 'var(--cp-text-tertiary, #6B778C)', flex: 1 }}>Unassigned</span>
+              <span style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))', flex: 1 }}>Unassigned</span>
             </div>
             {filtered.map(m => (
               <div key={m.user_id} onClick={() => updateMutation.mutate(m.user_id)}
@@ -220,7 +220,7 @@ export function WorkCardAssigneePicker({
               </div>
             ))}
             {filtered.length === 0 && (
-              <div style={{ padding: 16, fontSize: 13, color: 'var(--cp-text-tertiary, #6B778C)', textAlign: 'center' }}>
+              <div style={{ padding: 16, fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>
                 No members found
               </div>
             )}

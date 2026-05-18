@@ -34,7 +34,7 @@ export default function DeactivatedPage() {
         <p style={{
           margin: '0 0 8px',
           fontSize: 14,
-          color: 'var(--ds-text-subtle, #6B778C)',
+          color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))',
           lineHeight: 1.6,
         }}>
           Your Catalyst account has been deactivated due to inactivity.
@@ -42,7 +42,7 @@ export default function DeactivatedPage() {
         <p style={{
           margin: '0 0 32px',
           fontSize: 14,
-          color: 'var(--ds-text-subtle, #6B778C)',
+          color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))',
           lineHeight: 1.6,
         }}>
           Please contact your Catalyst admin to reactivate your access.
