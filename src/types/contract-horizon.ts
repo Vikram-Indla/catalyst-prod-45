@@ -43,7 +43,7 @@ export const DEPARTMENT_COLORS: Record<string, { gradient: string; shadow: strin
   Delivery: {
     gradient: 'linear-gradient(145deg, #3b82f6 0%, var(--cp-workstream-catalyst-primary, #2563eb) 100%)',
     shadow: 'rgba(37, 99, 235, 0.3)',
-    text: '#2563eb'
+    text: 'var(--cp-workstream-catalyst-primary, #2563eb)'
   },
   Product: {
     gradient: 'linear-gradient(145deg, #8b5cf6 0%, #7c3aed 100%)',

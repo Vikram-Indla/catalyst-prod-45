@@ -4,7 +4,7 @@
  */
 
 export const CATALYST_COLORS = {
-  primary: '#2563eb',
+  primary: 'var(--cp-workstream-catalyst-primary, #2563eb)',
   primaryDark: '#1d4ed8',
   primaryLight: '#3b82f6',
   teal: '#0d9488',

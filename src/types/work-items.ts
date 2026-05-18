@@ -128,7 +128,7 @@ export const TYPE_ICON_CONFIG: Record<WorkItemType, {
   label: string;
 }> = {
   story: { bgColor: '#0d9488', label: 'Story' },    // Teal
-  task: { bgColor: '#2563eb', label: 'Task' },      // Blue
+  task: { bgColor: 'var(--cp-workstream-catalyst-primary, #2563eb)', label: 'Task' },      // Blue
   defect: { bgColor: '#ef4444', label: 'Defect' },  // Red
   subtask: { bgColor: '#6b7280', label: 'Subtask' }, // Gray
 };

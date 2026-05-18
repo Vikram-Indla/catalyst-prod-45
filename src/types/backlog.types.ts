@@ -40,7 +40,7 @@ export type LabelDisplayMode = 'full' | 'abbreviated' | 'hidden';
 
 export const STATUS_COLORS: Record<EpicStatus, string> = {
   not_started: '#9ca3af',  // Gray-400
-  in_progress: '#2563eb',  // Blue-600 (was Amber)
+  in_progress: 'var(--cp-workstream-catalyst-primary, #2563eb)',  // Blue-600 (was Amber)
   accepted: '#0d9488',     // Teal-600 (was Blue)
   done: '#0d9488',         // Teal-600 (was Green)
   blocked: '#dc2626',      // Red-600
@@ -503,7 +503,7 @@ export const DEFAULT_LABEL_CONFIG: LabelConfig = {
 };
 
 export const EPIC_STATES: EpicState[] = [
-  { id: 1, name: 'Funnel', color: '#6B778C' },
+  { id: 1, name: 'Funnel', color: 'var(--cp-text-secondary, #6B778C)' },
   { id: 2, name: 'In Progress', color: '#FF8B00' },
   { id: 3, name: 'Done', color: '#36B37E' },
 ];

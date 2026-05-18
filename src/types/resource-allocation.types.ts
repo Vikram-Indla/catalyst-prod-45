@@ -221,7 +221,7 @@ export interface TimelineGridProps {
 
 // Assignment colors (cycle through for different projects)
 export const ASSIGNMENT_COLORS: string[] = [
-  '#2563eb', // Blue
+  'var(--cp-workstream-catalyst-primary, #2563eb)', // Blue
   '#0d9488', // Teal
   '#7c3aed', // Purple
   '#ea580c', // Orange
@@ -232,7 +232,7 @@ export const ASSIGNMENT_COLORS: string[] = [
 
 // Named colors for legacy compat
 export const ASSIGNMENT_COLOR_MAP: Record<string, string> = {
-  primary: '#2563eb',
+  primary: 'var(--cp-workstream-catalyst-primary, #2563eb)',
   teal: '#0d9488',
   orange: '#ea580c',
   purple: '#7c3aed',

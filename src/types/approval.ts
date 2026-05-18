@@ -73,7 +73,7 @@ export const APPROVAL_STATUS_CONFIG = {
     // Canonical StatusLozenge grey, subtler bg
     label: 'Skipped',
     color: '#42526E',
-    bgColor: '#F4F5F7',
+    bgColor: 'var(--cp-bg-sunken, #F4F5F7)',
   },
 } as const;
 

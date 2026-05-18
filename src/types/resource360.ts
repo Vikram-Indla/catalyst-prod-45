@@ -555,7 +555,7 @@ export function getStatusCategory(status: string, statusCategory?: string): Stat
 export const STATUS_COLORS: Record<StatusCategory, { bg: string; text: string; border: string; dot: string }> = {
   all:      { bg: '#F3F4F6', text: '#374151', border: '#D1D5DB', dot: '#6B7280' },
   todo:     { bg: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))', border: '#CBD5E1', dot: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))' },
-  progress: { bg: '#DBEAFE', text: '#2563EB', border: '#93C5FD', dot: '#2563EB' },
+  progress: { bg: '#DBEAFE', text: 'var(--cp-workstream-catalyst-primary, #2563EB)', border: '#93C5FD', dot: 'var(--cp-workstream-catalyst-primary, #2563EB)' },
   done:     { bg: '#D1FAE5', text: 'var(--quality-high, #059669)', border: '#6EE7B7', dot: 'var(--quality-high, #059669)' },
 };
 
@@ -563,7 +563,7 @@ export const STATUS_COLORS: Record<StatusCategory, { bg: string; text: string; b
 export const WH_HUB_COLORS: Record<string, string> = {
   StrategyHub:  'var(--cp-purple-60, #7C3AED)',
   ProductHub:   'var(--cp-teal-60, #0D9488)',
-  ProjectHub:   '#2563EB',
+  ProjectHub:   'var(--cp-workstream-catalyst-primary, #2563EB)',
   ReleaseHub:   'var(--cp-warning, #D97706)',
   TestHub:      'var(--cp-danger, #DC2626)',
   IncidentHub:  '#EF4444',

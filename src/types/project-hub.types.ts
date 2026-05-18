@@ -56,8 +56,8 @@ export type ProjectView = 'backlog' | 'board' | 'list' | 'timeline';
 /** Status display config */
 export const STATUS_CONFIG: Record<IssueStatus, { label: string; color: string; bg: string }> = {
   backlog:    { label: 'Backlog',    color: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))', bg: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' },
-  ready:      { label: 'Ready',     color: '#2563EB', bg: '#EFF6FF' },
-  in_dev:     { label: 'In Dev',    color: '#2563EB', bg: '#EFF6FF' },
+  ready:      { label: 'Ready',     color: 'var(--cp-workstream-catalyst-primary, #2563EB)', bg: '#EFF6FF' },
+  in_dev:     { label: 'In Dev',    color: 'var(--cp-workstream-catalyst-primary, #2563EB)', bg: '#EFF6FF' },
   in_qa:      { label: 'In QA',     color: 'var(--cp-warning, #D97706)', bg: '#FFFBEB' },
   in_uat:     { label: 'In UAT',    color: 'var(--cp-warning, #D97706)', bg: '#FFFBEB' },
   in_beta:    { label: 'In Beta',   color: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA' },
@@ -70,14 +70,14 @@ export const STATUS_CONFIG: Record<IssueStatus, { label: string; color: string; 
 export const PRIORITY_CONFIG: Record<IssuePriority, { label: string; color: string }> = {
   urgent: { label: 'Urgent', color: 'var(--cp-danger, #DC2626)' },
   high:   { label: 'High',   color: 'var(--cp-warning, #D97706)' },
-  medium: { label: 'Medium', color: '#2563EB' },
+  medium: { label: 'Medium', color: 'var(--cp-workstream-catalyst-primary, #2563EB)' },
   low:    { label: 'Low',    color: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))' },
 };
 
 /** Issue type icon config */
 export const ISSUE_TYPE_CONFIG: Record<IssueType, { icon: string; color: string; label: string }> = {
   epic:    { icon: '◆', color: 'var(--cp-purple-60, #7C3AED)', label: 'Epic' },
-  feature: { icon: '▲', color: '#2563EB', label: 'Feature' },
+  feature: { icon: '▲', color: 'var(--cp-workstream-catalyst-primary, #2563EB)', label: 'Feature' },
   story:   { icon: '●', color: 'var(--cp-teal-60, #0D9488)', label: 'Story' },
   bug:     { icon: '⬡', color: 'var(--cp-danger, #DC2626)', label: 'Bug' },
   task:    { icon: '■', color: 'var(--cp-warning, #D97706)', label: 'Task' },
@@ -87,8 +87,8 @@ export const ISSUE_TYPE_CONFIG: Record<IssueType, { icon: string; color: string;
 /** Default board columns */
 export const DEFAULT_BOARD_COLUMNS: BoardColumn[] = [
   { name: 'Backlog',     statuses: ['backlog'],              color: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))', wip_limit: 0 },
-  { name: 'Ready',       statuses: ['ready'],                color: '#2563EB', wip_limit: 10 },
-  { name: 'In Progress', statuses: ['in_dev'],               color: '#2563EB', wip_limit: 8 },
+  { name: 'Ready',       statuses: ['ready'],                color: 'var(--cp-workstream-catalyst-primary, #2563EB)', wip_limit: 10 },
+  { name: 'In Progress', statuses: ['in_dev'],               color: 'var(--cp-workstream-catalyst-primary, #2563EB)', wip_limit: 8 },
   { name: 'In QA',       statuses: ['in_qa'],                color: 'var(--cp-warning, #D97706)', wip_limit: 5 },
   { name: 'UAT',         statuses: ['in_uat', 'in_beta'],    color: 'var(--cp-teal-60, #0D9488)', wip_limit: 5 },
   { name: 'Done',        statuses: ['prod_ready', 'production'], color: 'var(--cp-success, #16A34A)', wip_limit: 0 },

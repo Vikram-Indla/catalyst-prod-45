@@ -68,7 +68,7 @@ export const SUBTASK_STATUS_CONFIG = {
   },
   in_progress: {
     label: 'In Progress',
-    color: '#2563eb',
+    color: 'var(--cp-workstream-catalyst-primary, #2563eb)',
     bgColor: 'rgba(37, 99, 235, 0.15)',
   },
   done: {
