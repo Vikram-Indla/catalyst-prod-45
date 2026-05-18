@@ -478,7 +478,7 @@ function MismatchResultRow({
 
 function EmptyState({ message, icon: Icon = WarningIcon }: { message: string; icon?: React.ComponentType<{ label: string; size?: string; primaryColor?: string }> }) {
   return (
-    <div className="flex flex-col items-center justify-center py-8" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+    <div className="flex flex-col items-center justify-center py-8" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
       <span style={{ marginBottom: '8px' }}><Icon label="" size="large" primaryColor="var(--ds-icon-subtle, #626F86)" /></span>
       <p className="text-sm">{message}</p>
     </div>

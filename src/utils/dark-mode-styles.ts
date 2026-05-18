@@ -62,7 +62,7 @@ export const LK: DarkTokens = {
   iconBg:        'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
 
   t1: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
-  t2: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))',
+  t2: 'var(--cp-text-secondary, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
   t3: 'var(--cp-text-tertiary, #6B6E76)',
   t4: 'var(--cp-text-tertiary, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
 

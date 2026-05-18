@@ -41,7 +41,7 @@ function TrendBadge({ text, dir }: { text: string; dir: TrendDir }) {
       ? token('color.text.success', '#216E4E')
       : dir === 'worse'
       ? token('color.text.danger', '#AE2A19')
-      : token('color.text.subtle', 'var(--cp-text-secondary, #44546F)');
+      : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))');
   return (
     <span
       style={{
@@ -110,7 +110,7 @@ function KpiCell({
         style={{
           fontSize: 11,
           fontWeight: 500,
-          color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
           minHeight: 32,
           lineHeight: '16px',
           display: 'block',
@@ -142,7 +142,7 @@ function KpiCell({
             style={{
               fontSize: 14,
               fontWeight: 500,
-              color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             }}
           >
             {unit}
@@ -172,7 +172,7 @@ function SettingsPanel() {
         borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         background: token('color.background.neutral.subtle', '#FAFBFC'),
         fontSize: 13,
-        color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
       }}
     >
       Configure which process steps define the Business, IT, and Landing legs.

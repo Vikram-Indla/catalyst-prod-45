@@ -456,7 +456,7 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
       <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
         <div style={{ padding: '16px 24px' }}>
           <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', margin: 0 }}>User List</h2>
-          <p style={{ fontSize: '13px', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))', marginTop: '4px' }}>View and manage all users in the system</p>
+          <p style={{ fontSize: '13px', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', marginTop: '4px' }}>View and manage all users in the system</p>
         </div>
         <div style={{ padding: '0 24px 24px' }}>
           <div className="flex items-center justify-center py-12">
@@ -472,7 +472,7 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3" style={{ padding: '16px 24px' }}>
         <div>
           <h2 className="text-lg sm:text-xl" style={{ fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', margin: 0 }}>User List</h2>
-          <p className="text-xs sm:text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))', marginTop: '4px' }}>View and manage all users in the system</p>
+          <p className="text-xs sm:text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', marginTop: '4px' }}>View and manage all users in the system</p>
         </div>
         <Button
           appearance="default"

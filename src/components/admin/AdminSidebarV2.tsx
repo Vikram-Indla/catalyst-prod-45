@@ -225,7 +225,7 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
                   style={{
                     padding: '8px 16px',
                     fontSize: 12,
-                    color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
+                    color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
                   }}
                 >
                   Try a different search term.

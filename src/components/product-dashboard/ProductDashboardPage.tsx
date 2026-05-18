@@ -87,7 +87,7 @@ export function ProductDashboardPage() {
               alignItems: 'center',
               gap: 6,
               fontSize: 11,
-              color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             }}
           >
             <span>Project Hub</span>
@@ -110,7 +110,7 @@ export function ProductDashboardPage() {
           <div
             style={{
               fontSize: 11,
-              color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
               marginTop: 2,
             }}
           >

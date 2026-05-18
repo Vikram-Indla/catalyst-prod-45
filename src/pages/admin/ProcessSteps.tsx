@@ -139,7 +139,7 @@ export default function ProcessSteps() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>BR Status</h1>
-            <p className="mt-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+            <p className="mt-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
               Manage status options for Business Requests
             </p>
           </div>
@@ -176,14 +176,14 @@ export default function ProcessSteps() {
         <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <div style={{ marginBottom: '12px' }}>
             <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>BR Status Configuration</h2>
-            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
               Configure statuses that appear in Business Request dropdowns and Kanban boards. Select colors and click "Save Settings" to apply changes across the entire application.
             </p>
           </div>
           <div>
             <div className="flex items-center gap-4 mb-4">
               <div className="relative flex-1">
-                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}><SearchIcon label="" size="small" /></span>
+                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><SearchIcon label="" size="small" /></span>
                 <Textfield
                   placeholder="Search BR statuses..."
                   value={searchTerm}
@@ -215,13 +215,13 @@ export default function ProcessSteps() {
                 <tbody>
                   {isLoading ? (
                     <tr>
-                      <td colSpan={7} className="p-3 text-center" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+                      <td colSpan={7} className="p-3 text-center" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                         Loading...
                       </td>
                     </tr>
                   ) : filteredSteps.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="p-3 text-center" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+                      <td colSpan={7} className="p-3 text-center" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                         No BR statuses found
                       </td>
                     </tr>
@@ -234,7 +234,7 @@ export default function ProcessSteps() {
                         onMouseLeave={() => setHoveredRow(null)}
                       >
                         <td className="p-3">
-                          <span style={{ cursor: 'grab', display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}><DragHandlerIcon label="" size="small" /></span>
+                          <span style={{ cursor: 'grab', display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><DragHandlerIcon label="" size="small" /></span>
                         </td>
                         <td className="p-3">
                           <div className="flex items-center gap-2">
@@ -254,8 +254,8 @@ export default function ProcessSteps() {
                           </div>
                         </td>
                         <td className="p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{step.label}</td>
-                        <td className="p-3 text-sm font-mono" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>{step.value}</td>
-                        <td className="p-3 text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>{step.sort_order}</td>
+                        <td className="p-3 text-sm font-mono" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>{step.value}</td>
+                        <td className="p-3 text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>{step.sort_order}</td>
                         <td className="p-3 text-sm">
                           <Toggle
                             isChecked={step.is_active}
@@ -311,7 +311,7 @@ export default function ProcessSteps() {
                     onChange={(e) => setFormData(prev => ({ ...prev, value: (e.target as HTMLInputElement).value }))}
                     placeholder="e.g., in_review (auto-generated if empty)"
                   />
-                  <p className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+                  <p className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                     Used internally as the database value. Auto-generated from label if left empty.
                   </p>
                 </div>

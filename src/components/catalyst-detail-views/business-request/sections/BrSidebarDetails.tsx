@@ -145,7 +145,7 @@ function SidebarRow({ label, children }: { label: string; children: ReactNode })
           paddingTop: 8,
           fontSize: 12,
           fontWeight: 600,
-          color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
           fontFamily: 'var(--cp-font-body)',
         }}
       >

@@ -52,7 +52,7 @@ function ToggleGroup({
             padding: '4px 10px',
             fontSize: 11,
             fontWeight: 500,
-            color: o.value === active ? token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') : token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+            color: o.value === active ? token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             cursor: 'pointer',
             borderRadius: 3,
             boxShadow: o.value === active ? '0 1px 1px rgba(9,30,66,0.15)' : 'none',
@@ -74,7 +74,7 @@ function SectionHeading({ label, count, danger }: { label: string; count: number
       style={{
         fontSize: 11,
         fontWeight: 600,
-        color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
         textTransform: 'uppercase',
         letterSpacing: '0.04em',
         marginBottom: 8,
@@ -153,7 +153,7 @@ function AttentionRow({
           {title}
         </div>
         {assignee && (
-          <div style={{ fontSize: 11, color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'), marginTop: 2 }}>
+          <div style={{ fontSize: 11, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), marginTop: 2 }}>
             {assignee}
           </div>
         )}
@@ -166,7 +166,7 @@ function AttentionRow({
           fontSize: 11,
           fontWeight: 600,
           background: token('color.background.neutral.subtle', '#F4F5F7'),
-          color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
           whiteSpace: 'nowrap',
         }}
       >

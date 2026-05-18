@@ -164,13 +164,13 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        style={{ display: 'flex', alignItems: 'center', padding: '0 8px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}
+                        style={{ display: 'flex', alignItems: 'center', padding: '0 8px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}
                       >
                         {showPassword ? <EyeOpenStrikethroughIcon label="" size="small" /> : <EyeOpenIcon label="" size="small" />}
                       </button>
                     }
                   />
-                  <p className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+                  <p className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                     The user will be required to change this password on their next login.
                   </p>
                 </div>
@@ -192,7 +192,7 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
               </TabsContent>
 
               <TabsContent value="link" className="space-y-4 mt-4">
-                <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+                <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                   Generate a one-time reset link that the user can use to set their own password.
                   The link expires in 24 hours.
                 </p>
@@ -291,7 +291,7 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
                     label="Copy password"
                   />
                 </div>
-                <p className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+                <p className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                   Share this password with the user securely. They will be prompted to set a new password on their first login.
                 </p>
               </div>

@@ -92,7 +92,7 @@ function StatsStrip() {
             style={{
               fontSize: 11,
               fontWeight: 600,
-              color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             }}
           >
             {item.label}
@@ -140,7 +140,7 @@ function ComponentListItem({
       isSelected={selected}
       onClick={onSelect}
       iconAfter={
-        <span style={{ fontSize: 11, color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)') }}>
+        <span style={{ fontSize: 11, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
           {consumerCount}
         </span>
       }
@@ -224,7 +224,7 @@ function InventoryPane() {
         {selected ? (
           <ComponentSpecCard entry={selected} />
         ) : (
-          <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)') }}>
+          <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
             Select a component on the left to view its spec.
           </span>
         )}
@@ -274,7 +274,7 @@ function BannedPane() {
               style={{
                 marginTop: token('space.075', '6px'),
                 fontSize: 11,
-                color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
               }}
             >
               CLAUDE.md anchor: {entry.banned_anchor}
@@ -321,7 +321,7 @@ function PlaceholderPane({ step, title }: { step: number; title: string }) {
         border: `1px solid ${token('color.border', '#DCDFE4')}`,
         borderRadius: 6,
         background: token('color.background.neutral.subtle', '#F7F8F9'),
-        color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
         fontSize: 13,
       }}
     >
@@ -348,7 +348,7 @@ export default function ComponentsAdminPage() {
           style={{
             marginTop: 0,
             marginBottom: token('space.300', '24px'),
-            color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             fontSize: 14,
             lineHeight: '20px',
             maxWidth: 760,

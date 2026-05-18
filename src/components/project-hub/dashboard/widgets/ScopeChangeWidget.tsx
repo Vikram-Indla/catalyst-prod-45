@@ -369,7 +369,7 @@ function ReleaseRow({
           <span
             style={{
               fontSize: 12,
-              color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
               fontVariantNumeric: 'tabular-nums',
               whiteSpace: 'nowrap',
             }}
@@ -430,7 +430,7 @@ function ReleaseRow({
               s.deltaPercent > thresholdHigh
                 ? 'var(--ds-text-accent-red-bolder, #AE2A19)'
                 : s.deltaPercent > 0
-                  ? token('color.text.subtle', 'var(--cp-text-secondary, #44546F)')
+                  ? token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))')
                   : 'var(--ds-text-accent-green-bolder, #216E4E)',
             fontVariantNumeric: 'tabular-nums',
           }}

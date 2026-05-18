@@ -36,7 +36,7 @@ export default function WorkflowsAdminPage() {
         <h1 style={{ fontSize: 24, fontWeight: 600, margin: 0, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
           Workflows
         </h1>
-        <p style={{ color: 'var(--cp-text-secondary, #44546F)', margin: '4px 0 0 0', fontSize: 14 }}>
+        <p style={{ color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))', margin: '4px 0 0 0', fontSize: 14 }}>
           Each issue type is bound to exactly one workflow. The status dropdown on any issue shows
           the transitions allowed from its current state, plus a &ldquo;View workflow&rdquo; link
           that opens the full diagram.
@@ -122,7 +122,7 @@ function WorkflowCard({
         ))}
       </div>
 
-      <div style={{ fontSize: 13, color: 'var(--cp-text-secondary, #44546F)' }}>
+      <div style={{ fontSize: 13, color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))' }}>
         <strong>{workflow.states.length}</strong> states, <strong>{workflow.transitions.length}</strong> explicit transitions
         {workflow.states.every(s => s.anyToThis) && (
           <span style={{ marginLeft: 8, padding: '2px 8px', background: '#F4E6FF', color: '#5E4DB2', borderRadius: 3, fontSize: 11, fontWeight: 700 }}>

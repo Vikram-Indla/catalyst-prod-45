@@ -27,7 +27,7 @@ export function WidgetIconBtn({
         border: 'none',
         background: hover ? token('color.background.neutral.hovered', '#F1F2F4') : 'transparent',
         borderRadius: 4,
-        color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
         cursor: 'pointer',
         display: 'inline-flex',
         alignItems: 'center',
@@ -109,7 +109,7 @@ export function WidgetShell({
               style={{
                 fontSize: 13,
                 lineHeight: '18px',
-                color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                 marginTop: 2,
                 fontStyle: 'italic',
               }}
@@ -145,7 +145,7 @@ export function WidgetShell({
                 borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                 fontSize: 11,
                 lineHeight: '16px',
-                color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',

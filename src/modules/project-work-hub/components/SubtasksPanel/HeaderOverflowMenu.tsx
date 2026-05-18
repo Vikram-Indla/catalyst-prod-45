@@ -99,14 +99,14 @@ export function HeaderOverflowMenu({
 
       <DropdownItemGroup>
         <DropdownItem
-          elemBefore={<Edit3 size={14} color="var(--cp-text-secondary, #44546F)" />}
+          elemBefore={<Edit3 size={14} color="var(--cp-text-secondary, var(--cp-text-secondary, #44546F))" />}
           isDisabled={bulkEditMode}
           onClick={() => onEnterBulkEdit()}
         >
           Bulk edit
         </DropdownItem>
         <DropdownItem
-          elemBefore={<Search size={14} color="var(--cp-text-secondary, #44546F)" />}
+          elemBefore={<Search size={14} color="var(--cp-text-secondary, var(--cp-text-secondary, #44546F))" />}
           onClick={() => onViewInSearch()}
         >
           View in search

@@ -598,7 +598,7 @@ function TranslateButton({ loading, label, onClick }: { loading: boolean; label:
         border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         borderRadius: 3,
         cursor: loading ? 'default' : 'pointer',
-        color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
         transition: 'background 120ms',
         outline: 'none',
       }}
@@ -625,7 +625,7 @@ function FieldLabel({ children, required }: { children: ReactNode; required?: bo
   return (
     <label style={{
       fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 600,
-      color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'), display: 'block', marginBottom: 4, lineHeight: '16px',
+      color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), display: 'block', marginBottom: 4, lineHeight: '16px',
     }}>
       {required && <span aria-hidden="true" style={{ color: token('color.text.danger'), marginRight: 4 }}>*</span>}
       {children}

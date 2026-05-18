@@ -76,8 +76,8 @@ export function WikiAdminHealthTab() {
 function HealthLoz({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
     healthy: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: '#0D7331' },
-    warning: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--cp-text-secondary, #44546F)' },
-    critical: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--cp-text-secondary, #44546F)' },
+    warning: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))' },
+    critical: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))' },
   };
   const s = map[status] ?? map.warning;
   return <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 4, background: s.bg, color: s.color, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{status ?? '—'}</span>;

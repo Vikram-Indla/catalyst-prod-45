@@ -31,7 +31,7 @@
   --clmp-p05:   #F0F5FF;
 
   --clmp-text1: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
-  --clmp-text2: var(--ds-text-subtle, var(--cp-text-secondary, #44546F));
+  --clmp-text2: var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)));
   --clmp-text3: var(--ds-text-subtlest, #5E6C84);
   --clmp-mute:  var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
 
@@ -308,7 +308,7 @@
 }
 .clmp-card-sub {
   font-size: 14px;
-  color: var(--ds-text-subtle, var(--cp-text-secondary, #44546F));
+  color: var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)));
   margin: 0;
   line-height: 1.4;
 }
@@ -324,7 +324,7 @@
 .clmp-label {
   font-size: 12px;
   font-weight: 600;
-  color: var(--ds-text-subtle, var(--cp-text-secondary, #44546F));
+  color: var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)));
   margin-bottom: 6px;
   letter-spacing: 0;
 }
@@ -1059,7 +1059,7 @@
 .clmp-arch-v2-col-label {
   font-size: 11px;
   font-weight: 700;
-  color: var(--ds-text-subtle, var(--cp-text-secondary, #44546F));
+  color: var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)));
   letter-spacing: 0;
   margin-bottom: 12px;
   display: flex;
@@ -1180,7 +1180,7 @@
 
 .clmp-arch-core-v2-sub {
   font-size: 11px;
-  color: var(--ds-text-subtle, var(--cp-text-secondary, #44546F));
+  color: var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)));
   margin-bottom: 14px;
   font-family: var(--ds-font-family-body, 'Atlassian Sans', sans-serif);
 }

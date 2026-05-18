@@ -310,7 +310,7 @@ export const CommentsCell = React.memo(function CommentsCell({ count }: { count?
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       minWidth: 22, height: 18, padding: '0 6px',
       fontSize: 11, fontWeight: 600,
-      color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
+      color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
       background: 'var(--ds-background-neutral, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
       borderRadius: 9,
     }} title={`${n} comment${n === 1 ? '' : 's'}`}>

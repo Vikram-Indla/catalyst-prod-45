@@ -356,7 +356,7 @@ export default function TimeInStatusWidget({
                     fontWeight: 700,
                     textTransform: 'uppercase',
                     letterSpacing: '0.04em',
-                    color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+                    color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                   }}
                 >
                   Ticket

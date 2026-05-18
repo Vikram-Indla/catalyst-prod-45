@@ -86,7 +86,7 @@
 }
 .r3-profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .r3-profile-name { font-size: 20px; font-weight: 500; color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))); letter-spacing: -0.2px; }
-.r3-profile-role { font-size: 13px; font-weight: 400; color: var(--ds-text-subtle, var(--cp-text-secondary, #44546F)); }
+.r3-profile-role { font-size: 13px; font-weight: 400; color: var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F))); }
 
 /* ── KPI Cards ── */
 .r3-kpis { display: flex; gap: 10px; margin-left: auto; }

@@ -220,7 +220,7 @@ function KpiHeadline({
               style={{
                 fontSize: 14,
                 fontWeight: 500,
-                color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -447,7 +447,7 @@ function WorkloadRow({
               alignItems: 'center',
               gap: 12,
               fontSize: 12,
-              color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
               fontVariantNumeric: 'tabular-nums',
               flexShrink: 0,
               minWidth: 220,

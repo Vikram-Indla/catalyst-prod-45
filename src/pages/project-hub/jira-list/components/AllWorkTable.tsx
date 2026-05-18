@@ -36,7 +36,7 @@ function hashColor(name: string): string {
 /* ── Tokens ── */
 const T = {
   headerBg: 'var(--cp-bg-sunken, #F7F8F9)',
-  headerText: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))',
+  headerText: 'var(--cp-text-secondary, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
   borderColor: 'var(--cp-border-default, #DDDEE1)',
   rowHover: 'var(--cp-interact-hover, rgba(0,0,0,0.04))',
   keyColor: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))',
@@ -397,7 +397,7 @@ const thStyle: React.CSSProperties = {
   fontWeight: 700,
   textTransform: 'uppercase',
   letterSpacing: '0.04em',
-  color: 'var(--cp-text-secondary, #44546F)',
+  color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))',
   fontFamily: 'var(--cp-font-body)',
   whiteSpace: 'nowrap',
   textAlign: 'left',
@@ -430,7 +430,7 @@ function PaginationBtn({ children, disabled, active, onClick }: {
         border: `1px solid ${active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-border-default, #DDDEE1)'}`,
         borderRadius: 3,
         fontSize: 12, fontWeight: active ? 600 : 400,
-        color: disabled ? 'var(--cp-text-muted, #C1C7CD)' : active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))',
+        color: disabled ? 'var(--cp-text-muted, #C1C7CD)' : active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-text-secondary, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
         background: active ? 'rgba(37,99,235,0.06)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         cursor: disabled ? 'default' : 'pointer',
         fontFamily: 'var(--cp-font-body)',

@@ -543,7 +543,7 @@ export default function CatalystViewIdea({
                     </div>
                     <p style={{
                       fontSize: 12, margin: '0 0 12px',
-                      color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
+                      color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
                     }}>
                       Convert this idea into a tracked Request under Product Hub.
                     </p>

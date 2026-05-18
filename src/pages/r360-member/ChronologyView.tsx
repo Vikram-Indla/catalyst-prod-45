@@ -90,7 +90,7 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             {item.role_on_item === 'Contributor' && (
-              <span style={{ fontSize: 12.5, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ fontSize: 12.5, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                 <span style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>{'\u2192'}</span> <MiniAvatar name={item.assignee_name} size={18} /> {item.assignee_name}
               </span>
             )}

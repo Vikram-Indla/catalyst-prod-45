@@ -295,11 +295,11 @@ export default function AdminAvatarsPage() {
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 12 }}>
           <Heading size="small">Canonical UserAvatar</Heading>
           <Lozenge appearance="success">v2.0.0</Lozenge>
-          <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+          <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
             <code>@/components/shared/UserAvatar</code>
           </span>
         </div>
-        <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))', marginBottom: 12, maxWidth: 800 }}>
+        <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', marginBottom: 12, maxWidth: 800 }}>
           Composition over <code>CatalystAvatar</code> with an optional country flag overlay.
           Use this wrapper everywhere a user identity is shown — tables, rails, sidebars,
           comment threads, notification rows. Photo precedence:{' '}
@@ -309,7 +309,7 @@ export default function AdminAvatarsPage() {
           {(['xsmall', 'small', 'medium', 'large', 'xlarge'] as const).map(s => (
             <div key={s} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
               <UserAvatar name="Amadou Ndiaye" country="Saudi Arabia" size={s} />
-              <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>{s}</span>
+              <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>{s}</span>
             </div>
           ))}
         </div>

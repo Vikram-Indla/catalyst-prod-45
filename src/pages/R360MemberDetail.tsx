@@ -509,7 +509,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                     <div style={{ fontSize: 22, fontWeight: 700, lineHeight: '26px', fontVariantNumeric: 'tabular-nums', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
                       {bannerOpenCount}
                     </div>
-                    <div style={{ fontSize: 10, fontWeight: 600, lineHeight: '13px', letterSpacing: '0.04em', color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)') }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, lineHeight: '13px', letterSpacing: '0.04em', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
                       active
                     </div>
                   </div>

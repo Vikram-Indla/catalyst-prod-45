@@ -644,7 +644,7 @@
   left: -14px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--cp-text-secondary, #44546F);
+  color: var(--cp-text-secondary, var(--cp-text-secondary, #44546F));
   font-size: 11px;
   transition: background 120ms;
 }
@@ -1466,7 +1466,7 @@
 }
 .sp-priority-icon { display: flex; align-items: center; flex-shrink: 0; }
 .sp-priority-label {
-  font-size: 14px; color: var(--cp-text-secondary, #44546F); white-space: nowrap;
+  font-size: 14px; color: var(--cp-text-secondary, var(--cp-text-secondary, #44546F)); white-space: nowrap;
   overflow: hidden; text-overflow: ellipsis;
 }
 
@@ -1483,7 +1483,7 @@
   font-size: 10px; font-weight: 700; color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); flex-shrink: 0;
 }
 .sp-assignee-name {
-  font-size: 14px; color: var(--cp-text-secondary, #44546F);
+  font-size: 14px; color: var(--cp-text-secondary, var(--cp-text-secondary, #44546F));
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60px;
 }
 
@@ -1498,7 +1498,7 @@
 .sp-status-btn:hover { opacity: 0.85; }
 .sp-status-btn--done { background: #DCFFF1; color: #206B4E; }
 .sp-status-btn--inprogress { background: #E9F2FF; color: #0055CC; }
-.sp-status-btn--todo { background: #F1F2F4; color: var(--cp-text-secondary, #44546F); }
+.sp-status-btn--todo { background: #F1F2F4; color: var(--cp-text-secondary, var(--cp-text-secondary, #44546F)); }
 .sp-status-chevron { display: flex; align-items: center; }
 
 .sp-status-dropdown {

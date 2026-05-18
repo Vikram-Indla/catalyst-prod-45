@@ -321,7 +321,7 @@
 }
 .sp-assignee-name {
   font-size: 14px;
-  color: var(--ds-text-subtle, var(--cp-text-secondary, #44546F));
+  color: var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

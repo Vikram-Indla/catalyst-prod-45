@@ -157,7 +157,7 @@ export function AddEditRoleModal({
           <div className="flex items-center justify-between rounded-lg border p-3" style={{ borderColor: 'var(--ds-border, #DCDFE4)' }}>
             <div className="space-y-0.5">
               <label htmlFor="role-active" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Active Status</label>
-              <p className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+              <p className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                 Inactive roles cannot be assigned to users
               </p>
             </div>

@@ -2298,7 +2298,7 @@ function ColumnManagerTrigger<TRow>({
                     fontFamily: 'inherit',
                     fontSize: 12,
                     fontWeight: isActive ? 600 : 500,
-                    color: isActive ? '#0C66E4' : 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
+                    color: isActive ? '#0C66E4' : 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
                     marginBottom: -1,
                   }}
                 >

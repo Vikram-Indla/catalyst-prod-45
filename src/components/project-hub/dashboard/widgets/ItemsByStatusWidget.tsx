@@ -43,7 +43,7 @@ const C = {
   todo: {
     fill: 'var(--ds-background-accent-gray-bolder, #626F86)',
     track: 'var(--ds-background-neutral, #F1F2F4)',
-    label: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
+    label: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
   },
   inProgress: {
     fill: 'var(--ds-background-accent-blue-bolder, #0C66E4)',

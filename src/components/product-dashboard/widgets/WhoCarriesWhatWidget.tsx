@@ -144,7 +144,7 @@ function WorkloadCol({
           borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
           fontSize: 11,
           fontWeight: 600,
-          color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
           textTransform: 'uppercase',
           letterSpacing: '0.04em',
         }}

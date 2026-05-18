@@ -132,7 +132,7 @@ export function CreateSchemeModal({ scheme, open, onClose, onCreated }: CreateSc
           <div className="flex items-center justify-between rounded-md border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] px-3 py-2.5">
             <div>
               <p className="text-xs font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Set as Default Scheme</p>
-              <p className="text-[11px] mt-0.5" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+              <p className="text-[11px] mt-0.5" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                 New projects will automatically use this scheme.
               </p>
             </div>

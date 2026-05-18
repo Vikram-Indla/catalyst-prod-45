@@ -42,7 +42,7 @@ const ADS = {
   surfaceSunken: 'var(--ds-surface-sunken, #F7F8F9)',
   neutralSubtle: 'var(--ds-background-neutral-subtle, #F1F2F4)',
   neutralHover:  'var(--ds-background-neutral-subtle-hovered, #DCDFE4)',
-  neutralBold:   'var(--ds-background-neutral-bold, var(--cp-text-secondary, #44546F))',
+  neutralBold:   'var(--ds-background-neutral-bold, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
   // state backgrounds
   dangerBg:      'var(--ds-background-danger, #FFECEB)',
   warningBg:     'var(--ds-background-warning, #FFF7D6)',
@@ -51,7 +51,7 @@ const ADS = {
   selectedBg:    'var(--ds-background-selected, #E9F2FF)',
   // text
   text:          'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
-  textSubtle:    'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
+  textSubtle:    'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
   textMuted:     'var(--ds-text-subtlest, #626F86)',
   textDanger:    'var(--ds-text-danger, #AE2E24)',
   textWarning:   'var(--ds-text-warning, #7F5F01)',
@@ -439,7 +439,7 @@ function GovernanceRagPill({ onCleanupClick }: { onCleanupClick: () => void }) {
 /* ── AI Cleanup Button ──
    /design-critique callout ④: bespoke `#1E293B` navy is off-palette. The
    Atlaskit-correct equivalent for a neutral dark CTA is
-   `color.background.neutral.bold` (var(--cp-text-secondary, #44546F)). The sparkle uses the same
+   `color.background.neutral.bold` (var(--cp-text-secondary, var(--cp-text-secondary, #44546F))). The sparkle uses the same
    brand blue as the AI Recap tab (see ForYouTabs callout ⓪) so every AI
    affordance in Catalyst reads as the same entity.
 */

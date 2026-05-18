@@ -203,7 +203,7 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
         <blockquote key={key} style={{
           borderLeft: `2px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
           padding: '8px 12px', margin: '8px 0',
-          color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
         }}>
           {(node.content ?? []).map((c, i) => renderBlock(c, i))}
         </blockquote>

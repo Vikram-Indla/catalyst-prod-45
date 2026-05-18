@@ -117,7 +117,7 @@ export function JiraBulkActionBar({
       <div
         className="flex items-center gap-0 rounded-lg overflow-hidden"
         style={{
-          backgroundColor: 'var(--cp-text-secondary, #44546F)',
+          backgroundColor: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))',
           boxShadow: '0 8px 32px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.12)',
           fontFamily: 'var(--cp-font-body)',
           height: 44,

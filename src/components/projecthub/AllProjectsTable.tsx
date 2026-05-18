@@ -40,7 +40,7 @@ const BADGE_COLORS = [
   'var(--ds-text-brand, var(--cp-primary-60, #0052CC))',
   'var(--ds-text-accent-purple, #5243AA)',
   'var(--ds-text-accent-teal, #0C7E6A)',
-  'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
+  'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
   'var(--ds-text-accent-green, #216E4E)',
   'var(--ds-text-subtlest, #626F86)',
 ];

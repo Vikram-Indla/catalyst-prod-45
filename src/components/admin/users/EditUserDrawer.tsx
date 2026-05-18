@@ -692,7 +692,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
 
             {/* Job Role Section - syncs to user list via searchable combobox */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                 <BriefcaseIcon label="" size="small" />
                 Job Role
               </h3>
@@ -770,7 +770,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
 
             {/* Vendor/Contract Section */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                 <OfficeBuildingIcon label="" size="small" />
                 Vendor &amp; Contract
               </h3>
@@ -832,7 +832,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
                   placeholder="Enter CTC amount"
                   value={formData.ctc}
                   onChange={(e) => setFormData(prev => ({ ...prev, ctc: (e.target as HTMLInputElement).value }))}
-                  elemBeforeInput={<span style={{ padding: '0 8px', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))', fontSize: '14px' }}>ریال</span>}
+                  elemBeforeInput={<span style={{ padding: '0 8px', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', fontSize: '14px' }}>ریال</span>}
                 />
               </div>
             </div>
@@ -841,7 +841,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
 
             {/* Assignment Section */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                 <BriefcaseIcon label="" size="small" />
                 Assignment
               </h3>
@@ -862,7 +862,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
 
             {/* Location Section */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                 <LocationIcon label="" size="small" />
                 Location
               </h3>

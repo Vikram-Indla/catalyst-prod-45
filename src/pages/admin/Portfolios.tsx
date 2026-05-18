@@ -256,14 +256,14 @@ export default function Portfolios() {
         <div className="mt-4" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <div style={{ marginBottom: '12px' }}>
             <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Program Configuration</h2>
-            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
               Manage programs, their projects, and strategic alignment
             </p>
           </div>
           <div>
             <div className="flex items-center gap-4 mb-4">
               <div className="relative flex-1">
-                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}><SearchIcon label="" size="small" /></span>
+                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><SearchIcon label="" size="small" /></span>
                 <Textfield
                   placeholder="Search programs..."
                   elemBeforeInput={<span />}
@@ -273,9 +273,9 @@ export default function Portfolios() {
             </div>
 
             {isLoading ? (
-              <div className="text-center py-8" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>Loading programs...</div>
+              <div className="text-center py-8" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>Loading programs...</div>
             ) : programs?.length === 0 ? (
-              <div className="text-center py-8" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+              <div className="text-center py-8" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                 No programs found. Click "Add Program" to create one.
               </div>
             ) : (
@@ -302,7 +302,7 @@ export default function Portfolios() {
                           <td className="p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{program.name}</td>
                           <td className="p-3 text-sm">
                             {programProjects.length === 0 ? (
-                              <span style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>-</span>
+                              <span style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>-</span>
                             ) : (
                               <span style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                                 {programProjects.map(p => p.name).join(', ')}
@@ -314,7 +314,7 @@ export default function Portfolios() {
                               program.status === 'active'
                                 ? 'bg-[var(--sem-success-bg)] text-[var(--sem-success)]'
                                 : ''
-                            }`} style={program.status !== 'active' ? { background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' } : {}}>
+                            }`} style={program.status !== 'active' ? { background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' } : {}}>
                               {program.status === 'active' ? 'Active' : 'Archived'}
                             </span>
                           </td>
