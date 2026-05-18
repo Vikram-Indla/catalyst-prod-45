@@ -97,7 +97,7 @@ export default function WikiAllArticlesPage() {
               <button key={a.key} onClick={() => { setBulkAction(a.key); if (a.key === 'archive') setShowConfirm(true); }} style={{
                 fontSize: 10, fontWeight: 650, padding: '4px 10px', borderRadius: 4,
                 border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)',
-                color: a.key === 'archive' ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #334155)'), cursor: 'pointer',
+                color: a.key === 'archive' ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))'), cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 4,
               }}>{a.icon} {a.label}</button>
             ))}
@@ -151,7 +151,7 @@ export default function WikiAllArticlesPage() {
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
               <button onClick={() => setShowConfirm(false)} style={{
                 fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 6,
-                border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #334155)', cursor: 'pointer',
+                border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))', cursor: 'pointer',
               }}>Cancel</button>
               <button onClick={executeBulk} style={{
                 fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 6, border: 'none',

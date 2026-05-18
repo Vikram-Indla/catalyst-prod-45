@@ -38,7 +38,7 @@
 
   /* Text - 4 levels */
   --tm-text-primary: var(--ds-text, #0f172a);
-  --tm-text-secondary: var(--ds-text-subtle, #334155);
+  --tm-text-secondary: var(--cp-ink-2, var(--cp-ink-2, #334155));
   --tm-text-muted: var(--ds-text-subtlest, #64748b);
   --tm-text-light: var(--ds-text-subtlest, #94a3b8);
 
@@ -875,7 +875,7 @@
   background: var(--ds-surface-sunken, #f1f5f9);
   border-radius: 4px;
   font-weight: 500;
-  color: var(--ds-text-subtle, #334155);
+  color: var(--cp-ink-2, var(--cp-ink-2, #334155));
 }
 
 .task-modal-v3__header-actions {
@@ -971,7 +971,7 @@
 }
 
 .task-modal-v3__tab:hover {
-  color: var(--ds-text-subtle, #334155);
+  color: var(--cp-ink-2, var(--cp-ink-2, #334155));
 }
 
 .task-modal-v3__tab--active {

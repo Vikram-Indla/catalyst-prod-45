@@ -42,7 +42,7 @@ export function doPrintExport(items: RoadmapDemand[]) {
           <div style="flex:1;height:4px;background:var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));border-radius:999px;overflow:hidden;min-width:50px">
             <div style="width:${item.progress}%;height:100%;background:var(--ds-text-brand, #2563EB);border-radius:999px"></div>
           </div>
-          <span style="font-size:11px;font-weight:600;color:var(--ds-text-subtle, #334155);min-width:32px">${item.progress}%</span>
+          <span style="font-size:11px;font-weight:600;color:var(--cp-ink-2, var(--cp-ink-2, #334155));min-width:32px">${item.progress}%</span>
         </div>
       </td>
     </tr>`;

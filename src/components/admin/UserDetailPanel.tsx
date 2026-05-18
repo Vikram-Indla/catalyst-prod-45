@@ -87,7 +87,7 @@ const InfoCard: React.FC<{ label: string; children: React.ReactNode; isDark?: bo
     }}>
       {label}
     </div>
-    <div style={{ fontSize: '11px', color: 'var(--cp-text-secondary, #334155)', lineHeight: 1.55 }}>{children}</div>
+    <div style={{ fontSize: '11px', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', lineHeight: 1.55 }}>{children}</div>
   </div>
 );
 const PERM_LEVELS = ['view', 'edit', 'full', 'none'] as const;
@@ -283,7 +283,7 @@ const ActivityTab: React.FC<{ events: any[]; isDark?: boolean }> = ({ events, is
               marginTop: '3px', background: getEventDotColor(ev),
             }} />
             <div style={{ flex: 1 }}>
-              <div className="jus-event-text" style={{ fontSize: '11px', color: 'var(--cp-text-secondary, #334155)' }}>{getEventText(ev)}</div>
+              <div className="jus-event-text" style={{ fontSize: '11px', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{getEventText(ev)}</div>
               <div className="jus-event-time" style={{ fontSize: '10px', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', marginTop: '1px' }}>{formatDate(ev.created_at)}</div>
             </div>
           </div>

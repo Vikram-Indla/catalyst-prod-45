@@ -16,7 +16,7 @@
 
   /* ── Text ── */
   --catalyst-text-primary: var(--ds-text, var(--cp-ink-1, #0F172A));
-  --catalyst-text-secondary: var(--ds-text-subtle, #334155);  /* slate-700, contrast 8.6:1 — passes AAA */
+  --catalyst-text-secondary: var(--cp-ink-2, var(--cp-ink-2, #334155));  /* slate-700, contrast 8.6:1 — passes AAA */
   --catalyst-text-tertiary: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));   /* slate-500, contrast 5.6:1 — passes AA */
   --catalyst-text-inverse: var(--ds-surface, #FFFFFF);
   --catalyst-text-link: var(--ds-text-brand, #2563EB);

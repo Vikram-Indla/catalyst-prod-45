@@ -317,7 +317,7 @@ export function UserMapping() {
           onChange={e => setDepartmentFilter(e.target.value)}
           style={{
             padding: '5px 10px', borderRadius: 6, fontSize: 12, border: `1px solid ${borderColor}`,
-            background: 'var(--bg-1, #F8FAFC)', color: 'var(--ds-text-subtle, #334155)', minWidth: 160,
+            background: 'var(--bg-1, #F8FAFC)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', minWidth: 160,
           }}
         >
           <option value="all">All Departments</option>
@@ -358,20 +358,20 @@ export function UserMapping() {
           onChange={e => setSearchText(e.target.value)}
           style={{
             padding: '5px 10px', borderRadius: 6, fontSize: 12, border: `1px solid ${borderColor}`,
-            background: 'var(--bg-1, #F8FAFC)', color: 'var(--ds-text-subtle, #334155)', width: 200, outline: 'none',
+            background: 'var(--bg-1, #F8FAFC)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', width: 200, outline: 'none',
           }}
         />
 
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
           <button onClick={() => refreshUsers.mutate()} disabled={refreshUsers.isPending} style={{
             padding: '6px 14px', borderRadius: 6, fontSize: 11, fontWeight: 500,
-            background: 'var(--bg-1, #F8FAFC)', color: 'var(--ds-text-subtle, #334155)', border: `1px solid ${borderColor}`, cursor: 'pointer',
+            background: 'var(--bg-1, #F8FAFC)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', border: `1px solid ${borderColor}`, cursor: 'pointer',
           }}>
             {refreshUsers.isPending ? 'Refreshing…' : '↻ Refresh Jira'}
           </button>
           <button onClick={handleAutoMatch} disabled={autoMatch.isPending} style={{
             padding: '6px 14px', borderRadius: 6, fontSize: 11, fontWeight: 500,
-            background: 'var(--bg-1, #F8FAFC)', color: 'var(--ds-text-subtle, #334155)', border: `1px solid ${borderColor}`, cursor: 'pointer',
+            background: 'var(--bg-1, #F8FAFC)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', border: `1px solid ${borderColor}`, cursor: 'pointer',
           }}>
             {autoMatch.isPending ? 'Matching…' : '⚡ Auto-Match Email'}
           </button>

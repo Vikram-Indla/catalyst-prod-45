@@ -43,7 +43,7 @@ function Lozenge({ status }: { status: string }) {
 /* ── Shared table helpers ───────────────────────────────── */
 const thClass = 'text-left text-[10px] font-semibold uppercase text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] dark:text-gray-400';
 const thStyle = { padding: '10px 12px', height: 50, maxHeight: 50 } as const;
-const tdClass = 'text-[var(--ds-text-subtle,#334155)] dark:text-white';
+const tdClass = 'text-[var(--cp-ink-2, var(--cp-ink-2, #334155))] dark:text-white';
 const tdStyle = { padding: '8px 12px', fontSize: 12, height: 50, maxHeight: 50 } as const;
 const PAGE_SIZE = 20;
 
@@ -241,7 +241,7 @@ export function WriteBackQueueTab() {
                 <tr key={q.id} className="border-b border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-surface-raised,#1A1A1A)]" style={{ height: 50, maxHeight: 50 }}>
                   <td className={tdClass} style={tdStyle}>{q.ph_work_items?.title || q.ph_work_item_id}</td>
                   <td style={tdStyle}>
-                    <span className="inline-block bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtle,#334155)] dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-gray-300" style={{ fontSize: 11, fontWeight: 600, borderRadius: 4, padding: '2px 6px', textTransform: 'uppercase' }}>
+                    <span className="inline-block bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--cp-ink-2, var(--cp-ink-2, #334155))] dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-gray-300" style={{ fontSize: 11, fontWeight: 600, borderRadius: 4, padding: '2px 6px', textTransform: 'uppercase' }}>
                       {q.operation}
                     </span>
                   </td>

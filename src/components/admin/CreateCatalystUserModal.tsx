@@ -70,7 +70,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
     );
   };
 
-  const labelStyle: React.CSSProperties = { fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtle, #334155)', marginBottom: '4px', display: 'block' };
+  const labelStyle: React.CSSProperties = { fontSize: '11px', fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', marginBottom: '4px', display: 'block' };
 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
@@ -220,7 +220,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             onClick={onClose}
             style={{
               padding: '8px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: 500,
-              border: '1px solid rgba(15,23,42,0.10)', background: 'var(--bg-app, #FFFFFF)', color: 'var(--ds-text-subtle, #334155)',
+              border: '1px solid rgba(15,23,42,0.10)', background: 'var(--bg-app, #FFFFFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
               cursor: 'pointer',
             }}
           >

@@ -181,7 +181,7 @@ export const WORKSTREAM_COLORS: Record<string, WorkstreamColorSet> = {
     hexLight: '#e2e8f0',
     hexFill: '#e2e8f0',
     textPrimary: '#475569',
-    textDark: '#334155',
+    textDark: 'var(--cp-ink-2, #334155)',
   },
   'Stand-Alone Projects': {
     primary: '#64748b',
@@ -191,7 +191,7 @@ export const WORKSTREAM_COLORS: Record<string, WorkstreamColorSet> = {
     hexLight: '#e2e8f0',
     hexFill: '#e2e8f0',
     textPrimary: '#475569',
-    textDark: '#334155',
+    textDark: 'var(--cp-ink-2, #334155)',
   },
   'Stand-Alone Projects Track': {
     primary: '#64748b',
@@ -201,7 +201,7 @@ export const WORKSTREAM_COLORS: Record<string, WorkstreamColorSet> = {
     hexLight: '#e2e8f0',
     hexFill: '#e2e8f0',
     textPrimary: '#475569',
-    textDark: '#334155',
+    textDark: 'var(--cp-ink-2, #334155)',
   },
 
   // Tahommona — Orange palette (A7)
@@ -236,7 +236,7 @@ export const DEFAULT_WORKSTREAM_COLOR: WorkstreamColorSet = {
   hexLight: '#e2e8f0',
   hexFill: '#e2e8f0',
   textPrimary: '#475569',
-  textDark: '#334155',
+  textDark: 'var(--cp-ink-2, #334155)',
 };
 
 /**

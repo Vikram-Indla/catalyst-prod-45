@@ -346,7 +346,7 @@ export default function ReqAssistLibrary() {
               }}>
                 Showing {documents?.length ?? 0} of {totalCount} documents
                 <span style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>·</span>
-                Filtered by: <strong style={{ color: 'var(--cp-text-secondary, #334155)', fontWeight: 600 }}>{tab !== 'all' ? tab.charAt(0).toUpperCase() + tab.slice(1) : search}</strong>
+                Filtered by: <strong style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontWeight: 600 }}>{tab !== 'all' ? tab.charAt(0).toUpperCase() + tab.slice(1) : search}</strong>
                 <button
                   onClick={() => { setSearch(''); setTab('all'); }}
                   style={{
@@ -661,7 +661,7 @@ export default function ReqAssistLibrary() {
                 setDraftDrawer({ brdId, docTitle: doc.title, jiraKey: (doc as any).jira_ticket_key || null });
               }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: `0.75px solid ${'var(--cp-border-strong, rgba(15,23,42,0.15))'}`, background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer',
+                border: `0.75px solid ${'var(--cp-border-strong, rgba(15,23,42,0.15))'}`, background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', cursor: 'pointer',
               }}>View Drafts</button>
               <button onClick={() => { const d = regenConfirm.doc; setRegenConfirm(null); setBgModal({ type: 'epics', doc: d }); }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,

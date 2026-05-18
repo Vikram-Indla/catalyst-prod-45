@@ -102,7 +102,7 @@ export default function ReleasesListPage() {
         <select
           value={filters.status}
           onChange={e => setFilters(f => ({ ...f, status: e.target.value }))}
-          style={{ height: 38, padding: '8px 12px', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 8, fontSize: 13, color: 'var(--ds-text-subtle, #334155)', background: 'var(--bg-app, #fff)', cursor: 'pointer' }}
+          style={{ height: 38, padding: '8px 12px', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 8, fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', background: 'var(--bg-app, #fff)', cursor: 'pointer' }}
         >
           <option value="all">All Statuses</option>
           {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
@@ -114,7 +114,7 @@ export default function ReleasesListPage() {
         <select
           value={filters.health}
           onChange={e => setFilters(f => ({ ...f, health: e.target.value }))}
-          style={{ height: 38, padding: '8px 12px', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 8, fontSize: 13, color: 'var(--ds-text-subtle, #334155)', background: 'var(--bg-app, #fff)', cursor: 'pointer' }}
+          style={{ height: 38, padding: '8px 12px', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 8, fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', background: 'var(--bg-app, #fff)', cursor: 'pointer' }}
         >
           <option value="all">All Health</option>
           <option value="healthy">Healthy</option>
@@ -240,12 +240,12 @@ function TableView({ releases, navigate }: { releases: Release[]; navigate: any 
                   </span>
                 </td>
                 <td style={tdStyle}>
-                  <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #334155)' }}>
+                  <span style={{ fontSize: 12, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
                     {r.test_cases_passed}/{r.test_cases_total || 0}
                   </span>
                 </td>
                 <td style={tdStyle}>
-                  <span style={{ fontSize: 12, color: r.critical_defects > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-subtle, #334155)', fontWeight: r.critical_defects > 0 ? 600 : 400 }}>
+                  <span style={{ fontSize: 12, color: r.critical_defects > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontWeight: r.critical_defects > 0 ? 600 : 400 }}>
                     {r.defects_open} open{r.critical_defects > 0 ? ` (${r.critical_defects} critical)` : ''}
                   </span>
                 </td>

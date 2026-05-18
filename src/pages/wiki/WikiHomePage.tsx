@@ -165,7 +165,7 @@ export default function WikiHomePage() {
             </div>
 
             <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={() => setUploadOpen(true)} style={{ fontSize: 12, fontWeight: 650, padding: '8px 16px', borderRadius: 6, cursor: 'pointer', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #334155)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button onClick={() => setUploadOpen(true)} style={{ fontSize: 12, fontWeight: 650, padding: '8px 16px', borderRadius: 6, cursor: 'pointer', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Upload size={14} /> Upload Document
               </button>
             </div>
@@ -216,9 +216,9 @@ export default function WikiHomePage() {
         >
           <HelpCircle size={16} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
           <div style={{ flex: 1, minWidth: 200 }}>
-            <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #334155)' }}>Can't find what you need? </span>
+            <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>Can't find what you need? </span>
             <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }} onClick={() => setKrFormOpen(true)}>Submit a Knowledge Request</span>
-            <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #334155)' }}> — route to domain experts</span>
+            <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}> — route to domain experts</span>
           </div>
           <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)' }}>
             {requests?.length ?? 0} open

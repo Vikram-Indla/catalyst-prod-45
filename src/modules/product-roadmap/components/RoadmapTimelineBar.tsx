@@ -196,7 +196,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
           </div>
           <div className="flex items-center gap-2">
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: finalColor }} />
-            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtle, #334155)' }}>
+            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
               {(item as any).initiative_type_label || typeKey}
             </span>
             {item.progress > 0 && (

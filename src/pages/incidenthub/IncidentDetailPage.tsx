@@ -164,7 +164,7 @@ export default function IncidentDetailPage() {
           {/* Description */}
           <div className="mb-6">
             <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: 8 }}>Description</h3>
-            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, lineHeight: 1.75, color: 'var(--cp-text-secondary, #334155)' }}>
+            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, lineHeight: 1.75, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
               {incident.description || 'No description provided.'}
             </p>
           </div>
@@ -238,7 +238,7 @@ export default function IncidentDetailPage() {
                         {c.created_at ? formatDistanceToNow(new Date(c.created_at), { addSuffix: true }) : ''}
                       </span>
                     </div>
-                    <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-secondary, #334155)', lineHeight: 1.6 }}>{c.content}</p>
+                    <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', lineHeight: 1.6 }}>{c.content}</p>
                   </div>
                 ))}
               </div>

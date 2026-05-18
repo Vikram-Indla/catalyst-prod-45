@@ -256,7 +256,7 @@ export default function EnvironmentDetailPage() {
               <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <FileText size={18} style={{ color: '#6366F1' }} /> Description
               </h3>
-              <p style={{ fontSize: 14, color: 'var(--cp-text-secondary, #334155)', margin: 0, whiteSpace: 'pre-wrap' }}>{environment.description}</p>
+              <p style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', margin: 0, whiteSpace: 'pre-wrap' }}>{environment.description}</p>
             </div>
           )}
         </div>

@@ -136,7 +136,7 @@ export default function SignOffQueuePage() {
           {actionModal && (
             <div className="space-y-4">
               <div className="rounded-[6px] p-3" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
-                <p className="text-[12px] mb-1" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Gate: <span className="font-bold" style={{ color: 'var(--cp-text-secondary, #334155)' }}>{actionModal.signoff.signoff_role || actionModal.signoff.stage}</span></p>
+                <p className="text-[12px] mb-1" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Gate: <span className="font-bold" style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{actionModal.signoff.signoff_role || actionModal.signoff.stage}</span></p>
                 <p className="text-[12px]" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Change: <span style={{ fontFamily: RH.fontMono, fontWeight: 650, color: 'var(--ds-text-brand, #2563EB)' }}>{actionModal.signoff.rh_changes?.chg_number}</span> — {actionModal.signoff.rh_changes?.title}</p>
                 {actionModal.signoff.rh_changes?.risk_level && <div className="mt-2"><RiskBadge risk={actionModal.signoff.rh_changes.risk_level} /></div>}
               </div>

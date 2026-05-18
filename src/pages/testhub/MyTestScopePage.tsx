@@ -145,7 +145,7 @@ export default function MyTestScopePage() {
           style={{
             display: 'flex', alignItems: 'center', gap: 6, height: 50,
             padding: '0 14px', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 8,
-            backgroundColor: 'var(--ds-surface, #FFF)', color: 'var(--ds-text-subtle, #334155)', fontSize: 13, cursor: 'pointer',
+            backgroundColor: 'var(--ds-surface, #FFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 13, cursor: 'pointer',
           }}
         >
           <RefreshCw size={14} /> Refresh
@@ -178,7 +178,7 @@ export default function MyTestScopePage() {
           borderRadius: 12, border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))',
         }}>
           <UserCheck size={48} style={{ marginBottom: 16, opacity: 0.3, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--ds-text-subtle, #334155)', margin: '0 0 8px' }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', margin: '0 0 8px' }}>
             No active assignments
           </h3>
           <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', margin: 0 }}>

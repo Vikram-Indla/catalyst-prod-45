@@ -727,7 +727,7 @@ export default function CleanupPage() {
                              {cat.name}
                            </span>
                            <span style={{
-                             fontSize: 11, color: 'var(--ds-text-subtle, #334155)',
+                             fontSize: 11, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
                              background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', border: '1px solid var(--cp-border, #E2E8F0)',
                              padding: '2px 8px', borderRadius: 20,
                            }}>
@@ -851,16 +851,16 @@ export default function CleanupPage() {
                             display: 'flex', gap: 16, marginTop: 4,
                             paddingLeft: cat.isReporterOnus ? 0 : 28, flexWrap: 'wrap',
                           }}>
-                            <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)' }}>
+                            <span style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
                               Assignee: {item.reporter_name || '\u2014'}
                             </span>
-                            <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)' }}>
+                            <span style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
                               Reporter: {item.reporter_name || '\u2014'}
                             </span>
-                            <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)' }}>
+                            <span style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
                               Project: {item.project_key || '\u2014'}
                             </span>
-                            <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)' }}>
+                            <span style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
                               Fix ver: {item.fixed_versions || '\u2014'}
                             </span>
                           </div>
@@ -876,7 +876,7 @@ export default function CleanupPage() {
                                 <div style={{
                                   background: 'var(--ds-surface-sunken, #F8FAFC)', borderLeft: '2px solid #CBD5E1',
                                   paddingLeft: 12, paddingTop: 6, paddingBottom: 6,
-                                  fontSize: 13, color: 'var(--ds-text-subtle, #334155)',
+                                  fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
                                 }}>
                                   {reason}
                                 </div>
@@ -1231,7 +1231,7 @@ export default function CleanupPage() {
                             {/* Category */}
                             <td style={{ padding: '8px 8px', width: 110 }}>
                               <span style={{
-                                display: 'inline-block', fontSize: 11, color: 'var(--ds-text-subtle, #334155)',
+                                display: 'inline-block', fontSize: 11, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
                                 background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', border: '1px solid var(--cp-border, #E2E8F0)',
                                 padding: '2px 8px', borderRadius: 20, whiteSpace: 'nowrap',
                                 maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis',
@@ -1357,11 +1357,11 @@ export default function CleanupPage() {
                     <td style={{ padding: '8px 12px', fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {entry.item_key}
                     </td>
-                    <td style={{ padding: '8px 12px', fontSize: 13, color: 'var(--ds-text-subtle, #334155)' }}>
+                    <td style={{ padding: '8px 12px', fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
                       {catLabel}
                     </td>
                     <td style={{ padding: '8px 12px' }}>
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, color: 'var(--ds-text-subtle, #334155)' }}>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
                         {entry.closed_at ? relativeTime(entry.closed_at) : '\u2014'}
                       </span>
                     </td>
@@ -1473,7 +1473,7 @@ export default function CleanupPage() {
                       </div>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>{r.name}</div>
-                        <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)' }}>
+                        <div style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
                           {r.items.length} item{r.items.length !== 1 ? 's' : ''}
                         </div>
                       </div>

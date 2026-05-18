@@ -53,7 +53,7 @@ export function CalendarDayCell({
             'h-7 w-7 flex items-center justify-center rounded-full text-sm font-medium',
             isCurrentDay && 'bg-[var(--ds-text-brand,#2563eb)] text-white',
             !isCurrentDay && isOutsideMonth && 'text-[var(--ds-text-subtlest,#94a3b8)]',
-            !isCurrentDay && !isOutsideMonth && 'text-[var(--ds-text-subtle,#334155)]'
+            !isCurrentDay && !isOutsideMonth && 'text-[var(--cp-ink-2, var(--cp-ink-2, #334155))]'
           )}
         >
           {format(date, 'd')}

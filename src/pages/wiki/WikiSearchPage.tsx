@@ -229,7 +229,7 @@ export default function WikiSearchPage() {
                   background: isDark ? 'rgba(124,58,237,0.15)' : '#F5F3FF', color: 'var(--cp-purple-60, #7C3AED)', display: 'inline-flex', alignItems: 'center', gap: 3,
                   marginBottom: 10,
                 }}><Sparkles size={10} /> AI Answer</span>
-                <div style={{ fontSize: 14, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #334155)', lineHeight: 1.75, marginTop: 10 }}>
+                <div style={{ fontSize: 14, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))', lineHeight: 1.75, marginTop: 10 }}>
                   {aiAnswer}
                 </div>
                 {aiSources.length > 0 && (
@@ -381,7 +381,7 @@ export default function WikiSearchPage() {
                       style={{
                         fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 4,
                         border: `1px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)',
-                        color: page === 0 ? (isDark ? 'var(--ds-border, #292929)' : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #334155)'), cursor: page === 0 ? 'default' : 'pointer',
+                        color: page === 0 ? (isDark ? 'var(--ds-border, #292929)' : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))'), cursor: page === 0 ? 'default' : 'pointer',
                       }}
                     >← Previous</button>
                     <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
@@ -393,7 +393,7 @@ export default function WikiSearchPage() {
                       style={{
                         fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 4,
                         border: `1px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)',
-                        color: page >= totalPages - 1 ? (isDark ? 'var(--ds-border, #292929)' : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #334155)'), cursor: page >= totalPages - 1 ? 'default' : 'pointer',
+                        color: page >= totalPages - 1 ? (isDark ? 'var(--ds-border, #292929)' : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))'), cursor: page >= totalPages - 1 ? 'default' : 'pointer',
                       }}
                     >Next →</button>
                   </div>

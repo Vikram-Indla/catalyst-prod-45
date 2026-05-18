@@ -102,7 +102,7 @@ function ChainPill({ color, keyLabel, title }: { color: string; keyLabel: string
         style={{ fontSize: 9, background: `${color}15`, color }}>
         {keyLabel}
       </span>
-      <span className="font-medium truncate" style={{ fontSize: 11, color: 'var(--ds-text-subtle, #334155)' }}>{title}</span>
+      <span className="font-medium truncate" style={{ fontSize: 11, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{title}</span>
     </div>
   );
 }

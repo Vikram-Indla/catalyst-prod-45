@@ -50,7 +50,7 @@ export function BulkActionBar({
         <X size={14} /> Clear
       </button>
 
-      <div style={{ width: 1, height: 20, background: 'var(--ds-text-subtle, #334155)', margin: '0 4px' }} />
+      <div style={{ width: 1, height: 20, background: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', margin: '0 4px' }} />
 
       {/* Status */}
       <div style={{ position: 'relative' }}>
@@ -127,7 +127,7 @@ function BulkBtn({ icon: Icon, label, onClick, danger }: {
       background: 'transparent', border: '1px solid #475569', borderRadius: 4,
       cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
     }}
-      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-text-subtle, #334155)')}
+      onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-ink-2, var(--cp-ink-2, #334155))')}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
     >
       <Icon size={13} /> {label}

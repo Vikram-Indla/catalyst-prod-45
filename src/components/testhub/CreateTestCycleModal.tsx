@@ -269,7 +269,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                   style={{
                     width: '100%', height: 40, padding: '8px 12px',
                     border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 6,
-                    fontSize: 14, color: 'var(--cp-text-secondary, #334155)', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
+                    fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
                     fontFamily: 'var(--cp-font-body)',
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     cursor: 'pointer', outline: 'none',
@@ -308,7 +308,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                           width: '100%', padding: '8px 12px', border: 'none',
                           backgroundColor: cycleStatus === opt.value ? ('var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))') : 'transparent',
                           display: 'flex', alignItems: 'center', gap: 8,
-                          cursor: 'pointer', fontSize: 14, color: 'var(--cp-text-secondary, #334155)',
+                          cursor: 'pointer', fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
                           fontFamily: 'var(--cp-font-body)',
                         }}
                         onMouseEnter={(e) => { (e.target as HTMLElement).style.backgroundColor = 'var(--cp-bg-page, #F8FAFC)'; }}

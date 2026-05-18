@@ -555,7 +555,7 @@ export default function TestHubDocsPage() {
                   <div style={{
                     padding: '0 20px 20px',
                     fontSize: 14,
-                    color: 'var(--cp-text-secondary, #334155)',
+                    color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
                     fontFamily: 'var(--cp-font-body)',
                     lineHeight: 1.7,
                   }}>

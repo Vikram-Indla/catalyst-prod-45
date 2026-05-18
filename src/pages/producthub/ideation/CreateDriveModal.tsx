@@ -213,7 +213,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     onMouseEnter={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = 'var(--cp-border-strong, #CBD5E1)'; e.currentTarget.style.background = 'var(--cp-bg-page, #F8FAFC)'; } }}
                     onMouseLeave={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = 'var(--cp-border-strong, var(--cp-border, #E2E8F0))'; e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)'; } }}
                   >
-                    <Icon size={20} strokeWidth={1.75} color={isSelected ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-secondary, #334155)')} />
+                    <Icon size={20} strokeWidth={1.75} color={isSelected ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-ink-2, var(--cp-ink-2, #334155))')} />
                   </button>
                 );
               })}
@@ -308,7 +308,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                   width: '36px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   border: 'none', background: 'var(--cp-bg-elevated, #FFFFFF)',
                   cursor: targetCount <= 1 ? 'not-allowed' : 'pointer',
-                  color: targetCount <= 1 ? ('var(--cp-text-muted, #CBD5E1)') : ('var(--cp-text-secondary, #334155)'),
+                  color: targetCount <= 1 ? ('var(--cp-text-muted, #CBD5E1)') : ('var(--cp-ink-2, var(--cp-ink-2, #334155))'),
                   fontSize: '18px', fontWeight: 500,
                 }}
                 disabled={targetCount <= 1}
@@ -340,7 +340,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                   width: '36px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   border: 'none', background: 'var(--cp-bg-elevated, #FFFFFF)',
                   cursor: targetCount >= 50 ? 'not-allowed' : 'pointer',
-                  color: targetCount >= 50 ? ('var(--cp-text-muted, #CBD5E1)') : ('var(--cp-text-secondary, #334155)'),
+                  color: targetCount >= 50 ? ('var(--cp-text-muted, #CBD5E1)') : ('var(--cp-ink-2, var(--cp-ink-2, #334155))'),
                   fontSize: '18px', fontWeight: 500,
                 }}
                 disabled={targetCount >= 50}

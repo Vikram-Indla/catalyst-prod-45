@@ -370,7 +370,7 @@ export default function SharedStepsPage() {
                   border: `1.5px solid ${activeFilters.length > 0 ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-border, var(--cp-border, #E2E8F0))')}`,
                   borderRadius: 8,
                   backgroundColor: activeFilters.length > 0 ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, #FFFFFF)'),
-                  color: activeFilters.length > 0 ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-secondary, #334155)'),
+                  color: activeFilters.length > 0 ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-ink-2, var(--cp-ink-2, #334155))'),
                   fontSize: 14, fontWeight: 500, cursor: 'pointer',
                   display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'var(--cp-font-body)',
                 }}
@@ -418,7 +418,7 @@ export default function SharedStepsPage() {
                       return (
                         <label key={cat.id} style={{
                           display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px',
-                          borderRadius: 8, cursor: 'pointer', fontSize: 14, color: 'var(--cp-text-secondary, #334155)', fontFamily: 'var(--cp-font-body)',
+                          borderRadius: 8, cursor: 'pointer', fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontFamily: 'var(--cp-font-body)',
                           backgroundColor: isChecked ? ('var(--cp-primary-light, #EFF6FF)') : 'transparent',
                         }}>
                           <input
@@ -457,7 +457,7 @@ export default function SharedStepsPage() {
                 onClick={(e) => { e.stopPropagation(); setIsSortOpen(!isSortOpen); setIsFilterOpen(false); }}
                 style={{
                   height: 40, padding: '0 14px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
-                  backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #334155)', fontSize: 14, fontWeight: 500,
+                  backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 14, fontWeight: 500,
                   cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'var(--cp-font-body)',
                 }}
               >
@@ -496,7 +496,7 @@ export default function SharedStepsPage() {
                         style={{
                           width: '100%', height: 40, padding: '8px 12px', border: 'none', borderRadius: 8,
                           backgroundColor: isActive ? ('var(--cp-primary-light, #EFF6FF)') : 'transparent',
-                          color: isActive ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-secondary, #334155)'), fontSize: 14,
+                          color: isActive ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-ink-2, var(--cp-ink-2, #334155))'), fontSize: 14,
                           fontWeight: isActive ? 600 : 400, cursor: 'pointer',
                           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                           textAlign: 'left', fontFamily: 'var(--cp-font-body)',
@@ -746,7 +746,7 @@ function CategorySidebarItem({ label, icon, count, isSelected, selectedColor, on
       </div>
       <span style={{
         flex: 1, fontSize: 14, fontWeight: isSelected ? 600 : 500,
-        color: isSelected ? selectedColor : ('var(--cp-text-secondary, #334155)'), fontFamily: 'var(--cp-font-body)',
+        color: isSelected ? selectedColor : ('var(--cp-ink-2, var(--cp-ink-2, #334155))'), fontFamily: 'var(--cp-font-body)',
         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
       }}>
         {label}
@@ -864,7 +864,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
           Action
         </span>
         <p style={{
-          fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-secondary, #334155)', margin: '4px 0 0',
+          fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', margin: '4px 0 0',
           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
           lineHeight: 1.6,
         }}>

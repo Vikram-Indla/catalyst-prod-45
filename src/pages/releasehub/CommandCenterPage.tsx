@@ -285,7 +285,7 @@ export default function CommandCenterPage() {
             {!coreDataReady ? (
               <div className="h-3 w-3/4 rounded animate-pulse" style={{ background: 'var(--cp-primary-light, #DBEAFE)' }} />
             ) : (
-              <p className="text-[12px]" style={{ color: 'var(--cp-text-secondary, #334155)' }}>{computed.postDeploySummary}</p>
+              <p className="text-[12px]" style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{computed.postDeploySummary}</p>
             )}
           </div>
         </div>
@@ -365,7 +365,7 @@ export default function CommandCenterPage() {
             {!coreDataReady ? (
               <div className="h-3 w-3/4 rounded animate-pulse" style={{ background: 'var(--cp-primary-light, #DBEAFE)' }} />
             ) : (
-              <p className="text-[12px]" style={{ color: 'var(--cp-text-secondary, #334155)' }}>{computed.conflictMessage}</p>
+              <p className="text-[12px]" style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{computed.conflictMessage}</p>
             )}
           </div>
         </div>
@@ -485,7 +485,7 @@ export default function CommandCenterPage() {
                     onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                     <td className="px-3" style={{ fontFamily: RH.fontMono, color: 'var(--ds-text-brand, #2563EB)', fontWeight: 650 }}>{so.rh_changes?.chg_number || '—'}</td>
-                    <td className="px-3" style={{ color: 'var(--cp-text-secondary, #334155)' }}>{so.signoff_role || so.stage || '—'}</td>
+                    <td className="px-3" style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{so.signoff_role || so.stage || '—'}</td>
                     <td className="px-3" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{so.assigned_to || '—'}</td>
                     <td className="px-3"><StatusLozenge status={so.status} /></td>
                   </tr>

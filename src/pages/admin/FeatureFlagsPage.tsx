@@ -240,7 +240,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
 
       {/* Updated */}
       <div className="px-3 min-w-0">
-        <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--cp-text-secondary, #334155)', fontVariantNumeric: 'tabular-nums' }}>
+        <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontVariantNumeric: 'tabular-nums' }}>
           {new Date(flag.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
         </div>
         <div

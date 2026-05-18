@@ -530,7 +530,7 @@
     height: 40px;
     border: none;
     background: transparent;
-    color: var(--ds-text-subtle, #334155);
+    color: var(--cp-ink-2, var(--cp-ink-2, #334155));
     cursor: pointer;
     border-radius: 8px;
   }

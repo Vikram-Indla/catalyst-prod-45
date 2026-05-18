@@ -77,9 +77,9 @@
   color: var(--ds-text, #EDEDED) !important;
 }
 
-/* Secondary text (var(--ds-text-subtle, #334155), var(--ds-text-subtle, #475569)) → t2 */
+/* Secondary text (var(--cp-ink-2, var(--cp-ink-2, #334155)), var(--ds-text-subtle, #475569)) → t2 */
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(51, 65, 85)"],
-[data-theme="dark"] [data-goals-page] [style*="color: #334155"],
+[data-theme="dark"] [data-goals-page] [style*="color: var(--cp-ink-2, #334155)"], [style*="color: #334155"],
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(71, 85, 105)"],
 .dark [data-goals-page] [style*="color: #475569"] , [data-theme="dark"] [data-goals-page] [style*="color: #475569"] {
   color: var(--ds-text-subtlest, #A1A1A1) !important;

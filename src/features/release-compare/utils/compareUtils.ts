@@ -20,7 +20,7 @@ export const CATALYST_COLORS = {
   gray400: 'var(--ds-text-subtlest, #94a3b8)',
   gray500: 'var(--ds-text-subtlest, #64748b)',
   gray600: 'var(--ds-text-subtle, #475569)',
-  gray700: 'var(--ds-text-subtle, #334155)',
+  gray700: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
   gray800: '#1e293b',
   gray900: 'var(--ds-text, #0f172a)',
 };

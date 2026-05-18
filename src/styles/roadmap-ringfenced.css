@@ -30,8 +30,8 @@
   /* Project = Deep Slate/Navy (NOT blue—reserved for avatar; NOT purple—AI color) */
   --roadmap-type-project:           var(--ds-text-subtle, #475569);
   --roadmap-type-project-bg:        var(--ds-surface-sunken, #F8FAFC);
-  --roadmap-type-project-bar:       linear-gradient(135deg, var(--ds-text-subtle, #475569), var(--ds-text-subtle, #334155));
-  --roadmap-type-project-hover:     var(--ds-text-subtle, #334155);
+  --roadmap-type-project-bar:       linear-gradient(135deg, var(--ds-text-subtle, #475569), var(--cp-ink-2, var(--cp-ink-2, #334155)));
+  --roadmap-type-project-hover:     var(--cp-ink-2, var(--cp-ink-2, #334155));
   --roadmap-type-project-light:     rgba(71, 85, 105, 0.12);
 
   /* Entity Integration = Amber/Warning (NOT purple—AI color) */

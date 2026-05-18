@@ -101,7 +101,7 @@
 }
 
 .task-bar[data-workstream*="MIM"] .task-title {
-  color: var(--ds-text-subtle, #334155) !important;  /* slate-700 - DARKER */
+  color: var(--cp-ink-2, var(--cp-ink-2, #334155)) !important;  /* slate-700 - DARKER */
 }
 
 /* === SENAEI — Teal === */
@@ -135,7 +135,7 @@
 }
 
 .task-bar[data-workstream*="Stand-Alone"] .task-title {
-  color: var(--ds-text-subtle, #334155) !important;
+  color: var(--cp-ink-2, var(--cp-ink-2, #334155)) !important;
 }
 
 /* === TAHOMMONA — Orange === */
@@ -167,7 +167,7 @@
 }
 
 .task-bar:not([data-workstream]) .task-title {
-  color: var(--ds-text-subtle, #334155) !important;
+  color: var(--cp-ink-2, var(--cp-ink-2, #334155)) !important;
 }
 
 /* ============================================================================
@@ -374,7 +374,7 @@
 .status-legend .legend-label {
   font-size: 13px !important;
   font-weight: 500 !important;
-  color: var(--ds-text-subtle, #334155) !important;
+  color: var(--cp-ink-2, var(--cp-ink-2, #334155)) !important;
 }
 
 .dark .status-legend .legend-label {

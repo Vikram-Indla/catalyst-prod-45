@@ -698,7 +698,7 @@ export function TestRepositoryPage() {
               style={{
                 height: 40, padding: '0 16px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
                 border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 8, fontFamily: 'var(--cp-font-body)',
-                fontSize: 14, fontWeight: 500, color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer',
+                fontSize: 14, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
               }}
             >
@@ -712,7 +712,7 @@ export function TestRepositoryPage() {
               style={{
                 height: 40, padding: '0 16px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
                 border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 8, fontFamily: 'var(--cp-font-body)',
-                fontSize: 14, fontWeight: 500, color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer',
+                fontSize: 14, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
               }}
             >
@@ -819,7 +819,7 @@ export function TestRepositoryPage() {
                       fontFamily: 'var(--cp-font-body)',
                       fontSize: 13,
                       fontWeight: 500,
-                      color: 'var(--cp-text-secondary, #334155)',
+                      color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -845,7 +845,7 @@ export function TestRepositoryPage() {
                       fontFamily: 'var(--cp-font-body)',
                       fontSize: 13,
                       fontWeight: 500,
-                      color: 'var(--cp-text-secondary, #334155)',
+                      color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -864,7 +864,7 @@ export function TestRepositoryPage() {
                         backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
                         border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
                         borderRadius: 6, fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500,
-                        color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer',
+                        color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', gap: 6,
                       }}
                     >
@@ -881,7 +881,7 @@ export function TestRepositoryPage() {
                         {assignableUsers.map(u => (
                           <button key={u.id} onClick={() => handleBulkAssign(u.id)} style={{
                             width: '100%', padding: '8px 12px', border: 'none', backgroundColor: 'transparent',
-                            fontSize: 13, color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer', textAlign: 'left',
+                            fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', cursor: 'pointer', textAlign: 'left',
                             borderRadius: 6, fontFamily: 'var(--cp-font-body)',
                           }}
                             onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--cp-bg-page, #F8FAFC)'}
@@ -903,7 +903,7 @@ export function TestRepositoryPage() {
                         backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
                         border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
                         borderRadius: 6, fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500,
-                        color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer',
+                        color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', gap: 6,
                       }}
                     >
@@ -920,7 +920,7 @@ export function TestRepositoryPage() {
                         {availableLabels.map(l => (
                           <button key={l.id} onClick={() => handleBulkTag(l.id)} style={{
                             width: '100%', padding: '8px 12px', border: 'none', backgroundColor: 'transparent',
-                            fontSize: 13, color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer', textAlign: 'left',
+                            fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', cursor: 'pointer', textAlign: 'left',
                             borderRadius: 6, fontFamily: 'var(--cp-font-body)',
                           }}
                             onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--cp-bg-page, #F8FAFC)'}

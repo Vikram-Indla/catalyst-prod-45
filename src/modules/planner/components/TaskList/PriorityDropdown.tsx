@@ -44,7 +44,7 @@ export const PriorityDropdown = memo(function PriorityDropdown({ task, width, on
               className="w-2.5 h-2.5 rounded-full flex-shrink-0"
               style={{ backgroundColor: PRIORITY_DOT_COLORS[task.priority] }}
             />
-            <span className="text-sm font-medium" style={{ color: 'var(--ds-text-subtle, #334155)' }}>{currentConfig.label}</span>
+            <span className="text-sm font-medium" style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{currentConfig.label}</span>
           </button>
         </PopoverTrigger>
         <PopoverContent className="w-44 p-1.5 z-[500] bg-popover border border-border shadow-lg" align="start">

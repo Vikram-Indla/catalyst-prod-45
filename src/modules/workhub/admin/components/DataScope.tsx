@@ -195,7 +195,7 @@ export function DataScope() {
         </h2>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
-          <label style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)', width: 260 }}>Default lookback period:</label>
+          <label style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', width: 260 }}>Default lookback period:</label>
           <select value={lookbackMonths} onChange={(e) => setLookbackMonths(Number(e.target.value))}
             style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', fontSize: 12, width: 150 }}>
             <option value={1}>1 month</option>
@@ -205,7 +205,7 @@ export function DataScope() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
-          <label style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)', width: 260 }}>Maximum lookback (hard limit):</label>
+          <label style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', width: 260 }}>Maximum lookback (hard limit):</label>
           <select value={maxMonths} onChange={(e) => setMaxMonths(Number(e.target.value))}
             style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', fontSize: 12, width: 150 }}>
             <option value={3}>3 months</option>
@@ -238,7 +238,7 @@ export function DataScope() {
         </h2>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
-          <label style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)', width: 260 }}>Mark items stale after:</label>
+          <label style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', width: 260 }}>Mark items stale after:</label>
           <select value={staleThreshold} onChange={(e) => setStaleThreshold(Number(e.target.value))}
             style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', fontSize: 12, width: 150 }}>
             <option value={7}>7 days</option>
@@ -248,7 +248,7 @@ export function DataScope() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
-          <label style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)', width: 260 }}>Mark items critical after:</label>
+          <label style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', width: 260 }}>Mark items critical after:</label>
           <select value={criticalThreshold} onChange={(e) => setCriticalThreshold(Number(e.target.value))}
             style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', fontSize: 12, width: 150 }}>
             <option value={14}>14 days</option>
@@ -266,7 +266,7 @@ export function DataScope() {
           ].map((t, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <Toggle checked={t.checked} onChange={t.onChange} />
-              <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)' }}>{t.label}</span>
+              <span style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{t.label}</span>
             </div>
           ))}
         </div>

@@ -29,7 +29,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
   const tooltipTimer = useRef<ReturnType<typeof setTimeout>>();
 
   const typeConfig = TYPE_COLORS[item.type];
-  const barGradient = typeConfig?.gradient || 'linear-gradient(135deg, var(--ds-text-subtle, #475569), var(--ds-text-subtle, #334155))';
+  const barGradient = typeConfig?.gradient || 'linear-gradient(135deg, var(--ds-text-subtle, #475569), var(--cp-ink-2, var(--cp-ink-2, #334155)))';
   const barColor = typeConfig?.solid || 'var(--ds-text-subtle, #475569)';
   const isOverdue = item.status !== 'Completed' && item.progress < 100 && item.hasRealEndDate && new Date(item.endDate) < new Date();
   const isFallbackEnd = !item.hasRealEndDate;

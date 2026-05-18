@@ -243,7 +243,7 @@ const bulkModalCSS = `
 
 .ct-modal-close:hover {
   background: var(--ds-surface-sunken, #f1f5f9);
-  color: var(--ds-text-subtle, #334155);
+  color: var(--cp-ink-2, var(--cp-ink-2, #334155));
 }
 
 /* Modal Body */
@@ -393,7 +393,7 @@ const bulkModalCSS = `
   padding: 12px 14px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--ds-text-subtle, #334155);
+  color: var(--cp-ink-2, var(--cp-ink-2, #334155));
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s ease;

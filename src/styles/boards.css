@@ -342,7 +342,7 @@
 .boards-add-task:hover {
   background-color: var(--ds-surface-sunken, #f8fafc);
   border-color: var(--ds-text-subtlest, #94a3b8);
-  color: var(--ds-text-subtle, #334155);
+  color: var(--cp-ink-2, var(--cp-ink-2, #334155));
 }
 
 .dark .boards-add-task {
@@ -893,7 +893,7 @@
 .boards-add-column:hover {
   background-color: var(--ds-surface-sunken, #f8fafc);
   border-color: var(--ds-text-subtlest, #94a3b8);
-  color: var(--ds-text-subtle, #334155);
+  color: var(--cp-ink-2, var(--cp-ink-2, #334155));
   transform: scale(1.02);
 }
 

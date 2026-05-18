@@ -124,7 +124,7 @@ const CycleDefectsPanel = ({ cycleId, isDark }: { cycleId?: string; isDark: bool
                 <td style={{ padding: '0 12px' }}>
                   <span onClick={() => navigate(`/testhub/defects/${d.id}`)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}>{d.defect_key}</span>
                 </td>
-                <td style={{ padding: '0 12px', fontSize: 14, color: 'var(--cp-text-secondary, #334155)' }}>{d.title}</td>
+                <td style={{ padding: '0 12px', fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{d.title}</td>
                 <td style={{ padding: '0 12px' }}>
                   <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', padding: '2px 8px', borderRadius: 3, backgroundColor: sc.bg, color: sc.color }}>{d.status?.replace(/_/g, ' ')}</span>
                 </td>
@@ -338,7 +338,7 @@ export default function TestCycleDetailPage() {
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={() => navigate(`/testhub/cycles/${cycleId}/report`)}
-              style={{ height: 40, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #334155)', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              style={{ height: 40, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
               <BarChart3 size={16} /> Report
             </button>
             <button onClick={handleExportCSV} title="Export CSV" disabled={testCases.length === 0}
@@ -364,7 +364,7 @@ export default function TestCycleDetailPage() {
                 const { error } = await typedQuery('tm_test_cycles').update({ status: 'paused', updated_at: new Date().toISOString() }).eq('id', cycleId);
                 if (error) { catalystToast.error(error.message); return; }
                 catalystToast.success('Cycle paused'); fetchCycle();
-              }} style={{ height: 40, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #334155)', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              }} style={{ height: 40, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Pause size={16} /> Pause Cycle
               </button>
             )}
@@ -373,7 +373,7 @@ export default function TestCycleDetailPage() {
                 const { error } = await typedQuery('tm_test_cycles').update({ status: 'active', updated_at: new Date().toISOString() }).eq('id', cycleId);
                 if (error) { catalystToast.error(error.message); return; }
                 catalystToast.success('Cycle resumed'); fetchCycle();
-              }} style={{ height: 40, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #334155)', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              }} style={{ height: 40, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Play size={16} /> Resume Cycle
               </button>
             )}
@@ -391,13 +391,13 @@ export default function TestCycleDetailPage() {
                 const { error } = await typedQuery('tm_test_cycles').update({ status: 'archived', updated_at: new Date().toISOString() }).eq('id', cycleId);
                 if (error) { catalystToast.error(error.message); return; }
                 catalystToast.success('Cycle archived'); fetchCycle();
-              }} style={{ height: 40, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #334155)', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              }} style={{ height: 40, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 Archive
               </button>
             )}
             {canEdit && (
               <button onClick={() => setIsEditModalOpen(true)}
-                style={{ height: 40, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #334155)', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                style={{ height: 40, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Pencil size={16} /> Edit
               </button>
             )}
@@ -441,7 +441,7 @@ export default function TestCycleDetailPage() {
               {pp}%
             </div>
           </div>
-          <p style={{ fontSize: 14, color: 'var(--cp-text-secondary, #334155)', margin: 0, fontWeight: 500 }}>{executedCount}/{totalCount} executed</p>
+          <p style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', margin: 0, fontWeight: 500 }}>{executedCount}/{totalCount} executed</p>
         </div>
 
         {/* By Status Panel */}
@@ -450,22 +450,22 @@ export default function TestCycleDetailPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <button onClick={() => setStatusFilter('passed')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'passed' ? ('var(--cp-success-light, #ECFDF5)') : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <CheckCircle2 size={18} style={{ color: 'var(--quality-high, #059669)' }} />
-              <span style={{ flex: 1, fontSize: 14, color: 'var(--cp-text-secondary, #334155)' }}>Passed</span>
+              <span style={{ flex: 1, fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>Passed</span>
               <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--quality-high, #059669)' }}>{passedCount}</span>
             </button>
             <button onClick={() => setStatusFilter('failed')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'failed' ? ('var(--cp-danger-light, #FEF2F2)') : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <XCircle size={18} style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }} />
-              <span style={{ flex: 1, fontSize: 14, color: 'var(--cp-text-secondary, #334155)' }}>Failed</span>
+              <span style={{ flex: 1, fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>Failed</span>
               <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{failedCount}</span>
             </button>
             <button onClick={() => setStatusFilter('blocked')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'blocked' ? ('var(--cp-warning-light, #FFFBEB)') : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <AlertTriangle size={18} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} />
-              <span style={{ flex: 1, fontSize: 14, color: 'var(--cp-text-secondary, #334155)' }}>Blocked</span>
+              <span style={{ flex: 1, fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>Blocked</span>
               <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }}>{blockedCount}</span>
             </button>
             <button onClick={() => setStatusFilter('not_run')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'not_run' ? ('var(--cp-bg-page, #F8FAFC)') : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <Clock size={18} style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }} />
-              <span style={{ flex: 1, fontSize: 14, color: 'var(--cp-text-secondary, #334155)' }}>Not Run</span>
+              <span style={{ flex: 1, fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>Not Run</span>
               <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{notRunCount}</span>
             </button>
             {statusFilter !== 'all' && (
@@ -490,7 +490,7 @@ export default function TestCycleDetailPage() {
                 return (
                   <div key={i}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-text-secondary, #334155)' }}>{ts.name}</span>
+                      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{ts.name}</span>
                       <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{ts.executed}/{ts.total}</span>
                     </div>
                     <div style={{ height: 6, backgroundColor: 'var(--cp-border, var(--cp-border, #E2E8F0))', borderRadius: 4, overflow: 'hidden' }}>
@@ -580,7 +580,7 @@ export default function TestCycleDetailPage() {
             )}
             {/* Status Filter */}
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-              style={{ height: 50, padding: '8px 12px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, fontSize: 13, color: 'var(--cp-text-secondary, #334155)', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}>
+              style={{ height: 50, padding: '8px 12px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}>
               <option value="all">All Statuses</option>
               <option value="not_run">Not Run</option>
               <option value="passed">Passed</option>
@@ -653,7 +653,7 @@ export default function TestCycleDetailPage() {
                         <td style={{ padding: '14px 16px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                             <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '3px 8px', borderRadius: 4 }}>{ctc.test_case?.case_key || '—'}</span>
-                            <span style={{ fontSize: 14, color: 'var(--cp-text-secondary, #334155)' }}>{ctc.test_case?.title || 'Unknown'}</span>
+                            <span style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{ctc.test_case?.title || 'Unknown'}</span>
                           </div>
                         </td>
                         <td style={{ padding: '14px 16px' }}>
@@ -669,7 +669,7 @@ export default function TestCycleDetailPage() {
                             style={{
                               display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px',
                               border: 'none', borderRadius: 4, backgroundColor: 'transparent',
-                              cursor: 'pointer', fontSize: 13, color: ctc.assignee ? ('var(--cp-text-secondary, #334155)') : ('var(--cp-text-muted, var(--cp-ink-4, #94A3B8))'),
+                              cursor: 'pointer', fontSize: 13, color: ctc.assignee ? ('var(--cp-ink-2, var(--cp-ink-2, #334155))') : ('var(--cp-text-muted, var(--cp-ink-4, #94A3B8))'),
                             }}
                           >
                             {ctc.assignee ? (
@@ -791,7 +791,7 @@ export default function TestCycleDetailPage() {
               </h2>
             </div>
             <div style={{ padding: 24 }}>
-              <p style={{ fontSize: 14, color: 'var(--cp-text-secondary, #334155)', margin: 0 }}>
+              <p style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', margin: 0 }}>
                 Are you sure you want to remove <strong>{selectedTestCaseIds.size}</strong> test case{selectedTestCaseIds.size !== 1 ? 's' : ''} from this cycle?
               </p>
               <p style={{ fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '12px 0 0' }}>
@@ -804,7 +804,7 @@ export default function TestCycleDetailPage() {
             }}>
               <button
                 onClick={() => setIsRemoveConfirmOpen(false)}
-                style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer' }}
+                style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', cursor: 'pointer' }}
               >
                 Cancel
               </button>

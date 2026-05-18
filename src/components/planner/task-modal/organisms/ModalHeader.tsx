@@ -330,7 +330,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
                   borderRadius: '12px',
                   fontSize: '14px',
                   fontWeight: 500,
-                  color: 'var(--ds-text-subtle, #334155)',
+                  color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
                   cursor: 'pointer'
                 }}
               >

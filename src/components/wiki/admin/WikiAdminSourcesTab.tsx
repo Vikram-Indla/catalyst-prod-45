@@ -69,7 +69,7 @@ function DocumentsTable() {
           border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
           background: 'transparent', cursor: 'pointer',
           fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 600,
-          color: 'var(--cp-text-secondary, #334155)', outline: 'none',
+          color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', outline: 'none',
         }}
           onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
           onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}

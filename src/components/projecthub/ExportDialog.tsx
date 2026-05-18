@@ -59,7 +59,7 @@ export function ExportDialog({ open, onClose, projects }: Props) {
               style={{ padding: '20px 12px', cursor: 'pointer' }}
             >
               <f.icon size={24} color="var(--cp-blue)" />
-              <span className="text-[var(--ds-text-subtle,#334155)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]" style={{ fontSize: 12, fontWeight: 600 }}>{f.label}</span>
+              <span className="text-[var(--cp-ink-2, var(--cp-ink-2, #334155))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]" style={{ fontSize: 12, fontWeight: 600 }}>{f.label}</span>
             </button>
           ))}
         </div>

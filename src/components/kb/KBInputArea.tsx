@@ -73,7 +73,7 @@ export function KBInputArea({
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';
-              e.currentTarget.style.color = 'var(--cp-text-secondary, #334155)';
+              e.currentTarget.style.color = 'var(--cp-ink-2, var(--cp-ink-2, #334155))';
               e.currentTarget.style.background = 'transparent';
             }}
           >

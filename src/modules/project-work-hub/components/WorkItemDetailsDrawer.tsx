@@ -395,7 +395,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                     )}
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] text-[#6B7280] dark:text-[#9C8E7E]">Last Synced</span>
-                      <span className="text-[12px] text-[var(--ds-text-subtle,#334155)] dark:text-[#E2D5C3]">
+                      <span className="text-[12px] text-[var(--cp-ink-2, var(--cp-ink-2, #334155))] dark:text-[#E2D5C3]">
                         {(jiraData.jira_pushed_at || jiraData.last_synced_at)
                           ? format(new Date(jiraData.jira_pushed_at || jiraData.last_synced_at!), 'MMM d, yyyy, hh:mm a')
                           : '—'}

@@ -488,7 +488,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                   <span key={tag} style={{
                     display: 'inline-flex', alignItems: 'center', gap: '4px',
                     padding: '2px 8px', background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
-                    borderRadius: '4px', fontSize: '12px', color: 'var(--cp-text-secondary, #334155)',
+                    borderRadius: '4px', fontSize: '12px', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
                   }}>
                     {tag}
                     <button

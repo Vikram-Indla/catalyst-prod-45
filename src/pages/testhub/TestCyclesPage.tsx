@@ -73,7 +73,7 @@ export default function TestCyclesPage() {
   const elevatedBg = 'var(--cp-bg-page, #F8FAFC)';
   const borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))';
   const textPrimary = 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))';
-  const textBody = 'var(--cp-text-secondary, #334155)';
+  const textBody = 'var(--cp-ink-2, var(--cp-ink-2, #334155))';
   const textSecondary = 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))';
   const textMuted = 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))';
 

@@ -5,7 +5,7 @@ const AVATAR_COLORS = ['var(--cp-purple-60, #7C3AED)', 'var(--ds-text-brand, #25
 
 const ROLE_STYLES: Record<string, { bg: string; text: string }> = {
   admin: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)' },
-  member: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--ds-text-subtle, #334155)' },
+  member: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' },
   viewer: { bg: '#FFFBEB', text: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
 };
 

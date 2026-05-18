@@ -46,7 +46,7 @@
      ═══════════════════════════════════════════════════════════ */
   --ct-text-primary: var(--ds-text, #0f172a);    /* 15.8:1 — headings, stat values */
   --ct-text-body: #1e293b;       /* 12.6:1 — body text */
-  --ct-text-secondary: var(--ds-text-subtle, #334155);  /* 7.4:1  — descriptions */
+  --ct-text-secondary: var(--cp-ink-2, var(--cp-ink-2, #334155));  /* 7.4:1  — descriptions */
   --ct-text-tertiary: var(--ds-text-subtle, #475569);   /* 5.9:1  — metadata, dates */
   --ct-text-muted: var(--ds-text-subtlest, #64748b);      /* 4.7:1  — labels, table headers */
   --ct-text-disabled: var(--ds-text-subtlest, #94a3b8);   /* 3.0:1  — disabled, placeholders ONLY */

@@ -172,7 +172,7 @@ function AddQuestionForm({ onClose }: { onClose: () => void }) {
         <button onClick={onClose} style={{
           padding: '6px 14px', borderRadius: 4, background: 'transparent',
           border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', cursor: 'pointer',
-          fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-secondary, #334155)', outline: 'none',
+          fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', outline: 'none',
         }}>Cancel</button>
       </div>
     </div>

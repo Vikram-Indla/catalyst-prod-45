@@ -17,7 +17,7 @@
   
   /* ==================== TEXT ==================== */
   --pln-cal-text-primary: var(--ds-text, #0f172a);
-  --pln-cal-text-secondary: var(--ds-text-subtle, #334155);
+  --pln-cal-text-secondary: var(--cp-ink-2, var(--cp-ink-2, #334155));
   --pln-cal-text-tertiary: var(--ds-text-subtlest, #64748b);
   --pln-cal-text-muted: var(--ds-text-subtlest, #94a3b8);
   --pln-cal-text-adjacent: var(--ds-text-disabled, #cbd5e1);
@@ -800,7 +800,7 @@
   /* Surfaces */
   --pln-cal-surface-page: var(--ds-text, #0f172a);
   --pln-cal-surface-card: #1e293b;
-  --pln-cal-surface-hover: var(--ds-text-subtle, #334155);
+  --pln-cal-surface-hover: var(--cp-ink-2, var(--cp-ink-2, #334155));
   --pln-cal-surface-selected: #1e3a5f;
   --pln-cal-surface-today: #1e3a5f;
   --pln-cal-surface-weekend: #1a2432;
@@ -814,7 +814,7 @@
   --pln-cal-text-adjacent: var(--ds-text-subtle, #475569);
   
   /* Borders */
-  --pln-cal-border: var(--ds-text-subtle, #334155);
+  --pln-cal-border: var(--cp-ink-2, var(--cp-ink-2, #334155));
   --pln-cal-border-light: #1e293b;
   --pln-cal-border-focus: var(--ds-text-brand, #60a5fa);
   
