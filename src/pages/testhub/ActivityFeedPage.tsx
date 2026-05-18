@@ -39,7 +39,7 @@ const ACTION_CONFIG: Record<string, { label: string; color: string; icon: any }>
   execute: { label: 'Executed', color: 'var(--cp-purple-60, #7C3AED)', icon: Play },
   assign: { label: 'Assigned', color: '#0891B2', icon: UserPlus },
   status_change: { label: 'Status Changed', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', icon: ArrowRight },
-  view: { label: 'Viewed', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', icon: Activity },
+  view: { label: 'Viewed', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', icon: Activity },
   export: { label: 'Exported', color: '#EC4899', icon: Activity },
   import: { label: 'Imported', color: '#EC4899', icon: Activity },
 };
@@ -153,7 +153,7 @@ export default function ActivityFeedPage() {
       {stats && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16, marginBottom: 24 }}>
           <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 16, border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
-            <p style={{ fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0, textTransform: 'uppercase' }}>Total (30d)</p>
+            <p style={{ fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: 0, textTransform: 'uppercase' }}>Total (30d)</p>
             <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '4px 0 0' }}>{stats.total_events}</p>
           </div>
           <div style={{ backgroundColor: '#ECFDF5', borderRadius: 12, padding: 16, border: '1px solid #A7F3D0' }}>
@@ -169,7 +169,7 @@ export default function ActivityFeedPage() {
             <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: '4px 0 0' }}>{stats.deletes}</p>
           </div>
           <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 16, border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
-            <p style={{ fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0, textTransform: 'uppercase' }}>Active Users</p>
+            <p style={{ fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: 0, textTransform: 'uppercase' }}>Active Users</p>
             <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '4px 0 0' }}>{stats.active_users}</p>
           </div>
         </div>
@@ -203,7 +203,7 @@ export default function ActivityFeedPage() {
         </select>
         {hasActiveFilters && (
           <button onClick={clearFilters}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', fontSize: 14, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
@@ -217,18 +217,18 @@ export default function ActivityFeedPage() {
       ) : filteredActivities.length === 0 ? (
         <div style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
           <Activity size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
-          <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0 }}>No activity found</p>
+          <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: 0 }}>No activity found</p>
           <p style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', margin: '8px 0 0' }}>Activity will appear here as users make changes</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {Object.entries(groupedActivities).map(([date, items]) => (
             <div key={date}>
-              <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '0 0 12px', textTransform: 'uppercase' }}>{date}</h3>
+              <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '0 0 12px', textTransform: 'uppercase' }}>{date}</h3>
               <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, overflow: 'hidden' }}>
                 {items.map((activity, index) => {
                   const action = ACTION_CONFIG[activity.action] || ACTION_CONFIG.view;
-                  const entity = ENTITY_CONFIG[activity.entity_type] || { label: activity.entity_type, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', icon: FileText };
+                  const entity = ENTITY_CONFIG[activity.entity_type] || { label: activity.entity_type, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', icon: FileText };
                   const ActionIcon = action.icon;
                   const EntityIcon = entity.icon;
 
@@ -241,7 +241,7 @@ export default function ActivityFeedPage() {
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                           <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{activity.user_name || 'Unknown user'}</span>
-                          <span style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{action.label.toLowerCase()}</span>
+                          <span style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{action.label.toLowerCase()}</span>
                           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: entity.color, backgroundColor: `${entity.color}15`, padding: '2px 8px', borderRadius: 4 }}>
                             <EntityIcon size={12} /> {entity.label}
                           </span>

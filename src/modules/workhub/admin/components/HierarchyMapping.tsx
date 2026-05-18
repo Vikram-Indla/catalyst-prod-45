@@ -83,7 +83,7 @@ export function HierarchyMapping() {
   }
 
   if (isLoading) {
-    return <div style={{ padding: 40, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-body)' }}>Loading hierarchy config...</div>
+    return <div style={{ padding: 40, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)' }}>Loading hierarchy config...</div>
   }
 
   return (
@@ -93,7 +93,7 @@ export function HierarchyMapping() {
         <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', margin: 0 }}>
           Hierarchy Mapping
         </h1>
-        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginTop: 4 }}>
+        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: 4 }}>
           Define issue type hierarchy levels and map Jira types to each. Drag rows to reorder priority.
         </p>
       </div>
@@ -147,7 +147,7 @@ export function HierarchyMapping() {
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', width: 100 }}>
                 {l.level}. {l.name}
               </span>
-              <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', flex: 1 }}>
+              <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', flex: 1 }}>
                 Mapped: {l.jiraTypes.join(', ') || 'None'}
               </span>
             </li>
@@ -168,7 +168,7 @@ export function HierarchyMapping() {
           <div key={l.name} style={{ marginBottom: 16 }}>
             <label style={{
               fontFamily: 'var(--cp-font-heading)', fontSize: 11, textTransform: 'uppercase',
-              color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', letterSpacing: '.3px', fontWeight: 600, display: 'block', marginBottom: 6,
+              color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', letterSpacing: '.3px', fontWeight: 600, display: 'block', marginBottom: 6,
             }}>
               Level: {l.name}
             </label>

@@ -208,7 +208,7 @@ export function UserMapping() {
   }, [profiles, catalystToJira])
 
   if (isLoading) {
-    return <div style={{ padding: 40, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-body)' }}>Loading...</div>
+    return <div style={{ padding: 40, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)' }}>Loading...</div>
   }
 
   const cardBg = 'var(--ds-surface, #fff)'
@@ -224,7 +224,7 @@ export function UserMapping() {
         <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', margin: 0 }}>
           User Mapping
         </h1>
-        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginTop: 4 }}>
+        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: 4 }}>
           Link Catalyst resources to Jira accounts. Filter by department and use smart name matching for suggestions.
         </p>
       </div>
@@ -311,7 +311,7 @@ export function UserMapping() {
         display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16,
         background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 8, padding: '10px 14px',
       }}>
-        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>Department</span>
+        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Department</span>
         <select
           value={departmentFilter}
           onChange={e => setDepartmentFilter(e.target.value)}
@@ -340,7 +340,7 @@ export function UserMapping() {
               style={{
                 padding: '5px 12px', fontSize: 11, fontWeight: 600, border: 'none', cursor: 'pointer',
                 background: viewMode === v.mode ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--bg-1, #F8FAFC)',
-                color: viewMode === v.mode ? 'var(--ds-surface, #fff)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+                color: viewMode === v.mode ? 'var(--ds-surface, #fff)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                 transition: 'all .15s',
               }}
             >
@@ -443,7 +443,7 @@ export function UserMapping() {
                             profile.department_name === 'Product' ? 'rgba(139,92,246,0.08)' :
                               'rgba(148,163,184,0.08)',
                           color: profile.department_name === 'Delivery' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' :
-                            profile.department_name === 'Product' ? '#8B5CF6' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+                            profile.department_name === 'Product' ? '#8B5CF6' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                         }}>
                           {profile.department_name}
                         </span>
@@ -466,7 +466,7 @@ export function UserMapping() {
                             <div style={{ fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', fontSize: 11 }}>
                               {existingJiraMapping.jira_display_name}
                             </div>
-                            <div style={{ fontSize: 9, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-mono)' }}>
+                            <div style={{ fontSize: 9, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-mono)' }}>
                               {existingJiraMapping.jira_account_id.slice(0, 16)}…
                             </div>
                           </div>
@@ -507,7 +507,7 @@ export function UserMapping() {
                             <div style={{ fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', fontSize: 11 }}>
                               {suggestedJira.jiraUser.jira_display_name}
                             </div>
-                            <div style={{ fontSize: 9, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
+                            <div style={{ fontSize: 9, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
                               {Math.round(suggestedJira.score * 100)}% match
                             </div>
                           </div>

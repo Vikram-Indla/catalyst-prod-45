@@ -25,7 +25,7 @@ interface CreateTagModalProps {
 const PRESET_COLORS = [
   'var(--ds-text-danger, #EF4444)', '#F97316', 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', '#EAB308', '#84CC16', 'var(--ds-text-success, #22C55E)', '#10B981',
   '#14B8A6', '#06B6D4', '#0EA5E9', 'var(--ds-text-brand, #3B82F6)', '#6366F1', '#8B5CF6', '#A855F7',
-  '#D946EF', '#EC4899', '#F43F5E', '#78716C', 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', 'var(--ds-text, var(--cp-ink-1, #0F172A))',
+  '#D946EF', '#EC4899', '#F43F5E', '#78716C', 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', 'var(--ds-text, var(--cp-ink-1, #0F172A))',
 ];
 
 const CATEGORY_SUGGESTIONS = [

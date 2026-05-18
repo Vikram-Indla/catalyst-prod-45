@@ -79,7 +79,7 @@ export function BulkMoveModal({ items, selectedKeys, onConfirm, onClose }: BulkM
             </p>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-            <X size={18} color="var(--ds-text-subtlest, var(--cp-ink-3, #64748B))" />
+            <X size={18} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
           </button>
         </div>
 

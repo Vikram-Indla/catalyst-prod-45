@@ -38,7 +38,7 @@ export function AttentionCards({ summary, onCardClick }: AttentionCardsProps) {
     { id: 'overdue', renderIcon: (color) => <FlameIcon size={14} color={color} />, label: 'Overdue', count: summary.overdueCount, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bgClass: 'bg-red-50 dark:bg-red-950/30' },
     { id: 'today', renderIcon: (color) => <ClockIcon label="" size="small" primaryColor={color} />, label: 'Due Today', count: summary.dueTodayCount, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bgClass: 'bg-amber-50 dark:bg-amber-950/30' },
     { id: 'defects', renderIcon: (color) => <BugIcon label="" size="small" primaryColor={color} />, label: 'Defects', count: summary.linkedDefectsCount, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bgClass: 'bg-red-50 dark:bg-red-950/30' },
-    { id: 'incidents', renderIcon: (color) => <ZapIcon size={14} color={color} />, label: 'Incidents', count: summary.activeIncidentsCount, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bgClass: 'bg-muted' },
+    { id: 'incidents', renderIcon: (color) => <ZapIcon size={14} color={color} />, label: 'Incidents', count: summary.activeIncidentsCount, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bgClass: 'bg-muted' },
   ];
 
   return (

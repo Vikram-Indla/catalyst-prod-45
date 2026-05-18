@@ -250,7 +250,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <MessageSquarePlus size={16} color="var(--cp-text-tertiary, var(--cp-ink-3, #64748B))" />
+              <MessageSquarePlus size={16} color="var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
             </button>
             <button
               onClick={onClose}
@@ -262,7 +262,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <X size={16} color="var(--cp-text-tertiary, var(--cp-ink-3, #64748B))" />
+              <X size={16} color="var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
             </button>
           </div>
         </div>

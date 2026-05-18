@@ -113,7 +113,7 @@ function FieldPair({ label, value }: { label: string; value: React.ReactNode }) 
     <div>
       <div style={{
         fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const,
-        letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginBottom: '6px',
+        letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: '6px',
       }}>
         {label}
       </div>

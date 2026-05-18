@@ -43,7 +43,7 @@ export function CircularGauge({ value, size = 100, strokeWidth = 10, color, labe
         </text>
         {label && (
           <text x={center} y={center + size * 0.14} textAnchor="middle" dominantBaseline="central"
-            style={{ fontSize: size * 0.11, fill: 'var(--exec-text-tertiary, var(--cp-ink-3, #64748B))' }}>
+            style={{ fontSize: size * 0.11, fill: 'var(--exec-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
             {label}
           </text>
         )}

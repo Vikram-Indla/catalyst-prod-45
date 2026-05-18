@@ -542,7 +542,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         );
       case 'updated':
         return (
-          <td key={colKey} style={{ width: columnWidths.updated, fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
+          <td key={colKey} style={{ width: columnWidths.updated, fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
             {formatDueDate(story.jira_updated_at ?? null)}
           </td>
         );
@@ -750,7 +750,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       header: 'UPDATED',
       sortingFn: (a, b) => (a.original.jira_updated_at || '').localeCompare(b.original.jira_updated_at || ''),
       cell: ({ row }) => (
-        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
+        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
           {formatDueDate(row.original.jira_updated_at ?? null)}
         </span>
       ),
@@ -797,7 +797,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '10px 12px', borderTop: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
-        fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-body)',
+        fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)',
       }}>
         <span style={{ fontWeight: 500 }}>
           {((page - 1) * pageSize) + 1}–{Math.min(page * pageSize, totalFiltered)} of {totalFiltered}
@@ -1040,7 +1040,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '10px 12px', borderTop: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
-            fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-body)',
+            fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)',
           }}>
             <span style={{ fontWeight: 500 }}>
               {((page - 1) * pageSize) + 1}–{Math.min(page * pageSize, totalFiltered)} of {totalFiltered}
@@ -1151,7 +1151,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         <div className="flex-1" />
 
         {/* Total count */}
-        <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{total} stories</span>
+        <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{total} stories</span>
 
       </div>
 

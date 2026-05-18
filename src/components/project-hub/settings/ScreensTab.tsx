@@ -40,7 +40,7 @@ function OperationCell({ op, screen }: { op: 'create' | 'edit' | 'view'; screen:
       >
         {label}
       </span>
-      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle,var(--cp-ink-3, #64748B))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {screen ?? '—'}
       </span>
     </div>

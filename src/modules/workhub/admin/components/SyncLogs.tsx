@@ -172,7 +172,7 @@ export function SyncLogs() {
         <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '18px', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))' }}>
           Sync & Logs
         </h1>
-        <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginTop: '4px' }}>
+        <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: '4px' }}>
           Monitor synchronization status and manage sync schedules
         </p>
       </div>
@@ -227,7 +227,7 @@ export function SyncLogs() {
           <div style={{ padding: '0 20px 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {/* Date Range */}
             <div>
-              <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '.4px', marginBottom: '8px', fontFamily: 'var(--cp-font-body)' }}>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase', letterSpacing: '.4px', marginBottom: '8px', fontFamily: 'var(--cp-font-body)' }}>
                 Date Range (Lookback)
               </label>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -330,7 +330,7 @@ export function SyncLogs() {
           {isSyncing ? 'Syncing…' : 'Sync with Filters'}
         </button>
         {hasFilters && !isSyncing && (
-          <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-body)' }}>
+          <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)' }}>
             {lookbackMonths}mo lookback{selectedProjects.length > 0 ? ` · ${selectedProjects.length} projects` : ''}{selectedTypes.length > 0 ? ` · ${selectedTypes.length} types` : ''}{selectedVersions.length > 0 ? ` · ${selectedVersions.length} versions` : ''}
           </span>
         )}
@@ -358,7 +358,7 @@ export function SyncLogs() {
                 onClick={() => setConfirmFullSync(false)}
                 style={{
                   padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
-                  background: 'var(--bg-app, #fff)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontSize: '11px', fontWeight: 600,
+                  background: 'var(--bg-app, #fff)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: '11px', fontWeight: 600,
                   cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
                 }}
               >
@@ -371,7 +371,7 @@ export function SyncLogs() {
               disabled={isSyncing}
               style={{
                 padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
-                background: 'var(--bg-app, #fff)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontSize: '11px', fontWeight: 600,
+                background: 'var(--bg-app, #fff)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: '11px', fontWeight: 600,
                 cursor: isSyncing ? 'not-allowed' : 'pointer', fontFamily: 'var(--cp-font-body)',
               }}
             >
@@ -431,7 +431,7 @@ export function SyncLogs() {
       <div style={{ background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: '8px', overflow: 'hidden' }}>
         <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '13px', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))' }}>Sync Log</span>
-          <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '2px 8px', borderRadius: '4px' }}>Last 10 runs</span>
+          <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '2px 8px', borderRadius: '4px' }}>Last 10 runs</span>
         </div>
         <div style={{ maxHeight: '340px', overflowY: 'auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '140px 90px 80px 1fr 100px 70px', padding: '8px 20px', background: 'var(--bg-1, #F8FAFC)', borderBottom: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', position: 'sticky', top: 0, zIndex: 1 }}>
@@ -502,7 +502,7 @@ function LogRow({ log, formatDuration }: { log: SyncLogEntry; formatDuration: (m
       onMouseOver={(e) => (e.currentTarget.style.background = 'var(--bg-1, #F8FAFC)')}
       onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
     >
-      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{timestamp}</span>
+      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{timestamp}</span>
       <span><span style={{ fontSize: '9px', padding: '2px 8px', borderRadius: '4px', background: tc.bg, color: tc.text, fontWeight: 600, textTransform: 'capitalize', fontFamily: 'var(--cp-font-body)' }}>{log.sync_type}</span></span>
       <span><span style={{ fontSize: '10px', padding: '2px 10px', borderRadius: '12px', background: sc.bg, color: sc.text, fontWeight: 600, textTransform: 'capitalize', fontFamily: 'var(--cp-font-body)' }}>{log.status}</span></span>
       <span style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: '12px', fontFamily: 'var(--cp-font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{details}</span>

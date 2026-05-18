@@ -190,7 +190,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
 }
 
 /* ── Avatar color palette (no purple/yellow) ── */
-const AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))','var(--ds-text-danger, var(--cp-danger, #DC2626))','var(--ds-text-success, var(--cp-success, #16A34A))','var(--ds-text-subtlest, var(--cp-ink-3, #64748B))','#0284C7','var(--quality-high, #059669)','#BE123C','var(--ds-background-brand-bold-hovered, #1D4ED8)','#0F766E'];
+const AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))','var(--ds-text-danger, var(--cp-danger, #DC2626))','var(--ds-text-success, var(--cp-success, #16A34A))','var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))','#0284C7','var(--quality-high, #059669)','#BE123C','var(--ds-background-brand-bold-hovered, #1D4ED8)','#0F766E'];
 function getAvatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -282,8 +282,8 @@ function DueDateCell({ date }: { date?: string }) {
 
 /* ── Type colors ── */
 const TYPE_COLORS: Record<string, string> = {
-  'Epic': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'Feature': 'var(--cp-teal-60, #0D9488)', 'Story': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Sub-task': 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
-  'Task': 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', 'Bug': 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
+  'Epic': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'Feature': 'var(--cp-teal-60, #0D9488)', 'Story': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Sub-task': 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
+  'Task': 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', 'Bug': 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
 };
 
 /* ── Parent cell (chip style matching ParentEpicChip) ── */
@@ -708,7 +708,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'type':
         return (
           <div style={{ padding: '0 8px' }}>
-            <span style={{ fontSize: 12, fontWeight: 500, color: TYPE_COLORS[item.issueType || ''] || 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
+            <span style={{ fontSize: 12, fontWeight: 500, color: TYPE_COLORS[item.issueType || ''] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
               {item.issueType || '—'}
             </span>
           </div>

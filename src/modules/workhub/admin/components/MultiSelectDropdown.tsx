@@ -67,7 +67,7 @@ export function MultiSelectDropdown({
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '.4px', fontFamily: 'var(--cp-font-body)' }}>
+        <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase', letterSpacing: '.4px', fontFamily: 'var(--cp-font-body)' }}>
           {label}
         </label>
         {selected.length > 0 && (
@@ -159,7 +159,7 @@ export function MultiSelectDropdown({
               </button>
               <button
                 onClick={() => onChange([])}
-                style={{ fontSize: '10px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontWeight: 600 }}
+                style={{ fontSize: '10px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontWeight: 600 }}
               >
                 Deselect all
               </button>

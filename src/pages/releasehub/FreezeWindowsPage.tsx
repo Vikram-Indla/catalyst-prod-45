@@ -107,7 +107,7 @@ export default function FreezeWindowsPage() {
       <div className="flex items-center justify-between mb-5">
         <div>
           <h1 className="text-[22px]" style={{ fontFamily: RH.fontDisplay, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', fontWeight: 650 }}>Freeze Windows</h1>
-          <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
+          <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
             Define deployment freeze periods. Releases targeting these dates will be flagged automatically.
           </p>
         </div>
@@ -121,12 +121,12 @@ export default function FreezeWindowsPage() {
       <div className="mb-6 rounded-lg p-4" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
         <div className="flex items-center justify-between mb-3">
           <button onClick={() => setCalMonth(new Date(calMonth.getFullYear(), calMonth.getMonth() - 1))}
-            className="h-7 w-7 rounded flex items-center justify-center" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
+            className="h-7 w-7 rounded flex items-center justify-center" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
             <ChevronLeft size={16} />
           </button>
           <span className="text-[14px] font-semibold" style={{ fontFamily: RH.fontDisplay, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{monthLabel}</span>
           <button onClick={() => setCalMonth(new Date(calMonth.getFullYear(), calMonth.getMonth() + 1))}
-            className="h-7 w-7 rounded flex items-center justify-center" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
+            className="h-7 w-7 rounded flex items-center justify-center" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
             <ChevronRight size={16} />
           </button>
         </div>
@@ -166,7 +166,7 @@ export default function FreezeWindowsPage() {
             <CalendarOff className="w-8 h-8" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }} />
           </div>
           <h3 className="font-semibold text-lg mb-1" style={{ color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>No freeze windows defined</h3>
-          <p className="text-[13px] max-w-md" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Add one to protect critical periods.</p>
+          <p className="text-[13px] max-w-md" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Add one to protect critical periods.</p>
         </div>
       ) : (
         <div className="rounded-lg overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
@@ -174,7 +174,7 @@ export default function FreezeWindowsPage() {
             <thead>
               <tr style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
                 {['NAME', 'START DATE', 'END DATE', 'DURATION', 'REASON', 'ACTIONS'].map(h => (
-                  <th key={h} className="px-3 py-0 h-9 text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{h}</th>
+                  <th key={h} className="px-3 py-0 h-9 text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -188,7 +188,7 @@ export default function FreezeWindowsPage() {
                   <td className="px-3 py-0" style={{ fontFamily: RH.fontMono, fontSize: 12, color: 'var(--cp-text-secondary, #475569)' }}>{formatDate(fw.start_date)}</td>
                   <td className="px-3 py-0" style={{ fontFamily: RH.fontMono, fontSize: 12, color: 'var(--cp-text-secondary, #475569)' }}>{formatDate(fw.end_date)}</td>
                   <td className="px-3 py-0" style={{ fontFamily: RH.fontMono, fontSize: 12, color: 'var(--cp-text-secondary, #475569)' }}>{daysBetween(fw.start_date, fw.end_date)} days</td>
-                  <td className="px-3 py-0 max-w-[240px] truncate" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }} title={fw.reason || ''}>{fw.reason ? (fw.reason.length > 40 ? fw.reason.slice(0, 40) + '…' : fw.reason) : '—'}</td>
+                  <td className="px-3 py-0 max-w-[240px] truncate" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }} title={fw.reason || ''}>{fw.reason ? (fw.reason.length > 40 ? fw.reason.slice(0, 40) + '…' : fw.reason) : '—'}</td>
                   <td className="px-3 py-0">
                     <button onClick={() => handleDelete(fw.id, fw.name)}
                       className="opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 rounded flex items-center justify-center hover:bg-[#FEE2E2] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] hover:text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]">

@@ -17,7 +17,7 @@ const QUARTER_STYLES: Record<string, { bg: string; color: string }> = {
 };
 
 const headerStyle: React.CSSProperties = {
-  fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-body)',
+  fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)',
   textTransform: 'uppercase', letterSpacing: '0.07em',
   background: 'var(--bg-1, #F8FAFC)', height: 50, padding: '8px 12px',
   borderBottom: '2px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', position: 'sticky', top: 0, zIndex: 2,

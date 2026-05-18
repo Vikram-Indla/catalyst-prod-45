@@ -142,7 +142,7 @@ function StatusLozenge({ value }: { value: string }) {
 function daysColor(d: number): string {
   if (d > 90) return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
   if (d >= 60) return '#92400E';
-  return 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
+  return 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
 }
 
 function relativeTime(iso: string): string {
@@ -557,7 +557,7 @@ export default function CleanupPage() {
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>Last scan: today 02:00 AST</span>
+          <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Last scan: today 02:00 AST</span>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: 20,
@@ -604,7 +604,7 @@ export default function CleanupPage() {
                 padding: '10px 24px', border: 'none', cursor: 'pointer',
                 background: 'transparent', fontFamily: 'var(--cp-font-body)',
                 fontSize: 13, fontWeight: activeTab === tab.key ? 700 : 500,
-                color: activeTab === tab.key ? 'var(--ds-text, var(--cp-ink-1, #0F172A))' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+                color: activeTab === tab.key ? 'var(--ds-text, var(--cp-ink-1, #0F172A))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                 borderBottom: activeTab === tab.key ? '2px solid #2563EB' : '2px solid transparent',
               }}
             >
@@ -627,7 +627,7 @@ export default function CleanupPage() {
                   height: 32, padding: '0 12px', border: 'none', cursor: 'pointer',
                   fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 500,
                   background: viewMode === v.key ? 'var(--ds-text, var(--cp-ink-1, #0F172A))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                  color: viewMode === v.key ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+                  color: viewMode === v.key ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                   transition: 'background 100ms, color 100ms',
                 }}
               >
@@ -661,7 +661,7 @@ export default function CleanupPage() {
                   {cell.value}
                 </div>
                 <div style={{
-                  fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+                  fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                   textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 4,
                 }}>
                   {cell.label}
@@ -682,7 +682,7 @@ export default function CleanupPage() {
                   <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700, color: '#065F46' }}>
                     Governance: GREEN
                   </span>
-                  <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
+                  <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
                     All items are in compliance. Check back tomorrow.
                   </span>
                 </div>
@@ -722,7 +722,7 @@ export default function CleanupPage() {
                              height: '100%',
                            }}
                          >
-                           <CatIcon size={16} color="var(--ds-text-subtlest, var(--cp-ink-3, #64748B))" />
+                           <CatIcon size={16} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
                            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>
                              {cat.name}
                            </span>
@@ -733,7 +733,7 @@ export default function CleanupPage() {
                            }}>
                              {items.length}
                            </span>
-                           <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginLeft: 4 }}>
+                           <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginLeft: 4 }}>
                              {cat.subtitle}
                            </span>
                            <div style={{ flex: 1 }} />
@@ -887,7 +887,7 @@ export default function CleanupPage() {
                           {/* Reporter onus note */}
                           {cat.isReporterOnus && (
                             <div style={{
-                              fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginTop: 4,
+                              fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: 4,
                               paddingLeft: cat.isReporterOnus ? 0 : 28,
                             }}>
                               Reporter must action — {item.reporter_name || 'Unknown'}
@@ -899,7 +899,7 @@ export default function CleanupPage() {
                       {isOpen && items.length === 0 && (
                         <div style={{
                           padding: '16px', textAlign: 'center',
-                          fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                          fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                           borderBottom: '0.75px solid var(--cp-bg-sunken, #F1F5F9)',
                         }}>
                           No items in this category
@@ -995,7 +995,7 @@ export default function CleanupPage() {
                     justifyContent: 'center', padding: '64px 0', gap: 12,
                   }}>
                     <CheckCircle size={32} color="var(--ds-text-disabled, #CBD5E1)" />
-                    <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>No items match this filter</span>
+                    <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>No items match this filter</span>
                     {(listCatFilter !== 'all' || listStatusFilter !== 'all') && (
                       <span
                         onClick={() => { setListCatFilter('all'); setListStatusFilter('all'); }}
@@ -1038,7 +1038,7 @@ export default function CleanupPage() {
                           <th key={i} style={{
                             height: 44, padding: '10px 12px',
                             background: 'var(--ds-surface-sunken, #F8FAFC)', borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
-                            fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+                            fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                             textTransform: 'uppercase', letterSpacing: '0.06em',
                             textAlign: (col.align || 'left') as any, whiteSpace: 'nowrap',
                             verticalAlign: 'middle', fontFamily: 'var(--cp-font-body)',
@@ -1322,7 +1322,7 @@ export default function CleanupPage() {
                   <th key={h} style={{
                     padding: '10px 12px', fontSize: 11, fontWeight: 700,
                     textTransform: 'uppercase', letterSpacing: '0.04em',
-                    color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', textAlign: 'left', fontFamily: 'var(--cp-font-body)',
+                    color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textAlign: 'left', fontFamily: 'var(--cp-font-body)',
                   }}>
                     {h}
                   </th>
@@ -1332,7 +1332,7 @@ export default function CleanupPage() {
             <tbody>
               {restoreData.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ padding: 40, textAlign: 'center', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
+                  <td colSpan={6} style={{ padding: 40, textAlign: 'center', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
                     No closed items found
                   </td>
                 </tr>
@@ -1413,7 +1413,7 @@ export default function CleanupPage() {
             }}>
               Force close {selected.size} item{selected.size !== 1 ? 's' : ''}?
             </h2>
-            <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginTop: 6, marginBottom: 0 }}>
+            <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: 6, marginBottom: 0 }}>
               These items will be marked Done and locked. Reporters will be notified. A comment will be added to each issue. The action is permanent in the audit trail.
             </p>
             <div style={{ height: 1, background: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', marginTop: 20 }} />
@@ -1423,7 +1423,7 @@ export default function CleanupPage() {
           <div style={{ padding: '16px 24px', maxHeight: '60vh', overflowY: 'auto' }}>
             {/* Section 1 */}
             <div style={{
-              fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+              fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
               textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12,
             }}>
               WHAT WILL HAPPEN
@@ -1435,7 +1435,7 @@ export default function CleanupPage() {
               { Icon: Clock, text: 'Restore window: 90 days from today' },
             ].map((row, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '8px 0' }}>
-                <row.Icon size={16} color="var(--ds-text-subtlest, var(--cp-ink-3, #64748B))" style={{ flexShrink: 0, marginTop: 1 }} />
+                <row.Icon size={16} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" style={{ flexShrink: 0, marginTop: 1 }} />
                 <span style={{ fontSize: 14, color: '#1E293B', lineHeight: 1.5 }}>{row.text}</span>
               </div>
             ))}
@@ -1444,7 +1444,7 @@ export default function CleanupPage() {
 
             {/* Section 2 — Reporters */}
             <div style={{
-              fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+              fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
               textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12,
             }}>
               REPORTERS BEING NOTIFIED
@@ -1459,7 +1459,7 @@ export default function CleanupPage() {
               });
               const reporters = Array.from(reporterMap.values());
               if (reporters.length === 0) {
-                return <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>No reporters linked to selected items.</p>;
+                return <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>No reporters linked to selected items.</p>;
               }
               return (
                 <div style={{ maxHeight: 160, overflowY: 'auto' }}>
@@ -1487,7 +1487,7 @@ export default function CleanupPage() {
 
             {/* Section 3 — Closure reason */}
             <div style={{
-              fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+              fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
               textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8,
             }}>
               CLOSURE REASON

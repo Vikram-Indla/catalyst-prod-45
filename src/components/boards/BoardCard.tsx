@@ -115,7 +115,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               opacity: hover || menuOpen ? 1 : 0, transition: 'opacity 150ms',
             }}>
-              <MoreIcon label="Board actions" size="small" primaryColor="var(--ds-text-subtlest, var(--cp-ink-3, #64748B))" />
+              <MoreIcon label="Board actions" size="small" primaryColor="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
             </button>
             {menuOpen && (
               <div style={{
@@ -158,7 +158,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             {board.isPersonal && <Chip bg={'var(--cp-primary-light, #EFF6FF)'} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))">Personal</Chip>}
             <Chip bg={vis.bg} color={vis.color}>{vis.label}</Chip>
             {board.swimlaneType !== 'none' && (
-              <Chip bg={'var(--cp-bg-page, #F8FAFC)'} color={'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'}>By {board.swimlaneType}</Chip>
+              <Chip bg={'var(--cp-bg-page, #F8FAFC)'} color={'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'}>By {board.swimlaneType}</Chip>
             )}
             {/* Jira Sync badge */}
             {hasJiraSync && (

@@ -6,7 +6,7 @@ import WatchButton from '@/components/shared/WatchButton';
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   'done':        { bg: 'rgba(16,185,129,0.1)', text: 'var(--quality-high, #059669)' },
   'in progress': { bg: 'rgba(37,99,235,0.1)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  'to do':       { bg: 'rgba(148,163,184,0.12)', text: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' },
+  'to do':       { bg: 'rgba(148,163,184,0.12)', text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' },
 };
 
 function getStatusStyle(category: string) {

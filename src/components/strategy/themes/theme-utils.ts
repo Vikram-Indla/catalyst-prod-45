@@ -83,7 +83,7 @@ export const PRIORITY_CONFIG: Record<string, { label: string; color: string }> =
   critical: { label: 'Critical', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
   high:     { label: 'High',     color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
   medium:   { label: 'Medium',   color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
-  low:      { label: 'Low',      color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' },
+  low:      { label: 'Low',      color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' },
 };
 
 // ═══ COLOR SWATCHES ═══

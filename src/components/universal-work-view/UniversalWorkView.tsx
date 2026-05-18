@@ -180,7 +180,7 @@ export function UniversalWorkView({ params, onClose }: Props) {
             flexWrap: 'wrap',
           }}
         >
-          <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 600 }}>Filtered:</span>
+          <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontWeight: 600 }}>Filtered:</span>
           {filterChips.map((c) => (
             <span
               key={c.label}
@@ -195,7 +195,7 @@ export function UniversalWorkView({ params, onClose }: Props) {
                 color: 'var(--ds-text, var(--cp-ink-1, #0F172A))',
               }}
             >
-              <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{c.label}:</span>
+              <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{c.label}:</span>
               <span style={{ fontWeight: 500 }}>{c.value}</span>
             </span>
           ))}

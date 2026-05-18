@@ -55,7 +55,7 @@ interface Props {
 }
 
 const mkSectionLabel = (isDark: boolean): React.CSSProperties => ({
-  fontSize: '10px', fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
+  fontSize: '10px', fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
   textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px',
 });
 
@@ -64,7 +64,7 @@ const mkFieldRow = (isDark: boolean): React.CSSProperties => ({
   padding: '5px 0', borderBottom: `0.5px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`,
 });
 
-const mkFieldKey = (isDark: boolean): React.CSSProperties => ({ fontSize: '11px', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' });
+const mkFieldKey = (isDark: boolean): React.CSSProperties => ({ fontSize: '11px', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' });
 const mkFieldVal = (isDark: boolean): React.CSSProperties => ({ fontSize: '12px', fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', textAlign: 'right' as const });
 const monoSmall: React.CSSProperties = { fontFamily: 'var(--cp-font-mono)', fontSize: '10px' };
 const Code: React.FC<{ children: React.ReactNode; isDark?: boolean }> = ({ children, isDark = false }) => (
@@ -82,7 +82,7 @@ const InfoCard: React.FC<{ label: string; children: React.ReactNode; isDark?: bo
     borderRadius: '6px', padding: '10px 12px',
   }}>
     <div style={{
-      fontSize: '9.5px', fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
+      fontSize: '9.5px', fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
       textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '5px',
     }}>
       {label}
@@ -95,7 +95,7 @@ const PERM_COLORS: Record<string, { bg: string; color: string; bgDark: string; c
   view: { bg: 'var(--ds-background-selected, #EFF6FF)', color: '#0747A6', bgDark: 'rgba(37,99,235,0.12)', colorDark: '#93C5FD' },
   edit: { bg: '#FEF3C7', color: '#92400E', bgDark: 'rgba(251,191,36,0.12)', colorDark: '#FCD34D' },
   full: { bg: 'var(--ds-background-success, #DCFCE7)', color: '#006644', bgDark: 'rgba(34,197,94,0.12)', colorDark: '#86EFAC' },
-  none: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bgDark: 'var(--ds-surface-raised, #1A1A1A)', colorDark: 'var(--ds-text-subtlest, #878787)' },
+  none: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bgDark: 'var(--ds-surface-raised, #1A1A1A)', colorDark: 'var(--ds-text-subtlest, #878787)' },
 };
 
 function getEventDotColor(ev: any): string {
@@ -136,7 +136,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
     fontSize: '9px', fontWeight: 700, textTransform: 'uppercase',
     padding: '3px 7px', borderRadius: '4px', cursor: 'pointer',
     border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
-    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
   };
   const xsBtnClass = 'jus-action-btn';
 
@@ -170,7 +170,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', marginTop: '6px' }}>
             <thead>
               <tr style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }} className="jus-table-head">
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', textAlign: 'left', width: '28px' }}>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase', textAlign: 'left', width: '28px' }}>
                   <input
                     type="checkbox"
                     checked={checkedPerms.size === perms.length && perms.length > 0}
@@ -178,9 +178,9 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                     style={{ width: '12px', height: '12px', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}
                   />
                 </th>
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', textAlign: 'left' }}>Project</th>
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', textAlign: 'left' }}>Key</th>
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', textAlign: 'right' }}>Permission</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase', textAlign: 'left' }}>Project</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase', textAlign: 'left' }}>Key</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase', textAlign: 'right' }}>Permission</th>
               </tr>
             </thead>
             <tbody>
@@ -205,7 +205,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                     <td style={{ padding: '6px 9px' }}>
                       <span className="jus-project-key-chip" style={{
                         fontFamily: 'var(--cp-font-mono)', fontSize: '9px',
-                        color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
+                        color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                         background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '1px 4px', borderRadius: '4px',
                       }}>{p.project_key}</span>
                     </td>
@@ -307,7 +307,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
     elevated: 'var(--ds-surface-raised, #1A1A1A)', inputBg: 'var(--ds-surface-raised, #1A1A1A)',
   } : {
     surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'rgba(15,23,42,0.10)', text1: 'var(--ds-text, var(--cp-ink-1, #0F172A))',
-    text2: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', text3: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', sunken: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
+    text2: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', text3: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', sunken: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
     elevated: 'var(--ds-surface-sunken, #F8FAFC)', inputBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   };
 

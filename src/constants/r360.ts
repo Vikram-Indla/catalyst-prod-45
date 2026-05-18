@@ -5,7 +5,7 @@ export const R360 = {
   danger: 'var(--ds-text-danger, #EF4444)', dangerLight: 'var(--ds-background-danger, #FEF2F2)', dangerText: '#7F1D1D',
   teal: 'var(--cp-teal-60, #0D9488)', tealLight: '#F0FDFA', tealText: '#134E4A',
   purple: 'var(--cp-purple-60, #7C3AED)', purpleLight: '#F5F3FF', purpleText: '#4C1D95',
-  ink1: '#020617', ink2: 'var(--fg-1, var(--cp-ink-1, #0F172A))', ink3: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', ink4: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+  ink1: '#020617', ink2: 'var(--fg-1, var(--cp-ink-1, #0F172A))', ink3: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', ink4: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
   surface: 'var(--bg-1, #F8FAFC)', card: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderLt: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
 } as const;
 
@@ -33,7 +33,7 @@ export const R360_STATUS_MAP: Record<string, StatusDisplay> = {
   'Hold':           { category:'blocked',     label:'On Hold',     color:'#7F1D1D', bg:'var(--ds-background-danger, #FEF2F2)', dot:'var(--ds-text-danger, #EF4444)' },
   'On Hold':        { category:'blocked',     label:'On Hold',     color:'#7F1D1D', bg:'var(--ds-background-danger, #FEF2F2)', dot:'var(--ds-text-danger, #EF4444)' },
 };
-export const R360_STATUS_DEFAULT: StatusDisplay = { category:'to_do', label:'Unknown', color:'var(--cp-ink-2, var(--cp-ink-2, #334155))', bg:'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', dot:'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' };
+export const R360_STATUS_DEFAULT: StatusDisplay = { category:'to_do', label:'Unknown', color:'var(--cp-ink-2, var(--cp-ink-2, #334155))', bg:'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', dot:'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' };
 
 export const R360_DEPT_COLORS: Record<string, string> = {
   Delivery:'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', Governance:'var(--cp-teal-60, #0D9488)', Operations:'var(--ds-text-warning, var(--cp-warning, #D97706))',
@@ -41,6 +41,6 @@ export const R360_DEPT_COLORS: Record<string, string> = {
 };
 
 export const R360_PROJECT_COLORS: Record<string, string> = {
-  BAU:'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', SEN:'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC:'var(--ds-text-success, var(--cp-success, #16A34A))', OPS:'var(--cp-teal-60, #0D9488)', SUP:'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+  BAU:'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', SEN:'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC:'var(--ds-text-success, var(--cp-success, #16A34A))', OPS:'var(--cp-teal-60, #0D9488)', SUP:'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
   LND:'var(--cp-purple-60, #7C3AED)', COM:'var(--cp-teal-60, #0D9488)', IN:'var(--ds-text-warning, var(--cp-warning, #D97706))', DET:'var(--ds-text-danger, #EF4444)', ICP:'var(--ds-text-success, var(--cp-success, #16A34A))',
 };

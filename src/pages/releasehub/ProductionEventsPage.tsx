@@ -44,7 +44,7 @@ function getDotStyle(event: any) {
     borderColor = 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
     size = 14;
   } else if (type === 'HOTFIX') {
-    borderColor = 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
+    borderColor = 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
     size = 12;
   }
 
@@ -87,7 +87,7 @@ export default function ProductionEventsPage() {
           }}>
             Production Events
           </h1>
-          <p style={{ fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginTop: 2 }}>
+          <p style={{ fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: 2 }}>
             Post-deployment monitoring & event log
           </p>
         </div>
@@ -113,7 +113,7 @@ export default function ProductionEventsPage() {
               fontWeight: 600,
               border: `0.75px solid ${resultFilter === chip.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-border-default, rgba(15,23,42,0.12))'}`,
               background: resultFilter === chip.key ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
-              color: resultFilter === chip.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'),
+              color: resultFilter === chip.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'),
             }}
           >
             {chip.label}
@@ -175,7 +175,7 @@ export default function ProductionEventsPage() {
                   </div>
 
                   {/* Meta row */}
-                  <div className="flex flex-wrap" style={{ gap: 16, fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
+                  <div className="flex flex-wrap" style={{ gap: 16, fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
                     {ev.change_key && <span style={{ fontFamily: RH.fontMono }}>{ev.change_key}</span>}
                     {ev.release_key && <span style={{ fontFamily: RH.fontMono }}>{ev.release_key}</span>}
                     {ev.deployed_at && <span>{formatDateTime(ev.deployed_at)}</span>}

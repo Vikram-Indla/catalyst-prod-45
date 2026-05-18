@@ -189,7 +189,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
           <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', marginBottom: 6 }}>
             {item.request_key}: {item.title}
           </div>
-          <div className="flex items-center gap-1.5" style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginBottom: 4 }}>
+          <div className="flex items-center gap-1.5" style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 4 }}>
             <Calendar className="w-3 h-3" />
             {formatDate(item.start_date)} → {formatDate(item.end_date)}
             {endDateIsEstimated && <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontStyle: 'italic' }}>(est.)</span>}

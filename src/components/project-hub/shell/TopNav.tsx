@@ -132,7 +132,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
           style={{ width: 32, height: 32, border: 'none', background: 'transparent', cursor: 'pointer' }}
           title="Notifications"
         >
-          <Bell size={18} className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] dark:text-[var(--ds-text-subtlest,#878787)]" strokeWidth={1.75} />
+          <Bell size={18} className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,#878787)]" strokeWidth={1.75} />
         </button>
 
         {/* Settings */}
@@ -141,7 +141,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
           style={{ width: 32, height: 32, border: 'none', background: 'transparent', cursor: 'pointer' }}
           title="Settings"
         >
-          <Settings size={18} className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] dark:text-[var(--ds-text-subtlest,#878787)]" strokeWidth={1.75} />
+          <Settings size={18} className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,#878787)]" strokeWidth={1.75} />
         </button>
 
         {/* Avatar */}

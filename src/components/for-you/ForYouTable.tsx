@@ -301,7 +301,7 @@ export function CatalystTable({
                     </div>
 
                     {/* Row 4: avatar + project + updated */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
                       {avatarUrl ? (
                         <img src={avatarUrl} alt={reporterName} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }} />
                       ) : (
@@ -401,7 +401,7 @@ export function CatalystTable({
         );
       case 'updated':
         return (
-          <td key={colKey} style={{ width: columnWidths.updated, fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
+          <td key={colKey} style={{ width: columnWidths.updated, fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
             {item.updatedAt}
           </td>
         );

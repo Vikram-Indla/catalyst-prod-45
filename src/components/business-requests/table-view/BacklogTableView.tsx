@@ -557,7 +557,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                           fontWeight: 650, /* V12 */
                           textTransform: 'uppercase' as const, /* V12 */
                           letterSpacing: '0.06em', /* V12 */
-                          color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', /* V12 */
+                          color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', /* V12 */
                           whiteSpace: 'nowrap' as const, /* V12 */
                           userSelect: 'none' as const, /* V12 */
                           lineHeight: 1.2, /* V12 */

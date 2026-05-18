@@ -77,7 +77,7 @@ export function InlineSummaryEditor({ value, onSave, onCancel }: {
 
 // ─── Inline Status Picker ──────────────────────────────────
 const STATUS_COLORS: Record<string, string> = {
-  todo: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', in_progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', done: 'var(--ds-text-success, var(--cp-success, #16A34A))', terminal: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
+  todo: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', in_progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', done: 'var(--ds-text-success, var(--cp-success, #16A34A))', terminal: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
 };
 
 export function InlineStatusPicker({ currentStatusId, statuses, anchorRef, onSelect, onClose }: {

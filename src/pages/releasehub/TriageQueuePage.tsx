@@ -54,7 +54,7 @@ export default function TriageQueuePage() {
     <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', minHeight: '100%', padding: '24px' }}>
       <div className="mb-5">
         <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>Triage Queue</h1>
-        <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]" style={{ fontFamily: RH.fontBody }}>
+        <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]" style={{ fontFamily: RH.fontBody }}>
           Changes without an assigned release — {unlinked.length} item{unlinked.length !== 1 ? 's' : ''} require{unlinked.length === 1 ? 's' : ''} action
         </p>
       </div>
@@ -72,7 +72,7 @@ export default function TriageQueuePage() {
             <thead>
               <tr style={{ background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
                 {['KEY', 'TITLE', 'RISK', 'SOURCE', 'DATE', 'AI RECOMMENDATION', 'ACTIONS'].map(h => (
-                  <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]">{h}</th>
+                  <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -89,7 +89,7 @@ export default function TriageQueuePage() {
                     </td>
                     <td className="px-3 py-2"><RiskBadge risk={mapRisk(c.risk_level)} /></td>
                     <td className="px-3 py-2"><SourceBadge source={c.source} /></td>
-                    <td className="px-3 py-2 text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>
+                    <td className="px-3 py-2 text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>
                       {c.deployment_date ? new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
                     </td>
                     <td className="px-3 py-2">
@@ -100,7 +100,7 @@ export default function TriageQueuePage() {
                             <span className="font-semibold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]">Suggested:</span>{' '}
                             <span className="text-[var(--ds-text,var(--cp-ink-1, #0F172A))]">{rec.releaseName}</span>
                             <br />
-                            <span className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]">{rec.reason}</span>
+                            <span className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">{rec.reason}</span>
                           </div>
                         </div>
                       ) : (

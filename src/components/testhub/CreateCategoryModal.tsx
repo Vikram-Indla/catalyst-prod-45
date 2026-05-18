@@ -16,7 +16,7 @@ interface CreateCategoryModalProps {
 
 const PRESET_COLORS = [
   'var(--ds-text-brand, #3B82F6)', '#8B5CF6', '#10B981', '#F97316', '#EC4899',
-  '#06B6D4', '#EAB308', 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', 'var(--ds-text-danger, #EF4444)', '#14B8A6',
+  '#06B6D4', '#EAB308', 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', 'var(--ds-text-danger, #EF4444)', '#14B8A6',
 ];
 
 const AVAILABLE_ICONS = [

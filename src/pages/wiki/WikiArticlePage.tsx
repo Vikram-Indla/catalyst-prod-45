@@ -98,7 +98,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
         <button onClick={onClose} style={{
           width: 28, height: 28, borderRadius: 4, border: 'none', background: 'transparent',
           cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+          color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
         }}><X size={16} /></button>
       </div>
 
@@ -121,7 +121,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{
                   fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 700,
-                  color: i === 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+                  color: i === 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                   padding: '2px 6px', borderRadius: 4,
                   background: i === 0 ? (isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))'),
                 }}>v{v.version_number}</span>
@@ -141,7 +141,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
             </div>
             <div style={{ fontSize: 12, fontWeight: 600, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 4 }}>{v.title || 'Untitled'}</div>
             {v.change_summary && (
-              <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginBottom: 4, lineHeight: 1.5 }}>{v.change_summary}</div>
+              <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 4, lineHeight: 1.5 }}>{v.change_summary}</div>
             )}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>
               {v.changed_by_name && <span>{v.changed_by_name}</span>}
@@ -191,7 +191,7 @@ function ExportDropdown({ onClose }: { onClose: () => void }) {
         onMouseEnter={e => e.currentTarget.style.background = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--ds-surface-sunken, #F8FAFC)'}
         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
       >
-        <Printer size={13} style={{ color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }} /> Print
+        <Printer size={13} style={{ color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }} /> Print
       </button>
     </div>
   );
@@ -208,14 +208,14 @@ function CrossModuleLinks({ links }: { links: any[] }) {
     }}>
       <div style={{
         fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
-        color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginBottom: 10, letterSpacing: '0.04em',
+        color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 10, letterSpacing: '0.04em',
         display: 'flex', alignItems: 'center', gap: 6,
       }}>
         <Link2 size={12} /> Related Items
       </div>
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
         {links.map((link: any) => {
-          const mod = MODULE_COLORS[link.target_module] || { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', label: link.target_module };
+          const mod = MODULE_COLORS[link.target_module] || { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', label: link.target_module };
           return (
             <span key={link.id} style={{
               display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px',
@@ -346,7 +346,7 @@ export default function WikiArticlePage() {
       <div style={{ fontFamily: 'var(--cp-font-body)', padding: 80, textAlign: 'center', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : undefined, minHeight: '100%' }}>
         <div style={{ fontSize: 48, marginBottom: 12 }}>📄</div>
         <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 8 }}>Article not found</div>
-        <div style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginBottom: 16 }}>The article you're looking for doesn't exist or has been removed.</div>
+        <div style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 16 }}>The article you're looking for doesn't exist or has been removed.</div>
         <button onClick={() => navigate('/wiki')} style={{
           fontSize: 12, fontWeight: 650, padding: '8px 20px', borderRadius: 6,
           background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', cursor: 'pointer',
@@ -402,7 +402,7 @@ export default function WikiArticlePage() {
       <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: info.donePercent >= 80 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>{info.donePercent}%</span>
     ) : null, show: info.donePercent != null },
     { label: 'Open Defects', value: info.openDefects != null ? (
-      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: info.openDefects > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))') }}>{info.openDefects}</span>
+      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: info.openDefects > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))') }}>{info.openDefects}</span>
     ) : null, show: info.openDefects != null },
     { label: 'Sprint', value: info.currentSprint, show: !!info.currentSprint },
     { label: 'Owner', value: info.owner ? <span style={{ fontWeight: 600 }}>{info.owner}</span> : null, show: !!info.owner },
@@ -436,7 +436,7 @@ export default function WikiArticlePage() {
           <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
           <span onClick={() => navigate(`/wiki/category/${DOMAIN_SLUGS[page.domain_code || ''] || ''}`)} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>{domainName}</span>
           <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
-          <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 600 }}>{title}</span>
+          <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontWeight: 600 }}>{title}</span>
         </nav>
 
         {/* ── 2-column ── */}
@@ -448,7 +448,7 @@ export default function WikiArticlePage() {
 
             {/* Metadata row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
-              <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{page.updated_at ? timeAgo(page.updated_at) : '—'}</span>
+              <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{page.updated_at ? timeAgo(page.updated_at) : '—'}</span>
               {conf > 0 && (
                 <span style={{
                   fontSize: 10, fontWeight: 650, padding: '2px 8px', borderRadius: 9999,
@@ -456,18 +456,18 @@ export default function WikiArticlePage() {
                 }}><Sparkles size={9} /> AI {conf}%</span>
               )}
               {formatIcon}
-              <span style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', display: 'inline-flex', alignItems: 'center', gap: 3, fontFamily: 'var(--cp-font-mono)' }}>
+              <span style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', display: 'inline-flex', alignItems: 'center', gap: 3, fontFamily: 'var(--cp-font-mono)' }}>
                 <GitBranch size={11} /> v{page.version ?? 1}
               </span>
               {readTime && (
-                <span style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                <span style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
                   <Clock size={11} /> {readTime} min
                 </span>
               )}
               <button onClick={handleBookmark} style={{
                 fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
                 border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: bookmarked ? (isDark ? 'rgba(217,119,6,0.12)' : '#FEF3C7') : 'transparent',
-                color: bookmarked ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'), display: 'flex', alignItems: 'center', gap: 4,
+                color: bookmarked ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'), display: 'flex', alignItems: 'center', gap: 4,
               }}>
                 <Star size={12} fill={bookmarked ? 'currentColor' : 'none'} /> {bookmarked ? 'Saved' : 'Save'}
               </button>
@@ -476,7 +476,7 @@ export default function WikiArticlePage() {
               <button onClick={() => setShowHistory(prev => !prev)} style={{
                 fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
                 border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: showHistory ? (isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)') : 'transparent',
-                color: showHistory ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'), display: 'flex', alignItems: 'center', gap: 4,
+                color: showHistory ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'), display: 'flex', alignItems: 'center', gap: 4,
               }}>
                 <History size={12} /> History
               </button>
@@ -486,7 +486,7 @@ export default function WikiArticlePage() {
                 <button onClick={(e) => { e.stopPropagation(); setShowExport(prev => !prev); }} style={{
                   fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
                   border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: showExport ? (isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)') : 'transparent',
-                  color: showExport ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'), display: 'flex', alignItems: 'center', gap: 4,
+                  color: showExport ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'), display: 'flex', alignItems: 'center', gap: 4,
                 }}>
                   <Download size={12} /> Export <ChevronDown size={10} />
                 </button>
@@ -501,7 +501,7 @@ export default function WikiArticlePage() {
                   <div style={{
                     width: 24, height: 24, borderRadius: '50%', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 10, fontWeight: 700, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+                    fontSize: 10, fontWeight: 700, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                   }}>{authorName.charAt(0).toUpperCase()}</div>
                   <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{authorName}</span>
                 </>
@@ -520,7 +520,7 @@ export default function WikiArticlePage() {
                 {tags.map(t => (
                   <span key={t} style={{
                     fontSize: 10, padding: '2px 8px', borderRadius: 4,
-                    background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 500,
+                    background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontWeight: 500,
                   }}>{t}</span>
                 ))}
               </div>
@@ -562,7 +562,7 @@ export default function WikiArticlePage() {
               }}>
                 <div style={{
                   fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
-                  color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginBottom: 8, letterSpacing: '0.04em',
+                  color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 8, letterSpacing: '0.04em',
                 }}>Contents</div>
                 {sections.map((s: any, i: number) => (
                   <a key={s.id} href={`#section-${i}`} style={{
@@ -623,7 +623,7 @@ export default function WikiArticlePage() {
             }}>
               <div>
                 <div style={{ fontSize: 14, fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 4 }}>Was this helpful?</div>
-                <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
+                <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
                   {helpVotes > 0 ? `${helpScore}% found this helpful (${helpVotes} votes)` : 'Be the first to rate this article'}
                 </div>
               </div>
@@ -643,7 +643,7 @@ export default function WikiArticlePage() {
                     fontSize: 10, fontWeight: 650, padding: '2px 8px', borderRadius: 9999,
                     background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', color: 'var(--cp-purple-60, #7C3AED)', display: 'inline-flex', alignItems: 'center', gap: 3,
                   }}><Sparkles size={9} /> AI {conf}%</span>
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
                     {Math.round((page.source_coverage ?? 0) * 100)}% coverage
                   </span>
                 </div>
@@ -668,7 +668,7 @@ export default function WikiArticlePage() {
                       onMouseLeave={e => e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(15,23,42,0.12)'}
                     >
                       <div style={{ fontSize: 13, fontWeight: 600, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 6 }}>{r.title}</div>
-                      <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
+                      <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
                         {r.domain_code}
                         {r.read_time_minutes ? ` · ${r.read_time_minutes} min` : ''}
                         {r.ai_confidence ? ` · ${Math.round(r.ai_confidence * 100)}%` : ''}
@@ -696,7 +696,7 @@ export default function WikiArticlePage() {
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 padding: '7px 14px', borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)',
               }}>
-                <span style={{ color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontSize: 11 }}>{row.label}</span>
+                <span style={{ color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: 11 }}>{row.label}</span>
                 <span style={{ fontSize: 11, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', fontWeight: 500 }}>{row.value}</span>
               </div>
             ))}
@@ -757,7 +757,7 @@ function ReferencesSection({ refs }: { refs: any[] }) {
           ) : (
             <span style={{ fontSize: 11, fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{r.source_key}</span>
           )}
-          <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{r.description || '—'}</span>
+          <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{r.description || '—'}</span>
         </div>
       ))}
     </div>

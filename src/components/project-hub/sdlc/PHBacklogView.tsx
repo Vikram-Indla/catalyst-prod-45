@@ -59,7 +59,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
     urgent: 'var(--ds-text-danger, #EF4444)',
     high: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
     medium: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-    low: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+    low: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
   };
 
   return (
@@ -165,7 +165,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                         No items in this release
                       </div>
                     ) : groupIssues.map(issue => {
-                      const accentColor = PRIORITY_ACCENT[issue.priority] ?? 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
+                      const accentColor = PRIORITY_ACCENT[issue.priority] ?? 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
                       const isHovered = hoveredId === issue.id;
                       return (
                         <div

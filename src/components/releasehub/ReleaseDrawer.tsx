@@ -225,7 +225,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
                 </button>
                 <button
                   onClick={() => setEditingDate(false)}
-                  className="w-6 h-6 flex items-center justify-center rounded border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]"
+                  className="w-6 h-6 flex items-center justify-center rounded border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]"
                   title="Cancel"
                 >
                   <X size={11} />
@@ -237,7 +237,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
                   setDateInput(release.target_date ? release.target_date.slice(0, 10) : '');
                   setEditingDate(true);
                 }}
-                className="group flex items-center gap-1 text-[12px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] transition-colors"
+                className="group flex items-center gap-1 text-[12px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] transition-colors"
                 title="Edit release date"
               >
                 <span>{release.target_date ? new Date(release.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
@@ -253,7 +253,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
         <div className="border-b border-[rgba(15,23,42,0.12)] px-6 flex gap-0">
           {TABS.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
-              className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]' : 'border-transparent text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] hover:text-[var(--ds-text-subtle,#475569)]'}`}>
+              className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]' : 'border-transparent text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] hover:text-[var(--ds-text-subtle,#475569)]'}`}>
               {tab}
               {tab === 'Changes' && <span className="ml-1 text-[10px] font-bold bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtle,#475569)] px-1 rounded">{relChanges.length}</span>}
               {tab === 'Test Cycles' && <span className="ml-1 text-[10px] font-bold bg-[var(--ds-background-selected,#EFF6FF)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] px-1 rounded">{testCycles.length}</span>}
@@ -379,15 +379,15 @@ Do not use jargon. Do not hallucinate features not listed above.`;
     <div className="space-y-5">
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-[var(--ds-surface-sunken,#F8FAFC)] rounded-lg p-3">
-          <p className="text-[10px] font-bold uppercase text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] mb-1">Status</p>
+          <p className="text-[10px] font-bold uppercase text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] mb-1">Status</p>
           <StatusLozenge status={release.status === 'todo' ? 'planning' : release.status === 'done' ? 'released' : release.status} />
         </div>
         <div className="bg-[var(--ds-surface-sunken,#F8FAFC)] rounded-lg p-3">
-          <p className="text-[10px] font-bold uppercase text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] mb-1">Changes</p>
+          <p className="text-[10px] font-bold uppercase text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] mb-1">Changes</p>
           <p className="text-[20px] font-extrabold" style={{ fontFamily: RH.fontMono, color: RH.ink1 }}>{changesCount}</p>
         </div>
         <div className="bg-[var(--ds-surface-sunken,#F8FAFC)] rounded-lg p-3">
-          <p className="text-[10px] font-bold uppercase text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] mb-1">Quality Gates</p>
+          <p className="text-[10px] font-bold uppercase text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] mb-1">Quality Gates</p>
           <p className="text-[20px] font-extrabold" style={{ fontFamily: RH.fontMono, color: RH.ink1 }}>{gatesPassCount}/{gatesTotalCount}</p>
         </div>
       </div>
@@ -483,7 +483,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
               </button>
               <button
                 onClick={generateReleaseNotes}
-                className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] hover:text-[var(--ds-text-subtle,#475569)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none rounded"
+                className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] hover:text-[var(--ds-text-subtle,#475569)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none rounded"
               >
                 Regenerate
               </button>
@@ -516,7 +516,7 @@ function ChangesTab({ changes }: { changes: any[] }) {
       <thead>
         <tr className="border-b border-[rgba(15,23,42,0.12)]">
           {['KEY', 'TITLE', 'STATUS', 'RISK', 'DATE'].map(h => (
-            <th key={h} className="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]">{h}</th>
+            <th key={h} className="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">{h}</th>
           ))}
         </tr>
       </thead>
@@ -601,7 +601,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
                 </div>
                 <div className="flex items-center gap-2 mb-2">
                   <StatusLozenge status={cycle?.status || 'not_started'} />
-                  <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]">{passCount}/{totalCases} cases</span>
+                  <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">{passCount}/{totalCases} cases</span>
                 </div>
                 <div className="w-full h-2 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] rounded-full overflow-hidden">
                   <div className="h-full bg-[var(--sem-success)] rounded-full" style={{ width: `${passRate}%` }} />
@@ -635,7 +635,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
                 >
                   <div className="flex-1 min-w-0">
                     <span className="text-[13px] font-medium block truncate" style={{ color: RH.ink1 }}>{cycle.name}</span>
-                    <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]">{cycle.total_cases ?? 0} cases</span>
+                    <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">{cycle.total_cases ?? 0} cases</span>
                   </div>
                   <StatusLozenge status={cycle.status || 'not_started'} />
                   {alreadyLinked && <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] font-medium">Linked</span>}
@@ -644,7 +644,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
             })}
           </div>
           <DialogFooter>
-            <button onClick={() => setShowLinkModal(false)} className="h-8 px-4 rounded-md text-[13px] font-medium text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]">Close</button>
+            <button onClick={() => setShowLinkModal(false)} className="h-8 px-4 rounded-md text-[13px] font-medium text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]">Close</button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

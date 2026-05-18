@@ -201,7 +201,7 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
         <ContentCard title="Team Distribution" badge={`${teamStats.length} teams`} badgeColor={C.success}>
           {teamStats.map(([team, count]) => {
             const pct = Math.round((count / total) * 100);
-            const barColor = team.includes('BAU') ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : team.includes('Integration') ? 'var(--cp-teal-60, #0D9488)' : team.includes('Mobile') ? 'var(--cp-purple-60, #7C3AED)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
+            const barColor = team.includes('BAU') ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : team.includes('Integration') ? 'var(--cp-teal-60, #0D9488)' : team.includes('Mobile') ? 'var(--cp-purple-60, #7C3AED)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
             return (
               <div key={team} style={{ marginBottom: '14px', paddingBottom: '14px', borderBottom: `1px solid ${C.surfaceAlt}` }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>

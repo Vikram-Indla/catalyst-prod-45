@@ -29,7 +29,7 @@ export function WikiAdminQueryLogTab() {
         border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
         maxWidth: 300,
       }}>
-        <Search style={{ width: 14, height: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }} />
+        <Search style={{ width: 14, height: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }} />
         <input
           placeholder="Search queries..."
           value={search}
@@ -40,7 +40,7 @@ export function WikiAdminQueryLogTab() {
 
       {rows.length === 0 ? (
         <EmptyState
-          icon={<Search style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }} />}
+          icon={<Search style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }} />}
           message="No queries recorded yet"
           sub="Query logs will appear here once users start searching the wiki."
         />
@@ -51,7 +51,7 @@ export function WikiAdminQueryLogTab() {
               <thead>
                 <tr style={{ background: 'var(--cp-bg-sunken, #F8FAFC)' }}>
                   {['Query', 'Language', 'Method', 'Confidence', 'Time (ms)', 'Cache', 'Timestamp'].map(h => (
-                    <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', whiteSpace: 'nowrap' }}>{h}</th>
+                    <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -76,9 +76,9 @@ export function WikiAdminQueryLogTab() {
 
           {totalPages > 1 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end', fontFamily: 'var(--cp-font-body)', fontSize: 12 }}>
-              <span style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginInlineEnd: 8 }}>{total} queries</span>
+              <span style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginInlineEnd: 8 }}>{total} queries</span>
               <PagBtn disabled={page === 0} onClick={() => setPage(p => p - 1)}><ChevronLeft style={{ width: 14, height: 14 }} /></PagBtn>
-              <span style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Page {page + 1} of {totalPages}</span>
+              <span style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Page {page + 1} of {totalPages}</span>
               <PagBtn disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)}><ChevronRight style={{ width: 14, height: 14 }} /></PagBtn>
             </div>
           )}

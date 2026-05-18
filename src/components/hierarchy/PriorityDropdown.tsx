@@ -18,7 +18,7 @@ function PriorityBarsInline({ level }: { level: number }) {
   return (
     <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
       {[1, 2, 3, 4].map((i) => (
-        <div key={i} style={{ width: 10, height: 4, borderRadius: 1, background: i <= level ? ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))') : ('var(--cp-bg-sunken, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))') }} />
+        <div key={i} style={{ width: 10, height: 4, borderRadius: 1, background: i <= level ? ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))') : ('var(--cp-bg-sunken, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))') }} />
       ))}
     </div>
   );

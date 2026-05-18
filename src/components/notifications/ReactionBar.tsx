@@ -62,7 +62,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
           background: 'transparent',
           cursor: 'pointer',
           fontSize: 13,
-          color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+          color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
         }}
       >
         +
@@ -73,7 +73,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
       {onReply && (
         <button
           onClick={(e) => { e.stopPropagation(); onReply(); }}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-body)' }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)' }}
         >
           Reply
         </button>

@@ -103,7 +103,7 @@ export default function AllChangesPage() {
       <div className="flex items-center justify-between mb-5">
         <div>
           <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>All Changes</h1>
-          <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Every deployment change — past, present & future</p>
+          <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Every deployment change — past, present & future</p>
         </div>
         <button onClick={() => setShowCreateChg(true)}
           className="h-9 px-4 rounded-md text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-transform"
@@ -161,7 +161,7 @@ export default function AllChangesPage() {
                   <input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleAll} className="rounded" />
                 </th>
                 {['KEY', 'TITLE', 'STATUS', 'RISK', 'RELEASE', 'SOURCE', 'SIGN-OFFS'].map(h => (
-                  <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{h}</th>
+                  <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -190,7 +190,7 @@ export default function AllChangesPage() {
                     </td>
                     <td className="px-3 py-0"><SourceBadge source={c.source} /></td>
                     <td className="px-3 py-0">
-                      <span className="text-[12px]" style={{ fontFamily: RH.fontMono, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
+                      <span className="text-[12px]" style={{ fontFamily: RH.fontMono, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
                         {c.pending_signoffs > 0 ? `${c.pending_signoffs} pending` : '—'}
                       </span>
                     </td>
@@ -223,7 +223,7 @@ function KanbanView({ changes, onSelect, isDark }: { changes: any[]; onSelect: (
         return (
           <div key={col.key} className="rounded-lg" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', minHeight: 200 }}>
             <div className="px-3 py-2 flex items-center gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-[0.06em]" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{col.label}</span>
+              <span className="text-[11px] font-bold uppercase tracking-[0.06em]" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{col.label}</span>
               <span className="text-[10px] font-bold rounded-full px-1.5" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>{items.length}</span>
             </div>
             <div className="px-2 pb-2 space-y-2">

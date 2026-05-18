@@ -104,7 +104,7 @@ export const QUARTER_BADGE: Record<string, { bg: string; text: string }> = {
 export function getImpactColor(score: number) {
   if (score >= 4.0) return { gradient: 'linear-gradient(90deg, var(--ds-text-success, var(--cp-success, #16A34A)), var(--ds-text-success, #22C55E))', text: 'var(--ds-text-success, var(--cp-success, #16A34A))' };
   if (score >= 3.0) return { gradient: 'linear-gradient(90deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)), var(--ds-text-brand, #3B82F6))', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' };
-  if (score >= 2.0) return { gradient: 'linear-gradient(90deg, var(--ds-text-subtlest, var(--cp-ink-3, #64748B)), var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8)))', text: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' };
+  if (score >= 2.0) return { gradient: 'linear-gradient(90deg, var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B))), var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8)))', text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' };
   return { gradient: 'linear-gradient(90deg, var(--ds-text-disabled, #CBD5E1), var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' };
 }
 

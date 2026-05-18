@@ -119,7 +119,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>Link Test Cases</h2>
           </div>
-          <button onClick={onClose} style={{ width: 36, height: 50, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={onClose} style={{ width: 36, height: 50, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={20} />
           </button>
         </div>
@@ -171,9 +171,9 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
 
         {/* Footer */}
         <div style={{ padding: '16px 24px', borderTop: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{selectedIds.size} selected</span>
+          <span style={{ fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{selectedIds.size} selected</span>
           <div style={{ display: 'flex', gap: 12 }}>
-            <button onClick={onClose} style={{ height: 40, padding: '0 16px', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1.5px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 12, fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer' }}>Cancel</button>
+            <button onClick={onClose} style={{ height: 40, padding: '0 16px', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1.5px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 12, fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', cursor: 'pointer' }}>Cancel</button>
             <button onClick={handleSubmit} disabled={selectedIds.size === 0 || isSubmitting}
               style={{ height: 40, padding: '0 20px', backgroundColor: selectedIds.size === 0 ? ('var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))') : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: selectedIds.size === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Link2 size={16} /> {isSubmitting ? 'Linking...' : `Link ${selectedIds.size > 0 ? `(${selectedIds.size})` : ''}`}

@@ -83,7 +83,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
           <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '15px', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', margin: 0 }}>
             Create Catalyst User
           </DialogTitle>
-          <p style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginTop: '2px' }}>
+          <p style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: '2px' }}>
             Local account — not pushed to Jira
           </p>
           <button
@@ -93,7 +93,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
               width: '26px', height: '26px', borderRadius: '50%',
               border: '1px solid rgba(15,23,42,0.10)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+              cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
             }}
           >
             <CrossIcon label="" size="small" />
@@ -153,7 +153,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={{ display: 'flex', alignItems: 'center', padding: '0 8px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}
+                  style={{ display: 'flex', alignItems: 'center', padding: '0 8px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}
                 >
                   {showPassword ? <EyeOpenStrikethroughIcon label="" size="small" /> : <EyeOpenIcon label="" size="small" />}
                 </button>

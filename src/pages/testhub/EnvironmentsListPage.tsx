@@ -46,7 +46,7 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   active: { label: 'Active', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: Power },
   maintenance: { label: 'Maintenance', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', icon: Wrench },
-  inactive: { label: 'Inactive', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: Power },
+  inactive: { label: 'Inactive', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: Power },
   deprecated: { label: 'Deprecated', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--ds-surface-sunken, #F8FAFC)', icon: XCircle },
 };
 
@@ -54,7 +54,7 @@ const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string; 
   healthy: { label: 'Healthy', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
   degraded: { label: 'Degraded', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', icon: AlertTriangle },
   down: { label: 'Down', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', icon: XCircle },
-  unknown: { label: 'Unknown', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: HelpCircle },
+  unknown: { label: 'Unknown', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: HelpCircle },
 };
 
 export default function EnvironmentsListPage() {
@@ -148,7 +148,7 @@ export default function EnvironmentsListPage() {
             </div>
             <div>
               <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>Test Environments</h1>
-              <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '4px 0 0' }}>Manage and monitor test environments</p>
+              <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '4px 0 0' }}>Manage and monitor test environments</p>
             </div>
           </div>
         </div>
@@ -172,7 +172,7 @@ export default function EnvironmentsListPage() {
           <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0, textTransform: 'uppercase' }}>Total</p>
+                <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: 0, textTransform: 'uppercase' }}>Total</p>
                 <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '8px 0 0' }}>{summary.total_environments}</p>
               </div>
               <Server size={24} style={{ color: '#6366F1' }} />
@@ -249,7 +249,7 @@ export default function EnvironmentsListPage() {
         </Select>
         {hasActiveFilters && (
           <button onClick={clearFilters}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', fontSize: 14, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
@@ -263,7 +263,7 @@ export default function EnvironmentsListPage() {
       ) : filteredEnvironments.length === 0 ? (
         <div style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
           <Server size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
-          <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0 }}>No environments found</p>
+          <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: 0 }}>No environments found</p>
           <p style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', margin: '8px 0 0' }}>Add an environment to get started</p>
         </div>
       ) : (
@@ -297,7 +297,7 @@ export default function EnvironmentsListPage() {
                 </div>
                 <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 8px' }}>{env.name}</h3>
                 {env.url && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginBottom: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     <ExternalLink size={14} /> {env.url}
                   </div>
                 )}

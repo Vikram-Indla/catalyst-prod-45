@@ -242,7 +242,7 @@ export default function ReqAssistLibrary() {
           <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 22, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>
             Req Assist™
           </h1>
-          <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '2px 0 0', fontFamily: 'var(--cp-font-body)' }}>
+          <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '2px 0 0', fontFamily: 'var(--cp-font-body)' }}>
             BRD library — sourced from Jira, enriched by AI, indexed for AI-powered search
           </p>
         </div>
@@ -304,7 +304,7 @@ export default function ReqAssistLibrary() {
           }}>
             <FileText size={32} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" style={{ marginBottom: 12 }} />
             <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 6px', fontFamily: 'var(--cp-font-heading)' }}>No documents yet</p>
-            <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '0 0 20px', fontFamily: 'var(--cp-font-body)' }}>Import from Jira or generate a BRD from text to get started.</p>
+            <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '0 0 20px', fontFamily: 'var(--cp-font-body)' }}>Import from Jira or generate a BRD from text to get started.</p>
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => setImportOpen(true)} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 50,
@@ -340,7 +340,7 @@ export default function ReqAssistLibrary() {
             {isFiltering && (
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                padding: '8px 28px', fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
+                padding: '8px 28px', fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                 background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.08))'}`,
                 fontFamily: 'var(--cp-font-body)',
               }}>
@@ -376,7 +376,7 @@ export default function ReqAssistLibrary() {
                   ].map((col, i) => (
                     <th key={i} style={{
                       padding: '10px 12px', height: 50,
-                      fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
+                      fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                       textTransform: 'uppercase', letterSpacing: '0.06em',
                       textAlign: 'left', width: col.w || undefined,
                       background: 'var(--cp-bg-page, #F8FAFC)',
@@ -543,7 +543,7 @@ export default function ReqAssistLibrary() {
                         </td>
                         {/* Imported */}
                         <td style={{ padding: '8px 12px', overflow: 'hidden' }}>
-                          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
+                          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
                             {doc.pulled_at ? formatImported(doc.pulled_at) : '—'}
                           </span>
                         </td>
@@ -564,7 +564,7 @@ export default function ReqAssistLibrary() {
                   <tr>
                     <td colSpan={8} style={{ padding: '48px 0', textAlign: 'center' }}>
                       <FileSearch size={24} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" style={{ margin: '0 auto 8px', display: 'block' }} />
-                      <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '0 0 8px', fontFamily: 'var(--cp-font-body)' }}>
+                      <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '0 0 8px', fontFamily: 'var(--cp-font-body)' }}>
                         No documents match "{search || 'your search term'}"
                       </p>
                       <button onClick={() => { setSearch(''); setTab('all'); }}
@@ -585,7 +585,7 @@ export default function ReqAssistLibrary() {
                 background: 'var(--cp-bg-page, #FAFAFA)',
                 borderTop: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.08))'}`,
               }}>
-                <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-body)' }}>
+                <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)' }}>
                   Showing {documents.length} of {totalCount} documents
                 </span>
                 <button
@@ -642,7 +642,7 @@ export default function ReqAssistLibrary() {
             <h3 style={{ fontSize: 16, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 8px', fontFamily: 'var(--cp-font-heading)' }}>
               Epics Already Exist
             </h3>
-            <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '0 0 20px', lineHeight: 1.5 }}>
+            <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '0 0 20px', lineHeight: 1.5 }}>
               This document already has {regenConfirm.count} epic{regenConfirm.count !== 1 ? 's' : ''} generated
               {regenConfirm.generatedAt ? (() => {
                 const days = Math.floor((Date.now() - new Date(regenConfirm.generatedAt!).getTime()) / 86400000);

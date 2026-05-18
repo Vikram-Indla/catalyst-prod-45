@@ -45,7 +45,7 @@ export function WikiAdminTrainingTab() {
           border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
           flex: 1, maxWidth: 300,
         }}>
-          <Search style={{ width: 14, height: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }} />
+          <Search style={{ width: 14, height: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }} />
           <input
             placeholder="Search questions..."
             value={search}
@@ -69,7 +69,7 @@ export function WikiAdminTrainingTab() {
 
       {rows.length === 0 && !showAdd ? (
         <EmptyState
-          icon={<GraduationCap style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }} />}
+          icon={<GraduationCap style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }} />}
           message="No training questions"
           sub="Add training questions to improve KB accuracy."
         />
@@ -80,7 +80,7 @@ export function WikiAdminTrainingTab() {
               <thead>
                 <tr style={{ background: 'var(--cp-bg-sunken, #F8FAFC)' }}>
                   {['Question', 'Module', 'Has Answer', 'Actions'].map(h => (
-                    <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{h}</th>
+                    <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -96,7 +96,7 @@ export function WikiAdminTrainingTab() {
                     <td style={{ padding: '8px 12px' }}>
                       <button onClick={() => deleteQ.mutate(r.id)} title="Delete" aria-label="Delete question" style={{
                         padding: 4, borderRadius: 4, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
-                        background: 'transparent', cursor: 'pointer', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
+                        background: 'transparent', cursor: 'pointer', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                         display: 'flex', alignItems: 'center', outline: 'none',
                       }}
                         onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
@@ -113,9 +113,9 @@ export function WikiAdminTrainingTab() {
 
           {totalPages > 1 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end', fontFamily: 'var(--cp-font-body)', fontSize: 12 }}>
-              <span style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginInlineEnd: 8 }}>{total} questions</span>
+              <span style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginInlineEnd: 8 }}>{total} questions</span>
               <PagBtn disabled={page === 0} onClick={() => setPage(p => p - 1)}><ChevronLeft style={{ width: 14, height: 14 }} /></PagBtn>
-              <span style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Page {page + 1} of {totalPages}</span>
+              <span style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Page {page + 1} of {totalPages}</span>
               <PagBtn disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)}><ChevronRight style={{ width: 14, height: 14 }} /></PagBtn>
             </div>
           )}

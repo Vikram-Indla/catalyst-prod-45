@@ -34,7 +34,7 @@ const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
   coverage: { label: 'Coverage', color: '#0891B2' },
   defect: { label: 'Defect Report', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
   trend: { label: 'Trend Analysis', color: 'var(--quality-high, #059669)' },
-  custom: { label: 'Custom', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' },
+  custom: { label: 'Custom', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' },
 };
 
 export default function ReportDetailPage() {
@@ -50,7 +50,7 @@ export default function ReportDetailPage() {
   const borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))';
   const borderSubtle = 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))';
   const textPrimary = 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))';
-  const textSecondary = 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))';
+  const textSecondary = 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
   const textMuted = 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))';
   const textBody = 'var(--cp-ink-2, var(--cp-ink-2, #334155))';
 

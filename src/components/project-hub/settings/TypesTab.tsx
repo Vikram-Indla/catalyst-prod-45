@@ -165,21 +165,21 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
 
                     {/* Workflow */}
                     <div style={{ display: 'flex', alignItems: 'center', padding: '12px 8px 12px 0', minWidth: 0 }}>
-                      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-ink-3, #64748B))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.workflow_name ?? '—'}
                       </span>
                     </div>
 
                     {/* Field config */}
                     <div style={{ display: 'flex', alignItems: 'center', padding: '12px 8px 12px 0', minWidth: 0 }}>
-                      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-ink-3, #64748B))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.field_config}
                       </span>
                     </div>
 
                     {/* Screen */}
                     <div style={{ display: 'flex', alignItems: 'center', padding: '12px 8px 12px 0', minWidth: 0 }}>
-                      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-ink-3, #64748B))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.screen_name ?? '—'}
                       </span>
                     </div>

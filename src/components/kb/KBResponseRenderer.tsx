@@ -177,7 +177,7 @@ function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendH
     }}>
       {/* Scope label */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--fg-3)' }}>
-        <Clock size={14} strokeWidth={2} color="var(--ds-text-subtlest, var(--cp-ink-3, #64748B))" />
+        <Clock size={14} strokeWidth={2} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
         <span>Showing {totalShown} of {totalAvailable} · {scopeLabel}</span>
       </div>
 

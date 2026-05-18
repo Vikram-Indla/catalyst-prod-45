@@ -108,7 +108,7 @@ interface StepStatus {
 
 // ── Status helpers ─────────────────────────────────────────────────────────
 const statusConfigLight: Record<string, { icon: any; color: string; bg: string; label: string }> = {
-  not_run: { icon: Clock, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', label: 'Not Run' },
+  not_run: { icon: Clock, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', label: 'Not Run' },
   passed: { icon: CheckCircle2, color: 'var(--quality-high, #059669)', bg: '#ECFDF5', label: 'Passed' },
   failed: { icon: XCircle, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', label: 'Failed' },
   blocked: { icon: AlertTriangle, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', label: 'Blocked' },

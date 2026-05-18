@@ -15,8 +15,8 @@ import { useTheme } from '@/hooks/useTheme';
 import { format } from 'date-fns';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  planning: { label: 'Planning', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: Clock },
-  planned: { label: 'Planned', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: Clock },
+  planning: { label: 'Planning', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: Clock },
+  planned: { label: 'Planned', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: Clock },
   development: { label: 'Development', color: '#8B5CF6', bg: '#F5F3FF', icon: Settings2 },
   testing: { label: 'Testing', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', icon: Beaker },
   uat: { label: 'UAT', color: '#EA580C', bg: '#FFF7ED', icon: Monitor },
@@ -80,7 +80,7 @@ export default function ReleaseDetailPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
           <button
             onClick={() => navigate('/testhub/releases')}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', display: 'flex', alignItems: 'center', gap: 6 }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', display: 'flex', alignItems: 'center', gap: 6 }}
           >
             <ArrowLeft style={{ width: 18, height: 18 }} />
           </button>
@@ -123,7 +123,7 @@ export default function ReleaseDetailPage() {
                 display: 'flex', alignItems: 'center', gap: 7, padding: '12px 20px',
                 fontSize: 14, fontWeight: active ? 600 : 500, border: 'none',
                 borderBottom: active ? '2px solid #2563EB' : '2px solid transparent',
-                color: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'), background: 'none', cursor: 'pointer',
+                color: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'), background: 'none', cursor: 'pointer',
               }}
             >
               <TabIcon style={{ width: 15, height: 15 }} />
@@ -148,7 +148,7 @@ function StatCard({ label, value, color, isDark }: { label: string; value: strin
   return (
     <div style={{ padding: '14px 16px', background: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 12, border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
       <div style={{ fontSize: 22, fontWeight: 700, color, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
-      <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginTop: 2 }}>{label}</div>
+      <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: 2 }}>{label}</div>
     </div>
   );
 }
@@ -174,7 +174,7 @@ function OverviewTab({ release, isDark }: { release: any; isDark: boolean }) {
             </div>
           )}
         </div>
-        <div style={{ display: 'flex', gap: 16, fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
+        <div style={{ display: 'flex', gap: 16, fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
           <span>✓ {release.test_cases_passed} Passed</span>
           <span>✗ {release.test_cases_failed || 0} Failed</span>
           <span>⊘ {release.test_cases_blocked || 0} Blocked</span>
@@ -203,7 +203,7 @@ function DetailRow({ label, value }: { label: string; value: string }) {
   const { isDark } = useTheme();
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <dt style={{ fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{label}</dt>
+      <dt style={{ fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{label}</dt>
       <dd style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>{value}</dd>
     </div>
   );
@@ -270,11 +270,11 @@ function DefectsTab({ release, isDark }: { release: any; isDark: boolean }) {
       <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 16 }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{release.defects_open || 0}</div>
-          <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Open</div>
+          <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Open</div>
         </div>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{release.critical_defects || 0}</div>
-          <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Critical</div>
+          <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Critical</div>
         </div>
       </div>
     </div>
@@ -293,7 +293,7 @@ function MilestonesTab({ releaseId, isDark }: { releaseId: string; isDark: boole
 
 const getThStyle = (isDark: boolean): React.CSSProperties => ({
   padding: '10px 14px', textAlign: 'left', fontSize: 11, fontWeight: 650,
-  color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '0.04em',
+  color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase', letterSpacing: '0.04em',
 });
 
 const tdStyle: React.CSSProperties = {

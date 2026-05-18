@@ -93,8 +93,8 @@ function resolveStatus(item: any) {
   return CAT_TODO;
 }
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', LND: 'var(--cp-purple-60, #7C3AED)' };
-const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', LND: 'var(--cp-purple-60, #7C3AED)' };
+const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
 const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
 const ageLabel = (d: number) => d === 0 ? 'Today' : d === 1 ? '1d ago' : `${d}d ago`;
 

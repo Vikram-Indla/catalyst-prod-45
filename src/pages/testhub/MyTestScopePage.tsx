@@ -134,7 +134,7 @@ export default function MyTestScopePage() {
             My Test Scope
           </h1>
           <span style={{
-            fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
+            fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
             padding: '2px 10px', borderRadius: 12,
           }}>
             {filteredItems.length} items
@@ -229,7 +229,7 @@ export default function MyTestScopePage() {
                       {first.cycle_status === 'active' ? 'IN PROGRESS' : first.cycle_status.toUpperCase()}
                     </span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
                     <Clock size={13} />
                     Ends {formatDate(first.planned_end)}
                     {isOverdue(first.planned_end) && (
@@ -275,7 +275,7 @@ export default function MyTestScopePage() {
                           </span>
                           {item.due_date && (
                             <span style={{
-                              fontSize: 12, color: isOverdue(item.due_date) ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+                              fontSize: 12, color: isOverdue(item.due_date) ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                               fontWeight: isOverdue(item.due_date) ? 600 : 400,
                             }}>
                               {formatDate(item.due_date)}

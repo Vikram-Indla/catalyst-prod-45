@@ -55,9 +55,9 @@ const COVERAGE_CONFIG: Record<string, { label: string; color: string; bg: string
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   functional: { label: 'Functional', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)' },
-  non_functional: { label: 'Non-Functional', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
+  non_functional: { label: 'Non-Functional', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
   user_story: { label: 'User Story', color: '#0891B2', bg: '#ECFEFF' },
-  epic: { label: 'Epic', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
+  epic: { label: 'Epic', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
   feature: { label: 'Feature', color: 'var(--quality-high, #059669)', bg: '#ECFDF5' },
   bug_fix: { label: 'Bug Fix', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)' },
 };
@@ -240,7 +240,7 @@ export default function RequirementDetailPage() {
   }
 
   if (!requirement) {
-    return <div style={{ padding: 24, textAlign: 'center', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>Requirement not found</div>;
+    return <div style={{ padding: 24, textAlign: 'center', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Requirement not found</div>;
   }
 
   const type = TYPE_CONFIG[requirement.type] || TYPE_CONFIG.functional;
@@ -250,7 +250,7 @@ export default function RequirementDetailPage() {
   return (
     <div style={{ padding: 24, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', minHeight: '100vh' }}>
       <button onClick={() => navigate('/testhub/requirements')}
-        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 8, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
+        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 8, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
         <ArrowLeft size={16} /> Back to Requirements
       </button>
 
@@ -266,13 +266,13 @@ export default function RequirementDetailPage() {
               padding: '2px 6px', borderRadius: 4, height: 20, display: 'inline-flex', alignItems: 'center',
             }}>{status.label}</span>
             {requirement.external_id && (
-              <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '4px 10px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '4px 10px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
                 <ExternalLink size={12} /> {requirement.external_id}
               </span>
             )}
           </div>
           <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>{requirement.title}</h1>
-          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
             {requirement.release_version && <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Tag size={14} /> v{requirement.release_version}</span>}
             <span>Created {formatDate(requirement.created_at)}</span>
           </div>
@@ -327,7 +327,7 @@ export default function RequirementDetailPage() {
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                     <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '2px 8px', borderRadius: 4 }}>{test.case_key}</span>
-                    <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{test.priority}</span>
+                    <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{test.priority}</span>
                     {(() => {
                       const cov = COVERAGE_CONFIG[test.coverage_status] || COVERAGE_CONFIG['Not Run'];
                       return (

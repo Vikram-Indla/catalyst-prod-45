@@ -224,7 +224,7 @@ export default function IdeasBacklogPage() {
                   ].map(col => (
                     <th key={col.label} style={{
                       textAlign: 'left', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
-                      letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', padding: '10px 12px',
+                      letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', padding: '10px 12px',
                       borderBottom: `0.75px solid ${dk.divider}`, whiteSpace: 'nowrap', width: col.width,
                     }}>{col.label}</th>
                   ))}

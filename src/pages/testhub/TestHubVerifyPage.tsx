@@ -303,7 +303,7 @@ export default function TestHubVerifyPage() {
                     fontWeight: 700,
                     textTransform: 'uppercase',
                     letterSpacing: '0.04em',
-                    color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+                    color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                     textAlign: 'left',
                     borderBottom: '0.75px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
                   }}>
@@ -333,7 +333,7 @@ export default function TestHubVerifyPage() {
                         <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontFamily: 'var(--cp-font-mono)', fontSize: 11, marginRight: 8 }}>{check.id}</span>
                         {check.label}
                       </td>
-                      <td style={{ padding: '8px 12px', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-mono)' }}>
+                      <td style={{ padding: '8px 12px', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-mono)' }}>
                         {check.expected}
                       </td>
                       <td style={{ padding: '8px 12px', fontSize: 12, color: '#1E293B', fontFamily: 'var(--cp-font-mono)' }}>
@@ -541,7 +541,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
                   {['A1', 'A2', 'A3'].map(id => {
                     const c = checks.find(x => x.id === id);
                     return (
-                      <div key={id} style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-mono)' }}>
+                      <div key={id} style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-mono)' }}>
                         {c?.label}: {c?.actual ?? '—'}
                       </div>
                     );

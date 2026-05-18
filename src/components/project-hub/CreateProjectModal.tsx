@@ -140,7 +140,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
             className="flex items-center justify-center rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
             style={{ width: 32, height: 32, border: 'none', background: 'transparent', cursor: 'pointer' }}
           >
-            <X size={18} className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] dark:text-[var(--ds-text-subtlest,#878787)]" />
+            <X size={18} className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,#878787)]" />
           </button>
         </div>
 

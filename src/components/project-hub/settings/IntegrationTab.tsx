@@ -187,7 +187,7 @@ export function IntegrationTab() {
                 {['Time', 'Event', 'Jira Key', 'Status', 'Items', 'Duration'].map((h) => (
                   <th
                     key={h}
-                    className="text-left px-4 text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] dark:text-gray-400"
+                    className="text-left px-4 text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-gray-400"
                     style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', height: 50, maxHeight: 50 }}
                   >
                     {h}

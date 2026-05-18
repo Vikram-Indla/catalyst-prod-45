@@ -145,7 +145,7 @@
   background: var(--ds-surface-sunken, #F8FAFC);
   border: none;
   border-radius: 8px;
-  color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
+  color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -180,7 +180,7 @@
 .th-folder-header-icon {
   width: 16px;
   height: 16px;
-  color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
+  color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
 }
 
 .th-folder-header-title {
@@ -188,7 +188,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
+  color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
 }
 
 .th-folder-header-actions {
@@ -307,7 +307,7 @@
   width: 17px;
   height: 17px;
   margin-right: 12px;
-  color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
+  color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
   flex-shrink: 0;
 }
 
@@ -406,7 +406,7 @@
 
 .th-test-count {
   font-size: 13px;
-  color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
+  color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
 }
 
 .th-test-count strong {
@@ -508,7 +508,7 @@
 .th-filter-btn svg {
   width: 16px;
   height: 16px;
-  color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
+  color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
 }
 
 /* === BULK ACTIONS BAR === */
@@ -573,7 +573,7 @@
 
 .th-bulk-clear {
   font-size: 13px;
-  color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
+  color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
   background: none;
   border: none;
   cursor: pointer;
@@ -607,7 +607,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
+  color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
   background: var(--ds-surface-sunken, #F8FAFC);
   border-bottom: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   text-align: left;
@@ -694,7 +694,7 @@
 .th-cell-id {
   font-family: 'Consolas', 'Monaco', monospace;
   font-size: 12px;
-  color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
+  color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
 }
 
 .th-cell-title {
@@ -704,7 +704,7 @@
 
 .th-cell-time {
   font-size: 12px;
-  color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
+  color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
 }
 
 /* Checkbox */
@@ -761,7 +761,7 @@
   border-radius: 4px;
 }
 
-.th-badge-draft { background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9)); color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B)); }
+.th-badge-draft { background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9)); color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B))); }
 .th-badge-ready { background: rgba(37, 99, 235, 0.1); color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); }
 .th-badge-approved { background: rgba(16, 185, 129, 0.1); color: var(--quality-high, #059669); }
 .th-badge-deprecated { background: rgba(239, 68, 68, 0.1); color: var(--ds-text-danger, var(--cp-danger, #DC2626)); }
@@ -770,14 +770,14 @@
 .th-badge-security { background: rgba(239, 68, 68, 0.1); color: var(--ds-text-danger, var(--cp-danger, #DC2626)); }
 .th-badge-integration { background: rgba(6, 182, 212, 0.1); color: #0891B2; }
 .th-badge-performance { background: rgba(215, 119, 6, 0.1); color: #B45309; }
-.th-badge-manual { background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9)); color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B)); }
+.th-badge-manual { background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9)); color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B))); }
 .th-badge-automated { background: rgba(16, 185, 129, 0.1); color: var(--quality-high, #059669); }
 .th-badge-planned { background: rgba(37, 99, 235, 0.1); color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); }
 
 .th-priority-critical { color: var(--ds-text-danger, #991B1B); font-weight: 600; }
 .th-priority-high { color: #C2410C; font-weight: 600; }
 .th-priority-medium { color: #A16207; font-weight: 500; }
-.th-priority-low { color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B)); font-weight: 500; }
+.th-priority-low { color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B))); font-weight: 500; }
 
 /* === AVATAR === */
 .th-avatar {
@@ -822,7 +822,7 @@
 
 .th-empty-description {
   font-size: 14px;
-  color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
+  color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
   margin-bottom: 24px;
   max-width: 400px;
 }
@@ -982,7 +982,7 @@
 
 .th-modal-subtitle {
   font-size: 14px;
-  color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
+  color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
   margin-top: 4px;
 }
 
@@ -1077,7 +1077,7 @@
 
 .th-steps-count {
   font-size: 13px;
-  color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
+  color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
   margin-left: 8px;
 }
 
@@ -1108,7 +1108,7 @@
 }
 
 .th-step-drag:hover {
-  color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
+  color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
   background: var(--ds-surface-sunken, #F8FAFC);
 }
 
@@ -1159,7 +1159,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
+  color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
   margin-bottom: 6px;
 }
 
@@ -1240,7 +1240,7 @@
   background: transparent;
   border: 2px dashed var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   border-radius: 8px;
-  color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
+  color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -1275,7 +1275,7 @@
 
 .th-pagination-info {
   font-size: 13px;
-  color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
+  color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
 }
 
 .th-pagination-buttons {
@@ -1291,7 +1291,7 @@
   border: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   border-radius: 6px;
   font-size: 13px;
-  color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
+  color: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
   cursor: pointer;
 }
 

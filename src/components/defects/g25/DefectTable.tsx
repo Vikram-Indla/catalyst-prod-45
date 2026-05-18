@@ -447,14 +447,14 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
       case 'assignee':
         return <td key={colKey} style={{ width: columnWidths.assignee }}><AssigneeCell defect={d} nameAvatarMap={nameAvatarMap} /></td>;
       case 'age':
-        return <td key={colKey} style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', width: columnWidths.age }}>{getRelativeAge(d.created_at)}</td>;
+        return <td key={colKey} style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', width: columnWidths.age }}>{getRelativeAge(d.created_at)}</td>;
       case 'actions':
         return (
           <td key={colKey} style={{ width: columnWidths.actions }} onClick={e => e.stopPropagation()}>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="pb-row-actions opacity-0 group-hover:opacity-100 transition-opacity duration-150" style={{ height: 28, width: 28, borderRadius: 4, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer' }}>
-                  <MoreHorizontal size={16} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }} />
+                  <MoreHorizontal size={16} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }} />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">

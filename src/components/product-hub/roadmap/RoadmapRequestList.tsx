@@ -87,7 +87,7 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
 
       <div ref={scrollRef as any} onScroll={onScroll} className="flex-1 overflow-y-auto roadmap-scroll">
         {groups.map((group, gi) => {
-          const typeColor = TYPE_COLORS[group.key]?.solid || group.color || 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
+          const typeColor = TYPE_COLORS[group.key]?.solid || group.color || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
           const isCollapsed = collapsedGroups.has(group.key);
           return (
             <div key={group.key}>

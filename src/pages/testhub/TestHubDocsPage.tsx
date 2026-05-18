@@ -430,7 +430,7 @@ export default function TestHubDocsPage() {
           <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0, fontFamily: 'var(--cp-font-body)' }}>
             📘 TestHub Functional Flow Guide
           </h1>
-          <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '4px 0 0', fontFamily: 'var(--cp-font-body)' }}>
+          <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '4px 0 0', fontFamily: 'var(--cp-font-body)' }}>
             Complete dependency map, step-by-step testing flow, database schema, and business rules
           </p>
         </div>
@@ -545,7 +545,7 @@ export default function TestHubDocsPage() {
                     <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', fontFamily: 'var(--cp-font-body)' }}>
                       {section.title}
                     </div>
-                    <div style={{ fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-body)', marginTop: 2 }}>
+                    <div style={{ fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)', marginTop: 2 }}>
                       {section.summary}
                     </div>
                   </div>

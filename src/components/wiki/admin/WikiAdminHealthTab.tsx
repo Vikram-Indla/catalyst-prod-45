@@ -30,7 +30,7 @@ export function WikiAdminHealthTab() {
   if (isLoading) return <div>{Array.from({ length: 6 }).map((_, i) => <SkeletonBlock key={i} height={36} style={{ marginBottom: 4 }} />)}</div>;
 
   if (derivedChecks.length === 0) {
-    return <EmptyState icon={<HeartPulse style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }} />} message="No health data" sub="Health checks will populate after the first sync run." />;
+    return <EmptyState icon={<HeartPulse style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }} />} message="No health data" sub="Health checks will populate after the first sync run." />;
   }
 
   const grouped = derivedChecks.reduce<Record<string, typeof derivedChecks>>((acc, c) => {
@@ -48,7 +48,7 @@ export function WikiAdminHealthTab() {
               <thead>
                 <tr style={{ background: 'var(--cp-bg-sunken, #F8FAFC)' }}>
                   {['Metric', 'Value', 'Threshold', 'Status'].map(h => (
-                    <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{h}</th>
+                    <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{h}</th>
                   ))}
                 </tr>
               </thead>

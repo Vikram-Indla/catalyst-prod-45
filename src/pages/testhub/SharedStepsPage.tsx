@@ -264,7 +264,7 @@ export default function SharedStepsPage() {
       <TestHubPageHeader title="Shared Steps Library" subtitle="Reusable test steps for consistency across test cases">
             <button onClick={handleRefresh} title="Refresh" style={{
               width: 40, height: 40, padding: 0, border: `1.5px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 8,
-              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer',
+              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', cursor: 'pointer',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <RefreshCw size={18} />
@@ -294,12 +294,12 @@ export default function SharedStepsPage() {
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           }}>
             <h2 style={{
-              fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase',
+              fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase',
               letterSpacing: '0.05em', margin: 0, fontFamily: 'var(--cp-font-body)',
             }}>Categories</h2>
             <button onClick={() => setIsCreateCategoryModalOpen(true)} title="Add category" style={{
               width: 28, height: 28, padding: 0, border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 6,
-              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer',
+              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <Plus size={14} />
@@ -311,7 +311,7 @@ export default function SharedStepsPage() {
             {/* All Steps */}
             <CategorySidebarItem
               label="All Steps"
-              icon={<Folder size={16} style={{ color: !selectedCategoryId ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))') }} />}
+              icon={<Folder size={16} style={{ color: !selectedCategoryId ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))') }} />}
               count={totalCount}
               isSelected={!selectedCategoryId}
               selectedColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"
@@ -325,7 +325,7 @@ export default function SharedStepsPage() {
               <CategorySidebarItem
                 key={cat.id}
                 label={cat.name}
-                icon={getCategoryIcon(cat.icon, selectedCategoryId === cat.id ? cat.color : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'))}
+                icon={getCategoryIcon(cat.icon, selectedCategoryId === cat.id ? cat.color : ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'))}
                 count={cat.step_count || 0}
                 isSelected={selectedCategoryId === cat.id}
                 selectedColor={cat.color}
@@ -402,7 +402,7 @@ export default function SharedStepsPage() {
                     padding: '12px 16px', borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}`,
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                   }}>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-body)' }}>Filter by Category</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)' }}>Filter by Category</span>
                     {activeFilters.length > 0 && (
                       <button onClick={() => setActiveFilters([])} style={{
                         background: 'none', border: 'none', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontSize: 12,
@@ -520,7 +520,7 @@ export default function SharedStepsPage() {
               <button onClick={() => setViewMode('list')} title="List view" style={{
                 width: 40, height: 38, padding: 0, border: 'none',
                 backgroundColor: viewMode === 'list' ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
-                color: viewMode === 'list' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'), cursor: 'pointer',
+                color: viewMode === 'list' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'), cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <List size={18} />
@@ -529,14 +529,14 @@ export default function SharedStepsPage() {
                 width: 40, height: 38, padding: 0, border: 'none',
                 borderLeft: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
                 backgroundColor: viewMode === 'card' ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
-                color: viewMode === 'card' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'), cursor: 'pointer',
+                color: viewMode === 'card' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'), cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <LayoutGrid size={18} />
               </button>
             </div>
 
-            <span style={{ fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-body)' }}>
+            <span style={{ fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)' }}>
               {totalCount} shared step{totalCount !== 1 ? 's' : ''}
             </span>
           </div>
@@ -568,11 +568,11 @@ export default function SharedStepsPage() {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--cp-font-body)' }}>
                   <thead>
                     <tr style={{ borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
-                      <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Name</th>
-                      <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Category</th>
-                      <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '0.05em', width: 80 }}>Variables</th>
-                      <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '0.05em', width: 70 }}>Used</th>
-                      <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '0.05em', width: 80 }}>Actions</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Name</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Category</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase', letterSpacing: '0.05em', width: 80 }}>Variables</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase', letterSpacing: '0.05em', width: 70 }}>Used</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase', letterSpacing: '0.05em', width: 80 }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -592,7 +592,7 @@ export default function SharedStepsPage() {
                           <td style={{ padding: '12px 16px' }}>
                             <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{step.name}</div>
                             {step.description && (
-                              <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 400 }}>
+                              <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 400 }}>
                                 {step.description}
                               </div>
                             )}
@@ -625,7 +625,7 @@ export default function SharedStepsPage() {
                               style={{
                                 padding: '2px 8px', borderRadius: 12, fontSize: 12, fontWeight: 600,
                                 backgroundColor: step.usage_count > 0 ? ('var(--cp-success-light, #F0FDF4)') : ('var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'),
-                                color: step.usage_count > 0 ? 'var(--quality-high, #059669)' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'),
+                                color: step.usage_count > 0 ? 'var(--quality-high, #059669)' : ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'),
                                 border: 'none', cursor: 'pointer',
                               }}
                               onMouseEnter={(e) => { if (step.usage_count > 0) e.currentTarget.style.textDecoration = 'underline'; }}
@@ -637,14 +637,14 @@ export default function SharedStepsPage() {
                           <td style={{ padding: '12px 16px', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
                             <button onClick={() => setEditingStep(step)} title="Edit" style={{
                               width: 32, height: 32, padding: 0, border: 'none', borderRadius: 6,
-                              backgroundColor: 'transparent', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer',
+                              backgroundColor: 'transparent', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', cursor: 'pointer',
                               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                             }}>
                               <Pencil size={14} />
                             </button>
                             <button onClick={() => handleDelete(step)} title="Delete" style={{
                               width: 32, height: 32, padding: 0, border: 'none', borderRadius: 6,
-                              backgroundColor: 'transparent', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer',
+                              backgroundColor: 'transparent', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', cursor: 'pointer',
                               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                             }}>
                               <Trash2 size={14} />
@@ -851,7 +851,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
       {/* Description */}
       {step.description && (
         <p style={{
-          fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '0 0 12px',
+          fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '0 0 12px',
           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
         }}>
           {step.description}
@@ -860,7 +860,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
 
       {/* Action */}
       <div style={{ marginBottom: 12 }}>
-        <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
+        <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
           Action
         </span>
         <p style={{
@@ -878,7 +878,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
           {variables.map((v, i) => (
             <span key={i} style={{
               padding: '2px 8px', backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', borderRadius: 4,
-              fontFamily: 'monospace', fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
+              fontFamily: 'monospace', fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
             }}>
               {`{{${v.name}}}`}
             </span>

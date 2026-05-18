@@ -303,7 +303,7 @@ export default function ReqAssistGenerate() {
               <div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-success, var(--cp-success, #16A34A))', fontFamily: 'var(--cp-font-body)' }}>✓ Qualified — Score {qualifyResult.score}/100</div>
                 {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: '#166534', margin: '4px 0 0', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>• {r}</p>)}
-                <p style={{ fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '6px 0 0', fontFamily: 'var(--cp-font-body)' }}>
+                <p style={{ fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '6px 0 0', fontFamily: 'var(--cp-font-body)' }}>
                   Domain: {qualifyResult.domain_detected} · ~{qualifyResult.requirement_count_estimate} requirements · {qualifyResult.language.toUpperCase()}
                 </p>
               </div>
@@ -349,7 +349,7 @@ export default function ReqAssistGenerate() {
             <div style={{ padding: '12px 16px', borderBottom: `0.75px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', fontFamily: 'var(--cp-font-heading)' }}>Generated BRD</span>
               <span style={{ display: 'inline-flex', alignItems: 'center', padding: '0 6px', height: 20, borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>QUALIFIED</span>
-              <span style={{ fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginLeft: 'auto', fontFamily: 'var(--cp-font-mono)' }}>
+              <span style={{ fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginLeft: 'auto', fontFamily: 'var(--cp-font-mono)' }}>
                 {genResult.section_count} sections · {genResult.language.toUpperCase()} · {genResult.total_requirements} requirements
               </span>
             </div>
@@ -475,7 +475,7 @@ export default function ReqAssistGenerate() {
         <ModalOverlay>
           <div style={{ width: 480, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <AlertTriangle size={20} color="var(--ds-text-subtlest, var(--cp-ink-3, #64748B))" />
+              <AlertTriangle size={20} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
               <span style={{ fontSize: 16, fontWeight: 650, color: 'var(--cp-text-primary, #111827)', fontFamily: 'var(--cp-font-heading)' }}>Document Already Exists</span>
             </div>
             <p style={{ fontSize: 14, color: 'var(--cp-text-secondary, #374151)', lineHeight: 1.6, margin: '0 0 20px' }}>
@@ -625,7 +625,7 @@ function BtnGhost({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonE
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
       border: 'none', borderRadius: 6, cursor: 'pointer',
-      background: 'transparent', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-body)',
+      background: 'transparent', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)',
       ...props.style,
     }}>{children}</button>
   );
@@ -673,7 +673,7 @@ function CatalystTopNav() {
         return (
           <button key={h.label} onClick={() => navigate(h.path)} style={{
             height: 48, padding: '0 14px', fontSize: 13, fontWeight: isActive ? 600 : 400,
-            color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', background: 'transparent', border: 'none', cursor: 'pointer',
+            color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: 'transparent', border: 'none', cursor: 'pointer',
             borderBottom: isActive ? '3px solid #2563EB' : '3px solid transparent', transition: 'color 120ms', fontFamily: 'var(--cp-font-body)',
           }}>{h.label}</button>
         );

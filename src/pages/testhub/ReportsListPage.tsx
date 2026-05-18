@@ -41,11 +41,11 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; ic
   coverage: { label: 'Coverage', color: '#0891B2', bg: '#ECFEFF', icon: Shield },
   defect: { label: 'Defect Report', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', icon: AlertCircle },
   trend: { label: 'Trend Analysis', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: TrendingUp },
-  custom: { label: 'Custom', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: FileBarChart },
+  custom: { label: 'Custom', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: FileBarChart },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  draft: { label: 'Draft', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
+  draft: { label: 'Draft', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
   generating: { label: 'Generating', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB' },
   ready: { label: 'Ready', color: 'var(--quality-high, #059669)', bg: '#ECFDF5' },
   failed: { label: 'Failed', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)' },
@@ -144,7 +144,7 @@ export default function ReportsListPage() {
           <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0, textTransform: 'uppercase' }}>Total Reports</p>
+                <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: 0, textTransform: 'uppercase' }}>Total Reports</p>
                 <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '8px 0 0' }}>{stats.total_reports}</p>
               </div>
               <FileBarChart size={24} style={{ color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' }} />
@@ -162,10 +162,10 @@ export default function ReportsListPage() {
           <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0, textTransform: 'uppercase' }}>This Month</p>
+                <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: 0, textTransform: 'uppercase' }}>This Month</p>
                 <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '8px 0 0' }}>{stats.this_month}</p>
               </div>
-              <Calendar size={24} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }} />
+              <Calendar size={24} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }} />
             </div>
           </div>
         </div>
@@ -196,13 +196,13 @@ export default function ReportsListPage() {
           <option value="archived">Archived</option>
         </select>
         {hasActiveFilters && (
-          <button onClick={clearFilters} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', fontSize: 14, cursor: 'pointer' }}>
+          <button onClick={clearFilters} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
       </div>
 
-      <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginBottom: 16 }}>
+      <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 16 }}>
         Showing {filteredReports.length} report{filteredReports.length !== 1 ? 's' : ''}
       </p>
 
@@ -214,7 +214,7 @@ export default function ReportsListPage() {
       ) : filteredReports.length === 0 ? (
         <div style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }}>
           <FileBarChart size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
-          <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0 }}>No reports found</p>
+          <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: 0 }}>No reports found</p>
           <p style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', margin: '8px 0 0' }}>Generate a new report to get started</p>
         </div>
       ) : (
@@ -240,7 +240,7 @@ export default function ReportsListPage() {
                         <span style={{ fontSize: 11, fontWeight: 500, color: status.color, backgroundColor: status.bg, padding: '2px 8px', borderRadius: 4 }}>{status.label}</span>
                       </div>
                       <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 4px' }}>{report.name}</h3>
-                      <div style={{ display: 'flex', gap: 12, fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
+                      <div style={{ display: 'flex', gap: 12, fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
                         {report.cycle && <span>Cycle: {report.cycle.cycle_key}</span>}
                         {report.plan && <span>Plan: {report.plan.plan_key}</span>}
                         <span>Generated: {formatDate(report.generated_at)}</span>

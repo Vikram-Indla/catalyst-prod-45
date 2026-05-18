@@ -339,7 +339,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
     );
   }
 
-  const deptColor = R360_DEPT_COLORS[overview.department] || 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
+  const deptColor = R360_DEPT_COLORS[overview.department] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
 
   return (
     <>

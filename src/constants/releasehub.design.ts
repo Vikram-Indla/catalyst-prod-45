@@ -32,7 +32,7 @@ export const RH = {
   // Text
   ink1: 'var(--fg-1, var(--cp-ink-1, #0F172A))',
   ink2: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
-  ink3: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+  ink3: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
   ink4: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
 
   // Fonts

@@ -31,7 +31,7 @@ function DataTable({ data }: { data: any[] }) {
       <thead>
         <tr>
           {keys.map((k) => (
-            <th key={k} style={{ textAlign: "left", padding: "4px 8px", borderBottom: "1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))", color: "var(--ds-text-subtlest, var(--cp-ink-3, #64748B))", fontWeight: 600 }}>{k}</th>
+            <th key={k} style={{ textAlign: "left", padding: "4px 8px", borderBottom: "1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))", color: "var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))", fontWeight: 600 }}>{k}</th>
           ))}
         </tr>
       </thead>
@@ -64,13 +64,13 @@ function CheckCard({ result }: { result: CheckResult }) {
         <span style={{ fontWeight: 600, fontSize: 13 }}>{result.id} · {result.title}</span>
         <StatusBadge status={result.status} />
       </div>
-      {result.message && <p style={{ fontSize: 12, color: "var(--ds-text-subtlest, var(--cp-ink-3, #64748B))", marginBottom: 4 }}>{result.message}</p>}
+      {result.message && <p style={{ fontSize: 12, color: "var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))", marginBottom: 4 }}>{result.message}</p>}
       {result.data && Array.isArray(result.data) && result.data.length > 0 && <DataTable data={result.data} />}
       {result.data && !Array.isArray(result.data) && typeof result.data === "object" && (
         <div style={{ fontSize: 12, marginTop: 4 }}>
           {Object.entries(result.data).map(([k, v]) => (
             <div key={k} style={{ display: "flex", gap: 8, padding: "2px 0" }}>
-              <span style={{ color: "var(--ds-text-subtlest, var(--cp-ink-3, #64748B))", fontWeight: 500, minWidth: 140 }}>{k}:</span>
+              <span style={{ color: "var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))", fontWeight: 500, minWidth: 140 }}>{k}:</span>
               <span>{String(v ?? "—")}</span>
             </div>
           ))}
@@ -267,7 +267,7 @@ export default function RAGAuditPage() {
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px", fontFamily: 'var(--cp-font-heading)' }}>
       <h1 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>RAG Pipeline Audit — Layers 1–3</h1>
-      <p style={{ fontSize: 13, color: "var(--ds-text-subtlest, var(--cp-ink-3, #64748B))", marginBottom: 24 }}>Req Assist™ · Run by Vikram · {today}</p>
+      <p style={{ fontSize: 13, color: "var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))", marginBottom: 24 }}>Req Assist™ · Run by Vikram · {today}</p>
 
       <button
         onClick={runAllChecks}
