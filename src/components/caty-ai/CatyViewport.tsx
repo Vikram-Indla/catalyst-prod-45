@@ -124,10 +124,10 @@ interface MetricTileProps {
 }
 
 const variantColors = {
-  neutral: { bg: 'var(--ds-surface-sunken, #f8fafc)', border: 'var(--ds-border, #e2e8f0)', text: 'var(--ds-text-subtle, #475569)', accent: 'var(--ds-text-subtlest, #64748b)' },
+  neutral: { bg: 'var(--ds-surface-sunken, #f8fafc)', border: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', text: 'var(--ds-text-subtle, #475569)', accent: 'var(--ds-text-subtlest, #64748b)' },
   danger: { bg: 'var(--ds-background-danger, #fef2f2)', border: '#fecaca', text: 'var(--ds-text-danger, #dc2626)', accent: 'var(--ds-text-danger, #dc2626)' },
   warning: { bg: '#fffbeb', border: '#fde68a', text: 'var(--ds-text-warning, #d97706)', accent: 'var(--ds-text-warning, #f59e0b)' },
-  info: { bg: 'var(--ds-background-selected, #eff6ff)', border: '#bfdbfe', text: 'var(--ds-text-brand, #2563eb)', accent: 'var(--ds-text-brand, #3b82f6)' },
+  info: { bg: 'var(--ds-background-selected, #eff6ff)', border: '#bfdbfe', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', accent: 'var(--ds-text-brand, #3b82f6)' },
 };
 
 function MetricTile({ icon: Icon, value, label, variant, showProgress, progressPercent = 0, onClick, isClickable = false }: MetricTileProps) {
@@ -254,8 +254,8 @@ function IssueTile({ question, accentColor, onClick }: IssueTileProps) {
         e.currentTarget.style.borderColor = 'var(--ds-text-disabled, #cbd5e1)';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.background = 'var(--ds-surface, #ffffff)';
-        e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)';
+        e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+        e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))';
       }}
     >
       {/* Left Accent Bar */}
@@ -299,7 +299,7 @@ function getTagStyle(type: string): React.CSSProperties {
       return { background: '#faf5ff', color: '#7c3aed', borderColor: '#e9d5ff' };
     case 'count':
     default:
-      return { background: 'var(--ds-surface-sunken, #f1f5f9)', color: 'var(--ds-text-subtle, #475569)', borderColor: 'var(--ds-border, #e2e8f0)' };
+      return { background: 'var(--ds-surface-sunken, #f1f5f9)', color: 'var(--ds-text-subtle, #475569)', borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' };
   }
 }
 
@@ -388,7 +388,7 @@ const styles: Record<string, React.CSSProperties> = {
   
   // Issues Container
   issuesContainer: {
-    background: 'var(--ds-surface, #ffffff)',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     borderRadius: 12,
     border: '1px solid #e2e8f0',
     padding: 16,
@@ -404,7 +404,7 @@ const styles: Record<string, React.CSSProperties> = {
   issuesTitle: {
     fontSize: 13,
     fontWeight: 700,
-    color: 'var(--ds-text-subtle, #334155)',
+    color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
     letterSpacing: '0.08em',
   },
   issuesBadge: {
@@ -456,7 +456,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: 12,
     padding: '10px 12px',
-    background: 'var(--ds-surface, #ffffff)',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     border: '1px solid #e2e8f0',
     borderRadius: 8,
     cursor: 'pointer',
@@ -512,7 +512,7 @@ const styles: Record<string, React.CSSProperties> = {
     height: 40,
     borderRadius: '50%',
     background: 'var(--ds-text-success, #22c55e)',
-    color: 'var(--ds-surface, #ffffff)',
+    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

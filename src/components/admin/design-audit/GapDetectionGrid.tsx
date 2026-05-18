@@ -153,31 +153,31 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
     <div className="space-y-6">
       {/* Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
           <div className="text-2xl font-bold text-foreground">{stats.total}</div>
           <div className="text-xs text-muted-foreground">Total Gaps</div>
         </div>
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
           <div className="text-2xl font-bold text-destructive">{stats.p0}</div>
           <div className="text-xs text-muted-foreground">P0 Critical</div>
         </div>
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
           <div className="text-2xl font-bold text-warning">{stats.p1}</div>
           <div className="text-xs text-muted-foreground">P1 Major</div>
         </div>
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
           <div className="text-2xl font-bold text-info">{stats.p2}</div>
           <div className="text-xs text-muted-foreground">P2 Medium</div>
         </div>
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
           <div className="text-2xl font-bold text-muted-foreground">{stats.p3}</div>
           <div className="text-xs text-muted-foreground">P3 Minor</div>
         </div>
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
           <div className="text-2xl font-bold text-success">{stats.autoFixable}</div>
           <div className="text-xs text-muted-foreground">Auto-fixable</div>
         </div>
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
           <div className="text-2xl font-bold text-brand-primary">{stats.responsive}</div>
           <div className="text-xs text-muted-foreground">Responsive</div>
         </div>
@@ -247,7 +247,7 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
 
       {/* Gap Grid */}
       {!showResponsive ? (
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
           <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
             <div className="flex items-center justify-between">
               <div>
@@ -330,7 +330,7 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
         </div>
       ) : (
         /* Responsive Gaps View */
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
           <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
             <h3 className="text-base flex items-center gap-2" style={{ fontWeight: 500, margin: 0 }}>
               <PhoneIcon label="" size="small" />
@@ -341,7 +341,7 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
           <div>
             <ScrollArea className="h-[400px]">
               <table className="w-full text-sm">
-                <thead className="sticky top-0 border-b" style={{ background: 'var(--ds-surface, #FFFFFF)' }}>
+                <thead className="sticky top-0 border-b" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                   <tr>
                     <th className="text-left font-medium px-4 py-2">Route</th>
                     <th className="text-left font-medium px-4 py-2">Viewport</th>

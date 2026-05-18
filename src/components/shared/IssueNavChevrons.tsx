@@ -5,10 +5,10 @@
  * Styling is pixel-matched to Jira Cloud (verified via computer-use
  * screenshot of digital-transformation.atlassian.net, 2026-04-19):
  *   - 28 × 28 button
- *   - 1px var(--ds-border, #DFE1E6) border at rest (subtle, NOT borderless ghost)
+ *   - 1px var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) border at rest (subtle, NOT borderless ghost)
  *   - 4px border radius
  *   - #42526E icon at rest, #C1C7D0 when disabled
- *   - hover: bg var(--ds-surface-sunken, #F4F5F7), border #C1C7D0
+ *   - hover: bg var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)), border #C1C7D0
  *   - 4px gap between prev/next
  *
  * Up = previous work item, Down = next work item (Atlassian convention).
@@ -45,7 +45,7 @@ export interface IssueNavChevronsProps {
 const BTN_BASE: React.CSSProperties = {
   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
   width: 28, height: 28, padding: 0,
-  background: 'var(--ds-surface, #FFFFFF)', border: '1px solid #DFE1E6', borderRadius: 4,
+  background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 4,
   transition: 'background 0.15s, border-color 0.15s',
 };
 
@@ -76,13 +76,13 @@ function ChevronButton({
       }}
       onMouseEnter={e => {
         if (!disabled) {
-          e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)';
+          e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))';
           e.currentTarget.style.borderColor = 'var(--ds-border-disabled, #C1C7D0)';
         }
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)';
-        e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)';
+        e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+        e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
       }}
     >
       <Icon size={16} />

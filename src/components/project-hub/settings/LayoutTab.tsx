@@ -38,13 +38,13 @@ const SECTION_ORDER = ['details', 'people', 'dates'];
 
 function VisibilityDot({ visible, required }: { visible: boolean; required: boolean }) {
   if (required) return (
-    <span style={{ fontSize: 10, fontWeight: 700, color: '#DC2626', marginLeft: 4 }} title="Required">*</span>
+    <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--cp-danger, #DC2626)', marginLeft: 4 }} title="Required">*</span>
   );
   return (
     <span
       style={{
         display: 'inline-block', width: 7, height: 7, borderRadius: '50%',
-        background: visible ? '#16A34A' : '#CBD5E1',
+        background: visible ? 'var(--cp-success, #16A34A)' : '#CBD5E1',
         marginLeft: 4, flexShrink: 0,
       }}
       title={visible ? 'Visible' : 'Hidden'}
@@ -107,13 +107,13 @@ function TypeLayoutPanel({ workTypeId, typeName }: { workTypeId: string; typeNam
                     >
                       <span style={{ fontSize: 13, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
                         {f.field_label}
-                        {f.is_required && <span style={{ color: '#DC2626', marginLeft: 3 }}>*</span>}
+                        {f.is_required && <span style={{ color: 'var(--cp-danger, #DC2626)', marginLeft: 3 }}>*</span>}
                       </span>
                       <span
                         style={{
                           fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 10,
-                          background: f.is_visible ? '#DCFCE7' : '#F1F5F9',
-                          color: f.is_visible ? '#15803D' : '#94A3B8',
+                          background: f.is_visible ? '#DCFCE7' : 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
+                          color: f.is_visible ? '#15803D' : 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))',
                         }}
                       >
                         {f.is_visible ? 'Shown' : 'Hidden'}

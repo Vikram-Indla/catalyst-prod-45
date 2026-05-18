@@ -13,7 +13,7 @@ interface Props {
 const STATUS_MINI: Record<string, { bg: string; text: string }> = {
   done: { bg: 'var(--ds-background-success, #DCFCE7)', text: '#15803D' },
   in_progress: { bg: '#DBEAFE', text: '#1E40AF' },
-  todo: { bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtle, #475569)' },
+  todo: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--ds-text-subtle, #475569)' },
 };
 
 export function WorkItemTag({ workItemKey, title, type, status, onClick }: Props) {
@@ -22,7 +22,7 @@ export function WorkItemTag({ workItemKey, title, type, status, onClick }: Props
   return (
     <button
       onClick={onClick}
-      className="inline-flex items-center gap-1.5 h-6 px-2 rounded border border-[var(--bd-default,#E2E8F0)] bg-white hover:bg-[#F0FDFA] hover:border-[#99F6E4] transition-colors max-w-[280px] group"
+      className="inline-flex items-center gap-1.5 h-6 px-2 rounded border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] bg-white hover:bg-[#F0FDFA] hover:border-[#99F6E4] transition-colors max-w-[280px] group"
       style={{ fontFamily: RH.fontBody }}
     >
       <WorkItemTypeIcon type={type} size={12} />

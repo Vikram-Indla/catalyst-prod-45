@@ -45,14 +45,14 @@ const FILE_TYPE_MAP: Record<string, { label: string; color: string; bg: string }
   xls: { label: 'XLS', color: '#0D7331', bg: '#0D733112' },
   xlsx: { label: 'XLS', color: '#0D7331', bg: '#0D733112' },
   csv: { label: 'XLS', color: '#0D7331', bg: '#0D733112' },
-  doc: { label: 'DOC', color: 'var(--ds-text-brand, #2563EB)', bg: '#2563EB12' },
-  docx: { label: 'DOC', color: 'var(--ds-text-brand, #2563EB)', bg: '#2563EB12' },
-  png: { label: 'IMG', color: '#7C3AED', bg: '#7C3AED12' },
-  jpg: { label: 'IMG', color: '#7C3AED', bg: '#7C3AED12' },
-  jpeg: { label: 'IMG', color: '#7C3AED', bg: '#7C3AED12' },
-  gif: { label: 'IMG', color: '#7C3AED', bg: '#7C3AED12' },
-  webp: { label: 'IMG', color: '#7C3AED', bg: '#7C3AED12' },
-  svg: { label: 'IMG', color: '#7C3AED', bg: '#7C3AED12' },
+  doc: { label: 'DOC', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: '#2563EB12' },
+  docx: { label: 'DOC', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: '#2563EB12' },
+  png: { label: 'IMG', color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--cp-purple-60, #7C3AED)12' },
+  jpg: { label: 'IMG', color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--cp-purple-60, #7C3AED)12' },
+  jpeg: { label: 'IMG', color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--cp-purple-60, #7C3AED)12' },
+  gif: { label: 'IMG', color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--cp-purple-60, #7C3AED)12' },
+  webp: { label: 'IMG', color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--cp-purple-60, #7C3AED)12' },
+  svg: { label: 'IMG', color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--cp-purple-60, #7C3AED)12' },
 };
 const DEFAULT_TYPE = { label: 'FILE', color: '#71717A', bg: '#71717A12' };
 
@@ -242,7 +242,7 @@ export function BrAttachmentsSection({ request }: Props) {
           border: `2px dashed ${
             dragging
               ? token('color.border.brand', '#1868DB')
-              : token('color.border', '#DFE1E6')
+              : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')
           }`,
           background: dragging
             ? token('color.background.selected', '#E9F2FF')
@@ -256,7 +256,7 @@ export function BrAttachmentsSection({ request }: Props) {
         <div
           style={{
             fontSize: 13,
-            color: token('color.text.subtle', '#44546F'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             fontFamily: 'var(--cp-font-body)',
             marginTop: 4,
           }}
@@ -338,7 +338,7 @@ export function BrAttachmentsSection({ request }: Props) {
           <div
             style={{
               padding: '20px 12px',
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               borderRadius: 6,
               textAlign: 'center',
               fontSize: 13,
@@ -365,7 +365,7 @@ export function BrAttachmentsSection({ request }: Props) {
                   alignItems: 'center',
                   gap: 12,
                   padding: '8px 12px',
-                  border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                   borderRadius: 6,
                   background: token('elevation.surface', '#FFFFFF'),
                   fontFamily: 'var(--cp-font-body)',

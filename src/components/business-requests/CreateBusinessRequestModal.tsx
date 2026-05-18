@@ -414,7 +414,7 @@ function MoreActionsButton() {
         <div role="menu" style={{
           position: 'absolute', top: '100%', right: 0, marginTop: 4, zIndex: 10,
           background: token('elevation.surface.overlay', '#FFF'),
-          border: `1px solid ${token('color.border', '#DFE1E6')}`,
+          border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
           borderRadius: 4, boxShadow: '0 4px 12px rgba(9,30,66,0.15)', minWidth: 160, padding: '4px 0',
         }}>
           <button role="menuitem" type="button" onClick={() => setOpen(false)}
@@ -538,7 +538,7 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
         style={{
-          border: `2px dashed ${dragOver ? token('color.border.brand', '#1868DB') : token('color.border', '#DFE1E6')}`,
+          border: `2px dashed ${dragOver ? token('color.border.brand', '#1868DB') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
           borderRadius: 4, padding: '20px 16px', textAlign: 'center', cursor: 'pointer',
           background: dragOver ? token('color.background.selected', '#E9F2FF') : token('color.background.input', '#FAFBFC'),
           transition: 'border-color 120ms, background 120ms',
@@ -595,10 +595,10 @@ function TranslateButton({ loading, label, onClick }: { loading: boolean; label:
         alignItems: 'center',
         justifyContent: 'center',
         background: loading ? token('color.background.neutral', '#F4F5F7') : token('color.background.neutral', '#F4F5F7'),
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         borderRadius: 3,
         cursor: loading ? 'default' : 'pointer',
-        color: token('color.text.subtle', '#44546F'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
         transition: 'background 120ms',
         outline: 'none',
       }}
@@ -608,9 +608,9 @@ function TranslateButton({ loading, label, onClick }: { loading: boolean; label:
       {loading ? (
         <Spinner size="small" />
       ) : (
-        // AI sparkle icon — purple (#7C3AED) reserved for AI per CLAUDE.md §8
+        // AI sparkle icon — purple (var(--cp-purple-60, #7C3AED)) reserved for AI per CLAUDE.md §8
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M8 1l1.5 4H14l-3.5 2.5 1.5 4L8 9l-4 2.5 1.5-4L2 5h4.5L8 1z" fill="#7C3AED"/>
+          <path d="M8 1l1.5 4H14l-3.5 2.5 1.5 4L8 9l-4 2.5 1.5-4L2 5h4.5L8 1z" fill="var(--cp-purple-60, #7C3AED)"/>
         </svg>
       )}
     </button>
@@ -625,7 +625,7 @@ function FieldLabel({ children, required }: { children: ReactNode; required?: bo
   return (
     <label style={{
       fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 600,
-      color: token('color.text.subtle', '#44546F'), display: 'block', marginBottom: 4, lineHeight: '16px',
+      color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), display: 'block', marginBottom: 4, lineHeight: '16px',
     }}>
       {required && <span aria-hidden="true" style={{ color: token('color.text.danger'), marginRight: 4 }}>*</span>}
       {children}

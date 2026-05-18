@@ -180,7 +180,7 @@ export function FilterDropdown({ filters, onChange, onClose }: FilterDropdownPro
           borderRadius: 8,
           fontSize: 13,
           fontWeight: 600,
-          color: 'var(--ds-text-inverse, #FFFFFF)',
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           cursor: 'pointer',
         }}
       >

@@ -50,7 +50,7 @@ function ProposalDiff({ proposal, statuses }: { proposal: WorkflowAIProposal; st
       padding: '10px 12px',
       fontSize: 12,
     }}>
-      <div style={{ fontWeight: 600, marginBottom: 6, color: 'var(--ds-text,#172B4D)', fontSize: 12 }}>
+      <div style={{ fontWeight: 600, marginBottom: 6, color: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontSize: 12 }}>
         Proposed changes
       </div>
 
@@ -121,7 +121,7 @@ function MessageBubble({
         borderRadius: isUser ? '8px 8px 2px 8px' : '8px 8px 8px 2px',
         padding: '10px 12px',
         fontSize: 13,
-        color: 'var(--ds-text,#172B4D)',
+        color: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
         lineHeight: 1.5,
       }}>
         {msg.content}
@@ -165,14 +165,14 @@ function MessageBubble({
           </div>
         )}
         {msg.rejected && (
-          <div style={{ marginTop: 6, fontSize: 11, color: 'var(--ds-text-subtlest,#6B778C)' }}>
+          <div style={{ marginTop: 6, fontSize: 11, color: 'var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))' }}>
             Skipped
           </div>
         )}
       </div>
 
       {/* Role label */}
-      <div style={{ fontSize: 10, color: 'var(--ds-text-subtlest,#6B778C)', marginTop: 2, padding: '0 2px' }}>
+      <div style={{ fontSize: 10, color: 'var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))', marginTop: 2, padding: '0 2px' }}>
         {isUser ? 'You' : 'CATY'}
       </div>
     </div>
@@ -253,15 +253,15 @@ export function CatyWorkflowPanel({
         zIndex: 50,
         display: 'flex',
         flexDirection: 'column',
-        background: 'var(--ds-surface,#ffffff)',
-        borderLeft: '1px solid var(--ds-border,#DFE1E6)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+        borderLeft: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
         boxShadow: '-4px 0 20px rgba(9,30,66,0.12)',
       }}
     >
       {/* Header */}
       <div style={{
         padding: '14px 16px',
-        borderBottom: '1px solid var(--ds-border,#DFE1E6)',
+        borderBottom: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
         display: 'flex',
         alignItems: 'center',
         gap: 10,
@@ -277,10 +277,10 @@ export function CatyWorkflowPanel({
           C
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text,#172B4D)' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
             Ask CATY
           </div>
-          <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest,#6B778C)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {issueType} Workflow · {statuses.length} statuses
           </div>
         </div>
@@ -297,7 +297,7 @@ export function CatyWorkflowPanel({
             <div style={{ fontSize: 13, color: 'var(--ds-text-subtle,#42526E)', marginBottom: 12, lineHeight: 1.5 }}>
               Describe a workflow change in plain English. I'll propose the exact status and transition edits needed.
             </div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest,#6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
               Examples
             </div>
             {EXAMPLE_PROMPTS.map((p, i) => (
@@ -307,7 +307,7 @@ export function CatyWorkflowPanel({
                 style={{
                   display: 'block', width: '100%', textAlign: 'left',
                   padding: '7px 10px', marginBottom: 5, borderRadius: 4,
-                  border: '1px solid var(--ds-border,#DFE1E6)',
+                  border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
                   background: 'var(--ds-surface-sunken,#F7F8F9)',
                   color: 'var(--ds-text-subtle,#42526E)', fontSize: 12,
                   cursor: 'pointer',
@@ -334,7 +334,7 @@ export function CatyWorkflowPanel({
         {isLoading && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px' }}>
             <Spinner size="small" />
-            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest,#6B778C)' }}>CATY is thinking…</span>
+            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))' }}>CATY is thinking…</span>
           </div>
         )}
 
@@ -342,7 +342,7 @@ export function CatyWorkflowPanel({
       </div>
 
       {/* Input */}
-      <div style={{ padding: '10px 14px', borderTop: '1px solid var(--ds-border,#DFE1E6)', display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+      <div style={{ padding: '10px 14px', borderTop: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', display: 'flex', gap: 8, alignItems: 'flex-end' }}>
         <div style={{ flex: 1 }}>
           <Textfield
             value={input}
@@ -366,7 +366,7 @@ export function CatyWorkflowPanel({
 
       {/* Restore footer — only when changes have been applied */}
       {hasUnappliedChanges && (
-        <div style={{ padding: '8px 14px', borderTop: '1px solid var(--ds-border,#DFE1E6)' }}>
+        <div style={{ padding: '8px 14px', borderTop: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }}>
           <Button appearance="danger" onClick={restoreSession} shouldFitContainer>
             ↩ Restore to session start
           </Button>

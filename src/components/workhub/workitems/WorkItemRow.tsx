@@ -28,7 +28,7 @@ const PRIORITY_COLORS: Record<string, string> = {
   Highest: 'var(--ds-text-danger, #dc2626)',
   High: '#ea580c',
   Medium: 'var(--ds-text-warning, #d97706)',
-  Low: 'var(--ds-text-brand, #2563eb)',
+  Low: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   Lowest: 'var(--ds-text-subtlest, #64748b)',
 };
 

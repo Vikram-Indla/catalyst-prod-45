@@ -23,7 +23,7 @@ export interface LozengeConfig {
 }
 
 const LOZENGE_STYLES_LIGHT: Record<LozengeColor, { bg: string; text: string }> = {
-  default:    { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)' },
+  default:    { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text, #253858)' },
   inprogress: { bg: '#DEEBFF', text: '#0747A6' },
   success:    { bg: '#E3FCEF', text: '#006644' },
   removed:    { bg: '#FFEBE6', text: '#BF2600' },
@@ -32,7 +32,7 @@ const LOZENGE_STYLES_LIGHT: Record<LozengeColor, { bg: string; text: string }> =
 };
 
 const LOZENGE_STYLES_DARK: Record<LozengeColor, { bg: string; text: string }> = {
-  default:    { bg: 'var(--ds-border, #2E2E2E)',            text: 'var(--ds-text-subtlest, #A1A1A1)' },
+  default:    { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',            text: 'var(--ds-text-subtlest, #A1A1A1)' },
   inprogress: { bg: 'rgba(59,130,246,0.10)',  text: '#7DB8FC' },
   success:    { bg: 'rgba(74,222,128,0.10)',  text: '#4ADE80' },
   removed:    { bg: 'rgba(248,113,113,0.10)', text: '#F87171' },
@@ -201,8 +201,8 @@ export function getPriorityLabel(priority: string | null): string {
 export function getPriorityColor(priority: string | null): string {
   switch (priority?.toLowerCase()) {
     case 'critical':
-    case 'highest': return 'var(--ds-text-danger, #DC2626)';
-    case 'high':    return 'var(--ds-text-warning, #D97706)';
+    case 'highest': return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
+    case 'high':    return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
     case 'medium':  return '#CF7B00';
     case 'low':
     case 'lowest':  return '#6B7280';
@@ -252,11 +252,11 @@ const EPIC_CHIP_PALETTE = [
   { bg: '#FFF0B3', text: '#7A4F00', border: '#FFD700' },
   { bg: '#FFBDAD', text: '#BF2600', border: '#FF7452' },
   { bg: '#FFE2FE', text: '#6B0089', border: '#D084FF' },
-  { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)', border: '#4C9AFF' },
-  { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)', border: '#57D9A3' },
+  { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '#4C9AFF' },
+  { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '#57D9A3' },
   { bg: '#E6FCFF', text: '#006884', border: '#00C7E6' },
   { bg: '#EAE6FF', text: '#403294', border: '#8777D9' },
-  { bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtle, #334155)', border: 'var(--ds-text-disabled, #CBD5E1)' },
+  { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', border: 'var(--ds-text-disabled, #CBD5E1)' },
 ];
 
 export function getEpicChipColor(epicId: string) {

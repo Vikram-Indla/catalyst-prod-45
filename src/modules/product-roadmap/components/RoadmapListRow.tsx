@@ -11,21 +11,21 @@ import type { RoadmapDemand } from '../types/roadmap';
 
 // ── Request type color map ──
 const TYPE_COLORS: Record<string, string> = {
-  project: 'var(--ds-text-brand, #2563EB)',
-  enhancement: '#0D9488',
-  improvement: 'var(--ds-text-warning, #D97706)',
+  project: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+  enhancement: 'var(--cp-teal-60, #0D9488)',
+  improvement: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
 };
 
 // ── Avatar color — deterministic from initials ──
 const AVATAR_COLORS = [
-  'var(--ds-text-brand, #2563EB)', // blue
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', // blue
   '#6366F1', // indigo
-  '#0D9488', // teal
-  'var(--ds-text-warning, #D97706)', // amber
-  'var(--ds-text-success, #16A34A)', // green
+  'var(--cp-teal-60, #0D9488)', // teal
+  'var(--ds-text-warning, var(--cp-warning, #D97706))', // amber
+  'var(--ds-text-success, var(--cp-success, #16A34A))', // green
   '#0891B2', // cyan
-  'var(--ds-text-danger, #DC2626)', // red
-  'var(--ds-text-subtle, #334155)', // slate
+  'var(--ds-text-danger, var(--cp-danger, #DC2626))', // red
+  'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', // slate
 ];
 
 function getColorFromName(name: string): string {
@@ -57,7 +57,7 @@ interface RoadmapListRowProps {
 export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, isDragging, ownerName }: RoadmapListRowProps) {
   const { isDark } = useTheme();
   const typeKey = (item as any).initiative_type_key || 'project';
-  const typeColor = TYPE_COLORS[typeKey] || 'var(--ds-text-subtlest, #94A3B8)';
+  const typeColor = TYPE_COLORS[typeKey] || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
   const isCritical = item.priority_tier === 'P0' || item.priority_tier === 'critical';
 
   const name = ownerName || null;
@@ -77,7 +77,7 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
       style={{
         height: 44,
         backgroundColor: isSelected ? ('var(--cp-primary-light, #EFF6FF)') : 'transparent',
-        borderBottom: `1px solid ${'var(--cp-border, #E2E8F0)'}`,
+        borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
         outline: isFocused ? '2px solid #2563EB' : 'none',
         outlineOffset: -2,
       }}
@@ -104,10 +104,10 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
           </span>
           {/* P0 badge */}
           {isCritical && (
-            <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--ds-surface, #FFFFFF)', background: 'var(--ds-text-danger, #EF4444)', borderRadius: 4, padding: '1px 4px' }}>P0</span>
+            <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: 'var(--ds-text-danger, #EF4444)', borderRadius: 4, padding: '1px 4px' }}>P0</span>
           )}
           {/* Title */}
-          <span className="truncate" style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)', letterSpacing: '-0.01em' }}>
+          <span className="truncate" style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', letterSpacing: '-0.01em' }}>
             {item.title}
           </span>
         </div>
@@ -120,7 +120,7 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
           style={{
             width: 28, height: 28,
             background: avatarColor,
-            color: 'var(--ds-surface, #FFFFFF)',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             fontSize: 10,
             fontWeight: 700,
             letterSpacing: '0.02em',
@@ -133,9 +133,9 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
       ) : (
         <div
           className="flex-shrink-0 flex items-center justify-center rounded-full"
-          style={{ width: 28, height: 28, background: 'var(--bd-default, #E2E8F0)' }}
+          style={{ width: 28, height: 28, background: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }}
         >
-          <User className="w-3.5 h-3.5" style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+          <User className="w-3.5 h-3.5" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
         </div>
       )}
     </div>

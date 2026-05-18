@@ -134,7 +134,7 @@ export const AssigneeCell = React.memo(function AssigneeCell({
         size="small"
         appearance="circle"
       />
-      <span style={{ fontSize: 13, color: name ? 'var(--ds-text, #172B4D)' : 'var(--cp-text-muted)' }}>
+      <span style={{ fontSize: 13, color: name ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' : 'var(--cp-text-muted)' }}>
         {name || 'Unassigned'}
       </span>
     </button>
@@ -147,7 +147,7 @@ export const AssigneeCell = React.memo(function AssigneeCell({
         position: 'fixed', top: pos.top, left: pos.left, zIndex: 99999,
         width: 240, maxHeight: 280, overflowY: 'auto',
         background: 'var(--ds-surface-overlay, #fff)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
         borderRadius: 4, boxShadow: '0 4px 16px rgba(0,0,0,0.16)',
         fontFamily: 'var(--cp-font-body)',
       }}
@@ -161,9 +161,9 @@ export const AssigneeCell = React.memo(function AssigneeCell({
           onClick={e => e.stopPropagation()}
           style={{
             width: '100%', boxSizing: 'border-box',
-            padding: '6px 8px', fontSize: 13, border: '2px solid var(--ds-border-focused, #0052CC)',
+            padding: '6px 8px', fontSize: 13, border: '2px solid var(--ds-border-focused, var(--cp-primary-60, #0052CC))',
             borderRadius: 3, outline: 'none', background: 'var(--ds-background-input, #fff)',
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
           }}
         />
       </div>
@@ -176,11 +176,11 @@ export const AssigneeCell = React.memo(function AssigneeCell({
             width: '100%', padding: '7px 10px', border: 'none',
             background: 'none', cursor: 'pointer', textAlign: 'left',
           }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)'; }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7))'; }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none'; }}
         >
           <Avatar src={u.avatar_url || undefined} name={u.full_name || u.email} size="xsmall" />
-          <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {u.full_name || u.email}
           </span>
         </button>
@@ -291,7 +291,7 @@ export const ParentCell = React.memo(function ParentCell({ parentKey }: { parent
   return (
     <span
       className="pb-id"
-      style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-link, #0052CC)' }}
+      style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-link, var(--cp-primary-60, #0052CC))' }}
       title={`Parent: ${parentKey}`}
     >
       {parentKey}
@@ -310,8 +310,8 @@ export const CommentsCell = React.memo(function CommentsCell({ count }: { count?
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       minWidth: 22, height: 18, padding: '0 6px',
       fontSize: 11, fontWeight: 600,
-      color: 'var(--ds-text-subtle, #44546F)',
-      background: 'var(--ds-background-neutral, #F1F5F9)',
+      color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
+      background: 'var(--ds-background-neutral, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
       borderRadius: 9,
     }} title={`${n} comment${n === 1 ? '' : 's'}`}>
       {n}

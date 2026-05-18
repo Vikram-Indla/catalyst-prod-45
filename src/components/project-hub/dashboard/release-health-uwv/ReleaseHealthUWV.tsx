@@ -141,7 +141,7 @@ function ReleaseItemsRows({
             background: 'var(--ds-surface-sunken, #FAFBFC)',
             borderBottom: '1px solid #F1F2F4',
             fontSize: 13,
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
           }}
         >
           <div /> {/* indent column */}
@@ -159,7 +159,7 @@ function ReleaseItemsRows({
               fontFamily: MONO_STACK,
               fontSize: 12,
               fontWeight: 600,
-              color: '#0052CC',
+              color: 'var(--cp-primary-60, #0052CC)',
               textAlign: 'left',
               textDecoration: 'none',
             }}
@@ -196,7 +196,7 @@ function ReleaseItemsRows({
                   width: 24,
                   height: 24,
                   borderRadius: '50%',
-                  background: 'var(--ds-border, #DFE1E6)',
+                  background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
                 }}
               />
             )}
@@ -223,7 +223,7 @@ function ReleaseRow({
 }) {
   const pct = rel.completionPct ?? 0;
   const isDone = pct >= 100;
-  const fillColor = isDone ? '#006644' : '#0052CC';
+  const fillColor = isDone ? '#006644' : 'var(--cp-primary-60, #0052CC)';
 
   return (
     <>
@@ -234,8 +234,8 @@ function ReleaseRow({
           alignItems: 'center',
           height: 44,
           padding: '0 16px',
-          background: 'var(--ds-text-inverse, #FFFFFF)',
-          borderBottom: '1px solid #DFE1E6',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          borderBottom: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
           cursor: 'pointer',
         }}
         onClick={onToggle}
@@ -264,7 +264,7 @@ function ReleaseRow({
           style={{
             fontSize: 13,
             fontWeight: 650,
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -284,7 +284,7 @@ function ReleaseRow({
               flex: 1,
               height: 6,
               borderRadius: 3,
-              background: 'var(--ds-border, #DFE1E6)',
+              background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
               overflow: 'hidden',
             }}
           >
@@ -367,7 +367,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
         position: 'fixed',
         inset: 0,
         zIndex: 1000,
-        background: 'var(--ds-text-inverse, #FFFFFF)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         display: 'flex',
         flexDirection: 'column',
         fontFamily: FONT_STACK,
@@ -380,8 +380,8 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '16px 24px',
-          borderBottom: '1px solid #DFE1E6',
-          background: 'var(--ds-text-inverse, #FFFFFF)',
+          borderBottom: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         }}
       >
         <div>
@@ -390,7 +390,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
               fontFamily: 'var(--cp-font-heading)' + FONT_STACK,
               fontSize: 16,
               fontWeight: 650,
-              color: 'var(--ds-text, #172B4D)',
+              color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
               lineHeight: 1.25,
             }}
           >
@@ -421,7 +421,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
               alignItems: 'center',
               color: '#42526E',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
             onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
           >
             <Settings size={16} />
@@ -440,7 +440,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
               alignItems: 'center',
               color: '#42526E',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
             onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
           >
             <X size={18} />
@@ -456,8 +456,8 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
           alignItems: 'center',
           height: 36,
           padding: '0 16px',
-          background: 'var(--ds-surface-sunken, #F4F5F7)',
-          borderBottom: '1px solid #DFE1E6',
+          background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
+          borderBottom: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
           fontSize: 11,
           fontWeight: 700,
           color: '#5E6C84',

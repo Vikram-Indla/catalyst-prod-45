@@ -6,31 +6,31 @@ import { useTheme } from '@/hooks/useTheme';
 // STATUS COLORS — Jira status → display colors
 // ═══════════════════════════════════════════════════
 const SC: Record<string, { dot: string; bg: string; tx: string; label: string; accent: string }> = {
-  'To Do':                { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'To Do',       accent: 'var(--ds-text-warning, #D97706)' },
-  'Open':                 { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'To Do',       accent: 'var(--ds-text-warning, #D97706)' },
-  'Backlog':              { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Backlog',     accent: 'var(--ds-text-warning, #D97706)' },
-  'Re-Open':              { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open',     accent: 'var(--ds-text-warning, #D97706)' },
-  'In Requirements':      { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements',accent: 'var(--ds-text-warning, #D97706)' },
-  'Awaiting Info':        { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting',    accent: 'var(--ds-text-warning, #D97706)' },
-  'In Progress':          { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress', accent: 'var(--ds-text-brand, #2563EB)' },
-  'In Development':       { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress', accent: 'var(--ds-text-brand, #2563EB)' },
-  'Under Implementation': { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress', accent: 'var(--ds-text-brand, #2563EB)' },
-  'In Review':            { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review',   accent: '#0D9488' },
-  'In QA':                { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA',       accent: '#0D9488' },
-  'Ready for QA':         { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Ready QA',    accent: '#0D9488' },
-  'Retest':               { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Retest',      accent: '#0D9488' },
-  'Code Review':          { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review',   accent: '#0D9488' },
-  'In UAT':               { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT',     accent: '#7C3AED' },
-  'UAT Ready':            { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready',  accent: '#7C3AED' },
-  'Done':                 { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, #16A34A)' },
-  'Closed':               { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, #16A34A)' },
-  'Resolved':             { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, #16A34A)' },
-  'Ready for Production': { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, #16A34A)' },
-  'Beta Ready':           { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, #16A34A)' },
+  'To Do':                { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do',       accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+  'Open':                 { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do',       accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+  'Backlog':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Backlog',     accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+  'Re-Open':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open',     accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+  'In Requirements':      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements',accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+  'Awaiting Info':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting',    accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+  'In Progress':          { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+  'In Development':       { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+  'Under Implementation': { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+  'In Review':            { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review',   accent: 'var(--cp-teal-60, #0D9488)' },
+  'In QA':                { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA',       accent: 'var(--cp-teal-60, #0D9488)' },
+  'Ready for QA':         { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'Ready QA',    accent: 'var(--cp-teal-60, #0D9488)' },
+  'Retest':               { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'Retest',      accent: 'var(--cp-teal-60, #0D9488)' },
+  'Code Review':          { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review',   accent: 'var(--cp-teal-60, #0D9488)' },
+  'In UAT':               { dot: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT',     accent: 'var(--cp-purple-60, #7C3AED)' },
+  'UAT Ready':            { dot: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready',  accent: 'var(--cp-purple-60, #7C3AED)' },
+  'Done':                 { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  'Closed':               { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  'Resolved':             { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  'Ready for Production': { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  'Beta Ready':           { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
   'Blocked':              { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: 'Blocked',     accent: 'var(--ds-text-danger, #EF4444)' },
   'Rejected':             { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: 'Rejected',    accent: 'var(--ds-text-danger, #EF4444)' },
 };
-const SCD = { dot: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', tx: 'var(--ds-text-subtle, #334155)', label: 'Unknown', accent: 'var(--ds-text-subtlest, #64748B)' };
+const SCD = { dot: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', tx: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', label: 'Unknown', accent: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' };
 
 function resolveStatus(item: any) {
   if (item.status_name && SC[item.status_name]) return SC[item.status_name];
@@ -65,12 +65,12 @@ function JiraIcon({ type }: { type: string }) {
 }
 
 // ═══ HELPERS ═══
-const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, #16A34A)' : d <= 14 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
+const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
 const trunc = (s: string, l: number) => s && s.length > l ? s.slice(0, l) + '…' : s || '';
 const ageLabel = (d: number) => d === 0 ? 'Today' : d === 1 ? '1d ago' : `${d}d ago`;
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, #D97706)', FAC: 'var(--ds-text-success, #16A34A)', OPS: '#0D9488', SUP: 'var(--ds-text-subtlest, #64748B)', LND: '#7C3AED' };
-const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, #64748B)';
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', LND: 'var(--cp-purple-60, #7C3AED)' };
+const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
 
 const SPOTS = [
   { x: 3,  y: 3  },
@@ -154,11 +154,11 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
     <div style={{
       position: 'relative', width: '100%', height: '720px', overflow: 'visible', boxSizing: 'border-box',
       background: isDark
-        ? 'radial-gradient(circle at center, var(--ds-surface-raised, #1A1A1A) 0%, var(--ds-surface, #0A0A0A) 55%, var(--ds-surface, #0A0A0A) 100%)'
-        : 'radial-gradient(circle at center, var(--ds-surface, #fff) 0%, var(--ds-surface-sunken, #F8FAFC) 55%, var(--ds-surface-sunken, #F1F5F9) 100%)',
+        ? 'radial-gradient(circle at center, var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) 0%, var(--ds-surface, #0A0A0A) 55%, var(--ds-surface, #0A0A0A) 100%)'
+        : 'radial-gradient(circle at center, var(--ds-surface, #fff) 0%, var(--ds-surface-sunken, #F8FAFC) 55%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 100%)',
       backgroundImage: isDark
-        ? 'radial-gradient(circle at center, var(--ds-surface-raised, #1A1A1A) 0%, var(--ds-surface, #0A0A0A) 55%, var(--ds-surface, #0A0A0A) 100%), radial-gradient(circle, var(--ds-border, #292929) 1px, transparent 1px)'
-        : 'radial-gradient(circle at center, var(--ds-surface, #fff) 0%, var(--ds-surface-sunken, #F8FAFC) 55%, var(--ds-surface-sunken, #F1F5F9) 100%), radial-gradient(circle, var(--ds-text-disabled, #CBD5E1) 1px, transparent 1px)',
+        ? 'radial-gradient(circle at center, var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) 0%, var(--ds-surface, #0A0A0A) 55%, var(--ds-surface, #0A0A0A) 100%), radial-gradient(circle, var(--ds-border, var(--cp-ink-1, #292929)) 1px, transparent 1px)'
+        : 'radial-gradient(circle at center, var(--ds-surface, #fff) 0%, var(--ds-surface-sunken, #F8FAFC) 55%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 100%), radial-gradient(circle, var(--ds-text-disabled, #CBD5E1) 1px, transparent 1px)',
       backgroundSize: 'cover, 24px 24px',
     }}>
       {/* SVG SPOKES */}
@@ -168,7 +168,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
           const cy = SPOTS[i].y + 9;
           return (
             <line key={`spoke-${i}`} x1="50%" y1={`${centerTopPct}%`} x2={`${cx}%`} y2={`${cy}%`}
-              stroke="var(--ds-text-subtlest, #94A3B8)" strokeWidth="2" strokeDasharray="8 5" strokeLinecap="round" />
+              stroke="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" strokeWidth="2" strokeDasharray="8 5" strokeLinecap="round" />
           );
         })}
       </svg>
@@ -241,7 +241,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
               <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
               {item.project_key && (
-                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-text-inverse, #FFFFFF)', background: projColor }}>{item.project_key}</span>
+                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: projColor }}>{item.project_key}</span>
               )}
               <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: 600, color: ageCol(item.age_days ?? 0), fontVariantNumeric: 'tabular-nums' }}>{item.age_days ?? 0}d</span>
             </div>
@@ -279,7 +279,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             }}
           >
             <div style={{
-              width: '48px', height: '48px', borderRadius: '50%', background: 'var(--ds-text-success, #16A34A)', color: 'var(--ds-text-inverse, #FFFFFF)',
+              width: '48px', height: '48px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success, #16A34A))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               fontSize: '18px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: showDone
                 ? '0 0 0 3px rgba(22,163,74,.25), 0 2px 8px rgba(22,163,74,.3)'
@@ -313,7 +313,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <div style={{
-                    width: '22px', height: '22px', borderRadius: '50%', background: 'var(--ds-text-success, #16A34A)',
+                    width: '22px', height: '22px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success, #16A34A))',
                     color: 'var(--ds-surface, #FFF)', fontSize: '12px', fontWeight: 700,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>✓</div>
@@ -348,12 +348,12 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                     {/* Green check circle */}
                     <div style={{
                       width: '22px', height: '22px', borderRadius: '50%',
-                      background: '#F0FDF4', border: '1.5px solid #16A34A',
+                      background: '#F0FDF4', border: '1.5px solid var(--cp-success, #16A34A)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       flexShrink: 0, marginTop: '1px',
                     }}>
                       <svg width="12" height="12" viewBox="0 0 12 12">
-                        <path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="var(--ds-text-success, #16A34A)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="var(--ds-text-success, var(--cp-success, #16A34A))" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
 
@@ -368,7 +368,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                         </span>
                         <span style={{
                           fontSize: '10px', fontWeight: 700, padding: '1px 5px',
-                          borderRadius: '4px', color: 'var(--ds-surface, #FFF)', background: 'var(--ds-text-success, #16A34A)',
+                          borderRadius: '4px', color: 'var(--ds-surface, #FFF)', background: 'var(--ds-text-success, var(--cp-success, #16A34A))',
                         }}>
                           DONE
                         </span>

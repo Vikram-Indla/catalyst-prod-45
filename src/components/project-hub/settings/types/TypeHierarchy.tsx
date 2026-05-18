@@ -5,12 +5,12 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
 };
 
 const TYPE_CONFIG: Record<string, { color: string; icon: string }> = {
-  Epic: { color: '#7C3AED', icon: 'Zap' },
-  Feature: { color: 'var(--ds-text-brand, #2563EB)', icon: 'Layers' },
-  Story: { color: '#0D9488', icon: 'Bookmark' },
-  Bug: { color: 'var(--ds-text-danger, #DC2626)', icon: 'Bug' },
-  Task: { color: 'var(--ds-text-warning, #D97706)', icon: 'CheckSquare' },
-  Subtask: { color: 'var(--ds-text-subtlest, #64748B)', icon: 'CornerDownRight' },
+  Epic: { color: 'var(--cp-purple-60, #7C3AED)', icon: 'Zap' },
+  Feature: { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', icon: 'Layers' },
+  Story: { color: 'var(--cp-teal-60, #0D9488)', icon: 'Bookmark' },
+  Bug: { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', icon: 'Bug' },
+  Task: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', icon: 'CheckSquare' },
+  Subtask: { color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', icon: 'CornerDownRight' },
 };
 
 interface TypeHierarchyProps {
@@ -18,7 +18,7 @@ interface TypeHierarchyProps {
 }
 
 function Badge({ name }: { name: string }) {
-  const cfg = TYPE_CONFIG[name] || { color: 'var(--ds-text-subtlest, #64748B)', icon: 'Zap' };
+  const cfg = TYPE_CONFIG[name] || { color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', icon: 'Zap' };
   const IconComp = ICON_MAP[cfg.icon] || Zap;
   return (
     <span
@@ -26,7 +26,7 @@ function Badge({ name }: { name: string }) {
       style={{ fontSize: 12, fontWeight: 600, padding: '3px 10px', background: `${cfg.color}15`, color: cfg.color }}
     >
       <span className="flex items-center justify-center rounded-full flex-shrink-0" style={{ width: 18, height: 18, background: cfg.color }}>
-        <IconComp size={10} color="var(--ds-text-inverse, #FFFFFF)" strokeWidth={2.5} />
+        <IconComp size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" strokeWidth={2.5} />
       </span>
       {name}
     </span>

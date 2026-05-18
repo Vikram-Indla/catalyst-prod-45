@@ -64,7 +64,7 @@ export function UWVColumnPicker({ columns, prefs, onSave }: Props) {
             width: 280,
             padding: 16,
             background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: '1px solid #DFE1E6',
+            border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
             borderRadius: 6,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16)',
           }}

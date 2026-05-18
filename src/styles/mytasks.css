@@ -58,8 +58,8 @@
      ======================================== */
   
   --mytasks-bg-page: var(--ds-surface-sunken, #f8fafc);
-  --mytasks-bg-card: var(--ds-surface, #ffffff);
-  --mytasks-bg-row: var(--ds-surface, #ffffff);
+  --mytasks-bg-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --mytasks-bg-row: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --mytasks-bg-row-hover: #f9fafb;       /* Very subtle — Linear style */
   --mytasks-bg-row-overdue: #fffbfb;     /* Barely tinted pink */
   --mytasks-bg-row-overdue-hover: var(--ds-background-danger, #fef2f2);
@@ -71,7 +71,7 @@
      ======================================== */
   
   --mytasks-border-light: var(--ds-surface-sunken, #f1f5f9);
-  --mytasks-border-default: var(--ds-border, #e2e8f0);
+  --mytasks-border-default: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --mytasks-border-row: var(--ds-surface-sunken, #f1f5f9);
   --mytasks-border-overdue: var(--ds-text-danger, #ef4444);     /* 3px left accent */
   --mytasks-border-today: #6366f1;       /* Optional: indigo accent */
@@ -207,7 +207,7 @@
 }
 
 .mytasks-summary-card--overdue .mytasks-summary-card__value { color: var(--ds-text-danger, #dc2626); }
-.mytasks-summary-card--today .mytasks-summary-card__value { color: var(--ds-text-brand, #2563eb); }
+.mytasks-summary-card--today .mytasks-summary-card__value { color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)); }
 .mytasks-summary-card--done .mytasks-summary-card__value { color: var(--ds-text-success, #16a34a); }
 
 .mytasks-summary-card__label {
@@ -243,7 +243,7 @@
   align-items: center;
   gap: 10px;
   padding: 10px 14px;
-  background-color: var(--ds-surface, #ffffff);
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--mytasks-border-default);
   border-radius: 12px;
   width: 260px;
@@ -270,7 +270,7 @@
 
 .mytasks-search__shortcut {
   padding: 3px 6px;
-  background-color: var(--ds-border, #e2e8f0);
+  background-color: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 4px;
   font-size: 10px;
   font-weight: 500;
@@ -282,12 +282,12 @@
   align-items: center;
   gap: 6px;
   padding: 10px 14px;
-  background-color: var(--ds-surface, #ffffff);
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--mytasks-border-default);
   border-radius: 12px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--ds-text-subtle, #334155);
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   cursor: pointer;
   font-family: inherit;
   transition: var(--mytasks-transition-fast);
@@ -307,12 +307,12 @@
   align-items: center;
   gap: 8px;
   padding: 10px 18px;
-  background-color: var(--ds-text-brand, #2563eb);
+  background-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   border: none;
   border-radius: 12px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--ds-surface, #ffffff);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   cursor: pointer;
   font-family: inherit;
   transition: background-color var(--mytasks-transition-fast);
@@ -463,12 +463,12 @@
 }
 
 .mytasks-checkbox--checked {
-  background-color: var(--ds-text-brand, #2563eb);
-  border-color: var(--ds-text-brand, #2563eb);
+  background-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 }
 
 .mytasks-checkbox--checked svg {
-  color: var(--ds-surface, #ffffff);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   width: 10px;
   height: 10px;
 }
@@ -704,8 +704,8 @@
 .mytasks-loading__spinner {
   width: 32px;
   height: 32px;
-  border: 2px solid var(--ds-border, #e2e8f0);
-  border-top-color: var(--ds-text-brand, #2563eb);
+  border: 2px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
+  border-top-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   border-radius: 50%;
   animation: mytasks-spin 0.8s linear infinite;
   margin: 0 auto 16px;
@@ -794,7 +794,7 @@
 /* MUTED gray header — NOT green per spec */
 .mytasks-section-header--completed {
   background-color: var(--ds-surface-sunken, #f1f5f9);  /* slate-100, NOT green */
-  border-bottom: 1px solid var(--ds-border, #e2e8f0);  /* slate-200 */
+  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));  /* slate-200 */
   cursor: pointer;
   width: 100%;
   text-align: left;
@@ -813,7 +813,7 @@
 }
 
 .mytasks-completed-list {
-  background-color: var(--ds-surface, #ffffff);  /* White, NOT green tint */
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));  /* White, NOT green tint */
 }
 
 /* 60% opacity per spec */
@@ -860,7 +860,7 @@
 
 .mytasks-restore-btn:hover {
   background-color: #dbeafe;
-  color: var(--ds-text-brand, #2563eb);
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 }
 
 

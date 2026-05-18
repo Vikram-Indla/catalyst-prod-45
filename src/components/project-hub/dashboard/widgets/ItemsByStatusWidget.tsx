@@ -43,7 +43,7 @@ const C = {
   todo: {
     fill: 'var(--ds-background-accent-gray-bolder, #626F86)',
     track: 'var(--ds-background-neutral, #F1F2F4)',
-    label: 'var(--ds-text-subtle, #44546F)',
+    label: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
   },
   inProgress: {
     fill: 'var(--ds-background-accent-blue-bolder, #0C66E4)',
@@ -162,7 +162,7 @@ export default function ItemsByStatusWidget({
               style={{
                 height: 24,
                 borderRadius: 4,
-                background: token('color.background.neutral.subtle', '#F1F5F9'),
+                background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'),
               }}
             />
           ))}
@@ -213,7 +213,7 @@ function KpiHeadline({
         flexDirection: 'column',
         gap: 2,
         padding: '10px 12px',
-        borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRight: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
       }}
     >
       <span
@@ -246,7 +246,7 @@ function KpiHeadline({
         display: 'flex',
         background: token('elevation.surface.sunken', '#F7F8F9'),
         borderRadius: token('border.radius', '4px'),
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         overflow: 'hidden',
       }}
     >

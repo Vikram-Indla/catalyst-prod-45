@@ -106,11 +106,11 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
 
   // Dark mode tokens
   const T = {
-    panelBg: 'var(--cp-bg-elevated, #FFFFFF)',
-    surfaceBg: 'var(--cp-bg-elevated, #FFFFFF)',
-    text1: 'var(--cp-text-primary, #0F172A)',
-    text2: 'var(--cp-text-tertiary, #64748B)',
-    text3: 'var(--cp-text-muted, #94A3B8)',
+    panelBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    surfaceBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    text1: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
+    text2: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
+    text3: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
     border: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
     borderStrong: 'var(--cp-border-default, rgba(15,23,42,0.12))',
     hover: 'var(--cp-interact-hover, rgba(15,23,42,0.04))',
@@ -118,7 +118,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     shadow: isDark
       ? '0 8px 24px rgba(0,0,0,0.4), 0 0 1px rgba(0,0,0,0.5)'
       : '0 8px 24px rgba(15,23,42,0.12), 0 0 1px rgba(15,23,42,0.08)',
-    menuBg: 'var(--cp-bg-elevated, #FFFFFF)',
+    menuBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     divider: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
   };
 
@@ -395,21 +395,21 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
               aria-label={unreadOnly ? 'Show all notifications' : 'Show only unread'}
               style={{
                 width: 36, height: 20, borderRadius: 12, cursor: 'pointer', border: 'none',
-                background: unreadOnly ? 'var(--ds-text-success, #16A34A)' : ('var(--cp-text-secondary, #334155)'),
+                background: unreadOnly ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : ('var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'),
                 position: 'relative', transition: 'background 200ms ease',
                 padding: 0,
               }}
             >
               <span style={{
                 position: 'absolute', top: 2, left: unreadOnly ? 18 : 2,
-                width: 16, height: 16, borderRadius: '50%', background: 'var(--ds-text-inverse, #FFFFFF)',
+                width: 16, height: 16, borderRadius: '50%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 transition: 'left 200ms cubic-bezier(0.16,1,0.3,1)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 {unreadOnly ? (
-                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="var(--ds-text-success, #16A34A)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="var(--ds-text-success, var(--cp-success, #16A34A))" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 ) : (
-                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M2 2L6 6M6 2L2 6" stroke="var(--ds-text-subtle, #334155)" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M2 2L6 6M6 2L2 6" stroke="var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))" strokeWidth="1.2" strokeLinecap="round"/></svg>
                 )}
               </span>
             </button>
@@ -505,7 +505,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                   background: 'none', border: 'none', borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
                   cursor: 'pointer',
                   fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: isActive ? 600 : 500,
-                  color: isActive ? 'var(--ds-text-brand, #2563EB)' : T.text2,
+                  color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.text2,
                   transition: 'color 150ms ease',
                 }}
                 onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = T.text1; }}

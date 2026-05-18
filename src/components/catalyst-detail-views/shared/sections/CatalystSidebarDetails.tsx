@@ -362,7 +362,7 @@ export function CatalystSidebarDetails({
             gap: 6,
             transition: 'background 0.15s',
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-hovered, #F4F5F7)')}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-hovered, var(--cp-bg-sunken, #F4F5F7))')}
           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
         >
           {/* jira-compare A1 (2026-04-28): wrap with jira-parity attribute so
@@ -379,7 +379,7 @@ export function CatalystSidebarDetails({
         {showStatusDropdown && (
           <div className="cv-status-listbox" style={{
             position: 'absolute', left: 0, top: '100%', marginTop: 4,
-            background: 'var(--ds-surface, #FFFFFF)', borderRadius: 8,
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 8,
             boxShadow: '0 4px 24px rgba(30,31,33,0.16), 0 0 1px rgba(30,31,33,0.31)',
             padding: '6px 0', zIndex: 9999, minWidth: 240, maxHeight: 420, overflowY: 'auto',
             animation: 'cv-slide-down 0.15s ease-out',
@@ -387,7 +387,7 @@ export function CatalystSidebarDetails({
             {STATUS_OPTION_GROUPS.map(group => (
               <div key={group.category}>
                 <div style={{
-                  fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase',
+                  fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase',
                   letterSpacing: '0.06em', padding: '10px 16px 6px',
                 }}>{group.groupLabel}</div>
                 {group.statuses.map(st => {
@@ -403,7 +403,7 @@ export function CatalystSidebarDetails({
                         justifyContent: 'space-between', cursor: 'pointer',
                         background: isActive ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent', transition: 'background 80ms',
                       }}
-                      onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                      onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                       onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
                     >
                       {/* jira-compare follow-up (2026-05-02): isBold so the
@@ -414,7 +414,7 @@ export function CatalystSidebarDetails({
                         <Lozenge appearance={optionAppearance} isBold>{st}</Lozenge>
                       </span>
                       {isActive && (
-                        <CheckIcon size="small" primaryColor="var(--ds-icon-selected, #0052CC)" />
+                        <CheckIcon size="small" primaryColor="var(--ds-icon-selected, var(--cp-primary-60, #0052CC))" />
                       )}
                     </div>
                   );
@@ -436,7 +436,7 @@ export function CatalystSidebarDetails({
       {pinnedFields.length > 0 && (
         <div style={{ marginBottom: 8 }}>
           <div style={{
-            fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)',
+            fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
             textTransform: 'uppercase', letterSpacing: '0.06em',
             padding: '0 0 6px',
           }}>

@@ -180,7 +180,7 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
       <div style={{
         margin: '8px 0', padding: '12px 16px', borderRadius: 'var(--ds-border-radius, 4px)',
         background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
         fontSize: 14, color: 'var(--ds-text, #292A2E)',
         display: 'inline-flex', alignItems: 'center', gap: 12, maxWidth: '100%',
         fontFamily: '"Atlassian Sans", -apple-system, sans-serif',
@@ -192,7 +192,7 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
         </svg>
         <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           <span style={{ fontWeight: 500 }}>{filename}</span>
-          <span style={{ color: 'var(--ds-text-subtlest, #6B778C)', marginLeft: 8, fontSize: 12 }}>
+          <span style={{ color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginLeft: 8, fontSize: 12 }}>
             hosted on Jira · auth required
           </span>
         </span>
@@ -215,7 +215,7 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
       {!loaded && (
         <div style={{
           width: '100%', height: 200, borderRadius: 3,
-          background: 'var(--ds-surface-sunken, #F4F5F7)',
+          background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <Loader2 size={24} style={{ color: '#6B6E76', animation: 'spin 0.86s cubic-bezier(0.4,0.15,0.6,0.85) infinite' }} />
@@ -249,7 +249,7 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
             background: 'rgba(9, 30, 66, 0.54)',
             border: 'none', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: 'var(--ds-surface, #FFFFFF)', transition: 'background 0.15s',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', transition: 'background 0.15s',
             zIndex: 2,
           }}
           onMouseEnter={e => { e.currentTarget.style.background = 'rgba(9, 30, 66, 0.71)'; }}

@@ -683,26 +683,26 @@ export function TestRepositoryPage() {
               title="Refresh"
               style={{
                 width: 40, height: 40, padding: 0,
-                backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0',
+                backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                 borderRadius: 8, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s',
               }}
             >
-              <RefreshCw style={{ width: 16, height: 16, color: 'var(--ds-text-subtlest, #64748B)' }} />
+              <RefreshCw style={{ width: 16, height: 16, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }} />
             </button>
 
             {/* Import */}
             <button 
               onClick={() => setIsImportModalOpen(true)}
               style={{
-                height: 40, padding: '0 16px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'var(--cp-font-body)',
-                fontSize: 14, fontWeight: 500, color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer',
+                height: 40, padding: '0 16px', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 8, fontFamily: 'var(--cp-font-body)',
+                fontSize: 14, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
               }}
             >
-              <Download style={{ width: 16, height: 16, color: 'var(--cp-text-tertiary, #64748B)' }} />
+              <Download style={{ width: 16, height: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }} />
               Import
             </button>
 
@@ -710,13 +710,13 @@ export function TestRepositoryPage() {
             <button 
               onClick={() => setIsExportModalOpen(true)}
               style={{
-                height: 40, padding: '0 16px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'var(--cp-font-body)',
-                fontSize: 14, fontWeight: 500, color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer',
+                height: 40, padding: '0 16px', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 8, fontFamily: 'var(--cp-font-body)',
+                fontSize: 14, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
               }}
             >
-              <Upload style={{ width: 16, height: 16, color: 'var(--cp-text-tertiary, #64748B)' }} />
+              <Upload style={{ width: 16, height: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }} />
               Export
             </button>
 
@@ -725,14 +725,14 @@ export function TestRepositoryPage() {
               onClick={() => setIsAIGenerateModalOpen(true)}
               style={{
                 height: 40, padding: '0 16px',
-                background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+                background: 'linear-gradient(135deg, var(--cp-purple-60, #7C3AED) 0%, #6D28D9 100%)',
                 border: 'none', borderRadius: 8, fontFamily: 'var(--cp-font-body)',
-                fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer',
+                fontSize: 14, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8,
                 boxShadow: '0 2px 8px rgba(124, 58, 237, 0.25)', transition: 'all 0.15s',
               }}
             >
-              <Sparkles style={{ width: 16, height: 16, color: 'var(--ds-text-inverse, #FFFFFF)' }} />
+              <Sparkles style={{ width: 16, height: 16, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
               Generate with AI
             </button>
 
@@ -741,14 +741,14 @@ export function TestRepositoryPage() {
               onClick={handleOpenCreateModal}
               style={{
                 height: 40, padding: '0 20px',
-                background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
+                background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
                 border: 'none', borderRadius: 8, fontFamily: 'var(--cp-font-body)',
-                fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer',
+                fontSize: 14, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8,
                 boxShadow: '0 2px 8px rgba(37,99,235,0.18)', transition: 'all 0.15s',
               }}
             >
-              <Plus style={{ width: 16, height: 16, color: 'var(--ds-text-inverse, #FFFFFF)' }} />
+              <Plus style={{ width: 16, height: 16, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
               Create Test Case
             </button>
           </div>
@@ -797,7 +797,7 @@ export function TestRepositoryPage() {
                   fontFamily: 'var(--cp-font-body)',
                   fontSize: 14,
                   fontWeight: 600,
-                  color: 'var(--ds-text-brand, #2563EB)',
+                  color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                 }}>
                   {selectedIds.size} selected
                 </span>
@@ -813,13 +813,13 @@ export function TestRepositoryPage() {
                     style={{
                       height: 32,
                       padding: '8px 12px',
-                      backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-                      border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                      backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                      border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                       borderRadius: 6,
                       fontFamily: 'var(--cp-font-body)',
                       fontSize: 13,
                       fontWeight: 500,
-                      color: 'var(--cp-text-secondary, #334155)',
+                      color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -839,13 +839,13 @@ export function TestRepositoryPage() {
                     style={{
                       height: 32,
                       padding: '8px 12px',
-                      backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-                      border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                      backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                      border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                       borderRadius: 6,
                       fontFamily: 'var(--cp-font-body)',
                       fontSize: 13,
                       fontWeight: 500,
-                      color: 'var(--cp-text-secondary, #334155)',
+                      color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -861,10 +861,10 @@ export function TestRepositoryPage() {
                       onClick={openBulkAssign}
                       style={{
                         height: 32, padding: '8px 12px',
-                        backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-                        border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                        backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                        border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                         borderRadius: 6, fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500,
-                        color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer',
+                        color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', gap: 6,
                       }}
                     >
@@ -874,14 +874,14 @@ export function TestRepositoryPage() {
                     {isBulkAssignOpen && (
                       <div style={{
                         position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 220,
-                        backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`,
+                        backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
                         borderRadius: 8, boxShadow: '0 10px 40px rgba(0,0,0,0.15)', zIndex: 200,
                         maxHeight: 240, overflowY: 'auto', padding: 4,
                       }}>
                         {assignableUsers.map(u => (
                           <button key={u.id} onClick={() => handleBulkAssign(u.id)} style={{
                             width: '100%', padding: '8px 12px', border: 'none', backgroundColor: 'transparent',
-                            fontSize: 13, color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer', textAlign: 'left',
+                            fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', cursor: 'pointer', textAlign: 'left',
                             borderRadius: 6, fontFamily: 'var(--cp-font-body)',
                           }}
                             onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--cp-bg-page, #F8FAFC)'}
@@ -890,7 +890,7 @@ export function TestRepositoryPage() {
                             {u.full_name}
                           </button>
                         ))}
-                        {assignableUsers.length === 0 && <div style={{ padding: 12, fontSize: 13, color: 'var(--ds-text-subtlest, #94A3B8)' }}>No users found</div>}
+                        {assignableUsers.length === 0 && <div style={{ padding: 12, fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No users found</div>}
                       </div>
                     )}
                   </div>
@@ -900,10 +900,10 @@ export function TestRepositoryPage() {
                       onClick={openBulkTag}
                       style={{
                         height: 32, padding: '8px 12px',
-                        backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-                        border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                        backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                        border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                         borderRadius: 6, fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500,
-                        color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer',
+                        color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', gap: 6,
                       }}
                     >
@@ -913,14 +913,14 @@ export function TestRepositoryPage() {
                     {isBulkTagOpen && (
                       <div style={{
                         position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 220,
-                        backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`,
+                        backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
                         borderRadius: 8, boxShadow: '0 10px 40px rgba(0,0,0,0.15)', zIndex: 200,
                         maxHeight: 240, overflowY: 'auto', padding: 4,
                       }}>
                         {availableLabels.map(l => (
                           <button key={l.id} onClick={() => handleBulkTag(l.id)} style={{
                             width: '100%', padding: '8px 12px', border: 'none', backgroundColor: 'transparent',
-                            fontSize: 13, color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer', textAlign: 'left',
+                            fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', cursor: 'pointer', textAlign: 'left',
                             borderRadius: 6, fontFamily: 'var(--cp-font-body)',
                           }}
                             onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--cp-bg-page, #F8FAFC)'}
@@ -929,7 +929,7 @@ export function TestRepositoryPage() {
                             {l.name}
                           </button>
                         ))}
-                        {availableLabels.length === 0 && <div style={{ padding: 12, fontSize: 13, color: 'var(--ds-text-subtlest, #94A3B8)' }}>No labels found</div>}
+                        {availableLabels.length === 0 && <div style={{ padding: 12, fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No labels found</div>}
                       </div>
                     )}
                   </div>
@@ -937,10 +937,10 @@ export function TestRepositoryPage() {
                     onClick={handleBulkDelete}
                     style={{
                       height: 32, padding: '8px 12px',
-                      backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-                      border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                      backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                      border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                       borderRadius: 6, fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500,
-                      color: 'var(--ds-text-danger, #DC2626)', cursor: 'pointer',
+                      color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', gap: 6,
                     }}
                     onMouseEnter={(e) => {
@@ -948,8 +948,8 @@ export function TestRepositoryPage() {
                       e.currentTarget.style.borderColor = '#FECACA';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'var(--cp-bg-elevated, #FFFFFF)';
-                      e.currentTarget.style.borderColor = 'var(--cp-border, #E2E8F0)';
+                      e.currentTarget.style.backgroundColor = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+                      e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))';
                     }}
                   >
                     <Trash2 style={{ width: 14, height: 14 }} />
@@ -969,7 +969,7 @@ export function TestRepositoryPage() {
                     fontFamily: 'var(--cp-font-body)',
                     fontSize: 13,
                     fontWeight: 500,
-                    color: 'var(--ds-text-subtlest, #64748B)',
+                    color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                     cursor: 'pointer',
                   }}
                   onMouseEnter={(e) => {

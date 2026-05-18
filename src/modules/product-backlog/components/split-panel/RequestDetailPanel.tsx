@@ -79,15 +79,15 @@ interface RequestDetailPanelProps {
 
 // Status color mapping based on process step value - QA spec colors
 const STATUS_COLORS: Record<string, string> = {
-  new_request: 'bg-[var(--ds-text-brand,#2563eb)]',      // Blue
-  new_demand: 'bg-[var(--ds-text-brand,#2563eb)]',       // Blue
+  new_request: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',      // Blue
+  new_demand: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',       // Blue
   draft: 'bg-[#737373]',            // Gray
-  in_review: 'bg-[var(--ds-text-brand,#2563eb)]',        // Blue
-  ea_review: 'bg-[var(--ds-text-brand,#2563eb)]',        // Blue
-  analyse: 'bg-[var(--ds-text-brand,#2563eb)]',          // Blue
+  in_review: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',        // Blue
+  ea_review: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',        // Blue
+  analyse: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',          // Blue
   approved: 'bg-[#0d9488]',         // Teal
   ready_to_implement: 'bg-[#0d9488]', // Teal
-  implement: 'bg-[var(--ds-text-brand,#2563eb)]',        // Blue
+  implement: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',        // Blue
   closed: 'bg-[#0d9488]',           // Teal
   completed: 'bg-[#0d9488]',        // Teal
   rejected: 'bg-[var(--ds-text-danger,#ef4444)]',         // Red

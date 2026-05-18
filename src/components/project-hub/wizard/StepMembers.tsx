@@ -58,7 +58,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
     onChange(members.map(m => m.userId === userId ? { ...m, role } : m));
   };
 
-  const AVATAR_COLORS = ['#7C3AED', 'var(--ds-text-brand, #2563EB)', '#0D9488', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, #DC2626)'];
+  const AVATAR_COLORS = ['var(--cp-purple-60, #7C3AED)', 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))'];
 
   return (
     <div className="space-y-4">
@@ -115,7 +115,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
                     width: 28,
                     height: 28,
                     background: AVATAR_COLORS[user.name.charCodeAt(0) % AVATAR_COLORS.length],
-                    color: 'var(--ds-text-inverse, #FFFFFF)',
+                    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     fontSize: 11,
                     fontWeight: 600,
                   }}
@@ -147,7 +147,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
                   width: 32,
                   height: 32,
                   background: AVATAR_COLORS[member.name.charCodeAt(0) % AVATAR_COLORS.length],
-                  color: 'var(--ds-text-inverse, #FFFFFF)',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   fontSize: 12,
                   fontWeight: 600,
                 }}
@@ -179,7 +179,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
               </select>
               <button
                 onClick={() => removeMember(member.userId)}
-                className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,#E2E8F0)]"
+                className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]"
                 style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer' }}
               >
                 <X size={14} color="var(--fg-4)" />

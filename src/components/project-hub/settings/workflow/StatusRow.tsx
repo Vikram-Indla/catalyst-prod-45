@@ -4,10 +4,10 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 const CATEGORY_PILL: Record<string, { bg: string; text: string; label: string }> = {
-  todo: { bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtlest, #64748B)', label: 'To Do' },
-  in_progress: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)', label: 'In Progress' },
-  done: { bg: '#F0FDFA', text: '#0D9488', label: 'Done' },
-  terminal: { bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtlest, #64748B)', label: 'Terminal' },
+  todo: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', label: 'To Do' },
+  in_progress: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', label: 'In Progress' },
+  done: { bg: '#F0FDFA', text: 'var(--cp-teal-60, #0D9488)', label: 'Done' },
+  terminal: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', label: 'Terminal' },
 };
 
 interface StatusRowProps {
@@ -48,7 +48,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
   // Determine pill styling
   const catKey = category.toLowerCase().replace(/\s+/g, '_');
   const pill = isDefault
-    ? { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)', label: 'Default' }
+    ? { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', label: 'Default' }
     : CATEGORY_PILL[catKey] || CATEGORY_PILL.todo;
 
   return (
@@ -95,7 +95,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
       <div className="relative" ref={menuRef}>
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,#E2E8F0)]"
+          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]"
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
         >
           <MoreHorizontal size={16} color="var(--fg-3)" />
@@ -103,7 +103,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
 
         {menuOpen && (
           <div
-            className="absolute right-0 top-full mt-1 z-10 bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
+            className="absolute right-0 top-full mt-1 z-10 bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
             style={{
               width: 120, border: '1px solid var(--divider)',
               borderRadius: 8, boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)',

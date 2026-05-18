@@ -3,7 +3,7 @@
 [data-testid='work-list-panel'] {
   display: grid;
   grid-template-rows: auto 1fr;
-  background: var(--ds-background-neutral, #ffffff);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border-right: 1px solid var(--ds-border, #dfe1e6);
 }
 

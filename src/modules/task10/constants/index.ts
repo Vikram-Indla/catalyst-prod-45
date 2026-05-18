@@ -26,7 +26,7 @@ export const T10_RANK_TIERS = {
 export const T10_COLORS = {
   brand: '#0d9488',
   brandDark: '#0f766e',
-  blue: 'var(--ds-text-brand, #2563eb)',
+  blue: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   blueDark: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
   success: '#10b981',
   warning: 'var(--ds-text-warning, #f59e0b)',

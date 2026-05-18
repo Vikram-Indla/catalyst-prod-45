@@ -269,7 +269,7 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
             borderRadius: 4,
             background: token('color.background.neutral', '#F1F2F4'),
             font: `400 11px/16px "Inter", system-ui, sans-serif`,
-            color: token('color.text.subtle', '#44546F'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             whiteSpace: 'nowrap',
           }}>
             {/* Green dot when data is fresh (within 2h); grey otherwise */}
@@ -343,7 +343,7 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
           }}
         >
           <Spinner size="small" />
-          <span style={{ ...type.body, color: token('color.text.subtle', '#44546F') }}>
+          <span style={{ ...type.body, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
             Clustering your issues into themes…
           </span>
         </div>
@@ -419,7 +419,7 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
             paddingInline: 12,
             paddingBlock: 8,
             ...type.meta,
-            color: token('color.text.subtle', '#44546F'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             display: 'flex',
             alignItems: 'center',
             gap: 8,

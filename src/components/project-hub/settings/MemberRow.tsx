@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { X } from '@/lib/atlaskit-icons';
 
-const AVATAR_COLORS = ['#7C3AED', 'var(--ds-text-brand, #2563EB)', '#0D9488', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, #DC2626)', '#EA580C', '#0284C7'];
+const AVATAR_COLORS = ['var(--cp-purple-60, #7C3AED)', 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#EA580C', '#0284C7'];
 
 const ROLE_STYLES: Record<string, { bg: string; text: string }> = {
-  admin: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)' },
-  member: { bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtle, #334155)' },
-  viewer: { bg: '#FFFBEB', text: 'var(--ds-text-warning, #D97706)' },
+  admin: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+  member: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' },
+  viewer: { bg: '#FFFBEB', text: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
 };
 
 interface MemberRowProps {
@@ -50,7 +50,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
       {/* Avatar */}
       <div
         className="flex items-center justify-center rounded-full flex-shrink-0"
-        style={{ width: 32, height: 32, background: avatarColor, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 12, fontWeight: 600 }}
+        style={{ width: 32, height: 32, background: avatarColor, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 12, fontWeight: 600 }}
       >
         {initials || '?'}
       </div>
@@ -82,7 +82,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
 
         {dropdownOpen && (
           <div
-            className="absolute right-0 top-full mt-1 z-10 bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
+            className="absolute right-0 top-full mt-1 z-10 bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
             style={{
               width: 120, border: '1px solid var(--divider)',
               borderRadius: 8, boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)',

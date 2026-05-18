@@ -2,14 +2,14 @@ import { MoreHorizontal } from '@/lib/atlaskit-icons';
 import { WorkItemTypeIcon } from '@/components/icons';
 
 const LEVEL_STYLES: Record<string, { bg: string; text: string }> = {
-  Top: { bg: '#F5F3FF', text: '#7C3AED' },
-  Mid: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)' },
-  Work: { bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtle, #334155)' },
-  Child: { bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtlest, #94A3B8)' },
-  top: { bg: '#F5F3FF', text: '#7C3AED' },
-  mid: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)' },
-  work: { bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtle, #334155)' },
-  child: { bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtlest, #94A3B8)' },
+  Top: { bg: '#F5F3FF', text: 'var(--cp-purple-60, #7C3AED)' },
+  Mid: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+  Work: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' },
+  Child: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
+  top: { bg: '#F5F3FF', text: 'var(--cp-purple-60, #7C3AED)' },
+  mid: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+  work: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' },
+  child: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
 };
 
 interface TypeRowProps {
@@ -63,7 +63,7 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
       <div className="relative">
         <button
           onClick={onViewFields}
-          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,#E2E8F0)]"
+          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]"
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
           title="View Fields"
         >

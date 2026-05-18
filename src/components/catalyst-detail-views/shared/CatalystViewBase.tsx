@@ -291,16 +291,16 @@ export function CatalystViewBase({
        (flex:1) gets a fixed height and can be the scroll container.
        Prior approach (minHeight:100%, overflow:visible) assumed page-level scroll, which
        doesn't exist inside the project hub layout. */
-    width: '100%', height: '100%', background: 'var(--ds-surface, #FFFFFF)',
+    width: '100%', height: '100%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
   } : panelMode ? {
-    width: '100%', height: '100%', background: 'var(--ds-surface, #FFFFFF)',
+    width: '100%', height: '100%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
     animation: 'cv-panel-in 200ms ease-out',
-    borderLeft: '1px solid var(--ds-border, #DFE1E6)',
+    borderLeft: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
   } : {
     width: 1100, maxWidth: '95vw', minHeight: 600, maxHeight: 'calc(100vh - 80px)',
-    background: 'var(--ds-surface, #FFFFFF)', borderRadius: 8,
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 8,
     display: 'flex', flexDirection: 'column',
     boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)', overflow: 'hidden',
     animation: 'cv-card-in 250ms ease-out',
@@ -390,7 +390,7 @@ export function CatalystViewBase({
             position: 'sticky',
             top: 0,
             zIndex: 10,
-            background: 'var(--ds-surface, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           }),
         }}>
           {/* Canonical breadcrumb — shown in every mode. When the current
@@ -429,7 +429,7 @@ export function CatalystViewBase({
 
             {/* Inline Prev/Next chevrons — Jira parity. Up = previous,
                 Down = next (Atlassian convention). Canonical component
-                IssueNavChevrons owns the 28×28 / 1px var(--ds-border, #DFE1E6) / 4px-radius
+                IssueNavChevrons owns the 28×28 / 1px var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) / 4px-radius
                 styling (verified against Jira Cloud, 2026-04-19). */}
             {navigationItems && navigationItems.length > 1 && (() => {
               const prevKey = canNavPrev ? (navigationItems[currentNavIndex - 1].issue_key ?? '') : '';
@@ -579,9 +579,9 @@ export function CatalystViewBase({
                 <div style={{ height: 20 }} /><Skel w="100%" h={200} />
               </div>
             ) : isNotFound ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60%', gap: 12, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60%', gap: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>
                 <span style={{ fontSize: 32 }}>⚠️</span>
-                <div style={{ fontSize: 16, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Issue not found</div>
+                <div style={{ fontSize: 16, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Issue not found</div>
                 <div style={{ fontSize: 14 }}>This issue may have been deleted or the key is invalid.</div>
               </div>
             ) : leftContent}
@@ -596,10 +596,10 @@ export function CatalystViewBase({
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
               transition: 'background 0.15s',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
             onMouseLeave={e => { if (!isDraggingRef.current) e.currentTarget.style.background = 'transparent'; }}
           >
-            <div style={{ width: 1.5, height: 32, borderRadius: 1, background: 'var(--ds-border, #DFE1E6)', transition: 'background 0.15s' }} />
+            <div style={{ width: 1.5, height: 32, borderRadius: 1, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', transition: 'background 0.15s' }} />
           </div>
 
           {/* RIGHT PANEL — Sidebar
@@ -610,7 +610,7 @@ export function CatalystViewBase({
               Panel/modal modes keep overflow-y:auto for independent column scroll. */}
           <div className="cv-drawer-sidebar" style={{
             width: rightPanelWidth, minWidth: 220, maxWidth: 600,
-            background: 'var(--ds-surface, #FFFFFF)', overflowX: 'hidden',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', overflowX: 'hidden',
             display: 'flex', flexDirection: 'column', padding: '16px 16px 32px 16px',
             minHeight: 0,
             ...(fullPageMode

@@ -13,8 +13,8 @@ const DK = {
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
   t4: 'var(--cp-t4)',
-  border: 'var(--ds-border, #2E2E2E)',
-  borderSubtle: 'var(--ds-border, #2E2E2E)',
+  border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
+  borderSubtle: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
 };
 
 const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
@@ -35,14 +35,14 @@ function getAvatarColors(name: string) {
 
 function statusBadge(status: string, isDark = false) {
   const map: Record<string, { dot: string; bg: string; text: string; bgDk: string; txtDk: string; label: string }> = {
-    active:      { dot: 'var(--ds-text-success, #16A34A)', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDk: '#182820', txtDk: '#86EFAC', label: 'Active' },
-    on_track:    { dot: 'var(--ds-text-success, #16A34A)', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDk: '#182820', txtDk: '#86EFAC', label: 'On Track' },
+    active:      { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDk: '#182820', txtDk: '#86EFAC', label: 'Active' },
+    on_track:    { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDk: '#182820', txtDk: '#86EFAC', label: 'On Track' },
     completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDk: '#1A2030', txtDk: '#93C5FD', label: 'Completed' },
-    at_risk:     { dot: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', bgDk: '#2A2418', txtDk: '#FBBF24', label: 'At Risk' },
-    off_track:   { dot: 'var(--ds-text-danger, #EF4444)', bg: 'rgba(239,68,68,0.08)',  text: 'var(--ds-text-danger, #DC2626)', bgDk: '#2A1C1E', txtDk: 'var(--ds-border-danger, #FCA5A5)', label: 'Off Track' },
-    draft:       { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F1F5F9)',               text: 'var(--ds-text-subtlest, #64748B)', bgDk: 'var(--ds-surface-raised, #1A1A1A)', txtDk: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Draft' },
-    not_started: { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F1F5F9)',               text: 'var(--ds-text-subtlest, #64748B)', bgDk: 'var(--ds-surface-raised, #1A1A1A)', txtDk: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Not Started' },
-    cancelled:   { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F1F5F9)',               text: 'var(--ds-text-subtlest, #64748B)', bgDk: 'var(--ds-surface-raised, #1A1A1A)', txtDk: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Cancelled' },
+    at_risk:     { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', bgDk: '#2A2418', txtDk: '#FBBF24', label: 'At Risk' },
+    off_track:   { dot: 'var(--ds-text-danger, #EF4444)', bg: 'rgba(239,68,68,0.08)',  text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bgDk: '#2A1C1E', txtDk: 'var(--ds-border-danger, #FCA5A5)', label: 'Off Track' },
+    draft:       { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bgDk: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', txtDk: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Draft' },
+    not_started: { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bgDk: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', txtDk: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Not Started' },
+    cancelled:   { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bgDk: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', txtDk: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Cancelled' },
   };
   const s = map[status] || map.draft;
   return (
@@ -116,7 +116,7 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
       {sortedGoals.map(goal => {
         const theme = themeMap.get(goal.theme_id);
         const pct = Math.round(goal.progress_pct || 0);
-        const barColor = pct >= 60 ? 'var(--ds-text-success, #16A34A)' : pct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
+        const barColor = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
         const initials = goal.owner_name ? goal.owner_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '';
         const ownerColors = goal.owner_name ? getAvatarColors(goal.owner_name) : null;
         return (
@@ -148,7 +148,7 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
               )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} style={{ width: 60, height: 5, background: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
+              <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} style={{ width: 60, height: 5, background: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
                 <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 3 }} />
               </div>
               <span style={{ fontSize: 13, fontWeight: 600, color: barColor }}>{pct}%</span>

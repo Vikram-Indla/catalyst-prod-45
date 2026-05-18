@@ -11,8 +11,8 @@ import { useStrategicThemes, useGoals } from '@/hooks/strategy/useStrategyData';
 
 function getProgressColor(v: number) {
   if (v >= 70) return 'var(--exec-blue-700, #1E40AF)';
-  if (v >= 40) return 'var(--exec-signal-amber, #D97706)';
-  return 'var(--exec-signal-red, #DC2626)';
+  if (v >= 40) return 'var(--exec-signal-amber, var(--cp-warning, #D97706))';
+  return 'var(--exec-signal-red, var(--cp-danger, #DC2626))';
 }
 
 export function OkrTree() {
@@ -108,7 +108,7 @@ export function OkrTree() {
                   padding: '8px 6px', borderRadius: 6, background: 'none', border: 'none', cursor: 'pointer',
                   transition: 'background 120ms',
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--exec-bg-hover, #F1F5F9)'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--exec-bg-hover, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >
                 <span style={{ width: 10, height: 10, borderRadius: '50%', background: theme.color, flexShrink: 0 }} />
@@ -133,7 +133,7 @@ export function OkrTree() {
                         borderRadius: 4,
                         transition: 'background-color 120ms ease',
                       }}
-                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--exec-bg-hover, #F1F5F9)'; }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--exec-bg-hover, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     >
                       <span style={{ width: 6, height: 6, borderRadius: '50%', background: getProgressColor(goal.progress), flexShrink: 0 }} />

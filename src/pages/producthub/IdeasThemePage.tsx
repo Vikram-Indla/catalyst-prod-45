@@ -87,15 +87,15 @@ export default function IdeasThemePage() {
               const converted = themeConvertedMap[theme.theme] || 0;
               const convRate = theme.idea_count > 0 ? Math.round((converted / theme.idea_count) * 100) : 0;
               const progressPct = theme.idea_count > 0 ? (converted / theme.idea_count) * 100 : 0;
-              const barColor = convRate >= 100 ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-brand, #2563EB)';
+              const barColor = convRate >= 100 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
               return (
                 <div key={theme.theme} onClick={() => navigate(`/product/ideas/backlog?theme=${encodeURIComponent(theme.theme)}`)}
                   style={{
-                    background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${isDark ? 'var(--ds-border-bold, #454545)' : dk.border}`, borderRadius: '8px',
+                    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${isDark ? 'var(--ds-border-bold, #454545)' : dk.border}`, borderRadius: '8px',
                     padding: '16px', cursor: 'pointer', transition: 'all 0.15s', minHeight: '180px',
                     display: 'flex', flexDirection: 'column',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--cp-border-subtle, rgba(15,23,42,0.08))'; e.currentTarget.style.transform = 'none'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
@@ -103,7 +103,7 @@ export default function IdeasThemePage() {
                       {theme.idea_count} {theme.idea_count === 1 ? 'idea' : 'ideas'}
                     </span>
                     <div style={{
-                      width: 36, height: 50, borderRadius: 8, background: 'var(--cp-bg-sunken, #F1F5F9)', border: `1px solid ${dk.border}`,
+                      width: 36, height: 50, borderRadius: 8, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: `1px solid ${dk.border}`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center', color: dk.t3,
                     }}>
                       <IconComp size={18} strokeWidth={2} />
@@ -128,7 +128,7 @@ export default function IdeasThemePage() {
                         {convRate}%
                       </span>
                     </div>
-                    <div style={{ height: 6, borderRadius: 4, background: 'var(--cp-border-lt, #F1F5F9)', overflow: 'hidden', border: `1px solid ${dk.border}` }}>
+                    <div style={{ height: 6, borderRadius: 4, background: 'var(--cp-border-lt, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', overflow: 'hidden', border: `1px solid ${dk.border}` }}>
                       <div style={{
                         width: `${Math.min(progressPct, 100)}%`, height: '100%',
                         background: barColor, borderRadius: 4, transition: 'width 0.3s',

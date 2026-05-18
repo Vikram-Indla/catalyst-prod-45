@@ -67,13 +67,13 @@ export const APPROVAL_STATUS_CONFIG = {
     // Canonical StatusLozenge grey (CLAUDE.md §5) — neutral.bold text on lozenge grey
     label: 'Waiting',
     color: '#42526E',
-    bgColor: '#DFE1E6',
+    bgColor: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
   },
   skipped: {
     // Canonical StatusLozenge grey, subtler bg
     label: 'Skipped',
     color: '#42526E',
-    bgColor: '#F4F5F7',
+    bgColor: 'var(--cp-bg-sunken, #F4F5F7)',
   },
 } as const;
 
@@ -86,7 +86,7 @@ export const APPROVAL_STATUS_CONFIG = {
 export const WORKFLOW_STATUSES = [
   { id: 'backlog', name: 'Backlog', color: '#42526E' },           // neutral.bold
   { id: 'design', name: 'Design', color: '#5243AA' },              // purple.bolder
-  { id: 'ready_dev', name: 'Ready for Development', color: '#0052CC' }, // brand.bold (info)
+  { id: 'ready_dev', name: 'Ready for Development', color: 'var(--cp-primary-60, #0052CC)' }, // brand.bold (info)
   { id: 'in_dev', name: 'In Development', color: '#FF991F' },      // warning.bold (yellow)
   { id: 'qa', name: 'QA Testing', color: '#FFAB00' },              // warning.bold.hovered
   { id: 'uat', name: 'UAT Testing', color: '#FF991F' },            // warning.bold

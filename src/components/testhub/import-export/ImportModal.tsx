@@ -17,7 +17,7 @@ const IMPORT_TYPES = [
   { value: 'test_cases', label: 'Test Cases', icon: FileText, color: 'var(--cp-blue)' },
   { value: 'defects', label: 'Defects', icon: Bug, color: 'var(--sem-danger)' },
   { value: 'requirements', label: 'Requirements', icon: FileCheck, color: 'var(--sem-success)' },
-  { value: 'shared_steps', label: 'Shared Steps', icon: Layers, color: 'var(--ds-text-brand, #2563EB)' },
+  { value: 'shared_steps', label: 'Shared Steps', icon: Layers, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
   { value: 'tags', label: 'Tags', icon: Tags, color: '#EC4899' },
 ];
 
@@ -324,7 +324,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
               background: 'linear-gradient(135deg, #14B8A6 0%, var(--sem-success) 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <Upload size={22} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
+              <Upload size={22} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
             </div>
             <div>
               <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Import Data</h2>
@@ -469,7 +469,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
             disabled={(step === 2 && !file) || isProcessing}
             style={{
               height: 44, padding: '0 24px',
-              background: (step === 2 && !file) ? 'var(--divider)' : 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
+              background: (step === 2 && !file) ? 'var(--divider)' : 'linear-gradient(135deg, #14B8A6 0%, var(--cp-teal-60, #0D9488) 100%)',
               border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--ds-surface, #FFF)',
               cursor: (step === 2 && !file) || isProcessing ? 'not-allowed' : 'pointer',
             }}

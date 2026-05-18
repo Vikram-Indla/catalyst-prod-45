@@ -426,7 +426,7 @@ export default function CatalystViewIdea({
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', height: 20,
                         padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700,
-                        background: QUARTER_BADGE[localQuarter]?.bg || 'var(--ds-border, #DFE1E6)',
+                        background: QUARTER_BADGE[localQuarter]?.bg || 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
                         color: QUARTER_BADGE[localQuarter]?.text || 'var(--ds-text-subtlest, #5E6C84)',
                       }}>
                         {localQuarter} 2026
@@ -521,7 +521,7 @@ export default function CatalystViewIdea({
                       <span style={{
                         fontFamily: 'var(--cp-font-mono, ui-monospace)',
                         fontSize: 13, fontWeight: 600,
-                        color: dim.value > 0 ? 'inherit' : 'var(--ds-text-subtlest, #94A3B8)',
+                        color: dim.value > 0 ? 'inherit' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
                         minWidth: 28, textAlign: 'right',
                       }}>{dim.value.toFixed(1)}</span>
                     </div>
@@ -543,7 +543,7 @@ export default function CatalystViewIdea({
                     </div>
                     <p style={{
                       fontSize: 12, margin: '0 0 12px',
-                      color: 'var(--ds-text-subtle, #44546F)',
+                      color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
                     }}>
                       Convert this idea into a tracked Request under Product Hub.
                     </p>

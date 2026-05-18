@@ -233,37 +233,37 @@ export default function Portfolios() {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Total Programs</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Total Programs</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{programs?.length || 0}</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{programs?.length || 0}</div>
           </div>
-          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Active Programs</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Active Programs</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{programs?.filter(p => p.status === 'active').length || 0}</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{programs?.filter(p => p.status === 'active').length || 0}</div>
           </div>
-          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Total Projects</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Total Projects</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{totalProjects}</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{totalProjects}</div>
           </div>
         </div>
 
-        <div className="mt-4" style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+        <div className="mt-4" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <div style={{ marginBottom: '12px' }}>
-            <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Program Configuration</h2>
-            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+            <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Program Configuration</h2>
+            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
               Manage programs, their projects, and strategic alignment
             </p>
           </div>
           <div>
             <div className="flex items-center gap-4 mb-4">
               <div className="relative flex-1">
-                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, #44546F)' }}><SearchIcon label="" size="small" /></span>
+                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><SearchIcon label="" size="small" /></span>
                 <Textfield
                   placeholder="Search programs..."
                   elemBeforeInput={<span />}
@@ -273,9 +273,9 @@ export default function Portfolios() {
             </div>
 
             {isLoading ? (
-              <div className="text-center py-8" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>Loading programs...</div>
+              <div className="text-center py-8" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>Loading programs...</div>
             ) : programs?.length === 0 ? (
-              <div className="text-center py-8" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+              <div className="text-center py-8" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                 No programs found. Click "Add Program" to create one.
               </div>
             ) : (
@@ -283,10 +283,10 @@ export default function Portfolios() {
                 <table className="w-full">
                   <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
                     <tr>
-                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Program Name</th>
-                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Projects</th>
-                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Status</th>
-                      <th className="text-right p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Actions</th>
+                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Program Name</th>
+                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Projects</th>
+                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Status</th>
+                      <th className="text-right p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -299,12 +299,12 @@ export default function Portfolios() {
                           onMouseEnter={() => setHoveredRow(program.id)}
                           onMouseLeave={() => setHoveredRow(null)}
                         >
-                          <td className="p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>{program.name}</td>
+                          <td className="p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{program.name}</td>
                           <td className="p-3 text-sm">
                             {programProjects.length === 0 ? (
-                              <span style={{ color: 'var(--ds-text-subtle, #44546F)' }}>-</span>
+                              <span style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>-</span>
                             ) : (
-                              <span style={{ color: 'var(--ds-text, #172B4D)' }}>
+                              <span style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                                 {programProjects.map(p => p.name).join(', ')}
                               </span>
                             )}
@@ -314,7 +314,7 @@ export default function Portfolios() {
                               program.status === 'active'
                                 ? 'bg-[var(--sem-success-bg)] text-[var(--sem-success)]'
                                 : ''
-                            }`} style={program.status !== 'active' ? { background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtle, #44546F)' } : {}}>
+                            }`} style={program.status !== 'active' ? { background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' } : {}}>
                               {program.status === 'active' ? 'Active' : 'Archived'}
                             </span>
                           </td>
@@ -349,7 +349,7 @@ export default function Portfolios() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <label htmlFor="add-name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Program Name</label>
+                <label htmlFor="add-name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Program Name</label>
                 <Textfield
                   id="add-name"
                   value={formData.name}
@@ -381,7 +381,7 @@ export default function Portfolios() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <label htmlFor="edit-name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Program Name</label>
+                <label htmlFor="edit-name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Program Name</label>
                 <Textfield
                   id="edit-name"
                   value={formData.name}

@@ -144,7 +144,7 @@ export function getHealthColor(level: 'healthy' | 'attention' | 'at_risk' | 'cri
 
 // Catalyst V5 Colors
 export const CATALYST_COLORS = {
-  primary: 'var(--ds-text-brand, #2563eb)',
+  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   teal: '#0d9488',
   warning: 'var(--ds-text-warning, #d97706)',
   danger: 'var(--ds-text-danger, #ef4444)',
@@ -153,12 +153,12 @@ export const CATALYST_COLORS = {
   gray: {
     50: 'var(--ds-surface-sunken, #f8fafc)',
     100: 'var(--ds-surface-sunken, #f1f5f9)',
-    200: 'var(--ds-border, #e2e8f0)',
+    200: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
     300: 'var(--ds-text-disabled, #cbd5e1)',
     400: 'var(--ds-text-subtlest, #94a3b8)',
     500: 'var(--ds-text-subtlest, #64748b)',
     600: 'var(--ds-text-subtle, #475569)',
-    700: 'var(--ds-text-subtle, #334155)',
+    700: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
     800: '#1e293b',
     900: 'var(--ds-text, #0f172a)',
   },

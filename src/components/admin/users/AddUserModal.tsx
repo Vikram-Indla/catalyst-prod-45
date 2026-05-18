@@ -133,7 +133,7 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label htmlFor="firstName" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>First Name *</label>
+              <label htmlFor="firstName" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>First Name *</label>
               <Textfield
                 id="firstName"
                 value={firstName}
@@ -152,7 +152,7 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="lastName" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Last Name *</label>
+              <label htmlFor="lastName" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Last Name *</label>
               <Textfield
                 id="lastName"
                 value={lastName}
@@ -172,7 +172,7 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="email" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Email *</label>
+            <label htmlFor="email" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Email *</label>
             <Textfield
               id="email"
               type="email"
@@ -192,7 +192,7 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
           </div>
 
           <div className="space-y-2">
-            <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Product Roles *</label>
+            <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Product Roles *</label>
             <div className={`border rounded-md p-3 space-y-2 max-h-[200px] overflow-y-auto ${fieldErrors.roles ? 'border-destructive' : ''}`}>
               {rolesLoading ? (
                 <div className="flex items-center justify-center py-4">

@@ -108,7 +108,7 @@ export function BulkRoleAssignment({ open, onOpenChange }: BulkRoleAssignmentPro
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Action</label>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Action</label>
               <AdsSelect
                 value={{ label: action === 'assign' ? 'Assign Role' : 'Remove Role', value: action }}
                 options={[
@@ -120,7 +120,7 @@ export function BulkRoleAssignment({ open, onOpenChange }: BulkRoleAssignmentPro
             </div>
 
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Role</label>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Role</label>
               <AdsSelect
                 value={selectedRole ? { label: ROLE_LABELS[selectedRole as keyof typeof ROLE_LABELS] || selectedRole, value: selectedRole } : null}
                 options={Object.entries(ROLE_LABELS).map(([value, label]) => ({ value, label }))}
@@ -131,7 +131,7 @@ export function BulkRoleAssignment({ open, onOpenChange }: BulkRoleAssignmentPro
           </div>
 
           <div className="space-y-2">
-            <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Notes (optional)</label>
+            <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Notes (optional)</label>
             <TextArea
               value={notes}
               onChange={(e) => setNotes((e.target as HTMLTextAreaElement).value)}
@@ -142,7 +142,7 @@ export function BulkRoleAssignment({ open, onOpenChange }: BulkRoleAssignmentPro
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Select Users ({selectedUserIds.length} selected)</span>
+              <span className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Select Users ({selectedUserIds.length} selected)</span>
               <Button appearance="default" onClick={toggleAll}>
                 {selectedUserIds.length === profiles?.length ? 'Deselect All' : 'Select All'}
               </Button>

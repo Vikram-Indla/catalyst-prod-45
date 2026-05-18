@@ -14,9 +14,9 @@ export function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect
   const { isDark } = useTheme();
   const doneColRef = useRef<HTMLDivElement>(null);
   const columns = useMemo(() => [
-    { key: 'to_do', label: 'To do', color: 'var(--ds-text-warning, #D97706)', items: items.filter(i => i.status_category === 'to_do' || i.status_category === 'blocked') },
-    { key: 'in_progress', label: 'In progress', color: 'var(--ds-text-brand, #2563EB)', items: items.filter(i => i.status_category === 'in_progress' || i.status_category === 'in_qa') },
-    { key: 'done', label: 'Done', color: 'var(--ds-text-success, #16A34A)', items: items.filter(i => i.status_category === 'done') },
+    { key: 'to_do', label: 'To do', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', items: items.filter(i => i.status_category === 'to_do' || i.status_category === 'blocked') },
+    { key: 'in_progress', label: 'In progress', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', items: items.filter(i => i.status_category === 'in_progress' || i.status_category === 'in_qa') },
+    { key: 'done', label: 'Done', color: 'var(--ds-text-success, var(--cp-success, #16A34A))', items: items.filter(i => i.status_category === 'done') },
   ], [items]);
 
   return (
@@ -43,7 +43,7 @@ export function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect
                 <div style={{
                   padding: '20px 12px', textAlign: 'center' as const,
                   fontSize: 12, color: 'var(--ds-text-subtlest, #626F86)',
-                  border: '1px dashed var(--ds-border, #DFE1E6)', borderRadius: 8,
+                  border: '1px dashed var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 8,
                 }}>
                   {col.key === 'done' ? 'No completed items this period' : 'Nothing here'}
                 </div>
@@ -69,7 +69,7 @@ export function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         <span className="r3-priority-dot" style={{ background: priorityDotColor(item.priority) }} />
-                        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-text-secondary, #334155)' }}>{item.priority}</span>
+                        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>{item.priority}</span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <StatusLozenge status={item.status} statusCategory={item.status_category} />

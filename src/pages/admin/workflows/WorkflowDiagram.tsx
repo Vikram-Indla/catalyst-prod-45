@@ -98,19 +98,19 @@ function StartNode() {
         width: 28,
         height: 28,
         borderRadius: '50%',
-        background: 'var(--ds-text,#172B4D)',
-        border: '3px solid var(--ds-text,#172B4D)',
+        background: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+        border: '3px solid var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         boxShadow: '0 0 0 4px rgba(23,43,77,0.18)',
       }}
     >
-      <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--ds-surface,#ffffff)' }} />
+      <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
       <Handle
         type="source"
         position={Position.Right}
-        style={{ background: 'var(--ds-text,#172B4D)', border: 'none', width: 8, height: 8 }}
+        style={{ background: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', border: 'none', width: 8, height: 8 }}
       />
     </div>
   );
@@ -155,7 +155,7 @@ function StatusNode({ data, selected }: { data: any; selected: boolean }) {
         <span style={{
           fontSize: 12,
           fontWeight: 600,
-          color: 'var(--ds-text,#172B4D)',
+          color: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
           lineHeight: 1.3,
           flex: 1,
           overflow: 'hidden',
@@ -171,14 +171,14 @@ function StatusNode({ data, selected }: { data: any; selected: boolean }) {
         {data.is_initial && (
           <span style={{
             fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
-            background: 'var(--ds-text-brand,#0C66E4)', color: 'var(--ds-surface,#ffffff)',
+            background: 'var(--ds-text-brand,#0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             borderRadius: 3, padding: '1px 5px',
           }}>START</span>
         )}
         {data.is_final && (
           <span style={{
             fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
-            background: 'var(--ds-border-success,#22A06B)', color: 'var(--ds-surface,#ffffff)',
+            background: 'var(--ds-border-success,#22A06B)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             borderRadius: 3, padding: '1px 5px',
           }}>END</span>
         )}
@@ -196,7 +196,7 @@ function AnyNode() {
     <div style={{
       padding: '4px 10px',
       background: 'var(--ds-background-warning,#FFF7D6)',
-      border: '1.5px dashed var(--ds-border-warning,#F59E0B)',
+      border: '1.5px dashed var(--ds-border-warning,var(--cp-amber, #F59E0B))',
       borderRadius: 20,
       fontSize: 11, fontWeight: 700, color: 'var(--ds-text-warning,#CF8800)',
       display: 'flex', alignItems: 'center', gap: 4,
@@ -205,7 +205,7 @@ function AnyNode() {
       <Handle
         type="source"
         position={Position.Right}
-        style={{ background: 'var(--ds-background-warning-bold,#F59E0B)', border: 'none', width: 8, height: 8 }}
+        style={{ background: 'var(--ds-background-warning-bold,var(--cp-amber, #F59E0B))', border: 'none', width: 8, height: 8 }}
       />
     </div>
   );
@@ -259,8 +259,8 @@ function buildFlowEdges(
       target: initial.id,
       type: 'bezier',
       animated: false,
-      style: { stroke: '#172B4D', strokeWidth: 2 },
-      markerEnd: { type: MarkerType.ArrowClosed, color: '#172B4D', width: 16, height: 16 },
+      style: { stroke: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))', strokeWidth: 2 },
+      markerEnd: { type: MarkerType.ArrowClosed, color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))', width: 16, height: 16 },
     });
   }
 
@@ -274,8 +274,8 @@ function buildFlowEdges(
         // Labels omitted on global edges — they fan out from a single ANY node and
         // overlap badly when there are many transitions (e.g. Story has 22).
         // The dashed amber stroke already identifies them as global.
-        style: { stroke: '#F59E0B', strokeWidth: 1.5, strokeDasharray: '5 3' },
-        markerEnd: { type: MarkerType.ArrowClosed, color: '#F59E0B', width: 14, height: 14 },
+        style: { stroke: 'var(--cp-amber, #F59E0B)', strokeWidth: 1.5, strokeDasharray: '5 3' },
+        markerEnd: { type: MarkerType.ArrowClosed, color: 'var(--cp-amber, #F59E0B)', width: 14, height: 14 },
       });
     } else if (t.from_status_id) {
       const fromStatus = statuses.find(s => s.id === t.from_status_id);
@@ -288,7 +288,7 @@ function buildFlowEdges(
         target: t.to_status_id,
         type: 'bezier',
         label: t.name || `${fromStatus.name} → ${toStatus.name}`,
-        labelStyle: { fontSize: 9, fill: '#44546F', fontWeight: 500 },
+        labelStyle: { fontSize: 9, fill: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))', fontWeight: 500 },
         labelBgStyle: { fill: '#ffffff', fillOpacity: 0.8 },
         style: { stroke: strokeColor, strokeWidth: 1.5 },
         markerEnd: { type: MarkerType.ArrowClosed, color: strokeColor, width: 14, height: 14 },
@@ -552,15 +552,15 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
       <div style={{
         position: 'absolute', top: 12, left: 12, right: 12, zIndex: 10,
         display: 'flex', alignItems: 'center', gap: 8,
-        background: 'var(--ds-surface,#ffffff)',
-        border: '1px solid var(--ds-border,#DFE1E6)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+        border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
         borderRadius: 8, padding: '8px 12px',
         boxShadow: '0 1px 4px rgba(9,30,66,0.08)',
       }}>
-        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ds-text,#172B4D)', marginRight: 4 }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginRight: 4 }}>
           {scheme.name}
         </span>
-        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest,#6B778C)', marginRight: 8 }}>
+        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))', marginRight: 8 }}>
           {statuses.length} statuses · {transitions.length} transitions
         </span>
 
@@ -621,13 +621,13 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
       {showAddStatus && (
         <div style={{
           position: 'absolute', top: 64, right: 12, zIndex: 20,
-          background: 'var(--ds-surface,#ffffff)',
-          border: '1px solid var(--ds-border,#DFE1E6)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
           borderRadius: 8,
           boxShadow: '0 4px 16px rgba(9,30,66,0.12)',
           padding: 16, width: 280,
         }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text,#172B4D)', marginBottom: 10 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 10 }}>
             Add Status
           </div>
 
@@ -661,12 +661,12 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
                   onClick={() => setNewStatusCat(cat)}
                   style={{
                     flex: 1, padding: '5px 4px', borderRadius: 4,
-                    border: `1.5px solid ${isActive ? strokeColor[cat] : 'var(--ds-border,#DFE1E6)'}`,
+                    border: `1.5px solid ${isActive ? strokeColor[cat] : 'var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'}`,
                     background: isActive
                       ? cat === 'done'
                         ? 'var(--ds-background-success,#DCFFF1)'
                         : 'var(--ds-background-information,#E9F2FF)'
-                      : 'var(--ds-surface,#ffffff)',
+                      : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     color: isActive ? strokeColor[cat] : 'var(--ds-text-subtle,#42526E)',
                     fontSize: 10, fontWeight: 600, cursor: 'pointer', transition: 'all 0.1s',
                   }}
@@ -682,8 +682,8 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
               onClick={() => setShowAddStatus(false)}
               style={{
                 flex: 1, padding: '7px 0', borderRadius: 4,
-                border: '1px solid var(--ds-border,#DFE1E6)',
-                background: 'var(--ds-surface,#ffffff)',
+                border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 color: 'var(--ds-text-subtle,#42526E)',
                 fontSize: 12, cursor: 'pointer',
               }}
@@ -696,7 +696,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
                 background: newStatusName.trim()
                   ? 'var(--ds-background-brand-bold,#0C66E4)'
                   : 'var(--ds-background-brand-hovered,#579DFF)',
-                color: 'var(--ds-text-inverse,#ffffff)',
+                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 fontSize: 12, fontWeight: 600,
                 cursor: newStatusName.trim() ? 'pointer' : 'not-allowed',
                 opacity: newStatusName.trim() ? 1 : 0.6,
@@ -715,7 +715,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
             ? 'var(--ds-background-warning,#FFF7D6)'
             : 'var(--ds-background-information,#E9F2FF)',
           border: `1px solid ${transitionFrom
-            ? 'var(--ds-border-warning,#F59E0B)'
+            ? 'var(--ds-border-warning,var(--cp-amber, #F59E0B))'
             : 'var(--ds-border-brand,#579DFF)'}`,
           borderRadius: 20, padding: '8px 20px',
           fontSize: 12, fontWeight: 600,
@@ -755,14 +755,14 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
           variant={BackgroundVariant.Dots}
           gap={24}
           size={1.2}
-          color="var(--ds-border,#DFE1E6)"
+          color="var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))"
         />
         <Controls
           position="bottom-left"
           showFitView={false}
           style={{
             boxShadow: '0 1px 4px rgba(9,30,66,0.08)',
-            border: '1px solid var(--ds-border,#DFE1E6)',
+            border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
             borderRadius: 6,
             bottom: 16,
           }}
@@ -770,8 +770,8 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
         <MiniMap
           position="bottom-right"
           nodeColor={(n) => {
-            if (n.id === 'START') return '#172B4D';
-            if (n.id === 'ANY') return '#F59E0B';
+            if (n.id === 'START') return 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))';
+            if (n.id === 'ANY') return 'var(--cp-amber, #F59E0B)';
             const data = n.data as any;
             return data?.category === 'done' ? '#22A06B' : '#579DFF';
           }}
@@ -780,7 +780,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
           maskColor="rgba(200,215,230,0.25)"
           style={{
             background: 'var(--ds-surface-sunken,#F0F2F5)',
-            border: '1px solid var(--ds-border,#DFE1E6)',
+            border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
             borderRadius: 6,
             height: 100,
           }}
@@ -790,8 +790,8 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
       {/* ─── Legend ─── */}
       <div style={{
         position: 'absolute', top: 64, left: 12, zIndex: 10,
-        background: 'var(--ds-surface,#ffffff)',
-        border: '1px solid var(--ds-border,#DFE1E6)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+        border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
         borderRadius: 8,
         padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 6,
         boxShadow: '0 1px 4px rgba(9,30,66,0.06)',
@@ -800,12 +800,12 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
         <div style={{
           fontWeight: 700, fontSize: 10, letterSpacing: '0.06em',
           textTransform: 'uppercase', marginBottom: 2,
-          color: 'var(--ds-text-subtlest,#6B778C)',
+          color: 'var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))',
         }}>Legend</div>
         <LegendRow color="#579DFF" label="To Do / In Progress" />
         <LegendRow color="#22A06B" label="Done" />
-        <LegendRow color="#F59E0B" label="Global (any → status)" dashed />
-        <LegendRow color="#172B4D" label="Start" />
+        <LegendRow color="var(--cp-amber, #F59E0B)" label="Global (any → status)" dashed />
+        <LegendRow color="var(--cp-text-primary, var(--cp-text-inverse, #172B4D))" label="Start" />
       </div>
 
       {/* ─── Delete confirm modal ─── */}

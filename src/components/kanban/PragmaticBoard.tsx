@@ -246,7 +246,7 @@ const PragmaticCard = memo(function PragmaticCard({
             top: ctxMenu.y,
             zIndex: 9999,
             minWidth: 180,
-            background: 'var(--ds-surface, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             borderRadius: 4,
             boxShadow: 'rgba(9,30,66,0.31) 0 0 1px, rgba(9,30,66,0.25) 0 4px 8px -2px',
             padding: '4px 0',
@@ -273,7 +273,7 @@ const PragmaticCard = memo(function PragmaticCard({
                 fontSize: 14, lineHeight: '20px',
                 color: item.danger ? '#AE2A19' : tk.textPrimary,
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
             >
               {item.label}
@@ -471,7 +471,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
               top: meatballAnchor.y,
               zIndex: 9999,
               minWidth: 200,
-              background: 'var(--ds-surface, #FFFFFF)',
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               borderRadius: 4,
               boxShadow: 'rgba(9,30,66,0.31) 0 0 1px, rgba(9,30,66,0.25) 0 4px 8px -2px',
               padding: '6px 0',
@@ -568,7 +568,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
             {[72, 56, 88].map((h, i) => (
               <div key={i} className="animate-pulse" style={{
                 height: h, borderRadius: 4,
-                background: 'var(--cp-bg-elevated, #FFFFFF)',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 boxShadow: tk.cardShadowRest,
               }} />
             ))}

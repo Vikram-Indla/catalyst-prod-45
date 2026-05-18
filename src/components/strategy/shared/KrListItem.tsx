@@ -26,7 +26,7 @@ export function KrListItem({ status, title, meta, progress, onClick, className =
       onKeyDown={onClick ? (e) => { if (e.key === 'Enter') onClick(); } : undefined}
       style={{
         padding: '10px 0',
-        borderBottom: '1px solid var(--catalyst-border-default, var(--bd-default, #E2E8F0))',
+        borderBottom: '1px solid var(--catalyst-border-default, var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))))',
         cursor: onClick ? 'pointer' : 'default',
         transition: 'background 150ms',
       }}
@@ -50,7 +50,7 @@ export function KrListItem({ status, title, meta, progress, onClick, className =
           style={{
             fontSize: 13,
             fontWeight: 500,
-            color: 'var(--catalyst-text-primary, #0F172A)',
+            color: 'var(--catalyst-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
             lineHeight: 1.4,
           }}
         >
@@ -59,7 +59,7 @@ export function KrListItem({ status, title, meta, progress, onClick, className =
         <div
           style={{
             fontSize: 11,
-            color: 'var(--catalyst-text-tertiary, #94A3B8)',
+            color: 'var(--catalyst-text-tertiary, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
             lineHeight: 1.4,
           }}
         >

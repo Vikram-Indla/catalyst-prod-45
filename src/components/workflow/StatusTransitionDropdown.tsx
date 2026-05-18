@@ -122,7 +122,7 @@ export function StatusTransitionDropdown({
               category={currentState.category}
               name={currentState.name}
             />
-            <span aria-hidden="true" style={{ fontSize: 10, color: '#44546F' }}>▾</span>
+            <span aria-hidden="true" style={{ fontSize: 10, color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))' }}>▾</span>
           </button>
         )}
         placement="bottom-start"
@@ -149,7 +149,7 @@ export function StatusTransitionDropdown({
                     minWidth: 220,
                   }}
                 >
-                  <span style={{ color: '#44546F' }}>{tr.verb}</span>
+                  <span style={{ color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))' }}>{tr.verb}</span>
                   <span aria-hidden="true" style={{ color: '#8590A2' }}>→</span>
                   <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
                     <Lozenge appearance={APPEARANCE_MAP[target.category]} isBold>

@@ -15,9 +15,9 @@ export function getLabelColor(label: string): { bg: string; color: string; borde
     case 'LOW': return { bg: '#f0fdf4', color: 'var(--ds-text-success, #16a34a)', border: '#bbf7d0' };
     case 'BLOCKED': return { bg: 'var(--ds-background-danger, #fef2f2)', color: '#b91c1c', border: '#fecaca' };
     case 'NEEDS-REVIEW': return { bg: '#f5f3ff', color: '#7c3aed', border: '#ddd6fe' };
-    case 'HR': return { bg: 'var(--ds-background-selected, #eff6ff)', color: 'var(--ds-text-brand, #2563eb)', border: '#bfdbfe' };
+    case 'HR': return { bg: 'var(--ds-background-selected, #eff6ff)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', border: '#bfdbfe' };
     case 'BUG FIX': return { bg: 'var(--ds-background-danger, #fef2f2)', color: 'var(--ds-text-danger, #dc2626)', border: '#fecaca' };
-    case 'FEATURE': return { bg: '#ecfdf5', color: '#059669', border: '#a7f3d0' };
+    case 'FEATURE': return { bg: '#ecfdf5', color: 'var(--quality-high, #059669)', border: '#a7f3d0' };
     case 'DOCUMENTATION': return { bg: '#f0f9ff', color: '#0284c7', border: '#bae6fd' };
     default: {
       // Generate consistent color based on label hash
@@ -163,7 +163,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
         left: position.left,
         width: position.width,
         zIndex: 100001,
-        background: 'var(--ds-surface, #ffffff)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         borderRadius: '8px',
         boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15), 0 4px 6px -2px rgba(0,0,0,0.08)',
         border: '1px solid #e5e7eb',

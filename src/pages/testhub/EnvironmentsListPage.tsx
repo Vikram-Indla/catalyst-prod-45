@@ -35,26 +35,26 @@ interface EnvironmentSummary {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  development: { label: 'Development', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
-  testing: { label: 'Testing', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
-  staging: { label: 'Staging', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
-  uat: { label: 'UAT', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
-  production: { label: 'Production', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
-  other: { label: 'Other', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
+  development: { label: 'Development', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' },
+  testing: { label: 'Testing', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' },
+  staging: { label: 'Staging', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' },
+  uat: { label: 'UAT', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' },
+  production: { label: 'Production', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' },
+  other: { label: 'Other', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  active: { label: 'Active', color: '#059669', bg: '#ECFDF5', icon: Power },
-  maintenance: { label: 'Maintenance', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', icon: Wrench },
-  inactive: { label: 'Inactive', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: Power },
-  deprecated: { label: 'Deprecated', color: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F8FAFC)', icon: XCircle },
+  active: { label: 'Active', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: Power },
+  maintenance: { label: 'Maintenance', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', icon: Wrench },
+  inactive: { label: 'Inactive', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', icon: Power },
+  deprecated: { label: 'Deprecated', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--ds-surface-sunken, #F8FAFC)', icon: XCircle },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  healthy: { label: 'Healthy', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
-  degraded: { label: 'Degraded', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', icon: AlertTriangle },
-  down: { label: 'Down', color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)', icon: XCircle },
-  unknown: { label: 'Unknown', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: HelpCircle },
+  healthy: { label: 'Healthy', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
+  degraded: { label: 'Degraded', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', icon: AlertTriangle },
+  down: { label: 'Down', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', icon: XCircle },
+  unknown: { label: 'Unknown', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', icon: HelpCircle },
 };
 
 export default function EnvironmentsListPage() {
@@ -144,11 +144,11 @@ export default function EnvironmentsListPage() {
               background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <Server size={24} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
+              <Server size={24} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>Test Environments</h1>
-              <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, #64748B)', margin: '4px 0 0' }}>Manage and monitor test environments</p>
+              <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0 }}>Test Environments</h1>
+              <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '4px 0 0' }}>Manage and monitor test environments</p>
             </div>
           </div>
         </div>
@@ -157,8 +157,8 @@ export default function EnvironmentsListPage() {
           style={{
             display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 20px',
             border: 'none', borderRadius: 12,
-            background: 'var(--ds-text-brand, #2563EB)',
-            color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+            background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 600, cursor: 'pointer',
             boxShadow: 'none',
           }}
         >
@@ -169,11 +169,11 @@ export default function EnvironmentsListPage() {
       {/* Summary Cards */}
       {summary && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', margin: 0, textTransform: 'uppercase' }}>Total</p>
-                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '8px 0 0' }}>{summary.total_environments}</p>
+                <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: 0, textTransform: 'uppercase' }}>Total</p>
+                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: '8px 0 0' }}>{summary.total_environments}</p>
               </div>
               <Server size={24} style={{ color: '#6366F1' }} />
             </div>
@@ -181,28 +181,28 @@ export default function EnvironmentsListPage() {
           <div style={{ backgroundColor: '#ECFDF5', borderRadius: 12, padding: 20, border: '1px solid #A7F3D0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <p style={{ fontSize: 12, color: '#059669', margin: 0, textTransform: 'uppercase' }}>Healthy</p>
-                <p style={{ fontSize: 28, fontWeight: 700, color: '#059669', margin: '8px 0 0' }}>{summary.healthy_count}</p>
+                <p style={{ fontSize: 12, color: 'var(--quality-high, #059669)', margin: 0, textTransform: 'uppercase' }}>Healthy</p>
+                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--quality-high, #059669)', margin: '8px 0 0' }}>{summary.healthy_count}</p>
               </div>
-              <CheckCircle2 size={24} style={{ color: '#059669' }} />
+              <CheckCircle2 size={24} style={{ color: 'var(--quality-high, #059669)' }} />
             </div>
           </div>
           <div style={{ backgroundColor: '#FFFBEB', borderRadius: 12, padding: 20, border: '1px solid #FDE68A' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <p style={{ fontSize: 12, color: 'var(--ds-text-warning, #D97706)', margin: 0, textTransform: 'uppercase' }}>Degraded</p>
-                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-warning, #D97706)', margin: '8px 0 0' }}>{summary.degraded_count}</p>
+                <p style={{ fontSize: 12, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', margin: 0, textTransform: 'uppercase' }}>Degraded</p>
+                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', margin: '8px 0 0' }}>{summary.degraded_count}</p>
               </div>
-              <AlertTriangle size={24} style={{ color: 'var(--ds-text-warning, #D97706)' }} />
+              <AlertTriangle size={24} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} />
             </div>
           </div>
           <div style={{ backgroundColor: 'var(--ds-background-danger, #FEF2F2)', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <p style={{ fontSize: 12, color: 'var(--ds-text-danger, #DC2626)', margin: 0, textTransform: 'uppercase' }}>Down</p>
-                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-danger, #DC2626)', margin: '8px 0 0' }}>{summary.down_count}</p>
+                <p style={{ fontSize: 12, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: 0, textTransform: 'uppercase' }}>Down</p>
+                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: '8px 0 0' }}>{summary.down_count}</p>
               </div>
-              <XCircle size={24} style={{ color: 'var(--ds-text-danger, #DC2626)' }} />
+              <XCircle size={24} style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }} />
             </div>
           </div>
         </div>
@@ -211,7 +211,7 @@ export default function EnvironmentsListPage() {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
-          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
           <input
             type="text"
             placeholder="Search environments..."
@@ -219,12 +219,12 @@ export default function EnvironmentsListPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
               width: '100%', height: 44, padding: '0 14px 0 44px',
-              border: `1.5px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined,
+              border: `1.5px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined,
             }}
           />
         </div>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="h-[50px] w-[160px] border-[var(--ds-border,#E2E8F0)] rounded text-[13px]" style={{ fontFamily: 'var(--cp-font-body)' }}>
+          <SelectTrigger className="h-[50px] w-[160px] border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded text-[13px]" style={{ fontFamily: 'var(--cp-font-body)' }}>
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent>
@@ -237,7 +237,7 @@ export default function EnvironmentsListPage() {
           </SelectContent>
         </Select>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="h-[50px] w-[160px] border-[var(--ds-border,#E2E8F0)] rounded text-[13px]" style={{ fontFamily: 'var(--cp-font-body)' }}>
+          <SelectTrigger className="h-[50px] w-[160px] border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded text-[13px]" style={{ fontFamily: 'var(--cp-font-body)' }}>
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent>
@@ -249,7 +249,7 @@ export default function EnvironmentsListPage() {
         </Select>
         {hasActiveFilters && (
           <button onClick={clearFilters}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 14, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
@@ -261,10 +261,10 @@ export default function EnvironmentsListPage() {
           <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#6366F1' }} />
         </div>
       ) : filteredEnvironments.length === 0 ? (
-        <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
+        <div style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
           <Server size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
-          <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, #64748B)', margin: 0 }}>No environments found</p>
-          <p style={{ fontSize: 14, color: 'var(--cp-text-muted, #94A3B8)', margin: '8px 0 0' }}>Add an environment to get started</p>
+          <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: 0 }}>No environments found</p>
+          <p style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', margin: '8px 0 0' }}>Add an environment to get started</p>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 16 }}>
@@ -280,32 +280,32 @@ export default function EnvironmentsListPage() {
                 key={env.id}
                 onClick={() => navigate(`/testhub/environments/${env.id}`)}
                 style={{
-                  backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, padding: 20,
-                  border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, cursor: 'pointer', transition: 'all 0.15s',
+                  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, padding: 20,
+                  border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, cursor: 'pointer', transition: 'all 0.15s',
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border-strong, #CBD5E1)'; e.currentTarget.style.boxShadow = isDark ? 'none' : '0 4px 12px rgba(0,0,0,0.05)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, #E2E8F0)'; e.currentTarget.style.boxShadow = 'none'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'; e.currentTarget.style.boxShadow = 'none'; }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 12, fontWeight: 600, color: '#6366F1', backgroundColor: '#EEF2FF', padding: '4px 10px', borderRadius: 6 }}>{env.env_key}</span>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #475569)', backgroundColor: 'var(--ds-surface-sunken, #F1F5F9)', padding: '0 6px', borderRadius: 4, height: 20, display: 'inline-flex', alignItems: 'center', textTransform: 'uppercase' as const }}>{type.label}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #475569)', backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '0 6px', borderRadius: 4, height: 20, display: 'inline-flex', alignItems: 'center', textTransform: 'uppercase' as const }}>{type.label}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: health.color, backgroundColor: health.bg, padding: '4px 8px', borderRadius: 6 }}>
                     <HealthIcon size={12} /> {health.label}
                   </div>
                 </div>
-                <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 8px' }}>{env.name}</h3>
+                <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: '0 0 8px' }}>{env.name}</h3>
                 {env.url && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--cp-text-tertiary, #64748B)', marginBottom: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     <ExternalLink size={14} /> {env.url}
                   </div>
                 )}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}` }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: status.color }}>
                     <StatusIcon size={14} /> {status.label}
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--cp-text-muted, #94A3B8)' }}>Checked: {formatDate(env.last_health_check)}</div>
+                  <div style={{ fontSize: 12, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Checked: {formatDate(env.last_health_check)}</div>
                 </div>
               </div>
             );

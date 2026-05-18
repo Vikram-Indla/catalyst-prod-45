@@ -27,7 +27,7 @@ const SWIMLANE_OPTIONS: { value: SwimlaneType; label: string; desc: string }[] =
 ];
 
 const COLOR_SWATCHES = [
-  'var(--ds-text-brand, #2563EB)', 'var(--ds-text-success, #16A34A)', '#7C3AED', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-warning, #D97706)', '#0D9488', '#525252', '#0284C7',
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-teal-60, #0D9488)', '#525252', '#0284C7',
 ];
 
 const VISIBILITY_OPTIONS: { value: BoardVisibility; label: string; desc: string; warning?: boolean }[] = [
@@ -40,7 +40,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
   const [name, setName] = useState('');
   const [template, setTemplate] = useState('standard');
   const [swimlane, setSwimlane] = useState<SwimlaneType>('none');
-  const [color, setColor] = useState('var(--ds-text-brand, #2563EB)');
+  const [color, setColor] = useState('var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))');
   const [visibility, setVisibility] = useState<BoardVisibility>('project');
   const createBoard = useCreateBoard();
   const navigate = useNavigate();
@@ -92,7 +92,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
             background: 'transparent', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <CloseIcon label="Close" size="small" primaryColor="var(--ds-text-subtlest, #94A3B8)" />
+            <CloseIcon label="Close" size="small" primaryColor="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
           </button>
         </div>
 
@@ -192,7 +192,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
                     </span>
                     {opt.warning && (
                       <span title="Visible to all users in the organisation. Use with caution.">
-                        <WarningIcon label="Warning" size="small" primaryColor="var(--ds-text-warning, #D97706)" />
+                        <WarningIcon label="Warning" size="small" primaryColor="var(--ds-text-warning, var(--cp-warning, #D97706))" />
                       </span>
                     )}
                   </div>
@@ -221,7 +221,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
               height: 34, padding: '0 18px', borderRadius: 6, border: 'none',
               background: name.trim() ? 'var(--cp-blue)' : 'var(--divider)',
               fontSize: 12.5, fontWeight: 600,
-              color: name.trim() ? 'var(--ds-surface, #FFFFFF)' : 'var(--fg-4)',
+              color: name.trim() ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--fg-4)',
               fontFamily: 'var(--cp-font-body)',
               cursor: name.trim() ? 'pointer' : 'not-allowed',
             }}>
@@ -254,7 +254,7 @@ function RadioCircle({ selected }: { selected: boolean }) {
       background: selected ? 'var(--cp-blue)' : 'var(--bg-app)',
       transition: 'all 100ms',
     }}>
-      {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--bg-app, #FFFFFF)' }} />}
+      {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />}
     </div>
   );
 }

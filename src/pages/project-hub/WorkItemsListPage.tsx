@@ -239,7 +239,7 @@ export default function WorkItemsListPage() {
   const assignees = useMemo(() => {
     const seen = new Set<string>();
     const result: { name: string; color: string }[] = [];
-    const colors = ['var(--ds-text-brand, #2563EB)', '#0D9488', '#7C3AED', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-success, #16A34A)'];
+    const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))'];
     for (const item of items) {
       if (item.assignee_name && !seen.has(item.assignee_name)) {
         seen.add(item.assignee_name);
@@ -252,7 +252,7 @@ export default function WorkItemsListPage() {
   }, [items]);
 
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', background: 'var(--bg-app, #FFFFFF)', minHeight: '100%' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', minHeight: '100%' }}>
       {/* Sync Banner — conflictCount from real DB */}
       {!bannerDismissed && (
         <SyncBanner
@@ -267,9 +267,9 @@ export default function WorkItemsListPage() {
       <div className="px-6 py-4 max-w-[1400px] mx-auto">
         {/* Breadcrumb */}
         <div className="flex items-center gap-1 mb-3">
-          <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #94A3B8)' }}>ProjectHub</span>
+          <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>ProjectHub</span>
           <span style={{ fontSize: 10, color: 'var(--ds-text-disabled, #CBD5E1)' }}>/</span>
-          <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #94A3B8)' }}>{project?.key ?? key?.toUpperCase()} — {project?.name ?? 'Loading…'}</span>
+          <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{project?.key ?? key?.toUpperCase()} — {project?.name ?? 'Loading…'}</span>
           <span style={{ fontSize: 10, color: 'var(--ds-text-disabled, #CBD5E1)' }}>/</span>
           <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>List</span>
         </div>
@@ -282,7 +282,7 @@ export default function WorkItemsListPage() {
             className="inline-flex items-center gap-1.5"
             style={{
               height: 30, padding: '0 10px', borderRadius: 4,
-              border: '0.75px solid var(--bd-default, #E2E8F0)', background: 'none',
+              border: '0.75px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', background: 'none',
               fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtle, #475569)',
               fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
             }}
@@ -329,7 +329,7 @@ export default function WorkItemsListPage() {
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 size={24} className="animate-spin" style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
+            <Loader2 size={24} className="animate-spin" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
           </div>
         ) : (
           <WorkItemsTable

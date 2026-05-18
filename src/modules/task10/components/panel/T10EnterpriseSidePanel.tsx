@@ -24,15 +24,15 @@ interface T10EnterpriseSidePanelProps {
 // CONSTANTS
 // ═══════════════════════════════════════════════════════════════════════════
 const COLORS = {
-  white: 'var(--ds-surface, #ffffff)',
+  white: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   gray50: 'var(--ds-surface-sunken, #f8fafc)',
   gray100: 'var(--ds-surface-sunken, #f1f5f9)',
-  gray200: 'var(--ds-border, #e2e8f0)',
+  gray200: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
   gray300: 'var(--ds-text-disabled, #cbd5e1)',
   gray400: 'var(--ds-text-subtlest, #94a3b8)',
   gray500: 'var(--ds-text-subtlest, #64748b)',
   gray600: 'var(--ds-text-subtle, #475569)',
-  gray700: 'var(--ds-text-subtle, #334155)',
+  gray700: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
   gray800: '#1e293b',
   gray900: 'var(--ds-text, #0f172a)',
   blue: 'var(--ds-text-brand, #3b82f6)',

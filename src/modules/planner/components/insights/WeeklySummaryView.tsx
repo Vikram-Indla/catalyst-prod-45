@@ -45,7 +45,7 @@ function StatusBadge({ status }: { status: string }) {
 // Empty state component
 function EmptyState({ title, icon: Icon }: { title: string; icon: any }) {
   return (
-    <div className="flex flex-col items-center justify-center py-8 text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)]">
+    <div className="flex flex-col items-center justify-center py-8 text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
       <Icon className="w-8 h-8 mb-2" />
       <p className="text-sm">No {title} this week</p>
     </div>
@@ -71,7 +71,7 @@ export function WeeklySummaryView() {
 
   if (error || !data) {
     return (
-      <div className="p-6 flex flex-col items-center justify-center h-full text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
+      <div className="p-6 flex flex-col items-center justify-center h-full text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
         <AlertTriangle className="w-12 h-12 mb-4 text-amber-500" />
         <p>Failed to load weekly insights data</p>
       </div>
@@ -90,10 +90,10 @@ export function WeeklySummaryView() {
 
   // KPI Strip data from real counts
   const kpiStrip = [
-    { label: 'Stories', value: stories.length, colorClass: 'text-slate-800 dark:text-[var(--ds-text,#EDEDED)]' },
+    { label: 'Stories', value: stories.length, colorClass: 'text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' },
     { label: 'Releases', value: releases.length, colorClass: 'text-emerald-600', highlight: releases.length > 0 },
-    { label: 'Incidents', value: incidents.length, colorClass: incidents.length > 0 ? 'text-amber-600' : 'text-slate-800 dark:text-[var(--ds-text,#EDEDED)]' },
-    { label: 'Defects', value: defects.length, colorClass: defects.length > 0 ? 'text-red-600' : 'text-slate-800 dark:text-[var(--ds-text,#EDEDED)]' },
+    { label: 'Incidents', value: incidents.length, colorClass: incidents.length > 0 ? 'text-amber-600' : 'text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' },
+    { label: 'Defects', value: defects.length, colorClass: defects.length > 0 ? 'text-red-600' : 'text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' },
   ];
 
   return (
@@ -123,12 +123,12 @@ export function WeeklySummaryView() {
             <div 
               key={kpi.label}
               className={cn(
-                "bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-lg p-4 border border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] text-center transition-all hover:-translate-y-0.5 hover:shadow-md",
+                "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-lg p-4 border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-center transition-all hover:-translate-y-0.5 hover:shadow-md",
                 kpi.highlight && "border-emerald-400 bg-emerald-50"
               )}
             >
               <div className={cn("text-3xl font-extrabold", kpi.colorClass)}>{kpi.value}</div>
-              <div className="text-[10px] font-semibold text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase mt-1.5">{kpi.label}</div>
+              <div className="text-[10px] font-semibold text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] uppercase mt-1.5">{kpi.label}</div>
             </div>
           ))}
         </div>
@@ -136,13 +136,13 @@ export function WeeklySummaryView() {
         {/* Dashboard Grid - 2 columns */}
         <div className="grid grid-cols-2 gap-4">
           {/* Releases Card */}
-          <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,#2E2E2E)]">
+          <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
               <div className="flex items-center gap-2">
                 <Rocket className="w-5 h-5 text-blue-600" />
-                <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">Releases</h3>
+                <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">Releases</h3>
               </div>
-              <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">{releases.length} this week</span>
+              <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">{releases.length} this week</span>
             </div>
             <div className="p-4 space-y-3">
               {releases.length === 0 ? (
@@ -154,10 +154,10 @@ export function WeeklySummaryView() {
                       REL
                     </div>
                     <div className="flex-1">
-                      <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">
+                      <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
                         {release.name || release.version}
                       </div>
-                      <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] mt-0.5">
+                      <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mt-0.5">
                         {release.release_date ? format(new Date(release.release_date), 'MMM d, yyyy') : 'No date'}
                       </div>
                     </div>
@@ -169,13 +169,13 @@ export function WeeklySummaryView() {
           </div>
 
           {/* Incidents Card */}
-          <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,#2E2E2E)]">
+          <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-amber-600" />
-                <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">Incidents</h3>
+                <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">Incidents</h3>
               </div>
-              <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">{incidents.length} this week</span>
+              <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">{incidents.length} this week</span>
             </div>
             <div className="p-4 space-y-2">
               {incidents.length === 0 ? (
@@ -191,10 +191,10 @@ export function WeeklySummaryView() {
                       incident.severity === 'low' && "bg-slate-400"
                     )} />
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,#EDEDED)] truncate">
+                      <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] truncate">
                         {incident.title}
                       </div>
-                      <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] mt-0.5">
+                      <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mt-0.5">
                         {incident.severity || 'Unknown'} severity
                       </div>
                     </div>
@@ -206,13 +206,13 @@ export function WeeklySummaryView() {
           </div>
 
           {/* Defects Card */}
-          <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,#2E2E2E)]">
+          <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
               <div className="flex items-center gap-2">
                 <Bug className="w-5 h-5 text-red-600" />
-                <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">Defects</h3>
+                <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">Defects</h3>
               </div>
-              <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">{defects.length} this week</span>
+              <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">{defects.length} this week</span>
             </div>
             <div className="p-4 space-y-2">
               {defects.length === 0 ? (
@@ -227,10 +227,10 @@ export function WeeklySummaryView() {
                       defect.severity === 'minor' && "bg-teal-500"
                     )} />
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,#EDEDED)] truncate">
+                      <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] truncate">
                         {defect.title}
                       </div>
-                      <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] mt-0.5">
+                      <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mt-0.5">
                         {defect.severity || 'Unknown'} severity
                       </div>
                     </div>
@@ -242,13 +242,13 @@ export function WeeklySummaryView() {
           </div>
 
           {/* Stories Card */}
-          <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,#2E2E2E)]">
+          <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
               <div className="flex items-center gap-2">
                 <GitBranch className="w-5 h-5 text-purple-600" />
-                <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">Stories</h3>
+                <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">Stories</h3>
               </div>
-              <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">{stories.length} this week</span>
+              <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">{stories.length} this week</span>
             </div>
             <div className="p-4 space-y-2">
               {stories.length === 0 ? (
@@ -257,7 +257,7 @@ export function WeeklySummaryView() {
                 stories.slice(0, 5).map((story: any) => (
                   <div key={story.id} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-[#111111] rounded-lg hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors">
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,#EDEDED)] truncate">
+                      <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] truncate">
                         {story.title}
                       </div>
                     </div>
@@ -271,7 +271,7 @@ export function WeeklySummaryView() {
 
         {/* Footer */}
         <div className="flex items-center justify-between mt-6 px-2">
-          <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">
+          <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
             Data as of {format(new Date(), 'MMM d, yyyy h:mm a')}
           </span>
           <div className="flex gap-2">

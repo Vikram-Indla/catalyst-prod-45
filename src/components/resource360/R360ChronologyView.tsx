@@ -8,25 +8,25 @@ function getLozengeStyle(status: string, statusCategory?: string): { bg: string;
   // 1. Prioritise status_category from Jira (eliminates Unknown)
   const cat = (statusCategory || '').toLowerCase().replace(/[_ ]/g, '');
   if (cat === 'done' || cat === 'completed')
-    return { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)', label: (status || 'DONE').toUpperCase() };
+    return { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: (status || 'DONE').toUpperCase() };
   if (cat === 'inprogress' || cat === 'indeterminate' || cat === 'started')
-    return { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)', label: (status || 'IN PROGRESS').toUpperCase() };
+    return { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: (status || 'IN PROGRESS').toUpperCase() };
   if (cat === 'new' || cat === 'todo')
-    return { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E', label: (status || 'TO DO').toUpperCase() };
+    return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E', label: (status || 'TO DO').toUpperCase() };
 
   // 2. Fallback: string-match raw status name
   const s = (status || '').toLowerCase();
   // Green
   if (['done', 'closed', 'resolved', 'ready for production', 'beta ready', 'completed', 'production ready', 'monitor', 'released', 'verified'].some(k => s === k))
-    return { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)', label: status.toUpperCase() };
+    return { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: status.toUpperCase() };
   // Blue
   if (['in progress', 'in development', 'under implementation', 'in review', 'in qa', 'ready for qa', 'retest',
        'code review', 'in uat', 'uat ready', 're-open', 'in beta', 'in production', 'in design', 'in requirements',
        'ready for development', 'in entity integration', 'technical validation', 'end to end testing',
        'deferred for int', 'awaiting info', 'on hold', 'active'].some(k => s === k))
-    return { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)', label: status.toUpperCase() };
+    return { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: status.toUpperCase() };
   // Grey (default — never "Unknown")
-  return { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E', label: (status || 'TO DO').toUpperCase() };
+  return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E', label: (status || 'TO DO').toUpperCase() };
 }
 
 function StatusLozenge({ status, statusCategory }: { status: string; statusCategory?: string }) {
@@ -55,9 +55,9 @@ function JiraIcon({ type }: { type: string }) {
   return <TaskIcon />;
 }
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, #D97706)', FAC: 'var(--ds-text-success, #16A34A)', OPS: '#0D9488', SUP: 'var(--ds-text-subtlest, #64748B)', LND: '#7C3AED' };
-const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, #64748B)';
-const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, #16A34A)' : d <= 14 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', LND: 'var(--cp-purple-60, #7C3AED)' };
+const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
+const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
 
 function getCatFromStatus(status: string, statusCategory?: string): 'done' | 'progress' | 'blocked' | 'todo' {
   // Prioritise status_category
@@ -152,7 +152,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {groupItems.map((item: any) => {
                   const cat = getCatFromStatus(item.status_name || item.status || '', item.status_category);
-                  const accentDot = cat === 'done' ? 'var(--ds-text-success, #16A34A)' : cat === 'progress' ? 'var(--ds-text-brand, #2563EB)' : cat === 'blocked' ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-warning, #D97706)';
+                  const accentDot = cat === 'done' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : cat === 'progress' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : cat === 'blocked' ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
                   const projColor = pColor(item.project_key, item.project_color);
                   return (
                     <div key={item.id} onClick={() => onItemClick(item)} style={{

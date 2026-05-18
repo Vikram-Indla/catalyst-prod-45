@@ -163,7 +163,7 @@ function InviteUserModal({ onClose }: { onClose: () => void }) {
         }}
       >
         <div style={{ padding: '20px 24px 16px', borderBottom: `1px solid ${token('color.border', '#EBECF0')}` }}>
-          <h2 id="invite-user-modal-title" style={{ margin: 0, fontSize: 20, fontWeight: 500, color: token('color.text', '#172B4D') }}>
+          <h2 id="invite-user-modal-title" style={{ margin: 0, fontSize: 20, fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
             Invite User
           </h2>
         </div>
@@ -213,7 +213,7 @@ function InviteUserModal({ onClose }: { onClose: () => void }) {
                   key={m.key}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8,
-                    fontSize: 13, color: token('color.text', '#172B4D'),
+                    fontSize: 13, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                     cursor: m.default ? 'default' : 'pointer',
                     opacity: m.default ? 0.65 : 1,
                   }}
@@ -223,7 +223,7 @@ function InviteUserModal({ onClose }: { onClose: () => void }) {
                     checked={!!moduleAccess[m.key]}
                     disabled={!!m.default}
                     onChange={() => !m.default && toggleModule(m.key)}
-                    style={{ accentColor: token('color.background.brand.bold', '#0052CC'), cursor: m.default ? 'default' : 'pointer' }}
+                    style={{ accentColor: token('color.background.brand.bold', 'var(--cp-primary-60, #0052CC)'), cursor: m.default ? 'default' : 'pointer' }}
                   />
                   {m.label}
                   {m.default && <span style={{ fontSize: 11, color: token('color.text.subtlest', '#97A0AF') }}>(default)</span>}
@@ -446,11 +446,11 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
             size="large"
           />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {user.full_name || user.email}
             </div>
             {user.full_name && (
-              <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user.email}
               </div>
             )}
@@ -458,7 +458,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
           <button
             onClick={onClose}
             aria-label="Close panel"
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, borderRadius: 4, color: 'var(--ds-text-subtle, #6B778C)', display: 'flex', alignItems: 'center' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, borderRadius: 4, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', display: 'flex', alignItems: 'center' }}
           >
             <CloseIcon label="Close" size="small" />
           </button>
@@ -469,13 +469,13 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
 
           {/* Role */}
           <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 8 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 8 }}>
               Role
             </div>
             {isSuperAdmin ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Lozenge appearance="removed">Super Admin</Lozenge>
-                <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>Cannot be changed here</span>
+                <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))' }}>Cannot be changed here</span>
               </div>
             ) : (
               <Select
@@ -491,7 +491,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
 
           {/* Module access */}
           <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
               Module Access
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 24px' }}>
@@ -500,7 +500,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                   key={m.key}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8,
-                    fontSize: 13, color: 'var(--ds-text, #172B4D)',
+                    fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                     cursor: (m.default || saving) ? 'default' : 'pointer',
                     opacity: m.default ? 0.65 : 1, userSelect: 'none',
                   }}
@@ -510,7 +510,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                     checked={moduleAccess[m.key] === true}
                     disabled={!!m.default || saving}
                     onChange={() => toggleModule(m.key)}
-                    style={{ width: 16, height: 16, accentColor: 'var(--ds-background-brand-bold, #0052CC)', cursor: (m.default || saving) ? 'default' : 'pointer' }}
+                    style={{ width: 16, height: 16, accentColor: 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))', cursor: (m.default || saving) ? 'default' : 'pointer' }}
                   />
                   {m.label}
                   {m.default && <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #97A0AF)' }}>(default)</span>}
@@ -521,16 +521,16 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
 
           {/* Account Info */}
           <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
               Account Info
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', rowGap: 8, columnGap: 16, fontSize: 13, alignItems: 'center' }}>
-              <span style={{ color: 'var(--ds-text-subtle, #6B778C)', fontWeight: 500 }}>Status</span>
+              <span style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', fontWeight: 500 }}>Status</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                 {isActive
                   ? <Lozenge appearance="success">Active</Lozenge>
                   : <Lozenge appearance="removed">Suspended</Lozenge>}
-                {isSelf && <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #6B778C)' }}>This is you</span>}
+                {isSelf && <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))' }}>This is you</span>}
                 {canModify && (
                   <button
                     onClick={handleToggleSuspend}
@@ -540,7 +540,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                       border: `1px solid ${isActive ? 'var(--ds-border-danger, #FF8F73)' : 'var(--ds-border, #EBECF0)'}`,
                       borderRadius: 3, cursor: busyAny ? 'not-allowed' : 'pointer',
                       fontSize: 11, fontWeight: 500,
-                      color: isActive ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text-subtle, #6B778C)',
+                      color: isActive ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))',
                       padding: '2px 8px', opacity: busyAny ? 0.5 : 1,
                     }}
                   >
@@ -548,14 +548,14 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                   </button>
                 )}
               </span>
-              <span style={{ color: 'var(--ds-text-subtle, #6B778C)', fontWeight: 500 }}>Joined</span>
-              <span style={{ color: 'var(--ds-text, #172B4D)' }}>
+              <span style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', fontWeight: 500 }}>Joined</span>
+              <span style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                 {user.created_at
                   ? new Date(user.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
                   : '—'}
               </span>
-              <span style={{ color: 'var(--ds-text-subtle, #6B778C)', fontWeight: 500 }}>Active modules</span>
-              <span style={{ color: 'var(--ds-text, #172B4D)' }}>
+              <span style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', fontWeight: 500 }}>Active modules</span>
+              <span style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                 {Object.values(moduleAccess).filter(Boolean).length} / {MODULE_ITEMS.length}
               </span>
             </div>
@@ -564,15 +564,15 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
           {/* Security — only for non-self, non-super_admin */}
           {canModify && (
             <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
                 Security
               </div>
 
               {/* Send password reset email */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Password reset email</div>
-                  <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>Send a reset link to {user.email}</div>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Password reset email</div>
+                  <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))' }}>Send a reset link to {user.email}</div>
                 </div>
                 <Button
                   appearance="default"
@@ -585,11 +585,11 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
               </div>
 
               {/* Change password inline form */}
-              <div style={{ borderTop: '1px solid var(--ds-border-subtle, #F4F5F7)', paddingTop: 10 }}>
+              <div style={{ borderTop: '1px solid var(--ds-border-subtle, var(--cp-bg-sunken, #F4F5F7))', paddingTop: 10 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: pwOpen ? 12 : 0 }}>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Set new password</div>
-                    <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>Override password without email</div>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Set new password</div>
+                    <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))' }}>Override password without email</div>
                   </div>
                   <Button
                     appearance="subtle"
@@ -603,7 +603,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                 {pwOpen && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>
+                      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', marginBottom: 4 }}>
                         New password
                       </label>
                       <div style={{ position: 'relative' }}>
@@ -620,7 +620,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                           style={{
                             position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
                             background: 'none', border: 'none', cursor: 'pointer',
-                            fontSize: 11, color: 'var(--ds-text-subtle, #6B778C)', padding: 0,
+                            fontSize: 11, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', padding: 0,
                           }}
                         >
                           {showPw ? 'Hide' : 'Show'}
@@ -628,7 +628,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                       </div>
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>
+                      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', marginBottom: 4 }}>
                         Confirm password
                       </label>
                       <Textfield
@@ -825,7 +825,7 @@ function PeopleTab() {
               ].map((h, i) => (
                 <th key={i} style={{
                   textAlign: 'left', padding: '8px 12px',
-                  fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)',
+                  fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))',
                   fontSize: 12, width: h.width,
                 }}>
                   {h.label}
@@ -847,8 +847,8 @@ function PeopleTab() {
                 <tr
                   key={u.id}
                   onClick={() => setEditUser(u)}
-                  style={{ borderBottom: '1px solid var(--ds-border-subtle, #F4F5F7)', cursor: 'pointer' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)')}
+                  style={{ borderBottom: '1px solid var(--ds-border-subtle, var(--cp-bg-sunken, #F4F5F7))', cursor: 'pointer' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7))')}
                   onMouseLeave={e => (e.currentTarget.style.background = '')}
                 >
                   <td style={{ padding: '10px 12px', fontWeight: 500 }}>
@@ -872,8 +872,8 @@ function PeopleTab() {
                   <td style={{ padding: '10px 12px', textAlign: 'center' }}>
                     <span style={{
                       display: 'inline-block',
-                      background: modCount > 0 ? 'var(--ds-background-neutral, #DFE1E6)' : 'var(--ds-background-neutral-subtle, #F4F5F7)',
-                      color: modCount > 0 ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-disabled, #A5ADBA)',
+                      background: modCount > 0 ? 'var(--ds-background-neutral, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' : 'var(--ds-background-neutral-subtle, var(--cp-bg-sunken, #F4F5F7))',
+                      color: modCount > 0 ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' : 'var(--ds-text-disabled, #A5ADBA)',
                       borderRadius: 10, padding: '1px 8px', fontSize: 12, fontWeight: 500,
                     }}>
                       {modCount}/{MODULE_ITEMS.length}
@@ -888,7 +888,7 @@ function PeopleTab() {
                     {u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}
                   </td>
                   <td style={{ padding: '10px 4px' }} onClick={e => { e.stopPropagation(); setEditUser(u); }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-text-subtle, #6B778C)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))' }}>
                       <EditIcon label="Edit user" size="small" />
                     </div>
                   </td>
@@ -901,7 +901,7 @@ function PeopleTab() {
 
       {/* Row count */}
       {!isLoading && filtered.length > 0 && (
-        <div style={{ marginTop: 12, fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)', textAlign: 'right' }}>
+        <div style={{ marginTop: 12, fontSize: 12, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', textAlign: 'right' }}>
           {filtered.length === users.length
             ? `${users.length} user${users.length !== 1 ? 's' : ''}`
             : `${filtered.length} of ${users.length} users`}
@@ -985,7 +985,7 @@ function InvitationsTab() {
           <thead>
             <tr style={{ borderBottom: '2px solid var(--ds-border, #EBECF0)' }}>
               {['Email', 'Sent', 'Expires', 'Status', 'Actions'].map(h => (
-                <th key={h} style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', fontSize: 12 }}>{h}</th>
+                <th key={h} style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', fontSize: 12 }}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -997,7 +997,7 @@ function InvitationsTab() {
               const isPending = !inv.accepted_at && !expired;
               const loading = actionLoading[inv.id];
               return (
-                <tr key={inv.id} style={{ borderBottom: '1px solid var(--ds-border-subtle, #F4F5F7)' }}>
+                <tr key={inv.id} style={{ borderBottom: '1px solid var(--ds-border-subtle, var(--cp-bg-sunken, #F4F5F7))' }}>
                   <td style={{ padding: '10px 12px', fontWeight: 500 }}>{inv.email}</td>
                   <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtle)', fontSize: 12 }}>{new Date(inv.created_at).toLocaleDateString()}</td>
                   <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtle)', fontSize: 12 }}>{new Date(inv.expires_at).toLocaleDateString()}</td>
@@ -1022,7 +1022,7 @@ function InvitationsTab() {
                             style={{
                               background: 'none', border: '1px solid var(--ds-border, #EBECF0)',
                               borderRadius: 3, padding: '3px 8px', fontSize: 12, fontWeight: 500,
-                              color: 'var(--ds-text, #172B4D)',
+                              color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                               cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.5 : 1,
                             }}
                           >
@@ -1081,7 +1081,7 @@ function EmailLogTab() {
         <thead>
           <tr style={{ borderBottom: '2px solid var(--ds-border, #EBECF0)' }}>
             {['To', 'Subject', 'Status', 'Sent'].map(h => (
-              <th key={h} style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', fontSize: 12 }}>{h}</th>
+              <th key={h} style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', fontSize: 12 }}>{h}</th>
             ))}
           </tr>
         </thead>
@@ -1089,7 +1089,7 @@ function EmailLogTab() {
           {logs.length === 0 ? (
             <tr><td colSpan={4} style={{ padding: 32, textAlign: 'center', color: 'var(--ds-text-subtle)' }}>No emails sent yet</td></tr>
           ) : logs.map(log => (
-            <tr key={log.id} style={{ borderBottom: '1px solid var(--ds-border-subtle, #F4F5F7)' }}>
+            <tr key={log.id} style={{ borderBottom: '1px solid var(--ds-border-subtle, var(--cp-bg-sunken, #F4F5F7))' }}>
               <td style={{ padding: '10px 12px' }}>{log.to_email}</td>
               <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtle)' }}>{log.subject}</td>
               <td style={{ padding: '10px 12px' }}>
@@ -1116,7 +1116,7 @@ export default function AdminAccessPage() {
       <div style={{ padding: '24px 32px', maxWidth: 1100 }}>
         <div style={{ marginBottom: 24 }}>
           <Heading size="large">Access Management</Heading>
-          <p style={{ margin: '4px 0 0', fontSize: 14, color: 'var(--ds-text-subtle, #6B778C)' }}>
+          <p style={{ margin: '4px 0 0', fontSize: 14, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))' }}>
             Manage Catalyst user accounts, send invitations, and review email activity.
           </p>
         </div>

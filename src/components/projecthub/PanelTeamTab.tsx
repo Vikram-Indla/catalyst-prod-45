@@ -7,7 +7,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-const AVATAR_COLORS = ['var(--ds-text-brand, #2563EB)', '#7C3AED', '#0D9488', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-success, #16A34A)', '#0284C7', '#6366F1'];
+const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-purple-60, #7C3AED)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))', '#0284C7', '#6366F1'];
 function getColor(name: string) {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -18,9 +18,9 @@ function initials(name: string) {
 }
 
 const ROLE_COLOR: Record<string, string> = {
-  admin: 'var(--ds-text-brand, #2563EB)',
-  contributor: 'var(--ds-text-success, #16A34A)',
-  viewer: '#7C3AED',
+  admin: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+  contributor: 'var(--ds-text-success, var(--cp-success, #16A34A))',
+  viewer: 'var(--cp-purple-60, #7C3AED)',
 };
 
 interface ResourceUser {
@@ -132,10 +132,10 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
       <div className="space-y-3 p-4">
         {[1, 2, 3].map(i => (
           <div key={i} className="animate-pulse flex items-center gap-3">
-            <div className="bg-slate-200 dark:bg-[var(--ds-border,#2E2E2E)]" style={{ width: 40, height: 40, borderRadius: '50%' }} />
+            <div className="bg-slate-200 dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ width: 40, height: 40, borderRadius: '50%' }} />
             <div className="flex-1 space-y-1.5">
-              <div className="h-3 bg-slate-200 dark:bg-[var(--ds-border,#2E2E2E)] rounded w-1/2" />
-              <div className="h-2.5 bg-slate-100 dark:bg-[var(--ds-border,#292929)] rounded w-1/3" />
+              <div className="h-3 bg-slate-200 dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded w-1/2" />
+              <div className="h-2.5 bg-slate-100 dark:bg-[var(--ds-border,var(--cp-ink-1, #292929))] rounded w-1/3" />
             </div>
           </div>
         ))}
@@ -147,13 +147,13 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
     <div>
       {/* Search + Add button */}
       <div className="flex items-center gap-2 mx-4 mt-3 mb-2">
-        <div className="flex items-center gap-2 flex-1 rounded-lg bg-white dark:bg-transparent border border-[var(--ds-text-disabled,#CBD5E1)] dark:border-[var(--ds-border,#2E2E2E)]" style={{ height: 38, padding: '8px 12px' }}>
-          <Search size={14} className="shrink-0 text-[var(--ds-text-subtlest,#94A3B8)] dark:text-[#7D7D7D]" />
+        <div className="flex items-center gap-2 flex-1 rounded-lg bg-white dark:bg-transparent border border-[var(--ds-text-disabled,#CBD5E1)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ height: 38, padding: '8px 12px' }}>
+          <Search size={14} className="shrink-0 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search by name, role, or email..."
-            className="flex-1 bg-transparent p-0 m-0 appearance-none text-[var(--ds-text,#0F172A)] dark:text-[var(--ds-text,#EDEDED)] placeholder:text-[var(--ds-text-subtlest,#94A3B8)] dark:placeholder:text-[#7D7D7D]"
+            className="flex-1 bg-transparent p-0 m-0 appearance-none text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:placeholder:text-[#7D7D7D]"
             style={{ fontSize: 13, border: 'none', boxShadow: 'none', outline: 'none', WebkitAppearance: 'none', MozAppearance: 'none', background: 'transparent', borderRadius: 0 }}
           />
         </div>
@@ -168,14 +168,14 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
 
       {/* Search suggestions */}
       {searchSuggestions.length > 0 && (
-        <div className="mx-4 mb-3 rounded-lg overflow-hidden border border-[var(--ds-border,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)] bg-white dark:bg-transparent">
-          <div className="text-[var(--ds-text-subtlest,#64748B)] dark:text-[var(--ds-text-subtlest,#878787)] bg-[var(--ds-surface-sunken,#F8FAFC)] dark:bg-transparent border-b border-[var(--ds-surface-sunken,#F1F5F9)] dark:border-[var(--ds-border,#2E2E2E)]" style={{ padding: '6px 12px', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+        <div className="mx-4 mb-3 rounded-lg overflow-hidden border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-transparent">
+          <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] bg-[var(--ds-surface-sunken,#F8FAFC)] dark:bg-transparent border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ padding: '6px 12px', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Add from directory
           </div>
           {searchSuggestions.map(u => (
             <div
               key={u.id}
-              className="flex items-center gap-3 px-3 py-2 transition-colors hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] cursor-pointer group border-b border-[var(--ds-surface-sunken,#F8FAFC)] dark:border-[var(--ds-border,#292929)]"
+              className="flex items-center gap-3 px-3 py-2 transition-colors hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] cursor-pointer group border-b border-[var(--ds-surface-sunken,#F8FAFC)] dark:border-[var(--ds-border,var(--cp-ink-1, #292929))]"
               onClick={() => addMember.mutate({ userId: u.id, profileId: u.profile_id, roleName: u.role_name })}
             >
               {u.avatar_url ? (
@@ -186,11 +186,11 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <div className="text-[var(--ds-text,#0F172A)] dark:text-[var(--ds-text,#EDEDED)]" style={{ fontSize: 13, fontWeight: 600 }}>{u.name}</div>
-                <div className="text-[var(--ds-text-subtlest,#64748B)] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 11 }}>
+                <div className="text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 13, fontWeight: 600 }}>{u.name}</div>
+                <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 11 }}>
                   {u.role_name || 'No role'}
                   {u.department_name && <span className="text-[var(--ds-text-disabled,#CBD5E1)] dark:text-[var(--ds-border-bold,#454545)]"> · </span>}
-                  {u.department_name && <span className="text-[var(--ds-text-subtlest,#94A3B8)] dark:text-[#7D7D7D]">{u.department_name}</span>}
+                  {u.department_name && <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]">{u.department_name}</span>}
                 </div>
               </div>
               <button
@@ -207,7 +207,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
 
       {/* Existing team members */}
       {grouped.length === 0 && searchSuggestions.length === 0 ? (
-        <div className="text-center py-8 text-[var(--ds-text-subtlest,#94A3B8)] dark:text-[#7D7D7D]" style={{ fontSize: 13 }}>
+        <div className="text-center py-8 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]" style={{ fontSize: 13 }}>
           {search ? `No team members match "${search}"` : 'No team members assigned'}
           {!search && (
             <div className="mt-3">
@@ -222,9 +222,9 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
           {grouped.map(g => (
             <div key={g.category} className="mt-4">
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-[var(--ds-text-subtlest,#64748B)] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{g.category}</span>
-                <span className="rounded-full bg-[var(--ds-background-selected,#EFF6FF)] dark:bg-[rgba(59,130,246,0.15)] text-[var(--ds-text-brand,#2563EB)] dark:text-[var(--ds-text-brand,#60A5FA)]" style={{ padding: '1px 7px', fontSize: 10, fontWeight: 700 }}>{g.members.length}</span>
-                <div className="flex-1 bg-[var(--ds-border,#E2E8F0)] dark:bg-[var(--ds-border,#2E2E2E)]" style={{ height: 1 }} />
+                <span className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{g.category}</span>
+                <span className="rounded-full bg-[var(--ds-background-selected,#EFF6FF)] dark:bg-[rgba(59,130,246,0.15)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] dark:text-[var(--ds-text-brand,#60A5FA)]" style={{ padding: '1px 7px', fontSize: 10, fontWeight: 700 }}>{g.members.length}</span>
+                <div className="flex-1 bg-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ height: 1 }} />
               </div>
 
               <div className="space-y-0.5">
@@ -239,11 +239,11 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
                     )}
 
                     <div className="flex-1 min-w-0">
-                      <div className="text-[var(--ds-text,#0F172A)] dark:text-[var(--ds-text,#EDEDED)]" style={{ fontSize: 14, fontWeight: 600, lineHeight: '20px' }}>{m.full_name}</div>
+                      <div className="text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 14, fontWeight: 600, lineHeight: '20px' }}>{m.full_name}</div>
                       <div style={{ fontSize: 12, color: ROLE_COLOR[m.project_role] || 'var(--cp-blue)', fontWeight: 500, lineHeight: '18px' }}>
                         {m.project_role || 'member'}
                       </div>
-                      <div className="text-[var(--ds-text-subtlest,#94A3B8)] dark:text-[#7D7D7D]" style={{ fontSize: 11, lineHeight: '16px' }}>
+                      <div className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]" style={{ fontSize: 11, lineHeight: '16px' }}>
                         {resourceRoleMap.get(m.user_id) || m.job_role || 'Unassigned'}
                       </div>
                     </div>
@@ -254,7 +254,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
                       style={{ width: 28, height: 28, cursor: 'pointer' }}
                       title="Remove member"
                     >
-                      <Trash2 size={13} color="var(--ds-text-danger, #DC2626)" />
+                      <Trash2 size={13} color="var(--ds-text-danger, var(--cp-danger, #DC2626))" />
                     </button>
                   </div>
                 ))}

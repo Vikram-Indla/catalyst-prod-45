@@ -139,7 +139,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
               <div className="relative">
                 <input
                   value={project.key} readOnly
-                  className="bg-[var(--cp-bd-zone)] dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
+                  className="bg-[var(--cp-bd-zone)] dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
                   style={{ ...inputStyle, color: 'var(--fg-3)', cursor: 'not-allowed', fontFamily: 'var(--cp-font-mono)', letterSpacing: '0.05em', paddingRight: 36 }}
                 />
                 <Lock size={14} color="var(--fg-4)" className="absolute right-3 top-1/2 -translate-y-1/2" />
@@ -193,7 +193,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
               </div>
               <button
                 onClick={() => setForm(f => ({ ...f, feature_layer: !f.feature_layer }))}
-                className={`flex-shrink-0 rounded-full transition-colors ${form.feature_layer ? 'bg-[var(--cp-blue)]' : 'bg-[var(--divider)] dark:bg-[var(--ds-border,#292929)]'}`}
+                className={`flex-shrink-0 rounded-full transition-colors ${form.feature_layer ? 'bg-[var(--cp-blue)]' : 'bg-[var(--divider)] dark:bg-[var(--ds-border,var(--cp-ink-1, #292929))]'}`}
                 style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', position: 'relative' }}
               >
                 <span className="rounded-full bg-[var(--bg-app)] dark:bg-[var(--ds-surface,#0A0A0A)]" style={{ width: 16, height: 16, borderRadius: '50%', position: 'absolute', top: 3, left: form.feature_layer ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} />
@@ -208,7 +208,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
               </div>
               <button
                 onClick={() => setForm(f => ({ ...f, ai_assist: !f.ai_assist }))}
-                className={`flex-shrink-0 rounded-full transition-colors ${form.ai_assist ? 'bg-[var(--cp-blue)]' : 'bg-[var(--divider)] dark:bg-[var(--ds-border,#292929)]'}`}
+                className={`flex-shrink-0 rounded-full transition-colors ${form.ai_assist ? 'bg-[var(--cp-blue)]' : 'bg-[var(--divider)] dark:bg-[var(--ds-border,var(--cp-ink-1, #292929))]'}`}
                 style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', position: 'relative' }}
               >
                 <span className="rounded-full bg-[var(--bg-app)] dark:bg-[var(--ds-surface,#0A0A0A)]" style={{ width: 16, height: 16, borderRadius: '50%', position: 'absolute', top: 3, left: form.ai_assist ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} />
@@ -225,7 +225,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
             className={`transition-all disabled:opacity-40 ${isDirty && !saving ? 'bg-[var(--cp-blue)]' : 'bg-[var(--cp-blue-muted)]'}`}
             style={{
               height: 50, padding: '0 20px', fontSize: 13, fontWeight: 600,
-              color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: 6,
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: 6,
               cursor: isDirty && !saving ? 'pointer' : 'default',
             }}
             onMouseEnter={e => { if (isDirty && !saving) e.currentTarget.style.background = 'var(--cp-primary-70)'; }}

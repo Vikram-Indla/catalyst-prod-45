@@ -67,7 +67,7 @@ export type KanbanViewMode = 'board' | 'swimlane';
 
 // Catalyst V5 Color Palette (spec-mandated)
 export const CATALYST_COLORS = {
-  primary: 'var(--ds-text-brand, #2563eb)',
+  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   primaryHover: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
   primaryLight: 'var(--ds-background-selected, #eff6ff)',
   

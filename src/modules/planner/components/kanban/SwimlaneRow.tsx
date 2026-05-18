@@ -15,7 +15,7 @@ import type { SwimlaneGrouping } from './KanbanFilters';
 // Status colors for summary badges
 const STATUS_DOT_COLORS: Record<string, string> = {
   'backlog': '#9ca3af',
-  'planned': 'var(--ds-text-brand, #2563eb)',
+  'planned': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   'in-progress': 'var(--ds-text-warning, #d97706)',
   'review': '#8b5cf6',
   'done': '#10b981',

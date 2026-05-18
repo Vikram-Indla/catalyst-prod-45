@@ -1,7 +1,7 @@
 /**
  * ThemeDetailDrawer — 560px right-side overlay with 6 tabs
  * Fixes: Financials uses planned_budget, enhanced empty states, activity tab, Linear badges
- * Dark mode: uses isDark prop for Dark mode surface (var(--ds-surface-raised, #1A1A1A))
+ * Dark mode: uses isDark prop for Dark mode surface (var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)))
  */
 import { useEffect, useState } from 'react';
 import { X, Pencil, Trash2, Plus, Loader2, Target, Rocket, Flag, Clock } from '@/lib/atlaskit-icons';
@@ -51,13 +51,13 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
   const pri = theme.priority ? PRIORITY_CONFIG[theme.priority] : null;
 
   // Dark palette shortcuts
-  const bg = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)';
+  const bg = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-app)';
   const t1 = isDark ? DK.t1 : 'var(--fg-1)';
   const t2 = isDark ? DK.t2 : 'var(--fg-3)';
   const t3 = isDark ? DK.t3 : 'var(--fg-4)';
-  const border = isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)';
-  const borderSubtle = isDark ? 'var(--ds-border, #292929)' : 'var(--bg-1)';
-  const hoverBg = isDark ? 'var(--ds-border, #292929)' : 'var(--bg-1)';
+  const border = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)';
+  const borderSubtle = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bg-1)';
+  const hoverBg = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bg-1)';
   const cardBg = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--bg-1)';
   const linkBlue = isDark ? 'var(--ds-text-brand, #60A5FA)' : 'var(--cp-blue)';
 
@@ -147,10 +147,10 @@ function dk(isDark: boolean) {
     t1: isDark ? DK.t1 : 'var(--fg-1)',
     t2: isDark ? DK.t2 : 'var(--fg-3)',
     t3: isDark ? DK.t3 : 'var(--fg-4)',
-    border: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)',
-    borderSubtle: isDark ? 'var(--ds-border, #292929)' : 'var(--bg-1)',
+    border: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)',
+    borderSubtle: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bg-1)',
     cardBg: isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--bg-1)',
-    hoverBg: isDark ? 'var(--ds-border, #292929)' : 'var(--bg-1)',
+    hoverBg: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bg-1)',
     linkBlue: isDark ? 'var(--ds-text-brand, #60A5FA)' : 'var(--cp-blue)',
   };
 }
@@ -180,7 +180,7 @@ function EmptyState({ icon: Icon, title, description, cta, isDark = false }: { i
   const d = dk(isDark);
   return (
     <div className="flex flex-col items-center justify-center text-center" style={{ padding: '48px 24px' }}>
-      <div className="rounded-xl flex items-center justify-center mb-4" style={{ width: 48, height: 48, background: 'var(--cp-bg-sunken, #F1F5F9)' }}>
+      <div className="rounded-xl flex items-center justify-center mb-4" style={{ width: 48, height: 48, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' }}>
         <Icon size={22} color={d.t3} strokeWidth={1.5} />
       </div>
       <p style={{ fontSize: 13, fontWeight: 600, color: d.t1, marginBottom: 4 }}>{title}</p>
@@ -216,7 +216,7 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
           padding: 16,
         }}>
           <div className="flex items-center gap-2 mb-2">
-            <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', background: 'var(--ds-text-brand, #3B82F6)', color: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', background: 'var(--ds-text-brand, #3B82F6)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               AI
             </span>
             <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-primary-hover, #1D4ED8)' }}>Strategy Health Score</span>
@@ -231,12 +231,12 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
               { label: 'Alignment', value: Math.round(theme.ai_health_score * 0.2) },
             ].map(f => (
               <div key={f.label} className="rounded-md text-center" style={{
-                background: isDark ? 'var(--ds-border, #292929)' : 'rgba(255,255,255,0.6)',
+                background: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'rgba(255,255,255,0.6)',
                 border: isDark ? '1px solid #2E2E2E' : 'none',
                 padding: '6px 0',
               }}>
                 <p style={{ fontSize: 13, fontWeight: 700, color: isDark ? DK.t1 : '#1E40AF' }}>{f.value}</p>
-                <p style={{ fontSize: 10, color: isDark ? DK.t3 : 'var(--ds-text-brand, #2563EB)' }}>{f.label}</p>
+                <p style={{ fontSize: 10, color: isDark ? DK.t3 : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{f.label}</p>
               </div>
             ))}
           </div>
@@ -293,7 +293,7 @@ function GoalsTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?: b
                     <div className="h-full rounded-full" style={{ width: `${g.progress_pct}%`, background: statusColor }} />
                   </div>
                   <span style={{ fontSize: 10, fontWeight: 600, color: d.t2 }}>{g.progress_pct}%</span>
-                  <span className="rounded px-1.5 py-0.5" style={{ fontSize: 9, fontWeight: 500, background: 'var(--cp-bg-sunken, #F1F5F9)', color: d.t2 }}>{g.kr_count} KRs</span>
+                  <span className="rounded px-1.5 py-0.5" style={{ fontSize: 9, fontWeight: 500, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: d.t2 }}>{g.kr_count} KRs</span>
                 </div>
               </div>
             );
@@ -324,7 +324,7 @@ function InitiativesTab({ theme, isDark = false }: { theme: StrategicTheme; isDa
             <div key={ini.id} className="rounded-lg border p-3" style={{ borderColor: d.border, background: isDark ? 'transparent' : undefined }}>
               <div className="flex items-start justify-between mb-1">
                 <span style={{ fontSize: 12, fontWeight: 600, color: d.t1 }}>{ini.title}</span>
-                <span className="inline-flex rounded-full px-2 py-0.5 shrink-0 ml-2" style={{ fontSize: 10, fontWeight: 500, background: 'var(--cp-bg-sunken, #F1F5F9)', color: d.t2 }}>{ini.status}</span>
+                <span className="inline-flex rounded-full px-2 py-0.5 shrink-0 ml-2" style={{ fontSize: 10, fontWeight: 500, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: d.t2 }}>{ini.status}</span>
               </div>
               <div className="flex items-center gap-3" style={{ fontSize: 10, color: d.t2 }}>
                 <span>Budget: {formatBudget(ini.budget_allocated)}</span>
@@ -352,7 +352,7 @@ function FinancialsTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
       <div className="grid grid-cols-3 gap-3 mb-5">
         <KpiCard label="Allocated" value={formatBudget(allocated)} isDark={isDark} />
         <KpiCard label="Spent" value={formatBudget(spent)} isDark={isDark} />
-        <KpiCard label="Remaining" value={`${remainingPct}%`} color={remainingPct < 20 ? 'var(--sem-danger)' : '#059669'} isDark={isDark} />
+        <KpiCard label="Remaining" value={`${remainingPct}%`} color={remainingPct < 20 ? 'var(--sem-danger)' : 'var(--quality-high, #059669)'} isDark={isDark} />
       </div>
       <div className="mb-3">
         <div className="flex items-center justify-between mb-1">
@@ -378,7 +378,7 @@ function FinancialsTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
 // ═══ MILESTONES ═══
 const MILESTONE_CATEGORIES = ['discover', 'define', 'design', 'deliver'] as const;
 const MILESTONE_STATES = ['not_started', 'in_progress', 'completed', 'missed'] as const;
-const STATE_COLORS: Record<string, string> = { not_started: 'var(--ds-text-subtlest, #94A3B8)', in_progress: 'var(--ds-text-brand, #2563EB)', completed: 'var(--ds-text-success, #16A34A)', missed: 'var(--ds-text-danger, #DC2626)' };
+const STATE_COLORS: Record<string, string> = { not_started: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', in_progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', completed: 'var(--ds-text-success, var(--cp-success, #16A34A))', missed: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' };
 
 function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?: boolean }) {
   const d = dk(isDark);
@@ -463,10 +463,10 @@ function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
             >
               <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: STATE_COLORS[m.state] || d.t3 }} />
               <span className="flex-1 truncate" style={{ fontSize: 12, fontWeight: 500, color: d.t1 }}>{m.name}</span>
-              <span className="shrink-0 rounded px-1.5 py-0.5" style={{ fontSize: 9, background: 'var(--cp-bg-sunken, #F1F5F9)', color: d.t2 }}>{m.category}</span>
+              <span className="shrink-0 rounded px-1.5 py-0.5" style={{ fontSize: 9, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: d.t2 }}>{m.category}</span>
               <span className="shrink-0" style={{ fontSize: 10, color: d.t3 }}>{m.state.replace(/_/g, ' ')}</span>
               <button onClick={() => startEdit(m)} className="opacity-0 group-hover:opacity-100 p-0.5" style={{ border: 'none', background: 'none', cursor: 'pointer' }}><Pencil size={12} color={d.t2} /></button>
-              <button onClick={() => deleteMilestone.mutate({ id: m.id, themeId: theme.id })} className="opacity-0 group-hover:opacity-100 p-0.5" style={{ border: 'none', background: 'none', cursor: 'pointer' }}><Trash2 size={12} color="var(--ds-text-danger, #DC2626)" /></button>
+              <button onClick={() => deleteMilestone.mutate({ id: m.id, themeId: theme.id })} className="opacity-0 group-hover:opacity-100 p-0.5" style={{ border: 'none', background: 'none', cursor: 'pointer' }}><Trash2 size={12} color="var(--ds-text-danger, var(--cp-danger, #DC2626))" /></button>
             </div>
           ))}
         </div>
@@ -480,13 +480,13 @@ function ActivityTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?
   const d = dk(isDark);
   const activities = [
     {
-      color: 'var(--ds-text-brand, #2563EB)',
+      color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
       title: 'Theme created',
       detail: `Created by ${theme.owner_name || 'System'}`,
       time: theme.created_at,
     },
     ...(theme.updated_at !== theme.created_at ? [{
-      color: 'var(--ds-text-success, #16A34A)',
+      color: 'var(--ds-text-success, var(--cp-success, #16A34A))',
       title: 'Last updated',
       detail: 'Theme details modified',
       time: theme.updated_at,
@@ -500,10 +500,10 @@ function ActivityTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?
       ) : (
         <div className="relative pl-6">
           {/* Timeline line */}
-          <div className="absolute left-[11px] top-2 bottom-2" style={{ width: 2, background: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)' }} />
+          <div className="absolute left-[11px] top-2 bottom-2" style={{ width: 2, background: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)' }} />
           {activities.map((a, i) => (
             <div key={i} className="relative flex items-start gap-3 mb-4">
-              <div className="absolute left-[-17px] top-1.5 rounded-full" style={{ width: 10, height: 10, background: a.color, border: `2px solid ${isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)'}` }} />
+              <div className="absolute left-[-17px] top-1.5 rounded-full" style={{ width: 10, height: 10, background: a.color, border: `2px solid ${isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-app)'}` }} />
               <div>
                 <p style={{ fontSize: 12.5, fontWeight: 500, color: d.t1 }}>{a.title}</p>
                 <p style={{ fontSize: 11, color: d.t2, marginBottom: 2 }}>{a.detail}</p>

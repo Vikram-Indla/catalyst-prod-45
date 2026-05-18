@@ -187,7 +187,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
               alignItems: 'center',
               marginTop: 6,
               fontSize: 11,
-              color: token('color.text.subtle', '#44546F'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             }}
           >
             <span>
@@ -236,7 +236,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                 onClick={() => { onStageClick(step.value); setOpenStage({ value: step.value, label: step.label }); }}
                 style={{
                   padding: '10px 8px',
-                  border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                   borderTop: `3px solid ${color}`,
                   borderRadius: 6,
                   textAlign: 'center',
@@ -264,7 +264,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                   style={{
                     fontSize: 11,
                     fontWeight: 500,
-                    color: token('color.text.subtle', '#44546F'),
+                    color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                     marginTop: 4,
                     minHeight: 28,
                     lineHeight: '14px',
@@ -277,7 +277,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                   style={{
                     fontSize: 20,
                     fontWeight: 700,
-                    color: token('color.text', '#172B4D'),
+                    color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                     marginTop: 6,
                     fontVariantNumeric: 'tabular-nums',
                   }}

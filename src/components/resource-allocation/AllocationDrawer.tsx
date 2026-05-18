@@ -335,7 +335,7 @@ function AllocationRow({
   colorIndex: number;
   onCellClick: (weekStart: string) => void;
 }) {
-  const colors = ['var(--ds-text-brand, #2563eb)', '#0d9488', '#ea580c', '#7c3aed'];
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', '#0d9488', '#ea580c', '#7c3aed'];
   const color = assignment.color || colors[colorIndex % colors.length];
 
   return (

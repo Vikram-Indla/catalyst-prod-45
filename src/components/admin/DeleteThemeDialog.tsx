@@ -122,7 +122,7 @@ export function DeleteThemeDialog({
             {/* List of linked epics */}
             {linkedEpics.length > 0 && (
               <div>
-                <span className="text-sm font-medium mb-2 block" style={{ color: 'var(--ds-text, #172B4D)' }}>Linked Epics:</span>
+                <span className="text-sm font-medium mb-2 block" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Linked Epics:</span>
                 <ScrollArea className="h-32 border rounded-md p-2">
                   <div className="space-y-1">
                     {linkedEpics.map(epic => (
@@ -140,7 +140,7 @@ export function DeleteThemeDialog({
             
             {/* Target theme selection */}
             <div>
-              <label htmlFor="target-theme-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)', display: 'block', marginBottom: '8px' }}>Move epics to:</label>
+              <label htmlFor="target-theme-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', display: 'block', marginBottom: '8px' }}>Move epics to:</label>
               <AdsSelect
                 inputId="target-theme-select"
                 value={targetThemeId ? { label: availableThemes.find(t => t.id === targetThemeId)?.name || 'Unlink from any theme', value: targetThemeId } : null}

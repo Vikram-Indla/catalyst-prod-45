@@ -142,7 +142,7 @@ export default function ResetPassword() {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center p-4"
-      style={{ background: 'var(--ds-surface-sunken, #F4F5F7)' }}
+      style={{ background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' }}
     >
       {/* Catalyst branding header */}
       <div className="flex flex-col items-center mb-8">
@@ -167,7 +167,7 @@ export default function ResetPassword() {
           style={{
             fontSize: 22,
             fontWeight: 700,
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
             letterSpacing: '-0.3px',
             fontFamily: 'var(--cp-font-body, system-ui, sans-serif)',
           }}
@@ -178,7 +178,7 @@ export default function ResetPassword() {
           style={{
             fontSize: 12,
             fontWeight: 500,
-            color: 'var(--ds-text-subtlest, #6B778C)',
+            color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
             marginTop: 2,
             fontFamily: 'var(--cp-font-body, system-ui, sans-serif)',
           }}
@@ -338,7 +338,7 @@ export default function ResetPassword() {
         style={{
           marginTop: 24,
           fontSize: 12,
-          color: 'var(--ds-text-subtlest, #6B778C)',
+          color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
           fontFamily: 'var(--cp-font-body, system-ui, sans-serif)',
         }}
       >

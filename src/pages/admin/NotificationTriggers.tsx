@@ -162,12 +162,12 @@ export default function NotificationTriggers() {
         <div>
           <h1
             className="text-2xl font-semibold tracking-tight flex items-center gap-2"
-            style={{ color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--cp-font-body)' }}
+            style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'var(--cp-font-body)' }}
           >
             <span style={{ display: 'inline-flex', color: 'var(--ds-text-brand, #0C66E4)' }}><NotificationIcon label="" size="medium" /></span>
             Notification Triggers
           </h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+          <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
             Configure which CRUD events trigger notifications, who receives them, and through which channels.
           </p>
         </div>
@@ -199,7 +199,7 @@ export default function NotificationTriggers() {
       </div>
 
       {/* ── Filters Row ──────────────────────────────────────────── */}
-      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+      <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
         <div className="flex items-center gap-3 flex-wrap">
           {/* Search */}
           <div className="relative flex-1 min-w-[240px]">
@@ -324,9 +324,9 @@ export default function NotificationTriggers() {
           ))}
         </div>
       ) : groups.length === 0 ? (
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '48px 16px', textAlign: 'center' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '48px 16px', textAlign: 'center' }}>
           <span style={{ display: 'flex', justifyContent: 'center', color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 12 }}><NotificationIcon label="" size="large" /></span>
-          <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>No triggers match your filters.</p>
+          <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>No triggers match your filters.</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -334,7 +334,7 @@ export default function NotificationTriggers() {
             <div
               key={group.key}
               className="overflow-hidden"
-              style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}
+              style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}
             >
               {/* Category Header */}
               <button
@@ -346,11 +346,11 @@ export default function NotificationTriggers() {
               >
                 <div className="flex items-center gap-3">
                   {expandedGroups.has(group.key) ? (
-                    <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><ChevronDownIcon label="" size="small" /></span>
+                    <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><ChevronDownIcon label="" size="small" /></span>
                   ) : (
-                    <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><ChevronRightIcon label="" size="small" /></span>
+                    <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><ChevronRightIcon label="" size="small" /></span>
                   )}
-                  <span className="text-sm font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>{group.label}</span>
+                  <span className="text-sm font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{group.label}</span>
                   <Lozenge appearance="default">
                     {group.enabledCount}/{group.totalCount}
                   </Lozenge>
@@ -365,7 +365,7 @@ export default function NotificationTriggers() {
                     className="grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 py-2 text-[10px] uppercase tracking-wider font-semibold"
                     style={{
                       background: 'var(--ds-background-neutral, #F7F8F9)',
-                      color: 'var(--ds-text-subtle, #44546F)',
+                      color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
                       borderBottom: '1px solid var(--ds-border-layout, #EBECF0)',
                     }}
                   >
@@ -428,16 +428,16 @@ function StatsCard({
   variant?: 'default' | 'blue' | 'gray' | 'red' | 'muted' | 'amber';
 }) {
   const colorMap: Record<string, string> = {
-    default: 'var(--ds-text, #172B4D)',
+    default: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
     blue: 'var(--ds-text-brand, #0C66E4)',
-    gray: 'var(--ds-text-subtle, #44546F)',
+    gray: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
     red: 'var(--ds-text-danger, #CA3521)',
     muted: 'var(--ds-text-subtlest, #626F86)',
     amber: 'var(--ds-text-warning, #974F0C)',
   };
 
   return (
-    <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px', textAlign: 'center' }}>
+    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px', textAlign: 'center' }}>
       <p
         className="text-xl font-semibold"
         style={{ color: colorMap[variant], fontFamily: 'var(--cp-font-mono)' }}
@@ -503,13 +503,13 @@ function TriggerRow({
           content={
             <>
               <p className="font-medium">{trigger.displayName}</p>
-              <p style={{ color: 'var(--ds-text-subtle, #44546F)' }} className="mt-0.5">{trigger.description}</p>
-              <p style={{ color: 'var(--ds-text-subtle, #44546F)' }} className="mt-1 font-mono text-[10px]">Key: {trigger.triggerKey}</p>
+              <p style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }} className="mt-0.5">{trigger.description}</p>
+              <p style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }} className="mt-1 font-mono text-[10px]">Key: {trigger.triggerKey}</p>
             </>
           }
         >
           <div className="flex items-center gap-1.5">
-            <span className="text-xs font-medium truncate" style={{ color: 'var(--ds-text, #172B4D)' }}>
+            <span className="text-xs font-medium truncate" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
               {trigger.displayName}
             </span>
             {trigger.isMandatory && (

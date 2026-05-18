@@ -30,7 +30,7 @@ export function WikiAdminHealthTab() {
   if (isLoading) return <div>{Array.from({ length: 6 }).map((_, i) => <SkeletonBlock key={i} height={36} style={{ marginBottom: 4 }} />)}</div>;
 
   if (derivedChecks.length === 0) {
-    return <EmptyState icon={<HeartPulse style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, #64748B)' }} />} message="No health data" sub="Health checks will populate after the first sync run." />;
+    return <EmptyState icon={<HeartPulse style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }} />} message="No health data" sub="Health checks will populate after the first sync run." />;
   }
 
   const grouped = derivedChecks.reduce<Record<string, typeof derivedChecks>>((acc, c) => {
@@ -42,13 +42,13 @@ export function WikiAdminHealthTab() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {Object.entries(grouped).map(([cat, items]) => (
         <div key={cat}>
-          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 6 }}>{cat}</div>
+          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 6 }}>{cat}</div>
           <div style={{ border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', borderRadius: 4, overflow: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--cp-font-body)', fontSize: 12 }}>
               <thead>
                 <tr style={{ background: 'var(--cp-bg-sunken, #F8FAFC)' }}>
                   {['Metric', 'Value', 'Threshold', 'Status'].map(h => (
-                    <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, #64748B)' }}>{h}</th>
+                    <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -75,9 +75,9 @@ export function WikiAdminHealthTab() {
 
 function HealthLoz({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
-    healthy: { bg: '#1B7F37', color: '#0D7331' },
-    warning: { bg: 'var(--ds-border, #DFE1E6)', color: '#44546F' },
-    critical: { bg: 'var(--ds-border, #DFE1E6)', color: '#44546F' },
+    healthy: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: '#0D7331' },
+    warning: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))' },
+    critical: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))' },
   };
   const s = map[status] ?? map.warning;
   return <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 4, background: s.bg, color: s.color, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{status ?? '—'}</span>;

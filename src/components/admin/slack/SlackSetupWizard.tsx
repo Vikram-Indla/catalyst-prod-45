@@ -142,7 +142,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
   return (
     <div className="space-y-6">
       {/* Progress Steps */}
-      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '24px' }}>
+      <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '24px' }}>
         <div className="flex items-center justify-between">
           {STEPS.map((step, index) => {
             const Icon = step.icon;
@@ -190,7 +190,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
       </div>
 
       {/* Step Content */}
-      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '32px' }}>
+      <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '32px' }}>
           {/* Step 1: Create Slack App */}
           {currentStep === 1 && (
             <div className="max-w-2xl mx-auto space-y-6">
@@ -261,7 +261,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
 
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="app_id" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>App ID</label>
+                  <label htmlFor="app_id" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>App ID</label>
                   <div className="mt-1.5">
                     <Textfield
                       id="app_id"
@@ -274,7 +274,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                 </div>
 
                 <div>
-                  <label htmlFor="client_id" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                  <label htmlFor="client_id" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                     Client ID <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
                   </label>
                   <div className="mt-1.5">
@@ -288,7 +288,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                 </div>
 
                 <div>
-                  <label htmlFor="client_secret" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                  <label htmlFor="client_secret" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                     Client Secret <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
                   </label>
                   <div className="mt-1.5">
@@ -304,7 +304,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                 </div>
 
                 <div>
-                  <label htmlFor="signing_secret" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Signing Secret (optional)</label>
+                  <label htmlFor="signing_secret" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Signing Secret (optional)</label>
                   <div className="mt-1.5">
                     <Textfield
                       id="signing_secret"
@@ -432,7 +432,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
               </div>
 
               <div>
-                <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Redirect URL</label>
+                <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Redirect URL</label>
                 <div className="flex gap-2 mt-1.5">
                   <div className="flex-1">
                     <Textfield

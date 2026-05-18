@@ -333,7 +333,7 @@ export function makeKeyCell(
 // wire it on the column with `onCellEdit`.
 //
 // Apr 27, 2026 (L60): typography per Jira-parity spec — 14/20/400 with
-// `color.text` (var(--ds-text, #172B4D)). Inherits from JiraTable's tbody td baseline so
+// `color.text` (var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))). Inherits from JiraTable's tbody td baseline so
 // no explicit fontSize is needed here; only truncation behavior.
 //
 // Tooltip on truncated text is the user's spec requirement — added via
@@ -566,7 +566,7 @@ export function makeStatusEditCell<T>(opts: {
                     cursor: 'pointer',
                     textAlign: 'left',
                     fontSize: 14,
-                    color: token('color.text', '#172B4D'),
+                    color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                   }}
                   onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = isActive ? token('color.background.selected', '#E9F2FF') : token('color.background.neutral.subtle.hovered', '#F7F8F9'); }}
                   onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = isActive ? token('color.background.selected', '#E9F2FF') : 'transparent'; }}
@@ -578,13 +578,13 @@ export function makeStatusEditCell<T>(opts: {
                       width: 8, height: 8, borderRadius: '50%',
                       background: dotBg,
                       flexShrink: 0,
-                      border: ap === 'default' ? '1px solid var(--ds-border, #DFE1E6)' : 'none',
+                      border: ap === 'default' ? '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' : 'none',
                     }}
                   />
                   <span style={{ flex: 1 }}>{s}</span>
                   {/* Checkmark on selected item */}
                   {isActive && (
-                    <span style={{ marginLeft: 4, color: token('color.icon.brand', '#0052CC') }}>✓</span>
+                    <span style={{ marginLeft: 4, color: token('color.icon.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
                   )}
                 </button>
               );
@@ -619,7 +619,7 @@ export function makeAssigneeCell(getAssignee: (row: any) => AssigneeCellInput | 
         <Avatar size="small" name={a.name} src={a.avatarUrl || undefined} appearance="circle" />
         <span
           style={{
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -771,10 +771,10 @@ export function makePriorityCell(getPriority: (row: any) => string | null) {
     const level = idx >= 0 ? PRIORITY_ORDER.length - idx : 0;
     const color =
       level >= 4 ? token('color.icon.danger',  '#E5484D') :
-      level >= 3 ? token('color.icon.warning', '#F59E0B') :
+      level >= 3 ? token('color.icon.warning', 'var(--cp-amber, #F59E0B)') :
       level >= 1 ? token('color.icon.success', '#22C55E') :
-      token('color.border', '#DFE1E6');
-    const inactive = token('color.border', '#DFE1E6');
+      token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))');
+    const inactive = token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))');
     return (
       <span style={{ display: 'inline-flex', gap: 2 }} title={p || 'No priority'}>
         {[1, 2, 3, 4].map((i) => (
@@ -841,7 +841,7 @@ export function makeDateCell(
 
 // ─── Labels Cell ─────────────────────────────────────────────────────────────
 // Renders label tags as Jira-style outlined chips. Measured from Jira live DOM:
-//   bg transparent, border 1px solid #DFE1E6, borderRadius 4px, padding 0px 4px,
+//   bg transparent, border 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)), borderRadius 4px, padding 0px 4px,
 //   fontSize 14px, fontWeight 400, color #292A2E.
 export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
   return function LabelsCell({ row }: CellProps<any>) {
@@ -859,7 +859,7 @@ export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
               alignItems: 'center',
               padding: '0 4px',
               borderRadius: 4,
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               fontSize: 14,
               fontWeight: 400,
               lineHeight: '20px',
@@ -900,12 +900,12 @@ export function makeFixVersionsCell(getFixVersions: (row: any) => string[] | nul
             key={v}
             style={{
               display: 'inline-block',
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               borderRadius: 3,
               padding: '2px 6px',
               fontSize: 12,
               fontWeight: 400,
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',

@@ -39,7 +39,7 @@ export function TestEventCard({
             statusColors.bg,
             statusColors.border,
             statusColors.text,
-            isDragging && 'opacity-50 ring-2 ring-[var(--ds-text-brand,#2563eb)]'
+            isDragging && 'opacity-50 ring-2 ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]'
           )}
         >
           <span className="truncate">{event.code}</span>
@@ -60,7 +60,7 @@ export function TestEventCard({
         'p-2 rounded border-l-[3px] cursor-pointer transition-shadow hover:shadow-md',
         statusColors.bg,
         statusColors.border,
-        isDragging && 'opacity-50 ring-2 ring-[var(--ds-text-brand,#2563eb)]'
+        isDragging && 'opacity-50 ring-2 ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]'
       )}
     >
       <div className="flex items-start justify-between gap-2">

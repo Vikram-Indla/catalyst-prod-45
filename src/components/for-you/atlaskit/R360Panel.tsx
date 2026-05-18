@@ -62,7 +62,7 @@ function SidebarMemberRow({
         padding: '8px 12px',
         borderRadius: 6,
         border: 'none',
-        borderInlineStart: active ? `3px solid ${token('color.border.brand', '#0052CC')}` : '3px solid transparent',
+        borderInlineStart: active ? `3px solid ${token('color.border.brand', 'var(--cp-primary-60, #0052CC)')}` : '3px solid transparent',
         background: active
           ? token('color.background.selected', '#DEEBFF')
           : hover
@@ -77,7 +77,7 @@ function SidebarMemberRow({
       <div style={{
         width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
         background: isMe
-          ? `linear-gradient(135deg,${token('color.background.information.bold', '#0052CC')},${token('color.background.success.bold', '#1F845A')})`
+          ? `linear-gradient(135deg,${token('color.background.information.bold', 'var(--cp-primary-60, #0052CC)')},${token('color.background.success.bold', '#1F845A')})`
           : token('color.background.neutral', '#F1F2F4'),
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         overflow: 'hidden',
@@ -101,7 +101,7 @@ function SidebarMemberRow({
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
           fontSize: 13, fontWeight: active ? 600 : 400,
-          color: active ? token('color.text.selected', '#0052CC') : token('color.text', '#172B4D'),
+          color: active ? token('color.text.selected', 'var(--cp-primary-60, #0052CC)') : token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {name}
@@ -198,7 +198,7 @@ function SidebarRoster({
             border: `2px solid ${focused ? token('color.border.focused', '#388BFF') : token('color.border.input', '#8590A2')}`,
             borderRadius: 3,
             background: token('color.background.input', '#FAFBFC'),
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
             outline: 'none',
             boxSizing: 'border-box' as const,
             transition: 'border-color 120ms ease',
@@ -224,7 +224,7 @@ function SidebarRoster({
               cursor: 'pointer',
               fontSize: 12,
               fontWeight: 500,
-              color: token('color.text.brand', '#0052CC'),
+              color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)'),
               background: 'transparent',
             }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4'); }}
@@ -291,15 +291,15 @@ function MemberPill({
         display: 'inline-flex', flexDirection: 'column', alignItems: 'center',
         padding: '5px 14px', borderRadius: 20,
         border: active
-          ? `2px solid ${token('color.border.brand', '#0052CC')}`
-          : `1px solid ${token('color.border', '#DFE1E6')}`,
+          ? `2px solid ${token('color.border.brand', 'var(--cp-primary-60, #0052CC)')}`
+          : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         background: active
           ? token('color.background.selected', '#DEEBFF')
           : hover ? token('color.background.neutral.hovered', '#EBECF0') : token('elevation.surface', '#FFFFFF'),
         cursor: 'pointer', transition: 'all 120ms ease', gap: 1,
       }}
     >
-      <span style={{ fontSize: 13, fontWeight: active ? 600 : 400, color: active ? token('color.text.selected', '#0052CC') : token('color.text', '#172B4D'), whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 13, fontWeight: active ? 600 : 400, color: active ? token('color.text.selected', 'var(--cp-primary-60, #0052CC)') : token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), whiteSpace: 'nowrap' }}>
         {label}
       </span>
       {sublabel && (
@@ -413,7 +413,7 @@ export default function R360Panel() {
           style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '12px 0 16px', flexWrap: 'wrap',
-            borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             marginBottom: 8,
           }}
         >

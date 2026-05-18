@@ -82,7 +82,7 @@ export function T10ListCardV3({
     <div
       onClick={hasCurrentWeek ? onCardClick : undefined}
       style={{
-        backgroundColor: 'var(--ds-surface, #ffffff)',
+        backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         border: '1px solid #e2e8f0',
         borderRadius: '12px',
         padding: '20px 24px',
@@ -95,7 +95,7 @@ export function T10ListCardV3({
         e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)';
+        e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))';
         e.currentTarget.style.boxShadow = 'none';
       }}
     >
@@ -194,7 +194,7 @@ export function T10ListCardV3({
                   right: 0,
                   marginTop: '4px',
                   width: '140px',
-                  backgroundColor: 'var(--ds-surface, #ffffff)',
+                  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   border: '1px solid #e2e8f0',
                   borderRadius: '8px',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
@@ -262,7 +262,7 @@ export function T10ListCardV3({
           </p>
           
           {/* Progress Bar */}
-          <div style={{ height: '6px', backgroundColor: 'var(--ds-border, #e2e8f0)', borderRadius: '4px', marginBottom: '8px', overflow: 'hidden' }}>
+          <div style={{ height: '6px', backgroundColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', borderRadius: '4px', marginBottom: '8px', overflow: 'hidden' }}>
             <div
               style={{
                 height: '100%',
@@ -323,7 +323,7 @@ export function T10ListCardV3({
               gap: '6px',
               padding: '8px 12px',
               backgroundColor: 'var(--t10-accent)',
-              color: 'var(--ds-surface, #ffffff)',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               fontSize: '12px',
               fontWeight: 600,
               border: 'none',

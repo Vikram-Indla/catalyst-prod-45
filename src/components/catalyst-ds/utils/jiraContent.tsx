@@ -4,7 +4,7 @@
  * Jira-sourced strings arrive with:
  *   - Mentions:     [~accountid:712020:abc-def]
  *   - Links:        [display text|https://url?share=xxx&rtime=yyy]
- *   - Colors:       {color:#ffffff}text{color}
+ *   - Colors:       {color:var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))}text{color}
  *   - Emphasis:     *bold*  _italic_  +underline+  -strike-
  *   - Code:         {{monospace}}
  *   - Bare URLs:    https://moiksa-my.sharepoint.com/...?share=xxx&rtime=yyy

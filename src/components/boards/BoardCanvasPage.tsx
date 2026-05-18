@@ -21,32 +21,32 @@ const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-vie
 
 /* Board accent colors — use board.color from DB, fallback map */
 const BOARD_ACCENT: Record<string, string> = {
-  'Demand Analysis Kanban': 'var(--ds-text-brand, #2563EB)',
-  'Business Request Kanban': 'var(--ds-text-warning, #D97706)',
-  'Delivery Board': 'var(--ds-text-brand, #2563EB)',
-  'QA Board': 'var(--ds-text-success, #16A34A)',
-  'Design Board': '#7C3AED',
-  'My Planning Board': 'var(--ds-text-warning, #D97706)',
+  'Demand Analysis Kanban': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+  'Business Request Kanban': 'var(--ds-text-warning, var(--cp-warning, #D97706))',
+  'Delivery Board': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+  'QA Board': 'var(--ds-text-success, var(--cp-success, #16A34A))',
+  'Design Board': 'var(--cp-purple-60, #7C3AED)',
+  'My Planning Board': 'var(--ds-text-warning, var(--cp-warning, #D97706))',
 };
 
 /* ── StatusLozenge V12 3-color guardrail ── */
 function StatusLozenge({ status }: { status: string }) {
   const s = status.toLowerCase().replace(/[\s_-]+/g, '');
-  let bg = 'var(--ds-border, #DFE1E6)', color = '#42526E', label = status.toUpperCase();
+  let bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color = '#42526E', label = status.toUpperCase();
   let leftBorder: string | undefined;
 
   // Blue: in-progress family
   if (['inprogress','indev','inreview','inqa','active','inbeta','processing','testing','review'].includes(s)) {
-    bg = '#0C66E4'; color = 'var(--ds-surface, #FFFFFF)';
+    bg = '#0C66E4'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
   }
   // Green: done family
   else if (['done','completed','production','prodready','approved','resolved','passed','closed'].includes(s)) {
-    bg = '#1B7F37'; color = 'var(--ds-surface, #FFFFFF)';
+    bg = 'var(--cp-lozenge-green-bg, #1B7F37)'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
   }
   // Grey: everything else (backlog, todo, onhold, new, waiting, blocked)
   // Blocked gets a red left border accent on grey lozenge
   if (s === 'blocked') {
-    leftBorder = '3px solid #DC2626';
+    leftBorder = '3px solid var(--cp-danger, #DC2626)';
   }
 
   return (
@@ -264,7 +264,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
         <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: 0 }}>
           {boardTabs.map(tab => {
             const active = tab.id === boardId;
-            const accent = BOARD_ACCENT[tab.name] || tab.color || 'var(--ds-text-subtlest, #64748B)';
+            const accent = BOARD_ACCENT[tab.name] || tab.color || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
             const isPersonal = tab.name === 'My Planning Board';
             return (
               <button
@@ -282,7 +282,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                   transition: 'color 150ms, border-color 150ms',
                 }}
               >
-                {isPersonal && <User size={12} color={active ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-subtlest, #94A3B8)'} />}
+                {isPersonal && <User size={12} color={active ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'} />}
                 {tab.name}
               </button>
             );
@@ -310,7 +310,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
               cursor: 'pointer',
             }}>
               Group by: <strong style={{ fontWeight: 600 }}>{board.swimlaneType === 'none' ? 'None' : board.swimlaneType.charAt(0).toUpperCase() + board.swimlaneType.slice(1)}</strong>
-              <ChevronDown size={12} color="var(--ds-text-subtlest, #64748B)" />
+              <ChevronDown size={12} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
             </button>
             <button onClick={() => setSettingsOpen(true)} style={{
               display: 'flex', alignItems: 'center', gap: 5, height: 32, padding: '8px 12px',
@@ -396,7 +396,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <span style={{ transition: 'transform 0.2s', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)', display: 'flex' }}>
-                    <ChevronDown size={14} color="var(--ds-text-subtlest, #94A3B8)" />
+                    <ChevronDown size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
                   </span>
                 {/* Release pill in swimlane header */}
                 {lane.id !== 'default' && (
@@ -414,7 +414,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                 )}
                 {lane.id === 'default' && (
                   <span style={{
-                    fontSize: 12, fontWeight: 600, color: 'var(--ds-text, #0F172A)',
+                    fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
                     fontFamily: 'var(--cp-font-mono)',
                   }}>{lane.name}</span>
                 )}

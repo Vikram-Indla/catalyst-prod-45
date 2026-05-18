@@ -17,13 +17,13 @@ export default function CommentPreview({ text, attachmentFilename }: CommentPrev
   return (
     <div style={{
       background: 'var(--cp-bg-page, #F8FAFC)',
-      border: `0.5px solid ${isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(15,23,42,.08)'}`,
+      border: `0.5px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(15,23,42,.08)'}`,
       borderRadius: 4,
       padding: '10px 12px',
       marginTop: 8,
       fontFamily: 'var(--cp-font-body)',
       fontSize: 13,
-      color: 'var(--cp-text-primary, #0F172A)',
+      color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
       lineHeight: '18px',
       maxHeight: expanded ? 'none' : 80,
       overflow: 'hidden',
@@ -34,14 +34,14 @@ export default function CommentPreview({ text, attachmentFilename }: CommentPrev
           onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
           style={{
             background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginLeft: 4,
-            color: 'var(--ds-text-brand, #2563EB)', fontSize: 12, fontFamily: 'var(--cp-font-body)', fontWeight: 500,
+            color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontSize: 12, fontFamily: 'var(--cp-font-body)', fontWeight: 500,
           }}
         >
           Show more
         </button>
       )}
       {attachmentFilename && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 6, color: 'var(--cp-text-tertiary, #64748B)', fontSize: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 6, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: 12 }}>
           <Paperclip size={13} />
           <span>{attachmentFilename}</span>
         </div>

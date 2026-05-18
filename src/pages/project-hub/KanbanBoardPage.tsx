@@ -975,7 +975,7 @@ export default function KanbanBoardPage() {
                     width: '100%', textAlign: 'left', padding: '8px 14px',
                     background: b.id === resolvedBoardId ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent',
                     border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500,
-                    color: b.id === resolvedBoardId ? 'var(--ds-link, #0052CC)' : tk.textPrimary,
+                    color: b.id === resolvedBoardId ? 'var(--ds-link, var(--cp-primary-60, #0052CC))' : tk.textPrimary,
                     fontFamily: 'var(--cp-font-body)',
                   }}
                   onMouseEnter={e => { if (b.id !== resolvedBoardId) e.currentTarget.style.background = tk.surfaceHover; }}
@@ -991,7 +991,7 @@ export default function KanbanBoardPage() {
                   width: '100%', textAlign: 'left', padding: '8px 14px',
                   background: 'transparent', border: 'none', cursor: 'pointer',
                   fontSize: 13, fontWeight: 500,
-                  color: 'var(--ds-link, #0052CC)', fontFamily: 'var(--cp-font-body)',
+                  color: 'var(--ds-link, var(--cp-primary-60, #0052CC))', fontFamily: 'var(--cp-font-body)',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -1138,7 +1138,7 @@ export default function KanbanBoardPage() {
                 style={{
                   height: 32, padding: '0 16px', borderRadius: 3,
                   border: 'none',
-                  background: newBoardName.trim() ? 'var(--ds-background-brand-bold, #0052CC)' : tk.chipBg,
+                  background: newBoardName.trim() ? 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))' : tk.chipBg,
                   fontSize: 14, cursor: newBoardName.trim() ? 'pointer' : 'not-allowed',
                   color: newBoardName.trim() ? '#FFFFFF' : tk.textMuted,
                   fontFamily: 'var(--cp-font-body)',
@@ -1153,13 +1153,13 @@ export default function KanbanBoardPage() {
 
       {/* F3: "Show archived" moved into the board ••• menu — no standalone row above toolbar */}
       {showArchived && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 16px', background: 'var(--ds-background-warning-bold, #FFAB00)', color: '#172B4D' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 16px', background: 'var(--ds-background-warning-bold, #FFAB00)', color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))' }}>
           <span style={{ fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)' }}>
             Showing archived issues — restore from the issue overflow menu.
           </span>
           <button
             onClick={() => setShowArchived(false)}
-            style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: '#172B4D', fontFamily: 'var(--cp-font-body)', padding: '0 4px' }}
+            style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))', fontFamily: 'var(--cp-font-body)', padding: '0 4px' }}
           >
             Exit
           </button>

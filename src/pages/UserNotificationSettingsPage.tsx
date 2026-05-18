@@ -11,7 +11,7 @@ export default function UserNotificationSettingsPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--ds-surface, #FFFFFF)' }}>
+    <div className="min-h-screen" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {/* Header with back button */}
         <div className="mb-6">

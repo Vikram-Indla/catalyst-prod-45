@@ -237,7 +237,7 @@ export function BulkEditCommandBar({
                   </PopoverTrigger>
                   <PopoverContent className="w-64 p-3" align="center" side="top">
                     <div className="space-y-3">
-                      <label style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text, #172B4D)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <label style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', display: 'flex', alignItems: 'center', gap: '4px' }}>
                         {field.icon}
                         Set {field.label}
                       </label>
@@ -306,7 +306,7 @@ export function BulkEditCommandBar({
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs"
-                style={{ background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtle, #44546F)' }}
+                style={{ background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}
               >
                 <span className="font-medium">{Object.keys(pendingUpdates).length}</span>
                 <span>field(s)</span>

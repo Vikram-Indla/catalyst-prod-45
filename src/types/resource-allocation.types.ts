@@ -221,29 +221,29 @@ export interface TimelineGridProps {
 
 // Assignment colors (cycle through for different projects)
 export const ASSIGNMENT_COLORS: string[] = [
-  '#2563eb', // Blue
+  'var(--cp-workstream-catalyst-primary, #2563eb)', // Blue
   '#0d9488', // Teal
   '#7c3aed', // Purple
   '#ea580c', // Orange
   '#db2777', // Pink
-  '#059669', // Emerald
+  'var(--quality-high, #059669)', // Emerald
   '#8b5cf6', // Violet
 ];
 
 // Named colors for legacy compat
 export const ASSIGNMENT_COLOR_MAP: Record<string, string> = {
-  primary: '#2563eb',
+  primary: 'var(--cp-workstream-catalyst-primary, #2563eb)',
   teal: '#0d9488',
   orange: '#ea580c',
   purple: '#7c3aed',
   pink: '#db2777',
-  emerald: '#059669',
+  emerald: 'var(--quality-high, #059669)',
   violet: '#8b5cf6',
 };
 
 // Department gradients for avatars
 export const DEPARTMENT_GRADIENTS: Record<string, string> = {
-  Delivery: 'linear-gradient(145deg, #3b82f6, #2563eb)',
+  Delivery: 'linear-gradient(145deg, #3b82f6, var(--cp-workstream-catalyst-primary, #2563eb))',
   Product: 'linear-gradient(145deg, #8b5cf6, #7c3aed)',
   Operations: 'linear-gradient(145deg, #f97316, #ea580c)',
   'Technical Support': 'linear-gradient(145deg, #14b8a6, #0d9488)',

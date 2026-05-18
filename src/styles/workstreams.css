@@ -16,7 +16,7 @@
 
 :root {
   /* Primary Colors - Catalyst V5 */
-  --ws-primary: var(--ds-text-brand, #2563eb);
+  --ws-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --ws-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --ws-primary-light: var(--ds-background-selected, #eff6ff);
   
@@ -41,17 +41,17 @@
   /* Neutral Scale */
   --ws-slate-50: var(--ds-surface-sunken, #f8fafc);
   --ws-slate-100: var(--ds-surface-sunken, #f1f5f9);
-  --ws-slate-200: var(--ds-border, #e2e8f0);
+  --ws-slate-200: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --ws-slate-300: var(--ds-text-disabled, #cbd5e1);
   --ws-slate-400: var(--ds-text-subtlest, #94a3b8);
   --ws-slate-500: var(--ds-text-subtlest, #64748b);
   --ws-slate-600: var(--ds-text-subtle, #475569);
-  --ws-slate-700: var(--ds-text-subtle, #334155);
+  --ws-slate-700: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   --ws-slate-800: #1e293b;
   --ws-slate-900: var(--ds-text, #0f172a);
   
   /* Semantic Mappings - Light Mode */
-  --ws-bg-primary: var(--ds-surface, #ffffff);
+  --ws-bg-primary: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --ws-bg-secondary: var(--ws-slate-50);
   --ws-bg-tertiary: var(--ws-slate-100);
   --ws-text-primary: var(--ws-slate-900);

@@ -22,13 +22,13 @@ const TOKENS = `
 [data-sri] {
   --sri-ink:#09090B; --sri-ink-2:#18181B; --sri-ink-3:#3F3F46;
   --sri-ink-m:#71717A;
-  --sri-bg:var(--ds-text-inverse, #FFFFFF); --sri-bg-2:#FAFAFA; --sri-bg-3:#F4F4F5;
+  --sri-bg:var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); --sri-bg-2:#FAFAFA; --sri-bg-3:#F4F4F5;
   --sri-bdr:#E4E4E7; --sri-bdr-s:#D4D4D8;
-  --sri-ai:var(--ds-text-brand, #2563EB); --sri-ai-d:#1E40AF; --sri-ai-bg:var(--ds-background-selected, #EFF6FF);
+  --sri-ai:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); --sri-ai-d:#1E40AF; --sri-ai-bg:var(--ds-background-selected, #EFF6FF);
   --sri-ai-bg2:#DBEAFE; --sri-ai-bdr:#93C5FD; --sri-ai-m:var(--ds-text-brand, #3B82F6);
-  --sri-green:var(--ds-text-success, #16A34A); --sri-green-t:#11853D; --sri-green-bg:#F0FDF4;
+  --sri-green:var(--ds-text-success, var(--cp-success, #16A34A)); --sri-green-t:#11853D; --sri-green-bg:#F0FDF4;
   --sri-teal-t:#0A8277;
-  --sri-red:var(--ds-text-danger, #DC2626); --sri-red-t:#D92525; --sri-red-bg:var(--ds-background-danger, #FEF2F2);
+  --sri-red:var(--ds-text-danger, var(--cp-danger, #DC2626)); --sri-red-t:#D92525; --sri-red-bg:var(--ds-background-danger, #FEF2F2);
   --sri-r:4px; --sri-r2:6px; --sri-r3:8px; --sri-r4:12px; --sri-pill:9999px;
   font-family: var(--cp-font-body); color:var(--sri-ink);
   -webkit-font-smoothing:antialiased; line-height:1.5;
@@ -40,10 +40,10 @@ const TOKENS = `
   --sri-ink-2: rgba(255,255,255,0.82);
   --sri-ink-3: rgba(255,255,255,0.75);
   --sri-ink-m: rgba(255,255,255,0.70);
-  --sri-bg: var(--ds-surface-raised, #1A1A1A);
+  --sri-bg: var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A));
   --sri-bg-2: var(--ds-surface-overlay, #1F1F1F);
-  --sri-bg-3: var(--ds-border, #2E2E2E);
-  --sri-bdr: var(--ds-border, #2E2E2E);
+  --sri-bg-3: var(--ds-border, var(--cp-ink-1, #2E2E2E));
+  --sri-bdr: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --sri-bdr-s: var(--ds-border-bold, #454545);
   --sri-ai: var(--ds-text-brand, #3B82F6);
   --sri-ai-d: var(--ds-text-brand, #60A5FA);

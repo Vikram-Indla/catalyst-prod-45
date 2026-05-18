@@ -33,8 +33,8 @@ function CatySparkle({ size = 18, monochromeColor }: SparkleProps) {
         <defs>
           <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="var(--ds-text-brand, #60A5FA)" />
-            <stop offset="55%" stopColor="var(--ds-text-brand, #2563EB)" />
-            <stop offset="100%" stopColor="#7C3AED" />
+            <stop offset="55%" stopColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />
+            <stop offset="100%" stopColor="var(--cp-purple-60, #7C3AED)" />
           </linearGradient>
         </defs>
       )}
@@ -58,11 +58,11 @@ function AskCatalystIcon() {
 const DEPT_OPTIONS = ['Delivery', 'Product', 'Governance', 'Operations', 'Technical Support', 'Strategy & Planning'];
 
 const DEPT_COLORS: Record<string, string> = {
-  Delivery: 'var(--ds-text-brand, #2563EB)',
-  Product: '#7C3AED',
-  Governance: '#0D9488',
-  Operations: 'var(--ds-text-warning, #D97706)',
-  'Technical Support': 'var(--ds-text-danger, #DC2626)',
+  Delivery: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+  Product: 'var(--cp-purple-60, #7C3AED)',
+  Governance: 'var(--cp-teal-60, #0D9488)',
+  Operations: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
+  'Technical Support': 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
   'Strategy & Planning': '#0891B2',
 };
 
@@ -152,7 +152,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
               cursor: isForYou ? 'pointer' : 'not-allowed',
               opacity: isForYou ? 1 : 0.55,
               fontFamily: 'var(--cp-font-body)',
-              color: token('color.text', '#0F172A'),
+              color: token('color.text', 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))'),
             }}
           >
             <CatySparkle size={18} />
@@ -162,7 +162,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
                 fontWeight: 650,
                 letterSpacing: '-0.1px',
                 lineHeight: 1,
-                color: token('color.text', '#0F172A'),
+                color: token('color.text', 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))'),
               }}
             >
               Ask Caty
@@ -178,8 +178,8 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
             top: '100%',
             right: 0,
             marginTop: 6,
-            background: 'var(--ds-surface-overlay, var(--cp-float, #FFFFFF))',
-            border: '1px solid var(--ds-border, var(--cp-bd, #DFE1E6))',
+            background: 'var(--ds-surface-overlay, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))))',
+            border: '1px solid var(--ds-border, var(--cp-bd, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))))',
             borderRadius: 12,
             // ADS canonical overlay shadow — works in both modes via the token resolver
             boxShadow: 'var(--ds-shadow-overlay, 0 8px 30px rgba(0,0,0,0.12))',
@@ -193,7 +193,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
               padding: '8px 12px 6px',
               fontSize: 11,
               fontWeight: 600,
-              color: 'var(--cp-t3, #6B778C)',
+              color: 'var(--cp-t3, var(--cp-text-secondary, #6B778C))',
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
             }}
@@ -220,7 +220,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
                 cursor: 'pointer',
                 fontSize: 13,
                 fontWeight: 500,
-                color: 'var(--cp-t1, #172B4D)',
+                color: 'var(--cp-t1, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                 transition: 'background 100ms',
                 textAlign: 'left',
               }}
@@ -236,7 +236,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
                   width: 8,
                   height: 8,
                   borderRadius: '50%',
-                  background: DEPT_COLORS[dept] || 'var(--cp-t3, #6B778C)',
+                  background: DEPT_COLORS[dept] || 'var(--cp-t3, var(--cp-text-secondary, #6B778C))',
                   flexShrink: 0,
                 }}
               />

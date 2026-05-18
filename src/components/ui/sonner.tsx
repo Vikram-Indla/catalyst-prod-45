@@ -3,7 +3,7 @@
  * - Success: Light teal background (#f0fdfa) with teal text (#0d9488)
  * - Error: Light red background (var(--ds-background-danger, #fef2f2)) with red text (var(--ds-text-danger, #dc2626))
  * - Warning: Light amber background (#fffbeb) with amber text (var(--ds-text-warning, #d97706))
- * - Info: Light blue background (var(--ds-background-selected, #eff6ff)) with blue text (var(--ds-text-brand, #2563eb))
+ * - Info: Light blue background (var(--ds-background-selected, #eff6ff)) with blue text (var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)))
  */
 import { useTheme } from "next-themes";
 import { Toaster as Sonner, toast } from "sonner";
@@ -32,7 +32,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           success: "group-[.toast]:!bg-[#f0fdfa] group-[.toast]:!text-[#0d9488] group-[.toast]:!border-[#99f6e4]",
           error: "group-[.toast]:!bg-[var(--ds-background-danger,#fef2f2)] group-[.toast]:!text-[var(--ds-text-danger,#dc2626)] group-[.toast]:!border-[#fecaca]",
           warning: "group-[.toast]:!bg-[#fffbeb] group-[.toast]:!text-[var(--ds-text-warning,#d97706)] group-[.toast]:!border-[#fde68a]",
-          info: "group-[.toast]:!bg-[var(--ds-background-selected,#eff6ff)] group-[.toast]:!text-[var(--ds-text-brand,#2563eb)] group-[.toast]:!border-[#bfdbfe]",
+          info: "group-[.toast]:!bg-[var(--ds-background-selected,#eff6ff)] group-[.toast]:!text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] group-[.toast]:!border-[#bfdbfe]",
         },
       }}
       {...props}

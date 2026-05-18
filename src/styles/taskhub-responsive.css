@@ -473,7 +473,7 @@
     right: 0;
     height: 64px;
     background: white;
-    border-top: 1px solid var(--ds-border, #e2e8f0);
+    border-top: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
     justify-content: space-around;
     align-items: center;
     z-index: 1000;
@@ -496,7 +496,7 @@
   }
 
   .mobile-bottom-nav-item.active {
-    color: var(--ds-text-brand, #2563eb);
+    color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
     background: var(--ds-background-selected, #eff6ff);
   }
 
@@ -530,7 +530,7 @@
     height: 40px;
     border: none;
     background: transparent;
-    color: var(--ds-text-subtle, #334155);
+    color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
     cursor: pointer;
     border-radius: 8px;
   }
@@ -554,7 +554,7 @@
     padding: 16px !important;
     border-radius: 8px !important;
     margin-bottom: 8px !important;
-    border: 1px solid var(--ws-border-primary, #e2e8f0) !important;
+    border: 1px solid var(--ws-border-primary, var(--cp-bg-sunken, #e2e8f0)) !important;
   }
 
   .ws-row-name {
@@ -753,7 +753,7 @@
     display: flex !important;
     flex-direction: column !important;
     padding: 12px !important;
-    border: 1px solid var(--ds-border, #e2e8f0) !important;
+    border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
     border-radius: 8px !important;
     gap: 8px !important;
   }
@@ -844,7 +844,7 @@
     top: 0 !important;
     background: white !important;
     z-index: 10 !important;
-    border-bottom: 1px solid var(--ds-border, #e2e8f0);
+    border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   }
 
   /* Modal content scrollable */
@@ -858,7 +858,7 @@
     position: sticky !important;
     bottom: 0 !important;
     background: white !important;
-    border-top: 1px solid var(--ds-border, #e2e8f0);
+    border-top: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
     padding: 16px !important;
   }
 }
@@ -897,8 +897,8 @@
    ========================================================================== */
 
 .dark .mobile-bottom-nav , [data-theme="dark"] .mobile-bottom-nav {
-  background: var(--cp-bg-surface, #242528);
-  border-top-color: var(--ds-border, #2E2E2E);
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  border-top-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 
 .dark .mobile-bottom-nav-item , [data-theme="dark"] .mobile-bottom-nav-item {
@@ -915,15 +915,15 @@
 }
 
 .dark .mobile-menu-toggle:hover , [data-theme="dark"] .mobile-menu-toggle:hover {
-  background: var(--ds-border, #292929);
+  background: var(--ds-border, var(--cp-ink-1, #292929));
 }
 
 .dark .modal-header , [data-theme="dark"] .modal-header {
-  background: var(--cp-bg-surface, #242528);
-  border-bottom-color: var(--ds-border, #2E2E2E);
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  border-bottom-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 
 .dark .modal-footer , [data-theme="dark"] .modal-footer {
-  background: var(--cp-bg-surface, #242528);
-  border-top-color: var(--ds-border, #2E2E2E);
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  border-top-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }

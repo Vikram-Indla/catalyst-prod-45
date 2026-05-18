@@ -402,7 +402,7 @@ const BG_SOLIDS: Array<{ name: string; value: string }> = [
   { name: 'Peach',   value: '#FFE2D5' },
   { name: 'Rose',    value: '#FFD2DC' },
   { name: 'Lilac',   value: '#E5DBFF' },
-  { name: 'Stone',   value: 'var(--ds-border, #DFE1E6)' },
+  { name: 'Stone',   value: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
   { name: 'Blue',    value: '#0C66E4' }, // bold accents
   { name: 'Teal',    value: '#1F845A' },
   { name: 'Violet',  value: '#5E4DB2' },
@@ -415,7 +415,7 @@ const BG_GRADIENTS: Array<{ name: string; value: string }> = [
   { name: 'Sunset',   value: 'linear-gradient(135deg, var(--ds-icon-accent-red, #C9372C), #E54787)' },
   { name: 'Forest',   value: 'linear-gradient(135deg, #1F845A, var(--ds-icon-accent-green, #22A06B))' },
   { name: 'Lavender', value: 'linear-gradient(135deg, #8270DB, #5E4DB2)' },
-  { name: 'Slate',    value: 'linear-gradient(135deg, #44546F, var(--ds-text-subtlest, #6B6E76))' },
+  { name: 'Slate',    value: 'linear-gradient(135deg, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)), var(--ds-text-subtlest, #6B6E76))' },
 ];
 
 interface ProjectBackground {
@@ -1474,17 +1474,17 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         const p = (sample.priority || '').toLowerCase();
         const PRIORITY_RANK: Record<string, { level: number; color: string }> = {
           highest:  { level: 4, color: 'var(--ds-icon-accent-red, #C9372C)' }, critical: { level: 4, color: 'var(--ds-icon-accent-red, #C9372C)' },
-          high:     { level: 3, color: 'var(--ds-text-warning, #F59E0B)' },
+          high:     { level: 3, color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' },
           medium:   { level: 2, color: 'var(--ds-text-success, #22C55E)' },
           low:      { level: 1, color: 'var(--ds-text-success, #22C55E)' },
-          lowest:   { level: 0, color: 'var(--ds-border, #DFE1E6)' },
+          lowest:   { level: 0, color: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
         };
-        const rank = PRIORITY_RANK[p] || { level: 0, color: 'var(--ds-border, #DFE1E6)' };
+        const rank = PRIORITY_RANK[p] || { level: 0, color: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' };
         labelNode = (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }} title={k}>
             <span style={{ display: 'inline-flex', gap: 2 }}>
               {[1, 2, 3, 4].map((i) => (
-                <span key={i} style={{ width: 4, height: 12, borderRadius: 1, background: i <= rank.level ? rank.color : 'var(--ds-border, #DFE1E6)' }} />
+                <span key={i} style={{ width: 4, height: 12, borderRadius: 1, background: i <= rank.level ? rank.color : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }} />
               ))}
             </span>
             <span>{k}</span>
@@ -1529,7 +1529,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             )}
             {!isOrphan && parentSummary && (
               <span style={{
-                color: 'var(--ds-text, #172B4D)',
+                color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                 fontWeight: 500,
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -1820,7 +1820,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   height: 16,
                   borderRadius: 3,
                   background: bg,
-                  color: 'var(--ds-text-inverse, #FFFFFF)',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   fontSize: 10,
                   fontWeight: 700,
                 }}
@@ -2471,7 +2471,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       // chrome) — twice Jira's. Reducing to {x:24, y:16} so the card
       // edge aligns with toolbar/table inset measured from Jira.
       cardPadding={{ x: 24, y: 16 }}
-      cardBorder="1px solid #DFE1E6"
+      cardBorder="1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))"
       // Apr 27 2026 (jira-compare regression D-001/002/003): chrome-band
       // slot. Renders Projects breadcrumb + project icon + H1 ABOVE the
       // white card.
@@ -2619,7 +2619,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         display: 'flex',
         gap: 12,
         alignItems: 'center',
-        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
       }}>
         {/* Apr 27, 2026 — REVERTED toolbar Create button. Jira's list view
             does NOT have a Create CTA in the table toolbar; the only
@@ -3142,7 +3142,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   display: 'block',
                   fontSize: 16,
                   fontWeight: 600,
-                  color: token('color.text', '#172B4D'),
+                  color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                   marginBottom: 8,
                   textAlign: 'center',
                 }}>
@@ -3152,7 +3152,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   display: 'block',
                   fontSize: 14,
                   fontWeight: 400,
-                  color: token('color.text.subtle', '#44546F'),
+                  color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                   textAlign: 'center',
                   marginBottom: 16,
                 }}>
@@ -3173,7 +3173,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                       fontWeight: 500,
                       color: token('color.link', '#0C66E4'),
                       background: 'transparent',
-                      border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                       borderRadius: 3,
                       cursor: 'pointer',
                     }}
@@ -3224,7 +3224,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                     gap: 8,
                     padding: '8px 12px',
                     background: token('elevation.surface.overlay', '#FFFFFF'),
-                    border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                     borderRadius: 4,
                     boxShadow: token('elevation.shadow.overlay', '0 8px 24px rgba(9,30,66,0.15)'),
                     opacity: 0.96,
@@ -3245,7 +3245,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                           height: 16,
                           borderRadius: 3,
                           background: '#904EE2',
-                          color: 'var(--ds-text-inverse, #FFFFFF)',
+                          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                           fontSize: 10,
                           fontWeight: 700,
                         }}
@@ -3268,7 +3268,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   <span style={{ color: token('color.link', '#0C66E4'), textDecoration: 'underline', fontWeight: 500, flexShrink: 0 }}>
                     {activeDragRow.key || '—'}
                   </span>
-                  <span style={{ color: token('color.text', '#172B4D'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                  <span style={{ color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                     {activeDragRow.title}
                   </span>
                 </div>
@@ -3439,13 +3439,13 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                       width: 24, height: 24, borderRadius: '50%',
                       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: 12, fontWeight: 700,
-                      background: bulkWizardStep >= s ? '#0C66E4' : '#DFE1E6',
+                      background: bulkWizardStep >= s ? '#0C66E4' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
                       color: bulkWizardStep >= s ? '#fff' : '#42526E',
                     }}>{s}</span>
                     <span style={{ fontSize: 12, color: bulkWizardStep >= s ? '#0C66E4' : '#7A869A', fontWeight: 500 }}>
                       {s === 1 ? 'Choose action' : 'Configure & confirm'}
                     </span>
-                    {s < 2 && <span style={{ flex: 1, height: 1, background: '#DFE1E6' }} />}
+                    {s < 2 && <span style={{ flex: 1, height: 1, background: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))' }} />}
                   </React.Fragment>
                 ))}
               </div>
@@ -3464,7 +3464,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                       style={{
                         display: 'flex', alignItems: 'flex-start', gap: 12,
                         padding: '12px 16px', borderRadius: 6, cursor: 'pointer',
-                        border: `2px solid ${bulkWizardAction === opt.id ? '#0C66E4' : '#DFE1E6'}`,
+                        border: `2px solid ${bulkWizardAction === opt.id ? '#0C66E4' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'}`,
                         background: bulkWizardAction === opt.id ? '#E9F2FF' : '#FAFBFC',
                         transition: 'border-color 80ms, background 80ms',
                       }}
@@ -3479,7 +3479,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                       />
                       <div>
                         <div style={{ fontSize: 14, fontWeight: 600, color: '#292A2E', marginBottom: 2 }}>{opt.label}</div>
-                        <div style={{ fontSize: 13, color: '#44546F' }}>{opt.description}</div>
+                        <div style={{ fontSize: 13, color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))' }}>{opt.description}</div>
                       </div>
                     </label>
                   ))}
@@ -3657,7 +3657,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             left: projectMenuAnchor.left,
             zIndex: 9001,
             background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 4,
             boxShadow: '0 4px 16px rgba(9, 30, 66, 0.16)',
             minWidth: 280,
@@ -3690,7 +3690,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             { id: 'delete', label: 'Delete project', danger: true, onClick: () => { setDeleteConfirmText(''); setDeleteOpen(true); } },
           ].map((item) => {
             if ((item as any).divider) {
-              return <div key={item.id} style={{ height: 1, background: token('color.border', '#DFE1E6'), margin: '6px 0' }} />;
+              return <div key={item.id} style={{ height: 1, background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'), margin: '6px 0' }} />;
             }
             return (
               <button
@@ -3875,7 +3875,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   width: '100%',
                   height: 36,
                   padding: '0 12px',
-                  border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                   borderRadius: 3,
                   background: token('elevation.surface', '#FFFFFF'),
                   color: token('color.text', '#292A2E'),
@@ -3907,7 +3907,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               justifyContent: 'flex-end',
               gap: 8,
               padding: '12px 24px 20px',
-              borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             }}
           >
             <Button
@@ -4085,7 +4085,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               display: 'flex',
               justifyContent: 'flex-end',
               gap: 8,
-              borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             }}
           >
             <Button appearance="subtle" onClick={() => { setLinkedTeamsOpen(false); setLinkedTeamsSearch(''); }}>
@@ -4173,7 +4173,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             style={{
               padding: '12px 24px 16px',
               display: 'flex', justifyContent: 'flex-end', gap: 8,
-              borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             }}
           >
             <Button appearance="subtle" onClick={() => setArchiveOpen(false)}>Cancel</Button>
@@ -4264,7 +4264,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   marginBottom: 4,
                 }}
               >
-                Type <code style={{ background: token('color.background.neutral', '#DFE1E6'), padding: '0 4px', borderRadius: 3, fontFamily: 'inherit' }}>{projectKey}</code> to confirm
+                Type <code style={{ background: token('color.background.neutral', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'), padding: '0 4px', borderRadius: 3, fontFamily: 'inherit' }}>{projectKey}</code> to confirm
               </label>
               <Textfield
                 id="delete-project-confirm"
@@ -4280,7 +4280,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             style={{
               padding: '12px 24px 16px',
               display: 'flex', justifyContent: 'flex-end', gap: 8,
-              borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             }}
           >
             <Button appearance="subtle" onClick={() => { setDeleteOpen(false); setDeleteConfirmText(''); }}>Cancel</Button>
@@ -4335,7 +4335,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             width: 350,
             maxHeight: 500,
             background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 8,
             boxShadow: '0 8px 24px rgba(9, 30, 66, 0.18)',
             display: 'flex',
@@ -4412,7 +4412,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                         background: sw.value,
                         border: isActive
                           ? `2px solid ${token('color.border.selected', '#0C66E4')}`
-                          : `1px solid ${token('color.border', '#DFE1E6')}`,
+                          : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                         cursor: 'pointer',
                         padding: 0,
                       }}
@@ -4458,7 +4458,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                         background: gr.value,
                         border: isActive
                           ? `2px solid ${token('color.border.selected', '#0C66E4')}`
-                          : `1px solid ${token('color.border', '#DFE1E6')}`,
+                          : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                         cursor: 'pointer',
                         padding: 0,
                       }}
@@ -4473,7 +4473,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           <div
             style={{
               padding: '10px 16px 12px',
-              borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               display: 'flex',
               justifyContent: 'flex-end',
             }}
@@ -4643,7 +4643,7 @@ function GroupByControl({
           height: 32,
           padding: '0 12px',
           borderRadius: 3,
-          border: `1px solid ${(isOpen || value !== 'none') ? token('color.border.selected', '#0C66E4') : token('color.border', '#DFE1E6')}`,
+          border: `1px solid ${(isOpen || value !== 'none') ? token('color.border.selected', '#0C66E4') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
           background: (isOpen || value !== 'none') ? token('color.background.selected', '#E9F2FF') : token('elevation.surface', '#FFFFFF'),
           color: (isOpen || value !== 'none') ? token('color.text.selected', '#0055CC') : token('color.text', '#292A2E'),
           fontSize: 13,
@@ -4673,7 +4673,7 @@ function GroupByControl({
             left: anchor.left,
             minWidth: 180,
             background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 4,
             boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
             padding: '6px 0',
@@ -4878,7 +4878,7 @@ function ToolbarMenuButton({
             right: anchor.right,
             minWidth: 180,
             background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 4,
             boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
             padding: '6px 0',
@@ -4954,7 +4954,7 @@ function ToolbarMenuButton({
                 <div style={{
                   height: 1,
                   margin: '4px 0',
-                  background: token('color.border', '#DFE1E6'),
+                  background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'),
                 }} />
               )}
             </React.Fragment>
@@ -5053,7 +5053,7 @@ function ColumnFilterMultiSelect({
         placeholder="Search…"
         style={{
           padding: '4px 8px', fontSize: 13,
-          border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
+          border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3,
           outline: 'none', fontFamily: 'inherit',
         }}
         autoFocus
@@ -5085,12 +5085,12 @@ function ColumnFilterMultiSelect({
           );
         })}
       </div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--ds-border, #DFE1E6)', paddingTop: 6 }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', paddingTop: 6 }}>
         <button
           type="button"
           onClick={onClose}
           style={{
-            border: '1px solid var(--ds-border, #DFE1E6)', background: 'transparent',
+            border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', background: 'transparent',
             padding: '4px 12px', borderRadius: 3, cursor: 'pointer', fontSize: 13,
           }}
         >Done</button>
@@ -5262,7 +5262,7 @@ function InlineGroupCreateRow({
         gap: 8,
         padding: '8px 16px',
         background: token('elevation.surface', '#FFFFFF'),
-        borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
       }}
       onKeyDown={(e) => {
         if (e.key === 'Escape') {
@@ -5328,7 +5328,7 @@ function InlineGroupCreateRow({
               maxHeight: '60vh',
               overflowY: 'auto',
               background: token('elevation.surface.overlay', '#FFFFFF'),
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               borderRadius: 4,
               boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
               padding: '6px 0',
@@ -5417,7 +5417,7 @@ function InlineGroupCreateRow({
                 gap: 6,
                 height: 27,
                 padding: '0 10px',
-                border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                 borderRadius: 3,
                 background: assigneeMenuOpen ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)') : token('elevation.surface', '#FFFFFF'),
                 color: token('color.text', '#292A2E'),
@@ -5455,7 +5455,7 @@ function InlineGroupCreateRow({
                   maxHeight: '50vh',
                   overflowY: 'auto',
                   background: token('elevation.surface.overlay', '#FFFFFF'),
-                  border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                   borderRadius: 4,
                   boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
                   padding: 6,
@@ -5475,7 +5475,7 @@ function InlineGroupCreateRow({
                   placeholder="Search people…"
                   style={{
                     padding: '6px 8px', fontSize: 13,
-                    border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                     borderRadius: 3, outline: 'none', fontFamily: 'inherit',
                   }}
                 />
@@ -5656,7 +5656,7 @@ function BottomCreateRow({
           position: 'sticky',
           bottom: 0,
           zIndex: 2,
-          borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
           background: token('elevation.surface', '#FFFFFF'),
           minWidth: '100%',
           flexShrink: 0,
@@ -5697,7 +5697,7 @@ function BottomCreateRow({
         position: 'sticky',
         bottom: 0,
         zIndex: 2,
-        borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         background: token('elevation.surface', '#FFFFFF'),
         height: 40,
         minWidth: '100%',
@@ -5882,7 +5882,7 @@ function InlineCreateRow({
         }}
         onMouseEnter={(e) => {
           (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
-          (e.currentTarget as HTMLElement).style.borderColor = token('color.border', '#DFE1E6');
+          (e.currentTarget as HTMLElement).style.borderColor = token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))');
         }}
         onMouseLeave={(e) => {
           (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -5972,7 +5972,7 @@ function BulkActionsBar({
   // Re-styled 2026-04-26 to match Jira's list-view bulk action bar:
   //   - floating bottom dark pill (NOT a top-of-table inline blue bar)
   //   - portal-mounted to <body> so panel/scroll can't clip it
-  //   - dark surface #44546F, white text, 14px/500
+  //   - dark surface var(--cp-text-secondary, var(--cp-text-secondary, #44546F)), white text, 14px/500
   //   - X close on left → vertical divider → "N work item(s) selected"
   //     → vertical divider → action buttons → red Delete
   //   - hover state: white/10 overlay
@@ -5999,8 +5999,8 @@ function BulkActionsBar({
           alignItems: 'center',
           gap: 0,
           height: 44,
-          background: '#44546F',
-          color: 'var(--ds-text-inverse, #FFFFFF)',
+          background: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))',
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           borderRadius: 8,
           boxShadow: '0 8px 32px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.12)',
           fontFamily: 'var(--cp-font-body)',
@@ -6022,7 +6022,7 @@ function BulkActionsBar({
             height: 44,
             background: 'transparent',
             border: 'none',
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             cursor: 'pointer',
             transition: 'background 100ms',
           }}
@@ -6039,7 +6039,7 @@ function BulkActionsBar({
             padding: '0 16px',
             fontSize: 14,
             fontWeight: 500,
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             letterSpacing: '-0.01em',
             whiteSpace: 'nowrap',
             userSelect: 'none',
@@ -6062,7 +6062,7 @@ function BulkActionsBar({
                 margin: '0 6px',
                 background: 'transparent',
                 border: 'none',
-                color: 'var(--ds-text-inverse, #FFFFFF)',
+                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 fontSize: 14,
                 fontWeight: 500,
                 cursor: 'pointer',
@@ -6090,7 +6090,7 @@ function BulkActionsBar({
                 margin: '0 6px',
                 background: 'transparent',
                 border: 'none',
-                color: 'var(--ds-text-inverse, #FFFFFF)',
+                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 fontSize: 14,
                 fontWeight: 500,
                 cursor: 'pointer',
@@ -6150,7 +6150,7 @@ function BulkActionsBar({
             padding: '0 16px',
             background: 'transparent',
             border: 'none',
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             fontSize: 14,
             fontWeight: 500,
             cursor: isBusy ? 'default' : 'pointer',
@@ -6248,7 +6248,7 @@ function BulkPopover({
           padding: '0 14px',
           background: 'transparent',
           border: 'none',
-          color: 'var(--ds-text-inverse, #FFFFFF)',
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           fontSize: 14,
           fontWeight: 500,
           cursor: 'pointer',
@@ -6277,7 +6277,7 @@ function BulkPopover({
             zIndex: 10000,
             minWidth: width,
             background: token('elevation.surface', '#FFFFFF'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 4,
             boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18)',
             padding: 4,
@@ -6422,7 +6422,7 @@ function EditBacklogItemModal({
                 width: '100%',
                 height: 36,
                 padding: '0 10px',
-                border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                 borderRadius: 3,
                 fontSize: 14,
                 fontFamily: 'inherit',

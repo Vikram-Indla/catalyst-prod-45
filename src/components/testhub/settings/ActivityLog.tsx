@@ -22,7 +22,7 @@ const ACTION_CONFIG: Record<string, { label: string; icon: any; color: string }>
   'create': { label: 'Created', icon: Plus, color: 'var(--sem-success)' },
   'update': { label: 'Updated', icon: Edit2, color: 'var(--cp-blue)' },
   'delete': { label: 'Deleted', icon: Trash2, color: 'var(--sem-danger)' },
-  'execute': { label: 'Executed', icon: Play, color: 'var(--ds-text-brand, #2563EB)' },
+  'execute': { label: 'Executed', icon: Play, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
   'pass': { label: 'Passed', icon: CheckCircle2, color: 'var(--sem-success)' },
   'fail': { label: 'Failed', icon: XCircle, color: 'var(--sem-danger)' },
   'assign': { label: 'Assigned', icon: User, color: 'var(--sem-warning)' },
@@ -121,7 +121,7 @@ export function ActivityLog({ limit = 20, showHeader = true }: ActivityLogProps)
             const ActionIcon = actionConfig.icon;
 
             return (
-              <div key={activity.id} style={{ display: 'flex', gap: 12, padding: '14px 0', borderBottom: index < activities.length - 1 ? '1px solid #F1F5F9' : 'none' }}>
+              <div key={activity.id} style={{ display: 'flex', gap: 12, padding: '14px 0', borderBottom: index < activities.length - 1 ? '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' : 'none' }}>
                 <div style={{ width: 36, height: 50, borderRadius: 8, backgroundColor: `${actionConfig.color}10`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <ActionIcon size={18} style={{ color: actionConfig.color }} />
                 </div>

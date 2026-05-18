@@ -207,7 +207,7 @@ export function RichTextCommentEditor({
   return (
     <div style={{ position: 'relative' }}>
       <div style={{
-        border: `1px solid ${isFocused ? 'var(--ds-border-focused, #4C9AFF)' : 'var(--ds-border, #DFE1E6)'}`,
+        border: `1px solid ${isFocused ? 'var(--ds-border-focused, #4C9AFF)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'}`,
         borderRadius: 6, overflow: 'hidden',
         boxShadow: isFocused ? '0 0 0 1px var(--ds-border-focused, #4C9AFF)' : 'none',
         transition: 'border-color 0.15s, box-shadow 0.15s',
@@ -229,7 +229,7 @@ export function RichTextCommentEditor({
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           ><TextUnderlineIcon label="Underline" /></button>
-          <div style={{ width: 1, height: 16, background: 'var(--ds-border, #DFE1E6)', margin: '0 4px' }} />
+          <div style={{ width: 1, height: 16, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', margin: '0 4px' }} />
           <button style={toolbarBtnStyle} onClick={() => execCmd('insertUnorderedList')} title="Bullet list"
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
@@ -250,7 +250,7 @@ export function RichTextCommentEditor({
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           ><LinkIcon label="Insert link" /></button>
-          <div style={{ width: 1, height: 16, background: 'var(--ds-border, #DFE1E6)', margin: '0 4px' }} />
+          <div style={{ width: 1, height: 16, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', margin: '0 4px' }} />
           <button style={toolbarBtnStyle} onClick={() => execCmd('undo')} title="Undo"
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
@@ -276,7 +276,7 @@ export function RichTextCommentEditor({
           data-placeholder={placeholder}
           style={{
             minHeight: 80, padding: '12px 14px', outline: 'none',
-            fontSize: 14, color: 'var(--ds-text, #172B4D)', lineHeight: 1.6, fontFamily: 'inherit',
+            fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', lineHeight: 1.6, fontFamily: 'inherit',
             background: 'var(--ds-surface, #FFF)', overflowY: 'auto', maxHeight: 300,
             position: 'relative',
           }}
@@ -286,7 +286,7 @@ export function RichTextCommentEditor({
         {mentionQuery !== null && filteredMembers.length > 0 && mentionPos && (
           <div style={{
             position: 'absolute', top: mentionPos.top + 48, left: mentionPos.left + 8,
-            background: 'var(--ds-surface, #FFF)', border: '1px solid #DFE1E6', borderRadius: 6,
+            background: 'var(--ds-surface, #FFF)', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 6,
             boxShadow: '0 4px 16px rgba(9,30,66,0.18)', zIndex: 100, minWidth: 240,
             maxHeight: 200, overflowY: 'auto',
           }}>
@@ -295,7 +295,7 @@ export function RichTextCommentEditor({
                 onMouseDown={e => { e.preventDefault(); insertMention(m); }}
                 style={{
                   width: '100%', padding: '8px 12px', border: 'none', textAlign: 'left', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--ds-text, #172B4D)',
+                  display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                   background: idx === mentionIndex ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
                 }}
                 onMouseEnter={() => setMentionIndex(idx)}
@@ -315,7 +315,7 @@ export function RichTextCommentEditor({
       </div>
 
       {uploading && (
-        <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 4 }}>Uploading image…</div>
+        <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', marginTop: 4 }}>Uploading image…</div>
       )}
 
       {/* Save / Cancel */}
@@ -325,11 +325,11 @@ export function RichTextCommentEditor({
           disabled={isEmpty || isSubmitting}
           style={{
             padding: '6px 16px', borderRadius: 4, border: 'none', cursor: isEmpty || isSubmitting ? 'not-allowed' : 'pointer',
-            background: isEmpty || isSubmitting ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--ds-background-brand-bold, #0052CC)', color: isEmpty || isSubmitting ? 'var(--ds-text-disabled, #A5ADBA)' : 'var(--ds-surface, #FFF)',
+            background: isEmpty || isSubmitting ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' : 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))', color: isEmpty || isSubmitting ? 'var(--ds-text-disabled, #A5ADBA)' : 'var(--ds-surface, #FFF)',
             fontSize: 14, fontWeight: 600, transition: 'background 0.15s',
           }}
           onMouseEnter={e => { if (!isEmpty && !isSubmitting) e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #0747A6)'; }}
-          onMouseLeave={e => { if (!isEmpty && !isSubmitting) e.currentTarget.style.background = 'var(--ds-background-brand-bold, #0052CC)'; }}
+          onMouseLeave={e => { if (!isEmpty && !isSubmitting) e.currentTarget.style.background = 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))'; }}
         >Save</button>
         <button
           onClick={handleCancel}

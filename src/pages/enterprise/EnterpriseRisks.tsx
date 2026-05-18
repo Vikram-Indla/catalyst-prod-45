@@ -39,7 +39,7 @@ const palette = {
 const CHART_COLORS = {
   olive: '#0d9488',
   bronze: 'var(--ds-text-warning, #f59e0b)',
-  primary: 'var(--ds-text-brand, #2563eb)',
+  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   champagne: 'var(--ds-text-subtlest, #94a3b8)',
   grey: '#c8ccd0',
   critical: 'var(--ds-text-danger, #ef4444)',

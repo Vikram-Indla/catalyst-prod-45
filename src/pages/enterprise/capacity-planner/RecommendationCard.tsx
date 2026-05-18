@@ -34,7 +34,7 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
           <p className="text-xs text-muted-foreground">{recommendation.description}</p>
           <div className="flex gap-2 mt-3">
             <Button size="sm" variant="outline" className="h-7 text-xs">Dismiss</Button>
-            <Button size="sm" className="h-7 text-xs bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]">Apply</Button>
+            <Button size="sm" className="h-7 text-xs bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]">Apply</Button>
           </div>
         </div>
       </div>

@@ -20,7 +20,7 @@ export const T10_STATUS_COLORS = {
 } as const;
 
 export const T10_RANK_COLORS = {
-  top5: 'var(--ds-text-brand, #2563eb)',      // Blue with glow for ranks 1-5
+  top5: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',      // Blue with glow for ranks 1-5
   standard: 'var(--ds-text-subtlest, #64748b)',  // Gray for ranks 6-10
   buffer: 'var(--ds-text-subtlest, #94a3b8)',    // Light gray dashed for 11+
 } as const;

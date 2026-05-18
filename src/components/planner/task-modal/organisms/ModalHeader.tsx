@@ -225,7 +225,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
                 backgroundColor: COLORS.accent,
                 border: 'none',
                 borderRadius: '8px',
-                color: 'var(--ds-surface, #ffffff)',
+                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 cursor: 'pointer'
               }}
               title="Save title"
@@ -306,7 +306,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              backgroundColor: 'var(--ds-surface, #ffffff)',
+              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               borderRadius: '16px',
               padding: '24px',
               width: '400px',
@@ -330,7 +330,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
                   borderRadius: '12px',
                   fontSize: '14px',
                   fontWeight: 500,
-                  color: 'var(--ds-text-subtle, #334155)',
+                  color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                   cursor: 'pointer'
                 }}
               >
@@ -346,7 +346,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
                   borderRadius: '12px',
                   fontSize: '14px',
                   fontWeight: 500,
-                  color: 'var(--ds-surface, #ffffff)',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   cursor: isLoading ? 'not-allowed' : 'pointer',
                   opacity: isLoading ? 0.7 : 1
                 }}

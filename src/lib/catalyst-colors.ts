@@ -4,7 +4,7 @@
  * 
  * STATUS COLORS (Catalyst V5):
  * - Available: Teal #0d9488
- * - Optimal: Blue #2563eb
+ * - Optimal: Blue var(--cp-workstream-catalyst-primary, #2563eb)
  * - Over-allocated: Orange #d97706
  * - Error: Red #ef4444
  * 
@@ -60,7 +60,7 @@ export const CATALYST_V5 = {
     400: '#94a3b8',
     500: '#64748b',
     600: '#475569',
-    700: '#334155',
+    700: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
     800: '#1e293b',
     900: '#0f172a',
   },

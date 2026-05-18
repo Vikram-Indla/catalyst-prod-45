@@ -78,7 +78,7 @@ function EmptyInlineEdit() {
         defaultValue=""
         label="Summary"
         readView={() => (
-          <div style={{ padding: '6px 8px', minHeight: 32, color: 'var(--ds-text-subtlest, #94A3B8)' }}>
+          <div style={{ padding: '6px 8px', minHeight: 32, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
             {value || 'Click to add summary'}
           </div>
         )}

@@ -96,13 +96,13 @@ export function CatalystConfigureDrawer({
         <div style={{
           paddingBottom: 16,
           marginBottom: 16,
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         }}>
           <h2 style={{
             margin: 0,
             fontSize: 20,
             fontWeight: 600,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
             lineHeight: '24px',
           }}>
             Configure issue layout
@@ -225,7 +225,7 @@ function FieldConfigRow({
     >
       <span style={{
         fontSize: 14,
-        color: token('color.text', '#172B4D'),
+        color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
         fontWeight: 400,
       }}>
         {label}
@@ -239,10 +239,10 @@ function FieldConfigRow({
           gap: 4,
           height: 28,
           padding: '0 10px',
-          border: `1px solid ${isPinned ? token('color.border.brand', '#0052CC') : token('color.border', '#DFE1E6')}`,
+          border: `1px solid ${isPinned ? token('color.border.brand', 'var(--cp-primary-60, #0052CC)') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
           borderRadius: 3,
-          background: isPinned ? token('color.background.brand.bold', '#0052CC') : 'transparent',
-          color: isPinned ? '#FFFFFF' : token('color.text', '#172B4D'),
+          background: isPinned ? token('color.background.brand.bold', 'var(--cp-primary-60, #0052CC)') : 'transparent',
+          color: isPinned ? '#FFFFFF' : token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
           fontSize: 12,
           fontWeight: 500,
           cursor: 'pointer',

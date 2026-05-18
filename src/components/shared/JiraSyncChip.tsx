@@ -41,7 +41,7 @@ export function JiraSyncChip({ jiraKey, baseUrl, size = 'sm', className }: JiraS
           target="_blank"
           rel="noopener noreferrer"
           onClick={e => e.stopPropagation()}
-          className="text-[#0747A6] dark:text-[#4C9AFF] hover:text-[#0052CC]"
+          className="text-[#0747A6] dark:text-[#4C9AFF] hover:text-[var(--cp-primary-60, #0052CC)]"
         >
           <ExternalLink size={10} />
         </a>

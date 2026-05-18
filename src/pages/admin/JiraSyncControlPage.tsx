@@ -12,7 +12,7 @@ export default function JiraSyncControlPage() {
         <div className="flex items-center gap-3">
           <div
             className="h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{ background: '#DFE1E618' }}
+            style={{ background: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))18' }}
           >
             <CrossCircleIcon label="" size="small" />
           </div>

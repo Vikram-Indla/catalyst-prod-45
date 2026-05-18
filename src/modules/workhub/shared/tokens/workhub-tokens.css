@@ -1,20 +1,20 @@
 /* ═══ WORKHUB RING-FENCED DESIGN TOKENS ═══ */
 :root {
   /* Surfaces */
-  --wh-bg: var(--ds-surface, #FFFFFF);
+  --wh-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --wh-sf: var(--ds-surface-sunken, #F8FAFC);
-  --wh-sf2: var(--ds-surface-sunken, #F1F5F9);
-  --wh-sf3: var(--ds-border, #E2E8F0);
-  --wh-bdr: var(--ds-border, #E2E8F0);
+  --wh-sf2: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
+  --wh-sf3: var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
+  --wh-bdr: var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
 
   /* Text */
-  --wh-tx: var(--ds-text, #0F172A);
-  --wh-tx2: var(--ds-text-subtle, #334155);
-  --wh-tx3: var(--ds-text-subtlest, #64748B);
-  --wh-tx4: var(--ds-text-subtlest, #94A3B8);
+  --wh-tx: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
+  --wh-tx2: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
+  --wh-tx3: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
+  --wh-tx4: var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)));
 
   /* Primary */
-  --wh-pri: var(--ds-text-brand, #2563EB);
+  --wh-pri: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --wh-pri2: var(--ds-background-brand-bold-hovered, #1D4ED8);
   --wh-pri-bg: var(--ds-background-selected, #EFF6FF);
   --wh-pri-bdr: #BFDBFE;
@@ -22,7 +22,7 @@
   /* Semantic */
   --wh-suc: #10B981;
   --wh-suc-bg: #ECFDF5;
-  --wh-warn: var(--ds-text-warning, #F59E0B);
+  --wh-warn: var(--ds-text-warning, var(--cp-amber, #F59E0B));
   --wh-warn-bg: #FFFBEB;
   --wh-dng: var(--ds-text-danger, #EF4444);
   --wh-dng-bg: var(--ds-background-danger, #FEF2F2);
@@ -51,19 +51,19 @@
   /* Surfaces — ONE surface var(--ds-surface, #0A0A0A) DARK MODE */
   --wh-bg: var(--cp-bg-page, #1F1F21);
   --wh-sf: var(--cp-bg-page, #1F1F21);
-  --wh-sf2: var(--cp-bg-surface, #242528);
-  --wh-sf3: var(--cp-bg-surface, #242528);
-  --wh-bdr: var(--ds-border, #2E2E2E);
+  --wh-sf2: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  --wh-sf3: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  --wh-bdr: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 
   /* Text — warm white ladder */
-  --wh-tx: var(--ds-text, #EDEDED);
+  --wh-tx: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --wh-tx2: var(--ds-text-subtlest, #A1A1A1);
-  --wh-tx3: var(--ds-text-subtlest, #878787);
+  --wh-tx3: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
   --wh-tx4: #7D7D7D;
 
   /* Primary */
   --wh-pri: var(--ds-text-brand, #3B82F6);
-  --wh-pri2: var(--ds-text-brand, #2563EB);
+  --wh-pri2: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --wh-pri-bg: rgba(59,130,246,0.10);
   --wh-pri-bdr: rgba(59,130,246,0.20);
 

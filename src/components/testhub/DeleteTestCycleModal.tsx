@@ -307,13 +307,13 @@ export function DeleteTestCycleModal({
               height: 40,
               padding: '0 20px',
               background: (!hasTestCases || confirmText === cycle.cycle_key)
-                ? 'linear-gradient(135deg, var(--ds-text-danger, #EF4444) 0%, var(--ds-text-danger, #DC2626) 100%)'
+                ? 'linear-gradient(135deg, var(--ds-text-danger, #EF4444) 0%, var(--ds-text-danger, var(--cp-danger, #DC2626)) 100%)'
                 : 'var(--fg-4)',
               border: 'none',
               borderRadius: 8,
               fontSize: 14,
               fontWeight: 600,
-              color: 'var(--ds-text-inverse, #FFFFFF)',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               cursor: (!hasTestCases || confirmText === cycle.cycle_key) ? 'pointer' : 'not-allowed',
               opacity: isDeleting ? 0.7 : 1,
               display: 'flex',

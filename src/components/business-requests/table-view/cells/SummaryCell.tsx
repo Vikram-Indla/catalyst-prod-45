@@ -11,7 +11,7 @@ export function SummaryCell({ title }: SummaryCellProps) {
           fontFamily: 'var(--cp-font-body)', /* V12 */
           fontSize: 13, /* V12 */
           fontWeight: 400, /* V12 */
-          color: 'var(--fg-1, #0F172A)', /* V12 */
+          color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', /* V12 */
           display: 'block',
           overflow: 'hidden',
           textOverflow: 'ellipsis',

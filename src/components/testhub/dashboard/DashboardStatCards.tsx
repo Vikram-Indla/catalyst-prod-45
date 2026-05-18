@@ -54,7 +54,7 @@ const CARDS = [
     label: 'Blocked Tests',
     icon: AlertTriangle,
     iconBg: '#FFFBEB',
-    iconColor: 'var(--ds-text-warning, #F59E0B)',
+    iconColor: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))',
     getValue: (s: DashboardStats) => s.total_blocked,
     getSub: (s: DashboardStats) => `${s.total_failed} failed`,
     warnWhenPositive: true,

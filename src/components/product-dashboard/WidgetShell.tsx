@@ -27,7 +27,7 @@ export function WidgetIconBtn({
         border: 'none',
         background: hover ? token('color.background.neutral.hovered', '#F1F2F4') : 'transparent',
         borderRadius: 4,
-        color: token('color.text.subtle', '#44546F'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
         cursor: 'pointer',
         display: 'inline-flex',
         alignItems: 'center',
@@ -85,7 +85,7 @@ export function WidgetShell({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: collapsed ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderBottom: collapsed ? 'none' : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
           gap: 12,
           cursor: 'pointer',
           userSelect: 'none',
@@ -98,7 +98,7 @@ export function WidgetShell({
               margin: 0,
               fontSize: 20,
               fontWeight: 500,
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
               lineHeight: '24px',
             }}
           >
@@ -109,7 +109,7 @@ export function WidgetShell({
               style={{
                 fontSize: 13,
                 lineHeight: '18px',
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                 marginTop: 2,
                 fontStyle: 'italic',
               }}
@@ -142,10 +142,10 @@ export function WidgetShell({
             <div
               style={{
                 padding: '10px 24px',
-                borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+                borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                 fontSize: 11,
                 lineHeight: '16px',
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',

@@ -116,7 +116,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
     }
   };
 
-  const AVATAR_COLORS = ['#7C3AED', 'var(--ds-text-brand, #2563EB)', '#0D9488', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, #DC2626)'];
+  const AVATAR_COLORS = ['var(--cp-purple-60, #7C3AED)', 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))'];
 
   return (
     <div className="ph-card">
@@ -142,7 +142,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
 
         {searchResults.length > 0 && (
           <div
-            className="absolute top-full left-0 right-0 mt-1 z-10 max-h-[200px] overflow-y-auto bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
+            className="absolute top-full left-0 right-0 mt-1 z-10 max-h-[200px] overflow-y-auto bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
             style={{ border: '1px solid var(--divider)', borderRadius: 8, boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)' }}
           >
             {searchResults.map(user => (
@@ -200,7 +200,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
             <ModalTitle appearance="warning">Remove member</ModalTitle>
           </ModalHeader>
           <ModalBody>
-            <p style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', margin: 0 }}>
+            <p style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', margin: 0 }}>
               Remove <strong>{pendingRemove.name}</strong> from this project? They will lose access to all project work items and settings.
             </p>
           </ModalBody>

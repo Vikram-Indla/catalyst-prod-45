@@ -145,7 +145,7 @@ function SidebarRow({ label, children }: { label: string; children: ReactNode })
           paddingTop: 8,
           fontSize: 12,
           fontWeight: 600,
-          color: token('color.text.subtle', '#44546F'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
           fontFamily: 'var(--cp-font-body)',
         }}
       >
@@ -391,7 +391,7 @@ export function BrSidebarDetails({ request, onUpdate }: Props) {
         style={{
           marginTop: 16,
           paddingTop: 12,
-          borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
           display: 'flex',
           flexDirection: 'column',
           gap: 4,

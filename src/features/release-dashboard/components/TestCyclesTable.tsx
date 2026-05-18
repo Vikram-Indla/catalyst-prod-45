@@ -62,7 +62,7 @@ export function TestCyclesTable({ cycles, releaseId }: TestCyclesTableProps) {
               <td className="py-2">
                 <div
                   className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-medium"
-                  style={{ backgroundColor: 'var(--ds-text-brand, #2563eb)' }}
+                  style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }}
                 >
                   {cycle.assignee.initials}
                 </div>

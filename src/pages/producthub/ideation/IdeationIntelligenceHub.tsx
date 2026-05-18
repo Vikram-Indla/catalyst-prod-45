@@ -15,10 +15,10 @@ interface Props {
 }
 
 const C = {
-  primary: 'var(--ds-text-brand, #2563eb)', success: '#0d9488', warning: 'var(--ds-text-warning, #d97706)', danger: 'var(--ds-text-danger, #ef4444)',
-  textPrimary: 'var(--ds-text, #0f172a)', textSecondary: 'var(--ds-text-subtle, #334155)', textTertiary: 'var(--ds-text-subtle, #475569)',
-  surface: 'var(--ds-surface-sunken, #f8fafc)', surfaceAlt: 'var(--ds-surface-sunken, #f1f5f9)', border: 'var(--ds-border, #e2e8f0)', bg: 'var(--ds-text-inverse, #ffffff)',
-  insightBg: 'var(--ds-background-selected, #eff6ff)', insightText: '#1e40af', insightBorder: 'var(--ds-text-brand, #2563eb)',
+  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', success: '#0d9488', warning: 'var(--ds-text-warning, #d97706)', danger: 'var(--ds-text-danger, #ef4444)',
+  textPrimary: 'var(--ds-text, #0f172a)', textSecondary: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', textTertiary: 'var(--ds-text-subtle, #475569)',
+  surface: 'var(--ds-surface-sunken, #f8fafc)', surfaceAlt: 'var(--ds-surface-sunken, #f1f5f9)', border: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', bg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+  insightBg: 'var(--ds-background-selected, #eff6ff)', insightText: '#1e40af', insightBorder: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   gapBg: 'var(--ds-background-danger, #fef2f2)', gapText: 'var(--ds-text-danger, #991b1b)', gapBody: '#7f1d1d', gapBorder: 'var(--ds-text-danger, #ef4444)',
 } as const;
 
@@ -32,7 +32,7 @@ function computeThemes(ideas: Idea[]) {
   });
   const sorted = Object.entries(map).sort((a, b) => b[1] - a[1]);
   const max = sorted[0]?.[1] || 1;
-  const colors = ['var(--ds-text-brand, #2563EB)', '#7C3AED', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-success, #16A34A)', '#0D9488', 'var(--ds-text-danger, #EF4444)', '#EC4899', '#6366F1'];
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, #EF4444)', '#EC4899', '#6366F1'];
   return sorted.slice(0, 8).map(([name, count], i) => ({
     name, count, pct: Math.round((count / max) * 100),
     trend: i < 2 ? '↑ trending' : i < 4 ? '→ stable' : '↑ new',
@@ -111,9 +111,9 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{
-            width: '36px', height: '50px', borderRadius: '50%', background: '#7C3AED',
+            width: '36px', height: '50px', borderRadius: '50%', background: 'var(--cp-purple-60, #7C3AED)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '16px', color: 'var(--ds-text-inverse, #FFFFFF)',
+            fontSize: '16px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           }}>✦</div>
           <div>
             <div style={{ fontSize: '20px', fontWeight: 800, color: C.textPrimary }}>AI Ideas Hub</div>
@@ -132,10 +132,10 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
       {/* ══ KPI Stat Strip ══ */}
       <div style={{ padding: '20px 32px', display: 'flex', gap: '16px' }}>
         {[
-          { value: String(duplicates.length), label: `idea pairs with keyword overlap`, title: 'DUPLICATE SIGNALS', valueColor: 'var(--ds-text-warning, #D97706)' },
-          { value: String(themes.length), label: 'themes identified from backlog', title: 'THEMES DISCOVERED', valueColor: 'var(--ds-text-brand, #2563EB)' },
-          { value: `${conversionRate}%`, label: `${converted} of ${total} ideas converted`, title: 'CONVERSION RATE', valueColor: 'var(--ds-text-success, #16A34A)' },
-          { value: String(underReview), label: `ideas pending review`, title: 'UNDER REVIEW', valueColor: '#0D9488' },
+          { value: String(duplicates.length), label: `idea pairs with keyword overlap`, title: 'DUPLICATE SIGNALS', valueColor: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+          { value: String(themes.length), label: 'themes identified from backlog', title: 'THEMES DISCOVERED', valueColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+          { value: `${conversionRate}%`, label: `${converted} of ${total} ideas converted`, title: 'CONVERSION RATE', valueColor: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+          { value: String(underReview), label: `ideas pending review`, title: 'UNDER REVIEW', valueColor: 'var(--cp-teal-60, #0D9488)' },
         ].map(s => (
           <div key={s.title} style={{
             flex: 1, background: C.bg, border: `1px solid ${C.border}`, borderRadius: '12px', padding: '16px 20px',
@@ -201,7 +201,7 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
         <ContentCard title="Team Distribution" badge={`${teamStats.length} teams`} badgeColor={C.success}>
           {teamStats.map(([team, count]) => {
             const pct = Math.round((count / total) * 100);
-            const barColor = team.includes('BAU') ? 'var(--ds-text-brand, #2563EB)' : team.includes('Integration') ? '#0D9488' : team.includes('Mobile') ? '#7C3AED' : 'var(--ds-text-subtlest, #64748B)';
+            const barColor = team.includes('BAU') ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : team.includes('Integration') ? 'var(--cp-teal-60, #0D9488)' : team.includes('Mobile') ? 'var(--cp-purple-60, #7C3AED)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
             return (
               <div key={team} style={{ marginBottom: '14px', paddingBottom: '14px', borderBottom: `1px solid ${C.surfaceAlt}` }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
@@ -220,9 +220,9 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
         <ContentCard title="Status Breakdown" badge={`${total} ideas`} badgeColor={C.success}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
             {[
-              { name: 'Under Review', count: underReview, color: 'var(--ds-text-warning, #D97706)' },
-              { name: 'Converted', count: converted, color: 'var(--ds-text-success, #16A34A)' },
-              { name: 'Submitted', count: submitted, color: 'var(--ds-text-brand, #2563EB)' },
+              { name: 'Under Review', count: underReview, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+              { name: 'Converted', count: converted, color: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+              { name: 'Submitted', count: submitted, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
             ].map(p => (
               <div key={p.name} style={{
                 background: C.surface, border: `1px solid ${C.border}`,
@@ -300,7 +300,7 @@ function DuplicatePair({ match, idea1, idea2, signals, onMerge }: {
       </div>
       <div style={{ display: 'flex', gap: '8px' }}>
         <button onClick={() => { if (onMerge) onMerge(); else toast.success('Merge initiated'); }}
-          style={{ background: C.primary, color: 'var(--ds-text-inverse, #ffffff)', border: 'none', borderRadius: '6px', padding: '6px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
+          style={{ background: C.primary, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '6px', padding: '6px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
           Merge Ideas
         </button>
         <button onClick={() => toast('Kept separate')}

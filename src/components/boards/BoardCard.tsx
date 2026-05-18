@@ -65,8 +65,8 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
   };
 
   const visibilityChip = () => {
-    if (board.visibility === 'private') return { label: '🔒 Private', bg: 'rgba(217,119,6,0.06)', color: 'var(--ds-text-warning, #D97706)' };
-    if (board.visibility === 'global') return { label: '🌐 Organisation', bg: 'rgba(37,99,235,0.06)', color: 'var(--ds-text-brand, #2563EB)' };
+    if (board.visibility === 'private') return { label: '🔒 Private', bg: 'rgba(217,119,6,0.06)', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' };
+    if (board.visibility === 'global') return { label: '🌐 Organisation', bg: 'rgba(37,99,235,0.06)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' };
     return { label: 'Project', bg: 'var(--bg-1)', color: 'var(--fg-3)' };
   };
 
@@ -80,7 +80,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
         onMouseLeave={() => setHover(false)}
         style={{
           background: 'var(--bg-app)',
-          border: `0.75px solid ${isDark ? (hover ? 'var(--ds-border-bold, #454545)' : 'var(--ds-border, #2E2E2E)') : (hover ? 'rgba(15,23,42,0.18)' : 'rgba(15,23,42,0.12)')}`,
+          border: `0.75px solid ${isDark ? (hover ? 'var(--ds-border-bold, #454545)' : 'var(--ds-border, var(--cp-ink-1, #2E2E2E))') : (hover ? 'rgba(15,23,42,0.18)' : 'rgba(15,23,42,0.12)')}`,
           borderRadius: 8, cursor: 'pointer', position: 'relative',
           transition: 'box-shadow 150ms, border-color 150ms',
           boxShadow: hover ? (isDark ? '0 4px 16px rgba(0,0,0,0.30)' : '0 4px 16px rgba(15,23,42,0.10)') : 'none',
@@ -115,7 +115,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               opacity: hover || menuOpen ? 1 : 0, transition: 'opacity 150ms',
             }}>
-              <MoreIcon label="Board actions" size="small" primaryColor="var(--ds-text-subtlest, #64748B)" />
+              <MoreIcon label="Board actions" size="small" primaryColor="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
             </button>
             {menuOpen && (
               <div style={{
@@ -149,16 +149,16 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             transition: 'opacity 150ms',
           }}>
             {board.isStarred
-              ? <StarStarredIcon label="Starred" size="small" primaryColor="var(--ds-text-warning, #D97706)" />
-              : <StarUnstarredIcon label="Star board" size="small" primaryColor="var(--ds-text-subtlest, #94A3B8)" />
+              ? <StarStarredIcon label="Starred" size="small" primaryColor="var(--ds-text-warning, var(--cp-warning, #D97706))" />
+              : <StarUnstarredIcon label="Star board" size="small" primaryColor="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
             }
           </button>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
-            {board.isPersonal && <Chip bg={'var(--cp-primary-light, #EFF6FF)'} color="var(--ds-text-brand, #2563EB)">Personal</Chip>}
+            {board.isPersonal && <Chip bg={'var(--cp-primary-light, #EFF6FF)'} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))">Personal</Chip>}
             <Chip bg={vis.bg} color={vis.color}>{vis.label}</Chip>
             {board.swimlaneType !== 'none' && (
-              <Chip bg={'var(--cp-bg-page, #F8FAFC)'} color={'var(--cp-text-tertiary, #64748B)'}>By {board.swimlaneType}</Chip>
+              <Chip bg={'var(--cp-bg-page, #F8FAFC)'} color={'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'}>By {board.swimlaneType}</Chip>
             )}
             {/* Jira Sync badge */}
             {hasJiraSync && (
@@ -166,10 +166,10 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
                 display: 'inline-flex', alignItems: 'center', gap: 4,
                 height: 18, padding: '0 8px', borderRadius: 8,
                 background: isDark ? 'rgba(0,82,204,0.15)' : 'rgba(0,82,204,0.06)', border: isDark ? '0.75px solid rgba(0,82,204,0.30)' : '0.75px solid rgba(0,82,204,0.18)',
-                fontSize: 10.5, fontWeight: 600, color: '#0052CC',
+                fontSize: 10.5, fontWeight: 600, color: 'var(--cp-primary-60, #0052CC)',
                 fontFamily: 'var(--cp-font-body)',
               }}>
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#0052CC' }} />
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--cp-primary-60, #0052CC)' }} />
                 Jira Sync
               </span>
             )}
@@ -193,7 +193,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8,
           padding: '8px 12px',
-          background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-1)', borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)',
+          background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-1)', borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)',
         }}>
           <button onClick={e => { e.stopPropagation(); onSettings(); }} style={{
             display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 10px',
@@ -206,7 +206,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           <button onClick={e => { e.stopPropagation(); handleOpen(); }} style={{
             display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '8px 12px',
             background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: 'pointer',
-            fontSize: 11.5, fontWeight: 600, color: 'var(--ds-surface, #FFFFFF)', fontFamily: 'var(--cp-font-body)',
+            fontSize: 11.5, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontFamily: 'var(--cp-font-body)',
           }}>
             Open Board <ArrowRightIcon label="" size="small" />
           </button>
@@ -253,7 +253,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
                   padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
                   border: 'none',
                   background: deleteConfirm === board.name ? 'var(--sem-danger)' : 'var(--divider)',
-                  color: deleteConfirm === board.name ? 'var(--ds-surface, #FFFFFF)' : 'var(--fg-4)',
+                  color: deleteConfirm === board.name ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--fg-4)',
                   cursor: deleteConfirm === board.name ? 'pointer' : 'not-allowed',
                   fontFamily: 'var(--cp-font-body)',
                 }}>

@@ -45,7 +45,7 @@ export function BulkFooterBar({
         paddingLeft: 16,
         paddingRight: 16,
         backgroundColor: token('color.background.neutral.subtle', '#F7F8F9'),
-        borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         zIndex: 100,
         boxShadow: token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.13)'),
       }}
@@ -55,7 +55,7 @@ export function BulkFooterBar({
         style={{
           fontSize: 14,
           fontWeight: 500,
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
         }}
       >
         {selectedCount} selected
@@ -99,7 +99,7 @@ export function BulkFooterBar({
           style={{
             padding: '6px 12px',
             borderRadius: 3,
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             background: token('color.background.neutral', '#FFFFFF'),
             color: token('color.text.danger', '#AE2A19'),
             cursor: 'pointer',
@@ -118,9 +118,9 @@ export function BulkFooterBar({
           style={{
             padding: '6px 12px',
             borderRadius: 3,
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             background: token('color.background.neutral', '#FFFFFF'),
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
             cursor: 'pointer',
             fontSize: 14,
             fontWeight: 500,
@@ -137,9 +137,9 @@ export function BulkFooterBar({
           style={{
             padding: '6px 12px',
             borderRadius: 3,
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             background: token('color.background.neutral', '#FFFFFF'),
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
             cursor: 'pointer',
             fontSize: 14,
             fontWeight: 500,

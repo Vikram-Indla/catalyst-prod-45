@@ -4,9 +4,9 @@ import { getStatusCategory, getStaleIndicator, WH_HUB_COLORS, WH_HUB_SHORT } fro
 import { HighlightText } from './Resource360Shared';
 
 const T = {
-  bg: '#F5F0EB', surface: 'var(--ds-text-inverse, #FFFFFF)', text1: 'var(--ds-surface, #0A0A0A)', text2: '#1A1A2E',
+  bg: '#F5F0EB', surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', text1: 'var(--ds-surface, #0A0A0A)', text2: '#1A1A2E',
   text3: '#3D3D56', text4: '#6B6B80', border: '#D9D2C9',
-  todo: '#E23636', progress: 'var(--ds-text-brand, #2563EB)', done: '#0E8A5F',
+  todo: '#E23636', progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', done: '#0E8A5F',
   shadow: '0 2px 8px rgba(0,0,0,.12)',
   mono: "'JetBrains Mono', 'SF Mono', monospace",
 };
@@ -69,7 +69,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
             {/* Cards */}
             <div style={{ flex: 1, overflowY: 'auto', paddingRight: 4 }}>
               {col.items.map(item => {
-                const hubColor = WH_HUB_COLORS[item.hub] ?? 'var(--ds-text-subtlest, #64748B)';
+                const hubColor = WH_HUB_COLORS[item.hub] ?? 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
                 const hubShort = WH_HUB_SHORT[item.hub] ?? item.hub?.slice(0, 4).toUpperCase();
                 const stale = getStaleIndicator(item.age_days, item.status, item.status_category);
 

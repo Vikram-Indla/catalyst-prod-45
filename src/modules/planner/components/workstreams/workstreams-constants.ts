@@ -10,22 +10,22 @@
 export const COLORS = {
   // Text
   textPrimary: 'var(--ds-text, #0f172a)',
-  textSecondary: 'var(--ds-text-subtle, #334155)',
+  textSecondary: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
   textMuted: 'var(--ds-text-subtlest, #64748b)',
   textLight: 'var(--ds-text-subtlest, #94a3b8)',
 
   // Surfaces
-  surfaceWhite: 'var(--ds-surface, #ffffff)',
+  surfaceWhite: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   surfacePage: 'var(--ds-surface-sunken, #f8fafc)',
   surfaceHover: 'var(--ds-surface-sunken, #f1f5f9)',
   surfaceSelected: '#dbeafe',
 
   // Borders
-  borderLight: 'var(--ds-border, #e2e8f0)',
+  borderLight: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
   borderDefault: 'var(--ds-text-disabled, #cbd5e1)',
 
   // Brand
-  accent: 'var(--ds-text-brand, #2563eb)',
+  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   accentHover: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
   accentLight: '#dbeafe',
   accentLighter: 'var(--ds-background-selected, #eff6ff)',

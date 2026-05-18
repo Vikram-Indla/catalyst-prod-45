@@ -17,15 +17,15 @@ const QUARTER_STYLES: Record<string, { bg: string; color: string }> = {
 };
 
 const headerStyle: React.CSSProperties = {
-  fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #64748B)', fontFamily: 'var(--cp-font-body)',
+  fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)',
   textTransform: 'uppercase', letterSpacing: '0.07em',
   background: 'var(--bg-1, #F8FAFC)', height: 50, padding: '8px 12px',
-  borderBottom: '2px solid var(--bd-default, #E2E8F0)', position: 'sticky', top: 0, zIndex: 2,
+  borderBottom: '2px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', position: 'sticky', top: 0, zIndex: 2,
   textAlign: 'left', whiteSpace: 'nowrap',
 };
 
 const cellStyle: React.CSSProperties = {
-  height: 50, padding: '8px 12px', borderBottom: '1px solid #F1F5F9',
+  height: 50, padding: '8px 12px', borderBottom: '1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
   verticalAlign: 'middle', whiteSpace: 'nowrap',
 };
 
@@ -86,7 +86,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                 <td style={cellStyle}>
                   {idea.team ? (
                     <span style={{
-                      fontSize: 10, fontWeight: 600, background: 'var(--ds-surface-sunken, #F1F5F9)',
+                      fontSize: 10, fontWeight: 600, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
                       color: 'var(--fg-2)', padding: '2px 6px', borderRadius: 4,
                     }}>{idea.team}</span>
                   ) : <span style={{ color: 'var(--ds-text-disabled, #CBD5E1)' }}>—</span>}
@@ -129,7 +129,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                 <td style={cellStyle}>
                   {isConverted(idea.status) ? (
                     <span style={{
-                      fontSize: 10, fontWeight: 700, background: '#1B7F37', color: 'var(--bg-app)',
+                      fontSize: 10, fontWeight: 700, background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--bg-app)',
                       border: '1px solid #B7EBD1', padding: '2px 6px', borderRadius: 4,
                     }}>✓</span>
                   ) : idea.isCommitted ? (

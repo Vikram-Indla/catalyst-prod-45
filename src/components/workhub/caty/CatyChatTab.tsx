@@ -58,7 +58,7 @@ export function CatyChatTab() {
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center text-white"
               style={{
-                background: 'linear-gradient(135deg, var(--ds-text-brand, #2563eb), var(--ds-background-brand-bold-hovered, #1D4ED8))',
+                background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)), var(--ds-background-brand-bold-hovered, #1D4ED8))',
               }}
             >
               <MessageSquare className="w-5 h-5" />
@@ -150,7 +150,7 @@ export function CatyChatTab() {
                 onClick={() => handleSuggestionClick(chip)}
                 className="px-3 py-1.5 rounded-full border text-xs font-medium hover:opacity-80 transition-all"
                 style={{
-                  backgroundColor: 'var(--ds-text-inverse, #ffffff)',
+                  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   borderColor: 'var(--wh-border)',
                   color: 'var(--wh-text-primary)',
                 }}
@@ -190,7 +190,7 @@ export function CatyChatTab() {
           disabled={!input.trim() || isTyping}
           className="w-8 h-8 rounded-lg flex items-center justify-center transition-all disabled:opacity-50"
           style={{
-            backgroundColor: input.trim() && !isTyping ? 'var(--wh-primary)' : 'var(--ds-border, #e2e8f0)',
+            backgroundColor: input.trim() && !isTyping ? 'var(--wh-primary)' : 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
           }}
         >
           <Send

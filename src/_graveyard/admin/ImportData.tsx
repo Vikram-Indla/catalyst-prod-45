@@ -158,8 +158,8 @@ export default function ImportData() {
         onClick={() => { setImportSource('csv'); setSelectedModule(null); }}
         className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
           importSource === 'csv'
-            ? 'bg-[#2563EB] text-white'
-            : 'bg-[#F1F5F9] text-muted-foreground hover:bg-[#E2E8F0]'
+            ? 'bg-[var(--cp-workstream-catalyst-primary, #2563EB)] text-white'
+            : 'bg-[var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))] text-muted-foreground hover:bg-[var(--cp-border, var(--cp-bg-sunken, #E2E8F0))]'
         }`}
       >
         CSV Import
@@ -168,8 +168,8 @@ export default function ImportData() {
         onClick={() => setImportSource('notion')}
         className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
           importSource === 'notion'
-            ? 'bg-[#2563EB] text-white'
-            : 'bg-[#F1F5F9] text-muted-foreground hover:bg-[#E2E8F0]'
+            ? 'bg-[var(--cp-workstream-catalyst-primary, #2563EB)] text-white'
+            : 'bg-[var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))] text-muted-foreground hover:bg-[var(--cp-border, var(--cp-bg-sunken, #E2E8F0))]'
         }`}
       >
         Notion Import
@@ -181,7 +181,7 @@ export default function ImportData() {
   if (importSource === 'notion') {
     return (
       <div className="flex flex-col h-full bg-[#F8FAFC]">
-        <div className="px-6 pt-4 bg-white border-b border-[#E2E8F0]">
+        <div className="px-6 pt-4 bg-white border-b border-[var(--cp-border, var(--cp-bg-sunken, #E2E8F0))]">
           {sourceTabs}
         </div>
         <div className="flex-1 min-h-0 overflow-auto">

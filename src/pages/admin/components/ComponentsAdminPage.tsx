@@ -92,7 +92,7 @@ function StatsStrip() {
             style={{
               fontSize: 11,
               fontWeight: 600,
-              color: token('color.text.subtle', '#44546F'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             }}
           >
             {item.label}
@@ -104,7 +104,7 @@ function StatsStrip() {
               color:
                 item.tone === 'banned'
                   ? token('color.text.danger', '#AE2A19')
-                  : token('color.text', '#172B4D'),
+                  : token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
               marginTop: token('space.050', '4px'),
             }}
           >
@@ -140,7 +140,7 @@ function ComponentListItem({
       isSelected={selected}
       onClick={onSelect}
       iconAfter={
-        <span style={{ fontSize: 11, color: token('color.text.subtle', '#44546F') }}>
+        <span style={{ fontSize: 11, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
           {consumerCount}
         </span>
       }
@@ -218,13 +218,13 @@ function InventoryPane() {
           borderRadius: 6,
           padding: token('space.300', '24px'),
           background: token('elevation.surface', '#FFFFFF'),
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
         }}
       >
         {selected ? (
           <ComponentSpecCard entry={selected} />
         ) : (
-          <span style={{ color: token('color.text.subtle', '#44546F') }}>
+          <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
             Select a component on the left to view its spec.
           </span>
         )}
@@ -256,7 +256,7 @@ function BannedPane() {
               borderRadius: 6,
               padding: token('space.200', '16px'),
               background: token('color.background.danger', '#FFEDEB'),
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
             }}
           >
             <div
@@ -274,7 +274,7 @@ function BannedPane() {
               style={{
                 marginTop: token('space.075', '6px'),
                 fontSize: 11,
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
               }}
             >
               CLAUDE.md anchor: {entry.banned_anchor}
@@ -284,7 +284,7 @@ function BannedPane() {
                 marginTop: token('space.100', '8px'),
                 fontSize: 13,
                 lineHeight: '18px',
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
               }}
             >
               {entry.banned_reason}
@@ -321,7 +321,7 @@ function PlaceholderPane({ step, title }: { step: number; title: string }) {
         border: `1px solid ${token('color.border', '#DCDFE4')}`,
         borderRadius: 6,
         background: token('color.background.neutral.subtle', '#F7F8F9'),
-        color: token('color.text.subtle', '#44546F'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
         fontSize: 13,
       }}
     >
@@ -340,7 +340,7 @@ export default function ComponentsAdminPage() {
           padding: '24px 32px',
           maxWidth: 1400,
           margin: '0 auto',
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
         }}
       >
         <Heading size="xlarge">Components</Heading>
@@ -348,7 +348,7 @@ export default function ComponentsAdminPage() {
           style={{
             marginTop: 0,
             marginBottom: token('space.300', '24px'),
-            color: token('color.text.subtle', '#44546F'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             fontSize: 14,
             lineHeight: '20px',
             maxWidth: 760,

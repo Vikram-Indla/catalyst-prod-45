@@ -19,7 +19,7 @@ interface ExportOptions {
 
 // Brand colors for enterprise styling
 const BRAND_COLORS = {
-  primary: 'var(--ds-text-brand, #2563eb)',
+  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   secondary: '#1e40af',
   accent: 'var(--ds-text-brand, #3b82f6)',
   text: '#1f2937',
@@ -199,7 +199,7 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
       theme: 'grid',
       headStyles: {
         fillColor: BRAND_COLORS.primary,
-        textColor: 'var(--ds-surface, #ffffff)',
+        textColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         fontSize: 9,
         fontStyle: 'bold',
         halign: 'left',

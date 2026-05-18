@@ -19,7 +19,7 @@ const TEXT_COLORS = [
   { label: 'Yellow', value: '#FF991F' },
   { label: 'Green', value: '#00875A' },
   { label: 'Teal', value: '#00B8D9' },
-  { label: 'Blue', value: '#0052CC' },
+  { label: 'Blue', value: 'var(--cp-primary-60, #0052CC)' },
   { label: 'Purple', value: '#6554C0' },
   { label: 'Pink', value: '#FF5630' },
 ];
@@ -251,7 +251,7 @@ function ColorBtn({ editor }: { editor: Editor }) {
       >
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
           <Type size={13} />
-          <div style={{ width: 12, height: 3, borderRadius: 1, background: currentColor ?? '#172B4D' }} />
+          <div style={{ width: 12, height: 3, borderRadius: 1, background: currentColor ?? 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))' }} />
         </div>
       </button>
       {open && (
@@ -267,7 +267,7 @@ function ColorBtn({ editor }: { editor: Editor }) {
                 setOpen(false);
               }}
               className="jde-color-swatch"
-              style={{ background: c.value ?? '#172B4D', outline: currentColor === c.value ? '2px solid #2563EB' : 'none' }}
+              style={{ background: c.value ?? 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))', outline: currentColor === c.value ? '2px solid #2563EB' : 'none' }}
             />
           ))}
         </div>
@@ -378,7 +378,7 @@ const INSERT_ITEMS = [
   // Jira-parity: Action item, Mention, Decision at top
   {
     label: 'Action item',
-    icon: <CheckSquare size={14} style={{ color: '#0052CC' }} />,
+    icon: <CheckSquare size={14} style={{ color: 'var(--cp-primary-60, #0052CC)' }} />,
     cmd: (e: Editor) => e.chain().focus().toggleTaskList().run(),
   },
   {
@@ -399,7 +399,7 @@ const INSERT_ITEMS = [
   },
   {
     label: 'Info panel',
-    icon: <Info size={14} style={{ color: '#0052CC' }} />,
+    icon: <Info size={14} style={{ color: 'var(--cp-primary-60, #0052CC)' }} />,
     cmd: (e: Editor) => e.chain().focus().insertContent({ type: 'panel', attrs: { panelType: 'info' }, content: [{ type: 'paragraph' }] }).run(),
   },
   {
@@ -555,11 +555,11 @@ function AIImproveBtn({ editor }: { editor: Editor }) {
         onMouseDown={e => { e.preventDefault(); setOpen(v => !v); }}
         className="jde-tb-style-btn"
         title="AI: Improve description"
-        style={{ color: '#7C3AED', gap: 3 }}
+        style={{ color: 'var(--cp-purple-60, #7C3AED)', gap: 3 }}
       >
-        <Sparkles size={13} style={{ color: '#7C3AED' }} />
-        <span style={{ fontSize: 12, fontWeight: 500, color: '#7C3AED' }}>Improve</span>
-        <ChevronDown size={10} style={{ color: '#7C3AED' }} />
+        <Sparkles size={13} style={{ color: 'var(--cp-purple-60, #7C3AED)' }} />
+        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-purple-60, #7C3AED)' }}>Improve</span>
+        <ChevronDown size={10} style={{ color: 'var(--cp-purple-60, #7C3AED)' }} />
       </button>
       {open && (
         <div className="jde-dropdown jde-dropdown--style">
@@ -572,9 +572,9 @@ function AIImproveBtn({ editor }: { editor: Editor }) {
                 setOpen(false);
               }}
               className="jde-dropdown-item jde-dropdown-item--row"
-              style={{ color: '#7C3AED' }}
+              style={{ color: 'var(--cp-purple-60, #7C3AED)' }}
             >
-              <span className="jde-dropdown-icon" style={{ color: '#7C3AED' }}>{a.icon}</span>
+              <span className="jde-dropdown-icon" style={{ color: 'var(--cp-purple-60, #7C3AED)' }}>{a.icon}</span>
               {a.label}
             </button>
           ))}

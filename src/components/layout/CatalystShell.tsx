@@ -99,10 +99,10 @@ import { HubSurface } from './HubSurface';
 // V3 Canonical White Canvas (Apr 27, 2026 audit, L36).
 // Was '#E9F2FE' (light Jira blue) — painted on <main> for every hub-surface
 // route, producing a global blue tint that didn't match Jira's actual
-// background (which is white var(--ds-surface, #FFFFFF)). Catalyst owner decision: all hub
+// background (which is white var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))). Catalyst owner decision: all hub
 // pages are white-canvas. Kept as a named constant in case we ever bring
 // back a tinted page wash.
-const JIRA_CANVAS_BG = 'var(--ds-surface, #FFFFFF)';
+const JIRA_CANVAS_BG = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
 function useIsDarkTheme(): boolean {
   return useSyncExternalStore(
     (onChange) => {
@@ -401,7 +401,7 @@ function CatalystShellContent() {
   // This produces Jira's exact two-tier shell: canvas dim, sidebar+header
   // raised. Previously fell back to --cp-bg legacy alias.
   const mainBg = isWhiteCanvasRoute
-    ? 'var(--ds-surface, #FFFFFF)'
+    ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'
     : isDarkTheme
       ? 'var(--ds-background-neutral, #1D2125)'
       : (isHubSurfaceRoute ? JIRA_CANVAS_BG : 'var(--cp-bg)');
@@ -719,7 +719,7 @@ function CatalystShellContent() {
               background: 'var(--ds-background-neutral-subtle, transparent)',
               border: 'none',
               cursor: 'pointer',
-              color: 'var(--ds-text, var(--cp-t1, #172B4D))',
+              color: 'var(--ds-text, var(--cp-t1, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))))',
               zIndex: 50,
             }}
           >

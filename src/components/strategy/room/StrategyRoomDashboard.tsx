@@ -65,14 +65,14 @@ const TOKENS = `
 [data-srd] {
   --srd-ink:#09090B; --srd-ink-2:#18181B; --srd-ink-3:#3F3F46;
   --srd-ink-m:#71717A;
-  --srd-bg:var(--ds-text-inverse, #FFFFFF); --srd-bg-2:#FAFAFA; --srd-bg-3:#F4F4F5;
+  --srd-bg:var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); --srd-bg-2:#FAFAFA; --srd-bg-3:#F4F4F5;
   --srd-bdr:#E4E4E7; --srd-bdr-s:#D4D4D8;
-  --srd-blue:var(--ds-text-brand, #2563EB); --srd-blue-h:var(--ds-background-brand-bold-hovered, #1D4ED8); --srd-blue-bg:var(--ds-background-selected, #EFF6FF); --srd-blue-bdr:#BFDBFE;
-  --srd-teal:#0D9488; --srd-teal-t:#0A8277; --srd-teal-bg:#F0FDFA;
-  --srd-green:var(--ds-text-success, #16A34A); --srd-green-t:#11853D; --srd-green-bg:#F0FDF4;
-  --srd-red:var(--ds-text-danger, #DC2626); --srd-red-t:#D92525; --srd-red-bg:var(--ds-background-danger, #FEF2F2);
-  --srd-purple:var(--ds-text-brand, #2563EB);
-  --srd-ai:var(--ds-text-brand, #2563EB); --srd-ai-d:#1E40AF; --srd-ai-bg:var(--ds-background-selected, #EFF6FF); --srd-ai-bdr:#93C5FD;
+  --srd-blue:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); --srd-blue-h:var(--ds-background-brand-bold-hovered, #1D4ED8); --srd-blue-bg:var(--ds-background-selected, #EFF6FF); --srd-blue-bdr:#BFDBFE;
+  --srd-teal:var(--cp-teal-60, #0D9488); --srd-teal-t:#0A8277; --srd-teal-bg:#F0FDFA;
+  --srd-green:var(--ds-text-success, var(--cp-success, #16A34A)); --srd-green-t:#11853D; --srd-green-bg:#F0FDF4;
+  --srd-red:var(--ds-text-danger, var(--cp-danger, #DC2626)); --srd-red-t:#D92525; --srd-red-bg:var(--ds-background-danger, #FEF2F2);
+  --srd-purple:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
+  --srd-ai:var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); --srd-ai-d:#1E40AF; --srd-ai-bg:var(--ds-background-selected, #EFF6FF); --srd-ai-bdr:#93C5FD;
   --srd-r:4px; --srd-r2:6px; --srd-r3:8px; --srd-r4:12px; --srd-pill:9999px;
   font-family: var(--cp-font-body); color:var(--srd-ink);
   -webkit-font-smoothing:antialiased; line-height:1.5;
@@ -86,8 +86,8 @@ const TOKENS = `
   --srd-ink-m: rgba(255,255,255,0.60);
   --srd-bg: var(--ds-surface, #0A0A0A);
   --srd-bg-2: var(--ds-surface, #0A0A0A);
-  --srd-bg-3: var(--ds-border, #292929);
-  --srd-bdr: var(--ds-border, #2E2E2E);
+  --srd-bg-3: var(--ds-border, var(--cp-ink-1, #292929));
+  --srd-bdr: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --srd-bdr-s: var(--ds-border-bold, #454545);
   --srd-blue: var(--ds-text-brand, #3B82F6);
   --srd-blue-h: var(--ds-text-brand, #60A5FA);

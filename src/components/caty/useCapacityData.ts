@@ -10,7 +10,7 @@ import { getInitials } from './types';
 
 // Department colors mapping
 const DEPT_COLORS: Record<string, string> = {
-  'Delivery': 'var(--ds-text-brand, #2563eb)',
+  'Delivery': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   'Product': '#8b5cf6',
   'Operations': '#ea580c',
   'Technical Support': '#f97316',

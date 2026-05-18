@@ -136,7 +136,7 @@ export function DashboardHeader({
             <div className="flex items-center gap-4">
               <div className="relative w-[100px] h-[100px]">
                 <svg className="w-full h-full -rotate-90">
-                  <circle cx="50" cy="50" r="40" fill="none" stroke="var(--ds-border, #e2e8f0)" strokeWidth="10" />
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="var(--ds-border, var(--cp-bg-sunken, #e2e8f0))" strokeWidth="10" />
                   <circle
                     cx="50" cy="50" r="40" fill="none"
                     stroke={healthColor}

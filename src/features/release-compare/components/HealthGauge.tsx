@@ -69,7 +69,7 @@ export function HealthGauge({ score, level, trend, isWinner }: HealthGaugeProps)
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke="var(--ds-border, #e2e8f0)"
+            stroke="var(--ds-border, var(--cp-bg-sunken, #e2e8f0))"
             strokeWidth={strokeWidth}
           />
           {/* Progress circle */}

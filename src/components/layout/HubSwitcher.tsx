@@ -295,7 +295,7 @@ export function HubSwitcher() {
                   ? 'var(--ds-background-neutral-pressed, rgba(9,30,66,0.14))'
                   : 'transparent',
                 cursor: 'pointer',
-                color: 'var(--cp-text-secondary, #44546F)',
+                color: 'var(--cp-text-secondary, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
                 transition: 'background 120ms ease',
               }}
               onMouseEnter={(e) => {
@@ -324,7 +324,7 @@ export function HubSwitcher() {
         className="z-[1000] p-0"
         style={{
           width: 343,
-          background: 'var(--ds-surface-overlay, #FFFFFF)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           borderRadius: 8,
           padding: 0,
           maxHeight: 'none',
@@ -337,7 +337,7 @@ export function HubSwitcher() {
             alignItems: 'center',
             gap: 8,
             padding: '10px 12px',
-            borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+            borderBottom: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
           }}
         >
           <span style={{ color: 'var(--ds-text-subtlest, #626F86)', display: 'inline-flex' }}>
@@ -356,7 +356,7 @@ export function HubSwitcher() {
               outline: 'none',
               background: 'transparent',
               fontSize: 14,
-              color: 'var(--ds-text, #172B4D)',
+              color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
             }}
           />
         </div>

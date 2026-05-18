@@ -143,7 +143,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                   {p.sublabel && (
                     <span style={{
                       fontSize: 9, fontWeight: 700,
-                      color: isCurrentQ ? ('var(--cp-text-link, #2563EB)') : ink[2],
+                      color: isCurrentQ ? ('var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))') : ink[2],
                       textTransform: 'uppercase', letterSpacing: '0.05em',
                     }}>
                       {p.sublabel}
@@ -151,7 +151,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                   )}
                   <span style={{
                     fontSize: 12, fontWeight: p.isCurrent ? 700 : 600,
-                    color: p.isCurrent ? ('var(--cp-text-link, #2563EB)') : ink[1],
+                    color: p.isCurrent ? ('var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))') : ink[1],
                     letterSpacing: '0.02em',
                   }}>
                     {p.label}
@@ -184,7 +184,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
               <div className="absolute pointer-events-none" style={{ left: `${todayPct}%`, top: 0, bottom: 0, zIndex: 20 }}>
                 <div style={{
                   position: 'absolute', top: -2, left: '50%', transform: 'translateX(-50%)',
-                  fontSize: 9, fontWeight: 700, color: 'var(--ds-text-inverse, #FFFFFF)', background: 'var(--ds-text-danger, #EF4444)',
+                  fontSize: 9, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: 'var(--ds-text-danger, #EF4444)',
                   padding: '2px 8px', borderRadius: 4, whiteSpace: 'nowrap',
                   textTransform: 'uppercase', letterSpacing: '0.08em',
                 }}>
@@ -199,7 +199,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
 
             {/* Groups + Rows */}
             {groups.map((group, gi) => {
-              const typeColor = TYPE_COLORS[group.key]?.solid || group.color || 'var(--ds-text-subtlest, #64748B)';
+              const typeColor = TYPE_COLORS[group.key]?.solid || group.color || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
               const isCollapsed = collapsedGroups.has(group.key);
               return (
                 <div key={group.key}>

@@ -58,7 +58,7 @@ function SkeletonRowTitle() {
         height: 12,
         width: '70%',
         borderRadius: 4,
-        background: 'var(--ds-background-neutral, #F1F5F9)',
+        background: 'var(--ds-background-neutral, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
         opacity: 0.8,
       }}
       aria-hidden="true"
@@ -177,7 +177,7 @@ function getSectionIconComponent(label: string) {
     const Component: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
       <span
         className={className}
-        style={{ display: 'inline-flex', alignItems: 'center', color: 'var(--ds-icon-subtle, #6B778C)', ...style }}
+        style={{ display: 'inline-flex', alignItems: 'center', color: 'var(--ds-icon-subtle, var(--cp-text-secondary, #6B778C))', ...style }}
       >
         <Icon size={16} strokeWidth={1.75} />
       </span>

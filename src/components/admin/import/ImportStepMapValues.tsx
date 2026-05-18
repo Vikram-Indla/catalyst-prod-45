@@ -81,7 +81,7 @@ export function ImportStepMapValues({
           return (
             <div key={header} className="space-y-4">
               <div className="flex items-center gap-2">
-                <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>{header}</span>
+                <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{header}</span>
                 <span className="text-xs text-muted-foreground">→</span>
                 <span className="text-sm text-muted-foreground">{fieldConfig.label}</span>
               </div>

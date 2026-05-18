@@ -97,7 +97,7 @@ export default function ADSViolationsPanel() {
           : token('elevation.surface', '#FFFFFF'),
         color: isActive
           ? token('color.text.selected', '#0C66E4')
-          : token('color.text', '#172B4D'),
+          : token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
         fontSize: 12,
         fontWeight: 500,
         cursor: 'pointer',
@@ -120,7 +120,7 @@ export default function ADSViolationsPanel() {
             marginTop: token('space.075', '6px'),
             marginBottom: 0,
             fontSize: 13,
-            color: token('color.text.subtle', '#44546F'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             maxWidth: 760,
           }}
         >
@@ -199,7 +199,7 @@ export default function ADSViolationsPanel() {
                     style={{
                       padding: token('space.100', '8px'),
                       verticalAlign: 'top',
-                      color: token('color.text', '#172B4D'),
+                      color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                     }}
                   >
                     {CATEGORY_LABELS[v.category]}
@@ -211,7 +211,7 @@ export default function ADSViolationsPanel() {
                         marginTop: 4,
                         fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
                         fontSize: 11,
-                        color: token('color.text.subtle', '#44546F'),
+                        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -226,7 +226,7 @@ export default function ADSViolationsPanel() {
                     style={{
                       padding: token('space.100', '8px'),
                       verticalAlign: 'top',
-                      color: token('color.text', '#172B4D'),
+                      color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                     }}
                   >
                     <div>{v.rule}</div>
@@ -234,7 +234,7 @@ export default function ADSViolationsPanel() {
                       style={{
                         marginTop: 4,
                         fontSize: 12,
-                        color: token('color.text.subtle', '#44546F'),
+                        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                       }}
                     >
                       Fix: {v.suggestion}

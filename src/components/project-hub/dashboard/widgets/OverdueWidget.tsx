@@ -151,7 +151,7 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
               style={{
                 height: 36,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', '#F1F5F9'),
+                background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'),
               }}
             />
           ))}
@@ -202,7 +202,7 @@ function KpiHeadline({
         display: 'flex',
         background: token('elevation.surface.sunken', '#F7F8F9'),
         borderRadius: token('border.radius', '4px'),
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         overflow: 'hidden',
       }}
     >
@@ -240,7 +240,7 @@ function KpiCell({
         flexDirection: 'column',
         gap: 2,
         padding: '10px 12px',
-        borderRight: last ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
       }}
     >
       <span

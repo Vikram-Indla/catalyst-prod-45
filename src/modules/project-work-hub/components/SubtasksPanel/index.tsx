@@ -130,7 +130,7 @@ function TypeSelector({
       <button type="button" onClick={() => setOpen(o => !o)} className="sp-type-selector-btn">
         <span style={{ display: 'flex', width: 16, height: 16 }}>{current.icon}</span>
         <span>{current.label}</span>
-        <ChevronDown size={12} color="var(--ds-text-subtlest, #6B778C)" />
+        <ChevronDown size={12} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
       </button>
       {open && (
         <div className="sp-type-selector-dropdown">
@@ -142,7 +142,7 @@ function TypeSelector({
             >
               <span style={{ display: 'flex', width: 16, height: 16 }}>{opt.icon}</span>
               <span>{opt.label}</span>
-              {opt.key === value && <Check size={12} color="#0052CC" style={{ marginLeft: 'auto' }} />}
+              {opt.key === value && <Check size={12} color="var(--cp-primary-60, #0052CC)" style={{ marginLeft: 'auto' }} />}
             </div>
           ))}
         </div>
@@ -906,7 +906,7 @@ export function SubtasksPanel({
                           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                           width: 24, height: 24, border: 'none', borderRadius: 3,
                           background: 'transparent', cursor: 'pointer', padding: 0,
-                          color: 'var(--ds-text-subtlest, #6B778C)',
+                          color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
                         }}
                         onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
                         onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
@@ -924,10 +924,10 @@ export function SubtasksPanel({
                           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                           width: 24, height: 24, border: 'none', borderRadius: 3,
                           background: 'transparent', cursor: 'pointer', padding: 0,
-                          color: 'var(--ds-text-subtlest, #6B778C)',
+                          color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
                         }}
                         onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#FFEBE6'; (e.currentTarget as HTMLButtonElement).style.color = '#BF2600'; }}
-                        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--ds-text-subtlest, #6B778C)'; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))'; }}
                       >
                         <DeleteIcon label="" size="small" />
                       </button>

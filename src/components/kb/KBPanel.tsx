@@ -250,7 +250,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <MessageSquarePlus size={16} color="var(--cp-text-tertiary, #64748B)" />
+              <MessageSquarePlus size={16} color="var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
             </button>
             <button
               onClick={onClose}
@@ -262,7 +262,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <X size={16} color="var(--cp-text-tertiary, #64748B)" />
+              <X size={16} color="var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
             </button>
           </div>
         </div>
@@ -282,7 +282,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               <AlertCircle size={14} />
               <span style={{ flex: 1 }}>{error}</span>
               <button onClick={() => reset()} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
-                <RefreshCw size={13} color="var(--cp-danger-60, #DC2626)" />
+                <RefreshCw size={13} color="var(--cp-danger-60, var(--cp-danger, #DC2626))" />
               </button>
             </div>
           )}

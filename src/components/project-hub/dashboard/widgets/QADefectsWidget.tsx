@@ -102,7 +102,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         fontWeight: 700,
         textTransform: 'uppercase',
         letterSpacing: '0.04em',
-        color: token('color.text.subtle', '#44546F'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
       }}
     >
       {label}
@@ -221,7 +221,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
               style={{
                 fontSize: 13,
                 fontWeight: 500,
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                 fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                 whiteSpace: 'nowrap',
               }}
@@ -248,7 +248,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         <div className="p-4 animate-pulse">
           <div
             className="h-20 rounded"
-            style={{ background: token('color.background.neutral.subtle', '#F1F5F9') }}
+            style={{ background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))') }}
           />
         </div>
       ) : !defects?.length ? (
@@ -261,7 +261,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
               display: 'flex',
               gap: 12,
               alignItems: 'center',
-              borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             }}
           >
             <span

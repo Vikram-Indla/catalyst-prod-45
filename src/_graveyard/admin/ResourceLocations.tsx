@@ -119,7 +119,7 @@ export default function ResourceLocationsPage() {
           </p>
         </div>
         <Button 
-          className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8]"
+          className="gap-2 bg-[var(--cp-workstream-catalyst-primary, #2563eb)] hover:bg-[#1d4ed8]"
           onClick={() => setCreateModalOpen(true)}
         >
           <Plus className="h-4 w-4" />
@@ -210,7 +210,7 @@ export default function ResourceLocationsPage() {
             <Button 
               onClick={handleCreate}
               disabled={createLocation.isPending}
-              className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+              className="bg-[var(--cp-workstream-catalyst-primary, #2563eb)] hover:bg-[#1d4ed8]"
             >
               {createLocation.isPending ? 'Creating...' : 'Create'}
             </Button>
@@ -239,7 +239,7 @@ export default function ResourceLocationsPage() {
             <Button 
               onClick={handleUpdate}
               disabled={updateLocation.isPending}
-              className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+              className="bg-[var(--cp-workstream-catalyst-primary, #2563eb)] hover:bg-[#1d4ed8]"
             >
               {updateLocation.isPending ? 'Saving...' : 'Save'}
             </Button>

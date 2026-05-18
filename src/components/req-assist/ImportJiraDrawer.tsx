@@ -16,14 +16,14 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 
 /* ── Constants ── */
-const PROJECT_COLORS: Record<string, string> = { SEN: 'var(--ds-text-brand, #2563EB)', MDT: '#3F3F46' };
+const PROJECT_COLORS: Record<string, string> = { SEN: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', MDT: '#3F3F46' };
 const getAvatarColor = (key: string) => PROJECT_COLORS[key] || '#3F3F46';
 
 /* ── Small component for live ticket count badge ── */
 function ProjectTicketCountBadge({ projectKey }: { projectKey: string }) {
   const { data: count } = useProjectTicketCount(projectKey);
   return (
-    <span style={{ background: 'var(--ds-border, #DFE1E6)', color: '#374151', fontSize: 11, fontWeight: 600, borderRadius: 4, padding: '2px 6px', fontFamily: 'var(--cp-font-body)' }}>
+    <span style={{ background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#374151', fontSize: 11, fontWeight: 600, borderRadius: 4, padding: '2px 6px', fontFamily: 'var(--cp-font-body)' }}>
       {count ?? '…'}
     </span>
   );
@@ -32,23 +32,23 @@ function ProjectTicketCountBadge({ projectKey }: { projectKey: string }) {
 const PRIORITY_STYLES: Record<string, { bg: string; color: string }> = {
   HIGH:     { bg: '#FEF3C7', color: '#92400E' },
   CRITICAL: { bg: '#FEF3C7', color: '#92400E' },
-  MEDIUM:   { bg: 'var(--ds-border, #DFE1E6)', color: '#374151' },
-  LOW:      { bg: 'var(--ds-border, #DFE1E6)', color: '#374151' },
+  MEDIUM:   { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#374151' },
+  LOW:      { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#374151' },
 };
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
-  'Open':        { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' },
-  'To Do':       { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' },
-  'Backlog':     { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' },
-  'In Progress': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  'In Review':   { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  'Done':        { bg: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)' },
-  'Resolved':    { bg: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)' },
-  'Closed':      { bg: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)' },
+  'Open':        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'To Do':       { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'Backlog':     { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'In Progress': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'In Review':   { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Done':        { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Resolved':    { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Closed':      { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
 };
 
 function Lozenge({ label, styles }: { label: string; styles: Record<string, { bg: string; color: string }> }) {
-  const s = styles[label] || { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' };
+  const s = styles[label] || { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' };
   return (
     <span title={label} style={{
       display: 'inline-block', padding: '2px 6px', borderRadius: 4,
@@ -376,7 +376,7 @@ function Step1({
                   transition: 'background 0.1s',
                 }}
                 onMouseEnter={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.02)'; }}
-                onMouseLeave={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
+                onMouseLeave={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
               >
                 {/* Avatar */}
                 <div style={{

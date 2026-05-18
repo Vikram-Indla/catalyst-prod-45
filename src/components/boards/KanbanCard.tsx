@@ -13,8 +13,8 @@ interface Props {
 const PRIORITY_COLORS: Record<string, string> = {
   critical: '#FF5630',
   high: '#FF7452',
-  medium: 'var(--ds-text-warning, #D97706)',
-  low: 'var(--ds-text-subtlest, #94A3B8)',
+  medium: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
+  low: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
 };
 
 function getOverdueDays(dueDate: string | null): number | null {
@@ -83,7 +83,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
         <span style={{
           fontSize: 11, fontWeight: 600, padding: '1px 5px', borderRadius: 4,
           background: source === 'JIRA' ? '#E3F0FF' : 'var(--cp-bd-zone)',
-          color: source === 'JIRA' ? '#0052CC' : 'var(--fg-3)',
+          color: source === 'JIRA' ? 'var(--cp-primary-60, #0052CC)' : 'var(--fg-3)',
           fontFamily: 'var(--cp-font-body)',
           lineHeight: 1.4,
         }}>{source}</span>
@@ -101,7 +101,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           opacity: hover ? 1 : 0, transition: 'opacity 100ms',
         }} onClick={e => e.stopPropagation()}>
-          <MoreHorizontal size={14} color="var(--ds-text-subtlest, #94A3B8)" />
+          <MoreHorizontal size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
         </button>
       </div>
 
@@ -125,10 +125,10 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
         }}>
           <span style={{
             width: 5, height: 5, borderRadius: '50%',
-            background: 'var(--ds-text-brand, #2563EB)', flexShrink: 0,
+            background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', flexShrink: 0,
           }} />
           <span style={{
-            fontSize: 10.5, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)',
+            fontSize: 10.5, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
             fontFamily: 'var(--cp-font-body)',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>{card.epic.title}</span>
@@ -145,7 +145,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
           {card.priority && (
             <span style={{
               width: 8, height: 8, borderRadius: '50%',
-              background: PRIORITY_COLORS[card.priority.name] ?? 'var(--ds-text-subtlest, #94A3B8)',
+              background: PRIORITY_COLORS[card.priority.name] ?? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
               flexShrink: 0,
             }} title={card.priority.name} />
           )}
@@ -178,7 +178,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
               width: 22, height: 22, borderRadius: '50%',
               background: hashColor(card.assignee.id),
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 9, fontWeight: 700, color: 'var(--ds-surface, #FFFFFF)',
+              fontSize: 9, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               fontFamily: 'var(--cp-font-heading)',
             }} title={card.assignee.displayName}>
               {card.assignee.initials}
@@ -191,7 +191,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
 }
 
 function hashColor(id: string): string {
-  const colors = ['var(--ds-text-brand, #2563EB)', 'var(--ds-text-success, #16A34A)', '#7C3AED', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-warning, #D97706)', '#0D9488', '#0284C7', '#525252'];
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-teal-60, #0D9488)', '#0284C7', '#525252'];
   let hash = 0;
   for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
   return colors[Math.abs(hash) % colors.length];

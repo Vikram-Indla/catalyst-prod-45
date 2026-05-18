@@ -17,7 +17,7 @@
  * - Amber #f59e0b: Warning/attention states (at risk, pending)
  * - Red #ef4444: Critical/blocked states (off track, blocked)
  * - Gray #6b7280: Neutral states (draft, backlog)
- * - Blue #2563eb: Progress/active states
+ * - Blue var(--cp-workstream-catalyst-primary, #2563eb): Progress/active states
  */
 
 import { cn } from '@/lib/utils';
@@ -66,9 +66,9 @@ const CATEGORY_STYLES: Record<StatusCategory, { bg: string; text: string; border
   },
   progress: {
     bg: 'rgba(37, 99, 235, 0.1)',      // Blue 10%
-    text: 'var(--ds-text-brand, #2563eb)',
-    border: 'var(--ds-text-brand, #2563eb)',
-    dot: 'var(--ds-text-brand, #2563eb)',
+    text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+    border: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+    dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   },
 };
 

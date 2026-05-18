@@ -83,23 +83,23 @@ export function ColumnsPanel({
       ref={panelRef}
       className="absolute top-full right-0 mt-2 w-64 rounded-lg shadow-lg z-[500] overflow-hidden"
       style={{
-        backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--surface-1)',
+        backgroundColor: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--surface-1)',
         border: isDark ? '1px solid #2E2E2E' : '1px solid var(--border-color)',
       }}
     >
       <div 
         className="px-4 py-3 border-b flex items-center justify-between"
-        style={{ borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)' }}
+        style={{ borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)' }}
       >
         <span 
           className="text-sm font-semibold"
-          style={{ color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--text-1)' }}
+          style={{ color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--text-1)' }}
         >
           Columns
         </span>
         <span 
           className="text-xs"
-          style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--text-3)' }}
+          style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--text-3)' }}
         >
           {visibleColumns.length} of {columns.length}
         </span>
@@ -129,7 +129,7 @@ export function ColumnsPanel({
               />
               <span 
                 className="text-sm"
-                style={{ color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--text-1)' }}
+                style={{ color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--text-1)' }}
               >
                 {col.header}
               </span>
@@ -141,7 +141,7 @@ export function ColumnsPanel({
       <div 
         className="px-4 py-3 border-t flex gap-2"
         style={{ 
-          borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)',
+          borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)',
           backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--surface-2)',
         }}
       >

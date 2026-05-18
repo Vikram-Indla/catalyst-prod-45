@@ -92,7 +92,7 @@ function StateNode({
         border: isCurrent
           ? `2px solid ${token('color.border.focused', '#388BFF')}`
           : isAnyHub
-          ? `2px dashed ${token('color.border', '#DFE1E6')}`
+          ? `2px dashed ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`
           : '2px solid transparent',
         borderRadius: 6,
         background: isCurrent ? token('color.background.selected', '#E9F2FF') : 'transparent',
@@ -244,7 +244,7 @@ export function WorkflowViewerModal({
                     minWidth: 'max-content',
                     background: token('elevation.surface.sunken', '#F7F8F9'),
                     borderRadius: 8,
-                    border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                   }}>
                     {(() => {
                       const ordered = lineariseStates(workflow);
@@ -288,15 +288,15 @@ export function WorkflowViewerModal({
                       marginBottom: 8,
                     }}>Transitions</div>
                     <div style={{
-                      border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                       borderRadius: 6, overflow: 'hidden',
                     }}>
                       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                         <thead>
                           <tr style={{ background: token('color.background.neutral', '#F4F5F7') }}>
-                            <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: token('color.text', '#292A2E'), borderBottom: `1px solid ${token('color.border', '#DFE1E6')}` }}>Action</th>
-                            <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: token('color.text', '#292A2E'), borderBottom: `1px solid ${token('color.border', '#DFE1E6')}` }}>From</th>
-                            <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: token('color.text', '#292A2E'), borderBottom: `1px solid ${token('color.border', '#DFE1E6')}` }}>→ To</th>
+                            <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: token('color.text', '#292A2E'), borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}` }}>Action</th>
+                            <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: token('color.text', '#292A2E'), borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}` }}>From</th>
+                            <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: token('color.text', '#292A2E'), borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}` }}>→ To</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -308,7 +308,7 @@ export function WorkflowViewerModal({
                                 key={`${t.from}-${t.to}-${i}`}
                                 style={{
                                   borderBottom: i < workflow.transitions.length - 1
-                                    ? `1px solid ${token('color.border', '#DFE1E6')}`
+                                    ? `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`
                                     : 'none',
                                 }}
                               >

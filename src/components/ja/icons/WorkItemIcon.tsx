@@ -7,16 +7,16 @@ import { Tooltip } from '@/components/ads';
 const ICON_COLORS: Record<string, string> = {
   // Enterprise
   theme: '#0d9488',      // Teal
-  objective: 'var(--ds-text-brand, #2563eb)',  // Blue
+  objective: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',  // Blue
   
   // Product
-  'business-request': 'var(--ds-text-brand, #2563eb)', // Blue
+  'business-request': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // Blue
   
   // Program
   epic: '#904EE2',       // Purple
   
   // Project
-  feature: 'var(--ds-text-warning, #F59E0B)',    // Amber
+  feature: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))',    // Amber
   story: '#36B37E',      // Green
   task: '#0065FF',       // Blue
   defect: '#FF5630',     // Red

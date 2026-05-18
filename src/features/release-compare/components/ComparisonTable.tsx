@@ -135,7 +135,7 @@ export function ComparisonTable({ releases, winners }: ComparisonTableProps) {
             <span 
               className="text-xl font-bold"
               style={{ 
-                color: isRisk ? 'var(--ds-text-danger, #ef4444)' : isWarning ? 'var(--ds-text-warning, #d97706)' : 'var(--ds-text-subtle, #334155)'
+                color: isRisk ? 'var(--ds-text-danger, #ef4444)' : isWarning ? 'var(--ds-text-warning, #d97706)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'
               }}
             >
               {days}

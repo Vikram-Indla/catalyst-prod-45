@@ -5,7 +5,7 @@
 
 export const loginColors = {
   // Primary Action - Blue (ALL interactive elements)
-  primary: 'var(--ds-text-brand, #2563eb)',
+  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   primaryHover: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
   primaryDeep: '#1e40af',
   primaryLight: 'var(--ds-text-brand, #3b82f6)',
@@ -22,7 +22,7 @@ export const loginColors = {
   successLight: '#2dd4bf',
 
   // Text Colors (WCAG AA Compliant)
-  textPrimary: 'var(--ds-surface, #ffffff)',
+  textPrimary: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   textSecondary: '#d1d5db',
   textMuted: '#9ca3af',
   
@@ -38,7 +38,7 @@ export const loginColors = {
 
   // Form Surface
   formSurface: 'var(--ds-surface-sunken, #f8fafc)',
-  formBorder: 'var(--ds-border, #e2e8f0)',
+  formBorder: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
 
   // Hero Panel Background
   heroDark: '#070a0f',

@@ -1,6 +1,6 @@
 /**
  * IdeationMatrixView — Impact vs Complexity scatter plot with 4 quadrants
- * V12: Submitted bubbles use var(--ds-text-subtlest, #64748B) slate (not primary blue)
+ * V12: Submitted bubbles use var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B))) slate (not primary blue)
  */
 import React, { useState } from 'react';
 import { useIdeas } from '@/hooks/useIdeation';
@@ -17,23 +17,23 @@ interface DotData {
 
 // V12 bubble colors — submitted = slate, NOT primary blue
 const STATUS_BUBBLE_COLORS: Record<string, string> = {
-  'converted':    'var(--ds-text-success, #16A34A)',
-  'approved':     'var(--ds-text-success, #16A34A)',
-  'under_review': '#7C3AED',  // AI-enriched marker ✓
-  'submitted':    'var(--ds-text-subtlest, #64748B)',  // neutral slate — not primary blue
-  'rejected':     'var(--ds-text-danger, #DC2626)',
-  'draft':        'var(--ds-text-subtlest, #94A3B8)',
+  'converted':    'var(--ds-text-success, var(--cp-success, #16A34A))',
+  'approved':     'var(--ds-text-success, var(--cp-success, #16A34A))',
+  'under_review': 'var(--cp-purple-60, #7C3AED)',  // AI-enriched marker ✓
+  'submitted':    'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',  // neutral slate — not primary blue
+  'rejected':     'var(--ds-text-danger, var(--cp-danger, #DC2626))',
+  'draft':        'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
 };
 
 function getBubbleColor(status: string): string {
-  return STATUS_BUBBLE_COLORS[status] ?? 'var(--ds-text-subtlest, #64748B)';
+  return STATUS_BUBBLE_COLORS[status] ?? 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
 }
 
 const QUADRANTS = [
-  { top: 0, left: 0, label: 'QUICK WINS', bg: '#F0FDF4', labelColor: 'var(--ds-text-success, #16A34A)' },
-  { top: 0, left: '50%', label: 'BIG BETS', bg: 'var(--ds-background-selected, #EFF6FF)', labelColor: 'var(--ds-text-brand, #2563EB)' },
-  { top: '50%', left: 0, label: 'FILL-INS', bg: 'var(--ds-surface-sunken, #F8FAFC)', labelColor: 'var(--ds-text-subtlest, #64748B)' },
-  { top: '50%', left: '50%', label: 'MONEY PIT', bg: 'var(--ds-background-danger, #FEF2F2)', labelColor: 'var(--ds-text-danger, #DC2626)' },
+  { top: 0, left: 0, label: 'QUICK WINS', bg: '#F0FDF4', labelColor: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
+  { top: 0, left: '50%', label: 'BIG BETS', bg: 'var(--ds-background-selected, #EFF6FF)', labelColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+  { top: '50%', left: 0, label: 'FILL-INS', bg: 'var(--ds-surface-sunken, #F8FAFC)', labelColor: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' },
+  { top: '50%', left: '50%', label: 'MONEY PIT', bg: 'var(--ds-background-danger, #FEF2F2)', labelColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
 ];
 
 export default function IdeationMatrixView({ onOpenDetail }: Props) {
@@ -72,11 +72,11 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
           { label: 'SIZE', value: 'Votes' },
         ].map(ctrl => (
           <div key={ctrl.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, #94A3B8)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ctrl.label}:</span>
+            <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ctrl.label}:</span>
             <div style={{
               width: '160px', fontSize: '12px', fontWeight: 600, padding: '5px 10px',
-              background: 'var(--cp-bg-page, #F8FAFC)', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: '6px',
-              color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer',
+              background: 'var(--cp-bg-page, #F8FAFC)', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: '6px',
+              color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', cursor: 'pointer',
             }}>
               {ctrl.value}
             </div>
@@ -87,7 +87,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
       {/* Chart — V12: border-only, NO box-shadow */}
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         <div style={{
-          width: '100%', height: '520px', background: 'var(--cp-bg-elevated, #FFFFFF)', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+          width: '100%', height: '520px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
           borderRadius: '6px', position: 'relative', overflow: 'hidden',
         }}>
           {/* Grid area */}
@@ -110,8 +110,8 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
             ))}
 
             {/* Midlines */}
-            <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 0, borderLeft: '1.5px dashed #94A3B8', zIndex: 1 }} />
-            <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 0, borderTop: '1.5px dashed #94A3B8', zIndex: 1 }} />
+            <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 0, borderLeft: '1.5px dashed var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))', zIndex: 1 }} />
+            <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 0, borderTop: '1.5px dashed var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))', zIndex: 1 }} />
 
             {/* Dots */}
             {dots.map(dot => (
@@ -128,7 +128,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
                   borderRadius: '50%', background: dot.color,
                   border: '2px solid white', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '10px', fontWeight: 800, color: 'var(--ds-text-inverse, #FFFFFF)',
+                  fontSize: '10px', fontWeight: 800, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   fontFamily: 'var(--cp-font-mono)',
                   textShadow: '0 1px 2px rgba(0,0,0,0.3)',
                   boxShadow: hoveredDot === dot.key ? '0 4px 14px rgba(0,0,0,0.25)' : '0 2px 6px rgba(0,0,0,0.15)',
@@ -142,7 +142,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
                 {hoveredDot === dot.key && (
                   <div style={{
                     position: 'absolute', bottom: `${dot.size + 8}px`, left: '50%', transform: 'translateX(-50%)',
-                    background: 'var(--ds-text, #0F172A)', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: '12px', borderRadius: '8px',
+                    background: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: '12px', borderRadius: '8px',
                     padding: '8px 12px', whiteSpace: 'nowrap', zIndex: 20,
                     boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
                   }}>
@@ -153,7 +153,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
                     <div style={{
                       position: 'absolute', bottom: '-4px', left: '50%', transform: 'translateX(-50%)',
                       width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent',
-                      borderTop: '5px solid #0F172A',
+                      borderTop: '5px solid var(--cp-ink-1, var(--cp-ink-1, #0F172A))',
                     }} />
                   </div>
                 )}
@@ -164,14 +164,14 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
           {/* Axis labels */}
           <div style={{
             position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)',
-            fontSize: '11px', fontWeight: 700, color: 'var(--ds-text-subtle, #334155)', letterSpacing: '1px',
+            fontSize: '11px', fontWeight: 700, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', letterSpacing: '1px',
             textTransform: 'uppercase', whiteSpace: 'nowrap',
           }}>
             ← LOW COMPLEXITY — HIGH COMPLEXITY →
           </div>
           <div style={{
             position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%) rotate(-90deg)',
-            fontSize: '11px', fontWeight: 700, color: 'var(--ds-text-subtle, #334155)', letterSpacing: '1px',
+            fontSize: '11px', fontWeight: 700, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', letterSpacing: '1px',
             textTransform: 'uppercase', whiteSpace: 'nowrap',
           }}>
             ← LOW STRATEGIC VALUE — HIGH STRATEGIC VALUE →
@@ -184,17 +184,17 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', marginTop: '16px',
       }}>
         {[
-          { color: 'var(--ds-text-success, #16A34A)', label: 'Approved / Converted' },
-          { color: '#7C3AED', label: 'Under Review (AI-enriched)' },
-          { color: 'var(--ds-text-subtlest, #64748B)', label: 'Submitted' },
-          { color: 'var(--ds-text-danger, #DC2626)', label: 'Rejected' },
+          { color: 'var(--ds-text-success, var(--cp-success, #16A34A))', label: 'Approved / Converted' },
+          { color: 'var(--cp-purple-60, #7C3AED)', label: 'Under Review (AI-enriched)' },
+          { color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', label: 'Submitted' },
+          { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Rejected' },
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: l.color, flexShrink: 0 }} />
-            <span style={{ fontSize: '12px', color: 'var(--cp-text-secondary, #334155)', fontWeight: 600 }}>{l.label}</span>
+            <span style={{ fontSize: '12px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontWeight: 600 }}>{l.label}</span>
           </div>
         ))}
-        <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, #94A3B8)' }}>Dot size = Vote count</span>
+        <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Dot size = Vote count</span>
       </div>
     </div>
   );

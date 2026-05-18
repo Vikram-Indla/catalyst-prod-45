@@ -81,11 +81,11 @@ export function HeaderOverflowMenu({
           elemBefore={
             sort.field
               ? (sort.dir === 'asc'
-                  ? <ArrowUp size={14} color="#0052CC" />
-                  : <ArrowDown size={14} color="#0052CC" />)
+                  ? <ArrowUp size={14} color="var(--cp-primary-60, #0052CC)" />
+                  : <ArrowDown size={14} color="var(--cp-primary-60, #0052CC)" />)
               : undefined
           }
-          elemAfter={<ChevronRight size={14} color="var(--ds-text-subtlest, #6B778C)" />}
+          elemAfter={<ChevronRight size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />}
           onClick={(e) => {
             e.preventDefault();
             // Close the dropdown by returning focus, then open the sort popup.
@@ -99,14 +99,14 @@ export function HeaderOverflowMenu({
 
       <DropdownItemGroup>
         <DropdownItem
-          elemBefore={<Edit3 size={14} color="#44546F" />}
+          elemBefore={<Edit3 size={14} color="var(--cp-text-secondary, var(--cp-text-secondary, #44546F))" />}
           isDisabled={bulkEditMode}
           onClick={() => onEnterBulkEdit()}
         >
           Bulk edit
         </DropdownItem>
         <DropdownItem
-          elemBefore={<Search size={14} color="#44546F" />}
+          elemBefore={<Search size={14} color="var(--cp-text-secondary, var(--cp-text-secondary, #44546F))" />}
           onClick={() => onViewInSearch()}
         >
           View in search
@@ -132,7 +132,7 @@ export function HeaderOverflowMenu({
                   onClick={() => onCycleSort(field)}
                 >
                   <span className="sp-pop-label">{label}</span>
-                  {active && <Arrow size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}
+                  {active && <Arrow size={14} color="var(--cp-primary-60, #0052CC)" style={{ marginLeft: 'auto' }} />}
                 </button>
               );
             })}

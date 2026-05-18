@@ -4,9 +4,9 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  *
  * GUARDRAIL: 3 colours only. Zero exceptions. Zero overrides.
- *   GREY  → bg:#42526E  text:#FFFFFF  → To Do / Backlog / On Hold
- *   BLUE  → bg:#0C66E4  text:#FFFFFF  → In Progress / In Review / Active
- *   GREEN → bg:#1B7F37  text:#FFFFFF  → Done / Approved / Completed
+ *   GREY  → bg:#42526E  text:var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))  → To Do / Backlog / On Hold
+ *   BLUE  → bg:#0C66E4  text:var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))  → In Progress / In Review / Active
+ *   GREEN → bg:var(--cp-lozenge-green-bg, #1B7F37)  text:var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))  → Done / Approved / Completed
  *
  * Usage: import { deriveStatusCategory, STATUS_LOZENGE } from '@/lib/status-colors';
  */
@@ -16,7 +16,7 @@ export type StatusCategory = 'todo' | 'in_progress' | 'done';
 export const STATUS_LOZENGE = {
   todo:        { bg: '#42526E', text: '#FFFFFF' },
   in_progress: { bg: '#0C66E4', text: '#FFFFFF' },
-  done:        { bg: '#1B7F37', text: '#FFFFFF' },
+  done:        { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: '#FFFFFF' },
 } as const;
 
 // ── Normalized status patterns ───────────────────────────────────────────────
@@ -47,7 +47,7 @@ export function getStatusLozengeColors(status: string | null | undefined): { bg:
 // ── Priority colors (consistent across all modules) ──────────────────────────
 
 export const PRIORITY_COLORS = {
-  critical: { hex: '#DC2626', bg: '#FEF2F2', text: '#991B1B' },
+  critical: { hex: 'var(--cp-danger, #DC2626)', bg: '#FEF2F2', text: '#991B1B' },
   high:     { hex: '#F97316', bg: '#FFF7ED', text: '#9A3412' },
   medium:   { hex: '#EAB308', bg: '#FEFCE8', text: '#854D0E' },
   low:      { hex: '#22C55E', bg: '#F0FDF4', text: '#166534' },

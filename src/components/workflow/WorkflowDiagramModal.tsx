@@ -41,7 +41,7 @@ export function WorkflowDiagramModal({ workflow, currentStateId, onClose }: Prop
           <ModalTitle>{workflow.name} workflow</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <p style={{ color: '#44546F', margin: '0 0 16px 0', fontSize: 14 }}>
+          <p style={{ color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))', margin: '0 0 16px 0', fontSize: 14 }}>
             Bound to issue types: <strong>{workflow.issueTypes.join(', ')}</strong>.
             {allAnyToThis && ' Every state can transition to every other state (Any-to-Any).'}
           </p>
@@ -50,7 +50,7 @@ export function WorkflowDiagramModal({ workflow, currentStateId, onClose }: Prop
           <WorkflowSvg workflow={workflow} currentStateId={currentStateId} />
 
           {/* Detailed transition table below */}
-          <h4 style={{ fontSize: 12, textTransform: 'uppercase', color: 'var(--ds-text-subtlest, #6B778C)', margin: '24px 0 8px' }}>
+          <h4 style={{ fontSize: 12, textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', margin: '24px 0 8px' }}>
             Transitions
           </h4>
           <TransitionTable workflow={workflow} />
@@ -91,7 +91,7 @@ function WorkflowSvg({ workflow, currentStateId }: { workflow: Workflow; current
   const allAnyToThis = workflow.states.every(s => s.anyToThis);
 
   return (
-    <div style={{ overflowX: 'auto', border: '1px solid #DFE1E6', borderRadius: 6, padding: 8, background: 'var(--ds-surface-sunken, #FAFBFC)' }}>
+    <div style={{ overflowX: 'auto', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 6, padding: 8, background: 'var(--ds-surface-sunken, #FAFBFC)' }}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">
         <defs>
           <marker id="wf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
@@ -181,19 +181,19 @@ function TransitionTable({ workflow }: { workflow: Workflow }) {
   const byId = new Map(workflow.states.map(s => [s.id, s]));
   if (workflow.transitions.length === 0) {
     return (
-      <p style={{ fontSize: 13, color: '#44546F' }}>
+      <p style={{ fontSize: 13, color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))' }}>
         No explicit transitions — this workflow uses Any-to-Any.
       </p>
     );
   }
   return (
-    <div style={{ border: '1px solid #DFE1E6', borderRadius: 6, overflow: 'hidden' }}>
+    <div style={{ border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 6, overflow: 'hidden' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
         <thead>
-          <tr style={{ background: 'var(--ds-surface-sunken, #F4F5F7)', textAlign: 'left' }}>
-            <th style={{ padding: '8px 12px', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>From</th>
-            <th style={{ padding: '8px 12px', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>Verb</th>
-            <th style={{ padding: '8px 12px', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>To</th>
+          <tr style={{ background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', textAlign: 'left' }}>
+            <th style={{ padding: '8px 12px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>From</th>
+            <th style={{ padding: '8px 12px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>Verb</th>
+            <th style={{ padding: '8px 12px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>To</th>
           </tr>
         </thead>
         <tbody>
@@ -206,7 +206,7 @@ function TransitionTable({ workflow }: { workflow: Workflow }) {
                 <td style={{ padding: '8px 12px' }}>
                   <JiraStatusLozengeForState state={from} variant="subtle" />
                 </td>
-                <td style={{ padding: '8px 12px', color: '#44546F' }}>{t.verb}</td>
+                <td style={{ padding: '8px 12px', color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))' }}>{t.verb}</td>
                 <td style={{ padding: '8px 12px' }}>
                   <JiraStatusLozengeForState state={to} />
                 </td>

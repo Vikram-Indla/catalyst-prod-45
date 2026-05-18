@@ -160,7 +160,7 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
         width: 240,
         minWidth: 240,
         height: '100%',
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         borderRight: '1px solid var(--ds-border-layout, #EBECF0)',
         display: 'flex',
         flexDirection: 'column',
@@ -225,7 +225,7 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
                   style={{
                     padding: '8px 16px',
                     fontSize: 12,
-                    color: 'var(--ds-text-subtle, #44546F)',
+                    color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
                   }}
                 >
                   Try a different search term.

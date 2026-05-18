@@ -4,9 +4,9 @@ import { JiraBacklogIssue } from '@/hooks/useJiraBacklogIssues';
 import WatchButton from '@/components/shared/WatchButton';
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  'done':        { bg: 'rgba(16,185,129,0.1)', text: '#059669' },
-  'in progress': { bg: 'rgba(37,99,235,0.1)', text: 'var(--ds-text-brand, #2563EB)' },
-  'to do':       { bg: 'rgba(148,163,184,0.12)', text: 'var(--ds-text-subtlest, #64748B)' },
+  'done':        { bg: 'rgba(16,185,129,0.1)', text: 'var(--quality-high, #059669)' },
+  'in progress': { bg: 'rgba(37,99,235,0.1)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+  'to do':       { bg: 'rgba(148,163,184,0.12)', text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' },
 };
 
 function getStatusStyle(category: string) {
@@ -17,7 +17,7 @@ function getStatusStyle(category: string) {
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  Highest: 'var(--ds-text-danger, #DC2626)', High: '#EA580C', Medium: 'var(--ds-text-warning, #F59E0B)', Low: 'var(--ds-text-brand, #3B82F6)', Lowest: 'var(--ds-text-subtlest, #94A3B8)',
+  Highest: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', High: '#EA580C', Medium: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', Low: 'var(--ds-text-brand, #3B82F6)', Lowest: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
 };
 
 interface Props {

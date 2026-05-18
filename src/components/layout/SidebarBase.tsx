@@ -39,7 +39,7 @@ import { useTheme } from '@/hooks/useTheme';
 const HUB_ITEMS = [
   { label: 'Home',         href: '/for-you',                    Icon: HomeIcon,            tone: '#42526E' },
   { label: 'Strategy Hub', href: '/strategyhub',                Icon: OfficeBuildingIcon,  tone: '#8270DB' },
-  { label: 'Product Hub',  href: '/product-hub',                Icon: PortfolioIcon,       tone: '#0052CC' },
+  { label: 'Product Hub',  href: '/product-hub',                Icon: PortfolioIcon,       tone: 'var(--cp-primary-60, #0052CC)' },
   { label: 'Project Hub',  href: '/project-hub',                Icon: FolderIcon,          tone: '#00A3BF' },
   { label: 'Release Hub',  href: '/release-hub/command-center', Icon: ShipIcon,            tone: '#FF8B00' },
   { label: 'Test Hub',     href: '/testhub/dashboard',          Icon: CheckCircleIcon,     tone: '#36B37E' },
@@ -173,30 +173,30 @@ export function SidebarBase({
   const tokens: DarkTokens = {
     isDark,
     itemText: 'var(--cp-text-secondary, #42526E)',
-    activeText: 'var(--cp-text-link, #0052CC)',
+    activeText: 'var(--cp-text-link, var(--cp-primary-60, #0052CC))',
     activeBg: isDark ? 'var(--ds-background-selected, #1C2B41)' : '#E9F2FF',
-    hoverBg: isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : 'var(--ds-surface-sunken, #F4F5F7)',
-    hoverText: 'var(--cp-text-primary, #172B4D)',
+    hoverBg: isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
+    hoverText: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
     iconOpacityInactive: isDark ? 0.85 : 0.75,
     badgeBg: isDark ? 'var(--ds-background-neutral-subtle, #22272B)' : '#EBECF0',
-    badgeText: 'var(--cp-text-tertiary, #6B778C)',
+    badgeText: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))',
   };
 
-  // Chevron critique (2026-04-19): brand-blue (#0052CC / --cp-blue) violated
+  // Chevron critique (2026-04-19): brand-blue (var(--cp-primary-60, #0052CC) / --cp-blue) violated
   // the CLAUDE.md colour reservation — blue is reserved for the +Create CTA
   // only. Pulled the toggle to neutral muted tokens so the primary blue cue
   // stays unique to the primary action. Hover lifts to text-primary for an
   // affordance pop without reintroducing brand colour.
-  const chevronColor = 'var(--cp-text-tertiary, #6B778C)';
-  const chevronHoverColor = 'var(--cp-text-primary, #172B4D)';
+  const chevronColor = 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))';
+  const chevronHoverColor = 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))';
   // ADS canonical: side-nav uses --ds-surface (rail surface lifts above
   // page bg --ds-background-neutral). Was incorrectly using page bg token.
-  const sidebarBg = 'var(--cp-bg-elevated, #FFFFFF)';
+  const sidebarBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
   // ADS canonical: --ds-border is translucent (#a6c5e229 dark / #0b120e24 light)
-  const sidebarBorder = 'var(--cp-border, #DFE1E6)';
-  const dividerColor = 'var(--cp-border, #DFE1E6)';
-  const sectionLabel = 'var(--cp-text-tertiary, #6B778C)';
-  const hubLabel = 'var(--cp-text-primary, #172B4D)';
+  const sidebarBorder = 'var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
+  const dividerColor = 'var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
+  const sectionLabel = 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))';
+  const hubLabel = 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))';
 
   const isActive = (path: string, exact: boolean = false, activeMatchPaths: string[] = []) => {
     if (activeMatchPaths.some((matchPath) => location.pathname === matchPath || location.pathname.startsWith(matchPath + '/'))) {
@@ -248,7 +248,7 @@ export function SidebarBase({
           willChange: 'width',
           contain: 'layout style',
           scrollbarWidth: 'thin' as any,
-          scrollbarColor: isDark ? '#454545 transparent' : '#DFE1E6 transparent',
+          scrollbarColor: isDark ? '#454545 transparent' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)) transparent',
         }}
       >
         {/* Header — hub badge + label only. The collapse toggle now lives
@@ -607,13 +607,13 @@ function renderMenuItem(
             background: item.textBadge === 'AI' 
               ? 'rgba(124, 58, 237, 0.06)'
               : item.textBadgeVariant === 'new' 
-              ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+              ? 'linear-gradient(135deg, #10b981 0%, var(--quality-high, #059669) 100%)'
               : item.textBadgeVariant === 'beta'
               ? 'linear-gradient(135deg, var(--ds-text-warning, #f59e0b) 0%, var(--ds-text-warning, #d97706) 100%)'
               : 'hsl(var(--brand-primary))',
             color: item.textBadge === 'AI'
-              ? '#7C3AED'
-              : 'var(--ds-surface, #ffffff)',
+              ? 'var(--cp-purple-60, #7C3AED)'
+              : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: item.textBadge === 'AI' ? '1px solid rgba(124, 58, 237, 0.12)' : 'none',
             position: expanded ? 'relative' : 'absolute',
             top: expanded ? 'auto' : '4px',

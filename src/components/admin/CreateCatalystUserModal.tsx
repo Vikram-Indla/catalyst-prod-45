@@ -70,20 +70,20 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
     );
   };
 
-  const labelStyle: React.CSSProperties = { fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtle, #334155)', marginBottom: '4px', display: 'block' };
+  const labelStyle: React.CSSProperties = { fontSize: '11px', fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', marginBottom: '4px', display: 'block' };
 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent
-        className="!bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] !text-slate-900 dark:!text-[var(--ds-text,#EDEDED)] p-0 gap-0"
+        className="!bg-white dark:!bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] !text-slate-900 dark:!text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] p-0 gap-0"
         style={{ maxWidth: '460px', borderRadius: '8px' }}
       >
         {/* Header */}
         <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(15,23,42,0.06)', position: 'relative' }}>
-          <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '15px', fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+          <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '15px', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0 }}>
             Create Catalyst User
           </DialogTitle>
-          <p style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, #64748B)', marginTop: '2px' }}>
+          <p style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: '2px' }}>
             Local account — not pushed to Jira
           </p>
           <button
@@ -91,9 +91,9 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             style={{
               position: 'absolute', top: '14px', right: '16px',
               width: '26px', height: '26px', borderRadius: '50%',
-              border: '1px solid rgba(15,23,42,0.10)', background: 'var(--bg-app, #FFFFFF)',
+              border: '1px solid rgba(15,23,42,0.10)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', color: 'var(--ds-text-subtlest, #64748B)',
+              cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
             }}
           >
             <CrossIcon label="" size="small" />
@@ -109,7 +109,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             alignItems: 'flex-start', marginBottom: '16px',
           }}>
             <ShareIcon label="" size="small" />
-            <span style={{ fontSize: '11px', color: '#7C3AED', lineHeight: 1.55 }}>
+            <span style={{ fontSize: '11px', color: 'var(--cp-purple-60, #7C3AED)', lineHeight: 1.55 }}>
               This user will exist only in Catalyst. Jira bidirectional sync is
               excluded. They authenticate with a Catalyst-managed password.
             </span>
@@ -117,19 +117,19 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
 
           {/* Full Name */}
           <div style={{ marginBottom: '12px' }}>
-            <label style={labelStyle}>Full Name <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>*</span></label>
+            <label style={labelStyle}>Full Name <span style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>*</span></label>
             <Textfield
               value={displayName}
               onChange={e => { setDisplayName((e.target as HTMLInputElement).value); setErrors(p => ({ ...p, displayName: '' })); }}
               placeholder="e.g. Dr. Ahmed Al-Rashid"
               isInvalid={!!errors.displayName}
             />
-            {errors.displayName && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, #DC2626)', marginTop: '2px', display: 'block' }}>{errors.displayName}</span>}
+            {errors.displayName && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', marginTop: '2px', display: 'block' }}>{errors.displayName}</span>}
           </div>
 
           {/* Email */}
           <div style={{ marginBottom: '12px' }}>
-            <label style={labelStyle}>Email <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>*</span></label>
+            <label style={labelStyle}>Email <span style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>*</span></label>
             <Textfield
               type="email"
               value={email}
@@ -137,12 +137,12 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
               placeholder="user@moi.gov.sa"
               isInvalid={!!errors.email}
             />
-            {errors.email && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, #DC2626)', marginTop: '2px', display: 'block' }}>{errors.email}</span>}
+            {errors.email && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', marginTop: '2px', display: 'block' }}>{errors.email}</span>}
           </div>
 
           {/* Password */}
           <div style={{ marginBottom: '12px' }}>
-            <label style={labelStyle}>Password <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>*</span></label>
+            <label style={labelStyle}>Password <span style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>*</span></label>
             <Textfield
               type={showPassword ? 'text' : 'password'}
               value={password}
@@ -153,16 +153,16 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={{ display: 'flex', alignItems: 'center', padding: '0 8px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--ds-text-subtlest, #64748B)' }}
+                  style={{ display: 'flex', alignItems: 'center', padding: '0 8px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}
                 >
                   {showPassword ? <EyeOpenStrikethroughIcon label="" size="small" /> : <EyeOpenIcon label="" size="small" />}
                 </button>
               }
             />
-            <span style={{ fontSize: '10px', color: 'var(--ds-text-subtlest, #94A3B8)', marginTop: '2px', display: 'block' }}>
+            <span style={{ fontSize: '10px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: '2px', display: 'block' }}>
               Min 8 characters. Stored securely in Catalyst (bcrypt).
             </span>
-            {errors.password && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, #DC2626)', marginTop: '1px', display: 'block' }}>{errors.password}</span>}
+            {errors.password && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', marginTop: '1px', display: 'block' }}>{errors.password}</span>}
           </div>
 
           {/* Role + Department */}
@@ -208,7 +208,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             disabled={isPending}
             style={{
               flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
-              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
+              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
               padding: '8px 14px', borderRadius: '6px', fontSize: '13px', fontWeight: 600,
               cursor: isPending ? 'not-allowed' : 'pointer', opacity: isPending ? 0.7 : 1,
             }}
@@ -220,7 +220,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             onClick={onClose}
             style={{
               padding: '8px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: 500,
-              border: '1px solid rgba(15,23,42,0.10)', background: 'var(--bg-app, #FFFFFF)', color: 'var(--ds-text-subtle, #334155)',
+              border: '1px solid rgba(15,23,42,0.10)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
               cursor: 'pointer',
             }}
           >

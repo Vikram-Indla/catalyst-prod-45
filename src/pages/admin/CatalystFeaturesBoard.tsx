@@ -69,11 +69,11 @@ const STALE_MS = 7 * 24 * 60 * 60 * 1000;
 
 // ADS tokens as CSS vars (fallback hex for non-ADS environments)
 const T = {
-  surface:       'var(--ds-surface,#FFFFFF)',
+  surface:       'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   text:          'var(--ds-text,#292A2E)',
-  textSubtle:    'var(--ds-text-subtle,#44546F)',
+  textSubtle:    'var(--ds-text-subtle,var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
   textSubtlest:  'var(--ds-text-subtlest,#626F86)',
-  textBrand:     'var(--ds-text-brand,#0052CC)',
+  textBrand:     'var(--ds-text-brand,var(--cp-primary-60, #0052CC))',
   border:        'var(--ds-border,rgba(11,18,14,.14))',
   borderLayout:  'var(--ds-border-layout,#EBECF0)',
   borderBrand:   'var(--ds-border-brand,#0C66E4)',
@@ -323,7 +323,7 @@ function SwimLaneRow({ group, cards }: { group: string; cards: FeatureCard[] }) 
       }}>
         <span style={{
           fontSize: 11, fontWeight: 600,
-          color: 'var(--ds-text-subtle,#44546F)',
+          color: 'var(--ds-text-subtle,var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
           lineHeight: '16px', wordBreak: 'break-word',
         }}>
           {group}
@@ -363,7 +363,7 @@ function FeatureCardView({ card }: { card: FeatureCard }) {
       onKeyDown={e => e.key === 'Enter' && setExpanded(v => !v)}
       aria-expanded={expanded}
       style={{
-        background: 'var(--ds-surface-raised,#FFFFFF)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         border: `1px solid ${isStale ? 'var(--ds-border-warning,#F5A623)' : 'var(--ds-border,rgba(11,18,14,.14))'}`,
         borderLeft: isStale ? '3px solid var(--ds-border-warning,#F5A623)' : undefined,
         borderRadius: 6, padding: '8px 10px', cursor: 'pointer',
@@ -401,7 +401,7 @@ function FeatureCardView({ card }: { card: FeatureCard }) {
           {card.skill_source.map(skill => (
             <span key={skill} style={{
               fontSize: 9, fontWeight: 600, color: '#fff',
-              background: SKILL_BG[skill] ?? 'var(--ds-background-neutral-bold,#44546F)',
+              background: SKILL_BG[skill] ?? 'var(--ds-background-neutral-bold,var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
               borderRadius: 3, padding: '1px 5px',
             }}>
               {skill}
@@ -436,7 +436,7 @@ function FeatureCardView({ card }: { card: FeatureCard }) {
           onClick={e => e.stopPropagation()}
           style={{
             display: 'flex', alignItems: 'center', gap: 4,
-            fontSize: 10, color: 'var(--ds-text-brand,#0052CC)', textDecoration: 'none',
+            fontSize: 10, color: 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))', textDecoration: 'none',
             marginBottom: 3,
           }}
         >
@@ -496,7 +496,7 @@ function ExpandSection({ label, text, lines }: { label: string; text: string; li
     <div style={{ marginBottom: 7 }}>
       <div style={{
         fontSize: 10, fontWeight: 600,
-        color: 'var(--ds-text-subtle,#44546F)', marginBottom: 3,
+        color: 'var(--ds-text-subtle,var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', marginBottom: 3,
       }}>
         {label}
       </div>
@@ -520,7 +520,7 @@ function EmptyState() {
       color: 'var(--ds-text-subtlest,#626F86)',
     }}>
       <BoardIcon label="" />
-      <div style={{ fontSize: 14, fontWeight: 500, marginTop: 12, marginBottom: 8, color: 'var(--ds-text-subtle,#44546F)' }}>
+      <div style={{ fontSize: 14, fontWeight: 500, marginTop: 12, marginBottom: 8, color: 'var(--ds-text-subtle,var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
         No feature cards yet
       </div>
       <div style={{ fontSize: 12, lineHeight: '18px' }}>

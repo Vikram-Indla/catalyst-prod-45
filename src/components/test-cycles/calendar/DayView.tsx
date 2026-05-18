@@ -54,7 +54,7 @@ export function DayView({
       {/* Main content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Time column */}
-        <div className="w-16 shrink-0 border-r border-[var(--ds-border,#e2e8f0)]">
+        <div className="w-16 shrink-0 border-r border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
           {HOURS.map((hour) => (
             <div
               key={hour}
@@ -99,8 +99,8 @@ export function DayView({
       </div>
 
       {/* Summary panel */}
-      <div className="w-80 shrink-0 border-l border-[var(--ds-border,#e2e8f0)] bg-[var(--ds-surface-sunken,#f8fafc)] overflow-auto">
-        <div className="p-4 border-b border-[var(--ds-border,#e2e8f0)]">
+      <div className="w-80 shrink-0 border-l border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] bg-[var(--ds-surface-sunken,#f8fafc)] overflow-auto">
+        <div className="p-4 border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
           <div className="flex items-center gap-2 mb-2">
             <h3 className="font-semibold text-[var(--ds-text,#0f172a)]">
               {format(currentDate, 'EEEE, MMMM d')}
@@ -113,14 +113,14 @@ export function DayView({
         </div>
 
         {/* Status breakdown */}
-        <div className="p-4 border-b border-[var(--ds-border,#e2e8f0)]">
+        <div className="p-4 border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
           <h4 className="text-xs font-semibold text-[var(--ds-text-subtlest,#64748b)] uppercase tracking-wide mb-3">
             By Status
           </h4>
           <div className="space-y-2">
             {Object.entries(eventsByStatus).map(([status, statusEvents]) => (
               <div key={status} className="flex items-center justify-between">
-                <span className="text-sm text-[var(--ds-text-subtle,#334155)]">
+                <span className="text-sm text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]">
                   {STATUS_LABELS[status as CalendarEventStatus]}
                 </span>
                 <span className="text-sm font-medium text-[var(--ds-text,#0f172a)]">
@@ -141,7 +141,7 @@ export function DayView({
               <div key={id} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Avatar name={name} size="xsmall" />
-                  <span className="text-sm text-[var(--ds-text-subtle,#334155)]">{name}</span>
+                  <span className="text-sm text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]">{name}</span>
                 </div>
                 <span className="text-sm font-medium text-[var(--ds-text,#0f172a)]">
                   {assigneeEvents.length}

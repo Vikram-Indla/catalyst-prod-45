@@ -156,7 +156,7 @@ export function QuickExecutionModal({
         <div style={{ padding: '18px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flex: 1, minWidth: 0 }}>
             <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, #10B981 0%, var(--sem-success) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <Play size={20} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
+              <Play size={20} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
@@ -256,7 +256,7 @@ export function QuickExecutionModal({
               <XCircle size={18} /> Fail
             </button>
             <button onClick={() => handleExecute('blocked')} disabled={isSubmitting}
-              style={{ height: 44, padding: '0 24px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, var(--ds-text-warning, #F59E0B) 0%, var(--sem-warning) 100%)', color: 'var(--cp-float)', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(217,119,6,0.3)' }}>
+              style={{ height: 44, padding: '0 24px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, var(--ds-text-warning, var(--cp-amber, #F59E0B)) 0%, var(--sem-warning) 100%)', color: 'var(--cp-float)', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(217,119,6,0.3)' }}>
               <AlertTriangle size={18} /> Blocked
             </button>
             <button onClick={() => handleExecute('skipped')} disabled={isSubmitting}

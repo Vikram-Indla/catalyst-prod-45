@@ -103,7 +103,7 @@ export function ImproveIssueDropdown({
     height: 30,
     padding: '0 10px',
     borderRadius: 4,
-    border: `1px solid ${token('color.border', '#DFE1E6')}`,
+    border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
     background: token('color.background.accent.purple.subtlest', '#F3F0FF'),
     color: token('color.text.accent.purple', '#5E4DB2'),
     cursor: 'pointer',
@@ -163,7 +163,7 @@ export function ImproveIssueDropdown({
             whiteSpace: 'nowrap',
             transition: 'background 0.15s',
           }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)'; }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7))'; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
         >
           {/* jira-compare 2026-05-05: Jira Improve button has NO chevron.
@@ -183,7 +183,7 @@ export function ImproveIssueDropdown({
               left: 0,
               minWidth: 260,
               background: token('elevation.surface.overlay', '#FFFFFF'),
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               borderRadius: 6,
               boxShadow: '0 8px 24px rgba(9, 30, 66, 0.16)',
               zIndex: 50,

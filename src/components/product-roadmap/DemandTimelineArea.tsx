@@ -256,7 +256,7 @@ interface DemandTimelineRowProps {
 }
 
 // Status-based color mapping for progress bars - CATALYST BRAND COLORS ONLY
-// Blue: var(--ds-text-brand, #2563eb), var(--ds-background-brand-bold-hovered, #1d4ed8)
+// Blue: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)), var(--ds-background-brand-bold-hovered, #1d4ed8)
 // Teal: #0d9488, #0f766e
 // Gray: #6b7280, #9ca3af
 // Amber: var(--ds-text-warning, #f59e0b)
