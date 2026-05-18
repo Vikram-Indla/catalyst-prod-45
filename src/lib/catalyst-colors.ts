@@ -16,42 +16,42 @@ import type { ResourceAllocation } from '@/modules/capacity-planner/types';
 // ============= CATALYST V5 PRIMARY COLORS =============
 export const CATALYST_V5 = {
   available: {
-    hex: '#0d9488',
-    bg: 'rgba(13, 148, 136, 0.08)',
-    bgSolid: '#f0fdfa',
+    hex: 'var(--cp-color-teal)',
+    bg: 'var(--cp-bg-teal-light)',
+    bgSolid: 'var(--cp-color-teal-lightest)',
   },
   optimal: {
-    hex: '#2563eb',
-    bg: 'rgba(37, 99, 235, 0.08)',
-    bgSolid: '#eff6ff',
+    hex: 'var(--cp-color-blue)',
+    bg: 'var(--cp-bg-blue-light)',
+    bgSolid: 'var(--cp-color-blue-lightest)',
   },
   overAllocated: {
-    hex: '#d97706',
-    bg: 'rgba(217, 119, 6, 0.08)',
-    bgSolid: '#fffbeb',
+    hex: 'var(--cp-color-orange)',
+    bg: 'var(--cp-bg-orange-light)',
+    bgSolid: 'var(--cp-color-orange-lightest)',
   },
   error: {
-    hex: '#ef4444',
-    bg: 'rgba(239, 68, 68, 0.08)',
-    bgSolid: '#fef2f2',
+    hex: 'var(--cp-color-red)',
+    bg: 'var(--cp-bg-red-light)',
+    bgSolid: 'var(--cp-color-red-lightest)',
   },
   // Additional colors for Test Cycle Command Center
-  primary: '#2563eb',
-  primaryHover: '#1d4ed8',
-  primaryLight: '#dbeafe',
-  primaryLighter: '#eff6ff',
-  teal: '#0d9488',
-  tealHover: '#0f766e',
-  tealLight: '#ccfbf1',
-  tealLighter: '#f0fdfa',
-  warning: '#d97706',
-  warningHover: '#b45309',
-  warningLight: '#fef3c7',
-  warningLighter: '#fffbeb',
-  danger: '#ef4444',
-  dangerHover: '#dc2626',
-  dangerLight: '#fee2e2',
-  dangerLighter: '#fef2f2',
+  primary: 'var(--cp-color-blue)',
+  primaryHover: 'var(--cp-color-blue-hover)',
+  primaryLight: 'var(--cp-color-blue-lighter)',
+  primaryLighter: 'var(--cp-color-blue-lightest)',
+  teal: 'var(--cp-color-teal)',
+  tealHover: 'var(--cp-color-teal-hover)',
+  tealLight: 'var(--cp-color-teal-light)',
+  tealLighter: 'var(--cp-color-teal-lightest)',
+  warning: 'var(--cp-color-orange)',
+  warningHover: 'var(--cp-color-orange-hover)',
+  warningLight: 'var(--cp-color-orange-lighter)',
+  warningLighter: 'var(--cp-color-orange-lightest)',
+  danger: 'var(--cp-color-red)',
+  dangerHover: 'var(--cp-color-red-hover)',
+  dangerLight: 'var(--cp-color-red-lighter)',
+  dangerLighter: 'var(--cp-color-red-lightest)',
   slate: {
     50: '#f8fafc',
     100: '#f1f5f9',
@@ -68,112 +68,112 @@ export const CATALYST_V5 = {
 
 // Test Cycle Status Colors - Catalyst V5
 export const TEST_STATUS_COLORS = {
-  passed: { bg: '#ccfbf1', text: '#0d9488', border: '#0d9488' },
-  failed: { bg: '#fee2e2', text: '#ef4444', border: '#ef4444' },
-  blocked: { bg: '#fef3c7', text: '#d97706', border: '#d97706' },
-  in_progress: { bg: '#dbeafe', text: '#2563eb', border: '#2563eb' },
-  not_started: { bg: '#f1f5f9', text: '#475569', border: '#cbd5e1' },
+  passed: { bg: 'var(--cp-status-passed-bg)', text: 'var(--cp-status-passed-text)', border: 'var(--cp-status-passed-border)' },
+  failed: { bg: 'var(--cp-status-failed-bg)', text: 'var(--cp-status-failed-text)', border: 'var(--cp-status-failed-border)' },
+  blocked: { bg: 'var(--cp-status-blocked-bg)', text: 'var(--cp-status-blocked-text)', border: 'var(--cp-status-blocked-border)' },
+  in_progress: { bg: 'var(--cp-status-in-progress-bg)', text: 'var(--cp-status-in-progress-text)', border: 'var(--cp-status-in-progress-border)' },
+  not_started: { bg: 'var(--cp-status-not-started-bg)', text: 'var(--cp-status-not-started-text)', border: 'var(--cp-status-not-started-border)' },
 } as const;
 
 // Test Priority Colors - Catalyst V5
 export const TEST_PRIORITY_COLORS = {
-  critical: { bg: '#fee2e2', text: '#ef4444' },
-  high: { bg: '#fef3c7', text: '#d97706' },
-  medium: { bg: '#dbeafe', text: '#2563eb' },
-  low: { bg: '#f1f5f9', text: '#475569' },
+  critical: { bg: 'var(--cp-priority-critical-bg)', text: 'var(--cp-priority-critical-text)' },
+  high: { bg: 'var(--cp-priority-high-bg)', text: 'var(--cp-priority-high-text)' },
+  medium: { bg: 'var(--cp-priority-medium-bg)', text: 'var(--cp-priority-medium-text)' },
+  low: { bg: 'var(--cp-priority-low-bg)', text: 'var(--cp-priority-low-text)' },
 } as const;
 
 // Legacy export for backwards compatibility - DEPRECATED
 export const CATALYST_GOLDEN_HOUR = {
-  olive: '#0d9488',    // Mapped to Teal
-  bronze: '#d97706',   // Mapped to Orange
-  gold: '#2563eb',     // Mapped to Blue
-  champagne: '#64748b', // Mapped to Slate
-  grey: '#94a3b8',     // Mapped to Slate light
+  olive: 'var(--cp-color-teal)',    // Mapped to Teal
+  bronze: 'var(--cp-color-orange)',   // Mapped to Orange
+  gold: 'var(--cp-color-blue)',     // Mapped to Blue
+  champagne: 'var(--cp-color-slate-500)', // Mapped to Slate
+  grey: 'var(--cp-color-slate-400)',     // Mapped to Slate light
 };
 
 export const CATALYST = {
   blue: {
-    600: '#2563eb',
-    500: '#3b82f6',
-    100: '#dbeafe',
-    50: '#eff6ff',
-    primary: '#2563eb',
-    dark: '#1d4ed8',
-    light: '#3b82f6',
-    bg: 'rgba(37, 99, 235, 0.08)',
+    600: 'var(--cp-color-blue)',
+    500: 'var(--cp-color-blue-light)',
+    100: 'var(--cp-color-blue-lighter)',
+    50: 'var(--cp-color-blue-lightest)',
+    primary: 'var(--cp-color-blue)',
+    dark: 'var(--cp-color-blue-hover)',
+    light: 'var(--cp-color-blue-light)',
+    bg: 'var(--cp-bg-blue-light)',
   },
   teal: {
-    600: '#0d9488',
-    500: '#14b8a6',
-    100: '#ccfbf1',
-    50: '#f0fdfa',
-    primary: '#0d9488',
-    dark: '#0f766e',
-    bg: 'rgba(13, 148, 136, 0.08)',
+    600: 'var(--cp-color-teal)',
+    500: 'var(--cp-color-teal-light)',
+    100: 'var(--cp-color-teal-lighter)',
+    50: 'var(--cp-color-teal-lightest)',
+    primary: 'var(--cp-color-teal)',
+    dark: 'var(--cp-color-teal-hover)',
+    bg: 'var(--cp-bg-teal-light)',
   },
   orange: {
-    600: '#d97706',
-    500: '#f59e0b',
-    100: '#fef3c7',
-    50: '#fffbeb',
-    primary: '#d97706',
-    dark: '#b45309',
-    bg: 'rgba(217, 119, 6, 0.08)',
+    600: 'var(--cp-color-orange)',
+    500: 'var(--cp-color-orange-light)',
+    100: 'var(--cp-color-orange-lighter)',
+    50: 'var(--cp-color-orange-lightest)',
+    primary: 'var(--cp-color-orange)',
+    dark: 'var(--cp-color-orange-hover)',
+    bg: 'var(--cp-bg-orange-light)',
   },
   red: {
-    600: '#ef4444',
-    500: '#f87171',
-    100: '#fee2e2',
-    50: '#fef2f2',
-    primary: '#ef4444',
-    dark: '#dc2626',
-    bg: 'rgba(239, 68, 68, 0.08)',
+    600: 'var(--cp-color-red)',
+    500: 'var(--cp-color-red-light)',
+    100: 'var(--cp-color-red-lighter)',
+    50: 'var(--cp-color-red-lightest)',
+    primary: 'var(--cp-color-red)',
+    dark: 'var(--cp-color-red-hover)',
+    bg: 'var(--cp-bg-red-light)',
   },
   // Keep amber as alias to orange for backwards compat
   amber: {
-    600: '#d97706',
-    500: '#f59e0b',
-    100: '#fef3c7',
-    50: '#fffbeb',
+    600: 'var(--cp-color-orange)',
+    500: 'var(--cp-color-orange-light)',
+    100: 'var(--cp-color-orange-lighter)',
+    50: 'var(--cp-color-orange-lightest)',
   },
   // DEPRECATED - mapped to new colors
   olive: {
-    primary: '#0d9488', // Now Teal
-    dark: '#0f766e',
-    bg: 'rgba(13, 148, 136, 0.08)',
+    primary: 'var(--cp-color-teal)', // Now Teal
+    dark: 'var(--cp-color-teal-hover)',
+    bg: 'var(--cp-bg-teal-light)',
   },
   bronze: {
-    600: '#d97706', // Now Orange
-    500: '#f59e0b',
-    100: '#fef3c7',
-    50: '#fffbeb',
-    primary: '#d97706',
-    dark: '#b45309',
-    bg: 'rgba(217, 119, 6, 0.08)',
+    600: 'var(--cp-color-orange)', // Now Orange
+    500: 'var(--cp-color-orange-light)',
+    100: 'var(--cp-color-orange-lighter)',
+    50: 'var(--cp-color-orange-lightest)',
+    primary: 'var(--cp-color-orange)',
+    dark: 'var(--cp-color-orange-hover)',
+    bg: 'var(--cp-bg-orange-light)',
   },
   slate: {
-    900: '#0f172a',
-    800: '#1e293b',
-    700: '#334155',
-    600: '#475569',
-    500: '#64748b',
-    400: '#94a3b8',
-    300: '#cbd5e1',
-    200: '#e2e8f0',
-    100: '#f1f5f9',
-    50: '#f8fafc',
+    900: 'var(--cp-color-slate-900)',
+    800: 'var(--cp-color-slate-800)',
+    700: 'var(--cp-color-slate-700)',
+    600: 'var(--cp-color-slate-600)',
+    500: 'var(--cp-color-slate-500)',
+    400: 'var(--cp-color-slate-400)',
+    300: 'var(--cp-color-slate-300)',
+    200: 'var(--cp-color-slate-200)',
+    100: 'var(--cp-color-slate-100)',
+    50: 'var(--cp-color-slate-50)',
   },
   grey: {
-    50: '#fafafa',
-    100: '#f5f5f4',
-    200: '#e5e5e5',
-    300: '#d4d4d4',
-    400: '#a3a3a3',
-    500: '#737373',
-    600: '#525252',
-    700: '#404040',
-    900: '#0a0a0a',
+    50: 'var(--cp-color-grey-50)',
+    100: 'var(--cp-color-grey-100)',
+    200: 'var(--cp-color-grey-200)',
+    300: 'var(--cp-color-grey-300)',
+    400: 'var(--cp-color-grey-400)',
+    500: 'var(--cp-color-grey-500)',
+    600: 'var(--cp-color-grey-600)',
+    700: 'var(--cp-color-grey-700)',
+    900: 'var(--cp-color-grey-900)',
   },
 };
 
@@ -182,16 +182,16 @@ export const CATALYST = {
  * Using only: Blue, Teal, Orange, Slate
  */
 export const ASSIGNMENT_THEMES: Record<string, { bg: string; text: string; accent: string }> = {
-  'Senaei BAU': { bg: '#eff6ff', text: '#1e40af', accent: '#2563eb' },           // Blue
-  'Innovation Platform': { bg: '#eff6ff', text: '#1e3a8a', accent: '#1d4ed8' },  // Blue Dark
-  'Inspection Project': { bg: '#f0fdfa', text: '#115e59', accent: '#0d9488' },   // Teal
-  'International Relations': { bg: '#f0fdfa', text: '#134e4a', accent: '#0f766e' }, // Teal Dark
-  'MIM Website': { bg: '#f0fdfa', text: '#115e59', accent: '#14b8a6' },          // Teal Light
-  'Senaei OPS': { bg: '#eff6ff', text: '#1e40af', accent: '#3b82f6' },           // Blue Light
-  'Sectorial Services': { bg: '#f8fafc', text: '#475569', accent: '#64748b' },   // Slate
-  'Tahommena': { bg: '#f0fdfa', text: '#0f766e', accent: '#0d9488' },            // Teal
-  'Data Platform': { bg: '#dbeafe', text: '#1e40af', accent: '#3b82f6' },        // Blue Light
-  'Unassigned': { bg: '#f8fafc', text: '#64748b', accent: '#94a3b8' },           // Slate
+  'Senaei BAU': { bg: 'var(--cp-theme-senaei-bau-bg)', text: 'var(--cp-theme-senaei-bau-text)', accent: 'var(--cp-theme-senaei-bau-accent)' },           // Blue
+  'Innovation Platform': { bg: 'var(--cp-theme-innovation-bg)', text: 'var(--cp-theme-innovation-text)', accent: 'var(--cp-theme-innovation-accent)' },  // Blue Dark
+  'Inspection Project': { bg: 'var(--cp-theme-inspection-bg)', text: 'var(--cp-theme-inspection-text)', accent: 'var(--cp-theme-inspection-accent)' },   // Teal
+  'International Relations': { bg: 'var(--cp-theme-international-bg)', text: 'var(--cp-theme-international-text)', accent: 'var(--cp-theme-international-accent)' }, // Teal Dark
+  'MIM Website': { bg: 'var(--cp-theme-mim-bg)', text: 'var(--cp-theme-mim-text)', accent: 'var(--cp-theme-mim-accent)' },          // Teal Light
+  'Senaei OPS': { bg: 'var(--cp-theme-senaei-ops-bg)', text: 'var(--cp-theme-senaei-ops-text)', accent: 'var(--cp-theme-senaei-ops-accent)' },           // Blue Light
+  'Sectorial Services': { bg: 'var(--cp-theme-sectorial-bg)', text: 'var(--cp-theme-sectorial-text)', accent: 'var(--cp-theme-sectorial-accent)' },   // Slate
+  'Tahommena': { bg: 'var(--cp-theme-tahommena-bg)', text: 'var(--cp-theme-tahommena-text)', accent: 'var(--cp-theme-tahommena-accent)' },            // Teal
+  'Data Platform': { bg: 'var(--cp-theme-data-platform-bg)', text: 'var(--cp-theme-data-platform-text)', accent: 'var(--cp-theme-data-platform-accent)' },        // Blue Light
+  'Unassigned': { bg: 'var(--cp-theme-unassigned-bg)', text: 'var(--cp-theme-unassigned-text)', accent: 'var(--cp-theme-unassigned-accent)' },           // Slate
 };
 
 /**
@@ -199,23 +199,23 @@ export const ASSIGNMENT_THEMES: Record<string, { bg: string; text: string; accen
  */
 export function getAssignmentTheme(name: string | null | undefined): { bg: string; text: string; accent: string } {
   if (!name) return ASSIGNMENT_THEMES['Unassigned'];
-  return ASSIGNMENT_THEMES[name] || { bg: '#eff6ff', text: '#1e40af', accent: '#2563eb' };
+  return ASSIGNMENT_THEMES[name] || { bg: 'var(--cp-color-blue-lightest)', text: 'var(--cp-theme-senaei-bau-text)', accent: 'var(--cp-color-blue)' };
 }
 
 /**
  * Assignment colors - Catalyst V5 compliant
  */
 export const ASSIGNMENT_COLORS: Record<string, string> = {
-  'Senaei BAU': '#2563eb',           // Blue
-  'Innovation Platform': '#1d4ed8',  // Blue Dark
-  'Inspection Project': '#0d9488',   // Teal
-  'International Relations': '#0f766e', // Teal Dark
-  'MIM Website': '#14b8a6',          // Teal Light
-  'Senaei OPS': '#3b82f6',           // Blue Light
-  'Sectorial Services': '#64748b',   // Slate
-  'Tahommena': '#0d9488',            // Teal
-  'Data Platform': '#3b82f6',        // Blue Light
-  'Unassigned': '#94a3b8',           // Slate
+  'Senaei BAU': 'var(--cp-color-blue)',           // Blue
+  'Innovation Platform': 'var(--cp-color-blue-hover)',  // Blue Dark
+  'Inspection Project': 'var(--cp-color-teal)',   // Teal
+  'International Relations': 'var(--cp-color-teal-hover)', // Teal Dark
+  'MIM Website': 'var(--cp-color-teal-light)',          // Teal Light
+  'Senaei OPS': 'var(--cp-color-blue-light)',           // Blue Light
+  'Sectorial Services': 'var(--cp-color-slate-500)',   // Slate
+  'Tahommena': 'var(--cp-color-teal)',            // Teal
+  'Data Platform': 'var(--cp-color-blue-light)',        // Blue Light
+  'Unassigned': 'var(--cp-color-slate-400)',           // Slate
 };
 
 export function getAssignmentColor(name: string | null | undefined): string {
@@ -462,11 +462,11 @@ export function getAllocationsForPeriod(
 
 // ============= STACKED BAR SEGMENT COLORS - Catalyst V5 =============
 export const ALLOCATION_SEGMENT_COLORS = [
-  '#2563eb', // Blue
-  '#0d9488', // Teal
-  '#3b82f6', // Blue Light
-  '#14b8a6', // Teal Light
-  '#64748b', // Slate
+  'var(--cp-color-blue)', // Blue
+  'var(--cp-color-teal)', // Teal
+  'var(--cp-color-blue-light)', // Blue Light
+  'var(--cp-color-teal-light)', // Teal Light
+  'var(--cp-color-slate-500)', // Slate
 ];
 
 // =====================================================
@@ -578,9 +578,9 @@ export const DEFECT_STATUS_COLORS = {
 // =====================================================
 export const DEFECT_PRIORITY_COLORS = {
   critical: {
-    bg: '#fff1f2', // rose-50
-    text: '#e11d48', // rose-600
-    border: '#e11d4830',
+    bg: 'var(--cp-defect-priority-critical-bg)', // rose-50
+    text: 'var(--cp-defect-priority-critical-text)', // rose-600
+    border: 'var(--cp-defect-priority-critical-border)',
     colorful: true,
   },
   high: {
