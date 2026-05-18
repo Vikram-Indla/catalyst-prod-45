@@ -73,19 +73,24 @@ class TypographyEnforcer {
         });
       }
 
-      // Check for hardcoded fontWeight (should use 400/500/600/700 only)
+      // Check for hardcoded fontWeight. Allowed: the standard 100-step CSS
+      // scale (300/400/500/600/700/900) PLUS the Jira-derived weights
+      // probed live from atlassian.design (653 = Jira headers/lozenges,
+      // 800 = Jira table column heads in some surfaces). These are
+      // ADS-canonical for parity work and explicitly approved by Vikram.
       if (line.includes('fontWeight:') && !line.includes('var(')) {
         const match = line.match(/fontWeight:\s*['"]?(\d+)['"]?/);
         if (match) {
           const weight = parseInt(match[1]);
-          if (![300, 400, 500, 600, 700, 900].includes(weight)) {
+          const ALLOWED_WEIGHTS = [300, 400, 500, 600, 653, 700, 800, 900];
+          if (!ALLOWED_WEIGHTS.includes(weight)) {
             this.violations.push({
               file: filePath,
               line: index + 1,
               type: 'INVALID_FONTWEIGHT',
               content: line.trim(),
-              expected: 'fontWeight should be 300, 400, 500, 600, 700, or 900',
-              fix: 'Use valid ADS font weight: fontWeight: 400 (normal), 500 (medium), 600 (semibold), 700 (bold)'
+              expected: `fontWeight should be one of ${ALLOWED_WEIGHTS.join(', ')}`,
+              fix: 'Use valid ADS font weight: 400 (normal), 500 (medium), 600 (semibold), 653 (Jira semibold-emphasis), 700 (bold)'
             });
           }
         }

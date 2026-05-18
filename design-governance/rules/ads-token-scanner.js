@@ -62,16 +62,34 @@ class ADSTokenScanner {
         }
       }
 
-      // Check for hardcoded px spacing (but allow in specific contexts)
-      if (this.hardcodedPxPattern.test(line) && line.includes('padding') || line.includes('margin')) {
-        if (!line.includes('var(') && !line.includes('token(')) {
+      // Check for hardcoded px spacing in padding/margin properties.
+      // Per CLAUDE.md the canonical Catalyst spacing grid is direct px
+      // values 0/4/8/12/16/24/32 (12 is on the Jira grid for half-step
+      // alignment of nav items). Off-grid values like 7px, 13px, 18px are
+      // violations.
+      //
+      // We extract the padding/margin VALUE specifically (not numbers from
+      // unrelated properties on the same line such as border widths or icon
+      // sizes) and check each shorthand component against the grid.
+      const VALID_GRID = new Set([0, 4, 8, 12, 16, 24, 32, 40, 48]);
+      const spacingMatches = [
+        ...line.matchAll(/(?:padding|margin)(?:Top|Bottom|Left|Right|Inline|Block)?\s*:\s*['"]?([^'"`,}]+)['"]?/g),
+      ];
+      for (const m of spacingMatches) {
+        const value = m[1];
+        if (value.includes('var(') || value.includes('token(') || value.includes('calc(')) continue;
+        // Extract every number in the shorthand value
+        const nums = [...value.matchAll(/(-?\d+)(?:px)?/g)].map(n => parseInt(n[1]));
+        const hasOffGrid = nums.some(n => !VALID_GRID.has(Math.abs(n)));
+        if (hasOffGrid) {
           this.violations.push({
             file: filePath,
             line: index + 1,
             type: 'HARDCODED_PX',
             content: line.trim(),
-            fix: 'Use spacing token: xs/sm/md/lg/xl from design-governance/core/ads-config.json'
+            fix: 'Use spacing grid: 0/4/8/12/16/24/32/40/48 px direct, or var(--ds-space-*).'
           });
+          break;
         }
       }
 

@@ -1004,3 +1004,35 @@ EXISTS (
 When adding a new admin-facing table, the SELECT policy can be permissive (`TO anon, authenticated USING (true)`) for non-PII governance/config data — gating happens at the AdminGuard component layer. Write policies (INSERT/UPDATE/DELETE) must use the user_roles EXISTS pattern. Before declaring a new admin table "RLS-ready", probe it from an unauthenticated browser session — if data doesn't come back, the policy is wrong.
 
 **Severity:** P0 (silently breaks every admin data surface — looks like the table is empty when it has data).
+
+---
+
+## 2026-05-19 — Design-system audit was a fraud: silently passed everything; 1541 false-positive headline number masked the real 599 admin violations
+
+**Surface:** `design-governance/rules/audit.js`, `ads-token-scanner.js`, `typography-enforcer.js`
+**Pattern (RCA):** Vikram pointed at the live `/admin/user-access` page and asked why hardcoded hex/uppercase/Tailwind weren't flagged by the design-system audit. Investigation revealed THREE distinct breakages that together turned the audit into a no-op:
+
+1. **Silent-pass on scan failure (P0 systemic).** `audit.js` wrapped each validator in try/catch and on ANY error returned `{ passed: true, violations: [] }`. The catch fired whenever `scanDirectory()` was given a single file path (CLI default) instead of a directory — `fs.readdirSync` throws ENOTDIR, the catch swallows it, and the audit reports "✅ AUDIT PASSED: All validators passed with 0 violations" while having scanned nothing. The pre-commit hook and CI gate have been merging garbage. Every "100% compliant" claim was a lie.
+
+2. **var() fallback false positive (P0 false negative for users, false positive for compliance).** The ADS Token Scanner flagged ANY hex anywhere in a line, including hex inside `var(--ds-foo, #BAR)` fallback chains. Those fallbacks are the ADS-canonical pattern (token first, hex fallback for browsers without CSS-vars / SSR). Flagging them as violations bloated the headline number from 599 → 1541 (~62% noise) and made the audit so noisy that nobody could read the real signal.
+
+3. **Over-zealous HARDCODED_PX rule.** Any `padding: 8px` or `margin: 16px` got flagged — but CLAUDE.md explicitly says the canonical Catalyst grid is direct values `4/8/16/24/32 px`. The scanner had no allowlist. It also leaked across properties: `padding: '12px 0'; borderBottom: '1px solid'` would extract `1` from the unrelated border and flag the padding as off-grid.
+
+4. **Typography enforcer rejected Jira's actual `fontWeight: 653`.** Live DOM probe of atlassian.design shows Jira uses 653 for headers/lozenges/labels. The enforcer accepted only the standard 100-step CSS scale (300/400/500/600/700/900) and flagged every Jira-parity weight as INVALID_FONTWEIGHT.
+
+**Fix:**
+1. **`audit.js`**: removed every try/catch around validator runs. Path is checked with `fs.existsSync` up-front — throws if missing. `isDirectory()` check selects between `scanDirectory()` and `scanFile()`. NEVER defaults to passed:true. If the audit can't read the path, it dies loudly with a non-zero exit code.
+2. **`ads-token-scanner.js`** RAW_HEX rule: strip `var(...)` expressions from the line BEFORE running the hex regex. Hex only inside fallback chains no longer fires.
+3. **`ads-token-scanner.js`** HARDCODED_PX rule: now extracts only the `padding|margin` shorthand VALUE (not the whole line) and checks each number against an explicit `VALID_GRID = {0,4,8,12,16,24,32,40,48}` set. Off-grid values fail; on-grid values pass.
+4. **`typography-enforcer.js`**: extended `ALLOWED_WEIGHTS` to `[300, 400, 500, 600, 653, 700, 800, 900]` — 653 added for Jira parity per live probe.
+
+**Numbers after fix:**
+- src/pages/admin total: 1541 (pre-fix, ~62% noise) → **599 (real violations)**
+- UserAccessPage.tsx: 31 hex + 1 typography (pre-fix, mostly false positives) → 0 after sweep
+- Single-file audit (the CLI's default mode): silent-pass → real result
+
+**Rule:** Audit infrastructure must NEVER swallow errors. A validator that can't read its target throws and dies; the CI gate must surface that failure. The token scanner must not flag hex inside `var(...)` fallbacks — that pattern is canonical. The spacing rule must check VALUE NUMBERS specifically (not whole-line digits). The typography rule must accept Jira-derived fontWeights (653, 800) alongside the standard scale, since Catalyst's stated parity target is Jira not generic CSS.
+
+**Remaining work flagged for follow-up:** 599 real violations across 25+ admin files. Top offenders: ComponentsAdminPage (118 — much of it intentional preview-gallery hex; should add `// ads-scanner:ignore-next-line` marker support), AdminAccessPage (48), JiraUserSync (44), CatalystFeaturesBoard (25), workflows pages (~37 combined). Each file needs the same Jira-token sweep applied to UserAccessPage: 24/653 H1, sentence-case 12/653 column headers, 14/400 cells, var() fallbacks, no Tailwind utilities on chrome.
+
+**Severity:** P0 (the governance system was non-functional; every merge since the audit was wired had unchecked design drift).
