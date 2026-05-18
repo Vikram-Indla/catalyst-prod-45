@@ -129,7 +129,7 @@ export default function WikiSubscriptionsPage() {
               <span style={{ fontSize: 12.5, fontWeight: 500, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', flex: 1 }}>{d.name}</span>
               <div style={{
                 width: 36, height: 20, borderRadius: 12,
-                background: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-border, #292929)' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'),
+                background: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'),
                 position: 'relative', transition: 'background 150ms',
               }}>
                 <div style={{

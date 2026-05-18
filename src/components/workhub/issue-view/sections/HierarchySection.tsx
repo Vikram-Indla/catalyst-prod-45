@@ -54,7 +54,7 @@ function IssueRow({
       {badge && (
         <span className={cn(
           'text-[10px] font-body font-medium px-1.5 py-0.5 rounded shrink-0',
-          isDark ? 'bg-[var(--ds-border,#292929)] text-[var(--ds-text-subtlest,#878787)]' : 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[var(--ds-text-subtlest,#6B6E76)]',
+          isDark ? 'bg-[var(--ds-border,var(--cp-ink-1, #292929))] text-[var(--ds-text-subtlest,#878787)]' : 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[var(--ds-text-subtlest,#6B6E76)]',
         )}>
           {badge}
         </span>

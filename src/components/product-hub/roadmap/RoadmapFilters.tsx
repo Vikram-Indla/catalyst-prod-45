@@ -87,7 +87,7 @@ export function RoadmapFilters({
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
               }}
-              onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = isDark ? 'var(--ds-border, #292929)' : surface.page; }}
+              onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : surface.page; }}
               onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
             >
               {f.label}

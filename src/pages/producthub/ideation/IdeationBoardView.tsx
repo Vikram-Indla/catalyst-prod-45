@@ -139,7 +139,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         </span>
         <span style={{
           fontFamily: 'var(--cp-font-mono)', fontSize: '9px', fontWeight: 800,
-          background: isDark ? 'var(--ds-border, #292929)' : pc.bg, color: isDark ? dk.t2 : pc.text,
+          background: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : pc.bg, color: isDark ? dk.t2 : pc.text,
           padding: '1px 5px', borderRadius: '4px',
           border: `1px solid ${isDark ? dk.border : pc.border}`,
         }}>

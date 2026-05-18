@@ -56,8 +56,8 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
   const t2 = isDark ? DK.t2 : 'var(--fg-3)';
   const t3 = isDark ? DK.t3 : 'var(--fg-4)';
   const border = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)';
-  const borderSubtle = isDark ? 'var(--ds-border, #292929)' : 'var(--bg-1)';
-  const hoverBg = isDark ? 'var(--ds-border, #292929)' : 'var(--bg-1)';
+  const borderSubtle = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bg-1)';
+  const hoverBg = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bg-1)';
   const cardBg = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--bg-1)';
   const linkBlue = isDark ? 'var(--ds-text-brand, #60A5FA)' : 'var(--cp-blue)';
 
@@ -148,9 +148,9 @@ function dk(isDark: boolean) {
     t2: isDark ? DK.t2 : 'var(--fg-3)',
     t3: isDark ? DK.t3 : 'var(--fg-4)',
     border: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)',
-    borderSubtle: isDark ? 'var(--ds-border, #292929)' : 'var(--bg-1)',
+    borderSubtle: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bg-1)',
     cardBg: isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--bg-1)',
-    hoverBg: isDark ? 'var(--ds-border, #292929)' : 'var(--bg-1)',
+    hoverBg: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bg-1)',
     linkBlue: isDark ? 'var(--ds-text-brand, #60A5FA)' : 'var(--cp-blue)',
   };
 }
@@ -231,7 +231,7 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
               { label: 'Alignment', value: Math.round(theme.ai_health_score * 0.2) },
             ].map(f => (
               <div key={f.label} className="rounded-md text-center" style={{
-                background: isDark ? 'var(--ds-border, #292929)' : 'rgba(255,255,255,0.6)',
+                background: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'rgba(255,255,255,0.6)',
                 border: isDark ? '1px solid #2E2E2E' : 'none',
                 padding: '6px 0',
               }}>

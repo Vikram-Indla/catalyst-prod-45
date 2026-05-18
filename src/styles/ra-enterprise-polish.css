@@ -323,8 +323,8 @@
     -45deg,
     var(--ds-surface-overlay, #1F1F1F),
     var(--ds-surface-overlay, #1F1F1F) 4px,
-    var(--ds-border, #292929) 4px,
-    var(--ds-border, #292929) 8px
+    var(--ds-border, var(--cp-ink-1, #292929)) 4px,
+    var(--ds-border, var(--cp-ink-1, #292929)) 8px
   );
-  --ra-end-text-bg: var(--ds-border, #292929);
+  --ra-end-text-bg: var(--ds-border, var(--cp-ink-1, #292929));
 }

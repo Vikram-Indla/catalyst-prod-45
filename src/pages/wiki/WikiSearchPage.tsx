@@ -381,7 +381,7 @@ export default function WikiSearchPage() {
                       style={{
                         fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 4,
                         border: `1px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                        color: page === 0 ? (isDark ? 'var(--ds-border, #292929)' : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'), cursor: page === 0 ? 'default' : 'pointer',
+                        color: page === 0 ? (isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'), cursor: page === 0 ? 'default' : 'pointer',
                       }}
                     >← Previous</button>
                     <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
@@ -393,7 +393,7 @@ export default function WikiSearchPage() {
                       style={{
                         fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 4,
                         border: `1px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                        color: page >= totalPages - 1 ? (isDark ? 'var(--ds-border, #292929)' : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'), cursor: page >= totalPages - 1 ? 'default' : 'pointer',
+                        color: page >= totalPages - 1 ? (isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'), cursor: page >= totalPages - 1 ? 'default' : 'pointer',
                       }}
                     >Next →</button>
                   </div>

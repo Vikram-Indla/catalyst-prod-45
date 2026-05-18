@@ -41,7 +41,7 @@ export default function WikiLearningPathsPage() {
                 </div>
               </div>
               <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 16, lineHeight: 1.5 }}>{p.description}</div>
-              <div style={{ height: 4, borderRadius: 4, background: isDark ? 'var(--ds-border, #292929)' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', marginBottom: 8 }}>
+              <div style={{ height: 4, borderRadius: 4, background: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', marginBottom: 8 }}>
                 <div style={{ height: '100%', borderRadius: 4, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', width: `${pct}%` }} />
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>

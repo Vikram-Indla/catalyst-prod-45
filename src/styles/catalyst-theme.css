@@ -54,7 +54,7 @@
   --text-4: #444444;
   --text-inv: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --text-link: var(--ds-text-brand, #60A5FA);
-  --bd-subtle: var(--ds-border, #292929);
+  --bd-subtle: var(--ds-border, var(--cp-ink-1, #292929));
   --bd-default: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --bd-strong: var(--ds-border-bold, #454545);
   --hover: var(--ds-surface-overlay, #1F1F1F);

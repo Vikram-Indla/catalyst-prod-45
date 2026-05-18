@@ -151,7 +151,7 @@ function ContentCard({
 }) {
   return (
     <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-lg border border-gray-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-sm">
-      <div className="px-4 py-2.5 border-b border-gray-100 dark:border-[var(--ds-border,#292929)] flex items-center justify-between">
+      <div className="px-4 py-2.5 border-b border-gray-100 dark:border-[var(--ds-border,var(--cp-ink-1, #292929))] flex items-center justify-between">
         <h2 className={cn("text-[13px] font-semibold flex items-center gap-1.5", titleClass)}>
           {titleIcon}
           {title}
@@ -174,7 +174,7 @@ function SidebarPanel({
 }) {
   return (
     <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-lg border border-gray-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-sm">
-      <div className="px-4 py-2.5 border-b border-gray-100 dark:border-[var(--ds-border,#292929)] flex items-center justify-between">
+      <div className="px-4 py-2.5 border-b border-gray-100 dark:border-[var(--ds-border,var(--cp-ink-1, #292929))] flex items-center justify-between">
         <h3 className="text-[11px] font-bold uppercase text-gray-500 tracking-wider">{title}</h3>
         {action}
       </div>

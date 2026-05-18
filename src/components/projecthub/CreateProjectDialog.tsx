@@ -129,9 +129,9 @@ export function CreateProjectDialog({ open, onClose }: Props) {
   const border = dk ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)';
   const divider = dk ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)';
   const inputBg = dk ? 'transparent' : 'var(--bg-app)';
-  const closeHoverBg = dk ? 'var(--ds-border, #292929)' : 'var(--cp-bd-zone)';
+  const closeHoverBg = dk ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--cp-bd-zone)';
   const cancelBg = dk ? 'transparent' : 'var(--bg-app)';
-  const cancelHoverBg = dk ? 'var(--ds-border, #292929)' : 'var(--bg-1)';
+  const cancelHoverBg = dk ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bg-1)';
   const dropdownBg = dk ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : 'var(--cp-float)';
 
   const inputStyle: React.CSSProperties = {

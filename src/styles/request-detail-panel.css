@@ -66,7 +66,7 @@
   --idp-ink-muted-strong: var(--ds-text-subtlest, #878787);
   --idp-surface: var(--cp-bg-surface, #242528);
   --idp-surface-secondary: var(--ds-surface-overlay, #1F1F1F);
-  --idp-surface-tertiary: var(--ds-border, #292929);
+  --idp-surface-tertiary: var(--ds-border, var(--cp-ink-1, #292929));
   --idp-border: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --idp-border-strong: var(--ds-border-bold, #454545);
   --idp-primary-bg: rgba(59,130,246,0.12);

@@ -45,7 +45,7 @@ export function DailyScorecardView() {
                   Task completion by team and individual • {format(data.period.date, 'EEEE, MMMM d, yyyy')}
                 </p>
               </div>
-              <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] bg-slate-100 dark:bg-[var(--ds-border,#292929)] px-3 py-1.5 rounded-full">
+              <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] bg-slate-100 dark:bg-[var(--ds-border,var(--cp-ink-1, #292929))] px-3 py-1.5 rounded-full">
                 <Clock className="w-3.5 h-3.5" />
                 <span>Live data</span>
               </div>

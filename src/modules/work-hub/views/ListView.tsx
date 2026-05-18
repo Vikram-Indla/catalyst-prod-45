@@ -728,7 +728,7 @@ export function ListView() {
                                           {item.labels.length > 0 ? (
                                             <div className="flex gap-1 flex-wrap">
                                               {item.labels.map((label) => (
-                                                <span key={label} className="text-[11px] text-slate-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)] bg-slate-100 dark:bg-[var(--ds-border,#292929)] px-1.5 py-0.5 rounded">
+                                                <span key={label} className="text-[11px] text-slate-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)] bg-slate-100 dark:bg-[var(--ds-border,var(--cp-ink-1, #292929))] px-1.5 py-0.5 rounded">
                                                   {label}
                                                 </span>
                                               ))}

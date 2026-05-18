@@ -60,9 +60,9 @@ function ToolbarButton({ icon, title, onClick, active }: ToolbarButtonProps) {
       className={cn(
         'h-7 w-7 flex items-center justify-center rounded',
         'text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] hover:bg-[#EBECF0] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]',
-        'dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-border,#292929)] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
+        'dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-border,var(--cp-ink-1, #292929))] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
         'transition-colors duration-100',
-        active && 'bg-[#EBECF0] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:bg-[var(--ds-border,#292929)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
+        active && 'bg-[#EBECF0] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:bg-[var(--ds-border,var(--cp-ink-1, #292929))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
         '[&_svg]:h-4 [&_svg]:w-4'
       )}
     >
@@ -214,7 +214,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                           className={cn(
                             'h-7 w-7 flex items-center justify-center rounded',
                             'text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] hover:bg-[#EBECF0] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]',
-                            'dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-border,#292929)] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
+                            'dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-border,var(--cp-ink-1, #292929))] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
                             '[&_svg]:h-4 [&_svg]:w-4'
                           )}
                         >

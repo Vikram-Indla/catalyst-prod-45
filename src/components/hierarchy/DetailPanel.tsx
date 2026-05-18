@@ -74,7 +74,7 @@ function priorityToLevel(name?: string): number {
 function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
   const dk = useIsDark();
   return (
-    <div style={{ padding: '8px 20px', borderBottom: `1px solid ${dk ? 'var(--ds-border, #292929)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}` }}>
+    <div style={{ padding: '8px 20px', borderBottom: `1px solid ${dk ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}` }}>
       <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em', marginBottom: 4, fontFamily: 'var(--cp-font-body)' }}>
         {label}
       </div>
@@ -380,7 +380,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                   onClick={() => onSelectItem?.(child)}
                   style={{
                     height: 50, display: 'flex', alignItems: 'center', gap: 6,
-                    padding: '0 20px', borderBottom: `1px solid ${dk ? 'var(--ds-border, #292929)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}`, cursor: 'pointer',
+                    padding: '0 20px', borderBottom: `1px solid ${dk ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}`, cursor: 'pointer',
                     fontFamily: 'var(--cp-font-body)',
                   }}
                   onMouseEnter={e => (e.currentTarget.style.background = dk ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--bg-1, #F8FAFC)')}

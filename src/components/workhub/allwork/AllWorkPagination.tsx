@@ -52,7 +52,7 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
   return (
     <div
       className="flex items-center justify-between px-8 py-2.5"
-      style={{ borderTop: '1px solid var(--bd-subtle, #292929)', backgroundColor: 'var(--bg-app)' }}
+      style={{ borderTop: '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))', backgroundColor: 'var(--bg-app)' }}
     >
       {/* Left: count */}
       <span className="text-[12px]" style={{ color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>

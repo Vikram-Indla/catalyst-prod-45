@@ -550,7 +550,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
               ? 'radial-gradient(circle at center, var(--ds-surface, #0A0A0A) 0%, var(--ds-surface, #0A0A0A) 55%, var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) 100%)'
               : 'radial-gradient(circle at center, var(--ds-surface, #fff) 0%, var(--ds-surface-sunken, #F8FAFC) 55%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 100%)',
             backgroundImage: isDark
-              ? 'radial-gradient(circle at center, var(--ds-surface, #0A0A0A) 0%, var(--ds-surface, #0A0A0A) 55%, var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) 100%), radial-gradient(circle, var(--ds-border, #292929) 1px, transparent 1px)'
+              ? 'radial-gradient(circle at center, var(--ds-surface, #0A0A0A) 0%, var(--ds-surface, #0A0A0A) 55%, var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) 100%), radial-gradient(circle, var(--ds-border, var(--cp-ink-1, #292929)) 1px, transparent 1px)'
               : 'radial-gradient(circle at center, var(--ds-surface, #fff) 0%, var(--ds-surface-sunken, #F8FAFC) 55%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 100%), radial-gradient(circle, var(--ds-text-disabled, #CBD5E1) 1px, transparent 1px)',
             backgroundSize: 'cover, 24px 24px',
             boxSizing: 'border-box',

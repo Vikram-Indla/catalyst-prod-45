@@ -148,7 +148,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--bd-subtle, #292929)' }}>
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))' }}>
           <h2 className="text-[16px] font-semibold" style={{ color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>Create Work Item</h2>
           <button onClick={onClose} className="p-1 rounded hover:bg-[var(--hover,#1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" aria-label="Close modal">
             <X className="w-5 h-5" style={{ color: 'var(--ds-text-subtlest, #6b6e76)' }} />
@@ -215,7 +215,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4" style={{ borderTop: '1px solid var(--bd-subtle, #292929)' }}>
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderTop: '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))' }}>
           <label className="flex items-center gap-2 text-[12px] cursor-pointer" style={{ color: 'var(--ds-text-subtlest, #6b6e76)', fontFamily: 'var(--cp-font-body)' }}>
             <input
               type="checkbox"

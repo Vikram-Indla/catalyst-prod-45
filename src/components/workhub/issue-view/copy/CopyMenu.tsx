@@ -151,7 +151,7 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
               <span className={cn('font-body text-sm font-medium', isDark ? 'text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' : 'text-[var(--ds-text,#292A2E)]')}>
                 Copy manually
               </span>
-              <button onClick={() => setFallbackText(null)} className={cn('p-1 rounded', isDark ? 'hover:bg-[var(--ds-border,#292929)]' : 'hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]')}>
+              <button onClick={() => setFallbackText(null)} className={cn('p-1 rounded', isDark ? 'hover:bg-[var(--ds-border,var(--cp-ink-1, #292929))]' : 'hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]')}>
                 <X className="w-4 h-4" />
               </button>
             </div>

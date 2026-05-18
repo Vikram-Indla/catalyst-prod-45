@@ -167,7 +167,7 @@ export const DK = {
   t3: 'var(--cp-t3)',
   t4: 'var(--cp-t4)',
   border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
-  borderSubtle: 'var(--ds-border, #292929)',
+  borderSubtle: 'var(--ds-border, var(--cp-ink-1, #292929))',
   hover: 'var(--ds-surface-overlay, #1F1F1F)',
-  iconBgSubtle: 'var(--ds-border, #292929)',
+  iconBgSubtle: 'var(--ds-border, var(--cp-ink-1, #292929))',
 };

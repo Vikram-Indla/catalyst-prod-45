@@ -123,7 +123,7 @@
   --slate-400: var(--fg-4, rgba(237,237,237,0.30));
   --slate-300: var(--ds-border-bold, #454545);
   --slate-200: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  --slate-100: var(--ds-border, #292929);
+  --slate-100: var(--ds-border, var(--cp-ink-1, #292929));
   --slate-50: var(--ds-surface-overlay, #1F1F1F);
   --white: var(--cp-bg-surface, #242528);
 

@@ -20,7 +20,7 @@ function ShimmerBar({ width, height, borderRadius = 4, isDark }: {
     <div style={{
       width, height, borderRadius,
       background: isDark
-        ? 'linear-gradient(90deg, var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) 25%, var(--ds-border, #292929) 50%, var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) 75%)'
+        ? 'linear-gradient(90deg, var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) 25%, var(--ds-border, var(--cp-ink-1, #292929)) 50%, var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) 75%)'
         : 'linear-gradient(90deg, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 25%, var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))) 50%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 75%)',
       backgroundSize: '600px 100%',
       animation: 'ageing-shimmer 1.6s infinite linear',

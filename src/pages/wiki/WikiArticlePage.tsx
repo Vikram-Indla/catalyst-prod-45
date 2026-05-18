@@ -106,7 +106,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
       <div style={{ flex: 1, overflowY: 'auto', padding: '12px 0' }}>
         {versions.length === 0 ? (
           <div style={{ padding: '48px 20px', textAlign: 'center' }}>
-            <History size={32} style={{ color: isDark ? 'var(--ds-border, #292929)' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', marginBottom: 12 }} />
+            <History size={32} style={{ color: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', marginBottom: 12 }} />
             <div style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No version history yet</div>
           </div>
         ) : versions.map((v: any, i: number) => (
@@ -393,7 +393,7 @@ export default function WikiArticlePage() {
     { label: 'Stories', value: info.totalStories ? (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11 }}>{info.doneStories ?? 0}/{info.totalStories} done</span>
-        <div style={{ width: 40, height: 3, borderRadius: 4, background: isDark ? 'var(--ds-border, #292929)' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }}>
+        <div style={{ width: 40, height: 3, borderRadius: 4, background: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }}>
           <div style={{ height: '100%', borderRadius: 4, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', width: `${info.donePercent ?? 0}%` }} />
         </div>
       </div>
@@ -421,7 +421,7 @@ export default function WikiArticlePage() {
       {/* Scroll progress bar */}
       <div style={{
         position: 'fixed', top: 0, left: 0, right: 0, height: 3, zIndex: 100,
-        background: isDark ? 'var(--ds-border, #292929)' : 'rgba(15,23,42,0.04)',
+        background: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'rgba(15,23,42,0.04)',
       }}>
         <div style={{
           height: '100%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', width: `${scrollPct}%`,

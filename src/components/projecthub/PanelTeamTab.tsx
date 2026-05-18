@@ -135,7 +135,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
             <div className="bg-slate-200 dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ width: 40, height: 40, borderRadius: '50%' }} />
             <div className="flex-1 space-y-1.5">
               <div className="h-3 bg-slate-200 dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded w-1/2" />
-              <div className="h-2.5 bg-slate-100 dark:bg-[var(--ds-border,#292929)] rounded w-1/3" />
+              <div className="h-2.5 bg-slate-100 dark:bg-[var(--ds-border,var(--cp-ink-1, #292929))] rounded w-1/3" />
             </div>
           </div>
         ))}
@@ -175,7 +175,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
           {searchSuggestions.map(u => (
             <div
               key={u.id}
-              className="flex items-center gap-3 px-3 py-2 transition-colors hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] cursor-pointer group border-b border-[var(--ds-surface-sunken,#F8FAFC)] dark:border-[var(--ds-border,#292929)]"
+              className="flex items-center gap-3 px-3 py-2 transition-colors hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] cursor-pointer group border-b border-[var(--ds-surface-sunken,#F8FAFC)] dark:border-[var(--ds-border,var(--cp-ink-1, #292929))]"
               onClick={() => addMember.mutate({ userId: u.id, profileId: u.profile_id, roleName: u.role_name })}
             >
               {u.avatar_url ? (

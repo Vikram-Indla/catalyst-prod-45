@@ -29,7 +29,7 @@
   --pk-ink-muted: #7D7D7D;
   --pk-surface: var(--cp-bg-page, #1F1F21);
   --pk-surface-column: var(--ds-surface-overlay, #1F1F1F);
-  --pk-surface-tertiary: var(--ds-border, #292929);
+  --pk-surface-tertiary: var(--ds-border, var(--cp-ink-1, #292929));
   --pk-border: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --pk-border-strong: var(--ds-border-bold, #454545);
   --pk-primary-bg: rgba(59,130,246,0.12);
@@ -56,7 +56,7 @@
 }
 .dark .pk-chip:hover,
 .dark .pk-chip:hover , [data-theme="dark"] .pk-chip:hover {
-  background: var(--ds-border, #292929) !important;
+  background: var(--ds-border, var(--cp-ink-1, #292929)) !important;
   border-color: var(--ds-border-bold, #454545) !important;
 }
 .dark .pk-chip.pk-chip--active,
@@ -73,7 +73,7 @@
 }
 .dark .pk-dropdown-item:hover,
 .dark .pk-dropdown-item:hover , [data-theme="dark"] .pk-dropdown-item:hover {
-  background: var(--ds-border, #292929);
+  background: var(--ds-border, var(--cp-ink-1, #292929));
 }
 .dark .pk-context-menu,
 .dark .pk-context-menu , [data-theme="dark"] .pk-context-menu {
@@ -83,7 +83,7 @@
 }
 .dark .pk-column-collapsed:hover,
 .dark .pk-column-collapsed:hover , [data-theme="dark"] .pk-column-collapsed:hover {
-  background: var(--ds-border, #292929);
+  background: var(--ds-border, var(--cp-ink-1, #292929));
 }
 .dark .pk-card--overlay,
 .dark .pk-card--overlay , [data-theme="dark"] .pk-card--overlay {

@@ -148,7 +148,7 @@ function FilterSection({
   dark: boolean;
 }) {
   return (
-    <div className="px-3 py-2" style={{ borderBottom: `1px solid ${dark ? 'var(--ds-border, #292929)' : '#EBECF0'}` }}>
+    <div className="px-3 py-2" style={{ borderBottom: `1px solid ${dark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : '#EBECF0'}` }}>
       <div
         style={{
           fontSize: 10,

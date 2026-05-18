@@ -268,7 +268,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
               {selectedLead.avatar_url ? (
                 <img src={selectedLead.avatar_url} alt="" className="rounded-full" style={{ width: 22, height: 22, objectFit: 'cover' }} />
               ) : (
-                <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:bg-[var(--ds-border,#292929)]" style={{ width: 22, height: 22, fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
+                <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:bg-[var(--ds-border,var(--cp-ink-1, #292929))]" style={{ width: 22, height: 22, fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
                   {getInitials(selectedLead.display_name)}
                 </div>
               )}
@@ -312,7 +312,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
                     {p.avatar_url ? (
                       <img src={p.avatar_url} alt="" className="rounded-full" style={{ width: 24, height: 24, objectFit: 'cover' }} />
                     ) : (
-                      <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:bg-[var(--ds-border,#292929)]" style={{ width: 24, height: 24, fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
+                      <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:bg-[var(--ds-border,var(--cp-ink-1, #292929))]" style={{ width: 24, height: 24, fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
                         {getInitials(p.display_name)}
                       </div>
                     )}

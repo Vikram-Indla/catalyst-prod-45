@@ -1165,12 +1165,12 @@ html:has(body[data-scroll-locked]) {
     --nav-text-primary: var(--cp-bg-neutral, #EDEDED);
     --nav-text-secondary: #A1A1A1;
     --nav-text-tertiary: #878787;
-    --nav-module-badge: #292929;           /* Neutral badge */
+    --nav-module-badge: var(--cp-ink-1, #292929);           /* Neutral badge */
     --nav-section-label: #878787;
     --nav-accent-bar: #3b82f6;             /* Left accent bar */
     
     /* === C) DIVIDER + BORDER GRAMMAR (ADS neutral borders) === */
-    --divider: #292929;
+    --divider: var(--cp-ink-1, #292929);
     --border-subtle: var(--cp-ink-1, #2E2E2E);
     --border-strong: #454545;
     --stroke-1: var(--divider);
@@ -1221,7 +1221,7 @@ html:has(body[data-scroll-locked]) {
     
     /* Neutral fallback (for non-semantic use) */
     --neutral-fg: #A1A1A1;
-    --neutral-bg: #292929;
+    --neutral-bg: var(--cp-ink-1, #292929);
     --neutral-bd: var(--cp-ink-1, #2E2E2E);
     
     /* === F) SHADOWS (Modern, soft depth) === */
@@ -1230,7 +1230,7 @@ html:has(body[data-scroll-locked]) {
     --shadow-color: 0 0% 0%;
     --shadow-elev-1: var(--shadow-1);
     --shadow-elev-2: var(--shadow-2);
-    --shadow-elev-3: 0 1px 0 #292929, 0 20px 50px rgba(0,0,0,0.65);
+    --shadow-elev-3: 0 1px 0 var(--cp-ink-1, #292929), 0 20px 50px rgba(0,0,0,0.65);
     --shadow-brand: 0 4px 12px rgba(59, 130, 246, 0.25);  /* Blue brand shadow */
     
     /* === SEMANTIC TOKEN ALIASES (V5 CANONICAL) === */
@@ -1418,7 +1418,7 @@ html:has(body[data-scroll-locked]) {
     --table-row-bg: var(--cp-ink-1, #1A1A1A);
     --table-row-alt-bg: var(--cp-ink-1, #1A1A1A);
     --table-row-hover: #1F1F1F;
-    --table-row-selected: #292929;
+    --table-row-selected: var(--cp-ink-1, #292929);
     --table-row-border: var(--cp-ink-1, #2E2E2E);
     --table-cell-divider: var(--cp-ink-1, #2E2E2E);
     --table-text-primary: var(--fg-1);
@@ -1526,8 +1526,8 @@ html:has(body[data-scroll-locked]) {
     /* Dividers and separators */
     hr,
     [role="separator"] {
-      border-color: #292929;
-      background-color: #292929;
+      border-color: var(--cp-ink-1, #292929);
+      background-color: var(--cp-ink-1, #292929);
     }
     
     /* Table rows */
@@ -3262,7 +3262,7 @@ input[type="range"]::-moz-range-thumb {
   --bg-4: #282E33;
   --border: var(--cp-ink-1, #2E2E2E);
   --cp-bd: var(--cp-ink-1, #2E2E2E);
-  --cp-bd-table: #292929;
+  --cp-bd-table: var(--cp-ink-1, #292929);
   --cp-bd-zone: var(--cp-ink-1, #2E2E2E);
   --cp-bg: #1D2125;
   --cp-bg-elevated: #22272B;
@@ -3277,12 +3277,12 @@ input[type="range"]::-moz-range-thumb {
   --cp-blue-wash: rgba(59,130,246,0.10);
   --cp-border-default: var(--cp-ink-1, #2E2E2E);
   --cp-border-strong: #454545;
-  --cp-border-subtle: #292929;
+  --cp-border-subtle: var(--cp-ink-1, #292929);
   --cp-err: #F87171;
   --cp-err-bg: rgba(248,113,113,0.10);
   --cp-err-text: #F87171;
   --cp-float: var(--cp-ink-1, #1A1A1A);
-  --cp-hover: #292929;
+  --cp-hover: var(--cp-ink-1, #292929);
   --cp-interact-hover: var(--cp-ink-1, #2E2E2E);
   --cp-interact-press: var(--cp-ink-1, #2E2E2E);
   /* jira-compare Phase 0 (2026-05-02): dark variant of
@@ -3293,7 +3293,7 @@ input[type="range"]::-moz-range-thumb {
   --cp-lozenge-blue-text: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
   --cp-lozenge-green-bg: var(--cp-lozenge-green-bg, #1B7F37);
   --cp-lozenge-green-text: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
-  --cp-lozenge-grey-bg: #292929;
+  --cp-lozenge-grey-bg: var(--cp-ink-1, #292929);
   --cp-lozenge-grey-text: #D4D4D4;
   --cp-lz-bl-bg: #0C66E4;
   --cp-lz-bl-t: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
@@ -3317,7 +3317,7 @@ input[type="range"]::-moz-range-thumb {
   --cp-text-tertiary: #9FA2A6;
   --cp-warn: #FBBF24;
   --cp-warn-bg: rgba(251,191,36,0.10);
-  --divider: #292929;
+  --divider: var(--cp-ink-1, #292929);
   --ring: rgba(59,130,246,0.7);
   --shadow: 0 4px 12px rgba(0,0,0,0.4);
   --text-1: var(--cp-bg-neutral, #EDEDED);
@@ -3358,7 +3358,7 @@ input[type="range"]::-moz-range-thumb {
 
 .dark .scrollbar-catalyst::-webkit-scrollbar-thumb,
 .dark .scrollbar-catalyst::-webkit-scrollbar-thumb , [data-theme="dark"] .scrollbar-catalyst::-webkit-scrollbar-thumb {
-  background: #292929;
+  background: var(--cp-ink-1, #292929);
 }
 
 .dark .scrollbar-catalyst::-webkit-scrollbar-thumb:hover,
@@ -3753,9 +3753,9 @@ input[type="range"]::-moz-range-thumb {
   --surface-page:     #0A0A0A;
   --surface-card:     var(--cp-ink-1, #1A1A1A);
   --surface-hover:    #1F1F1F;
-  --surface-active:   #292929;
+  --surface-active:   var(--cp-ink-1, #292929);
   --border-default:   var(--cp-ink-1, #2E2E2E);
-  --border-subtle:    #292929;
+  --border-subtle:    var(--cp-ink-1, #292929);
   --border-medium:    #454545;
   --text-primary:     var(--cp-bg-neutral, #EDEDED);
   --text-secondary:   #A1A1A1;
@@ -3769,7 +3769,7 @@ input[type="range"]::-moz-range-thumb {
   --bg-2: var(--cp-ink-1, #1A1A1A);
   --bg-3: var(--cp-ink-1, #1A1A1A);
   --bg-4: var(--cp-ink-1, #1A1A1A);
-  --bg-5: #292929;
+  --bg-5: var(--cp-ink-1, #292929);
   --text-1: var(--cp-bg-neutral, #EDEDED);
   --text-2: #A1A1A1;
   --text-3: #878787;
@@ -3986,7 +3986,7 @@ input[type="range"]::-moz-range-thumb {
 [data-theme="dark"] [class*="Lozenge"],
 [data-theme="dark"] [class*="Tag"],
 .dark input , [data-theme="dark"] input {
-  border-color: #292929 !important;
+  border-color: var(--cp-ink-1, #292929) !important;
 }
 
 .dark [data-slot="control"],
@@ -5194,9 +5194,9 @@ input[type="range"]::-moz-range-thumb {
 .dark .jus-page { background-color: #0A0A0A !important; }
 .dark .jus-surface,
 .dark .admin-content-area { background-color: var(--cp-ink-1, #1A1A1A) !important; border-color: var(--cp-ink-1, #2E2E2E); }
-.dark .jus-surface-sunken { background-color: #0A0A0A !important; border-color: #292929; }
+.dark .jus-surface-sunken { background-color: #0A0A0A !important; border-color: var(--cp-ink-1, #292929); }
 .dark .jus-surface-elevated { background-color: var(--cp-ink-1, #1A1A1A) !important; border-color: var(--cp-ink-1, #2E2E2E); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
-.dark .jus-table-row { border-bottom: 0.75px solid #292929; }
+.dark .jus-table-row { border-bottom: 0.75px solid var(--cp-ink-1, #292929); }
 .dark .jus-table-row:hover { background-color: var(--cp-ink-1, #2E2E2E) !important; }
 .dark .jus-table-row.selected { background-color: rgba(37, 99, 235, 0.12) !important; }
 .dark .jus-table-header { background-color: var(--cp-ink-1, #1A1A1A) !important; border-bottom: 0.75px solid var(--cp-ink-1, #2E2E2E); color: #878787; }
@@ -5229,7 +5229,7 @@ input[type="range"]::-moz-range-thumb {
    Duplicates .dark selectors using attribute selector for reliability
    ═══════════════════════════════════════════════════════════════ */
 .dark .jus-surface-elevated , [data-theme="dark"] .jus-surface-elevated { background-color: var(--cp-ink-1, #1A1A1A) !important; border-color: var(--cp-ink-1, #2E2E2E); }
-.dark .jus-table-row , [data-theme="dark"] .jus-table-row { border-bottom: 0.75px solid #292929; }
+.dark .jus-table-row , [data-theme="dark"] .jus-table-row { border-bottom: 0.75px solid var(--cp-ink-1, #292929); }
 .dark .jus-table-row:hover , [data-theme="dark"] .jus-table-row:hover { background-color: var(--cp-ink-1, #2E2E2E) !important; }
 .dark .jus-table-row.selected , [data-theme="dark"] .jus-table-row.selected { background-color: rgba(37, 99, 235, 0.12) !important; }
 .dark .jus-table-header , [data-theme="dark"] .jus-table-header { background-color: var(--cp-ink-1, #1A1A1A) !important; border-bottom: 0.75px solid var(--cp-ink-1, #2E2E2E); color: #878787; }
@@ -5283,7 +5283,7 @@ input[type="range"]::-moz-range-thumb {
 
 .dark [role="dialog"][aria-label="Notifications"] [role="button"]:hover,
 .dark [role="dialog"][aria-label="Notifications"] [role="button"]:hover , [data-theme="dark"] [role="dialog"][aria-label="Notifications"] [role="button"]:hover {
-  background: #292929 !important;
+  background: var(--cp-ink-1, #292929) !important;
 }
 
 /* Notification section wrapper */
@@ -5626,7 +5626,7 @@ input[type="range"]::-moz-range-thumb {
   color: #579DFF;
 }
 .dark .adf-description-content .adf-date {
-  background: #292929;
+  background: var(--cp-ink-1, #292929);
   color: var(--cp-bg-neutral, #EDEDED);
 }
 .dark .adf-description-content .adf-panel--info { background: rgba(7, 71, 166, 0.15); }
@@ -5646,7 +5646,7 @@ input[type="range"]::-moz-range-thumb {
   color: var(--cp-bg-neutral, #EDEDED);
 }
 .dark .adf-description-content code {
-  background: #292929;
+  background: var(--cp-ink-1, #292929);
   color: var(--cp-bg-neutral, #EDEDED);
 }
 .dark .adf-description-content blockquote {

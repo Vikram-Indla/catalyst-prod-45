@@ -1524,7 +1524,7 @@
   color: var(--fg-4);
 }
 .dark .th-row-action-btn:hover , [data-theme="dark"] .th-row-action-btn:hover {
-  background: var(--ds-border, #292929);
+  background: var(--ds-border, var(--cp-ink-1, #292929));
   color: var(--fg-2);
 }
 
@@ -1603,7 +1603,7 @@
   color: var(--fg-4);
 }
 .dark .th-modal-close:hover , [data-theme="dark"] .th-modal-close:hover {
-  background: var(--ds-border, #292929);
+  background: var(--ds-border, var(--cp-ink-1, #292929));
   color: var(--fg-1);
 }
 .dark .th-modal-footer , [data-theme="dark"] .th-modal-footer {
@@ -1652,7 +1652,7 @@
   color: var(--fg-4);
 }
 .dark .th-step-action-btn:hover , [data-theme="dark"] .th-step-action-btn:hover {
-  background: var(--ds-border, #292929);
+  background: var(--ds-border, var(--cp-ink-1, #292929));
   color: var(--fg-2);
 }
 .dark .th-step-action-btn.danger:hover , [data-theme="dark"] .th-step-action-btn.danger:hover {

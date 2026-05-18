@@ -68,7 +68,7 @@ export function OkrProgressCell({ baseline, status, compact = false }: OkrProgre
       {/* Progress bar - fixed width, left-aligned with visible track */}
       <div className={cn(
         "h-2 rounded-full overflow-hidden flex-shrink-0",
-        isDark ? 'bg-[var(--ds-border,#292929)]' : 'bg-[#e5e5e5]',
+        isDark ? 'bg-[var(--ds-border,var(--cp-ink-1, #292929))]' : 'bg-[#e5e5e5]',
         compact ? 'w-20' : 'w-28'
       )}>
         <div

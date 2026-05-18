@@ -224,7 +224,7 @@ export function ActivitySection({
               'p-2 rounded-md transition-colors shrink-0',
               commentText.trim()
                 ? 'bg-[#0C66E4] text-white hover:bg-[var(--cp-primary-60, #0052CC)]'
-                : isDark ? 'bg-[var(--ds-border,#292929)] text-[var(--ds-text-subtlest,#878787)]' : 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[var(--ds-text-subtlest,#6B6E76)]',
+                : isDark ? 'bg-[var(--ds-border,var(--cp-ink-1, #292929))] text-[var(--ds-text-subtlest,#878787)]' : 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[var(--ds-text-subtlest,#6B6E76)]',
             )}
           >
             {posting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}

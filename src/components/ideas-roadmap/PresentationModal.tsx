@@ -51,7 +51,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
       </div>
 
       {/* Progress bar */}
-      <div style={{ height: 2, background: 'var(--ds-border, #292929)', flexShrink: 0 }}>
+      <div style={{ height: 2, background: 'var(--ds-border, var(--cp-ink-1, #292929))', flexShrink: 0 }}>
         <div style={{
           height: '100%', background: 'var(--sem-success)', transition: 'width 300ms',
           width: `${((slide + 1) / TOTAL_SLIDES) * 100}%`,
@@ -133,7 +133,7 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
             { label: 'FISCAL YEAR', value: '2026', sub: new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) },
           ].map(s => (
             <div key={s.label} style={{
-              background: 'var(--ds-border, #292929)', border: '1px solid #2E2E2E',
+              background: 'var(--ds-border, var(--cp-ink-1, #292929))', border: '1px solid #2E2E2E',
               borderRadius: 8, padding: '16px 20px', minWidth: 140,
             }}>
               <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.1em', marginBottom: 6 }}>{s.label}</div>

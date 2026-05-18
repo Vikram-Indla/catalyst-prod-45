@@ -152,12 +152,12 @@
   --roadmap-timeline-header-bg:     var(--ds-surface-overlay, #1F1F1F);
   --roadmap-timeline-quarter-text:  var(--ds-text-subtlest, #A1A1A1);
   --roadmap-timeline-month-text:    var(--ds-text, var(--cp-bg-neutral, #EDEDED));
-  --roadmap-timeline-grid:          var(--ds-border, #292929);
+  --roadmap-timeline-grid:          var(--ds-border, var(--cp-ink-1, #292929));
 
   --roadmap-group-bg:               var(--ds-surface-overlay, #1F1F1F);
   --roadmap-group-text:             var(--ds-text-subtlest, #A1A1A1);
   --roadmap-group-border:           var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  --roadmap-group-count-bg:         var(--ds-border, #292929);
+  --roadmap-group-count-bg:         var(--ds-border, var(--cp-ink-1, #292929));
   --roadmap-group-count-border:     var(--ds-border, var(--cp-ink-1, #2E2E2E));
   
   --roadmap-kpi-bg:                 transparent;
@@ -168,7 +168,7 @@
 }
 .dark .roadmap-group-header:hover,
 .dark .roadmap-group-header:hover , [data-theme="dark"] .roadmap-group-header:hover {
-  background: var(--ds-border, #292929);
+  background: var(--ds-border, var(--cp-ink-1, #292929));
 }
 
 

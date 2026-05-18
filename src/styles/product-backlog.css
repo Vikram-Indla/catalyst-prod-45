@@ -122,7 +122,7 @@
   --cp-text-muted: #7D7D7D;
   --cp-text-link: var(--ds-text-brand, #60A5FA);
 
-  --cp-border-subtle: var(--ds-border, #292929);
+  --cp-border-subtle: var(--ds-border, var(--cp-ink-1, #292929));
   --cp-border-default: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --cp-border-strong: var(--ds-border-bold, #454545);
 
@@ -131,7 +131,7 @@
   --cp-interact-selected: rgba(59,130,246,0.10);
   --cp-interact-selected-hover: rgba(59,130,246,0.15);
 
-  --cp-toolbar-bg: var(--ds-border, #292929);
+  --cp-toolbar-bg: var(--ds-border, var(--cp-ink-1, #292929));
   --cp-toolbar-bg-hover: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --cp-toolbar-bg-press: var(--ds-border-bold, #454545);
   --cp-toolbar-bg-active: rgba(59,130,246,0.12);

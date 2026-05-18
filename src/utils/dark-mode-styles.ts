@@ -27,9 +27,9 @@ export const DK: DarkTokens = {
   hoverBg:       'var(--cp-interact-hover, var(--cp-ink-1, #2E2E2E))',
   selectedBg:    'var(--cp-interact-selected, rgba(59,130,246,0.15))',
   floatBg:       'var(--cp-float, var(--cp-ink-1, #1A1A1A))',
-  chipBg:        'var(--cp-bg-sunken, #292929)',
+  chipBg:        'var(--cp-bg-sunken, var(--cp-ink-1, #292929))',
   progressTrack: 'var(--cp-border-default, var(--cp-ink-1, #2E2E2E))',
-  iconBg:        'var(--cp-bg-sunken, #292929)',
+  iconBg:        'var(--cp-bg-sunken, var(--cp-ink-1, #292929))',
 
   t1: 'var(--cp-text-primary, var(--cp-bg-neutral, #EDEDED))',
   t2: 'var(--cp-text-secondary, #C9CCD0)',
@@ -38,7 +38,7 @@ export const DK: DarkTokens = {
 
   border:       'var(--cp-border-default, var(--cp-ink-1, #2E2E2E))',
   borderStrong: 'var(--cp-border-strong, #454545)',
-  divider:      'var(--cp-border-default, #292929)',
+  divider:      'var(--cp-border-default, var(--cp-ink-1, #292929))',
 
   blue:      'var(--cp-blue-text, #60A5FA)',
   blueKey:   'var(--cp-blue-text, #60A5FA)',

@@ -77,7 +77,7 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
                   { label: 'KRs', value: theme.kr_count },
                   { label: 'Budget', value: formatBudget(theme.planned_budget) },
                 ].map(m => (
-                  <div key={m.label} className="rounded-md text-center" style={{ background: isDark ? 'var(--ds-border, #292929)' : 'var(--bg-1)', padding: '6px 0' }}>
+                  <div key={m.label} className="rounded-md text-center" style={{ background: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bg-1)', padding: '6px 0' }}>
                     <p style={{ fontSize: 14, fontWeight: 700, color: isDark ? DK.t1 : 'var(--fg-1)' }}>{m.value}</p>
                     <p style={{ fontSize: 10, color: isDark ? DK.t3 : 'var(--fg-3)' }}>{m.label}</p>
                   </div>

@@ -97,7 +97,7 @@ function FilterDropdown({
             const isSelected = selected.includes(opt.id);
             return (
               <label key={opt.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', borderRadius: 4, cursor: 'pointer', fontSize: 12, color: isDark ? DK.t1 : 'var(--fg-1)' }}
-                onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--ds-border, #292929)' : 'var(--cp-bd-zone)')}
+                onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--cp-bd-zone)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 <input type="checkbox" checked={isSelected} onChange={() => onToggle(opt.id)} style={{ accentColor: 'var(--cp-blue)' }} />

@@ -137,7 +137,7 @@
   --wh-surface: var(--cp-bg-surface, #242528);
   --wh-surface-elevated: var(--cp-bg-surface, #242528);
   --wh-border: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  --wh-border-light: var(--ds-border, #292929);
+  --wh-border-light: var(--ds-border, var(--cp-ink-1, #292929));
   --wh-text-primary: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --wh-text-secondary: var(--ds-text-subtlest, #A1A1A1);
   --wh-text-tertiary: var(--ds-text-subtlest, #878787);

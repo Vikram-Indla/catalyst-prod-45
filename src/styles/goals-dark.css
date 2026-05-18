@@ -43,7 +43,7 @@
 /* ── Goal Row ── */
 .dark .goal-tree-row , [data-theme="dark"] .goal-tree-row {
   background: transparent !important;
-  border-bottom-color: var(--ds-border, #292929) !important;
+  border-bottom-color: var(--ds-border, var(--cp-ink-1, #292929)) !important;
 }
 .dark .goal-tree-row:hover , [data-theme="dark"] .goal-tree-row:hover {
   background: var(--ds-surface-overlay, #1F1F1F) !important;
@@ -55,7 +55,7 @@
   border-bottom-color: var(--ds-surface-overlay, #1F1F1F) !important;
 }
 .dark .kr-row-hover:hover , [data-theme="dark"] .kr-row-hover:hover {
-  background: var(--ds-border, #292929) !important;
+  background: var(--ds-border, var(--cp-ink-1, #292929)) !important;
 }
 
 /* ── Tree Footer ── */
@@ -144,12 +144,12 @@
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 .dark [data-goals-page] div[style*="position: absolute"] label:hover , [data-theme="dark"] [data-goals-page] div[style*="position: absolute"] label:hover {
-  background: var(--ds-border, #292929) !important;
+  background: var(--ds-border, var(--cp-ink-1, #292929)) !important;
 }
 
 /* View Switcher pill bar */
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(241, 245, 249)"][style*="borderRadius: 8"][style*="padding: 3"] {
-  background: var(--ds-border, #292929) !important;
+  background: var(--ds-border, var(--cp-ink-1, #292929)) !important;
 }
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(241, 245, 249)"] button[style*="background: rgb(255, 255, 255)"] {
   background: var(--ds-border-bold, #454545) !important;
@@ -238,7 +238,7 @@
 
 /* Heatmap row borders */
 .dark .heatmap-row , [data-theme="dark"] .heatmap-row {
-  border-bottom-color: var(--ds-border, #292929) !important;
+  border-bottom-color: var(--ds-border, var(--cp-ink-1, #292929)) !important;
 }
 .dark .heatmap-row:hover , [data-theme="dark"] .heatmap-row:hover {
   background: #111111 !important;
@@ -247,18 +247,18 @@
 /* Heatmap theme label cell */
 .dark .heatmap-row > div:first-child , [data-theme="dark"] .heatmap-row > div:first-child {
   background: transparent !important;
-  border-right-color: var(--ds-border, #292929) !important;
+  border-right-color: var(--ds-border, var(--cp-ink-1, #292929)) !important;
 }
 
 /* Heatmap empty cells */
 [data-theme="dark"] .heatmap-row div[style*="background: rgb(255, 255, 255)"] {
   background: transparent !important;
-  border-right-color: var(--ds-border, #292929) !important;
+  border-right-color: var(--ds-border, var(--cp-ink-1, #292929)) !important;
 }
 
 /* Heatmap cell borders */
 .dark .heatmap-cell , [data-theme="dark"] .heatmap-cell {
-  border-right-color: var(--ds-border, #292929) !important;
+  border-right-color: var(--ds-border, var(--cp-ink-1, #292929)) !important;
 }
 
 /* ── List view row hover ── */

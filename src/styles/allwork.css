@@ -497,10 +497,10 @@
 .dark .jlpCardSummary { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .jlpCardSummary.jlpCardSummaryActive { color: #4C9AFF; }
 .dark .jlpCardKey { color: var(--ds-text-subtlest, #878787); }
-.dark .jlpCardAvatarEmpty { background: var(--ds-border, #292929); }
+.dark .jlpCardAvatarEmpty { background: var(--ds-border, var(--cp-ink-1, #292929)); }
 .dark .jlpFooterCount { color: var(--ds-text-subtlest, #878787); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .jlpFooterCount strong { color: #4C9AFF; }
-.dark .jlpSkLine, .dark .jlpSkCircle { background: var(--ds-border, #292929); }
+.dark .jlpSkLine, .dark .jlpSkCircle { background: var(--ds-border, var(--cp-ink-1, #292929)); }
 
 /* Legacy aw* classes kept for center/right panel usage */
 .awLeftTop, .awLeftTitle, .awSearchWrap, .awSearch, .awFilters { display: none; }
@@ -1607,7 +1607,7 @@
 .dark .awToolbarSearchInput { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awToolbarAvatar { border-color: var(--cp-bg-page, #1F1F21); }
 .dark .awToolbarAvatarFallback { border-color: var(--cp-bg-page, #1F1F21); }
-.dark .awToolbarAvatarOverflow { background: var(--ds-border, #292929); color: var(--ds-text-subtlest, #A1A1A1); border-color: var(--cp-bg-page, #1F1F21); }
+.dark .awToolbarAvatarOverflow { background: var(--ds-border, var(--cp-ink-1, #292929)); color: var(--ds-text-subtlest, #A1A1A1); border-color: var(--cp-bg-page, #1F1F21); }
 .dark .awViewToggleBtn { background: var(--cp-bg-surface, #242528); color: var(--ds-text-subtlest, #878787); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .awViewToggleBtn:hover { background: var(--ds-surface-overlay, #1F1F1F); }
 .dark .awViewToggleBtn.active { background: rgba(12,102,228,0.12); color: #4C9AFF; }
@@ -1657,7 +1657,7 @@
 .dark .awTimelineTime { color: var(--ds-text-subtlest, #878787); }
 .dark .awTypeBadgeHistory { background: var(--ds-border-bold, #454545); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awTypeBadgeComment { background: rgba(12,102,228,0.15); color: #4C9AFF; }
-.dark .awTypeBadgeWorklog { background: var(--ds-border, #292929); color: var(--ds-text-subtlest, #A1A1A1); }
+.dark .awTypeBadgeWorklog { background: var(--ds-border, var(--cp-ink-1, #292929)); color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .awStatusLoz { border-color: var(--ds-border-bold, #454545); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awAssigneeChip { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awChangeOld { color: var(--ds-text-subtlest, #878787); }
@@ -1677,7 +1677,7 @@
 .dark .awAddParentLink { color: var(--ds-text-subtlest, #878787); }
 .dark .awAddParentLink:hover { color: #4C9AFF; background: var(--ds-surface-overlay, #1F1F1F); }
 /* (old pill-style tab dark rule removed — now using underline tabs) */
-.dark .awLabelChip { background: var(--ds-border, #292929); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
+.dark .awLabelChip { background: var(--ds-border, var(--cp-ink-1, #292929)); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 /* SubtasksPanel DARK MODE overrides moved to SubtasksPanel.css — see
    src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanel.css
    (consolidated per CLAUDE.md L35). */

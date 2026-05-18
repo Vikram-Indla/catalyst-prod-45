@@ -22,7 +22,7 @@ interface Props {
 
 export function AllWorkHeader({ activeTab, onTabChange }: Props) {
   return (
-    <div className="px-8 pt-5 pb-0" style={{ borderBottom: '1px solid var(--bd-subtle, #292929)' }}>
+    <div className="px-8 pt-5 pb-0" style={{ borderBottom: '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))' }}>
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 mb-2" aria-label="Breadcrumb">
         <a href="#" className="text-[12px] hover:underline" style={{ color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-body)' }}>Projects</a>

@@ -76,7 +76,7 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
           </span>
           <span style={{
             fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: ink[4],
-            background: isDark ? 'var(--ds-border, #292929)' : SURFACE.page, border: `1px solid ${surface.border}`,
+            background: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : SURFACE.page, border: `1px solid ${surface.border}`,
             borderRadius: 9999, padding: '0 6px', height: 20, display: 'inline-flex', alignItems: 'center',
           }}>
             {totalCount}

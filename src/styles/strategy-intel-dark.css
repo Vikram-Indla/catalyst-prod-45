@@ -31,7 +31,7 @@
 }
 .dark .strategy-intel-panel .bg-slate-100,
 .dark .strategy-intel-panel .bg-slate-50 {
-  background: var(--ds-border, #292929) !important;
+  background: var(--ds-border, var(--cp-ink-1, #292929)) !important;
 }
 
 /* Borders */
@@ -46,7 +46,7 @@
 /* Hover states */
 .dark .strategy-intel-panel .hover\:bg-slate-100:hover,
 .dark .strategy-intel-panel .hover\:bg-slate-50:hover {
-  background: var(--ds-border, #292929) !important;
+  background: var(--ds-border, var(--cp-ink-1, #292929)) !important;
 }
 
 /* Tab bar */
@@ -70,7 +70,7 @@
 
 /* Close button */
 .dark .strategy-intel-panel button.p-1\.5:hover {
-  background: var(--ds-border, #292929) !important;
+  background: var(--ds-border, var(--cp-ink-1, #292929)) !important;
 }
 
 /* Shadow kill */

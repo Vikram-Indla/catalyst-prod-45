@@ -44,7 +44,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
   const { target, aggregation, thread } = notification;
 
   const hoverBg  = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)');
-  const pressBg  = isDark ? 'var(--ds-border, #292929)' : token('color.background.neutral.pressed',  'rgba(9,30,66,0.10)');
+  const pressBg  = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : token('color.background.neutral.pressed',  'rgba(9,30,66,0.10)');
   const rowBg    = pressed ? pressBg : hovered ? hoverBg : 'transparent';
 
   const text1    = isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : token('color.text', '#292A2E');

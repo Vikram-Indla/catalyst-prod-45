@@ -186,8 +186,8 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
   return (
     <div className="flex h-full gap-0 rounded border overflow-hidden" style={{ borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bd-default, var(--cp-ink-1, #2E2E2E))', borderRadius: 4 }}>
       {/* Left card list — 320px */}
-      <div className="flex flex-col" style={{ width: 320, borderRight: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)' }}>
-        <div className="flex items-center justify-between px-3 py-2" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>
+      <div className="flex flex-col" style={{ width: 320, borderRight: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))', backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)' }}>
+        <div className="flex items-center justify-between px-3 py-2" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))' }}>
           {/* Sort dropdown + direction toggle (TC-L1, TC-L2) */}
           <div className="relative flex items-center gap-0.5" ref={sortRef}>
             <button
@@ -275,7 +275,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                 onClick={() => handleListSelect(item.issue_key)}
                 className="px-3 py-2.5 cursor-pointer transition-colors duration-[80ms]"
                 style={{
-                  borderBottom: isDark ? '1px solid #292929' : '1px solid var(--bd-subtle, #292929)',
+                  borderBottom: isDark ? '1px solid #292929' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))',
                   backgroundColor: isActive ? 'rgba(37,99,235,0.08)' : isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
                   borderLeft: isActive ? '3px solid #2563EB' : '3px solid transparent',
                 }}
@@ -307,7 +307,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
           })}
         </div>
 
-        <div className="px-3 py-2 text-[11px]" style={{ color: 'var(--fg-3)', borderTop: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', fontFamily: 'var(--cp-font-mono)' }}>
+        <div className="px-3 py-2 text-[11px]" style={{ color: 'var(--fg-3)', borderTop: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))', fontFamily: 'var(--cp-font-mono)' }}>
           {items.length} of {items.length}
         </div>
       </div>
@@ -323,7 +323,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               fontSize: 12,
               lineHeight: '16px',
               fontFamily: 'var(--cp-font-body)',
-              borderBottom: isDark ? '1px solid #292929' : '1px solid var(--bd-subtle, #292929)',
+              borderBottom: isDark ? '1px solid #292929' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))',
               backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
               minHeight: 32,
               flexShrink: 0,
@@ -387,7 +387,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
           </nav>
 
           {/* Detail header */}
-          <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>
+          <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))' }}>
             <div className="flex items-center gap-2">
               {/* Back button */}
               {canGoBack && (
@@ -430,7 +430,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
           {/* Tabs */}
           <div
             className="flex items-center gap-0 px-5"
-            style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}
+            style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))' }}
             role="tablist"
           >
             {TABS.map(tab => {
@@ -459,7 +459,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                       style={{
                         fontSize: 10, fontWeight: 700, minWidth: 18, textAlign: 'center',
                         padding: '1px 5px', borderRadius: 12,
-                        backgroundColor: isActive ? 'rgba(37,99,235,0.10)' : isDark ? 'var(--ds-border, #292929)' : 'var(--bd-subtle, #292929)',
+                        backgroundColor: isActive ? 'rgba(37,99,235,0.10)' : isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bd-subtle, var(--cp-ink-1, #292929))',
                         color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--fg-3)',
                         fontFamily: 'var(--cp-font-mono)',
                       }}
@@ -575,7 +575,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
 
                   {/* Activity section */}
                   <div>
-                    <div className="flex items-center gap-4 mb-3" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', paddingBottom: 8 }}>
+                    <div className="flex items-center gap-4 mb-3" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))', paddingBottom: 8 }}>
                       {(['all', 'comments', 'history', 'worklog'] as const).map(tab => (
                         <button
                           key={tab}
@@ -627,17 +627,17 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                           aria-label="Add a comment"
                         />
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle,#292929)] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'var(--ds-border, #292929)' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-tertiary, #6b6e76)' }}>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle,var(--cp-ink-1, #292929))] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-tertiary, #6b6e76)' }}>
                             Status update...
                           </span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle,#292929)] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'var(--ds-border, #292929)' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-tertiary, #6b6e76)' }}>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle,var(--cp-ink-1, #292929))] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-tertiary, #6b6e76)' }}>
                             Thanks!
                           </span>
                         </div>
                       </div>
                     </div>
                     <p className="text-[10px] mt-2 ml-9" style={{ color: 'var(--fg-3)' }}>
-                      <b>Tip:</b> press <kbd className="px-1 py-0.5 rounded text-[10px]" style={{ backgroundColor: isDark ? 'var(--ds-border, #292929)' : 'var(--hover, #1F1F1F)', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>M</kbd> to comment
+                      <b>Tip:</b> press <kbd className="px-1 py-0.5 rounded text-[10px]" style={{ backgroundColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--hover, #1F1F1F)', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))' }}>M</kbd> to comment
                     </p>
                   </div>
                 </>
@@ -673,7 +673,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
             </div>
 
             {/* Right detail sidebar — 260px */}
-            <div className="overflow-y-auto py-4 px-4" style={{ width: 260, borderLeft: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+            <div className="overflow-y-auto py-4 px-4" style={{ width: 260, borderLeft: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
               <div className="mb-4">
                 <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: 'var(--cp-text-tertiary, #6b6e76)', letterSpacing: '0.05em' }}>Status</span>
                 <StatusLozenge status={currentItem.status} />
@@ -721,7 +721,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                 {currentItem.labels?.length ? (
                   <div className="flex flex-wrap gap-1">
                     {currentItem.labels.map(l => (
-                      <span key={l} className="text-[11px] px-2 py-0.5 rounded" style={{ backgroundColor: isDark ? 'var(--ds-border, #292929)' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-secondary, #44546f)' }}>{l}</span>
+                      <span key={l} className="text-[11px] px-2 py-0.5 rounded" style={{ backgroundColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-secondary, #44546f)' }}>{l}</span>
                     ))}
                   </div>
                 ) : (
@@ -729,7 +729,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                 )}
               </div>
 
-              <div className="mt-6 pt-4" style={{ borderTop: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>
+              <div className="mt-6 pt-4" style={{ borderTop: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))' }}>
                 <div className="mb-2">
                   <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: 'var(--cp-text-tertiary, #6b6e76)', letterSpacing: '0.05em' }}>Created</span>
                   <span className="text-[12px]" style={{ color: 'var(--cp-text-secondary, #44546f)', fontFamily: 'var(--cp-font-mono)' }} title={currentItem.jira_created_at || ''}>

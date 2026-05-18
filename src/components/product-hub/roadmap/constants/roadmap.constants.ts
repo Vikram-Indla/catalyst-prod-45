@@ -62,7 +62,7 @@ export const SURFACE_DARK = {
   page: 'var(--ds-surface, #0A0A0A)',
   card: 'transparent',
   border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
-  borderLight: 'var(--ds-border, #292929)',
+  borderLight: 'var(--ds-border, var(--cp-ink-1, #292929))',
 };
 
 // ── Typography — Catalyst spec: Sora (headings) + Inter (body) + JetBrains Mono (data) ──

@@ -39,7 +39,7 @@ export function normalisePriority(raw: string | null | undefined): PriorityLevel
 }
 
 const EMPTY_BAR_LIGHT = 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))';
-const EMPTY_BAR_DARK  = 'var(--ds-border, #292929)';
+const EMPTY_BAR_DARK  = 'var(--ds-border, var(--cp-ink-1, #292929))';
 
 interface PriorityBarsProps {
   priority: PriorityLevel;

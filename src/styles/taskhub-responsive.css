@@ -915,7 +915,7 @@
 }
 
 .dark .mobile-menu-toggle:hover , [data-theme="dark"] .mobile-menu-toggle:hover {
-  background: var(--ds-border, #292929);
+  background: var(--ds-border, var(--cp-ink-1, #292929));
 }
 
 .dark .modal-header , [data-theme="dark"] .modal-header {

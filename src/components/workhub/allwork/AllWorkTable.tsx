@@ -249,7 +249,7 @@ const TableRow = memo(function TableRow({
         gridTemplateColumns: GRID_TEMPLATE,
         height: 44,
         maxHeight: 44,
-        borderBottom: '0.75px solid var(--bd-subtle, #292929)',
+        borderBottom: '0.75px solid var(--bd-subtle, var(--cp-ink-1, #292929))',
         backgroundColor: isSelected ? 'rgba(37,99,235,0.08)' : node.depth > 0 ? 'var(--bg-1)' : 'var(--bg-app)',
         transition: 'background-color 80ms ease',
       }}

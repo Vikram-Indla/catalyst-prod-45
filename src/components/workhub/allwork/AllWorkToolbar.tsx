@@ -140,7 +140,7 @@ export function AllWorkToolbar({
   const hasFilters = !!(filters.types?.length || filters.statuses?.length || filters.priorities?.length);
 
   return (
-    <div className="px-8 py-3 flex items-center gap-3 flex-wrap" style={{ borderBottom: '1px solid var(--bd-subtle, #292929)' }}>
+    <div className="px-8 py-3 flex items-center gap-3 flex-wrap" style={{ borderBottom: '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))' }}>
       <FilterDropdown
         label="Type"
         options={issueTypes ?? []}
