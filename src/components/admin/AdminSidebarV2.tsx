@@ -51,9 +51,6 @@ interface FlatPath {
   parent?: string;
 }
 
-/** Pinned admin item paths — hardcoded for now; user-customisable is a follow-up. */
-const PINNED_PATHS = ['/admin/users', '/admin/workhub/sync-logs'] as const;
-
 function getAllPaths(): FlatPath[] {
   const paths: FlatPath[] = [];
   adminPockets.forEach(pocket => {
@@ -84,13 +81,6 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
       return parts.every(part => label.includes(part) || parent.includes(part));
     });
   }, [searchQuery, allPaths]);
-
-  const pinnedItems = useMemo(
-    () =>
-      PINNED_PATHS.map(path => allPaths.find(p => p.path === path))
-        .filter((p): p is FlatPath => Boolean(p)),
-    [allPaths],
-  );
 
   // "/" focuses the search input (Jira parity).
   useEffect(() => {
@@ -201,21 +191,6 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
             )
           ) : (
             <>
-              {pinnedItems.length > 0 && (
-                <Section title="Pinned">
-                  {pinnedItems.map(item => (
-                    <LinkItem
-                      key={item.path}
-                      href={item.path}
-                      onClick={handleNav(item.path)}
-                      isSelected={location.pathname === item.path}
-                    >
-                      {item.label}
-                    </LinkItem>
-                  ))}
-                </Section>
-              )}
-
               {/* Jira admin pattern: every pocket renders flat-expanded.
                   Section header (small subtle text) + children listed
                   directly as LinkItems beneath. No collapse, no icon-before
