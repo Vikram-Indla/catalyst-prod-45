@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAdminGuard } from '@/hooks/useAdminGuard';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 import Toggle from '@atlaskit/toggle';
 import AtlasButton from '@atlaskit/button/new';
 import Spinner from '@atlaskit/spinner';
@@ -18,9 +18,6 @@ interface EnforcementConfig {
 }
 
 export default function GovernanceSettings() {
-  // Admin guard to protect this page
-  useAdminGuard();
-
   // State management
   const [config, setConfig] = useState<EnforcementConfig | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -112,13 +109,16 @@ export default function GovernanceSettings() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <Spinner appearance="inherit" />
-      </div>
+      <AdminGuard>
+        <div className="flex-1 flex items-center justify-center">
+          <Spinner appearance="inherit" />
+        </div>
+      </AdminGuard>
     );
   }
 
   return (
+    <AdminGuard>
     <div className="flex-1 overflow-y-auto">
       {/* Page Header */}
       <div
@@ -293,5 +293,6 @@ export default function GovernanceSettings() {
         </div>
       </div>
     </div>
+    </AdminGuard>
   );
 }
