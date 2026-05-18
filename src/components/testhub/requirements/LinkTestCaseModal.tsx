@@ -26,7 +26,7 @@ interface TestCase {
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  critical: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', high: '#EA580C', medium: 'var(--ds-text-warning, #D97706)', low: 'var(--quality-high, #059669)',
+  critical: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', high: '#EA580C', medium: 'var(--ds-text-warning, var(--cp-warning, #D97706))', low: 'var(--quality-high, #059669)',
 };
 
 export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, alreadyLinkedIds }: LinkTestCaseModalProps) {
@@ -147,7 +147,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
             filtered.map(tc => {
               const isSelected = selectedIds.has(tc.id);
               const priorityName = tc.priority?.name || 'Medium';
-              const priorityColor = PRIORITY_COLORS[priorityName.toLowerCase()] || 'var(--ds-text-warning, #D97706)';
+              const priorityColor = PRIORITY_COLORS[priorityName.toLowerCase()] || 'var(--ds-text-warning, var(--cp-warning, #D97706))';
               return (
                 <div key={tc.id} onClick={() => toggleSelect(tc.id)}
                   style={{

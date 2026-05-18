@@ -7,7 +7,7 @@ interface Props {
 }
 
 const QUARTERS: RoadmapQuarter[] = ['Q1', 'Q2', 'Q3', 'Q4'];
-const Q_COLORS: Record<string, string> = { Q1: 'var(--cp-purple-60, #7C3AED)', Q2: 'var(--ds-text-brand, #2563EB)', Q3: 'var(--cp-teal-60, #0D9488)', Q4: 'var(--ds-text-warning, #D97706)' };
+const Q_COLORS: Record<string, string> = { Q1: 'var(--cp-purple-60, #7C3AED)', Q2: 'var(--ds-text-brand, #2563EB)', Q3: 'var(--cp-teal-60, #0D9488)', Q4: 'var(--ds-text-warning, var(--cp-warning, #D97706))' };
 const Q_LABELS: Record<string, string> = { Q1: 'Jan – Mar', Q2: 'Apr – Jun', Q3: 'Jul – Sep', Q4: 'Oct – Dec' };
 const TOTAL_SLIDES = 5;
 
@@ -111,7 +111,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
 function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: RoadmapIdea[] }) {
   const qs: Record<string, number> = { Q1: 0, Q2: 0, Q3: 0, Q4: 0 };
   committed.forEach(i => { if (i.quarter) qs[i.quarter]++; });
-  const qColors = ['var(--cp-purple-60, #7C3AED)', 'var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, #D97706)'];
+  const qColors = ['var(--cp-purple-60, #7C3AED)', 'var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))'];
 
   return (
     <div style={{ display: 'flex', gap: 60, alignItems: 'center', maxWidth: 1200, width: '100%' }}>

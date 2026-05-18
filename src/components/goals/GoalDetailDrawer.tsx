@@ -35,7 +35,7 @@ function statusBadge(status: string) {
     on_track:    { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'On Track' },
     completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Completed' },
     achieved:    { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Achieved' },
-    at_risk:     { dot: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', label: 'At Risk' },
+    at_risk:     { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', label: 'At Risk' },
     off_track:   { dot: 'var(--sem-danger)', bg: 'rgba(239,68,68,0.08)',  text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Off Track' },
     draft:       { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Draft' },
     not_started: { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Not Started' },
@@ -51,7 +51,7 @@ function statusBadge(status: string) {
 }
 
 function progressBar(pct: number, height = 8) {
-  const color = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--sem-danger)';
+  const color = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--sem-danger)';
   return (
     <div style={{ width: '100%', height, background: 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
       <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 4, transition: 'width 300ms' }} />
@@ -140,13 +140,13 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
   if (!isOpen) return null;
 
   const confPct = goal ? (typeof goal.confidence_level === 'number' ? (goal.confidence_level <= 1 ? Math.round(goal.confidence_level * 100) : Math.round(goal.confidence_level)) : 0) : 0;
-  const confColor = confPct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : confPct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--sem-danger)';
+  const confColor = confPct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : confPct >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--sem-danger)';
   const daysToDeadline = goal?.target_date ? Math.ceil((new Date(goal.target_date).getTime() - Date.now()) / 86400000) : null;
 
   // Status dot color
   const statusDotColor = goal ? ({
     active: 'var(--ds-text-success, var(--cp-success, #16A34A))', on_track: 'var(--ds-text-success, var(--cp-success, #16A34A))', completed: '#4F46E5',
-    at_risk: 'var(--ds-text-warning, #D97706)', off_track: 'var(--sem-danger)', draft: 'var(--ds-text-subtlest, #94A3B8)',
+    at_risk: 'var(--ds-text-warning, var(--cp-warning, #D97706))', off_track: 'var(--sem-danger)', draft: 'var(--ds-text-subtlest, #94A3B8)',
   }[goal.status] || 'var(--ds-text-subtlest, #94A3B8)') : 'var(--ds-text-subtlest, #94A3B8)';
 
   return (
@@ -391,7 +391,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
   })() : '—';
 
   const pct = Math.round(goal.progress_pct || 0);
-  const pctColor = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--sem-danger)';
+  const pctColor = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--sem-danger)';
 
   const fields = [
     { label: 'Status', value: statusBadge(goal.status) },
@@ -488,7 +488,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       {krs.map(kr => {
         const pct = computeKRProgress(kr);
-        const pctColor = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--sem-danger)';
+        const pctColor = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--sem-danger)';
         return (
           <div key={kr.id} className="kr-detail-card" style={{
             background: 'var(--cp-bg-elevated, #FFFFFF)', border: '1px solid var(--divider)', borderRadius: 8,
@@ -689,7 +689,7 @@ function ActivityTab({ goal, krs, checkins }: { goal: Goal; krs: KeyResult[]; ch
   const items = [
     { icon: <Activity size={12} color="var(--ds-text-brand, #2563EB)" />, user: 'System', text: 'Goal created', date: goal.created_at || goal.start_date },
     ...(krs.length > 0 ? [{ icon: <BarChart3 size={12} color="var(--cp-teal-60, #0D9488)" />, user: 'System', text: `${krs.length} Key Results added`, date: goal.created_at }] : []),
-    ...(checkins.length > 0 ? [{ icon: <Clock size={12} color="var(--ds-text-warning, #D97706)" />, user: 'Team', text: `${checkins.length} check-ins recorded`, date: checkins[0]?.created_at }] : []),
+    ...(checkins.length > 0 ? [{ icon: <Clock size={12} color="var(--ds-text-warning, var(--cp-warning, #D97706))" />, user: 'Team', text: `${checkins.length} check-ins recorded`, date: checkins[0]?.created_at }] : []),
   ];
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>

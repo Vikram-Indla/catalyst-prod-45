@@ -20,7 +20,7 @@ export const RH = {
   teal: 'var(--cp-teal-60, #0D9488)',
   success: 'var(--ds-text-success, var(--cp-success, #16A34A))',
   successBg: 'var(--cp-lozenge-green-bg, #1B7F37)',
-  warning: 'var(--ds-text-warning, #D97706)',
+  warning: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
   danger: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
   dangerBg: 'var(--ds-background-danger, #FEF2F2)',
 

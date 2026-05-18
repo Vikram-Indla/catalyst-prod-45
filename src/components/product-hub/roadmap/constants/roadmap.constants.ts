@@ -23,7 +23,7 @@ export const TYPE_COLORS: Record<string, {
 // ── Priority Colors ──
 export const PRIORITY_COLORS: Record<string, { color: string; bg: string; label: string }> = {
   P0: { color: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', label: 'Critical' },
-  P1: { color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', label: 'High' },
+  P1: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', label: 'High' },
   P2: { color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', label: 'Medium' },
 };
 

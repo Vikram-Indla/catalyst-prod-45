@@ -178,7 +178,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
     // Initials fallback
     const name = actorName || '?';
     const initials = name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
-    const colours = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, #D97706)'];
+    const colours = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, var(--cp-warning, #D97706))'];
     const bg = colours[(notification.actor_user_id || '').charCodeAt(0) % colours.length];
     return (
       <div style={{
@@ -314,7 +314,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
               display: 'flex', alignItems: 'center', gap: 6, marginTop: 8,
               background: 'rgba(217,119,6,.08)', borderRadius: 4, padding: '6px 10px',
             }}>
-              <Clock size={14} color="var(--ds-text-warning, #D97706)" />
+              <Clock size={14} color="var(--ds-text-warning, var(--cp-warning, #D97706))" />
               <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-warning-text, #92400E)' }}>
                 Due in {daysUntilDue} day{daysUntilDue !== 1 ? 's' : ''} — {notification.metadata.due_date}
               </span>

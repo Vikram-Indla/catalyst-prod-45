@@ -65,7 +65,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
   };
 
   const visibilityChip = () => {
-    if (board.visibility === 'private') return { label: '🔒 Private', bg: 'rgba(217,119,6,0.06)', color: 'var(--ds-text-warning, #D97706)' };
+    if (board.visibility === 'private') return { label: '🔒 Private', bg: 'rgba(217,119,6,0.06)', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' };
     if (board.visibility === 'global') return { label: '🌐 Organisation', bg: 'rgba(37,99,235,0.06)', color: 'var(--ds-text-brand, #2563EB)' };
     return { label: 'Project', bg: 'var(--bg-1)', color: 'var(--fg-3)' };
   };
@@ -149,7 +149,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             transition: 'opacity 150ms',
           }}>
             {board.isStarred
-              ? <StarStarredIcon label="Starred" size="small" primaryColor="var(--ds-text-warning, #D97706)" />
+              ? <StarStarredIcon label="Starred" size="small" primaryColor="var(--ds-text-warning, var(--cp-warning, #D97706))" />
               : <StarUnstarredIcon label="Star board" size="small" primaryColor="var(--ds-text-subtlest, #94A3B8)" />
             }
           </button>

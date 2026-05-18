@@ -239,7 +239,7 @@ export default function WorkItemsListPage() {
   const assignees = useMemo(() => {
     const seen = new Set<string>();
     const result: { name: string; color: string }[] = [];
-    const colors = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))'];
+    const colors = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))'];
     for (const item of items) {
       if (item.assignee_name && !seen.has(item.assignee_name)) {
         seen.add(item.assignee_name);

@@ -320,8 +320,8 @@ function KPICard({
     },
     warning: {
       iconBg: 'rgba(245,158,11,0.15)',
-      iconColor: 'var(--ds-text-warning, #D97706)',
-      valueColor: 'var(--ds-text-warning, #D97706)',
+      iconColor: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
+      valueColor: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
     },
     success: {
       iconBg: 'rgba(38,166,154,0.15)',

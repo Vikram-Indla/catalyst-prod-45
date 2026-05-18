@@ -564,7 +564,7 @@ export const WH_HUB_COLORS: Record<string, string> = {
   StrategyHub:  'var(--cp-purple-60, #7C3AED)',
   ProductHub:   'var(--cp-teal-60, #0D9488)',
   ProjectHub:   '#2563EB',
-  ReleaseHub:   '#D97706',
+  ReleaseHub:   'var(--cp-warning, #D97706)',
   TestHub:      'var(--cp-danger, #DC2626)',
   IncidentHub:  '#EF4444',
   TaskHub:      '#64748B',

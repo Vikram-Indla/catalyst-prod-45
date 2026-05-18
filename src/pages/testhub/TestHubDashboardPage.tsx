@@ -249,7 +249,7 @@ export default function TestHubDashboardPage() {
   const totalExecuted = totalPassed + totalFailed + totalBlocked;
   const totalAll = totalExecuted + totalNotRun;
   const passRate = overallPassRate;
-  const passRateColor = passRate < 60 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : passRate < 80 ? 'var(--ds-text-warning, #D97706)' : 'var(--quality-high, #059669)';
+  const passRateColor = passRate < 60 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : passRate < 80 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--quality-high, #059669)';
 
   const execSegments = useMemo(() => {
     if (totalAll === 0) return [];
@@ -328,7 +328,7 @@ export default function TestHubDashboardPage() {
           <KPICard label="Total test cases" value={totalTestCases} accent="var(--ds-text-brand, #2563EB)"
             trend={{ direction: 'up', value: '+3', color: 'var(--quality-high, #059669)' }}
             subtitle={`${totalCycles} cycles total`} sparkData={[4, 6, 5, 8, 10, 9, 12, 14]} />
-          <KPICard label="Overall pass rate" value={`${passRate}%`} accent={passRate < 60 ? "var(--ds-text-danger, #EF4444)" : "var(--ds-text-warning, #D97706)"}
+          <KPICard label="Overall pass rate" value={`${passRate}%`} accent={passRate < 60 ? "var(--ds-text-danger, #EF4444)" : "var(--ds-text-warning, var(--cp-warning, #D97706))"}
             trend={{ direction: 'down', value: '−12%', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}
             subtitle={`${totalExecuted} of ${totalAll} executed`} sparkData={[80, 72, 65, 58, 52, 48, 46, 47]}
             valueColor={passRateColor} isDanger={passRate < 60} />
@@ -471,7 +471,7 @@ export default function TestHubDashboardPage() {
                    {failingTests.slice(0, 10).map(test => {
                      const sevColor = test.priority?.toLowerCase() === 'high' || test.priority?.toLowerCase() === 'critical'
                        ? { bg: 'var(--cp-danger-light, #FEF2F2)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }
-                       : { bg: 'var(--cp-warning-light, #FFFBEB)', color: 'var(--ds-text-warning, #D97706)' };
+                       : { bg: 'var(--cp-warning-light, #FFFBEB)', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' };
                      return (
                        <div key={test.test_case_id} onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
                          className="c10-row-danger"
@@ -568,7 +568,7 @@ export default function TestHubDashboardPage() {
                       width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       background: item.danger ? ('var(--cp-danger-light, #FEF2F2)') : ('var(--cp-warning-light, #FFFBEB)'),
                     }}>
-                      <AlertTriangle size={12} color={item.danger ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-warning, #D97706)'} />
+                      <AlertTriangle size={12} color={item.danger ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-warning, var(--cp-warning, #D97706))'} />
                     </div>
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)' }}>{item.title}</div>

@@ -232,7 +232,7 @@ export default function CommandCenterPage() {
   }, [allSignoffs, pendingSignoffs, testCycles, prodEvents, changes]);
 
   const alertBorderColor = computed.alertSeverity === 'destructive' ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))'
-    : computed.alertSeverity === 'warning' ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-success, var(--cp-success, #16A34A))';
+    : computed.alertSeverity === 'warning' ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-success, var(--cp-success, #16A34A))';
   const alertBgColor = computed.alertSeverity === 'destructive' ? 'var(--ds-background-danger, #FEF2F2)'
     : computed.alertSeverity === 'warning' ? '#FFFBEB' : '#F0FDF4';
 

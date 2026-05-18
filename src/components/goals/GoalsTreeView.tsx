@@ -39,7 +39,7 @@ function statusBadge(status: string, isDark = false) {
     on_track:    { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDark: '#182820', textDark: '#86EFAC', label: 'On Track' },
     completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDark: '#1A2030', textDark: '#93C5FD', label: 'Completed' },
     achieved:    { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDark: '#1A2030', textDark: '#93C5FD', label: 'Achieved' },
-    at_risk:     { dot: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', bgDark: '#2A2418', textDark: '#FBBF24', label: 'At Risk' },
+    at_risk:     { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', bgDark: '#2A2418', textDark: '#FBBF24', label: 'At Risk' },
     off_track:   { dot: 'var(--ds-text-danger, #EF4444)', bg: 'rgba(239,68,68,0.08)',  text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bgDark: '#2A1C1E', textDark: 'var(--ds-border-danger, #FCA5A5)', label: 'Off Track' },
     draft:       { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F1F5F9)',               text: 'var(--ds-text-subtlest, #64748B)', bgDark: 'var(--ds-surface-raised, #1A1A1A)', textDark: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Draft' },
     not_started: { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F1F5F9)',               text: 'var(--ds-text-subtlest, #64748B)', bgDark: 'var(--ds-surface-raised, #1A1A1A)', textDark: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Not Started' },
@@ -55,7 +55,7 @@ function statusBadge(status: string, isDark = false) {
 }
 
 function progressBar(pct: number, height = 6, isDark = false) {
-  const color = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
+  const color = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
   return (
     <div style={{ width: 80, height, background: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
       <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 4, transition: 'width 300ms ease' }} />
@@ -72,7 +72,7 @@ function ConfidenceDots({ level, isDark = false }: { level: number; isDark?: boo
           style={{
             width: 5, height: 5, borderRadius: '50%',
             background: i <= level
-              ? (level >= 4 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : level >= 3 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)')
+              ? (level >= 4 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : level >= 3 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)')
               : (isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)'),
           }}
         />
@@ -295,7 +295,7 @@ export function GoalsTreeView({
         const themeKRCount = themeGoals.reduce((s, g) => s + (krsByGoal.get(g.id)?.length || 0), 0);
         const avgConf = themeGoals.length > 0
           ? Math.round(themeGoals.reduce((s, g) => s + getConfidenceLevel(g.confidence_level), 0) / themeGoals.length) : 0;
-        const progressColor = avgProgress >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : avgProgress >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
+        const progressColor = avgProgress >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : avgProgress >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
 
         return (
           <div key={theme.id}>
@@ -336,7 +336,7 @@ export function GoalsTreeView({
               const goalKRs = krsByGoal.get(goal.id) || [];
               const confLevel = getConfidenceLevel(goal.confidence_level);
               const goalPct = Math.round(goal.progress_pct || 0);
-              const goalProgressColor = goalPct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : goalPct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
+              const goalProgressColor = goalPct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : goalPct >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
               const isLastGoal = gi === themeGoals.length - 1;
 
               return (
@@ -398,7 +398,7 @@ export function GoalsTreeView({
                       : kr.target < kr.baseline
                         ? Math.min(100, Math.max(0, Math.round(((kr.baseline - kr.current_value) / (kr.baseline - kr.target)) * 100)))
                         : Math.min(100, Math.max(0, Math.round(((kr.current_value - kr.baseline) / (kr.target - kr.baseline)) * 100)));
-                    const krProgressColor = krProgress >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : krProgress >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
+                    const krProgressColor = krProgress >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : krProgress >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
                     const isLastKR = ki === goalKRs.length - 1;
 
                     return (

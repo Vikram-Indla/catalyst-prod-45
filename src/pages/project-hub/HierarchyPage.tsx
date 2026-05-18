@@ -148,7 +148,7 @@ const STATUS_DOT_COLORS: Record<string, string> = {
   'In Development': 'var(--ds-text-brand, #2563EB)', 'In Progress': 'var(--ds-text-brand, #2563EB)', 'In Beta': 'var(--ds-text-brand, #2563EB)', 'In QA': 'var(--ds-text-brand, #2563EB)', 'UAT Ready': 'var(--ds-text-brand, #2563EB)', 'In Review': 'var(--ds-text-brand, #2563EB)',
   'Ready for Production': 'var(--cp-teal-60, #0D9488)', 'Ready for QA': 'var(--cp-teal-60, #0D9488)',
   'Backlog': 'var(--ds-text-subtlest, #94A3B8)', 'To Do': 'var(--ds-text-subtlest, #94A3B8)', 'Open': 'var(--ds-text-subtlest, #94A3B8)',
-  'On Hold': 'var(--ds-text-warning, #D97706)', 'Awaiting Info': 'var(--ds-text-warning, #D97706)', 'Awaiting Information': 'var(--ds-text-warning, #D97706)', 'Blocked': 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
+  'On Hold': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Awaiting Info': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Awaiting Information': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Blocked': 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
 };
 function getStatusDotColor(status: string): string {
   return STATUS_DOT_COLORS[status] || 'var(--ds-text-subtlest, #94A3B8)';
@@ -163,7 +163,7 @@ function PriorityIcon({ name }: { name: string }) {
   else if (n === 'high' || n === 'highest') level = 3;
   else if (n === 'medium') level = 2;
   else if (n === 'low' || n === 'lowest') level = 1;
-  const color = level >= 3 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : level === 2 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-subtlest, #64748B)';
+  const color = level >= 3 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : level === 2 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-subtlest, #64748B)';
   return (
     <div style={{ display: 'flex', gap: 1.5, alignItems: 'flex-end', height: 14, width: 14 }}>
       {[1, 2, 3, 4].map(i => (

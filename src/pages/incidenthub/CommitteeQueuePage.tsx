@@ -28,7 +28,7 @@ export default function CommitteeQueuePage() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: '#FEF3C7' }}>
-              <Users size={18} style={{ color: 'var(--ds-text-warning, #D97706)' }} />
+              <Users size={18} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} />
             </div>
             <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)' }}>Committee Queue</h1>
           </div>
@@ -100,7 +100,7 @@ export default function CommitteeQueuePage() {
                     <div style={{
                       height: '100%',
                       width: `${progress * 100}%`,
-                      backgroundColor: progress >= 0.6 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-warning, #D97706)',
+                      backgroundColor: progress >= 0.6 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-warning, var(--cp-warning, #D97706))',
                       borderRadius: 4,
                       transition: 'width 400ms ease',
                     }} />

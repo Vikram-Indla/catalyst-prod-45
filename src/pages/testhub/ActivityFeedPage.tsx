@@ -38,7 +38,7 @@ const ACTION_CONFIG: Record<string, { label: string; color: string; icon: any }>
   delete: { label: 'Deleted', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', icon: Trash2 },
   execute: { label: 'Executed', color: 'var(--cp-purple-60, #7C3AED)', icon: Play },
   assign: { label: 'Assigned', color: '#0891B2', icon: UserPlus },
-  status_change: { label: 'Status Changed', color: 'var(--ds-text-warning, #D97706)', icon: ArrowRight },
+  status_change: { label: 'Status Changed', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', icon: ArrowRight },
   view: { label: 'Viewed', color: 'var(--ds-text-subtlest, #64748B)', icon: Activity },
   export: { label: 'Exported', color: '#EC4899', icon: Activity },
   import: { label: 'Imported', color: '#EC4899', icon: Activity },

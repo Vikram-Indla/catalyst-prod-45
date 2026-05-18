@@ -263,7 +263,7 @@ export default function IncidentListPage() {
         <div className="grid grid-cols-5 gap-3 mb-4">
           {[
             { label: 'Critical (SEV-1)', value: stats.sev1, accent: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
-            { label: 'High (SEV-2)', value: stats.sev2, accent: 'var(--ds-text-warning, #D97706)' },
+            { label: 'High (SEV-2)', value: stats.sev2, accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
             { label: 'Active Incidents', value: stats.active, accent: 'var(--cp-text-link, #2563EB)' },
             { label: 'Committee Pending', value: stats.committeePending, accent: textSecondary },
             { label: 'Resolved (7d)', value: stats.resolvedWeek, accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },

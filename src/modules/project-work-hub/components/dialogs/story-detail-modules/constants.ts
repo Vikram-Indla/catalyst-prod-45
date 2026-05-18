@@ -57,7 +57,7 @@ export const PRIORITY_COLORS: Record<string, string> = {
 export const PRIORITY_STYLES: Record<string, { color: string; symbol: string }> = {
   Highest: { color: 'var(--ds-text-danger, #AE2A19)', symbol: '▲▲' },
   High: { color: 'var(--ds-text-danger, #DE350B)', symbol: '▲' },
-  Medium: { color: 'var(--ds-text-warning, #D97706)', symbol: '—' },
+  Medium: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', symbol: '—' },
   Low: { color: 'var(--ds-background-success-bold, #36B37E)', symbol: '▼' },
   Lowest: { color: 'var(--ds-text-subtlest, #6B778C)', symbol: '▼▼' },
 };

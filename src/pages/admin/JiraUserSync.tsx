@@ -39,7 +39,7 @@ const STATS_CONFIG = [
   { key: 'jiraSynced',   dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', label: 'Jira Synced',    sub: 'from last sync' },
   { key: 'catalystOnly', dot: 'var(--cp-purple-60, #7C3AED)', label: 'Catalyst Only',  sub: 'Not in Jira' },
   { key: 'proxyAuth',    dot: 'var(--ds-text-brand, #2563EB)', label: 'Proxy Auth',     sub: 'Jira password active' },
-  { key: 'conflicts',    dot: 'var(--ds-text-warning, #D97706)', label: 'Conflicts',      sub: 'Needs resolution' },
+  { key: 'conflicts',    dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'Conflicts',      sub: 'Needs resolution' },
   { key: 'inactive',     dot: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Inactive',       sub: 'Access revoked' },
   { key: 'webhooks24h',  dot: 'var(--cp-teal-60, #0D9488)', label: 'Webhooks / 24h', sub: 'Real-time events' },
 ] as const;

@@ -533,7 +533,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
 
               {/* §3 — Stale warning banner */}
               {allStale && allOpenItems.length > 0 && (
-                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: token('color.background.warning', '#FFF7D6'), borderLeft: `3px solid ${token('color.border.warning', '#D97706')}`, borderRadius: '0 4px 4px 0', fontSize: '13px', color: token('color.text.warning', '#974F0C') }}>
+                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: token('color.background.warning', '#FFF7D6'), borderLeft: `3px solid ${token('color.border.warning', 'var(--cp-warning, #D97706)')}`, borderRadius: '0 4px 4px 0', fontSize: '13px', color: token('color.text.warning', '#974F0C') }}>
                   ⚠️ All assigned items are stale. Oldest: {oldestAge} days.
                 </div>
               )}

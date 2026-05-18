@@ -167,8 +167,8 @@ export default function RequirementsListPage() {
               <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-success, var(--cp-success, #16A34A))', margin: '8px 0 0' }}>{fullyCount}</p>
             </div>
             <div style={{ backgroundColor: '#FFFBEB', borderRadius: 12, padding: 20, border: '1px solid #FDE68A' }}>
-              <p style={{ fontSize: 12, color: 'var(--ds-text-warning, #D97706)', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Partially Covered</p>
-              <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-warning, #D97706)', margin: '8px 0 0' }}>{partialCount}</p>
+              <p style={{ fontSize: 12, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Partially Covered</p>
+              <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', margin: '8px 0 0' }}>{partialCount}</p>
             </div>
             <div style={{ backgroundColor: 'var(--ds-background-danger, #FEF2F2)', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>
               <p style={{ fontSize: 12, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>No Coverage</p>

@@ -46,7 +46,7 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; ic
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   draft: { label: 'Draft', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
-  generating: { label: 'Generating', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB' },
+  generating: { label: 'Generating', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB' },
   ready: { label: 'Ready', color: 'var(--quality-high, #059669)', bg: '#ECFDF5' },
   failed: { label: 'Failed', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)' },
   archived: { label: 'Archived', color: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F8FAFC)' },

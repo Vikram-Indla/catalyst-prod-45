@@ -20,7 +20,7 @@
   --pc-teal-bg: #F0FDFA;
   --pc-success: var(--ds-text-success, var(--cp-success, #16A34A));
   --pc-success-bg: #F0FDF4;
-  --pc-warning: var(--ds-text-warning, #D97706);
+  --pc-warning: var(--ds-text-warning, var(--cp-warning, #D97706));
   --pc-warning-bg: #FFFBEB;
   --pc-danger: var(--ds-text-danger, var(--cp-danger, #DC2626));
   --pc-danger-bg: var(--ds-background-danger, #FEF2F2);

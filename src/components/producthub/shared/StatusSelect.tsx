@@ -6,9 +6,9 @@ const STATUS_GROUPS = [
     group: 'Intake',
     items: [
       { value: 'new', label: 'New', color: 'var(--ds-text-brand, #2563EB)' },
-      { value: 'portfolio_review', label: 'Portfolio Review', color: 'var(--ds-text-warning, #D97706)' },
-      { value: 'technical_validation', label: 'Technical Validation', color: 'var(--ds-text-warning, #D97706)' },
-      { value: 'estimate', label: 'Estimate', color: 'var(--ds-text-warning, #D97706)' },
+      { value: 'portfolio_review', label: 'Portfolio Review', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+      { value: 'technical_validation', label: 'Technical Validation', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+      { value: 'estimate', label: 'Estimate', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
     ],
   },
   {

@@ -53,7 +53,7 @@
   /* Status */
   --cp-ok:              var(--ds-text-success, var(--cp-success, #16A34A));
   --cp-ok-bg:           rgba(22,163,74,0.08);
-  --cp-warn:            var(--ds-text-warning, #D97706);
+  --cp-warn:            var(--ds-text-warning, var(--cp-warning, #D97706));
   --cp-warn-bg:         rgba(217,119,6,0.08);
   --cp-err:             var(--ds-text-danger, var(--cp-danger, #DC2626));
   --cp-err-bg:          rgba(220,38,38,0.08);
@@ -91,7 +91,7 @@
   /* Chart Palette */
   --cp-chart-1: var(--ds-text-brand, #2563EB);
   --cp-chart-2: var(--cp-teal-60, #0D9488);
-  --cp-chart-3: var(--ds-text-warning, #D97706);
+  --cp-chart-3: var(--ds-text-warning, var(--cp-warning, #D97706));
   --cp-chart-4: var(--ds-text-danger, var(--cp-danger, #DC2626));
   --cp-chart-5: var(--ds-text-success, var(--cp-success, #16A34A));
   --cp-chart-6: var(--cp-purple-60, #7C3AED);

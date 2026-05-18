@@ -133,7 +133,7 @@ export default function AllReleasesPage() {
           gap: '10px',
           marginBottom: '12px',
         }}>
-          <AlertTriangle size={16} color="var(--ds-text-warning, #D97706)" />
+          <AlertTriangle size={16} color="var(--ds-text-warning, var(--cp-warning, #D97706))" />
           <span style={{ fontSize: '13px', color: '#92400E' }}>
             {freezeConflicts.length === 1
               ? `"${freezeConflicts[0].name}" targets a date within a freeze window.`

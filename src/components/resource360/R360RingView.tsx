@@ -6,12 +6,12 @@ import { useTheme } from '@/hooks/useTheme';
 // STATUS COLORS — Jira status → display colors
 // ═══════════════════════════════════════════════════
 const SC: Record<string, { dot: string; bg: string; tx: string; label: string; accent: string }> = {
-  'To Do':                { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'To Do',       accent: 'var(--ds-text-warning, #D97706)' },
-  'Open':                 { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'To Do',       accent: 'var(--ds-text-warning, #D97706)' },
-  'Backlog':              { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Backlog',     accent: 'var(--ds-text-warning, #D97706)' },
-  'Re-Open':              { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open',     accent: 'var(--ds-text-warning, #D97706)' },
-  'In Requirements':      { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements',accent: 'var(--ds-text-warning, #D97706)' },
-  'Awaiting Info':        { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting',    accent: 'var(--ds-text-warning, #D97706)' },
+  'To Do':                { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do',       accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+  'Open':                 { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do',       accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+  'Backlog':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Backlog',     accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+  'Re-Open':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open',     accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+  'In Requirements':      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements',accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
+  'Awaiting Info':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting',    accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
   'In Progress':          { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress', accent: 'var(--ds-text-brand, #2563EB)' },
   'In Development':       { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress', accent: 'var(--ds-text-brand, #2563EB)' },
   'Under Implementation': { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress', accent: 'var(--ds-text-brand, #2563EB)' },
@@ -65,11 +65,11 @@ function JiraIcon({ type }: { type: string }) {
 }
 
 // ═══ HELPERS ═══
-const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
+const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
 const trunc = (s: string, l: number) => s && s.length > l ? s.slice(0, l) + '…' : s || '';
 const ageLabel = (d: number) => d === 0 ? 'Today' : d === 1 ? '1d ago' : `${d}d ago`;
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, #D97706)', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, #64748B)', LND: 'var(--cp-purple-60, #7C3AED)' };
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, #64748B)', LND: 'var(--cp-purple-60, #7C3AED)' };
 const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, #64748B)';
 
 const SPOTS = [

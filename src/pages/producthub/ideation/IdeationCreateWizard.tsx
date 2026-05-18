@@ -25,7 +25,7 @@ const IDEA_TYPES = [
   { key: 'Opportunity', label: 'Opportunity', dot: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
   { key: 'Feature Request', label: 'Feature', dot: 'var(--ds-text-brand, #2563EB)' },
   { key: 'Solution', label: 'Solution', dot: 'var(--cp-purple-60, #7C3AED)' },
-  { key: 'Improvement', label: 'Improvement', dot: 'var(--ds-text-warning, #D97706)' },
+  { key: 'Improvement', label: 'Improvement', dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
 ];
 
 const PRIORITIES = [

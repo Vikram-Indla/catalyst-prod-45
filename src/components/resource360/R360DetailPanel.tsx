@@ -9,18 +9,18 @@ import { resolveStatusCategoryStatic } from '@/hooks/useStatusMappingLookup';
 // ═══════════════════════════════════════════════════
 const SC: Record<string, { dot: string; bg: string; tx: string; label: string }> = {
   // ── Grey: To Do / Waiting ──
-  'To Do':                { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
-  'Open':                 { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
-  'Backlog':              { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Backlog' },
-  'Re-Open':              { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
-  'Reopened':             { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
-  'In Requirements':      { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements' },
-  'Awaiting Info':        { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting' },
-  'On Hold':              { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'On Hold' },
-  'Todo':                 { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
-  'Reported':             { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Reported' },
-  'Ready for Dev':        { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Ready Dev' },
-  'Ready for Test':       { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Ready Test' },
+  'To Do':                { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
+  'Open':                 { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
+  'Backlog':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Backlog' },
+  'Re-Open':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
+  'Reopened':             { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
+  'In Requirements':      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements' },
+  'Awaiting Info':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting' },
+  'On Hold':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'On Hold' },
+  'Todo':                 { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
+  'Reported':             { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Reported' },
+  'Ready for Dev':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Ready Dev' },
+  'Ready for Test':       { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Ready Test' },
   // ── Blue: In Progress ──
   'In Progress':          { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
   'In Development':       { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
@@ -71,7 +71,7 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
 // Category-level fallbacks (Jira always provides these)
 const CAT_DONE       = { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done' };
 const CAT_INPROGRESS = { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' };
-const CAT_TODO       = { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' };
+const CAT_TODO       = { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' };
 
 function resolveStatus(item: any) {
   // 1. Try exact status_name match first (most descriptive label)
@@ -93,9 +93,9 @@ function resolveStatus(item: any) {
   return CAT_TODO;
 }
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, #D97706)', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, #64748B)', LND: 'var(--cp-purple-60, #7C3AED)' };
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, #64748B)', LND: 'var(--cp-purple-60, #7C3AED)' };
 const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, #64748B)';
-const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
+const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
 const ageLabel = (d: number) => d === 0 ? 'Today' : d === 1 ? '1d ago' : `${d}d ago`;
 
 interface Props {

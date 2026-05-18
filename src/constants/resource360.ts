@@ -5,7 +5,7 @@ export const HUB_COLORS: Record<string, string> = {
   ProductHub: '#8B5CF6',
   ProjectHub: 'var(--ds-text-brand, #2563EB)',
   ReleaseHub: 'var(--cp-teal-60, #0D9488)',
-  TestHub: 'var(--ds-text-warning, #D97706)',
+  TestHub: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
   IncidentHub: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
   TaskHub: 'var(--quality-high, #059669)',
 };
@@ -29,7 +29,7 @@ export const STATUS_CATEGORY_COLORS = {
 export const PRIORITY_COLORS: Record<string, string> = {
   Critical: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
   High: '#EA580C',
-  Medium: 'var(--ds-text-warning, #D97706)',
+  Medium: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
   Low: 'var(--ds-text-subtlest, #64748B)',
 };
 
@@ -71,7 +71,7 @@ export const R360_TOKENS = {
   success: 'var(--ds-text-success, var(--cp-success, #16A34A))',
   successLight: '#F0FDF4',
   successText: '#14532D',
-  warning: 'var(--ds-text-warning, #D97706)',
+  warning: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
   warningLight: '#FFFBEB',
   warningText: '#78350F',
   danger: 'var(--ds-text-danger, #EF4444)',
@@ -97,18 +97,18 @@ export const R360_TOKENS = {
 export const R360_STATUS_STYLES: Record<string, {
   color: string; bg: string; dot: string; label: string;
 }> = {
-  'ToDo':        { color: '#78350F', bg: '#FFFBEB', dot: 'var(--ds-text-warning, #D97706)', label: 'ToDo' },
+  'ToDo':        { color: '#78350F', bg: '#FFFBEB', dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'ToDo' },
   'In Progress': { color: '#1E3A5F', bg: 'var(--ds-background-selected, #EFF6FF)', dot: 'var(--ds-text-brand, #2563EB)', label: 'In Progress' },
   'In Review':   { color: '#134E4A', bg: '#F0FDFA', dot: 'var(--cp-teal-60, #0D9488)', label: 'In Review' },
   'Done':        { color: '#14532D', bg: '#F0FDF4', dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', label: 'Done' },
   'Blocked':     { color: '#7F1D1D', bg: 'var(--ds-background-danger, #FEF2F2)', dot: 'var(--ds-text-danger, #EF4444)', label: 'Blocked' },
-  'Re-Open':     { color: '#78350F', bg: '#FFFBEB', dot: 'var(--ds-text-warning, #D97706)', label: 'Re-Open' },
+  'Re-Open':     { color: '#78350F', bg: '#FFFBEB', dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'Re-Open' },
 };
 
 // Project colors
 export const R360_PROJECT_COLORS: Record<string, string> = {
   BAU: 'var(--ds-text-brand, #2563EB)',
-  SEN: 'var(--ds-text-warning, #D97706)',
+  SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
   FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))',
   OPS: 'var(--cp-teal-60, #0D9488)',
   SUP: 'var(--ds-text-subtlest, #64748B)',
@@ -133,5 +133,5 @@ export const R360_AGE_THRESHOLDS = {
 // BANNED: Golden Hour palette — NEVER use these as primary
 export const BANNED_COLORS = [
   'var(--ds-text-warning, var(--cp-amber, #F59E0B))', '#FBBF24', '#FCD34D', '#FDE68A',
-  'var(--ds-text-warning, #D97706)', // ONLY allowed as status warning, never as primary accent
+  'var(--ds-text-warning, var(--cp-warning, #D97706))', // ONLY allowed as status warning, never as primary accent
 ] as const;

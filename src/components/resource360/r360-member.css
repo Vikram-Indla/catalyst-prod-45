@@ -312,7 +312,7 @@
   min-width: 100px !important;
 }
 #r360-root .r3-kpi-card.warn {
-  border-color: var(--ds-text-warning, #D97706) !important;
+  border-color: var(--ds-text-warning, var(--cp-warning, #D97706)) !important;
   background: #FFFBEB !important;
 }
 #r360-root .r3-kpi-card.neutral {
@@ -616,7 +616,7 @@
   border-inline-start: 3px solid var(--ds-text-danger, var(--cp-danger, #DC2626)) !important;
 }
 #r360-root .r3-ring-card.priority-medium {
-  border-inline-start: 3px solid var(--ds-text-warning, #D97706) !important;
+  border-inline-start: 3px solid var(--ds-text-warning, var(--cp-warning, #D97706)) !important;
 }
 #r360-root .r3-ring-card.priority-low {
   border-inline-start: 3px solid var(--ds-text-subtlest, #94A3B8) !important;
@@ -1166,7 +1166,7 @@
   background: var(--cp-primary, #2563EB) !important;
   transition: width var(--cp-duration-normal, 0.25s) !important;
 }
-#r360-root .days-fill.amber { background: var(--cp-warning, #D97706) !important; }
+#r360-root .days-fill.amber { background: var(--cp-warning, var(--cp-warning, #D97706)) !important; }
 #r360-root .days-fill.red   { background: var(--cp-danger, var(--cp-danger, #DC2626)) !important; }
 
 #r360-root .drawer-hier {

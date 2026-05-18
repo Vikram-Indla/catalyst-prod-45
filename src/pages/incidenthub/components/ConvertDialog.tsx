@@ -21,7 +21,7 @@ const TYPES = [
   { key: 'story', label: 'Story', desc: 'User story for backlog', color: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
   { key: 'epic', label: 'Epic', desc: 'Large body of work', color: 'var(--cp-purple-60, #7C3AED)' },
   { key: 'feature', label: 'New Feature', desc: 'New functionality', color: 'var(--cp-teal-60, #0D9488)' },
-  { key: 'improvement', label: 'Improvement', desc: 'Enhance existing feature', color: 'var(--ds-text-warning, #D97706)' },
+  { key: 'improvement', label: 'Improvement', desc: 'Enhance existing feature', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
 ];
 
 export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps) {

@@ -64,7 +64,7 @@ const MODULE_COLORS: Record<string, { bg: string; color: string; label: string }
   product: { bg: '#F5F3FF', color: 'var(--cp-purple-60, #7C3AED)', label: 'ProductHub' },
   incident: { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'IncidentHub' },
   release: { bg: '#ECFDF5', color: 'var(--quality-high, #059669)', label: 'ReleaseHub' },
-  requirement: { bg: '#FFFBEB', color: 'var(--ds-text-warning, #D97706)', label: 'Requirements' },
+  requirement: { bg: '#FFFBEB', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'Requirements' },
   wiki: { bg: '#F0F9FF', color: '#0284C7', label: 'WikiHub' },
 };
 
@@ -467,7 +467,7 @@ export default function WikiArticlePage() {
               <button onClick={handleBookmark} style={{
                 fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
                 border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: bookmarked ? (isDark ? 'rgba(217,119,6,0.12)' : '#FEF3C7') : 'transparent',
-                color: bookmarked ? 'var(--ds-text-warning, #D97706)' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)'), display: 'flex', alignItems: 'center', gap: 4,
+                color: bookmarked ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)'), display: 'flex', alignItems: 'center', gap: 4,
               }}>
                 <Star size={12} fill={bookmarked ? 'currentColor' : 'none'} /> {bookmarked ? 'Saved' : 'Save'}
               </button>

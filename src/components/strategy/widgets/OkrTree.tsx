@@ -11,7 +11,7 @@ import { useStrategicThemes, useGoals } from '@/hooks/strategy/useStrategyData';
 
 function getProgressColor(v: number) {
   if (v >= 70) return 'var(--exec-blue-700, #1E40AF)';
-  if (v >= 40) return 'var(--exec-signal-amber, #D97706)';
+  if (v >= 40) return 'var(--exec-signal-amber, var(--cp-warning, #D97706))';
   return 'var(--exec-signal-red, var(--cp-danger, #DC2626))';
 }
 

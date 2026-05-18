@@ -100,7 +100,7 @@ const PERM_COLORS: Record<string, { bg: string; color: string; bgDark: string; c
 
 function getEventDotColor(ev: any): string {
   if (ev.event_type === 'created') return 'var(--cp-purple-60, #7C3AED)';
-  if (ev.event_type === 'deactivated' || ev.event_type === 'reactivated') return 'var(--ds-text-warning, #D97706)';
+  if (ev.event_type === 'deactivated' || ev.event_type === 'reactivated') return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
   if (ev.direction === 'jira_to_catalyst') return 'var(--ds-text-brand, #2563EB)';
   if (ev.direction === 'catalyst_to_jira') return 'var(--cp-teal-60, #0D9488)';
   return 'var(--ds-text-brand, #2563EB)';

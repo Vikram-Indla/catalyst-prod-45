@@ -62,7 +62,7 @@ const TYPE_CONFIG: Record<string, { label: string; icon: any; color: string }> =
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   pending: { label: 'Pending', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: Clock },
-  validating: { label: 'Validating', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', icon: AlertTriangle },
+  validating: { label: 'Validating', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', icon: AlertTriangle },
   processing: { label: 'Processing', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', icon: RefreshCw },
   completed: { label: 'Completed', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
   failed: { label: 'Failed', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', icon: XCircle },

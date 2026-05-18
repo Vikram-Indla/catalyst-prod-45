@@ -22,11 +22,11 @@ const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-vie
 /* Board accent colors — use board.color from DB, fallback map */
 const BOARD_ACCENT: Record<string, string> = {
   'Demand Analysis Kanban': 'var(--ds-text-brand, #2563EB)',
-  'Business Request Kanban': 'var(--ds-text-warning, #D97706)',
+  'Business Request Kanban': 'var(--ds-text-warning, var(--cp-warning, #D97706))',
   'Delivery Board': 'var(--ds-text-brand, #2563EB)',
   'QA Board': 'var(--ds-text-success, var(--cp-success, #16A34A))',
   'Design Board': 'var(--cp-purple-60, #7C3AED)',
-  'My Planning Board': 'var(--ds-text-warning, #D97706)',
+  'My Planning Board': 'var(--ds-text-warning, var(--cp-warning, #D97706))',
 };
 
 /* ── StatusLozenge V12 3-color guardrail ── */
@@ -282,7 +282,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                   transition: 'color 150ms, border-color 150ms',
                 }}
               >
-                {isPersonal && <User size={12} color={active ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-subtlest, #94A3B8)'} />}
+                {isPersonal && <User size={12} color={active ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-subtlest, #94A3B8)'} />}
                 {tab.name}
               </button>
             );

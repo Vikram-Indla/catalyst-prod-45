@@ -28,7 +28,7 @@
   --idp-teal-bg: #F0FDFA;
   --idp-success: var(--ds-text-success, var(--cp-success, #16A34A));
   --idp-success-bg: #F0FDF4;
-  --idp-warning: var(--ds-text-warning, #D97706);
+  --idp-warning: var(--ds-text-warning, var(--cp-warning, #D97706));
   --idp-warning-bg: #FFFBEB;
   --idp-danger: var(--ds-text-danger, var(--cp-danger, #DC2626));
   --idp-danger-bg: var(--ds-background-danger, #FEF2F2);

@@ -149,7 +149,7 @@ export default function ForYouPage() {
       Project: <Folder size={14} color="var(--ds-text-brand, #2563EB)" strokeWidth={2} />,
       Task: <CheckSquare size={14} color="#4BADE8" strokeWidth={2} />,
       Plan: <BookOpen size={14} color="var(--cp-teal-60, #0D9488)" strokeWidth={2} />,
-      Strategy: <Zap size={14} color="var(--ds-text-warning, #D97706)" strokeWidth={2} />,
+      Strategy: <Zap size={14} color="var(--ds-text-warning, var(--cp-warning, #D97706))" strokeWidth={2} />,
     };
     const PRIORITY_ICONS: Record<string, React.ReactNode> = {
       Critical: <PriorityBars priority="critical" />,

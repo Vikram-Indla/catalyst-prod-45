@@ -204,7 +204,7 @@ function BoardCard({
       className="relative cursor-pointer bg-[var(--bg-app)]"
       style={{
         borderRadius: 12,
-        border: isOnHold ? '1px dashed #D9770640' : '1px solid var(--divider)',
+        border: isOnHold ? '1px dashed var(--cp-warning, #D97706)40' : '1px solid var(--divider)',
         boxShadow: hovered
           ? '0 4px 12px rgba(15,23,42,.1), 0 1px 3px rgba(15,23,42,.06)'
           : '0 1px 2px rgba(15,23,42,.06), 0 1px 3px rgba(15,23,42,.1)',

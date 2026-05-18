@@ -48,7 +48,7 @@ function getThemeDotColor(goals: Goal[]): string {
   const hasOffTrack = goals.some(g => g.status === 'off_track');
   const hasAtRisk = goals.some(g => g.status === 'at_risk');
   if (hasOffTrack || avgProgress < 40) return 'var(--ds-text-danger, #EF4444)';
-  if (hasAtRisk || avgProgress < 60) return 'var(--ds-text-warning, #D97706)';
+  if (hasAtRisk || avgProgress < 60) return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
   return 'var(--ds-text-success, var(--cp-success, #16A34A))';
 }
 

@@ -809,13 +809,13 @@ export function makeAssigneeEditCell<T>({
 // Jira-parity priority display: icon + text label.
 // Measured from digital-transformation.atlassian.net BAU list 2026-05-04:
 //   Priority cell shows icon (16px) + label text at 14px, inline-flex, gap 4px.
-//   Colors: Highest=#E5484D Highest/Critical, High=#E2730D, Medium=#D97706,
+//   Colors: Highest=#E5484D Highest/Critical, High=#E2730D, Medium=var(--cp-warning, #D97706),
 //   Low=#0065FF, Lowest=#7A869A. No colored bars — text label is the primary affordance.
 const PRIORITY_CONFIG: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
   critical:  { icon: <AkPriorityCriticalIcon label="" size="small" />, color: '#E5484D', label: 'Critical'  },
   highest:   { icon: <AkPriorityHighestIcon  label="" size="small" />, color: '#E5484D', label: 'Highest'   },
   high:      { icon: <AkPriorityHighIcon     label="" size="small" />, color: '#E2730D', label: 'High'      },
-  medium:    { icon: <AkPriorityMediumIcon   label="" size="small" />, color: '#D97706', label: 'Medium'    },
+  medium:    { icon: <AkPriorityMediumIcon   label="" size="small" />, color: 'var(--cp-warning, #D97706)', label: 'Medium'    },
   low:       { icon: <AkPriorityLowIcon      label="" size="small" />, color: '#0065FF', label: 'Low'       },
   lowest:    { icon: <AkPriorityLowestIcon   label="" size="small" />, color: '#7A869A', label: 'Lowest'    },
 };

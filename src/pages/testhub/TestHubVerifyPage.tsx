@@ -191,7 +191,7 @@ async function runCheck(id: string): Promise<Partial<VCheck>> {
 
 const STATUS_PILL: Record<string, { bg: string; color: string; label: string }> = {
   pass: { bg: '#E3FCEF', color: '#006644', label: 'PASS' },
-  warn: { bg: '#FFF8E1', color: 'var(--ds-text-warning, #D97706)', label: 'WARN' },
+  warn: { bg: '#FFF8E1', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'WARN' },
   fail: { bg: '#FFEBE6', color: '#BF2600', label: 'FAIL' },
   loading: { bg: '#DEEBFF', color: '#0747A6', label: 'LOADING' },
 };
@@ -263,7 +263,7 @@ export default function TestHubVerifyPage() {
         <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
           {[
             { label: 'PASSED', value: passCount, bg: '#E3FCEF', color: '#006644' },
-            { label: 'WARNINGS', value: warnCount, bg: '#FFFBEB', color: 'var(--ds-text-warning, #D97706)' },
+            { label: 'WARNINGS', value: warnCount, bg: '#FFFBEB', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
             { label: 'FAILED', value: failCount, bg: '#FFEBE6', color: '#BF2600' },
             { label: 'TOTAL', value: checks.length, bg: 'var(--ds-surface-sunken, #F1F5F9)', color: '#374151' },
           ].map(chip => (
@@ -398,7 +398,7 @@ export default function TestHubVerifyPage() {
             ...(failCount > 0
               ? { backgroundColor: '#FFEBE6', border: '1px solid #BF2600', color: '#BF2600' }
               : warnCount > 0
-                ? { backgroundColor: '#FFF8E1', border: '1px solid #D97706', color: 'var(--ds-text-warning, #D97706)' }
+                ? { backgroundColor: '#FFF8E1', border: '1px solid var(--cp-warning, #D97706)', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }
                 : { backgroundColor: '#E3FCEF', border: '1px solid #006644', color: '#006644' }),
           }}>
             {failCount > 0
@@ -447,7 +447,7 @@ function computeModuleScore(checks: VCheck[], checkIds: string[]): { passed: num
 
 function barColor(pct: number): string {
   if (pct >= 100) return 'var(--ds-text-success, var(--cp-success, #16A34A))';
-  if (pct >= 50) return 'var(--ds-text-warning, #D97706)';
+  if (pct >= 50) return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
   return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
 }
 
@@ -564,7 +564,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
           width: 120,
           height: 120,
           borderRadius: '50%',
-          border: `3px solid ${overallPct >= 90 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : overallPct >= 70 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))'}`,
+          border: `3px solid ${overallPct >= 90 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : overallPct >= 70 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))'}`,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',

@@ -459,7 +459,7 @@ export const WORK_ITEM_PRIORITY_CONFIG: Record<WorkItemPriority, {
   sortWeight: number;
 }> = {
   critical: { label: 'Critical', color: 'var(--cp-danger, #DC2626)', bgColor: '#FEF2F2', borderColor: '#FECACA', icon: 'AlertTriangle', sortWeight: 1 },
-  high:     { label: 'High',     color: '#D97706', bgColor: '#FFFBEB', borderColor: '#FDE68A', icon: 'ArrowUp',       sortWeight: 2 },
+  high:     { label: 'High',     color: 'var(--cp-warning, #D97706)', bgColor: '#FFFBEB', borderColor: '#FDE68A', icon: 'ArrowUp',       sortWeight: 2 },
   medium:   { label: 'Medium',   color: '#2563EB', bgColor: '#EFF6FF', borderColor: '#BFDBFE', icon: 'Minus',         sortWeight: 3 },
   low:      { label: 'Low',      color: '#64748B', bgColor: 'var(--bg-1, #F8FAFC)', borderColor: 'var(--bd-default, #E2E8F0)', icon: 'ArrowDown',     sortWeight: 4 },
   none:     { label: 'None',     color: '#94A3B8', bgColor: 'var(--bg-1, #F8FAFC)', borderColor: 'var(--bd-default, #E2E8F0)', icon: 'Minus',         sortWeight: 5 },

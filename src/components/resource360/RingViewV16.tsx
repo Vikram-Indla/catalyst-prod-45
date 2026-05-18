@@ -30,13 +30,13 @@ type StatusCat = 'todo' | 'progress' | 'done';
 
 // ─── CG-05 STATUS COLORS (DEF-02 fix) ───
 const STATUS_CG05: Record<StatusCat, { dot: string; bg: string; text: string }> = {
-  todo:     { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', text: '#78350F' },
+  todo:     { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', text: '#78350F' },
   progress: { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E3A5F' },
   done:     { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', text: '#14532D' },
 };
 
 const STATUS_SOLID: Record<StatusCat, { bg: string; text: string }> = {
-  todo:     { bg: 'var(--ds-text-warning, #D97706)', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  todo:     { bg: 'var(--ds-text-warning, var(--cp-warning, #D97706))', text: 'var(--ds-text-inverse, #FFFFFF)' },
   progress: { bg: 'var(--ds-text-brand, #2563EB)', text: 'var(--ds-text-inverse, #FFFFFF)' },
   done:     { bg: 'var(--ds-text-success, var(--cp-success, #16A34A))', text: 'var(--ds-text-inverse, #FFFFFF)' },
 };
@@ -123,7 +123,7 @@ function mapItem(r: Resource360Item): WorkItem {
 // ─── PROJECT COLOR MAP (DEF-06 fallback) ───
 const PROJECT_COLOR_FALLBACK: Record<string, string> = {
   BAU: 'var(--ds-text-brand, #2563EB)',
-  SEN: 'var(--ds-text-warning, #D97706)',
+  SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
   FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))',
   OPS: 'var(--cp-teal-60, #0D9488)',
   SUP: 'var(--ds-text-subtlest, #64748B)',

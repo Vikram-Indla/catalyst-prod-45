@@ -52,7 +52,7 @@ type StatusFilter = 'all' | 'pending' | 'syncing' | 'success' | 'failed' | 'skip
 
 /* ── Sync status config ─────────────────────────────────── */
 const SYNC_STATUS_CFG: Record<string, { renderIcon: () => React.ReactNode; color: string; bg: string; label: string }> = {
-  pending:  { renderIcon: () => <ClockIcon label="" size="small" />,        color: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.1)',  label: 'PENDING' },
+  pending:  { renderIcon: () => <ClockIcon label="" size="small" />,        color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'rgba(217,119,6,0.1)',  label: 'PENDING' },
   syncing:  { renderIcon: () => <Spinner size="small" />,                   color: 'var(--ds-text-brand, #2563EB)', bg: 'rgba(37,99,235,0.1)',  label: 'SYNCING' },
   success:  { renderIcon: () => <CheckCircleIcon label="" size="small" />,  color: 'var(--quality-high, #059669)', bg: 'rgba(5,150,105,0.1)',  label: 'SUCCESS' },
   failed:   { renderIcon: () => <CrossCircleIcon label="" size="small" />,  color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'rgba(220,38,38,0.1)',  label: 'FAILED' },
@@ -68,7 +68,7 @@ function DirectionBadge({ dir }: { dir: 'inbound' | 'outbound' }) {
       padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 700,
       textTransform: 'uppercase', letterSpacing: '0.03em',
       background: isIn ? 'rgba(37,99,235,0.08)' : 'rgba(217,119,6,0.08)',
-      color: isIn ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, #D97706)',
+      color: isIn ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, var(--cp-warning, #D97706))',
     }}>
       {isIn ? <ArrowDownLeftIcon label="" size="small" /> : <ArrowUpRightIcon label="" size="small" />}
       {isIn ? 'IN' : 'OUT'}
@@ -163,10 +163,10 @@ function SummaryStats({ items }: { items: SyncActivity[] }) {
   const pills: { label: string; value: number; color: string; bg: string }[] = [
     { label: 'Total', value: stats.total, color: 'var(--cp-t1, #0F172A)', bg: 'var(--cp-hover, #F1F5F9)' },
     { label: 'Inbound', value: stats.inbound, color: 'var(--ds-text-brand, #2563EB)', bg: 'rgba(37,99,235,0.08)' },
-    { label: 'Outbound', value: stats.outbound, color: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.08)' },
+    { label: 'Outbound', value: stats.outbound, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'rgba(217,119,6,0.08)' },
     { label: 'Success', value: stats.success, color: 'var(--quality-high, #059669)', bg: 'rgba(5,150,105,0.08)' },
     { label: 'Failed', value: stats.failed, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'rgba(220,38,38,0.08)' },
-    { label: 'Pending', value: stats.pending, color: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.08)' },
+    { label: 'Pending', value: stats.pending, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'rgba(217,119,6,0.08)' },
     { label: 'Skipped', value: stats.skipped, color: '#6B7280', bg: 'rgba(107,114,128,0.08)' },
   ];
 

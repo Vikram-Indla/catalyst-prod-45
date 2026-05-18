@@ -149,12 +149,12 @@ export default function IncidentDetailPage() {
                 : (slaBreached ? '#FECACA' : '#FDE68A')}`,
               borderRadius: 6,
             }}>
-              <Clock size={16} style={{ color: slaBreached ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-warning, #D97706)' }} />
+              <Clock size={16} style={{ color: slaBreached ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} />
               <div>
-                <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: slaBreached ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-warning, #D97706)', fontWeight: 650 }}>
+                <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: slaBreached ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-warning, var(--cp-warning, #D97706))', fontWeight: 650 }}>
                   {slaBreached ? 'SLA BREACHED' : 'SLA breach in '}
                 </span>
-                <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, fontWeight: 700, color: slaBreached ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-warning, #D97706)' }}>
+                <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, fontWeight: 700, color: slaBreached ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-warning, var(--cp-warning, #D97706))' }}>
                   {slaCountdown}
                 </span>
               </div>

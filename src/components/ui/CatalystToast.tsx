@@ -32,7 +32,7 @@ const toastConfig = {
   },
   warning: {
     icon: AlertTriangle,
-    iconColor: 'var(--ds-text-warning, #D97706)',
+    iconColor: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
     bgColor: '#FFFBEB',
     borderColor: '#FDE68A',
     titleColor: '#92400E',

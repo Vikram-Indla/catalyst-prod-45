@@ -13,7 +13,7 @@ import type { RoadmapDemand } from '../types/roadmap';
 const TYPE_COLORS: Record<string, string> = {
   project: 'var(--ds-text-brand, #2563EB)',
   enhancement: 'var(--cp-teal-60, #0D9488)',
-  improvement: 'var(--ds-text-warning, #D97706)',
+  improvement: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
 };
 
 // ── Avatar color — deterministic from initials ──
@@ -21,7 +21,7 @@ const AVATAR_COLORS = [
   'var(--ds-text-brand, #2563EB)', // blue
   '#6366F1', // indigo
   'var(--cp-teal-60, #0D9488)', // teal
-  'var(--ds-text-warning, #D97706)', // amber
+  'var(--ds-text-warning, var(--cp-warning, #D97706))', // amber
   'var(--ds-text-success, var(--cp-success, #16A34A))', // green
   '#0891B2', // cyan
   'var(--ds-text-danger, var(--cp-danger, #DC2626))', // red

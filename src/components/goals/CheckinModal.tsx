@@ -14,7 +14,7 @@ interface CheckinModalProps {
 }
 
 function progressBar(pct: number) {
-  const color = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
+  const color = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
   return (
     <div style={{ width: '100%', height: 6, background: 'var(--cp-bd-zone)', borderRadius: 4, overflow: 'hidden' }}>
       <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 4, transition: 'width 300ms' }} />

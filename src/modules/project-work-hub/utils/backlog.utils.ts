@@ -202,7 +202,7 @@ export function getPriorityColor(priority: string | null): string {
   switch (priority?.toLowerCase()) {
     case 'critical':
     case 'highest': return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
-    case 'high':    return 'var(--ds-text-warning, #D97706)';
+    case 'high':    return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
     case 'medium':  return '#CF7B00';
     case 'low':
     case 'lowest':  return '#6B7280';

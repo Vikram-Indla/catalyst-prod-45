@@ -27,7 +27,7 @@
   --p70: var(--ds-background-brand-bold-hovered, #1D4ED8);
   --p5: rgba(37,99,235,0.06);
   --ok60: var(--ds-text-success, var(--cp-success, #16A34A));
-  --warn60: var(--ds-text-warning, #D97706);
+  --warn60: var(--ds-text-warning, var(--cp-warning, #D97706));
   --err60: var(--ds-text-danger, var(--cp-danger, #DC2626));
   --loz-gr-bg: var(--ds-border, #DFE1E6);
   --loz-gr-tx: var(--ds-text, #253858);

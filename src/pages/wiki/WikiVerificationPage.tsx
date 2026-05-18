@@ -104,7 +104,7 @@ export default function WikiVerificationPage() {
               }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,99,235,0.04)'}
                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
-                  {stale && <AlertTriangle size={12} style={{ color: 'var(--ds-text-warning, #D97706)', flexShrink: 0 }} />}
+                  {stale && <AlertTriangle size={12} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', flexShrink: 0 }} />}
                   <span onClick={() => navigate(`/wiki/${a.slug}`)} style={{
                     fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer',
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -114,7 +114,7 @@ export default function WikiVerificationPage() {
                 <span style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)' }}>{a.author_name || '—'}</span>
                 <span style={{
                   fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 500,
-                  color: stale ? 'var(--ds-text-warning, #D97706)' : fresh >= 80 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-subtlest, #64748B)',
+                  color: stale ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : fresh >= 80 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-subtlest, #64748B)',
                 }}>{fresh}%</span>
                 <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)' }}>
                   {new Date(a.updated_at).toLocaleDateString()}
@@ -127,7 +127,7 @@ export default function WikiVerificationPage() {
                   }}><ShieldCheck size={11} /> Verify</button>
                   <button onClick={() => handleRequestChanges(a.id)} style={{
                     fontSize: 10, fontWeight: 650, padding: '4px 10px', borderRadius: 4,
-                    border: `0.75px solid ${isDark ? 'var(--ds-border-bold, #454545)' : 'rgba(0,0,0,0.12)'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', color: 'var(--ds-text-warning, #D97706)',
+                    border: `0.75px solid ${isDark ? 'var(--ds-border-bold, #454545)' : 'rgba(0,0,0,0.12)'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
                     cursor: 'pointer',
                   }}>Request Changes</button>
                 </div>

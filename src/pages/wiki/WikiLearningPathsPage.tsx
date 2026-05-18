@@ -27,7 +27,7 @@ export default function WikiLearningPathsPage() {
           <div style={{ padding: 40, textAlign: 'center', color: 'var(--ds-text-subtlest, #64748B)', fontSize: 12, gridColumn: '1 / -1' }}>No learning paths configured yet.</div>
         ) : (paths ?? []).map((p: any) => {
           const pct = p.article_count > 0 ? Math.round((p.completedCount / p.article_count) * 100) : 0;
-          const diffColor = p.difficulty === 'beginner' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : p.difficulty === 'intermediate' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, #D97706)';
+          const diffColor = p.difficulty === 'beginner' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : p.difficulty === 'intermediate' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
           return (
             <div key={p.id} style={{ padding: 24, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', border: isDark ? '1px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', transition: 'border-color 120ms' }}
               onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'} onMouseLeave={e => e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.06)'}>

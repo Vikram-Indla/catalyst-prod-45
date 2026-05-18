@@ -66,14 +66,14 @@ const executionStatusConfig: Record<string, { label: string; color: string; bg: 
   not_run: { label: 'Not Run', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', Icon: Clock },
   passed: { label: 'Passed', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', Icon: CheckCircle2 },
   failed: { label: 'Failed', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', Icon: XCircle },
-  blocked: { label: 'Blocked', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', Icon: AlertTriangle },
+  blocked: { label: 'Blocked', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', Icon: AlertTriangle },
   skipped: { label: 'Skipped', color: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F8FAFC)', Icon: Clock },
 };
 
 const priorityConfig: Record<string, { color: string; bg: string }> = {
   critical: { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)' },
   high: { color: '#EA580C', bg: '#FFF7ED' },
-  medium: { color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB' },
+  medium: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB' },
   low: { color: 'var(--quality-high, #059669)', bg: '#ECFDF5' },
 };
 
@@ -459,9 +459,9 @@ export default function TestCycleDetailPage() {
               <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{failedCount}</span>
             </button>
             <button onClick={() => setStatusFilter('blocked')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'blocked' ? ('var(--cp-warning-light, #FFFBEB)') : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
-              <AlertTriangle size={18} style={{ color: 'var(--ds-text-warning, #D97706)' }} />
+              <AlertTriangle size={18} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} />
               <span style={{ flex: 1, fontSize: 14, color: 'var(--cp-text-secondary, #334155)' }}>Blocked</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--ds-text-warning, #D97706)' }}>{blockedCount}</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }}>{blockedCount}</span>
             </button>
             <button onClick={() => setStatusFilter('not_run')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'not_run' ? ('var(--cp-bg-page, #F8FAFC)') : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <Clock size={18} style={{ color: 'var(--cp-text-tertiary, #64748B)' }} />
@@ -510,11 +510,11 @@ export default function TestCycleDetailPage() {
       {blockedTestCases.length > 0 && (
         <div style={{ padding: '0 32px 16px' }}>
           <div style={{ padding: '14px 20px', backgroundColor: 'var(--cp-warning-light, #FFFBEB)', border: `1px solid ${'var(--cp-warning-light, #FDE68A)'}`, borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
-            <AlertTriangle size={18} style={{ color: 'var(--ds-text-warning, #D97706)', flexShrink: 0 }} />
+            <AlertTriangle size={18} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', flexShrink: 0 }} />
             <span style={{ fontSize: 14, fontWeight: 500, color: '#92400E' }}>
               {blockedTestCases.length} blocked test case{blockedTestCases.length !== 1 ? 's' : ''} require attention
             </span>
-            <button onClick={() => setStatusFilter('blocked')} style={{ marginLeft: 'auto', padding: '4px 12px', border: `1px solid ${'var(--cp-warning-light, #FDE68A)'}`, borderRadius: 6, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--ds-text-warning, #D97706)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+            <button onClick={() => setStatusFilter('blocked')} style={{ marginLeft: 'auto', padding: '4px 12px', border: `1px solid ${'var(--cp-warning-light, #FDE68A)'}`, borderRadius: 6, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
               View Blocked
             </button>
           </div>

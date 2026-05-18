@@ -35,7 +35,7 @@ const STATUS_PILL_STYLES: Record<string, { color: string; bg: string; border: st
   demand_approved: { color: '#06B6D4', bg: '#ECFEFF', border: 'rgba(6,182,212,0.2)' },
   analysis: { color: '#0EA5E9', bg: '#F0F9FF', border: 'rgba(14,165,233,0.2)' },
   ready_for_development: { color: '#14B8A6', bg: '#F0FDFA', border: 'rgba(20,184,166,0.2)' },
-  under_implementation: { color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', border: 'rgba(217,119,6,0.2)' },
+  under_implementation: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', border: 'rgba(217,119,6,0.2)' },
   on_hold: { color: '#6B7280', bg: '#F9FAFB', border: 'rgba(107,114,128,0.2)' },
   implementation_review: { color: '#F97316', bg: '#FFF7ED', border: 'rgba(249,115,22,0.2)' },
   in_support: { color: '#10B981', bg: '#ECFDF5', border: 'rgba(16,185,129,0.2)' },

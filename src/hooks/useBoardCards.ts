@@ -62,7 +62,7 @@ export function useBoardCards(boardId: string | undefined) {
         // Map priority
         const priorityColors: Record<string, string> = {
           Critical: '#FF5630', Highest: '#FF5630', High: '#FF7452',
-          Medium: '#D97706', Low: '#94A3B8', Lowest: '#94A3B8',
+          Medium: 'var(--cp-warning, #D97706)', Low: '#94A3B8', Lowest: '#94A3B8',
         };
         const pName = item.priority ?? '';
         const priorityObj = pName ? {

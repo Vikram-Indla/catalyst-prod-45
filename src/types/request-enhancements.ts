@@ -7,7 +7,7 @@ export const HEALTH_STATUS_CONFIG: Record<HealthStatus, {
   label: string;
 }> = {
   on_track: { hex: 'var(--cp-success, #16A34A)', bg: '#F0FDF4', label: 'On Track' },
-  at_risk: { hex: '#D97706', bg: '#FFFBEB', label: 'At Risk' },
+  at_risk: { hex: 'var(--cp-warning, #D97706)', bg: '#FFFBEB', label: 'At Risk' },
   off_track: { hex: '#EF4444', bg: '#FEF2F2', label: 'Off Track' },
 };
 

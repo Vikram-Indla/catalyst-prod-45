@@ -31,14 +31,14 @@ const LAYER = {
   theme:      { color: 'var(--ds-text-brand, #2563EB)', badgeBg: 'var(--ds-background-selected, #EFF6FF)', badgeText: '#1E40AF', border: 'var(--ds-text-brand, #2563EB)' },
   goal:       { color: 'var(--cp-teal-60, #0D9488)', badgeBg: '#F0FDFA', badgeText: '#115E59', border: 'var(--cp-teal-60, #0D9488)' },
   kr:         { color: 'var(--ds-text-brand, #2563EB)', badgeBg: '#DBEAFE', badgeText: '#1E40AF', border: 'var(--ds-text-brand, #2563EB)' },
-  initiative: { color: 'var(--ds-text-warning, #D97706)', badgeBg: '#FFFBEB', badgeText: '#92400E', border: 'var(--ds-text-warning, #D97706)' },
+  initiative: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', badgeBg: '#FFFBEB', badgeText: '#92400E', border: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
   epic:       { color: '#4F46E5', badgeBg: '#EEF2FF', badgeText: '#3730A3', border: '#4F46E5' },
 } as const;
 
 const STATUS_CONFIG: Record<string, { dot: string; bg: string; text: string; label: string }> = {
   active:       { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', text: '#166534', label: 'Active' },
   on_track:     { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', text: '#166534', label: 'On Track' },
-  at_risk:      { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', text: '#92400E', label: 'At Risk' },
+  at_risk:      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', text: '#92400E', label: 'At Risk' },
   off_track:    { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)', label: 'Off Track' },
   draft:        { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Draft' },
   planned:      { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Planned' },
@@ -53,7 +53,7 @@ const STATUS_CONFIG: Record<string, { dot: string; bg: string; text: string; lab
 
 function getProgressColor(v: number) {
   if (v >= 60) return 'var(--ds-text-success, var(--cp-success, #16A34A))';
-  if (v >= 40) return 'var(--ds-text-warning, #D97706)';
+  if (v >= 40) return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
   return 'var(--ds-text-danger, #EF4444)';
 }
 
@@ -72,7 +72,7 @@ function StatusBadge({ status }: { status: string }) {
 
 function ChainStat({ label, value, total }: { label: string; value: number; total: number }) {
   const pct = total > 0 ? Math.round((value / total) * 100) : 0;
-  const clr = pct >= 70 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
+  const clr = pct >= 70 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
   return (
     <div className="text-center" style={{ minWidth: 100 }}>
       <div className="flex items-baseline justify-center gap-1">
@@ -166,11 +166,11 @@ function getChainHealthColor(chain: LockedChainData | null): string {
   const label = getChainHealthLabel(chain);
   switch (label) {
     case 'Strong': return 'var(--ds-text-success, var(--cp-success, #16A34A))';
-    case 'Moderate': return 'var(--ds-text-warning, #D97706)';
-    case 'At Risk': return 'var(--ds-text-warning, #D97706)';
+    case 'Moderate': return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
+    case 'At Risk': return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
     case 'Critical': return 'var(--ds-text-danger, #EF4444)';
     case 'Broken': return 'var(--ds-text-danger, #EF4444)';
-    case 'Partial': return 'var(--ds-text-warning, #D97706)';
+    case 'Partial': return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
     default: return 'var(--ds-text-subtlest, #94A3B8)';
   }
 }

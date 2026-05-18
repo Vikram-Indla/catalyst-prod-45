@@ -18,7 +18,7 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
       border: `1px solid rgba(217,119,6,${isDark ? '0.25' : '0.3'})`,
       display: 'flex', alignItems: 'flex-start', gap: 10,
     }}>
-      <AlertTriangle size={16} style={{ color: 'var(--ds-text-warning, #D97706)', flexShrink: 0, marginTop: 2 }} />
+      <AlertTriangle size={16} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', flexShrink: 0, marginTop: 2 }} />
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 12, fontWeight: 650, color: isDark ? '#FBBF24' : '#92400E', marginBottom: 4 }}>
           Similar article{duplicates.length > 1 ? 's' : ''} found
@@ -29,7 +29,7 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
               fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 700,
               padding: '1px 5px', borderRadius: 4,
               background: isDark ? 'rgba(217,119,6,0.2)' : '#FEF3C7',
-              color: 'var(--ds-text-warning, #D97706)',
+              color: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
             }}>{Math.round((d.similarity ?? 0.8) * 100)}%</span>
             <span
               onClick={() => navigate(`/wiki/${d.slug}`)}
@@ -42,7 +42,7 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
         </div>
       </div>
       <button onClick={onDismiss} style={{
-        background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-warning, #D97706)', padding: 2,
+        background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', padding: 2,
       }}><X size={14} /></button>
     </div>
   );
@@ -195,7 +195,7 @@ export default function WikiTemplatesPage() {
             fontSize: 11, fontWeight: 650, padding: '6px 16px', borderRadius: 4,
             border: `1px solid rgba(217,119,6,${isDark ? '0.25' : '0.3'})`,
             background: isDark ? 'rgba(217,119,6,0.12)' : '#FFFBEB',
-            color: 'var(--ds-text-warning, #D97706)',
+            color: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
             cursor: 'pointer',
           }}>Proceed Anyway</button>
         </div>

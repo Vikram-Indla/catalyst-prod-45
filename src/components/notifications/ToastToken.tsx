@@ -30,7 +30,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
   const [hovered, setHovered] = useState(false);
   const n = t.notification;
   const isDueDate = DUE_DATE_TYPES.some(dt => dt === n.notification_type);
-  const accentColor = isDueDate ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-brand, #2563EB)';
+  const accentColor = isDueDate ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-brand, #2563EB)';
   const isSystemAssign = !n.actor_user_id && (n.notification_type === 'assigned' || n.notification_type === 'status_changed');
   const actorName = isSystemAssign ? 'You were assigned to' : (n.actor?.full_name || (n.metadata as any)?.actor_display_name || 'Unknown');
   const actorId = n.actor?.id || n.actor_user_id || 'system';

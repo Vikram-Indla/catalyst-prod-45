@@ -24,7 +24,7 @@ const DOMAINS = [
 ];
 
 const ROLES = ['Analyst', 'Developer', 'Manager', 'Executive', 'Compliance Officer', 'Other'];
-const DIFF_COLORS: Record<string, string> = { beginner: 'var(--ds-text-success, var(--cp-success, #16A34A))', intermediate: 'var(--ds-text-brand, #2563EB)', advanced: 'var(--ds-text-warning, #D97706)' };
+const DIFF_COLORS: Record<string, string> = { beginner: 'var(--ds-text-success, var(--cp-success, #16A34A))', intermediate: 'var(--ds-text-brand, #2563EB)', advanced: 'var(--ds-text-warning, var(--cp-warning, #D97706))' };
 
 interface WikiOnboardingWizardProps {
   onComplete: () => void;

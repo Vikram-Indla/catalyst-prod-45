@@ -188,8 +188,8 @@ export default function ReportDetailPage() {
               <p style={{ fontSize: 12, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: '4px 0 0' }}>Failed</p>
             </div>
             <div style={{ backgroundColor: surfaceBg, borderRadius: 12, padding: 20, border: `1px solid ${borderColor}`, textAlign: 'center' }}>
-              <PieChart size={24} style={{ color: data.summary.pass_rate >= 80 ? 'var(--quality-high, #059669)' : data.summary.pass_rate >= 50 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))', marginBottom: 8 }} />
-              <p style={{ fontSize: 28, fontWeight: 700, color: data.summary.pass_rate >= 80 ? 'var(--quality-high, #059669)' : data.summary.pass_rate >= 50 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: 0 }}>{data.summary.pass_rate}%</p>
+              <PieChart size={24} style={{ color: data.summary.pass_rate >= 80 ? 'var(--quality-high, #059669)' : data.summary.pass_rate >= 50 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))', marginBottom: 8 }} />
+              <p style={{ fontSize: 28, fontWeight: 700, color: data.summary.pass_rate >= 80 ? 'var(--quality-high, #059669)' : data.summary.pass_rate >= 50 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: 0 }}>{data.summary.pass_rate}%</p>
               <p style={{ fontSize: 12, color: textSecondary, margin: '4px 0 0' }}>Pass Rate</p>
             </div>
           </div>

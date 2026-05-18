@@ -124,7 +124,7 @@ export function AIStrategyIntelligencePanel({
           {!metrics.initiativeKey && (
             <>
               <span className="text-[10px] font-medium" style={{ color: 'var(--fg-4)' }}>›</span>
-              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: 'var(--ds-text-warning, #D97706)', background: '#FFFBEB', border: '1px solid #FDE68A' }}>⚠ No Request</span>
+              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', background: '#FFFBEB', border: '1px solid #FDE68A' }}>⚠ No Request</span>
             </>
           )}
           {!metrics.epicKey && (
@@ -203,7 +203,7 @@ function StatusBanner({ status, health, confidence, label }: {
 }) {
   const config = {
     on_track: { text: 'ON TRACK', color: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-    at_risk:  { text: 'AT RISK',  color: 'var(--ds-text-warning, #D97706)' },
+    at_risk:  { text: 'AT RISK',  color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
     critical: { text: 'CRITICAL', color: 'var(--ds-text-danger, #EF4444)' },
   }[status];
 
@@ -225,7 +225,7 @@ function StatusBanner({ status, health, confidence, label }: {
 }
 
 function StatusDot({ status }: { status: 'on_track' | 'at_risk' | 'critical' }) {
-  const color = status === 'on_track' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : status === 'at_risk' ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
+  const color = status === 'on_track' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : status === 'at_risk' ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
   return <div className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />;
 }
 
@@ -367,7 +367,7 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <div className="flex items-center justify-center rounded-xl mb-4"
             style={{ width: 48, height: 48, background: '#FFFBEB' }}>
-            <X size={20} style={{ color: 'var(--ds-text-warning, #D97706)' }} />
+            <X size={20} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} />
           </div>
           <p className="font-semibold text-slate-900 mb-1" style={{ fontSize: 15 }}>Briefing Unavailable</p>
           <p className="text-slate-500" style={{ fontSize: 13, maxWidth: 300 }}>{briefError}</p>

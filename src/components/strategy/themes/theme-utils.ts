@@ -21,7 +21,7 @@ export function deriveHealthStatus(theme: StrategicTheme): HealthStatus {
 type StatusStyle = { label: string; bg: string; text: string; dot: string };
 export const STATUS_CONFIG: Record<HealthStatus, StatusStyle> = {
   on_track:  { label: 'On Track',  bg: 'rgba(220,252,231,0.7)',  text: '#15803d', dot: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  at_risk:   { label: 'At Risk',   bg: 'rgba(254,243,199,0.6)',  text: '#92400E', dot: 'var(--ds-text-warning, #D97706)' },
+  at_risk:   { label: 'At Risk',   bg: 'rgba(254,243,199,0.6)',  text: '#92400E', dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
   off_track: { label: 'Off Track', bg: 'rgba(254,226,226,0.6)',  text: 'var(--ds-text-danger, #991B1B)', dot: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
   planned:   { label: 'Planned',   bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtle, #475569)', dot: 'var(--ds-text-subtlest, #94A3B8)' },
   completed: { label: 'Completed', bg: 'rgba(238,242,255,0.7)', text: '#3730A3', dot: '#6366F1' },
@@ -30,7 +30,7 @@ export const STATUS_CONFIG: Record<HealthStatus, StatusStyle> = {
 
 export const STATUS_CONFIG_DARK: Record<HealthStatus, StatusStyle> = {
   on_track:  { label: 'On Track',  bg: '#182820', text: '#86EFAC', dot: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  at_risk:   { label: 'At Risk',   bg: '#2A2418', text: '#FBBF24', dot: 'var(--ds-text-warning, #D97706)' },
+  at_risk:   { label: 'At Risk',   bg: '#2A2418', text: '#FBBF24', dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
   off_track: { label: 'Off Track', bg: '#2A1C1E', text: 'var(--ds-border-danger, #FCA5A5)', dot: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
   planned:   { label: 'Planned',   bg: 'var(--ds-surface-raised, #1A1A1A)', text: '#B8BCC8', dot: 'var(--ds-text-subtlest, #94A3B8)' },
   completed: { label: 'Completed', bg: '#1A2030', text: '#93C5FD', dot: '#6366F1' },
@@ -81,21 +81,21 @@ export const BSC_FILTER_OPTIONS = [
 // ═══ PRIORITY ═══
 export const PRIORITY_CONFIG: Record<string, { label: string; color: string }> = {
   critical: { label: 'Critical', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
-  high:     { label: 'High',     color: 'var(--ds-text-warning, #D97706)' },
+  high:     { label: 'High',     color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
   medium:   { label: 'Medium',   color: 'var(--ds-text-brand, #2563EB)' },
   low:      { label: 'Low',      color: 'var(--ds-text-subtlest, #64748B)' },
 };
 
 // ═══ COLOR SWATCHES ═══
 export const THEME_COLORS = [
-  'var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, #D97706)', 'var(--cp-purple-60, #7C3AED)', '#EC4899',
+  'var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-purple-60, #7C3AED)', '#EC4899',
   'var(--quality-high, #059669)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#0284C7', '#4F46E5', '#CA8A04',
 ];
 
 // ═══ PROGRESS BAR COLOR ═══
 export function getProgressColor(pct: number): string {
   if (pct >= 60) return 'var(--ds-text-success, var(--cp-success, #16A34A))';
-  if (pct >= 40) return 'var(--ds-text-warning, #D97706)';
+  if (pct >= 40) return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
   return 'var(--ds-text-danger, #EF4444)';
 }
 
@@ -114,7 +114,7 @@ export function getInitials(name: string | null): string {
 
 export function getAvatarColor(name: string | null): string {
   if (!name) return 'var(--ds-text-subtlest, #94A3B8)';
-  const colors = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, #D97706)', '#EC4899', 'var(--quality-high, #059669)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))'];
+  const colors = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', '#EC4899', 'var(--quality-high, #059669)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))'];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
   return colors[Math.abs(hash) % colors.length];

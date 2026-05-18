@@ -95,7 +95,7 @@ export function ExecutionViewMode({
             display: 'flex', alignItems: 'center', gap: 6,
             fontSize: 12, color: 'var(--cp-warning-text, #92400E)',
           }}>
-            <AlertTriangle size={14} style={{ color: 'var(--ds-text-warning, #D97706)', flexShrink: 0 }} />
+            <AlertTriangle size={14} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', flexShrink: 0 }} />
             <span>
               This test case has been updated since it was added to this cycle
               (locked v{lockedVersion} → current v{currentVersion}).
@@ -112,7 +112,7 @@ export function ExecutionViewMode({
           {testCase.preconditions && (
             <div style={{ marginBottom: 12, padding: 14, backgroundColor: 'var(--cp-warning-light, #FFFBEB)', border: `1px solid ${'var(--cp-warning-light, #FDE68A)'}`, borderRadius: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                <AlertTriangle size={14} style={{ color: 'var(--ds-text-warning, #D97706)' }} />
+                <AlertTriangle size={14} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} />
                 <span style={{ fontSize: 12, fontWeight: 600, color: '#92400E' }}>Preconditions</span>
               </div>
               <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.4 }}>{testCase.preconditions}</p>
@@ -128,13 +128,13 @@ export function ExecutionViewMode({
               const stepColors: Record<string, { text: string; bg: string; border: string }> = isDark ? {
                 passed:  { text: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.3)' },
                 failed:  { text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' },
-                blocked: { text: 'var(--ds-text-warning, #D97706)', bg: 'rgba(251,191,36,0.12)', border: 'rgba(251,191,36,0.3)' },
+                blocked: { text: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'rgba(251,191,36,0.12)', border: 'rgba(251,191,36,0.3)' },
                 skipped: { text: 'var(--ds-text-subtlest, #878787)', bg: 'var(--ds-surface-raised, #1A1A1A)', border: 'var(--ds-border, #2E2E2E)' },
                 not_run: { text: 'var(--ds-text-subtlest, #878787)', bg: 'var(--ds-surface-raised, #1A1A1A)', border: 'var(--ds-border, #2E2E2E)' },
               } : {
                 passed:  { text: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', border: '#BBF7D0' },
                 failed:  { text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', border: '#FECACA' },
-                blocked: { text: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', border: '#FED7AA' },
+                blocked: { text: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', border: '#FED7AA' },
                 skipped: { text: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, #F8FAFC)', border: 'var(--ds-border, #E2E8F0)' },
                 not_run: { text: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', border: 'var(--ds-border, #E2E8F0)' },
               };

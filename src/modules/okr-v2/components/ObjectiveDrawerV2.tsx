@@ -72,7 +72,7 @@ function determineHealthFromProgress(progress: number): string {
 function getHealthColor(health?: string): string {
   switch (health) {
     case 'good': return 'var(--cp-teal-60, #0D9488)';
-    case 'fair': return 'var(--ds-text-warning, #D97706)';
+    case 'fair': return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
     case 'poor': return 'var(--ds-text-danger, #EF4444)';
     case 'at_risk': return '#F97316';
     default: return 'var(--ds-text-subtlest, #878787)';

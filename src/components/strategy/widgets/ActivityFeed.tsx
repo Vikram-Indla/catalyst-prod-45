@@ -30,7 +30,7 @@ const TEMP_MOCK_FEED: FeedItem[] = [
   },
   {
     initials: 'MK', color: '#1E40AF',
-    text: <><strong>Mohammed Khan</strong> requested budget reallocation for Supply Chain — <strong style={{ color: 'var(--ds-text-warning, #D97706)' }}>pending</strong></>,
+    text: <><strong>Mohammed Khan</strong> requested budget reallocation for Supply Chain — <strong style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }}>pending</strong></>,
     time: 'Yesterday',
   },
   {

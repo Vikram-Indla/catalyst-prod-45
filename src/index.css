@@ -118,9 +118,9 @@
   --cap-brd: #2563EB;
   --cap-translate: var(--cp-teal-60, #0D9488);
   --cap-epic: var(--cp-purple-60, #7C3AED);
-  --cap-uat: #D97706;
+  --cap-uat: var(--cp-warning, #D97706);
   --quality-high: var(--quality-high, #059669);
-  --quality-mid: #D97706;
+  --quality-mid: var(--cp-warning, #D97706);
   --quality-low: var(--cp-danger, #DC2626);
   --primary-50: #EFF6FF;
   --teal-50: #F0FDFA;
@@ -159,7 +159,7 @@
   --cp-success: var(--cp-success, #16A34A);
   --cp-success-light: #E3FCEF;
   --cp-success-text: #006644;
-  --cp-warning: #D97706;
+  --cp-warning: var(--cp-warning, #D97706);
   --cp-warning-light: #FEF3C7;
   --cp-warning-text: #92400E;
   --cp-danger: var(--cp-danger, #DC2626);
@@ -216,7 +216,7 @@
   --cp-purple-60: var(--cp-purple-60, #7C3AED);
   --cp-purple-5: #F5F3FF;
   --cp-success-60: var(--cp-success, #16A34A);
-  --cp-warning-60: #D97706;
+  --cp-warning-60: var(--cp-warning, #D97706);
   --cp-danger-60: var(--cp-danger, #DC2626);
   --cp-teal-60: var(--cp-teal-60, #0D9488);
   --cp-lozenge-grey-bg: #DFE1E6;
@@ -257,7 +257,7 @@
   --cp-blue-link: #2563EB;
   --cp-ok: var(--cp-success, #16A34A);
   --cp-ok-bg: rgba(22,163,74,0.08);
-  --cp-warn: #D97706;
+  --cp-warn: var(--cp-warning, #D97706);
   --cp-warn-bg: rgba(217,119,6,0.08);
   --cp-err: var(--cp-danger, #DC2626);
   --cp-err-bg: rgba(220,38,38,0.08);

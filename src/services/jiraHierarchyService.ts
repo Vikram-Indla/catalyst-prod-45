@@ -19,7 +19,7 @@ function issueTypeToLevel(type: string): { level: number; name: string; color: s
     case 'Backend':
       return { level: 3, name: 'Backend', color: 'var(--cp-purple-60, #7C3AED)', colorText: '#6D28D9' };
     case 'Task':
-      return { level: 3, name: 'Task', color: '#D97706', colorText: '#B45309' };
+      return { level: 3, name: 'Task', color: 'var(--cp-warning, #D97706)', colorText: '#B45309' };
     case 'Production Incident':
       return { level: 3, name: 'Incident', color: 'var(--cp-danger, #DC2626)', colorText: '#B91C1C' };
     case 'Change Request':

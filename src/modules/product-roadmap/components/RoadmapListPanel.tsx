@@ -23,7 +23,7 @@ interface RoadmapListPanelProps {
 const TYPE_COLORS: Record<string, string> = {
   project: 'var(--ds-text-brand, #2563EB)',
   enhancement: 'var(--cp-teal-60, #0D9488)',
-  improvement: 'var(--ds-text-warning, #D97706)',
+  improvement: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
 };
 
 export function RoadmapListPanel({

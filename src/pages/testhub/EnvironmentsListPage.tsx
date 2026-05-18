@@ -45,14 +45,14 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> 
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   active: { label: 'Active', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: Power },
-  maintenance: { label: 'Maintenance', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', icon: Wrench },
+  maintenance: { label: 'Maintenance', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', icon: Wrench },
   inactive: { label: 'Inactive', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: Power },
   deprecated: { label: 'Deprecated', color: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F8FAFC)', icon: XCircle },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   healthy: { label: 'Healthy', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
-  degraded: { label: 'Degraded', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', icon: AlertTriangle },
+  degraded: { label: 'Degraded', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', icon: AlertTriangle },
   down: { label: 'Down', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', icon: XCircle },
   unknown: { label: 'Unknown', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: HelpCircle },
 };
@@ -190,10 +190,10 @@ export default function EnvironmentsListPage() {
           <div style={{ backgroundColor: '#FFFBEB', borderRadius: 12, padding: 20, border: '1px solid #FDE68A' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <p style={{ fontSize: 12, color: 'var(--ds-text-warning, #D97706)', margin: 0, textTransform: 'uppercase' }}>Degraded</p>
-                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-warning, #D97706)', margin: '8px 0 0' }}>{summary.degraded_count}</p>
+                <p style={{ fontSize: 12, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', margin: 0, textTransform: 'uppercase' }}>Degraded</p>
+                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', margin: '8px 0 0' }}>{summary.degraded_count}</p>
               </div>
-              <AlertTriangle size={24} style={{ color: 'var(--ds-text-warning, #D97706)' }} />
+              <AlertTriangle size={24} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} />
             </div>
           </div>
           <div style={{ backgroundColor: 'var(--ds-background-danger, #FEF2F2)', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>

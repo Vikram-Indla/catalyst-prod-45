@@ -35,9 +35,9 @@
   --roadmap-type-project-light:     rgba(71, 85, 105, 0.12);
 
   /* Entity Integration = Amber/Warning (NOT purple—AI color) */
-  --roadmap-type-entity:            var(--cp-warning-60);    /* var(--ds-text-warning, #D97706) */
+  --roadmap-type-entity:            var(--cp-warning-60);    /* var(--ds-text-warning, var(--cp-warning, #D97706)) */
   --roadmap-type-entity-bg:         var(--cp-warning-5);     /* #FFFBEB */
-  --roadmap-type-entity-bar:        linear-gradient(135deg, var(--ds-text-warning, #D97706), #B45309);
+  --roadmap-type-entity-bar:        linear-gradient(135deg, var(--ds-text-warning, var(--cp-warning, #D97706)), #B45309);
   --roadmap-type-entity-hover:      var(--cp-warning-70);    /* #B45309 */
   --roadmap-type-entity-light:      rgba(217, 119, 6, 0.12);
 
@@ -143,7 +143,7 @@
   
   --roadmap-type-entity:            var(--cp-warning-40);
   --roadmap-type-entity-bg:         rgba(217, 119, 6, 0.15);
-  --roadmap-type-entity-bar:        linear-gradient(135deg, #FBBF24, var(--ds-text-warning, #D97706));
+  --roadmap-type-entity-bar:        linear-gradient(135deg, #FBBF24, var(--ds-text-warning, var(--cp-warning, #D97706)));
   
   --roadmap-type-improvement:       #4ADE80;
   --roadmap-type-improvement-bg:    rgba(22, 163, 74, 0.15);

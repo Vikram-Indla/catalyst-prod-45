@@ -126,7 +126,7 @@ export function ExecutionRunMode({
             {testCase.priority?.name || 'Medium'}
           </span>
           {fastTrackMode && (
-            <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-text-warning, #D97706)', backgroundColor: '#FEF3C7', padding: '3px 8px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 3 }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', backgroundColor: '#FEF3C7', padding: '3px 8px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 3 }}>
               <Zap size={10} /> FAST TRACK
             </span>
           )}
@@ -146,7 +146,7 @@ export function ExecutionRunMode({
             display: 'flex', alignItems: 'center', gap: 6,
             fontSize: 12, color: 'var(--cp-warning-text, #92400E)',
           }}>
-            <AlertTriangle size={14} style={{ color: 'var(--ds-text-warning, #D97706)', flexShrink: 0 }} />
+            <AlertTriangle size={14} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', flexShrink: 0 }} />
             <span>
               This test case has been updated since it was added to this cycle
               (locked v{lockedVersion} → current v{currentVersion}).
@@ -179,7 +179,7 @@ export function ExecutionRunMode({
           {testCase.preconditions && (
             <div style={{ marginBottom: 20, padding: 14, backgroundColor: 'var(--cp-warning-light, #FFFBEB)', border: `1px solid ${'var(--cp-warning-light, #FDE68A)'}`, borderRadius: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                <AlertTriangle size={14} style={{ color: 'var(--ds-text-warning, #D97706)' }} />
+                <AlertTriangle size={14} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} />
                 <span style={{ fontSize: 12, fontWeight: 600, color: '#92400E' }}>Preconditions</span>
               </div>
               <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.4 }}>{highlightVariables(testCase.preconditions)}</p>
@@ -294,7 +294,7 @@ export function ExecutionRunMode({
         {[
           { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: onPass, color: 'var(--quality-high, #059669)', bg: 'var(--cp-success-light, #ECFDF5)', activeBg: 'linear-gradient(135deg, #10B981, var(--quality-high, #059669))' },
           { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: onFail, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--cp-danger-light, #FEF2F2)', activeBg: 'linear-gradient(135deg, var(--ds-text-danger, #EF4444), var(--ds-text-danger, var(--cp-danger, #DC2626)))' },
-          { key: 'blocked', label: 'Block', shortcut: 'B', icon: AlertTriangle, onClick: onBlocked, color: 'var(--ds-text-warning, #D97706)', bg: 'var(--cp-warning-light, #FFFBEB)', activeBg: 'linear-gradient(135deg, var(--ds-text-warning, var(--cp-amber, #F59E0B)), var(--ds-text-warning, #D97706))' },
+          { key: 'blocked', label: 'Block', shortcut: 'B', icon: AlertTriangle, onClick: onBlocked, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--cp-warning-light, #FFFBEB)', activeBg: 'linear-gradient(135deg, var(--ds-text-warning, var(--cp-amber, #F59E0B)), var(--ds-text-warning, var(--cp-warning, #D97706)))' },
           { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: onSkip, color: 'var(--cp-text-tertiary, #64748B)', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, var(--ds-text-subtlest, #64748B), var(--ds-text-subtle, #475569))' },
         ].map(btn => {
           const Icon = btn.icon;
@@ -340,7 +340,7 @@ export function ExecutionRunMode({
             const statusColors: Record<string, { bg: string; text: string }> = {
               passed:  { bg: 'var(--ds-text-success, var(--cp-success, #16A34A))', text: 'var(--ds-text-inverse, #FFFFFF)' },
               failed:  { bg: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', text: 'var(--ds-text-inverse, #FFFFFF)' },
-              blocked: { bg: 'var(--ds-text-warning, #D97706)', text: 'var(--ds-text-inverse, #FFFFFF)' },
+              blocked: { bg: 'var(--ds-text-warning, var(--cp-warning, #D97706))', text: 'var(--ds-text-inverse, #FFFFFF)' },
               skipped: { bg: 'var(--ds-text-subtle, #475569)', text: 'var(--ds-text-inverse, #FFFFFF)' },
               not_run: { bg: 'var(--cp-border, #E2E8F0)', text: 'var(--cp-text-tertiary, #64748B)' },
             };

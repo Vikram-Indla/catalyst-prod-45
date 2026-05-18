@@ -172,7 +172,7 @@ export function StrategyPyramid() {
                   <div className="flex items-center gap-2 mb-1">
                     <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1E40AF', flexShrink: 0 }} />
                     <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--exec-text-primary)' }}>{t.title}</span>
-                    <span style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: avgProgress >= 70 ? '#1E40AF' : avgProgress >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{avgProgress}%</span>
+                    <span style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: avgProgress >= 70 ? '#1E40AF' : avgProgress >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{avgProgress}%</span>
                   </div>
                   <div style={{ fontSize: 11, color: 'var(--exec-text-tertiary)', marginBottom: 6, paddingLeft: 16 }}>
                     {themeGoals.length} Goals · {themeKrs.length} KRs

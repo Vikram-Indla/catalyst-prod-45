@@ -20,7 +20,7 @@ const TABS: { key: SettingsTab; label: string }[] = [
 ];
 
 const COLOR_SWATCHES = [
-  'var(--ds-text-brand, #2563EB)', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, #D97706)', 'var(--cp-teal-60, #0D9488)', '#525252', '#0284C7',
+  'var(--ds-text-brand, #2563EB)', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-teal-60, #0D9488)', '#525252', '#0284C7',
 ];
 
 const VISIBILITY_OPTIONS: { value: BoardVisibility; label: string; desc: string; warning?: boolean }[] = [
@@ -182,7 +182,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                           <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>{opt.label}</span>
-                          {opt.warning && <AlertTriangle size={12} color="var(--ds-text-warning, #D97706)" />}
+                          {opt.warning && <AlertTriangle size={12} color="var(--ds-text-warning, var(--cp-warning, #D97706))" />}
                         </div>
                         <div style={{ fontSize: 10.5, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginTop: 1 }}>{opt.desc}</div>
                       </div>

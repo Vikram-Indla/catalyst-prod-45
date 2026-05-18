@@ -20,7 +20,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
   development: { label: 'Development', color: '#8B5CF6', bg: '#F5F3FF', icon: Settings2 },
   testing: { label: 'Testing', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', icon: Beaker },
   uat: { label: 'UAT', color: '#EA580C', bg: '#FFF7ED', icon: Monitor },
-  staging: { label: 'Staging', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', icon: Rocket },
+  staging: { label: 'Staging', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', icon: Rocket },
   ready: { label: 'Ready', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
   released: { label: 'Released', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
   shipped: { label: 'Shipped', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
@@ -29,7 +29,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; dot: string }> = {
   healthy: { label: 'Healthy', color: 'var(--quality-high, #059669)', dot: 'var(--ds-text-success, #22C55E)' },
-  at_risk: { label: 'At Risk', color: 'var(--ds-text-warning, #D97706)', dot: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' },
+  at_risk: { label: 'At Risk', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', dot: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' },
   critical: { label: 'Critical', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', dot: 'var(--ds-text-danger, #EF4444)' },
   none: { label: '—', color: 'var(--ds-text-subtlest, #94A3B8)', dot: 'var(--ds-text-disabled, #CBD5E1)' },
 };
@@ -103,7 +103,7 @@ export default function ReleaseDetailPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 }}>
           <StatCard label="Days Left" value={daysLeft !== null ? String(daysLeft) : '—'} color="var(--ds-text-brand, #2563EB)" isDark={isDark} />
           <StatCard label="Total Tests" value={String(release.test_cases_total || 0)} color={'var(--cp-text-secondary, #334155)'} isDark={isDark} />
-          <StatCard label="Execution" value={`${execRate}%`} color={execRate >= 80 ? 'var(--quality-high, #059669)' : 'var(--ds-text-warning, #D97706)'} isDark={isDark} />
+          <StatCard label="Execution" value={`${execRate}%`} color={execRate >= 80 ? 'var(--quality-high, #059669)' : 'var(--ds-text-warning, var(--cp-warning, #D97706))'} isDark={isDark} />
           <StatCard label="Pass Rate" value={`${passRate}%`} color={passRate >= 80 ? 'var(--quality-high, #059669)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))'} isDark={isDark} />
           <StatCard label="Open Defects" value={String(release.defects_open || 0)} color={release.defects_open > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--quality-high, #059669)'} isDark={isDark} />
           <StatCard label="Critical" value={String(release.critical_defects || 0)} color={release.critical_defects > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--quality-high, #059669)'} isDark={isDark} />

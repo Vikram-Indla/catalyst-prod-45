@@ -19,7 +19,7 @@ const HUB_ICON_STYLES: Record<string, { bg: string; color: string; letter: strin
   ProductHub: { bg: '#F0FDFA', color: 'var(--cp-teal-60, #0D9488)', letter: 'P' },
   TestHub: { bg: '#F5F3FF', color: 'var(--cp-purple-60, #7C3AED)', letter: 'T' },
   ProjectHub: { bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)', letter: 'J' },
-  ReleaseHub: { bg: '#FFFBEB', color: 'var(--ds-text-warning, #D97706)', letter: 'R' },
+  ReleaseHub: { bg: '#FFFBEB', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', letter: 'R' },
   Other: { bg: '#F4F4F5', color: '#71717A', letter: 'O' },
 };
 

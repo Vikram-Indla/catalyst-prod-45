@@ -14,7 +14,7 @@ export function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect
   const { isDark } = useTheme();
   const doneColRef = useRef<HTMLDivElement>(null);
   const columns = useMemo(() => [
-    { key: 'to_do', label: 'To do', color: 'var(--ds-text-warning, #D97706)', items: items.filter(i => i.status_category === 'to_do' || i.status_category === 'blocked') },
+    { key: 'to_do', label: 'To do', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', items: items.filter(i => i.status_category === 'to_do' || i.status_category === 'blocked') },
     { key: 'in_progress', label: 'In progress', color: 'var(--ds-text-brand, #2563EB)', items: items.filter(i => i.status_category === 'in_progress' || i.status_category === 'in_qa') },
     { key: 'done', label: 'Done', color: 'var(--ds-text-success, var(--cp-success, #16A34A))', items: items.filter(i => i.status_category === 'done') },
   ], [items]);

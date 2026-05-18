@@ -34,7 +34,7 @@
   --catalyst-primary-bg: var(--ds-background-selected, #EFF6FF);
   --catalyst-success: var(--cp-teal-60, #0D9488);
   --catalyst-success-bg: #F0FDFA;
-  --catalyst-warning: var(--ds-text-warning, #D97706);
+  --catalyst-warning: var(--ds-text-warning, var(--cp-warning, #D97706));
   --catalyst-warning-bg: #FFFBEB;
   --catalyst-danger: var(--ds-text-danger, #EF4444);
   --catalyst-danger-bg: var(--ds-background-danger, #FEF2F2);
@@ -44,7 +44,7 @@
   /* ── Theme Colors (Strategic Themes) ── */
   --theme-digital: var(--ds-text-brand, #2563EB);
   --theme-workforce: var(--cp-teal-60, #0D9488);
-  --theme-supply-chain: var(--ds-text-warning, #D97706);
+  --theme-supply-chain: var(--ds-text-warning, var(--cp-warning, #D97706));
   --theme-esg: var(--ds-text-success, var(--cp-success, #16A34A));
 
   /* ── Workstream Colors ── */
