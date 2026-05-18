@@ -54,15 +54,13 @@ function ThemedFrame({ mode, children }: ThemedFrameProps) {
         style={{
           fontSize: 11,
           fontWeight: 600,
-          textTransform: 'uppercase',
-          letterSpacing: '0.04em',
           color: mode === 'dark'
             ? token('color.text.inverse', '#FFFFFF')
             : token('color.text.subtle', '#44546F'),
           opacity: 0.8,
         }}
       >
-        {mode}
+        {mode === 'dark' ? 'Dark' : 'Light'}
       </div>
       <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
         {children}

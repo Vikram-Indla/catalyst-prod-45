@@ -93,8 +93,6 @@ function StatsStrip() {
               fontSize: 11,
               fontWeight: 600,
               color: token('color.text.subtle', '#44546F'),
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
             }}
           >
             {item.label}

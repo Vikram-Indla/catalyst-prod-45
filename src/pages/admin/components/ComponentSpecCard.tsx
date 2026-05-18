@@ -35,20 +35,19 @@ function StatusBadge({ status }: { status: ComponentRegistryEntry['status'] }) {
 }
 
 function CategoryBadge({ category }: { category: ComponentRegistryEntry['category'] }) {
+  const label = category.charAt(0).toUpperCase() + category.slice(1);
   return (
     <span
       style={{
         fontSize: 11,
         fontWeight: 600,
-        textTransform: 'uppercase',
-        letterSpacing: '0.04em',
         padding: '2px 8px',
         borderRadius: 3,
         background: token('color.background.neutral', '#091E420F'),
         color: token('color.text.subtle', '#44546F'),
       }}
     >
-      {category}
+      {label}
     </span>
   );
 }
