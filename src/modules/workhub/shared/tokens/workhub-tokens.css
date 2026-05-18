@@ -22,7 +22,7 @@
   /* Semantic */
   --wh-suc: #10B981;
   --wh-suc-bg: #ECFDF5;
-  --wh-warn: var(--ds-text-warning, #F59E0B);
+  --wh-warn: var(--ds-text-warning, var(--cp-amber, #F59E0B));
   --wh-warn-bg: #FFFBEB;
   --wh-dng: var(--ds-text-danger, #EF4444);
   --wh-dng-bg: var(--ds-background-danger, #FEF2F2);

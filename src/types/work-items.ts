@@ -116,7 +116,7 @@ export const SEVERITY_CONFIG: Record<SeverityLevel, {
   SEV1: { label: 'Blocker', shortLabel: 'SEV1', color: '#DC2626' },
   SEV2: { label: 'Critical', shortLabel: 'SEV2', color: '#DC2626' },
   SEV3: { label: 'Major', shortLabel: 'SEV3', color: '#F97316' },
-  SEV4: { label: 'Minor', shortLabel: 'SEV4', color: '#F59E0B' },
+  SEV4: { label: 'Minor', shortLabel: 'SEV4', color: 'var(--cp-amber, #F59E0B)' },
 };
 
 // ═══════════════════════════════════════════════════════════════

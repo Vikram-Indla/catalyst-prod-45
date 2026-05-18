@@ -256,7 +256,7 @@ export default function TestHubDashboardPage() {
     return [
       { label: 'Passed', count: totalPassed, pct: (totalPassed / totalAll) * 100, color: '#10B981' },
       { label: 'Failed', count: totalFailed, pct: (totalFailed / totalAll) * 100, color: 'var(--ds-text-danger, #EF4444)' },
-      { label: 'Blocked', count: totalBlocked, pct: (totalBlocked / totalAll) * 100, color: 'var(--ds-text-warning, #F59E0B)' },
+      { label: 'Blocked', count: totalBlocked, pct: (totalBlocked / totalAll) * 100, color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' },
       { label: 'Not run', count: totalNotRun, pct: (totalNotRun / totalAll) * 100, color: 'var(--ds-text-disabled, #CBD5E1)' },
     ];
   }, [totalPassed, totalFailed, totalBlocked, totalNotRun, totalAll]);
@@ -396,7 +396,7 @@ export default function TestHubDashboardPage() {
                    const csNotRun = cs?.notRun ?? 0;
                    const csTotal = cs?.total ?? 0;
                    const pct = csTotal > 0 ? Math.min(Math.round(((csPassed + csFailed + csBlocked) / csTotal) * 100), 100) : 0;
-                   const barColor = pct === 0 ? 'var(--ds-text-disabled, #CBD5E1)' : pct <= 30 ? 'var(--ds-text-danger, #EF4444)' : pct <= 70 ? 'var(--ds-text-warning, #F59E0B)' : '#10B981';
+                   const barColor = pct === 0 ? 'var(--ds-text-disabled, #CBD5E1)' : pct <= 30 ? 'var(--ds-text-danger, #EF4444)' : pct <= 70 ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : '#10B981';
                    return (
                      <div key={cycle.id} onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
                        className="c10-row"
@@ -597,7 +597,7 @@ export default function TestHubDashboardPage() {
                      {recentActivity.slice(0, 10).map((a, i) => {
                        const dotColor = a.execution_status === 'passed' ? '#10B981'
                          : a.execution_status === 'failed' ? 'var(--ds-text-danger, #EF4444)'
-                         : a.execution_status === 'blocked' ? 'var(--ds-text-warning, #F59E0B)'
+                         : a.execution_status === 'blocked' ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))'
                          : 'var(--ds-text-brand, #3B82F6)';
                        const verb = a.execution_status === 'passed' ? 'passed'
                          : a.execution_status === 'failed' ? 'failed'

@@ -145,7 +145,7 @@ export function countActiveFilters(v: JiraFilterValue): number {
 const PRIORITY_LEVELS: Array<{ level: PriorityLevel; label: string; icon: React.ReactNode; color: string }> = [
   { level: 'highest', label: 'Highest', icon: <HighestPriIcon label="" size="small" />, color: token('color.icon.danger', '#E5484D') },
   { level: 'high',    label: 'High',    icon: <HighPriIcon    label="" size="small" />, color: token('color.icon.danger', '#E5484D') },
-  { level: 'medium',  label: 'Medium',  icon: <MediumPriIcon  label="" size="small" />, color: token('color.icon.warning', '#F59E0B') },
+  { level: 'medium',  label: 'Medium',  icon: <MediumPriIcon  label="" size="small" />, color: token('color.icon.warning', 'var(--cp-amber, #F59E0B)') },
   { level: 'low',     label: 'Low',     icon: <LowPriIcon     label="" size="small" />, color: token('color.icon.information', '#0065FF') },
   { level: 'lowest',  label: 'Lowest',  icon: <LowestPriIcon  label="" size="small" />, color: token('color.icon.information', '#0065FF') },
 ];

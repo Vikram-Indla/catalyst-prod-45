@@ -114,7 +114,7 @@ export default function ReportDetailPage() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: pageBg }}>
-        <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-warning, #F59E0B)' }} />
+        <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' }} />
       </div>
     );
   }
@@ -137,7 +137,7 @@ export default function ReportDetailPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-warning, #F59E0B)', backgroundColor: 'var(--cp-warning-light, #FFFBEB)', padding: '6px 14px', borderRadius: 8 }}>{report.report_key}</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', backgroundColor: 'var(--cp-warning-light, #FFFBEB)', padding: '6px 14px', borderRadius: 8 }}>{report.report_key}</span>
             <span style={{ fontSize: 12, fontWeight: 500, color: type.color, backgroundColor: `${type.color}15`, padding: '4px 10px', borderRadius: 6 }}>{type.label}</span>
           </div>
           <h1 style={{ fontSize: 24, fontWeight: 700, color: textPrimary, margin: 0 }}>{report.name}</h1>
@@ -205,7 +205,7 @@ export default function ReportDetailPage() {
                 <>
                   <div style={{ width: `${(data.summary.passed / data.summary.total_cases) * 100}%`, backgroundColor: '#10B981' }} />
                   <div style={{ width: `${(data.summary.failed / data.summary.total_cases) * 100}%`, backgroundColor: 'var(--ds-text-danger, #EF4444)' }} />
-                  <div style={{ width: `${(data.summary.blocked / data.summary.total_cases) * 100}%`, backgroundColor: 'var(--ds-text-warning, #F59E0B)' }} />
+                  <div style={{ width: `${(data.summary.blocked / data.summary.total_cases) * 100}%`, backgroundColor: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' }} />
                   <div style={{ width: `${(data.summary.skipped / data.summary.total_cases) * 100}%`, backgroundColor: 'var(--ds-text-subtlest, #94A3B8)' }} />
                 </>
               )}
@@ -213,7 +213,7 @@ export default function ReportDetailPage() {
             <div style={{ display: 'flex', gap: 16, marginTop: 12, fontSize: 12, color: textSecondary }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#10B981', borderRadius: 4, display: 'inline-block' }} /> Passed ({data.summary.passed})</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: 'var(--ds-text-danger, #EF4444)', borderRadius: 4, display: 'inline-block' }} /> Failed ({data.summary.failed})</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: 'var(--ds-text-warning, #F59E0B)', borderRadius: 4, display: 'inline-block' }} /> Blocked ({data.summary.blocked})</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', borderRadius: 4, display: 'inline-block' }} /> Blocked ({data.summary.blocked})</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: 'var(--ds-text-subtlest, #94A3B8)', borderRadius: 4, display: 'inline-block' }} /> Not Run ({data.summary.not_run})</span>
             </div>
           </div>
@@ -222,7 +222,7 @@ export default function ReportDetailPage() {
           {data.assignee_breakdown && data.assignee_breakdown.length > 0 && (
             <div style={{ backgroundColor: surfaceBg, borderRadius: 12, padding: 20, border: `1px solid ${borderColor}`, marginBottom: 24 }}>
               <h3 style={{ fontSize: 16, fontWeight: 600, color: textPrimary, margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Users size={18} style={{ color: 'var(--ds-text-warning, #F59E0B)' }} /> By Assignee
+                <Users size={18} style={{ color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' }} /> By Assignee
               </h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
                 {data.assignee_breakdown.map((a: any, i: number) => (

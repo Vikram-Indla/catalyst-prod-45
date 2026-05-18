@@ -104,8 +104,8 @@ export function HierarchyMapping() {
           background: '#FFFBEB', border: '1px solid #FCD34D', borderRadius: 6,
           padding: '8px 14px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8,
         }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-text-warning, #F59E0B)', flexShrink: 0 }} />
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-warning, #F59E0B)' }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', flexShrink: 0 }} />
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' }}>
             Unsaved changes — hierarchy order modified
           </span>
         </div>

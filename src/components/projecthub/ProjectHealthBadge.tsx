@@ -3,7 +3,7 @@ import { PROJECT_HEALTH_DISPLAY } from '@/types/projecthub';
 
 const HEALTH_STYLES_LIGHT: Record<string, { dot: string; text: string }> = {
   on_track: { dot: 'var(--ds-text-success, #22C55E)', text: '#15803D' },
-  at_risk: { dot: 'var(--ds-text-warning, #F59E0B)', text: 'var(--ds-text-warning, #D97706)' },
+  at_risk: { dot: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', text: 'var(--ds-text-warning, #D97706)' },
   off_track: { dot: 'var(--ds-text-danger, #EF4444)', text: 'var(--ds-text-danger, #DC2626)' },
 };
 

@@ -393,7 +393,7 @@ const SECTIONS = [
     summary: 'Layer 0 (Platform) → Layer 1 (Folders/Tags/Envs) → Layer 2 (Cases) → Layer 3 (Sets/Plans) → Layer 4 (Cycles/Runs) → Layer 5 (Defects) → Layer 6 (Releases) → Layer 7 (Reports)' },
   { id: 'steps', title: '3. Step-by-Step Testing Flow', icon: CheckCircle2, color: '#10B981',
     summary: '10 phases, 40+ individual test steps covering every module from folder creation to AI insights.' },
-  { id: 'database', title: '4. Database Schema', icon: Database, color: 'var(--ds-text-warning, #F59E0B)',
+  { id: 'database', title: '4. Database Schema', icon: Database, color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))',
     summary: '60+ tables in the tm_ schema with full foreign key relationships and entity hierarchy.' },
   { id: 'rules', title: '5. Business Rules & Constraints', icon: AlertTriangle, color: 'var(--ds-text-danger, #EF4444)',
     summary: 'Hard rules (DB-enforced) and soft rules (UI-enforced) governing the entire workflow.' },

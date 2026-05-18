@@ -474,7 +474,7 @@ function HealthBox({ label, value, valueColor, loading, spinning }: { label: str
 function LogRow({ log, formatDuration }: { log: SyncLogEntry; formatDuration: (ms: number) => string }) {
   const statusColors: Record<string, { bg: string; text: string }> = {
     success: { bg: '#ECFDF5', text: '#10B981' },
-    warning: { bg: '#FFFBEB', text: 'var(--ds-text-warning, #F59E0B)' },
+    warning: { bg: '#FFFBEB', text: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' },
     error: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #EF4444)' },
     running: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)' },
   }

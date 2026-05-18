@@ -151,7 +151,7 @@ export function SchedulingRules() {
             Version Name Parser
           </h2>
           <span style={{
-            fontSize: 9, background: '#FFFBEB', color: 'var(--ds-text-warning, #F59E0B)', padding: '2px 8px',
+            fontSize: 9, background: '#FFFBEB', color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', padding: '2px 8px',
             borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.3px',
           }}>Fallback</span>
         </div>

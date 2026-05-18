@@ -89,7 +89,7 @@ const formatDate = (dateString: string): string => {
 
 // Generate avatar color from name
 const getAvatarColor = (name: string): string => {
-  const colors = ['#8B5CF6', 'var(--ds-text-brand, #3B82F6)', '#10B981', 'var(--ds-text-warning, #F59E0B)', 'var(--ds-text-danger, #EF4444)', '#EC4899', '#6366F1'];
+  const colors = ['#8B5CF6', 'var(--ds-text-brand, #3B82F6)', '#10B981', 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', 'var(--ds-text-danger, #EF4444)', '#EC4899', '#6366F1'];
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);

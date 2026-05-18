@@ -21,7 +21,7 @@ const BAR_STATUS_COLORS: Record<string, { border: string; bg: string }> = {
   submitted:   { border: 'var(--ds-text-brand, #3B82F6)', bg: 'rgba(59,130,246,0.12)' },
   in_review:   { border: '#8B5CF6', bg: 'rgba(139,92,246,0.12)' },
   approved:    { border: '#06B6D4', bg: 'rgba(6,182,212,0.12)' },
-  in_progress: { border: 'var(--ds-text-warning, #F59E0B)', bg: 'rgba(245,158,11,0.12)' },
+  in_progress: { border: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', bg: 'rgba(245,158,11,0.12)' },
   completed:   { border: '#10B981', bg: 'rgba(16,185,129,0.12)' },
   rejected:    { border: 'var(--ds-text-danger, #EF4444)', bg: 'rgba(239,68,68,0.12)' },
   cancelled:   { border: 'var(--ds-text-danger, #EF4444)', bg: 'rgba(239,68,68,0.12)' },

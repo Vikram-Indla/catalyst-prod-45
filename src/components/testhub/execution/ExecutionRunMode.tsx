@@ -294,7 +294,7 @@ export function ExecutionRunMode({
         {[
           { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: onPass, color: 'var(--quality-high, #059669)', bg: 'var(--cp-success-light, #ECFDF5)', activeBg: 'linear-gradient(135deg, #10B981, var(--quality-high, #059669))' },
           { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: onFail, color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--cp-danger-light, #FEF2F2)', activeBg: 'linear-gradient(135deg, var(--ds-text-danger, #EF4444), var(--ds-text-danger, #DC2626))' },
-          { key: 'blocked', label: 'Block', shortcut: 'B', icon: AlertTriangle, onClick: onBlocked, color: 'var(--ds-text-warning, #D97706)', bg: 'var(--cp-warning-light, #FFFBEB)', activeBg: 'linear-gradient(135deg, var(--ds-text-warning, #F59E0B), var(--ds-text-warning, #D97706))' },
+          { key: 'blocked', label: 'Block', shortcut: 'B', icon: AlertTriangle, onClick: onBlocked, color: 'var(--ds-text-warning, #D97706)', bg: 'var(--cp-warning-light, #FFFBEB)', activeBg: 'linear-gradient(135deg, var(--ds-text-warning, var(--cp-amber, #F59E0B)), var(--ds-text-warning, #D97706))' },
           { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: onSkip, color: 'var(--cp-text-tertiary, #64748B)', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, var(--ds-text-subtlest, #64748B), var(--ds-text-subtle, #475569))' },
         ].map(btn => {
           const Icon = btn.icon;

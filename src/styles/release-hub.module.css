@@ -25,7 +25,7 @@
   --rh-teal-bg: #CCFBF1;
   --rh-success: var(--ds-text-success, #22C55E);
   --rh-success-bg: #F0FDF4;
-  --rh-warning: var(--ds-text-warning, #F59E0B);
+  --rh-warning: var(--ds-text-warning, var(--cp-amber, #F59E0B));
   --rh-warning-bg: #FFFBEB;
   --rh-danger: var(--ds-text-danger, #EF4444);
   --rh-danger-bg: var(--ds-background-danger, #FEF2F2);

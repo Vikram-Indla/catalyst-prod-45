@@ -16,7 +16,7 @@ const ICON_COLORS: Record<string, string> = {
   epic: '#904EE2',       // Purple
   
   // Project
-  feature: 'var(--ds-text-warning, #F59E0B)',    // Amber
+  feature: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))',    // Amber
   story: '#36B37E',      // Green
   task: '#0065FF',       // Blue
   defect: '#FF5630',     // Red

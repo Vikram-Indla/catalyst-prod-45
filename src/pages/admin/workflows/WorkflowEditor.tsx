@@ -474,7 +474,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 <tr className="bg-[#FFFBEB]">
                   <td className="sticky left-0 z-10 bg-[#FFFBEB] border-b border-r border-[var(--ds-border,#E2E8F0)] px-3 py-2 text-[var(--ds-text,#0F172A)] font-medium">
                     <span className="flex items-center gap-1.5">
-                      <span style={{ display: 'inline-flex', color: '#F59E0B' }}><CheckCircleIcon label="" size="small" /></span>
+                      <span style={{ display: 'inline-flex', color: 'var(--cp-amber, #F59E0B)' }}><CheckCircleIcon label="" size="small" /></span>
                       Any (Global)
                     </span>
                   </td>

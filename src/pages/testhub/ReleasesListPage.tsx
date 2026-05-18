@@ -28,7 +28,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; dot: string }> = {
   healthy: { label: 'Healthy', color: 'var(--quality-high, #059669)', dot: 'var(--ds-text-success, #22C55E)' },
-  at_risk: { label: 'At Risk', color: 'var(--ds-text-warning, #D97706)', dot: 'var(--ds-text-warning, #F59E0B)' },
+  at_risk: { label: 'At Risk', color: 'var(--ds-text-warning, #D97706)', dot: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' },
   critical: { label: 'Critical', color: 'var(--ds-text-danger, #DC2626)', dot: 'var(--ds-text-danger, #EF4444)' },
   none: { label: '—', color: 'var(--ds-text-subtlest, #94A3B8)', dot: 'var(--ds-text-disabled, #CBD5E1)' },
 };
@@ -314,7 +314,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
                 <span style={{ fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{execPct}%</span>
               </div>
               <div style={{ height: 6, backgroundColor: 'var(--ds-surface-sunken, #F1F5F9)', borderRadius: 3 }}>
-                <div style={{ height: '100%', width: `${execPct}%`, backgroundColor: execPct >= 80 ? 'var(--ds-text-success, #22C55E)' : execPct >= 50 ? 'var(--ds-text-warning, #F59E0B)' : 'var(--ds-text-brand, #3B82F6)', borderRadius: 4, transition: 'width 0.3s' }} />
+                <div style={{ height: '100%', width: `${execPct}%`, backgroundColor: execPct >= 80 ? 'var(--ds-text-success, #22C55E)' : execPct >= 50 ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : 'var(--ds-text-brand, #3B82F6)', borderRadius: 4, transition: 'width 0.3s' }} />
               </div>
             </div>
 

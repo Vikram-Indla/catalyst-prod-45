@@ -147,7 +147,7 @@ export default function ReportsListPage() {
                 <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', margin: 0, textTransform: 'uppercase' }}>Total Reports</p>
                 <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '8px 0 0' }}>{stats.total_reports}</p>
               </div>
-              <FileBarChart size={24} style={{ color: 'var(--ds-text-warning, #F59E0B)' }} />
+              <FileBarChart size={24} style={{ color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' }} />
             </div>
           </div>
           <div style={{ backgroundColor: '#ECFDF5', borderRadius: 12, padding: 20, border: '1px solid #A7F3D0' }}>
@@ -209,7 +209,7 @@ export default function ReportsListPage() {
       {/* Reports List */}
       {isLoading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}>
-          <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-warning, #F59E0B)' }} />
+          <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' }} />
         </div>
       ) : filteredReports.length === 0 ? (
         <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
@@ -235,7 +235,7 @@ export default function ReportsListPage() {
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-warning, #F59E0B)', backgroundColor: '#FFFBEB', padding: '3px 8px', borderRadius: 4 }}>{report.report_key}</span>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', backgroundColor: '#FFFBEB', padding: '3px 8px', borderRadius: 4 }}>{report.report_key}</span>
                         <span style={{ fontSize: 11, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '2px 8px', borderRadius: 4 }}>{type.label}</span>
                         <span style={{ fontSize: 11, fontWeight: 500, color: status.color, backgroundColor: status.bg, padding: '2px 8px', borderRadius: 4 }}>{status.label}</span>
                       </div>

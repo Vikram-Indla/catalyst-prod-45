@@ -56,7 +56,7 @@ const MOCK_COLLABORATORS: Collaborator[] = [
     id: '3',
     name: 'Alex Kumar',
     email: 'alex.k@company.com',
-    color: 'var(--ds-text-warning, #F59E0B)',
+    color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))',
     status: 'viewing',
     lastActive: new Date(Date.now() - 120000),
   },

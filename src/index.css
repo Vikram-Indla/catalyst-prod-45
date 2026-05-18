@@ -165,7 +165,7 @@
   --cp-danger: #DC2626;
   --cp-danger-light: #FEE2E2;
   --cp-danger-text: #991B1B;
-  --cp-amber: #F59E0B;
+  --cp-amber: var(--cp-amber, #F59E0B);
   --sl-todo-bg: #DFE1E6;
   --sl-todo-text: #253858;
   --sl-inprog-bg: #DEEBFF;

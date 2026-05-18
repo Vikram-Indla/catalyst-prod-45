@@ -235,7 +235,7 @@ export function UserMapping() {
           { label: 'Catalyst Profiles', value: deptFilteredProfiles.length, color: 'var(--ds-text-brand, #2563EB)', mode: 'all' as ViewMode },
           { label: 'Jira Users', value: jiraUsers.length, color: '#8B5CF6', mode: null },
           { label: 'Mapped', value: mappedCount, color: '#10B981', mode: null },
-          { label: 'Unmapped', value: unmappedCount, color: 'var(--ds-text-warning, #F59E0B)', mode: 'unmapped' as ViewMode },
+          { label: 'Unmapped', value: unmappedCount, color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', mode: 'unmapped' as ViewMode },
         ].map(s => (
           <div
             key={s.label}

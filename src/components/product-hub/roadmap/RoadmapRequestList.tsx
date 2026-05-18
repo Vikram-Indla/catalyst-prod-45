@@ -205,15 +205,15 @@ function RequestRow({
         style={{
           width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
           border: 'none', background: 'none', padding: 0, cursor: 'pointer',
-          color: item.starred ? 'var(--ds-text-warning, #F59E0B)' : ink[4],
+          color: item.starred ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : ink[4],
           opacity: item.starred ? 1 : undefined,
           transition: 'color 0.15s ease, opacity 0.15s ease',
         }}
         onClick={e => { e.stopPropagation(); onToggleStar(); }}
-        onMouseEnter={e => { e.currentTarget.style.color = 'var(--ds-text-warning, #F59E0B)'; }}
+        onMouseEnter={e => { e.currentTarget.style.color = 'var(--ds-text-warning, var(--cp-amber, #F59E0B))'; }}
         onMouseLeave={e => { if (!item.starred) e.currentTarget.style.color = ink[4]; }}
       >
-        <Star className="w-3.5 h-3.5" fill={item.starred ? 'var(--ds-text-warning, #F59E0B)' : 'none'} />
+        <Star className="w-3.5 h-3.5" fill={item.starred ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : 'none'} />
       </button>
 
       <div className="flex-shrink-0" style={{ width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

@@ -132,6 +132,6 @@ export const R360_AGE_THRESHOLDS = {
 
 // BANNED: Golden Hour palette — NEVER use these as primary
 export const BANNED_COLORS = [
-  'var(--ds-text-warning, #F59E0B)', '#FBBF24', '#FCD34D', '#FDE68A',
+  'var(--ds-text-warning, var(--cp-amber, #F59E0B))', '#FBBF24', '#FCD34D', '#FDE68A',
   'var(--ds-text-warning, #D97706)', // ONLY allowed as status warning, never as primary accent
 ] as const;

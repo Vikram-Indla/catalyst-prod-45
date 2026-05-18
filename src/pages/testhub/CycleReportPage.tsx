@@ -72,7 +72,7 @@ interface DailyExecution {
 const STATUS_COLORS: Record<string, string> = {
   passed: '#10B981',
   failed: 'var(--ds-text-danger, #EF4444)',
-  blocked: 'var(--ds-text-warning, #F59E0B)',
+  blocked: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))',
   skipped: 'var(--ds-text-subtlest, #64748B)',
   not_run: 'var(--ds-text-disabled, #CBD5E1)',
 };
@@ -177,10 +177,10 @@ export default function CycleReportPage() {
     { icon: CheckCircle2, label: 'Pass Rate', value: `${passRate}%`, color: '#10B981' },
     { icon: BarChart3, label: 'Executed', value: executed, color: 'var(--ds-text-brand, #3B82F6)' },
     { icon: XCircle, label: 'Failed', value: cycle.failed_count, color: 'var(--ds-text-danger, #EF4444)' },
-    { icon: AlertTriangle, label: 'Blocked', value: cycle.blocked_count, color: 'var(--ds-text-warning, #F59E0B)' },
+    { icon: AlertTriangle, label: 'Blocked', value: cycle.blocked_count, color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' },
   ];
 
-  const passRateColor = (rate: number) => rate >= 80 ? '#10B981' : rate >= 50 ? 'var(--ds-text-warning, #F59E0B)' : 'var(--ds-text-danger, #EF4444)';
+  const passRateColor = (rate: number) => rate >= 80 ? '#10B981' : rate >= 50 ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : 'var(--ds-text-danger, #EF4444)';
 
   const tableHeaderStyle: React.CSSProperties = {
     padding: '10px 14px', fontSize: 11, fontWeight: 600, color: 'hsl(var(--muted-foreground))',
@@ -264,7 +264,7 @@ export default function CycleReportPage() {
                     <Tooltip />
                     <Bar dataKey="passed" stackId="a" fill="#10B981" />
                     <Bar dataKey="failed" stackId="a" fill="var(--ds-text-danger, #EF4444)" />
-                    <Bar dataKey="blocked" stackId="a" fill="var(--ds-text-warning, #F59E0B)" />
+                    <Bar dataKey="blocked" stackId="a" fill="var(--ds-text-warning, var(--cp-amber, #F59E0B))" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>

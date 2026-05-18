@@ -1474,7 +1474,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         const p = (sample.priority || '').toLowerCase();
         const PRIORITY_RANK: Record<string, { level: number; color: string }> = {
           highest:  { level: 4, color: 'var(--ds-icon-accent-red, #C9372C)' }, critical: { level: 4, color: 'var(--ds-icon-accent-red, #C9372C)' },
-          high:     { level: 3, color: 'var(--ds-text-warning, #F59E0B)' },
+          high:     { level: 3, color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' },
           medium:   { level: 2, color: 'var(--ds-text-success, #22C55E)' },
           low:      { level: 1, color: 'var(--ds-text-success, #22C55E)' },
           lowest:   { level: 0, color: 'var(--ds-border, #DFE1E6)' },

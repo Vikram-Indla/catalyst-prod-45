@@ -118,7 +118,7 @@
 
   /* ─── STAR ────────────────────────────────────────────────────── */
   --roadmap-star-color:             var(--cp-text-muted);
-  --roadmap-star-active-color:      var(--cp-warning-50);    /* var(--ds-text-warning, #F59E0B) */
+  --roadmap-star-active-color:      var(--cp-warning-50);    /* var(--ds-text-warning, var(--cp-amber, #F59E0B)) */
   --roadmap-star-size:              14px;
 
   /* ─── INITIATIVE ICON ─────────────────────────────────────────── */

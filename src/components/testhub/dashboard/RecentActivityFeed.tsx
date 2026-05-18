@@ -25,7 +25,7 @@ interface Props {
 const STATUS_CFG: Record<string, { icon: typeof CheckCircle2; color: string; bg: string }> = {
   passed:  { icon: CheckCircle2,  color: '#10B981', bg: '#ECFDF5' },
   failed:  { icon: XCircle,       color: 'var(--sem-danger)', bg: 'var(--ds-background-danger, #FEF2F2)' },
-  blocked: { icon: AlertTriangle, color: 'var(--ds-text-warning, #F59E0B)', bg: '#FFFBEB' },
+  blocked: { icon: AlertTriangle, color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', bg: '#FFFBEB' },
   skipped: { icon: SkipForward,   color: 'var(--fg-3)', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
   not_run: { icon: Clock,         color: 'var(--fg-4)', bg: 'var(--bg-1, #F8FAFC)' },
 };

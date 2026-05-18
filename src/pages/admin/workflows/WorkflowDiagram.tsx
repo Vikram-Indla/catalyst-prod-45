@@ -196,7 +196,7 @@ function AnyNode() {
     <div style={{
       padding: '4px 10px',
       background: 'var(--ds-background-warning,#FFF7D6)',
-      border: '1.5px dashed var(--ds-border-warning,#F59E0B)',
+      border: '1.5px dashed var(--ds-border-warning,var(--cp-amber, #F59E0B))',
       borderRadius: 20,
       fontSize: 11, fontWeight: 700, color: 'var(--ds-text-warning,#CF8800)',
       display: 'flex', alignItems: 'center', gap: 4,
@@ -205,7 +205,7 @@ function AnyNode() {
       <Handle
         type="source"
         position={Position.Right}
-        style={{ background: 'var(--ds-background-warning-bold,#F59E0B)', border: 'none', width: 8, height: 8 }}
+        style={{ background: 'var(--ds-background-warning-bold,var(--cp-amber, #F59E0B))', border: 'none', width: 8, height: 8 }}
       />
     </div>
   );
@@ -274,8 +274,8 @@ function buildFlowEdges(
         // Labels omitted on global edges — they fan out from a single ANY node and
         // overlap badly when there are many transitions (e.g. Story has 22).
         // The dashed amber stroke already identifies them as global.
-        style: { stroke: '#F59E0B', strokeWidth: 1.5, strokeDasharray: '5 3' },
-        markerEnd: { type: MarkerType.ArrowClosed, color: '#F59E0B', width: 14, height: 14 },
+        style: { stroke: 'var(--cp-amber, #F59E0B)', strokeWidth: 1.5, strokeDasharray: '5 3' },
+        markerEnd: { type: MarkerType.ArrowClosed, color: 'var(--cp-amber, #F59E0B)', width: 14, height: 14 },
       });
     } else if (t.from_status_id) {
       const fromStatus = statuses.find(s => s.id === t.from_status_id);
@@ -715,7 +715,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
             ? 'var(--ds-background-warning,#FFF7D6)'
             : 'var(--ds-background-information,#E9F2FF)',
           border: `1px solid ${transitionFrom
-            ? 'var(--ds-border-warning,#F59E0B)'
+            ? 'var(--ds-border-warning,var(--cp-amber, #F59E0B))'
             : 'var(--ds-border-brand,#579DFF)'}`,
           borderRadius: 20, padding: '8px 20px',
           fontSize: 12, fontWeight: 600,
@@ -771,7 +771,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
           position="bottom-right"
           nodeColor={(n) => {
             if (n.id === 'START') return '#172B4D';
-            if (n.id === 'ANY') return '#F59E0B';
+            if (n.id === 'ANY') return 'var(--cp-amber, #F59E0B)';
             const data = n.data as any;
             return data?.category === 'done' ? '#22A06B' : '#579DFF';
           }}
@@ -804,7 +804,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
         }}>Legend</div>
         <LegendRow color="#579DFF" label="To Do / In Progress" />
         <LegendRow color="#22A06B" label="Done" />
-        <LegendRow color="#F59E0B" label="Global (any → status)" dashed />
+        <LegendRow color="var(--cp-amber, #F59E0B)" label="Global (any → status)" dashed />
         <LegendRow color="#172B4D" label="Start" />
       </div>
 

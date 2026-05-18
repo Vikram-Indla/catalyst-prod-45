@@ -65,7 +65,7 @@
   --p70: var(--ds-text-brand, #2563EB);
   --p5: rgba(59,130,246,0.08);
   --ok60: var(--ds-text-success, #22C55E);
-  --warn60: var(--ds-text-warning, #F59E0B);
+  --warn60: var(--ds-text-warning, var(--cp-amber, #F59E0B));
   --err60: var(--ds-text-danger, #EF4444);
   --loz-gr-bg: var(--ds-surface-raised, #1A1A1A);
   --loz-gr-tx: var(--ds-text-subtlest, #A1A1A1);

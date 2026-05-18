@@ -77,7 +77,7 @@ export const STATUS_CONFIG: Record<RequestStatus, { label: string; color: string
   demand_approved:         { label: 'Demand Approved',        color: '#06B6D4', bg: 'rgba(6,182,212,0.15)',    fill: 'rgba(6,182,212,0.40)' },
   analysis:                { label: 'Analysis',               color: '#0EA5E9', bg: 'rgba(14,165,233,0.15)',   fill: 'rgba(14,165,233,0.40)' },
   ready_for_development:   { label: 'Ready for Development',  color: '#14B8A6', bg: 'rgba(20,184,166,0.15)',   fill: 'rgba(20,184,166,0.40)' },
-  under_implementation:    { label: 'Under Implementation',   color: '#F59E0B', bg: 'rgba(245,158,11,0.15)',   fill: 'rgba(245,158,11,0.40)' },
+  under_implementation:    { label: 'Under Implementation',   color: 'var(--cp-amber, #F59E0B)', bg: 'rgba(245,158,11,0.15)',   fill: 'rgba(245,158,11,0.40)' },
   on_hold:                 { label: 'On Hold',                color: '#6B7280', bg: 'rgba(107,114,128,0.15)',  fill: 'rgba(107,114,128,0.40)' },
   implementation_review:   { label: 'Implementation Review',  color: '#F97316', bg: 'rgba(249,115,22,0.15)',   fill: 'rgba(249,115,22,0.40)' },
   in_support:              { label: 'In Support',             color: '#10B981', bg: 'rgba(16,185,129,0.15)',   fill: 'rgba(16,185,129,0.40)' },

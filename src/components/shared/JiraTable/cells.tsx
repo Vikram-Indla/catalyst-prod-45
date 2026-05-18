@@ -771,7 +771,7 @@ export function makePriorityCell(getPriority: (row: any) => string | null) {
     const level = idx >= 0 ? PRIORITY_ORDER.length - idx : 0;
     const color =
       level >= 4 ? token('color.icon.danger',  '#E5484D') :
-      level >= 3 ? token('color.icon.warning', '#F59E0B') :
+      level >= 3 ? token('color.icon.warning', 'var(--cp-amber, #F59E0B)') :
       level >= 1 ? token('color.icon.success', '#22C55E') :
       token('color.border', '#DFE1E6');
     const inactive = token('color.border', '#DFE1E6');

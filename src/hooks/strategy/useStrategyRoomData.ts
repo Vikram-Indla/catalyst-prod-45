@@ -49,7 +49,7 @@ const TYPE_COLORS: Record<string, string> = {
   Permanent: '#2563EB',
   Fixed: 'var(--cp-teal-60, #0D9488)',
   Variable: 'var(--cp-purple-60, #7C3AED)',
-  Freelance: '#F59E0B',
+  Freelance: 'var(--cp-amber, #F59E0B)',
 };
 
 function fmtSAR(n: number): string {
@@ -223,14 +223,14 @@ function useContracts() {
       const buckets: ContractBucket[] = [
         { count: active, label: 'Active', color: '#16A34A', textColor: '#11853D' },
         { count: exp30, label: '< 30 Days', color: '#DC2626', textColor: '#D92525' },
-        { count: exp90, label: '< 90 Days', color: '#F59E0B', textColor: '#B45309' },
+        { count: exp90, label: '< 90 Days', color: 'var(--cp-amber, #F59E0B)', textColor: '#B45309' },
         { count: expired, label: 'Expired', color: '#71717A', textColor: '#3F3F46' },
       ];
 
       const barSegments = total > 0
         ? [
             { pct: Math.round((active / total) * 100), color: '#16A34A' },
-            { pct: Math.round((exp90 / total) * 100), color: '#F59E0B' },
+            { pct: Math.round((exp90 / total) * 100), color: 'var(--cp-amber, #F59E0B)' },
             { pct: Math.round((exp30 / total) * 100), color: '#DC2626' },
             { pct: Math.round((expired / total) * 100), color: '#71717A' },
           ]
@@ -275,7 +275,7 @@ function useBudget() {
           { label: 'Insourced', pct: total > 0 ? Math.round((ins / total) * 100) : 0, color: '#2563EB' },
           { label: 'Co-sourced', pct: total > 0 ? Math.round((cos / total) * 100) : 0, color: 'var(--cp-teal-60, #0D9488)' },
           { label: 'Outsourced', pct: total > 0 ? Math.round((out / total) * 100) : 0, color: 'var(--cp-purple-60, #7C3AED)' },
-          { label: 'Licenses', pct: total > 0 ? Math.round((lic / total) * 100) : 0, color: '#F59E0B' },
+          { label: 'Licenses', pct: total > 0 ? Math.round((lic / total) * 100) : 0, color: 'var(--cp-amber, #F59E0B)' },
         ].filter(s => s.pct > 0);
 
         return {
@@ -304,7 +304,7 @@ function useBudget() {
         const t = r.resource_type || 'Other';
         typeCtc.set(t, (typeCtc.get(t) || 0) + (Number(r.ctc) || 0));
       });
-      const segColors: Record<string, string> = { Permanent: '#2563EB', Fixed: 'var(--cp-teal-60, #0D9488)', Variable: 'var(--cp-purple-60, #7C3AED)', Freelance: '#F59E0B' };
+      const segColors: Record<string, string> = { Permanent: '#2563EB', Fixed: 'var(--cp-teal-60, #0D9488)', Variable: 'var(--cp-purple-60, #7C3AED)', Freelance: 'var(--cp-amber, #F59E0B)' };
       const segments: BudgetSegment[] = Array.from(typeCtc.entries())
         .sort((a, b) => b[1] - a[1])
         .map(([label, val]) => ({
@@ -411,13 +411,13 @@ function useExecution() {
         {
           label: 'Avg Goal Progress',
           value: `${avgGoalProgress}%`,
-          valueColor: avgGoalProgress < 50 ? '#DC2626' : avgGoalProgress < 70 ? '#F59E0B' : '#16A34A',
+          valueColor: avgGoalProgress < 50 ? '#DC2626' : avgGoalProgress < 70 ? 'var(--cp-amber, #F59E0B)' : '#16A34A',
           target: '100%',
         },
         {
           label: 'Avg KR Progress',
           value: `${avgKRProgress}%`,
-          valueColor: avgKRProgress < 50 ? '#DC2626' : avgKRProgress < 70 ? '#F59E0B' : '#16A34A',
+          valueColor: avgKRProgress < 50 ? '#DC2626' : avgKRProgress < 70 ? 'var(--cp-amber, #F59E0B)' : '#16A34A',
           target: '100%',
         },
         {
@@ -460,7 +460,7 @@ function useAlignment() {
       return themes.map(t => {
         const progs = goalsByTheme.get(t.id) || [];
         const avgProg = progs.length > 0 ? Math.round(progs.reduce((a, b) => a + b, 0) / progs.length) : 0;
-        const color = avgProg >= 70 ? '#16A34A' : avgProg >= 40 ? '#F59E0B' : '#DC2626';
+        const color = avgProg >= 70 ? '#16A34A' : avgProg >= 40 ? 'var(--cp-amber, #F59E0B)' : '#DC2626';
         const textColor = avgProg >= 70 ? '#11853D' : avgProg >= 40 ? '#B45309' : '#D92525';
         return { name: t.title, pct: avgProg, color, textColor };
       });

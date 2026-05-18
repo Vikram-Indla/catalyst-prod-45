@@ -160,7 +160,7 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; b
 const EPIC_STATES: Record<string, { label: string; color: string }> = {
   funnel: { label: 'Funnel', color: 'var(--fg-3)' },
   candidate: { label: 'Candidate', color: 'var(--ds-text-brand, #3B82F6)' },
-  analysis: { label: 'Analysis', color: 'var(--ds-text-warning, #F59E0B)' },
+  analysis: { label: 'Analysis', color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' },
   backlog: { label: 'Backlog', color: 'var(--cp-blue)' },
   implementing: { label: 'Implementing', color: 'var(--sem-success)' },
   done: { label: 'Done', color: 'var(--fg-3)' },
@@ -379,7 +379,7 @@ function KPICard({
           </span>
           {overflow && (
             <Tooltip content={<p className="text-xs">Rollup exceeds 100%</p>}>
-              <AlertTriangle size={12} style={{ color: 'var(--ds-text-warning, #F59E0B)' }} />
+              <AlertTriangle size={12} style={{ color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' }} />
             </Tooltip>
           )}
         </div>
