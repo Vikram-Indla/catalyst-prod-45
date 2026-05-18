@@ -414,7 +414,7 @@ export function ListView() {
                 placeholder="Search list"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 h-8 w-44 text-[14px] bg-slate-50 dark:bg-[#111111] border-transparent rounded focus:border-blue-400 focus:bg-white dark:focus:bg-[var(--ds-surface-raised,#1A1A1A)] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,#878787)]"
+                className="pl-9 h-8 w-44 text-[14px] bg-slate-50 dark:bg-[#111111] border-transparent rounded focus:border-blue-400 focus:bg-white dark:focus:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,#878787)]"
               />
             </div>
             {/* Avatar group */}
@@ -441,7 +441,7 @@ export function ListView() {
 
         {/* Card container wrapping the table */}
         <div className="flex-1 p-4 overflow-hidden">
-          <div className="h-full flex flex-col rounded-lg border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] overflow-hidden">
+          <div className="h-full flex flex-col rounded-lg border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] overflow-hidden">
             {/* Table container with horizontal scroll */}
             <div className="flex-1 overflow-auto">
               <table className="w-full border-collapse" style={{ minWidth: '1100px' }}>
@@ -769,7 +769,7 @@ export function ListView() {
             </div>
 
             {/* Footer inside card */}
-            <div className="border-t border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] flex items-center justify-between px-4 py-2 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] flex-shrink-0">
+            <div className="border-t border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] flex items-center justify-between px-4 py-2 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] flex-shrink-0">
               <span className="text-[14px] text-slate-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
                 {selectedItems.size > 0 
                   ? `${selectedItems.size} item${selectedItems.size > 1 ? 's' : ''} selected`

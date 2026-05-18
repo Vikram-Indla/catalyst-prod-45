@@ -146,7 +146,7 @@ export function AttachmentPreviewModal({ attachments, initialId, onClose }: Prop
             style={{ width: '90vw', height: '90vh' }}
           />
         ) : (
-          <div className="flex flex-col items-center gap-4 p-12 bg-[var(--ds-surface-raised,#1A1A1A)] rounded-lg text-white">
+          <div className="flex flex-col items-center gap-4 p-12 bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-lg text-white">
             <FileIcon label="File" />
             <div className="text-base font-medium">Preview not available</div>
             <div className="text-sm text-white/60">{current.mime_type || 'Unknown type'}</div>

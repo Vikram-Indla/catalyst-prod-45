@@ -124,7 +124,7 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
   };
 
   return (
-    <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-sm overflow-hidden">
         {/* Controls Row */}
         <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50/50 dark:bg-[#111111]">
           <div className="flex border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-md overflow-hidden">
@@ -135,7 +135,7 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
                 className={cn(
                   "px-3 py-1 text-xs font-medium capitalize transition-colors border-r border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] last:border-r-0",
                   zoom === level
-                    ? "bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] shadow-sm"
+                    ? "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] shadow-sm"
                     : "text-slate-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:text-slate-700 dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] hover:bg-white/50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
                 )}
               >

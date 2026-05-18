@@ -82,7 +82,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
 
         {dropdownOpen && (
           <div
-            className="absolute right-0 top-full mt-1 z-10 bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
+            className="absolute right-0 top-full mt-1 z-10 bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
             style={{
               width: 120, border: '1px solid var(--divider)',
               borderRadius: 8, boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)',

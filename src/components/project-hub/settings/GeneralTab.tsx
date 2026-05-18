@@ -139,7 +139,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
               <div className="relative">
                 <input
                   value={project.key} readOnly
-                  className="bg-[var(--cp-bd-zone)] dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
+                  className="bg-[var(--cp-bd-zone)] dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
                   style={{ ...inputStyle, color: 'var(--fg-3)', cursor: 'not-allowed', fontFamily: 'var(--cp-font-mono)', letterSpacing: '0.05em', paddingRight: 36 }}
                 />
                 <Lock size={14} color="var(--fg-4)" className="absolute right-3 top-1/2 -translate-y-1/2" />

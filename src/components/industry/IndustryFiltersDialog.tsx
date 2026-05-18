@@ -93,7 +93,7 @@ export function IndustryFiltersDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] p-0 gap-0 max-h-[85vh] flex flex-col">
+      <DialogContent className="max-w-lg bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] p-0 gap-0 max-h-[85vh] flex flex-col">
         <DialogHeader className="px-6 py-4 border-b border-border flex-shrink-0">
           <DialogTitle className="text-foreground text-lg font-semibold">Filters</DialogTitle>
         </DialogHeader>
@@ -143,7 +143,7 @@ export function IndustryFiltersDialog({
                       <SelectTrigger className="bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                         <SelectValue placeholder="Select reporters..." />
                       </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
+                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
                         <SelectItem value="all">Select reporters...</SelectItem>
                       </SelectContent>
                     </Select>
@@ -157,7 +157,7 @@ export function IndustryFiltersDialog({
                       <SelectTrigger className="bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                         <SelectValue placeholder="Search business owners..." />
                       </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
+                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
                         <SelectItem value="all">Search business owners...</SelectItem>
                       </SelectContent>
                     </Select>
@@ -173,7 +173,7 @@ export function IndustryFiltersDialog({
                       <SelectTrigger className="bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                         <SelectValue placeholder="Select assignees..." />
                       </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
+                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
                         <SelectItem value="all">Select assignees...</SelectItem>
                       </SelectContent>
                     </Select>
@@ -187,7 +187,7 @@ export function IndustryFiltersDialog({
                       <SelectTrigger className="bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                         <SelectValue placeholder="Select..." />
                       </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
+                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
                         <SelectItem value="all">Select...</SelectItem>
                         {departmentOptions.map((dept) => (
                           <SelectItem key={dept.value} value={dept.value}>
@@ -224,7 +224,7 @@ export function IndustryFiltersDialog({
                       <SelectTrigger className="bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                         <SelectValue placeholder="Select..." />
                       </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
+                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
                         <SelectItem value="all">Select...</SelectItem>
                         {processStepOptions.map((step) => (
                           <SelectItem key={step.value} value={step.value}>
@@ -243,7 +243,7 @@ export function IndustryFiltersDialog({
                       <SelectTrigger className="bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                         <SelectValue placeholder="All" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
+                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
                         {ageingOptions.map((opt) => (
                           <SelectItem key={opt.value} value={opt.value}>
                             {opt.label}
@@ -276,7 +276,7 @@ export function IndustryFiltersDialog({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-border flex items-center justify-between flex-shrink-0 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
+        <div className="px-6 py-4 border-t border-border flex items-center justify-between flex-shrink-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
           <span className="text-sm text-muted-foreground">
             <span className="text-brand-primary font-medium">{activeFilterCount}</span> filters applied
           </span>

@@ -174,7 +174,7 @@ export function AISummaryCard({ insights: staticInsights, releaseData }: AISumma
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl shadow-2xl max-w-2xl w-full max-h-[70vh] overflow-hidden"
+              className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl shadow-2xl max-w-2xl w-full max-h-[70vh] overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]"

@@ -39,7 +39,7 @@
    DARK MODE elevation hex so the gallery cards have a visible surface
    delta against the page bg. transparent reads as "broken / missing
    card" because the dark page bg shows straight through. The new
-   value matches --cp-bg-surface dark (var(--ds-surface-raised, #1A1A1A)) for consistency. */
+   value matches --cp-bg-surface dark (var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))) for consistency. */
 .dark [data-module="product-cards"],
 .dark [data-module="product-cards"] , [data-theme="dark"] [data-module="product-cards"] {
   --pc-ink: var(--ds-text, var(--cp-bg-neutral, #EDEDED));

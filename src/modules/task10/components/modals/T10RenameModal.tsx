@@ -38,7 +38,7 @@ export function T10RenameModal({ isOpen, onClose, currentName, onRename }: T10Re
 
       {/* Modal */}
       <div 
-        className="relative z-10 w-full max-w-md mx-4 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 fade-in duration-200"
+        className="relative z-10 w-full max-w-md mx-4 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 fade-in duration-200"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -66,7 +66,7 @@ export function T10RenameModal({ isOpen, onClose, currentName, onRename }: T10Re
               onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
               placeholder="List name..."
               autoFocus
-              className="w-full px-4 py-2.5 text-[15px] text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,#878787)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-slate-300 dark:border-[var(--ds-border-bold,#454545)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              className="w-full px-4 py-2.5 text-[15px] text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,#878787)] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-300 dark:border-[var(--ds-border-bold,#454545)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             />
           </div>
         </div>
@@ -76,7 +76,7 @@ export function T10RenameModal({ isOpen, onClose, currentName, onRename }: T10Re
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-[var(--ds-text-subtlest,#A1A1A1)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-slate-300 dark:border-[var(--ds-border-bold,#454545)] rounded-lg hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors"
+            className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-[var(--ds-text-subtlest,#A1A1A1)] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-300 dark:border-[var(--ds-border-bold,#454545)] rounded-lg hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors"
           >
             Cancel
           </button>

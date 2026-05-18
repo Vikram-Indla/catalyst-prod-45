@@ -129,8 +129,8 @@ export function ExecutionViewMode({
                 passed:  { text: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.3)' },
                 failed:  { text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' },
                 blocked: { text: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'rgba(251,191,36,0.12)', border: 'rgba(251,191,36,0.3)' },
-                skipped: { text: 'var(--ds-text-subtlest, #878787)', bg: 'var(--ds-surface-raised, #1A1A1A)', border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' },
-                not_run: { text: 'var(--ds-text-subtlest, #878787)', bg: 'var(--ds-surface-raised, #1A1A1A)', border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' },
+                skipped: { text: 'var(--ds-text-subtlest, #878787)', bg: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' },
+                not_run: { text: 'var(--ds-text-subtlest, #878787)', bg: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' },
               } : {
                 passed:  { text: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', border: '#BBF7D0' },
                 failed:  { text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', border: '#FECACA' },

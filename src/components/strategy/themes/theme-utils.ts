@@ -32,9 +32,9 @@ export const STATUS_CONFIG_DARK: Record<HealthStatus, StatusStyle> = {
   on_track:  { label: 'On Track',  bg: '#182820', text: '#86EFAC', dot: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
   at_risk:   { label: 'At Risk',   bg: '#2A2418', text: '#FBBF24', dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
   off_track: { label: 'Off Track', bg: '#2A1C1E', text: 'var(--ds-border-danger, #FCA5A5)', dot: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
-  planned:   { label: 'Planned',   bg: 'var(--ds-surface-raised, #1A1A1A)', text: '#B8BCC8', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
+  planned:   { label: 'Planned',   bg: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', text: '#B8BCC8', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
   completed: { label: 'Completed', bg: '#1A2030', text: '#93C5FD', dot: '#6366F1' },
-  draft:     { label: 'Planned',   bg: 'var(--ds-surface-raised, #1A1A1A)', text: '#B8BCC8', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
+  draft:     { label: 'Planned',   bg: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', text: '#B8BCC8', dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
 };
 
 export function getStatusConfig(health: HealthStatus, isDark: boolean): StatusStyle {

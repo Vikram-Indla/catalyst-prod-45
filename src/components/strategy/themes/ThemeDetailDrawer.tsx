@@ -1,7 +1,7 @@
 /**
  * ThemeDetailDrawer — 560px right-side overlay with 6 tabs
  * Fixes: Financials uses planned_budget, enhanced empty states, activity tab, Linear badges
- * Dark mode: uses isDark prop for Dark mode surface (var(--ds-surface-raised, #1A1A1A))
+ * Dark mode: uses isDark prop for Dark mode surface (var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)))
  */
 import { useEffect, useState } from 'react';
 import { X, Pencil, Trash2, Plus, Loader2, Target, Rocket, Flag, Clock } from '@/lib/atlaskit-icons';

@@ -140,7 +140,7 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-foreground">Add Team Member</DialogTitle>
         </DialogHeader>
@@ -165,7 +165,7 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
                 <SelectTrigger className="bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                   <SelectValue placeholder="Select role" />
                 </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
+                <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
                   {STANDARD_ROLES.map((role) => (
                     <SelectItem key={role} value={role}>{role}</SelectItem>
                   ))}
@@ -184,7 +184,7 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
               <SelectTrigger className="bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                 <SelectValue placeholder="Select project (optional)" />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
+              <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
                 {projects.filter(p => p !== 'All Projects').map((project) => (
                   <SelectItem key={project} value={project}>{project}</SelectItem>
                 ))}
@@ -219,7 +219,7 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
                   className={`px-2 py-0.5 text-xs rounded border transition-colors ${
                     skills.some(s => s.skill === skill)
                       ? 'bg-brand-primary/20 border-brand-primary text-brand-primary'
-                      : 'bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-neutral-300 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-neutral-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:border-brand-primary hover:text-brand-primary'
+                      : 'bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-neutral-300 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-neutral-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:border-brand-primary hover:text-brand-primary'
                   }`}
                 >
                   {skill}
@@ -239,7 +239,7 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
                       <SelectTrigger className="bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] h-9">
                         <SelectValue placeholder="Select skill" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
+                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
                         {STANDARD_SKILLS.map((skill) => (
                           <SelectItem key={skill} value={skill}>{skill}</SelectItem>
                         ))}
@@ -254,7 +254,7 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
                       <SelectTrigger className="bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] h-9">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
+                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
                         {proficiencyOptions.map(({ level, label }) => (
                           <SelectItem key={level} value={level}>{label}</SelectItem>
                         ))}

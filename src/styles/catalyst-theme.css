@@ -45,8 +45,8 @@
   --bg-page: var(--ds-surface, #0A0A0A);
   --bg-surface: var(--ds-surface, #0A0A0A);
   --bg-sunken: var(--ds-surface, #0A0A0A);
-  --bg-elevated: var(--ds-surface-raised, #1A1A1A);
-  --bg-float: var(--ds-surface-raised, #1A1A1A);
+  --bg-elevated: var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A));
+  --bg-float: var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A));
   --bg-overlay: rgba(0,0,0,0.65);
   --text-1: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --text-2: var(--ds-text-subtlest, #A1A1A1);
@@ -67,13 +67,13 @@
   --ok60: var(--ds-text-success, #22C55E);
   --warn60: var(--ds-text-warning, var(--cp-amber, #F59E0B));
   --err60: var(--ds-text-danger, #EF4444);
-  --loz-gr-bg: var(--ds-surface-raised, #1A1A1A);
+  --loz-gr-bg: var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A));
   --loz-gr-tx: var(--ds-text-subtlest, #A1A1A1);
   --loz-bl-bg: #1A2540;
   --loz-bl-tx: #93C5FD;
   --loz-gn-bg: #0F2A1A;
   --loz-gn-tx: #86EFAC;
-  --pop-bg: var(--ds-surface-raised, #1A1A1A);
+  --pop-bg: var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A));
   --pop-border: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --pop-hover: var(--ds-surface-overlay, #1F1F1F);
   --shadow-pop: 0 8px 24px rgba(0,0,0,0.4), 0 0 1px rgba(0,0,0,0.5);

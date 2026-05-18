@@ -33,7 +33,7 @@ export function DailyScorecardView() {
     <ScrollArea className="h-full">
       <div className="p-6 bg-slate-50 dark:bg-[#111111] min-h-full">
         {/* Main Card */}
-        <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl shadow-md border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
+        <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl shadow-md border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
           {/* Hero Section */}
           <div className="px-8 py-7 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
             <div className="flex items-start justify-between">
@@ -93,7 +93,7 @@ export function DailyScorecardView() {
               </div>
             ) : (
               data.workstreams.map(team => (
-                <div key={team.id} className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-[14px] overflow-hidden hover:border-slate-300 dark:hover:border-[var(--ds-border-bold,#454545)] hover:shadow-lg transition-all">
+                <div key={team.id} className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-[14px] overflow-hidden hover:border-slate-300 dark:hover:border-[var(--ds-border-bold,#454545)] hover:shadow-lg transition-all">
                   {/* Team Header */}
                   <div className="p-5 flex items-center gap-3.5 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                     <div 

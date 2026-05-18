@@ -115,7 +115,7 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
           aria-label="Copy options"
           className={cn(
             'absolute right-0 top-full mt-1 min-w-[220px] rounded-lg border shadow-md z-50 py-1',
-            isDark ? 'bg-[var(--ds-surface-raised,#1A1A1A)] border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]' : 'bg-white border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))]',
+            isDark ? 'bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]' : 'bg-white border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))]',
           )}
         >
           {menuItems.map(({ kind, label }) => (
@@ -142,7 +142,7 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
         <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40">
           <div className={cn(
             'w-[min(640px,calc(100vw-32px))] rounded-xl border shadow-xl',
-            isDark ? 'bg-[var(--ds-surface-raised,#1A1A1A)] border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]' : 'bg-white border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))]',
+            isDark ? 'bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]' : 'bg-white border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))]',
           )}>
             <div className={cn(
               'flex items-center justify-between px-4 py-3 border-b',

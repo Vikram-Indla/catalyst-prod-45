@@ -54,7 +54,7 @@ function ItemCard({
 }) {
   return (
     <div className={cn(
-      "flex items-center gap-3.5 p-4 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg transition-all hover:translate-x-1 hover:shadow-sm",
+      "flex items-center gap-3.5 p-4 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg transition-all hover:translate-x-1 hover:shadow-sm",
       "border-l-4",
       status === 'completed' && "border-l-emerald-500",
       status === 'in_progress' && "border-l-blue-500",
@@ -104,7 +104,7 @@ export function MonthlyChronicleView() {
     <ScrollArea className="h-full">
       <div className="min-h-full">
         {/* Main Card */}
-        <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl shadow-md border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden m-6">
+        <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl shadow-md border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden m-6">
           
           {/* Chronicle Hero - Dark Gradient */}
           <div className="relative px-14 py-12 bg-gradient-to-br from-slate-900 to-[#1a2744] text-white overflow-hidden">

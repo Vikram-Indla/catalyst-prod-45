@@ -104,7 +104,7 @@ function FilterButton({ label, count, isActive, children }: { label: string; cou
           variant="outline"
           size="sm"
           className={cn(
-            "h-[34px] text-xs font-medium bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]",
+            "h-[34px] text-xs font-medium bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]",
             isActive && "border-blue-600 text-blue-600 bg-blue-50"
           )}
         >
@@ -139,7 +139,7 @@ export function Toolbar({
           placeholder="Search releases..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-8 h-[34px] text-xs bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
+          className="pl-8 h-[34px] text-xs bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
         />
       </div>
 
@@ -212,7 +212,7 @@ export function Toolbar({
       {/* Sort */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="h-[34px] text-xs bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
+          <Button variant="outline" size="sm" className="h-[34px] text-xs bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
             <ArrowUpDownIcon size={14} />
             {SORT_LABELS[sortBy]}
           </Button>

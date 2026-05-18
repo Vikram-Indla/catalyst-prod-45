@@ -346,7 +346,7 @@ export function AllWorkView() {
   return (
     <div className="h-full flex flex-col" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
       {/* Filter Toolbar */}
-      <div className="px-4 py-3 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
+      <div className="px-4 py-3 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
         {/* Filter Chips + Right Controls */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -358,7 +358,7 @@ export function AllWorkView() {
                   isActive={assigneeOpen || selectedAssignees.size > 0} 
                 />
               </PopoverTrigger>
-              <PopoverContent className="w-72 p-0 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-lg" align="start">
+              <PopoverContent className="w-72 p-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-lg" align="start">
                 <div className="p-3 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                   <div className="text-[13px] text-slate-500 mb-2">Assignee = (equals)</div>
                   <div className="relative">
@@ -404,7 +404,7 @@ export function AllWorkView() {
                   isActive={typeOpen || selectedTypes.size > 0} 
                 />
               </PopoverTrigger>
-              <PopoverContent className="w-72 p-0 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-lg" align="start">
+              <PopoverContent className="w-72 p-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-lg" align="start">
                 <div className="p-3 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                   <div className="text-[13px] text-slate-500 mb-2">Type = (equals)</div>
                   <div className="relative">
@@ -454,7 +454,7 @@ export function AllWorkView() {
                   isActive={statusOpen || selectedStatuses.size > 0} 
                 />
               </PopoverTrigger>
-              <PopoverContent className="w-72 p-0 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-lg" align="start">
+              <PopoverContent className="w-72 p-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-lg" align="start">
                 <div className="p-3 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                   <div className="text-[13px] text-slate-500 mb-2">Status = (equals)</div>
                   <div className="relative">
@@ -518,7 +518,7 @@ export function AllWorkView() {
                   <ChevronDown className="h-3.5 w-3.5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+              <DropdownMenuContent align="end" className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                 <DropdownMenuItem className="text-[14px]">None</DropdownMenuItem>
                 <DropdownMenuItem className="text-[14px]">Status</DropdownMenuItem>
                 <DropdownMenuItem className="text-[14px]">Assignee</DropdownMenuItem>
@@ -533,7 +533,7 @@ export function AllWorkView() {
                   <Download className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+              <DropdownMenuContent align="end" className="w-64 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                 <DropdownMenuItem className="text-[14px]">Print list</DropdownMenuItem>
                 <DropdownMenuItem className="text-[14px]">Print details</DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -590,7 +590,7 @@ export function AllWorkView() {
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+              <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                 <DropdownMenuItem className="text-[14px]">View work items as a chart</DropdownMenuItem>
                 <DropdownMenuItem className="text-[14px]">Format rules</DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -647,9 +647,9 @@ export function AllWorkView() {
           </div>
         ) : (
           /* Regular Table View */
-          <div className="flex-1 overflow-auto bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
+          <div className="flex-1 overflow-auto bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
             <table className="min-w-full border-collapse">
-              <thead className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] sticky top-0 z-10 border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+              <thead className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] sticky top-0 z-10 border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                 <tr>
                   <th className="w-8 px-2 py-2">
                     <Checkbox />
@@ -681,7 +681,7 @@ export function AllWorkView() {
                           <Columns className="h-4 w-4 text-slate-500" />
                         </button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-64 p-0 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-lg" align="end">
+                      <PopoverContent className="w-64 p-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-lg" align="end">
                         <div className="p-3 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                           <Tabs defaultValue="my-defaults" className="w-full">
                             <TabsList className="grid w-full grid-cols-2 h-8">
@@ -740,7 +740,7 @@ export function AllWorkView() {
       </div>
 
       {/* Footer */}
-      <div className="px-4 py-2 text-[13px] text-slate-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
+      <div className="px-4 py-2 text-[13px] text-slate-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]">
         Showing {countItems(mockItems)} items
       </div>
 

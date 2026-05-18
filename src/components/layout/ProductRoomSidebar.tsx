@@ -147,7 +147,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
         zIndex: 9999,
         width: 260,
         borderRadius: 8,
-        background: isDark ? 'var(--ds-surface-raised, #1A1A1A)' : '#fff',
+        background: isDark ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : '#fff',
         border: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
         boxShadow: isDark
           ? '0 8px 24px rgba(0,0,0,0.60)'

@@ -119,7 +119,7 @@ export function AddColumnModal({ open, onOpenChange }: AddColumnModalProps) {
             {/* Preview */}
             <div className="grid gap-2">
               <Label>Preview</Label>
-              <div className="flex items-center gap-2 p-3 bg-slate-50 dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-lg">
+              <div className="flex items-center gap-2 p-3 bg-slate-50 dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-lg">
                 <span
                   className="w-2 h-2 rounded-full"
                   style={{ backgroundColor: color }}
@@ -127,7 +127,7 @@ export function AddColumnModal({ open, onOpenChange }: AddColumnModalProps) {
                 <span className="text-sm font-medium text-slate-700 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
                   {name || 'Column Name'}
                 </span>
-                <span className="text-xs text-slate-500 bg-slate-200 dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] px-2 py-0.5 rounded-full ml-auto">
+                <span className="text-xs text-slate-500 bg-slate-200 dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] px-2 py-0.5 rounded-full ml-auto">
                   0
                 </span>
               </div>

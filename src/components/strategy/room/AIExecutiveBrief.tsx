@@ -40,7 +40,7 @@ const TOKENS = `
   --sri-ink-2: rgba(255,255,255,0.82);
   --sri-ink-3: rgba(255,255,255,0.75);
   --sri-ink-m: rgba(255,255,255,0.70);
-  --sri-bg: var(--ds-surface-raised, #1A1A1A);
+  --sri-bg: var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A));
   --sri-bg-2: var(--ds-surface-overlay, #1F1F1F);
   --sri-bg-3: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --sri-bdr: var(--ds-border, var(--cp-ink-1, #2E2E2E));

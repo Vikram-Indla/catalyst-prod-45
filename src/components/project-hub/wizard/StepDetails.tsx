@@ -282,7 +282,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
 
         {showLeadPicker && (
           <div
-            className="absolute left-0 right-0 z-50 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg shadow-lg"
+            className="absolute left-0 right-0 z-50 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg shadow-lg"
             style={{ top: '100%', marginTop: 4, maxHeight: 260, display: 'flex', flexDirection: 'column' }}
           >
             <div className="p-2 border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">

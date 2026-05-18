@@ -122,7 +122,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="relative flex flex-col animate-scale-in bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
+        className="relative flex flex-col animate-scale-in bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
         style={{
           width: 640,
           maxHeight: '90vh',

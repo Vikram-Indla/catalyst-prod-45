@@ -27,7 +27,7 @@
  *     - flex column, minHeight 100%
  *
  *   Inner content card
- *     - background: elevation.surface (var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) light / var(--ds-surface-raised, #1A1A1A) dark)
+ *     - background: elevation.surface (var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) light / var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) dark)
  *     - borderRadius: 8px
  *     - overflow: hidden
  *     - flex: 1 — fills the outer wrapper

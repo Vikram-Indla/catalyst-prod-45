@@ -483,7 +483,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
         <div style={{
           position: 'absolute', top: '100%', right: 0, marginTop: 6,
           width: 330, borderRadius: 14,
-          background: dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-surface, #fff)', border: `1px solid ${dk ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, #e5e7eb)'}`,
+          background: dk ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : 'var(--ds-surface, #fff)', border: `1px solid ${dk ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, #e5e7eb)'}`,
           boxShadow: dk ? '0 12px 40px rgba(0,0,0,0.50), 0 2px 8px rgba(0,0,0,0.30)' : '0 12px 40px rgba(27,42,74,0.16), 0 2px 8px rgba(27,42,74,0.08)',
           zIndex: 50, overflow: 'hidden',
           animation: 'ewi-fadein 0.2s ease-out',

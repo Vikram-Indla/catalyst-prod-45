@@ -154,10 +154,10 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
     <div style={{
       position: 'relative', width: '100%', height: '720px', overflow: 'visible', boxSizing: 'border-box',
       background: isDark
-        ? 'radial-gradient(circle at center, var(--ds-surface-raised, #1A1A1A) 0%, var(--ds-surface, #0A0A0A) 55%, var(--ds-surface, #0A0A0A) 100%)'
+        ? 'radial-gradient(circle at center, var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) 0%, var(--ds-surface, #0A0A0A) 55%, var(--ds-surface, #0A0A0A) 100%)'
         : 'radial-gradient(circle at center, var(--ds-surface, #fff) 0%, var(--ds-surface-sunken, #F8FAFC) 55%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 100%)',
       backgroundImage: isDark
-        ? 'radial-gradient(circle at center, var(--ds-surface-raised, #1A1A1A) 0%, var(--ds-surface, #0A0A0A) 55%, var(--ds-surface, #0A0A0A) 100%), radial-gradient(circle, var(--ds-border, #292929) 1px, transparent 1px)'
+        ? 'radial-gradient(circle at center, var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) 0%, var(--ds-surface, #0A0A0A) 55%, var(--ds-surface, #0A0A0A) 100%), radial-gradient(circle, var(--ds-border, #292929) 1px, transparent 1px)'
         : 'radial-gradient(circle at center, var(--ds-surface, #fff) 0%, var(--ds-surface-sunken, #F8FAFC) 55%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 100%), radial-gradient(circle, var(--ds-text-disabled, #CBD5E1) 1px, transparent 1px)',
       backgroundSize: 'cover, 24px 24px',
     }}>

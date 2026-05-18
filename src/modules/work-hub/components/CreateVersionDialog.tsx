@@ -98,7 +98,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className="sm:max-w-[500px] p-0 gap-0 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
+        className="sm:max-w-[500px] p-0 gap-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
         style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}
       >
         {/* Header */}

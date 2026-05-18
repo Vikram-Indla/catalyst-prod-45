@@ -56,7 +56,7 @@ export function CalendarGrid({
   }, [releases, rowAssignments, viewStart, viewEnd]);
 
   return (
-    <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
+    <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
       {/* Column Headers */}
       <div 
         className="grid border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]"
@@ -70,7 +70,7 @@ export function CalendarGrid({
             key={i}
             className={cn(
               "p-3 text-center border-r border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] last:border-r-0",
-              col.isWeekend ? "bg-[var(--ds-surface-sunken,#f8fafc)] dark:bg-[#111111]" : "bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
+              col.isWeekend ? "bg-[var(--ds-surface-sunken,#f8fafc)] dark:bg-[#111111]" : "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
             )}
           >
             <span className="text-xs font-medium text-slate-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">{col.label}</span>
@@ -139,7 +139,7 @@ export function CalendarGrid({
 
         {/* Release Labels (Left Column) */}
         <div 
-          className="absolute left-0 top-0 w-[120px] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-r border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]"
+          className="absolute left-0 top-0 w-[120px] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-r border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]"
           style={{ height: `${(maxRow + 1) * ROW_HEIGHT + 40}px` }}
         >
           {releasesWithPositions.map(({ release, row }) => (

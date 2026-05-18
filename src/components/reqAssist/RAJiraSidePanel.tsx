@@ -924,7 +924,7 @@ function TicketTypeBadgeDrawer({ type }: { type: string | null }) {
     subtask: { bg: dark ? 'rgba(217,119,6,0.15)' : '#FEF3C7', color: dark ? '#FBBF24' : '#92400E', label: 'SUBTASK' },
     story: { bg: dark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)', color: dark ? 'var(--ds-text-brand, #60A5FA)' : 'var(--ds-background-brand-bold-hovered, #1D4ED8)', label: 'STORY' },
     epic: { bg: dark ? 'rgba(124,58,237,0.15)' : '#F3E8FF', color: dark ? '#A78BFA' : '#6B21A8', label: 'EPIC' },
-    task: { bg: dark ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--fg-2)', label: 'TASK' },
+    task: { bg: dark ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--fg-2)', label: 'TASK' },
   };
   const s = map[type] || map['task']!;
   return (

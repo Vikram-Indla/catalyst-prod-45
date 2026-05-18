@@ -8,7 +8,7 @@ const LIGHT_STYLES: Record<StatusType, { bg: string; text: string }> = {
 };
 
 const DARK_STYLES: Record<StatusType, { bg: string; text: string }> = {
-  gray:  { bg: 'var(--ds-surface-raised, #1A1A1A)', text: 'var(--ds-text-subtlest, #A1A1A1)' },
+  gray:  { bg: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', text: 'var(--ds-text-subtlest, #A1A1A1)' },
   blue:  { bg: '#1A2540', text: '#93C5FD' },
   green: { bg: '#0F2A1A', text: '#86EFAC' },
 };

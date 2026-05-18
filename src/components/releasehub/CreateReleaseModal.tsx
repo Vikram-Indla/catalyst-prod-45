@@ -28,8 +28,8 @@ export function CreateReleaseModal({ onClose }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={onClose}>
       <div className="absolute inset-0 bg-[#080E1D]/38 backdrop-blur-[1px]" />
-      <div className="relative bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl shadow-2xl w-[480px] max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <div className="sticky top-0 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] z-10 flex items-center justify-between px-6 py-4 border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+      <div className="relative bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-xl shadow-2xl w-[480px] max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div className="sticky top-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] z-10 flex items-center justify-between px-6 py-4 border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
           <h2 className="text-[16px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>New Release</h2>
           <button onClick={onClose} className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]"><X size={14} /></button>
         </div>
@@ -60,7 +60,7 @@ export function CreateReleaseModal({ onClose }: Props) {
               className="w-full h-9 px-3 rounded-md border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[13px] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />
           </div>
         </div>
-        <div className="sticky bottom-0 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-t border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] px-6 py-3 flex justify-end gap-2">
+        <div className="sticky bottom-0 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-t border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] px-6 py-3 flex justify-end gap-2">
           <button onClick={onClose} className="h-9 px-4 rounded-md border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[13px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[#F4F7FA]">Cancel</button>
           <button onClick={handleSubmit} disabled={!name || !targetDate || createRelease.isPending}
             className="h-9 px-4 rounded-md bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white text-[13px] font-semibold hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] disabled:opacity-50">

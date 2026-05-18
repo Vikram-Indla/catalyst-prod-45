@@ -34,7 +34,7 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]" style={{ width: 440, borderRadius: 12, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
+      <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]" style={{ width: 440, borderRadius: 12, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-[var(--fg-1)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 16, fontWeight: 700, fontFamily: 'var(--cp-font-heading)' }}>Add Status</h3>
           <button onClick={onClose} className="flex items-center justify-center rounded-md hover:bg-[var(--cp-bd-zone)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors" style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}>

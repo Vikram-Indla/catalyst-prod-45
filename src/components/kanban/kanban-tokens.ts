@@ -72,7 +72,7 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
   },
   dark: {
     pageBg: 'var(--ds-surface, #0A0A0A)',
-    surfaceBg: 'var(--ds-surface-raised, #1A1A1A)',
+    surfaceBg: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))',
     surfaceHover: 'var(--ds-surface-overlay, #1F1F1F)',
     surfaceAlt: '#111111',
     headerBg: '#111111',
@@ -83,7 +83,7 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     textMuted: 'var(--ds-text-subtlest, #A1A1A1)',
     textDisabled: '#7D7D7D',
     badgeBg: 'transparent',
-    cardBg: 'var(--ds-surface-raised, #1A1A1A)',
+    cardBg: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))',
     cardBorder: 'transparent',
     cardHoverBg: 'var(--ds-surface-overlay, #1F1F1F)',
     cardShadowRest: 'rgba(0,0,0,.45) 0 1px 1px 0, rgba(0,0,0,.55) 0 0 1px 0',

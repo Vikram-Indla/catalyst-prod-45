@@ -132,7 +132,7 @@ export default function TimelineView() {
   return (
     <div className="h-full flex flex-col bg-white dark:bg-[var(--ds-surface,#0A0A0A)]">
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-b dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-sm">
+      <div className="sticky top-0 z-30 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-b dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-sm">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -154,7 +154,7 @@ export default function TimelineView() {
                       'px-3 py-1.5 text-xs border-r last:border-r-0 transition-colors',
                       zoom === level
                         ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] text-white'
-                        : 'bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] text-gray-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-gray-50 dark:hover:bg-[var(--ds-surface-raised,#1A1A1A)]'
+                        : 'bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] text-gray-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-gray-50 dark:hover:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]'
                     )}
                   >
                     {level.charAt(0).toUpperCase() + level.slice(1)}

@@ -26,7 +26,7 @@ export const DK: DarkTokens = {
   tableHeaderBg: 'var(--cp-bg-sunken, #161A1D)',
   hoverBg:       'var(--cp-interact-hover, var(--cp-ink-1, #2E2E2E))',
   selectedBg:    'var(--cp-interact-selected, rgba(59,130,246,0.15))',
-  floatBg:       'var(--cp-float, #1A1A1A)',
+  floatBg:       'var(--cp-float, var(--cp-ink-1, #1A1A1A))',
   chipBg:        'var(--cp-bg-sunken, #292929)',
   progressTrack: 'var(--cp-border-default, var(--cp-ink-1, #2E2E2E))',
   iconBg:        'var(--cp-bg-sunken, #292929)',

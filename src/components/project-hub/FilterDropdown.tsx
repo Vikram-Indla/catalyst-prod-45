@@ -73,7 +73,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
 
       {open && (
         <div
-          className={`absolute top-full left-0 mt-1 z-50 ${dark ? 'bg-[var(--ds-surface-raised,#1A1A1A)] border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]' : 'bg-white border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]'}`}
+          className={`absolute top-full left-0 mt-1 z-50 ${dark ? 'bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]' : 'bg-white border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]'}`}
           style={{
             width: 280,
             borderRadius: 8,

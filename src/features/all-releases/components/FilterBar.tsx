@@ -87,7 +87,7 @@ export function FilterBar({
           placeholder="Search releases..."
           value={filter.search}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-9 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
+          className="pl-9 bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
         />
       </div>
 
@@ -95,7 +95,7 @@ export function FilterBar({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className={cn(
-            "bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]",
+            "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]",
             filter.status.length > 0 && "border-primary text-primary"
           )}>
             Status
@@ -125,7 +125,7 @@ export function FilterBar({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className={cn(
-            "bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]",
+            "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]",
             filter.health.length > 0 && "border-primary text-primary"
           )}>
             Health
@@ -156,7 +156,7 @@ export function FilterBar({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className={cn(
-            "bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]",
+            "bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]",
             filter.quarter !== 'all' && "border-primary text-primary"
           )}>
             {filter.quarter === 'all' ? 'Quarter' : filter.quarter}

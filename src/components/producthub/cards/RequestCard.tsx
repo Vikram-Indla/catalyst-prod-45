@@ -66,9 +66,9 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
             className={cn(
               'text-xs font-bold uppercase rounded px-1.5 py-0.5',
               status.label === 'Done' && 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300',
-              status.label === 'New' && 'bg-gray-100 text-gray-700 dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
+              status.label === 'New' && 'bg-gray-100 text-gray-700 dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
               (status.label === 'Under Implementation' || status.label === 'Portfolio Review' || status.label === 'In Progress') && 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300',
-              !['Done','New','Under Implementation','Portfolio Review','In Progress'].includes(status.label) && 'bg-gray-100 text-gray-700 dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
+              !['Done','New','Under Implementation','Portfolio Review','In Progress'].includes(status.label) && 'bg-gray-100 text-gray-700 dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
             )}
           >
             {status.label}
@@ -123,7 +123,7 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
           /* Small: inline score bar + progress */
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5">
-              <div className="w-10 h-1.5 bg-zinc-100 dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-full overflow-hidden">
+              <div className="w-10 h-1.5 bg-zinc-100 dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full"
                   style={{
@@ -137,7 +137,7 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-10 h-1.5 bg-zinc-100 dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-full overflow-hidden">
+              <div className="w-10 h-1.5 bg-zinc-100 dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full bg-blue-500"
                   style={{ width: `${request.progress}%` }}
@@ -177,7 +177,7 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
                   ].map(s => (
                     <div key={s.label} className="flex items-center gap-2">
               <span className="text-[10px] text-zinc-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)] w-16 truncate">{s.label}</span>
-                      <div className="flex-1 h-1.5 bg-zinc-100 dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-full overflow-hidden">
+                      <div className="flex-1 h-1.5 bg-zinc-100 dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-full overflow-hidden">
                         <div
                           className="h-full rounded-full bg-blue-500"
                           style={{ width: `${((s.value ?? 0) / 5) * 100}%` }}
@@ -197,7 +197,7 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
                   <span className="text-[10px] text-zinc-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">Progress</span>
                   <span className="text-[10px] font-medium text-zinc-700 dark:text-[var(--ds-text-subtlest,#878787)]">{request.progress}%</span>
                 </div>
-                <div className="w-full h-1.5 bg-zinc-100 dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-zinc-100 dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full bg-blue-500 transition-all"
                     style={{ width: `${request.progress}%` }}

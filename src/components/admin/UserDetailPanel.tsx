@@ -95,7 +95,7 @@ const PERM_COLORS: Record<string, { bg: string; color: string; bgDark: string; c
   view: { bg: 'var(--ds-background-selected, #EFF6FF)', color: '#0747A6', bgDark: 'rgba(37,99,235,0.12)', colorDark: '#93C5FD' },
   edit: { bg: '#FEF3C7', color: '#92400E', bgDark: 'rgba(251,191,36,0.12)', colorDark: '#FCD34D' },
   full: { bg: 'var(--ds-background-success, #DCFCE7)', color: '#006644', bgDark: 'rgba(34,197,94,0.12)', colorDark: '#86EFAC' },
-  none: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bgDark: 'var(--ds-surface-raised, #1A1A1A)', colorDark: 'var(--ds-text-subtlest, #878787)' },
+  none: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bgDark: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', colorDark: 'var(--ds-text-subtlest, #878787)' },
 };
 
 function getEventDotColor(ev: any): string {
@@ -304,7 +304,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
   const T = isDark ? {
     surface: 'var(--ds-surface, #0A0A0A)', border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text1: 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))',
     text2: 'var(--ds-text-subtlest, #A1A1A1)', text3: 'var(--ds-text-subtlest, #878787)', sunken: 'var(--ds-surface, #0A0A0A)',
-    elevated: 'var(--ds-surface-raised, #1A1A1A)', inputBg: 'var(--ds-surface-raised, #1A1A1A)',
+    elevated: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', inputBg: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))',
   } : {
     surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'rgba(15,23,42,0.10)', text1: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
     text2: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', text3: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', sunken: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',

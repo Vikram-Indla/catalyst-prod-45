@@ -128,7 +128,7 @@ export function SortableColumn({
           <h3 className="boards-column__title dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">{column.name}</h3>
 
           {/* Task Count */}
-          <span className="boards-column__count dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">{column.task_count}</span>
+          <span className="boards-column__count dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">{column.task_count}</span>
         </div>
         
         <div className="flex items-center gap-1">
@@ -180,13 +180,13 @@ export function SortableColumn({
         </SortableContext>
 
         {tasks.length === 0 && (
-          <div className="boards-column__empty dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] dark:text-[var(--ds-text-subtlest,#878787)]">
+          <div className="boards-column__empty dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] dark:text-[var(--ds-text-subtlest,#878787)]">
             No tasks
           </div>
         )}
 
         {/* Add Task Button at bottom */}
-        <button className="boards-add-task dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] dark:text-[var(--ds-text-subtlest,#878787)] dark:hover:bg-[var(--ds-surface-raised,#1A1A1A)] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] dark:hover:border-[var(--ds-border-bold,#454545)]" onClick={() => onAddTask?.(column.id)}>
+        <button className="boards-add-task dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] dark:text-[var(--ds-text-subtlest,#878787)] dark:hover:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] dark:hover:border-[var(--ds-border-bold,#454545)]" onClick={() => onAddTask?.(column.id)}>
           <Plus className="w-4 h-4" />
           Add Task
         </button>

@@ -113,7 +113,7 @@ const RequirementDefectsPanel = ({ requirementId }: { requirementId?: string }) 
           {defects.map((d: any) => {
             const sc = defectStatusColors[d.status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' };
             return (
-              <tr key={d.id} style={{ height: 36, backgroundColor: 'var(--ds-surface-raised, #1A1A1A)', borderBottom: '0.75px solid #2E2E2E' }}>
+              <tr key={d.id} style={{ height: 36, backgroundColor: 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))', borderBottom: '0.75px solid #2E2E2E' }}>
                 <td style={{ padding: '8px 12px' }}>
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
                     {d.defect_key}

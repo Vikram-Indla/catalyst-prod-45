@@ -11,7 +11,7 @@ const stats = [
   { label: 'Critical Incidents', value: 3, className: 'text-[var(--ds-text-danger,#ef4444)]', trend: '↑ +2 from last week', trendUp: true },
   { label: 'Open Incidents', value: 24, className: 'text-[var(--ds-text-warning,#f59e0b)]', trend: '↑ +5 from last week', trendUp: true },
   { label: 'Resolved This Week', value: 18, className: 'text-[#0d9488]', trend: '↑ +12 improvement', trendUp: false },
-  { label: 'Avg Resolution Time', value: '4.2h', className: 'text-[var(--ds-surface-raised,#1A1A1A)]', trend: '↓ -1.2h improvement', trendUp: false },
+  { label: 'Avg Resolution Time', value: '4.2h', className: 'text-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]', trend: '↓ -1.2h improvement', trendUp: false },
   { label: 'SLA Compliance', value: '94%', className: 'text-[#0d9488]', trend: '↑ +3% improvement', trendUp: false },
 ];
 

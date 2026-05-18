@@ -31,7 +31,7 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
 
   return (
     <div
-      className="rounded-xl mt-4 bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
+      className="rounded-xl mt-4 bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]"
       style={{
         border: '1px solid var(--divider)', borderRadius: 12,
         padding: '16px 20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)',

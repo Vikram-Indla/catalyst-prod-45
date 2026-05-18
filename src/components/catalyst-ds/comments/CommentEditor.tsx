@@ -190,7 +190,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                 'rounded-md border transition-colors duration-150',
                 'border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]',
                 isFocused && 'border-[#4C9AFF] dark:border-[#4C9AFF] ring-1 ring-[#4C9AFF]/30',
-                'bg-[var(--ds-surface-sunken,#FAFBFC)] dark:bg-[var(--ds-surface-raised,#1A1A1A)]'
+                'bg-[var(--ds-surface-sunken,#FAFBFC)] dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]'
               )}
             >
               {isExpanded && (
