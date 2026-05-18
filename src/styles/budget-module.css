@@ -118,7 +118,7 @@
   --slate-900: var(--fg-1, var(--cp-bg-neutral, #EDEDED));
   --slate-800: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --slate-700: var(--fg-2, #A1A1A1);
-  --slate-600: var(--fg-3, #878787);
+  --slate-600: var(--fg-3, var(--cp-text-secondary, #878787));
   --slate-500: #7D7D7D;
   --slate-400: var(--fg-4, rgba(237,237,237,0.30));
   --slate-300: var(--ds-border-bold, #454545);
@@ -132,7 +132,7 @@
   --budget-bg-surface: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   --budget-text-primary: var(--fg-1, var(--cp-bg-neutral, #EDEDED));
   --budget-text-secondary: var(--fg-2, #A1A1A1);
-  --budget-text-muted: var(--fg-3, #878787);
+  --budget-text-muted: var(--fg-3, var(--cp-text-secondary, #878787));
   --budget-border: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --budget-border-strong: var(--ds-border-bold, #454545);
 

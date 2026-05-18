@@ -60,8 +60,8 @@ function ActivityFeed({
   if (isLoading) {
     return (
       <div className={cn('flex items-center justify-center py-12', className)}>
-        <Loader2 className="h-5 w-5 animate-spin text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)] mr-2" />
-        <span className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]">Loading history...</span>
+        <Loader2 className="h-5 w-5 animate-spin text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mr-2" />
+        <span className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">Loading history...</span>
       </div>
     );
   }
@@ -71,7 +71,7 @@ function ActivityFeed({
       <div className={cn('text-center py-12', className)}>
         <History className="h-10 w-10 mx-auto mb-3 text-[#C1C7D0] dark:text-[var(--ds-border-bold,#454545)]" />
         <p className="text-[14px] font-medium text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">{emptyMessage}</p>
-        <p className="text-[12px] text-[#97A0AF] dark:text-[var(--ds-text-subtlest,#878787)] mt-1">{emptyDescription}</p>
+        <p className="text-[12px] text-[#97A0AF] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mt-1">{emptyDescription}</p>
       </div>
     );
   }
@@ -86,8 +86,8 @@ function ActivityFeed({
 
       {isLoadingMore && (
         <div className="flex items-center justify-center py-4">
-          <Loader2 className="h-4 w-4 animate-spin text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)] mr-2" />
-          <span className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]">Loading more...</span>
+          <Loader2 className="h-4 w-4 animate-spin text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mr-2" />
+          <span className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">Loading more...</span>
         </div>
       )}
     </div>

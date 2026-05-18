@@ -452,7 +452,7 @@
   --ra-slate-300: var(--ds-border-bold, #454545);
   --ra-slate-400: var(--fg-4, rgba(237,237,237,0.30));
   --ra-slate-500: #7D7D7D;
-  --ra-slate-600: var(--fg-3, #878787);
+  --ra-slate-600: var(--fg-3, var(--cp-text-secondary, #878787));
   --ra-slate-700: var(--fg-2, #A1A1A1);
   --ra-slate-800: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 

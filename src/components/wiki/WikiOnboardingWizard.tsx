@@ -68,7 +68,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
           <Sparkles size={28} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
         </div>
         <h2 style={{ fontFamily: F.sora, fontSize: 18, fontWeight: 700, marginBottom: 6, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>Welcome to WikiHub</h2>
-        <p style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)', lineHeight: 1.5 }}>Let's personalize your experience. What's your role?</p>
+        <p style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)', lineHeight: 1.5 }}>Let's personalize your experience. What's your role?</p>
       </div>
       <div style={{ display: 'grid', gap: 6 }}>
         {ROLES.map(r => (
@@ -89,7 +89,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
     // Step 2: Domains
     <div key="step2">
       <h2 style={{ fontFamily: F.sora, fontSize: 16, fontWeight: 700, marginBottom: 6, textAlign: 'center', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>Choose Your Domains</h2>
-      <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)', marginBottom: 20, textAlign: 'center' }}>Select domains you want to follow.</p>
+      <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)', marginBottom: 20, textAlign: 'center' }}>Select domains you want to follow.</p>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
         {DOMAINS.map(d => {
           const active = selectedDomains.includes(d.code);
@@ -100,7 +100,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
               cursor: 'pointer', textAlign: 'left', fontSize: 12, transition: 'all 80ms',
               display: 'flex', alignItems: 'center', gap: 8,
             }}>
-              <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: active ? 'var(--cp-primary-20)' : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bd-zone)'), color: active ? '#1E40AF' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)') }}>{d.code}</span>
+              <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: active ? 'var(--cp-primary-20)' : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bd-zone)'), color: active ? '#1E40AF' : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)') }}>{d.code}</span>
               <span style={{ fontWeight: active ? 600 : 400, color: active ? (isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--fg-1)') : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)'), flex: 1, fontSize: 11.5 }}>{d.name}</span>
               {active && <Check size={12} style={{ color: 'var(--cp-blue)' }} />}
             </button>
@@ -112,7 +112,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
     // Step 3: Learning Paths
     <div key="step3">
       <h2 style={{ fontFamily: F.sora, fontSize: 16, fontWeight: 700, marginBottom: 6, textAlign: 'center', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>Start a Learning Path</h2>
-      <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)', marginBottom: 20, textAlign: 'center' }}>Pick one to begin structured learning.</p>
+      <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)', marginBottom: 20, textAlign: 'center' }}>Pick one to begin structured learning.</p>
       <div style={{ display: 'grid', gap: 8 }}>
         {(paths as any[]).slice(0, 3).map((p: any) => {
           const diffColor = DIFF_COLORS[p.difficulty] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
@@ -130,13 +130,13 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
                 <span style={{ fontFamily: F.sora, fontSize: 12.5, fontWeight: 600, flex: 1, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>{p.title}</span>
                 <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: diffColor }}>{p.difficulty}</span>
               </div>
-              <p style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)', lineHeight: 1.4 }}>{p.description}</p>
-              <div style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-4)', marginTop: 6 }}>{p.estimated_hours}h · {p.article_count} articles</div>
+              <p style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)', lineHeight: 1.4 }}>{p.description}</p>
+              <div style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-4)', marginTop: 6 }}>{p.estimated_hours}h · {p.article_count} articles</div>
             </div>
           );
         })}
         {paths.length === 0 && (
-          <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-4)', textAlign: 'center', padding: 20 }}>No learning paths available yet.</p>
+          <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-4)', textAlign: 'center', padding: 20 }}>No learning paths available yet.</p>
         )}
       </div>
     </div>,
@@ -171,7 +171,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
         {/* Footer */}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 28 }}>
           {step > 0 ? (
-            <button onClick={() => setStep(s => s - 1)} style={{ background: 'none', border: 'none', fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)', cursor: 'pointer', fontWeight: 500 }}>Back</button>
+            <button onClick={() => setStep(s => s - 1)} style={{ background: 'none', border: 'none', fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)', cursor: 'pointer', fontWeight: 500 }}>Back</button>
           ) : <span />}
           {step < 2 ? (
             <button onClick={() => setStep(s => s + 1)} disabled={!canNext} style={{

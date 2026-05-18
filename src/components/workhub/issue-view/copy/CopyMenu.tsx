@@ -127,7 +127,7 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
               className={cn(
                 'w-full text-left px-3 py-2 text-xs font-body transition-colors',
                 isDark
-                  ? 'text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] hover:bg-[var(--ds-surface-overlay,#1F1F1F)] disabled:text-[var(--ds-text-subtlest,#878787)]'
+                  ? 'text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] hover:bg-[var(--ds-surface-overlay,#1F1F1F)] disabled:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]'
                   : 'text-[var(--ds-text,#292A2E)] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] disabled:text-[var(--ds-text-subtlest,#6B6E76)]',
               )}
             >
@@ -156,7 +156,7 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
               </button>
             </div>
             <div className="p-4">
-              <p className={cn('font-body text-xs mb-2', isDark ? 'text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text-subtlest,#6B6E76)]')}>
+              <p className={cn('font-body text-xs mb-2', isDark ? 'text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]' : 'text-[var(--ds-text-subtlest,#6B6E76)]')}>
                 Clipboard write failed. Select and copy manually:
               </p>
               <textarea

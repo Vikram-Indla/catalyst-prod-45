@@ -221,7 +221,7 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-[12px] font-medium text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] truncate leading-tight">{release.name}</div>
-                  <div className="text-[10px] text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)] leading-tight">{statusLabel}</div>
+                  <div className="text-[10px] text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] leading-tight">{statusLabel}</div>
                 </div>
               </div>
 
@@ -316,7 +316,7 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
         })}
 
         {releases.length === 0 && (
-          <div className="py-16 text-center text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)] text-sm">No releases to display in timeline</div>
+          <div className="py-16 text-center text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] text-sm">No releases to display in timeline</div>
         )}
       </div>
   );

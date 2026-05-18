@@ -154,7 +154,7 @@ export function T10NewListModal({ isOpen, onClose, onCreated }: T10NewListModalP
           <h2 className="text-lg font-semibold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">Create list</h2>
           <button
             type="button"
-            className="p-1.5 rounded-lg text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)] hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] hover:text-slate-600 hover:bg-slate-100 transition-colors"
             onClick={onClose}
           >
             <X size={18} />
@@ -176,7 +176,7 @@ export function T10NewListModal({ isOpen, onClose, onCreated }: T10NewListModalP
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g., Q1 Sprint Goals"
                 maxLength={100}
-                className={`w-full px-4 py-2.5 text-[15px] text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,#878787)] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
+                className={`w-full px-4 py-2.5 text-[15px] text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
                   nameError ? 'border-red-400' : 'border-slate-300 dark:border-[var(--ds-border-bold,#454545)]'
                 }`}
               />
@@ -188,14 +188,14 @@ export function T10NewListModal({ isOpen, onClose, onCreated }: T10NewListModalP
             {/* Description Field */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-slate-700 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
-                Description <span className="text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)] font-normal">(optional)</span>
+                Description <span className="text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] font-normal">(optional)</span>
               </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="What is this list for?"
                 rows={2}
-                className="w-full px-4 py-2.5 text-[15px] text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,#878787)] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-300 dark:border-[var(--ds-border-bold,#454545)] rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-4 py-2.5 text-[15px] text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-300 dark:border-[var(--ds-border-bold,#454545)] rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               />
             </div>
 

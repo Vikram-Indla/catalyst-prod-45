@@ -63,7 +63,7 @@
   --idp-ink-secondary: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --idp-ink-tertiary: var(--ds-text-subtlest, #A1A1A1);
   --idp-ink-muted: #7D7D7D;
-  --idp-ink-muted-strong: var(--ds-text-subtlest, #878787);
+  --idp-ink-muted-strong: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
   --idp-surface: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   --idp-surface-secondary: var(--ds-surface-overlay, #1F1F1F);
   --idp-surface-tertiary: var(--ds-border, var(--cp-ink-1, #292929));

@@ -81,7 +81,7 @@ export function FilterBar({
     <div className="flex items-center gap-3 flex-wrap">
       {/* Search */}
       <div className="relative flex-1 min-w-[200px] max-w-[300px]">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)] flex items-center"><SearchIcon label="" size="small" primaryColor="currentColor" /></span>
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] flex items-center"><SearchIcon label="" size="small" primaryColor="currentColor" /></span>
         <Input
           id="release-search"
           placeholder="Search releases..."

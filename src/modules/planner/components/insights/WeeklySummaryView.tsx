@@ -45,7 +45,7 @@ function StatusBadge({ status }: { status: string }) {
 // Empty state component
 function EmptyState({ title, icon: Icon }: { title: string; icon: any }) {
   return (
-    <div className="flex flex-col items-center justify-center py-8 text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)]">
+    <div className="flex flex-col items-center justify-center py-8 text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
       <Icon className="w-8 h-8 mb-2" />
       <p className="text-sm">No {title} this week</p>
     </div>
@@ -71,7 +71,7 @@ export function WeeklySummaryView() {
 
   if (error || !data) {
     return (
-      <div className="p-6 flex flex-col items-center justify-center h-full text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
+      <div className="p-6 flex flex-col items-center justify-center h-full text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
         <AlertTriangle className="w-12 h-12 mb-4 text-amber-500" />
         <p>Failed to load weekly insights data</p>
       </div>
@@ -128,7 +128,7 @@ export function WeeklySummaryView() {
               )}
             >
               <div className={cn("text-3xl font-extrabold", kpi.colorClass)}>{kpi.value}</div>
-              <div className="text-[10px] font-semibold text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase mt-1.5">{kpi.label}</div>
+              <div className="text-[10px] font-semibold text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] uppercase mt-1.5">{kpi.label}</div>
             </div>
           ))}
         </div>
@@ -142,7 +142,7 @@ export function WeeklySummaryView() {
                 <Rocket className="w-5 h-5 text-blue-600" />
                 <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">Releases</h3>
               </div>
-              <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">{releases.length} this week</span>
+              <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">{releases.length} this week</span>
             </div>
             <div className="p-4 space-y-3">
               {releases.length === 0 ? (
@@ -157,7 +157,7 @@ export function WeeklySummaryView() {
                       <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
                         {release.name || release.version}
                       </div>
-                      <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] mt-0.5">
+                      <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mt-0.5">
                         {release.release_date ? format(new Date(release.release_date), 'MMM d, yyyy') : 'No date'}
                       </div>
                     </div>
@@ -175,7 +175,7 @@ export function WeeklySummaryView() {
                 <AlertTriangle className="w-5 h-5 text-amber-600" />
                 <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">Incidents</h3>
               </div>
-              <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">{incidents.length} this week</span>
+              <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">{incidents.length} this week</span>
             </div>
             <div className="p-4 space-y-2">
               {incidents.length === 0 ? (
@@ -194,7 +194,7 @@ export function WeeklySummaryView() {
                       <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] truncate">
                         {incident.title}
                       </div>
-                      <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] mt-0.5">
+                      <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mt-0.5">
                         {incident.severity || 'Unknown'} severity
                       </div>
                     </div>
@@ -212,7 +212,7 @@ export function WeeklySummaryView() {
                 <Bug className="w-5 h-5 text-red-600" />
                 <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">Defects</h3>
               </div>
-              <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">{defects.length} this week</span>
+              <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">{defects.length} this week</span>
             </div>
             <div className="p-4 space-y-2">
               {defects.length === 0 ? (
@@ -230,7 +230,7 @@ export function WeeklySummaryView() {
                       <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] truncate">
                         {defect.title}
                       </div>
-                      <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] mt-0.5">
+                      <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mt-0.5">
                         {defect.severity || 'Unknown'} severity
                       </div>
                     </div>
@@ -248,7 +248,7 @@ export function WeeklySummaryView() {
                 <GitBranch className="w-5 h-5 text-purple-600" />
                 <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">Stories</h3>
               </div>
-              <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">{stories.length} this week</span>
+              <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">{stories.length} this week</span>
             </div>
             <div className="p-4 space-y-2">
               {stories.length === 0 ? (
@@ -271,7 +271,7 @@ export function WeeklySummaryView() {
 
         {/* Footer */}
         <div className="flex items-center justify-between mt-6 px-2">
-          <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">
+          <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
             Data as of {format(new Date(), 'MMM d, yyyy h:mm a')}
           </span>
           <div className="flex gap-2">

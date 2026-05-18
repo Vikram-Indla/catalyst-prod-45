@@ -169,7 +169,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
       {/* Search suggestions */}
       {searchSuggestions.length > 0 && (
         <div className="mx-4 mb-3 rounded-lg overflow-hidden border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-transparent">
-          <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,#878787)] bg-[var(--ds-surface-sunken,#F8FAFC)] dark:bg-transparent border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ padding: '6px 12px', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] bg-[var(--ds-surface-sunken,#F8FAFC)] dark:bg-transparent border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ padding: '6px 12px', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Add from directory
           </div>
           {searchSuggestions.map(u => (
@@ -187,7 +187,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
               )}
               <div className="flex-1 min-w-0">
                 <div className="text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 13, fontWeight: 600 }}>{u.name}</div>
-                <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 11 }}>
+                <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 11 }}>
                   {u.role_name || 'No role'}
                   {u.department_name && <span className="text-[var(--ds-text-disabled,#CBD5E1)] dark:text-[var(--ds-border-bold,#454545)]"> · </span>}
                   {u.department_name && <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]">{u.department_name}</span>}
@@ -222,7 +222,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
           {grouped.map(g => (
             <div key={g.category} className="mt-4">
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{g.category}</span>
+                <span className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{g.category}</span>
                 <span className="rounded-full bg-[var(--ds-background-selected,#EFF6FF)] dark:bg-[rgba(59,130,246,0.15)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] dark:text-[var(--ds-text-brand,#60A5FA)]" style={{ padding: '1px 7px', fontSize: 10, fontWeight: 700 }}>{g.members.length}</span>
                 <div className="flex-1 bg-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ height: 1 }} />
               </div>

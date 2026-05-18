@@ -1376,8 +1376,8 @@
   --ph-gray-50: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   --ph-gray-100: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   --ph-gray-200: var(--ds-border, var(--cp-ink-1, #292929));
-  --ph-gray-300: var(--ds-text-subtlest, #878787);
-  --ph-gray-400: var(--ds-text-subtlest, #878787);
+  --ph-gray-300: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
+  --ph-gray-400: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
   --ph-gray-500: var(--ds-text-subtlest, #A1A1A1);
   --ph-gray-600: var(--ds-text-subtlest, #A1A1A1);
   --ph-gray-700: var(--ds-text, var(--cp-bg-neutral, #EDEDED));

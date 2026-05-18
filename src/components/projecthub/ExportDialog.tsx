@@ -47,7 +47,7 @@ export function ExportDialog({ open, onClose, projects }: Props) {
         <DialogHeader>
           <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18 }}>Export Projects</DialogTitle>
         </DialogHeader>
-        <p className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 13, marginTop: -4, marginBottom: 12 }}>
+        <p className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 13, marginTop: -4, marginBottom: 12 }}>
           Export {projects.length} project{projects.length !== 1 ? 's' : ''} matching current filters.
         </p>
         <div className="grid grid-cols-3 gap-3">

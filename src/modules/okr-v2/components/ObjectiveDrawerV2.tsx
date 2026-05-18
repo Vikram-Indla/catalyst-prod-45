@@ -75,7 +75,7 @@ function getHealthColor(health?: string): string {
     case 'fair': return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
     case 'poor': return 'var(--ds-text-danger, #EF4444)';
     case 'at_risk': return '#F97316';
-    default: return 'var(--ds-text-subtlest, #878787)';
+    default: return 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))';
   }
 }
 

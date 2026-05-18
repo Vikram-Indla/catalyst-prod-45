@@ -44,7 +44,7 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
           <div className="truncate text-sm font-semibold font-['Sora',sans-serif] text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
             {project.name}
           </div>
-          <span className="text-[11px] font-medium font-['JetBrains_Mono',monospace] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]">
+          <span className="text-[11px] font-medium font-['JetBrains_Mono',monospace] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
             {project.key}
           </span>
         </div>
@@ -59,7 +59,7 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
       {/* Footer: avatars + updated */}
       <div className="flex items-center justify-between mt-auto">
         <AvatarStack names={project.member_names || []} />
-        <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]">
+        <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
           {formatRelativeTime(project.updated_at)}
         </span>
       </div>

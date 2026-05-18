@@ -473,7 +473,7 @@
 /* ── Dark mode ── */
 .dark .csModal { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); }
 .dark .csModalTitle { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
-.dark .csRequiredNote { color: var(--ds-text-subtlest, #878787); }
+.dark .csRequiredNote { color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); }
 .dark .csHeaderBtn { color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .csHeaderBtn:hover { background: var(--ds-border, var(--cp-ink-1, #292929)); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .csModalFooter { border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
@@ -494,7 +494,7 @@
 .dark .csCreateAnother { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .csCancel { color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .csCancel:hover { background: var(--ds-border, var(--cp-ink-1, #292929)); }
-.dark .csHelpText { color: var(--ds-text-subtlest, #878787); }
+.dark .csHelpText { color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); }
 .dark .csDivider { background: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .csLearnLink { color: #4C9AFF; }
 .dark .csProjectIcon { background: #0C66E4; }

@@ -88,7 +88,7 @@ export const catalystTokens = {
     text: {
       primary: 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))',
       secondary: 'var(--ds-text-subtlest, #A1A1A1)',
-      muted: 'var(--ds-text-subtlest, #878787)',
+      muted: 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))',
     },
     surface: {
       bg: 'var(--ds-surface, #0A0A0A)',

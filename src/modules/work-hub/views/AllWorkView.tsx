@@ -310,7 +310,7 @@ export function AllWorkView() {
                 <span className="text-[13px] text-slate-700 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">{item.assignee}</span>
               </div>
             ) : (
-              <span className="text-[13px] text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)]">Unassigned</span>
+              <span className="text-[13px] text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">Unassigned</span>
             )}
           </td>
           {/* Created */}
@@ -328,7 +328,7 @@ export function AllWorkView() {
                 <ChevronRight className="h-3 w-3" />
               </button>
             ) : (
-              <span className="text-[13px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">None</span>
+              <span className="text-[13px] text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">None</span>
             )}
           </td>
           {/* Actions */}
@@ -544,7 +544,7 @@ export function AllWorkView() {
 
             {/* View Toggle Icons */}
             <div className="flex items-center border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-md overflow-hidden">
-              <button className="h-8 w-8 flex items-center justify-center text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)] hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]">
+              <button className="h-8 w-8 flex items-center justify-center text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]">
                 <LayoutGrid className="h-4 w-4" />
               </button>
               <button className="h-8 w-8 flex items-center justify-center text-blue-600 bg-blue-50">

@@ -484,10 +484,10 @@
 .dark .jlpHeader { background: var(--cp-bg-page, #1F1F21); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .jlpSortBtn { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .jlpSortBtn:hover, .dark .jlpSortBtn.active { background: rgba(12,102,228,0.15); color: #4C9AFF; }
-.dark .jlpToolBtn { color: var(--ds-text-subtlest, #878787); }
+.dark .jlpToolBtn { color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); }
 .dark .jlpToolBtn:hover { background: var(--ds-surface-overlay, #1F1F1F); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .jlpSortMenu { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
-.dark .jlpSortMenuTitle { color: var(--ds-text-subtlest, #878787); }
+.dark .jlpSortMenuTitle { color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); }
 .dark .jlpSortOption { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .jlpSortOption:hover { background: var(--ds-surface-overlay, #1F1F1F); }
 .dark .jlpBody { background: var(--cp-bg-page, #1F1F21); }
@@ -496,9 +496,9 @@
 .dark .jlpCard.jlpCardSelected { background: rgba(12,102,228,0.12); border-left-color: #4C9AFF; }
 .dark .jlpCardSummary { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .jlpCardSummary.jlpCardSummaryActive { color: #4C9AFF; }
-.dark .jlpCardKey { color: var(--ds-text-subtlest, #878787); }
+.dark .jlpCardKey { color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); }
 .dark .jlpCardAvatarEmpty { background: var(--ds-border, var(--cp-ink-1, #292929)); }
-.dark .jlpFooterCount { color: var(--ds-text-subtlest, #878787); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
+.dark .jlpFooterCount { color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .jlpFooterCount strong { color: #4C9AFF; }
 .dark .jlpSkLine, .dark .jlpSkCircle { background: var(--ds-border, var(--cp-ink-1, #292929)); }
 
@@ -1601,14 +1601,14 @@
 .dark .awToolbar { background: var(--cp-bg-page, #1F1F21); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .awToolbarBtn { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awToolbarBtn:hover { background: var(--ds-surface-overlay, #1F1F1F); }
-.dark .awToolbarBtn.awAskAi { background: none; color: var(--ds-text-subtlest, #878787); }
+.dark .awToolbarBtn.awAskAi { background: none; color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); }
 .dark .awToolbarBtn.awAskAi:hover { color: #4C9AFF; background: rgba(12,102,228,0.12); }
 .dark .awToolbarSearch { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .awToolbarSearchInput { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awToolbarAvatar { border-color: var(--cp-bg-page, #1F1F21); }
 .dark .awToolbarAvatarFallback { border-color: var(--cp-bg-page, #1F1F21); }
 .dark .awToolbarAvatarOverflow { background: var(--ds-border, var(--cp-ink-1, #292929)); color: var(--ds-text-subtlest, #A1A1A1); border-color: var(--cp-bg-page, #1F1F21); }
-.dark .awViewToggleBtn { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); color: var(--ds-text-subtlest, #878787); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
+.dark .awViewToggleBtn { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .awViewToggleBtn:hover { background: var(--ds-surface-overlay, #1F1F1F); }
 .dark .awViewToggleBtn.active { background: rgba(12,102,228,0.12); color: #4C9AFF; }
 .dark .awViewToggle { border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
@@ -1633,34 +1633,34 @@
 /* ── Activity section dark mode ── */
 .dark .awActivityHeading { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awActivityTabBar { border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
-.dark .awActivityTab2 { color: var(--ds-text-subtlest, #878787); }
+.dark .awActivityTab2 { color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); }
 .dark .awActivityTab2:hover { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awActivityTab2.active { color: #4C9AFF; border-bottom-color: #4C9AFF; }
-.dark .awSortToggle { color: var(--ds-text-subtlest, #878787); }
+.dark .awSortToggle { color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); }
 .dark .awSortToggle:hover { background: var(--ds-surface-overlay, #1F1F1F); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awCommentBox { border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .awCommentBox:hover { border-color: var(--ds-border-bold, #454545); }
-.dark .awCommentPlaceholder { color: var(--ds-text-subtlest, #878787); }
+.dark .awCommentPlaceholder { color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); }
 .dark .awCommentEditorBox { border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .awCommentEditorBox:focus-within { border-color: #4C9AFF; }
 .dark .awEditorToolbar { background: #111111; border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
-.dark .awToolbarBtn { color: var(--ds-text-subtlest, #878787); }
+.dark .awToolbarBtn { color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); }
 .dark .awToolbarBtn:hover { background: var(--ds-surface-overlay, #1F1F1F); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awToolbarDivider { background: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .awCommentTextarea2 { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
-.dark .awCommentTextarea2::placeholder { color: var(--ds-text-subtlest, #878787); }
+.dark .awCommentTextarea2::placeholder { color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); }
 .dark .awCommentSaveBtn { background: var(--ds-background-brand-bold-hovered, #1D4ED8); }
 .dark .awCommentSaveBtn:hover { background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); }
 .dark .awCommentCancelBtn { color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .awCommentCancelBtn:hover { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awTimelineName { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
-.dark .awTimelineTime { color: var(--ds-text-subtlest, #878787); }
+.dark .awTimelineTime { color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); }
 .dark .awTypeBadgeHistory { background: var(--ds-border-bold, #454545); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awTypeBadgeComment { background: rgba(12,102,228,0.15); color: #4C9AFF; }
 .dark .awTypeBadgeWorklog { background: var(--ds-border, var(--cp-ink-1, #292929)); color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .awStatusLoz { border-color: var(--ds-border-bold, #454545); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awAssigneeChip { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
-.dark .awChangeOld { color: var(--ds-text-subtlest, #878787); }
+.dark .awChangeOld { color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); }
 .dark .awChangeNew { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awTimelineDetail { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awLogWorkToggle { border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); color: #4C9AFF; }
@@ -1674,7 +1674,7 @@
 .dark .awLogWorkSubmit:hover { background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); }
 .dark .awDescriptionContent { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awDescPlaceholder:hover { background: var(--ds-surface-overlay, #1F1F1F); }
-.dark .awAddParentLink { color: var(--ds-text-subtlest, #878787); }
+.dark .awAddParentLink { color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); }
 .dark .awAddParentLink:hover { color: #4C9AFF; background: var(--ds-surface-overlay, #1F1F1F); }
 /* (old pill-style tab dark rule removed — now using underline tabs) */
 .dark .awLabelChip { background: var(--ds-border, var(--cp-ink-1, #292929)); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }

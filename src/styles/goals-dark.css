@@ -29,7 +29,7 @@
 .dark .goals-tree-container > div:first-child , [data-theme="dark"] .goals-tree-container > div:first-child {
   background: var(--ds-surface-overlay, #1F1F1F) !important;
   border-bottom-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
-  color: var(--ds-text-subtlest, #878787) !important;
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)) !important;
 }
 
 /* ── Theme Row (sunken var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) bg) ── */
@@ -88,13 +88,13 @@
 /* Tertiary text (var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))) → t3 */
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(100, 116, 139)"],
 .dark [data-goals-page] [style*="color: var(--cp-ink-3, var(--cp-text-secondary, #64748B))"] , [data-theme="dark"] [data-goals-page] [style*="color: var(--cp-ink-3, var(--cp-text-secondary, #64748B))"] {
-  color: var(--ds-text-subtlest, #878787) !important;
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)) !important;
 }
 
 /* Muted text (var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))) → t3 */
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(148, 163, 184)"],
 .dark [data-goals-page] [style*="color: var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))"] , [data-theme="dark"] [data-goals-page] [style*="color: var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))"] {
-  color: var(--ds-text-subtlest, #878787) !important;
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)) !important;
 }
 
 /* Very muted text (var(--ds-text-disabled, #CBD5E1)) → t4 */
@@ -176,7 +176,7 @@
 [data-theme="dark"] [data-goals-page] span[style*="background: rgb(241, 245, 249)"][style*="fontFamily"],
 .dark [data-goals-page] span[style*="background: var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))"][style*="fontFamily"] , [data-theme="dark"] [data-goals-page] span[style*="background: var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))"][style*="fontFamily"] {
   background: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
-  color: var(--ds-text-subtlest, #878787) !important;
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)) !important;
 }
 
 /* ── Confidence dots empty ── */
@@ -233,7 +233,7 @@
 .dark .heatmap-scroll > div:first-child , [data-theme="dark"] .heatmap-scroll > div:first-child {
   background: var(--ds-surface-overlay, #1F1F1F) !important;
   border-bottom-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
-  color: var(--ds-text-subtlest, #878787) !important;
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)) !important;
 }
 
 /* Heatmap row borders */

@@ -376,7 +376,7 @@
   font-family: var(--cp-font-mono);
   font-size: var(--roadmap-bar-date-font-size);
   font-weight: 500;
-  color: var(--ds-text-subtlest, #878787);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
   margin-left: auto;
   padding-left: 8px;
   flex-shrink: 0;

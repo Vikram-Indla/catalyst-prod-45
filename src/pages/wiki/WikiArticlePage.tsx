@@ -107,7 +107,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
         {versions.length === 0 ? (
           <div style={{ padding: '48px 20px', textAlign: 'center' }}>
             <History size={32} style={{ color: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', marginBottom: 12 }} />
-            <div style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No version history yet</div>
+            <div style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No version history yet</div>
           </div>
         ) : versions.map((v: any, i: number) => (
           <div key={v.id || i} style={{
@@ -143,7 +143,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
             {v.change_summary && (
               <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 4, lineHeight: 1.5 }}>{v.change_summary}</div>
             )}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
               {v.changed_by_name && <span>{v.changed_by_name}</span>}
               {v.changed_at && <span>· {formatDate(v.changed_at)}</span>}
               {!v.changed_at && v.created_at && <span>· {formatDate(v.created_at)}</span>}
@@ -377,7 +377,7 @@ export default function WikiArticlePage() {
     ? <FileDown size={14} style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }} />
     : (page as any).format === 'video'
     ? <Video size={14} style={{ color: 'var(--cp-purple-60, #7C3AED)' }} />
-    : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />;
+    : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />;
 
   const domainName = page.domain_code || 'Wiki';
 
@@ -433,9 +433,9 @@ export default function WikiArticlePage() {
         {/* ── Breadcrumb ── */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
           <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>Wiki</span>
-          <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
+          <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
           <span onClick={() => navigate(`/wiki/category/${DOMAIN_SLUGS[page.domain_code || ''] || ''}`)} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>{domainName}</span>
-          <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
+          <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
           <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontWeight: 600 }}>{title}</span>
         </nav>
 
@@ -506,7 +506,7 @@ export default function WikiArticlePage() {
                   <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>{authorName}</span>
                 </>
               ) : (
-                <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No author</span>
+                <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No author</span>
               )}
               <span style={{
                 fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4,
@@ -539,7 +539,7 @@ export default function WikiArticlePage() {
               {tldr ? (
                 <div style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', lineHeight: 1.7, marginTop: 8 }}>{tldr}</div>
               ) : (
-                <div style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: 8, fontStyle: 'italic' }}>AI summary not yet generated</div>
+                <div style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: 8, fontStyle: 'italic' }}>AI summary not yet generated</div>
               )}
             </div>
 
@@ -569,7 +569,7 @@ export default function WikiArticlePage() {
                     display: 'block', fontSize: 12, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', padding: '3px 0',
                     textDecoration: 'none',
                   }}>
-                    <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginRight: 8 }}>{i + 1}.</span>
+                    <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginRight: 8 }}>{i + 1}.</span>
                     {s.title}
                   </a>
                 ))}
@@ -583,7 +583,7 @@ export default function WikiArticlePage() {
                   fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 650, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
                   margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8,
                 }}>
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{i + 1}.</span>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{i + 1}.</span>
                   {s.title}
                   {s.is_live_data && (
                     <span style={{
@@ -607,7 +607,7 @@ export default function WikiArticlePage() {
             ))}
 
             {sections.length === 0 && (
-              <div style={{ padding: 48, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontSize: 13 }}>
+              <div style={{ padding: 48, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontSize: 13 }}>
                 This article has no content sections yet.
               </div>
             )}
@@ -731,7 +731,7 @@ export default function WikiArticlePage() {
 /* ── Delivery Status sub-component ── */
 function DeliveryStatusSection({ content }: { content: string | null }) {
   const { isDark } = useTheme();
-  if (!content) return <div style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No delivery data available.</div>;
+  if (!content) return <div style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No delivery data available.</div>;
   return (
     <div style={{
       borderRadius: 6, border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', overflow: 'hidden',
@@ -744,12 +744,12 @@ function DeliveryStatusSection({ content }: { content: string | null }) {
 /* ── References sub-component ── */
 function ReferencesSection({ refs }: { refs: any[] }) {
   const { isDark } = useTheme();
-  if (refs.length === 0) return <div style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', padding: 8 }}>No references.</div>;
+  if (refs.length === 0) return <div style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', padding: 8 }}>No references.</div>;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
       {refs.map((r: any) => (
         <div key={r.ref_number ?? r.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
-          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', minWidth: 24 }}>[{r.ref_number}]</span>
+          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', minWidth: 24 }}>[{r.ref_number}]</span>
           {r.source_type === 'jira' ? (
             <span style={{ fontSize: 11, fontWeight: 650, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontFamily: 'var(--cp-font-mono)' }}>{r.source_key}</span>
           ) : r.source_type === 'document' ? (

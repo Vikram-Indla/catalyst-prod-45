@@ -46,7 +46,7 @@ export function T10RenameModal({ isOpen, onClose, currentName, onRename }: T10Re
           <h2 className="text-lg font-semibold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">Rename List</h2>
           <button
             type="button"
-            className="p-1.5 rounded-lg text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)] hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] hover:text-slate-600 hover:bg-slate-100 transition-colors"
             onClick={onClose}
           >
             <X size={18} />
@@ -66,7 +66,7 @@ export function T10RenameModal({ isOpen, onClose, currentName, onRename }: T10Re
               onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
               placeholder="List name..."
               autoFocus
-              className="w-full px-4 py-2.5 text-[15px] text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,#878787)] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-300 dark:border-[var(--ds-border-bold,#454545)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              className="w-full px-4 py-2.5 text-[15px] text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] border border-slate-300 dark:border-[var(--ds-border-bold,#454545)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             />
           </div>
         </div>

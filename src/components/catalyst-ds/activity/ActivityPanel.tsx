@@ -208,10 +208,10 @@ function ActivityPanel({
           ph_worklogs data source is wired (Supabase work, next session). */}
       {activeTab === 'worklog' && (
         <div className="text-center py-10">
-          <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]">
+          <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
             No worklog entries yet
           </p>
-          <p className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)] mt-2">
+          <p className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mt-2">
             Track time spent on this work item via the Worklog tab. Coming soon.
           </p>
         </div>
@@ -231,11 +231,11 @@ function ActivityPanel({
           <div className="mt-4 divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
             {(isLoadingComments || isLoadingHistory) ? (
               <div className="text-center py-8">
-                <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]">Loading activity...</p>
+                <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">Loading activity...</p>
               </div>
             ) : mergedAll.length === 0 ? (
               <div className="text-center py-10">
-                <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]">
+                <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
                   No activity yet
                 </p>
               </div>

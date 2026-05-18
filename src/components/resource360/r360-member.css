@@ -1339,7 +1339,7 @@
 .dark #r360-root .r3-parent-key,
 .dark #r360-root .r3-weeknav-count,
 .dark #r360-root .r3-completed-text.empty {
-  color: var(--ds-text-subtlest, #878787) !important;
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)) !important;
 }
 
 /* Tabs and controls */
@@ -1451,7 +1451,7 @@
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark #r360-root .r3-tab {
-  color: var(--ds-text-subtlest, #878787) !important;
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)) !important;
 }
 .dark #r360-root .r3-tab:hover {
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
@@ -1520,7 +1520,7 @@
 /* Completed rail */
 .dark #r360-root .r3-completed-circle.empty {
   border-color: var(--ds-border-bold, #454545) !important;
-  color: var(--ds-text-subtlest, #878787) !important;
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)) !important;
 }
 .dark #r360-root .r3-completed-text {
   color: var(--ds-text-subtlest, #A1A1A1) !important;
@@ -1561,7 +1561,7 @@
 .dark #r360-root [style*="color:var(--cp-ink-3, var(--cp-text-secondary, #64748B))"],
 .dark #r360-root [style*="color: var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))"],
 .dark #r360-root [style*="color:var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))"] {
-  color: var(--ds-text-subtlest, #878787) !important;
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)) !important;
 }
 
 .dark #r360-root [style*="background:#fff"],
@@ -1603,7 +1603,7 @@
 }
 .dark #r360-root [style*="color: var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))"],
 .dark #r360-root [style*="color: #92400E"] {
-  color: var(--ds-text-subtlest, #878787) !important;
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)) !important;
 }
 
 /* rgba wash backgrounds → solid ADS hex */

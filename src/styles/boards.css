@@ -128,7 +128,7 @@
 /* Dark mode overrides — DARK MODE ADS neutral */
 .dark {
   --boards-card-title-color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
-  --boards-card-title-color-done: var(--ds-text-subtlest, #878787);
+  --boards-card-title-color-done: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
   --boards-card-id-color: var(--ds-text-subtlest, #A1A1A1);
   --boards-column-title-color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --boards-column-count-color: var(--ds-text-subtlest, #A1A1A1);
@@ -146,7 +146,7 @@
   --boards-shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.3);
   --boards-shadow-card-dragging: 0 8px 24px rgba(0, 0, 0, 0.4);
 
-  --boards-date-color-upcoming: var(--ds-text-subtlest, #878787);
+  --boards-date-color-upcoming: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 
 /* DARK MODE — Direct property overrides to guarantee dark card backgrounds */
@@ -168,7 +168,7 @@
 .dark .boards-column__empty , [data-theme="dark"] .boards-column__empty {
   background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
-  color: var(--ds-text-subtlest, #878787) !important;
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)) !important;
 }
 
 .dark .boards-column__header,
@@ -193,7 +193,7 @@
 
 .dark .boards-card__date,
 .dark .boards-card__date , [data-theme="dark"] .boards-card__date {
-  color: var(--ds-text-subtlest, #878787) !important;
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)) !important;
 }
 
 
@@ -347,7 +347,7 @@
 
 .dark .boards-add-task {
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  color: var(--ds-text-subtlest, #878787);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 
 .dark .boards-add-task:hover {
@@ -607,7 +607,7 @@
 .dark .boards-card__avatar--empty {
   background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  color: var(--ds-text-subtlest, #878787);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 
 
@@ -810,7 +810,7 @@
 }
 
 .dark .boards-column__drag-handle {
-  color: var(--ds-text-subtlest, #878787);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 
 .dark .boards-column__drag-handle:hover {
@@ -899,7 +899,7 @@
 
 .dark .boards-add-column {
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  color: var(--ds-text-subtlest, #878787);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 
 .dark .boards-add-column:hover {

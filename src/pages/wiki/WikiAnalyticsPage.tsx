@@ -102,7 +102,7 @@ export default function WikiAnalyticsPage() {
     <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, #F8FAFC)', minHeight: '100%', padding: '24px 40px 48px' }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>Wiki</span>
-        <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
+        <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
         <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontWeight: 600 }}>Analytics</span>
       </nav>
 
@@ -115,7 +115,7 @@ export default function WikiAnalyticsPage() {
         )) : statCards.map(s => (
           <div key={s.label} style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${border}`, textAlign: 'center' }}>
             <div style={{ fontFamily: F.sora, fontSize: 24, fontWeight: 700, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{s.value}</div>
-            <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: 4, letterSpacing: '0.05em' }}>{s.label}</div>
+            <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: 4, letterSpacing: '0.05em' }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -167,7 +167,7 @@ export default function WikiAnalyticsPage() {
               display: 'grid', gridTemplateColumns: '1fr 60px 60px 60px',
               background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '0 14px', height: 32, alignItems: 'center',
               fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
-              color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
+              color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
             }}>
               <span>Article</span><span>Views</span><span>Help.</span><span>Conf.</span>
             </div>
@@ -199,12 +199,12 @@ export default function WikiAnalyticsPage() {
               display: 'grid', gridTemplateColumns: '1fr 60px 60px',
               background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '0 14px', height: 32, alignItems: 'center',
               fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
-              color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
+              color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
             }}>
               <span>Article</span><span>Help.</span><span>Votes</span>
             </div>
             {(leastHelpful ?? []).length === 0 ? (
-              <div style={{ padding: 24, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontSize: 12 }}>No feedback data yet</div>
+              <div style={{ padding: 24, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontSize: 12 }}>No feedback data yet</div>
             ) : (leastHelpful ?? []).map((a: any) => (
               <div key={a.id} onClick={() => navigate(`/wiki/${a.slug}`)} style={{
                 display: 'grid', gridTemplateColumns: '1fr 60px 60px',

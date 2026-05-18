@@ -34,7 +34,7 @@ export const DK: DarkTokens = {
   t1: 'var(--cp-text-primary, var(--cp-bg-neutral, #EDEDED))',
   t2: 'var(--cp-text-secondary, #C9CCD0)',
   t3: 'var(--cp-text-tertiary, #A1A1A1)',
-  t4: 'var(--cp-text-tertiary, #878787)',
+  t4: 'var(--cp-text-tertiary, var(--cp-text-secondary, #878787))',
 
   border:       'var(--cp-border-default, var(--cp-ink-1, #2E2E2E))',
   borderStrong: 'var(--cp-border-strong, #454545)',

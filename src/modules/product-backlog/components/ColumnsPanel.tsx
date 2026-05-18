@@ -99,7 +99,7 @@ export function ColumnsPanel({
         </span>
         <span 
           className="text-xs"
-          style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--text-3)' }}
+          style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--text-3)' }}
         >
           {visibleColumns.length} of {columns.length}
         </span>

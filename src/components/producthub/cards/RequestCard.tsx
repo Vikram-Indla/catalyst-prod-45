@@ -143,7 +143,7 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
                   style={{ width: `${request.progress}%` }}
                 />
               </div>
-              <span className="text-[10px] text-zinc-500 dark:text-[var(--ds-text-subtlest,#878787)]">{request.progress}%</span>
+              <span className="text-[10px] text-zinc-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">{request.progress}%</span>
             </div>
           </div>
         ) : (
@@ -195,7 +195,7 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
               <div>
                 <div className="flex items-center justify-between mb-0.5">
                   <span className="text-[10px] text-zinc-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">Progress</span>
-                  <span className="text-[10px] font-medium text-zinc-700 dark:text-[var(--ds-text-subtlest,#878787)]">{request.progress}%</span>
+                  <span className="text-[10px] font-medium text-zinc-700 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">{request.progress}%</span>
                 </div>
                 <div className="w-full h-1.5 bg-zinc-100 dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] rounded-full overflow-hidden">
                   <div
@@ -290,7 +290,7 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
 
       {/* Footer */}
       <div className="border-t border-zinc-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] px-4 py-2">
-        <span className="text-[10px] text-zinc-400 dark:text-[var(--ds-text-subtlest,#878787)]">
+        <span className="text-[10px] text-zinc-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
           {gridSize === 'large'
             ? `Created ${format(new Date(request.created_at), 'MMM dd')} · Updated ${relativeTime(request.updated_at)}`
             : `Updated ${relativeTime(request.updated_at)}`

@@ -43,14 +43,14 @@ function DocStatusPoller({ docId, fileName }: { docId: string; fileName: string 
         </div>
       ) : (
         steps.map((s, si) => (
-          <div key={si} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '3px 0', fontSize: 11, color: s.done ? 'var(--cp-success-60)' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-muted)') }}>
+          <div key={si} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '3px 0', fontSize: 11, color: s.done ? 'var(--cp-success-60)' : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)') }}>
             {s.done ? <Check size={12} /> : <span style={{ width: 8, height: 8, borderRadius: '50%', background: si === 0 && !isDone ? 'var(--cp-primary-60)' : (isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--cp-border-default)'), animation: si === 0 && !isDone ? 'wiki-pulse 1.5s ease-in-out infinite' : 'none' }} />}
             {s.label}
           </div>
         ))
       )}
       {isDone && status && (
-        <div style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-muted)', marginTop: 6, fontFamily: 'var(--cp-font-mono)' }}>
+        <div style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)', marginTop: 6, fontFamily: 'var(--cp-font-mono)' }}>
           {status.pages_extracted ?? 0} pages · {status.words_extracted ?? 0} words · {status.chunks_generated ?? 0} chunks
         </div>
       )}
@@ -139,7 +139,7 @@ export function WikiUploadWizard({ open, onClose }: Props) {
         <div style={{ padding: '16px 20px 0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
             <span style={{ fontSize: 16, fontWeight: 650, fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)' }}>Upload Documents</span>
-            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-muted)', padding: 4 }}><X size={16} /></button>
+            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)', padding: 4 }}><X size={16} /></button>
           </div>
           <div style={{ height: 3, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--cp-bg-sunken)', borderRadius: 4, overflow: 'hidden' }}>
             <div style={{ height: '100%', width: `${progressPct}%`, background: 'var(--cp-primary-60)', transition: 'width 300ms', borderRadius: 2 }} />
@@ -148,7 +148,7 @@ export function WikiUploadWizard({ open, onClose }: Props) {
             {['Select Files', 'Classify', 'Review', 'Processing'].map((label, i) => (
               <span key={i} style={{
                 fontSize: 10, fontWeight: step > i ? 650 : 500, flex: 1, textAlign: 'center',
-                color: step > i ? 'var(--cp-primary-60)' : step === i + 1 ? (isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)') : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-muted)'),
+                color: step > i ? 'var(--cp-primary-60)' : step === i + 1 ? (isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)') : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)'),
               }}>{label}</span>
             ))}
           </div>
@@ -167,9 +167,9 @@ export function WikiUploadWizard({ open, onClose }: Props) {
                 }}
                 onClick={() => document.getElementById('wiki-file-input')?.click()}
               >
-                <Upload size={28} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-muted)', margin: '0 auto 8px' }} />
+                <Upload size={28} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)', margin: '0 auto 8px' }} />
                 <div style={{ fontSize: 13, fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-text-secondary)' }}>Drop files here or click to browse</div>
-                <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-muted)', marginTop: 4 }}>PDF, DOCX, XLSX, PPTX, MD, TXT, CSV · Max 50MB · Up to 5 files</div>
+                <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)', marginTop: 4 }}>PDF, DOCX, XLSX, PPTX, MD, TXT, CSV · Max 50MB · Up to 5 files</div>
                 <input id="wiki-file-input" type="file" multiple accept={ACCEPT} onChange={handleFileInput} style={{ display: 'none' }} />
               </div>
               {files.map((f, i) => (
@@ -177,10 +177,10 @@ export function WikiUploadWizard({ open, onClose }: Props) {
                   display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px',
                   borderRadius: 4, border: isDark ? '1px solid #292929' : '1px solid var(--cp-border-subtle)', marginBottom: 4,
                 }}>
-                  <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-muted)' }} />
+                  <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)' }} />
                   <span style={{ flex: 1, fontSize: 12, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.file.name}</span>
-                  <span style={{ fontSize: 10, fontFamily: 'var(--cp-font-mono)', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-muted)' }}>{(f.file.size / 1024 / 1024).toFixed(1)} MB</span>
-                  <button onClick={() => removeFile(i)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-muted)' }}><X size={12} /></button>
+                  <span style={{ fontSize: 10, fontFamily: 'var(--cp-font-mono)', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)' }}>{(f.file.size / 1024 / 1024).toFixed(1)} MB</span>
+                  <button onClick={() => removeFile(i)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)' }}><X size={12} /></button>
                 </div>
               ))}
             </>
@@ -252,10 +252,10 @@ export function WikiUploadWizard({ open, onClose }: Props) {
                     display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
                     borderBottom: i < files.length - 1 ? (isDark ? '0.75px solid #292929' : '0.75px solid var(--cp-border-subtle)') : 'none',
                   }}>
-                    <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-muted)' }} />
+                    <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)' }} />
                     <span style={{ flex: 1, fontSize: 12, fontWeight: 500, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)' }}>{f.file.name}</span>
                     <DomainBadge code={f.domain} />
-                    <span style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-muted)', textTransform: 'capitalize' }}>{f.docType.replace(/_/g, ' ')}</span>
+                    <span style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)', textTransform: 'capitalize' }}>{f.docType.replace(/_/g, ' ')}</span>
                   </div>
                 ))}
               </div>
@@ -268,7 +268,7 @@ export function WikiUploadWizard({ open, onClose }: Props) {
           {step === 4 && (
             <div>
               {uploading && (
-                <div style={{ padding: 24, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-muted)', fontSize: 12 }}>
+                <div style={{ padding: 24, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-muted)', fontSize: 12 }}>
                   Uploading files to storage...
                 </div>
               )}

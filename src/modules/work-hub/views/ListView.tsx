@@ -414,7 +414,7 @@ export function ListView() {
                 placeholder="Search list"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 h-8 w-44 text-[14px] bg-slate-50 dark:bg-[#111111] border-transparent rounded focus:border-blue-400 focus:bg-white dark:focus:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,#878787)]"
+                className="pl-9 h-8 w-44 text-[14px] bg-slate-50 dark:bg-[#111111] border-transparent rounded focus:border-blue-400 focus:bg-white dark:focus:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]"
               />
             </div>
             {/* Avatar group */}
@@ -431,10 +431,10 @@ export function ListView() {
           <div className="flex items-center gap-2">
             <GroupByMenu value={groupBy} onChange={setGroupBy} />
             <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]">
-              <Settings2 className="h-4 w-4 text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]" />
+              <Settings2 className="h-4 w-4 text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" />
             </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]">
-              <MoreHorizontal className="h-4 w-4 text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]" />
+              <MoreHorizontal className="h-4 w-4 text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" />
             </Button>
           </div>
         </div>
@@ -567,7 +567,7 @@ export function ListView() {
                                   <div className="flex items-center gap-2">
                                     <ChevronDown className="h-4 w-4 text-slate-500" />
                                     <span className="text-[14px] font-semibold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">{groupKey}</span>
-                                    <span className="text-[12px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">{groupItems.length}</span>
+                                    <span className="text-[12px] text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">{groupItems.length}</span>
                                   </div>
                                 </td>
                               </tr>
@@ -681,7 +681,7 @@ export function ListView() {
                                       {/* Comments */}
                                       {isFieldVisible('comments') && (
                                         <TableCell className="w-28" onClick={(e) => e.stopPropagation()}>
-                                          <button className="inline-flex items-center gap-1 text-[14px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] hover:text-slate-900 dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] rounded px-1 py-0.5 -mx-1 transition-colors">
+                                          <button className="inline-flex items-center gap-1 text-[14px] text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] hover:text-slate-900 dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] rounded px-1 py-0.5 -mx-1 transition-colors">
                                             <MessageSquare className="h-3.5 w-3.5" />
                                             {item.comments > 0 ? (
                                               <span>{item.comments} comment{item.comments > 1 ? 's' : ''}</span>
@@ -744,7 +744,7 @@ export function ListView() {
                                       {/* Created */}
                                       {isFieldVisible('created') && (
                                         <TableCell className="w-28">
-                                          <div className="inline-flex items-center gap-1 text-[14px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">
+                                          <div className="inline-flex items-center gap-1 text-[14px] text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
                                             <Calendar className="h-3.5 w-3.5" />
                                             <span>{formatDate(item.created)}</span>
                                           </div>

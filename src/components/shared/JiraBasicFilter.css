@@ -554,7 +554,7 @@
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 .dark .jf-tab {
-  color: var(--ds-text-subtlest, #878787);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 .dark .jf-tab:hover:not(.jf-tab--active):not(:disabled) {
   background-color: var(--ds-surface-overlay, #1F1F1F);
@@ -581,7 +581,7 @@
 }
 
 .dark .jf-clear-btn {
-  color: var(--ds-text-subtlest, #878787);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 .dark .jf-clear-btn:hover:not(:disabled) {
   color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
@@ -595,10 +595,10 @@
   border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
 }
 .dark .jf-search-icon-wrap {
-  color: var(--ds-text-subtlest, #878787);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 .dark .jf-search-placeholder {
-  color: var(--ds-text-subtlest, #878787);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 .dark .jf-search-input {
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
@@ -617,10 +617,10 @@
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 .dark .jf-option-label-extra {
-  color: var(--ds-text-subtlest, #878787);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 .dark .jf-empty-options {
-  color: var(--ds-text-subtlest, #878787);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 
 .dark .jf-footer {
@@ -628,7 +628,7 @@
   border-top-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 .dark .jf-shortcut {
-  color: var(--ds-text-subtlest, #878787);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 .dark .jf-kbd {
   background-color: var(--ds-border, var(--cp-ink-1, #292929));
@@ -636,7 +636,7 @@
   border-color: var(--ds-border-bold, #454545);
 }
 .dark .jf-feedback-btn {
-  color: var(--ds-text-subtlest, #878787);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 .dark .jf-feedback-btn:hover {
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));

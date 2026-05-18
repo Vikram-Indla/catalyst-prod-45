@@ -96,7 +96,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
         <div style={{ padding: '20px 24px 16px', borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center' }}>
           <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 700, margin: 0, flex: 1, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>New Knowledge Request</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-            <X size={16} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)' }} />
+            <X size={16} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)' }} />
           </button>
         </div>
 
@@ -161,7 +161,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
           }}>Cancel</button>
           <button onClick={handleSubmit} disabled={!canSubmit || submitting} style={{
             fontSize: 12, fontWeight: 650, padding: '8px 20px', borderRadius: 6, cursor: canSubmit ? 'pointer' : 'not-allowed',
-            border: 'none', background: canSubmit ? 'var(--cp-blue)' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-4)'), color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            border: 'none', background: canSubmit ? 'var(--cp-blue)' : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-4)'), color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             display: 'flex', alignItems: 'center', gap: 6, opacity: submitting ? 0.7 : 1,
           }}>
             <Send size={12} /> {submitting ? 'Submitting...' : 'Submit Request'}

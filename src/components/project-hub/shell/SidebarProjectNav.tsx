@@ -162,7 +162,7 @@ export function SidebarProjectNav({
                 style={{ border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left' }}
               >
                 <div className="min-w-0">
-                  <div className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '0.03em', textTransform: 'uppercase' }}>{projectKey}</div>
+                  <div className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '0.03em', textTransform: 'uppercase' }}>{projectKey}</div>
                   <div className="truncate text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 14, fontWeight: 600, fontFamily: 'var(--cp-font-heading)', lineHeight: '18px' }}>
                     {projectName}
                   </div>
@@ -211,8 +211,8 @@ export function SidebarProjectNav({
             cursor: 'pointer', justifyContent: collapsed ? 'center' : 'flex-start', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
           }}
         >
-          <ArrowLeft size={14} strokeWidth={1.75} className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]" />
-          {!collapsed && <span className="dark:text-[var(--ds-text-subtlest,#878787)]">All Projects</span>}
+          <ArrowLeft size={14} strokeWidth={1.75} className="text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" />
+          {!collapsed && <span className="dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">All Projects</span>}
         </button>
       </div>
 

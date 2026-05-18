@@ -117,7 +117,7 @@ function ActivityItemDisplay({ item, jiraUserMap, className }: ActivityItemProps
             </span>
           )}
 
-          <span className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]">
+          <span className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
             {formatRelativeTime(timestamp)}
           </span>
         </div>
@@ -129,7 +129,7 @@ function ActivityItemDisplay({ item, jiraUserMap, className }: ActivityItemProps
                 <Lozenge appearance={statusAppearance(fieldChange.oldValue)}>
                   {formatDisplayValue(fieldChange.oldValue)}
                 </Lozenge>
-                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)] shrink-0" />
+                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] shrink-0" />
                 <Lozenge appearance={statusAppearance(fieldChange.newValue)}>
                   {formatDisplayValue(fieldChange.newValue)}
                 </Lozenge>
@@ -141,7 +141,7 @@ function ActivityItemDisplay({ item, jiraUserMap, className }: ActivityItemProps
                     ? renderJiraContent(fieldChange.oldValue, { userMap: jiraUserMap })
                     : <span className="italic">None</span>}
                 </div>
-                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)] shrink-0 mt-1.5" />
+                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] shrink-0 mt-1.5" />
                 <div className="text-[13px] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] whitespace-pre-wrap break-words">
                   {fieldChange.newValue
                     ? renderJiraContent(fieldChange.newValue, { userMap: jiraUserMap })
@@ -153,7 +153,7 @@ function ActivityItemDisplay({ item, jiraUserMap, className }: ActivityItemProps
                 <span className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] line-through">
                   {normalizeJiraText(fieldChange.oldValue, { userMap: jiraUserMap }) || 'None'}
                 </span>
-                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)] shrink-0" />
+                <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] shrink-0" />
                 <span className="text-[13px] font-medium text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
                   {normalizeJiraText(fieldChange.newValue, { userMap: jiraUserMap }) || 'None'}
                 </span>

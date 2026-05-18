@@ -34,11 +34,11 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
       {/* Header */}
       <div className="flex border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
         <div className="shrink-0 flex items-center bg-slate-50 dark:bg-[var(--ds-surface-overlay,#1F1F1F)]" style={{ width: 220, height: 50, padding: '8px 12px' }}>
-          <span className="text-[10.5px] font-semibold text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)] uppercase tracking-wide">Theme</span>
+          <span className="text-[10.5px] font-semibold text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] uppercase tracking-wide">Theme</span>
         </div>
         <div className="flex-1 grid bg-slate-50 dark:bg-[var(--ds-surface-overlay,#1F1F1F)]" style={{ gridTemplateColumns: `repeat(12, 1fr)` }}>
           {MONTHS.map((m, i) => (
-            <div key={m} className="flex items-center justify-center text-[10.5px] font-medium text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)] border-l border-slate-100 dark:border-[var(--ds-surface-overlay,#1F1F1F)]" style={{
+            <div key={m} className="flex items-center justify-center text-[10.5px] font-medium text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] border-l border-slate-100 dark:border-[var(--ds-surface-overlay,#1F1F1F)]" style={{
               height: 50,
               background: i % 2 === 0 ? 'rgba(248,250,252,0.5)' : 'transparent',
             }}>
@@ -127,13 +127,13 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
             <span className="truncate text-xs font-medium text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">{theme.title}</span>
           </div>
           <div className="flex-1 flex items-center justify-center border-l border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
-            <span className="text-[11px] text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)]">No dates set</span>
+            <span className="text-[11px] text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">No dates set</span>
           </div>
         </div>
       ))}
 
       {themes.length === 0 && (
-        <div className="flex items-center justify-center text-[13px] text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)]" style={{ height: 120 }}>
+        <div className="flex items-center justify-center text-[13px] text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ height: 120 }}>
           No themes to display on timeline.
         </div>
       )}

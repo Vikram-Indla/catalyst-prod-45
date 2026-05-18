@@ -120,13 +120,13 @@ const Comment = React.forwardRef<HTMLDivElement, CommentProps>(
               className={cn(
                 'text-[13px] font-semibold',
                 isSystem
-                  ? 'text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]'
+                  ? 'text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]'
                   : 'text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]'
               )}
             >
               {author.name}
             </span>
-            <span className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]">
+            <span className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
               {formatRelativeTime(createdAt)}
             </span>
             {isEdited && (

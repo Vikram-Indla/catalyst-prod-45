@@ -44,7 +44,7 @@
 .dark , [data-theme="dark"] {
   --di-ink: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --di-ink-secondary: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
-  --di-ink-tertiary: var(--ds-text-subtlest, #878787);
+  --di-ink-tertiary: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
   --di-ink-muted: #7D7D7D;
   --di-surface: var(--cp-bg-page, #1F1F21);
   --di-surface-secondary: var(--cp-bg-surface, var(--cp-ink-1, #242528));
@@ -346,7 +346,7 @@
 .dark .hub-prj , [data-theme="dark"] .hub-prj { background: #1A2030; color: #93C5FD; }
 .dark .hub-tst , [data-theme="dark"] .hub-tst { background: rgba(167,139,250,0.10); color: #A78BFA; }
 .dark .hub-rel , [data-theme="dark"] .hub-rel { background: rgba(253,230,138,0.10); color: #FDE68A; }
-.dark .hub-oth , [data-theme="dark"] .hub-oth { background: var(--ds-border, var(--cp-ink-1, #292929)); color: var(--ds-text-subtlest, #878787); }
+.dark .hub-oth , [data-theme="dark"] .hub-oth { background: var(--ds-border, var(--cp-ink-1, #292929)); color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); }
 
 .di-ev-content { flex: 1; }
 
@@ -405,7 +405,7 @@
 .dark .sig-esc     , [data-theme="dark"] .sig-esc     { background: #2A1C1E; color: var(--ds-border-danger, #FCA5A5); }
 .dark .sig-action  , [data-theme="dark"] .sig-action  { background: #1A2030; color: #93C5FD; }
 .dark .sig-gap     , [data-theme="dark"] .sig-gap     { background: #182820; color: #86EFAC; }
-.dark .sig-observe , [data-theme="dark"] .sig-observe { background: var(--ds-border, var(--cp-ink-1, #292929)); color: var(--ds-text-subtlest, #878787); }
+.dark .sig-observe , [data-theme="dark"] .sig-observe { background: var(--ds-border, var(--cp-ink-1, #292929)); color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)); }
 
 /* ══════════════════════════════════════════════════════════
    TAB 1 — EXECUTIVE SUMMARY V5 (Role-Based)

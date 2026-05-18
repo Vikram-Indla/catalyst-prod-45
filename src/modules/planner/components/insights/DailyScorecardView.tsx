@@ -16,7 +16,7 @@ export function DailyScorecardView() {
   if (isLoading) {
     return (
       <div className="h-full flex items-center justify-center bg-slate-50 dark:bg-[#111111]">
-        <Loader2 className="w-8 h-8 animate-spin text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)]" />
+        <Loader2 className="w-8 h-8 animate-spin text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" />
       </div>
     );
   }
@@ -24,7 +24,7 @@ export function DailyScorecardView() {
   if (error || !data) {
     return (
       <div className="h-full flex items-center justify-center bg-slate-50 dark:bg-[#111111]">
-        <p className="text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">Failed to load scorecard data</p>
+        <p className="text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">Failed to load scorecard data</p>
       </div>
     );
   }
@@ -41,11 +41,11 @@ export function DailyScorecardView() {
                 <h1 className="font-serif text-[28px] font-bold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] mb-1">
                   Daily Scorecard
                 </h1>
-                <p className="text-sm text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">
+                <p className="text-sm text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
                   Task completion by team and individual • {format(data.period.date, 'EEEE, MMMM d, yyyy')}
                 </p>
               </div>
-              <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] bg-slate-100 dark:bg-[var(--ds-border,var(--cp-ink-1, #292929))] px-3 py-1.5 rounded-full">
+              <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] bg-slate-100 dark:bg-[var(--ds-border,var(--cp-ink-1, #292929))] px-3 py-1.5 rounded-full">
                 <Clock className="w-3.5 h-3.5" />
                 <span>Live data</span>
               </div>
@@ -55,22 +55,22 @@ export function DailyScorecardView() {
             <div className="flex items-center gap-6 mt-6 pt-5 border-t border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
               <div className="text-center">
                 <div className="text-2xl font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">{data.summary.workstreams}</div>
-                <div className="text-[10px] font-medium text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase mt-1">Workstreams</div>
+                <div className="text-[10px] font-medium text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] uppercase mt-1">Workstreams</div>
               </div>
               <div className="w-px h-10 bg-slate-200 dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
               <div className="text-center">
                 <div className="text-2xl font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">{data.summary.totalTasks}</div>
-                <div className="text-[10px] font-medium text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase mt-1">Total Tasks</div>
+                <div className="text-[10px] font-medium text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] uppercase mt-1">Total Tasks</div>
               </div>
               <div className="w-px h-10 bg-slate-200 dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
               <div className="text-center">
                 <div className="text-2xl font-bold text-emerald-600">{data.summary.completed}</div>
-                <div className="text-[10px] font-medium text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase mt-1">Completed</div>
+                <div className="text-[10px] font-medium text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] uppercase mt-1">Completed</div>
               </div>
               <div className="w-px h-10 bg-slate-200 dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
               <div className="text-center">
                 <div className="text-2xl font-bold text-amber-600">{data.summary.overdue}</div>
-                <div className="text-[10px] font-medium text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase mt-1">Overdue</div>
+                <div className="text-[10px] font-medium text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] uppercase mt-1">Overdue</div>
               </div>
               <div className="w-px h-10 bg-slate-200 dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
               <div className="text-center">
@@ -80,7 +80,7 @@ export function DailyScorecardView() {
                 )}>
                   {data.summary.completionRate}%
                 </div>
-                <div className="text-[10px] font-medium text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase mt-1">Completion</div>
+                <div className="text-[10px] font-medium text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] uppercase mt-1">Completion</div>
               </div>
             </div>
           </div>
@@ -88,7 +88,7 @@ export function DailyScorecardView() {
           {/* Team Cards */}
           <div className="p-6 space-y-4">
             {data.workstreams.length === 0 ? (
-              <div className="text-center py-12 text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">
+              <div className="text-center py-12 text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
                 No workstreams with assigned tasks found
               </div>
             ) : (
@@ -106,7 +106,7 @@ export function DailyScorecardView() {
                       <span className="font-bold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
                         {team.name}
                       </span>
-                      <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] mt-0.5">{team.memberCount} members • {team.taskCount} tasks</div>
+                      <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mt-0.5">{team.memberCount} members • {team.taskCount} tasks</div>
                     </div>
                     <div className="text-right">
                       <div className={cn(
@@ -115,7 +115,7 @@ export function DailyScorecardView() {
                       )}>
                         {team.completionRate}%
                       </div>
-                      <div className="text-[10px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] mt-1">Completion</div>
+                      <div className="text-[10px] text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mt-1">Completion</div>
                     </div>
                   </div>
                   
@@ -133,22 +133,22 @@ export function DailyScorecardView() {
                           <span className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
                             {member.name}
                           </span>
-                          <div className="text-[11px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">{member.role}</div>
+                          <div className="text-[11px] text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">{member.role}</div>
                         </div>
                         <div className="flex items-center gap-5">
                           <div className="text-center">
                             <div className="text-base font-bold text-emerald-600">{member.tasksDone}</div>
-                            <div className="text-[9px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase">Done</div>
+                            <div className="text-[9px] text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] uppercase">Done</div>
                           </div>
                           <div className="text-center">
                             <div className="text-base font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">{member.tasksActive}</div>
-                            <div className="text-[9px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase">Active</div>
+                            <div className="text-[9px] text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] uppercase">Active</div>
                           </div>
                           <div className="text-center">
                             <div className={cn("text-base font-bold", member.tasksOverdue > 0 ? "text-red-600" : "text-emerald-600")}>
                               {member.tasksOverdue}
                             </div>
-                            <div className="text-[9px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase">Overdue</div>
+                            <div className="text-[9px] text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] uppercase">Overdue</div>
                           </div>
                           <div className="w-[100px] h-1.5 bg-slate-200 dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-full overflow-hidden">
                             <div 

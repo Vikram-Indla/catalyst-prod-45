@@ -45,7 +45,7 @@ export function DevelopmentSection({ isDark, items }: DevelopmentSectionProps) {
   if (items.length === 0) {
     return (
       <div className="text-center py-4">
-        <p className={cn('font-body text-sm', isDark ? 'text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text-subtlest,#6B6E76)]')}>
+        <p className={cn('font-body text-sm', isDark ? 'text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]' : 'text-[var(--ds-text-subtlest,#6B6E76)]')}>
           No development activity found
         </p>
       </div>
@@ -65,7 +65,7 @@ export function DevelopmentSection({ isDark, items }: DevelopmentSectionProps) {
         <div key={type}>
           <span className={cn(
             'text-[10px] font-body font-semibold uppercase tracking-wider mb-1 block',
-            isDark ? 'text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text-subtlest,#6B6E76)]',
+            isDark ? 'text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]' : 'text-[var(--ds-text-subtlest,#6B6E76)]',
           )}>
             {type === 'pullRequest' ? 'Pull Requests' : type.charAt(0).toUpperCase() + type.slice(1) + 's'} ({typeItems.length})
           </span>
@@ -91,7 +91,7 @@ export function DevelopmentSection({ isDark, items }: DevelopmentSectionProps) {
                   <p className={cn('font-body text-sm truncate', isDark ? 'text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' : 'text-[var(--ds-text,#292A2E)]')}>
                     {devItem.title}
                   </p>
-                  <div className={cn('flex items-center gap-2 text-xs font-body', isDark ? 'text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text-subtlest,#6B6E76)]')}>
+                  <div className={cn('flex items-center gap-2 text-xs font-body', isDark ? 'text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]' : 'text-[var(--ds-text-subtlest,#6B6E76)]')}>
                     {devItem.repoName && <span>{devItem.repoName}</span>}
                     {devItem.author && <span>{devItem.author.displayName}</span>}
                     {devItem.updated && <span>{formatRelative(devItem.updated)}</span>}
@@ -110,7 +110,7 @@ export function DevelopmentSection({ isDark, items }: DevelopmentSectionProps) {
                 )}
                 <ExternalLink className={cn(
                   'w-3 h-3 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity',
-                  isDark ? 'text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text-accent-gray,#505258)]',
+                  isDark ? 'text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]' : 'text-[var(--ds-text-accent-gray,#505258)]',
                 )} />
               </a>
             );

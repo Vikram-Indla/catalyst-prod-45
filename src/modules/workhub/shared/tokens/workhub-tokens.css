@@ -58,7 +58,7 @@
   /* Text — warm white ladder */
   --wh-tx: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --wh-tx2: var(--ds-text-subtlest, #A1A1A1);
-  --wh-tx3: var(--ds-text-subtlest, #878787);
+  --wh-tx3: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
   --wh-tx4: #7D7D7D;
 
   /* Primary */

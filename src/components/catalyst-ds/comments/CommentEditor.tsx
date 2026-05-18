@@ -259,7 +259,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                                     <div className="flex flex-col">
                                       <span className="text-[13px] font-medium">{user.name}</span>
                                       {user.email && (
-                                        <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]">
+                                        <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
                                           {user.email}
                                         </span>
                                       )}
@@ -287,7 +287,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                 className={cn(
                   'w-full resize-none border-0 bg-transparent px-3 py-2.5',
                   'text-[14px] text-[var(--ds-text,#292A2E)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
-                  'placeholder:text-[#7A869A] dark:placeholder:text-[var(--ds-text-subtlest,#878787)]',
+                  'placeholder:text-[#7A869A] dark:placeholder:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]',
                   'focus:outline-none focus:ring-0',
                   'transition-all duration-150'
                 )}
@@ -331,7 +331,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                         type="button"
                         onClick={() => handleQuickReply(qr.template)}
                         className={cn(
-                          'text-[12px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)]',
+                          'text-[12px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]',
                           'hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
                           'hover:underline transition-colors cursor-pointer'
                         )}
@@ -343,7 +343,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                 )}
 
                 {shortcutHint && (
-                  <p className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,#878787)] mt-1.5">
+                  <p className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mt-1.5">
                     {shortcutHint.split(/(\*\*[^*]+\*\*)/).map((part, i) =>
                       part.startsWith('**') ? (
                         <span key={i} className="font-semibold text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">

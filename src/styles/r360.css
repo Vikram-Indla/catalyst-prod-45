@@ -411,7 +411,7 @@
 /* FIX 3: Table header background */
 .dark #r360-root .r3-table th {
   background: var(--ds-surface-overlay, #1F1F1F);
-  color: var(--ds-text-subtlest, #878787);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
   border-bottom-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 .dark #r360-root .r3-table td {
@@ -432,7 +432,7 @@
 .dark #r360-root .r3-btn {
   background: transparent;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  color: var(--ds-text-subtlest, #878787);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 .dark #r360-root .r3-btn:hover {
   color: var(--ds-text-subtlest, #A1A1A1);
@@ -457,7 +457,7 @@
 
 /* FIX 7: Resource type tabs dark mode */
 .dark #r360-root .r3-tab {
-  color: var(--ds-text-subtlest, #878787);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
   background: transparent;
 }
 .dark #r360-root .r3-tab:hover {
@@ -489,7 +489,7 @@
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 .dark #r360-root .r3-res-rid {
-  color: var(--ds-text-subtlest, #878787);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 .dark #r360-root .r3-dept {
   background: var(--ds-surface-overlay, #1F1F1F) !important;
@@ -560,7 +560,7 @@
 }
 .dark #r360-root .r3-date-dot--other {
   background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
-  border-color: var(--ds-text-subtlest, #878787) !important;
+  border-color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)) !important;
 }
 
 /* Status filter chips */
@@ -650,7 +650,7 @@
 
 /* Empty state */
 .dark #r360-root .r3-empty-state {
-  color: var(--ds-text-subtlest, #878787) !important;
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)) !important;
 }
 
 /* Generic fallbacks */
@@ -681,5 +681,5 @@
 }
 .dark #r360-root [style*="color: var(--cp-ink-3, var(--cp-text-secondary, #64748B))"],
 .dark #r360-root [style*="color:var(--cp-ink-3, var(--cp-text-secondary, #64748B))"] {
-  color: var(--ds-text-subtlest, #878787) !important;
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)) !important;
 }

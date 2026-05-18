@@ -159,7 +159,7 @@ function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
           fontSize: 12,
           fontWeight: 600,
           color: isDark
-            ? 'var(--ds-text-subtlest, #878787)'
+            ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))'
             : token('color.text.subtlest', '#8590A2'),
         }}
       >
@@ -204,7 +204,7 @@ function EmptyState({ isDark }: { isDark: boolean }) {
     <Box xcss={emptyXcss}>
       <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
         <circle cx="24" cy="24" r="20" fill={isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : token('color.background.neutral', '#F4F5F7')} />
-        <path d="M16 24l5 5 11-11" stroke={isDark ? 'var(--ds-text-subtlest, #878787)' : token('color.text.subtlest', '#8590A2')} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M16 24l5 5 11-11" stroke={isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : token('color.text.subtlest', '#8590A2')} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
       <span
         style={{

@@ -54,7 +54,7 @@ function IssueRow({
       {badge && (
         <span className={cn(
           'text-[10px] font-body font-medium px-1.5 py-0.5 rounded shrink-0',
-          isDark ? 'bg-[var(--ds-border,var(--cp-ink-1, #292929))] text-[var(--ds-text-subtlest,#878787)]' : 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[var(--ds-text-subtlest,#6B6E76)]',
+          isDark ? 'bg-[var(--ds-border,var(--cp-ink-1, #292929))] text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]' : 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[var(--ds-text-subtlest,#6B6E76)]',
         )}>
           {badge}
         </span>
@@ -81,7 +81,7 @@ export function HierarchySection({
   if (!hasParent && !hasChildren) {
     return (
       <div className="text-center py-4">
-        <p className={cn('font-body text-sm mb-3', isDark ? 'text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text-subtlest,#6B6E76)]')}>
+        <p className={cn('font-body text-sm mb-3', isDark ? 'text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]' : 'text-[var(--ds-text-subtlest,#6B6E76)]')}>
           No hierarchy items linked
         </p>
         <div className="flex items-center justify-center gap-2">
@@ -117,7 +117,7 @@ export function HierarchySection({
         <div>
           <span className={cn(
             'text-[10px] font-body font-semibold uppercase tracking-wider mb-1 block',
-            isDark ? 'text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text-subtlest,#6B6E76)]',
+            isDark ? 'text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]' : 'text-[var(--ds-text-subtlest,#6B6E76)]',
           )}>
             Parent
           </span>
@@ -140,7 +140,7 @@ export function HierarchySection({
         <div className={hasParent ? 'mt-2' : ''}>
           <span className={cn(
             'text-[10px] font-body font-semibold uppercase tracking-wider mb-1 block',
-            isDark ? 'text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text-subtlest,#6B6E76)]',
+            isDark ? 'text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]' : 'text-[var(--ds-text-subtlest,#6B6E76)]',
           )}>
             Children ({childItems.length || childCount})
           </span>
@@ -160,7 +160,7 @@ export function HierarchySection({
               />
             ))
           ) : (
-            <p className={cn('font-body text-xs py-2', isDark ? 'text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text-subtlest,#6B6E76)]')}>
+            <p className={cn('font-body text-xs py-2', isDark ? 'text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]' : 'text-[var(--ds-text-subtlest,#6B6E76)]')}>
               {childCount} subtask{childCount > 1 ? 's' : ''} (load to view)
             </p>
           )}

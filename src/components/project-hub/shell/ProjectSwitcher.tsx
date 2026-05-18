@@ -72,7 +72,7 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
       <div className="max-h-[320px] overflow-y-auto py-1">
         {pinned.length > 0 && (
           <>
-            <div className="px-3 pt-2 pb-1 text-[var(--fg-3)] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+            <div className="px-3 pt-2 pb-1 text-[var(--fg-3)] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
               <Star size={10} className="inline mr-1" /> Pinned
             </div>
             {pinned.map(p => (
@@ -81,7 +81,7 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
           </>
         )}
 
-        <div className="px-3 pt-2 pb-1 text-[var(--fg-3)] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+        <div className="px-3 pt-2 pb-1 text-[var(--fg-3)] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
           {pinned.length > 0 ? 'Recent' : 'All Projects'}
         </div>
         {recent.length === 0 ? (

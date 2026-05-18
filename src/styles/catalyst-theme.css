@@ -50,7 +50,7 @@
   --bg-overlay: rgba(0,0,0,0.65);
   --text-1: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --text-2: var(--ds-text-subtlest, #A1A1A1);
-  --text-3: var(--ds-text-subtlest, #878787);
+  --text-3: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
   --text-4: #444444;
   --text-inv: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --text-link: var(--ds-text-brand, #60A5FA);

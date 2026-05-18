@@ -262,7 +262,7 @@ export function WikiAdminSyncTab() {
                   flexShrink: 0, fontSize: 11, fontWeight: 700,
                   fontFamily: 'var(--cp-font-mono)',
                   background: isDone ? 'var(--cp-lozenge-green-bg, #1B7F37)' : isStepFailed ? 'rgba(220,38,38,0.08)' : isActive ? '#0C66E4' : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'),
-                  color: isDone ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : isStepFailed ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'),
+                  color: isDone ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : isStepFailed ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'),
                   ...(isActive ? { boxShadow: '0 0 0 3px rgba(37,99,235,0.2)' } : {}),
                 }}>
                   {isDone

@@ -29,7 +29,7 @@ function SectionHeader({ icon: Icon, title, color }: { icon: any; title: string;
 // Empty state component
 function EmptyState({ title }: { title: string }) {
   return (
-    <div className="flex flex-col items-center justify-center py-8 text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)] bg-slate-50 dark:bg-[#111111] rounded-lg">
+    <div className="flex flex-col items-center justify-center py-8 text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] bg-slate-50 dark:bg-[#111111] rounded-lg">
       <Inbox className="w-8 h-8 mb-2" />
       <p className="text-sm">No {title} this month</p>
     </div>
@@ -69,7 +69,7 @@ function ItemCard({
           {id && <span className="text-blue-600 cursor-pointer hover:underline mr-2">{id}</span>}
           {title}
         </div>
-        <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] mt-0.5">{meta}</div>
+        <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] mt-0.5">{meta}</div>
       </div>
     </div>
   );
@@ -91,7 +91,7 @@ export function MonthlyChronicleView() {
 
   if (error || !data) {
     return (
-      <div className="p-6 flex flex-col items-center justify-center h-full text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">
+      <div className="p-6 flex flex-col items-center justify-center h-full text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
         <AlertTriangle className="w-12 h-12 mb-4 text-amber-500" />
         <p>Failed to load monthly insights data</p>
       </div>
@@ -233,7 +233,7 @@ export function MonthlyChronicleView() {
 
           {/* Chronicle Footer */}
           <div className="flex items-center justify-between px-8 py-5 border-t border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50 dark:bg-[#111111]">
-            <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">
+            <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
               Data as of {format(new Date(), 'MMMM d, yyyy h:mm a')}
             </span>
             <div className="flex gap-2">

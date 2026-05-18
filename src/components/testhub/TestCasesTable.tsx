@@ -102,7 +102,7 @@ export function TestCasesTable({
     fontWeight: 600,
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
-    color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)',
+    color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)',
     verticalAlign: 'middle',
   };
 

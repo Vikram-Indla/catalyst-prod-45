@@ -109,7 +109,7 @@ export function SortableColumn({
         <div className="boards-column__header-left">
           {/* Drag Handle - Always visible with proper touch handling */}
           <div
-            className="boards-column__drag-handle dark:text-[var(--ds-text-subtlest,#878787)] dark:hover:text-[var(--ds-text-subtlest,#A1A1A1)]"
+            className="boards-column__drag-handle dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] dark:hover:text-[var(--ds-text-subtlest,#A1A1A1)]"
             {...attributes}
             {...listeners}
             style={{ touchAction: 'none' }}
@@ -180,13 +180,13 @@ export function SortableColumn({
         </SortableContext>
 
         {tasks.length === 0 && (
-          <div className="boards-column__empty dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] dark:text-[var(--ds-text-subtlest,#878787)]">
+          <div className="boards-column__empty dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">
             No tasks
           </div>
         )}
 
         {/* Add Task Button at bottom */}
-        <button className="boards-add-task dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] dark:text-[var(--ds-text-subtlest,#878787)] dark:hover:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] dark:hover:border-[var(--ds-border-bold,#454545)]" onClick={() => onAddTask?.(column.id)}>
+        <button className="boards-add-task dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] dark:hover:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] dark:hover:border-[var(--ds-border-bold,#454545)]" onClick={() => onAddTask?.(column.id)}>
           <Plus className="w-4 h-4" />
           Add Task
         </button>

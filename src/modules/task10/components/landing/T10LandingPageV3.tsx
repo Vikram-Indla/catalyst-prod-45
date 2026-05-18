@@ -113,7 +113,7 @@ function ListCard({
                 </strong>
               </>
             ) : (
-              <span className="text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)]">No active week</span>
+              <span className="text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]">No active week</span>
             )}
           </span>
           <span className="text-slate-400">
@@ -184,7 +184,7 @@ function ListCard({
         {/* More Button */}
         <button
           onClick={onMore}
-          className="w-9 h-9 flex items-center justify-center text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)] rounded-lg hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] hover:text-slate-600 transition-all"
+          className="w-9 h-9 flex items-center justify-center text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] rounded-lg hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] hover:text-slate-600 transition-all"
         >
           <MoreVertical size={18} />
         </button>
@@ -520,7 +520,7 @@ export function T10LandingPageV3() {
             placeholder="Search lists, task number, or keyword..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 min-w-0 text-[15px] font-medium text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,#878787)] !bg-transparent !border-0 !p-0 !outline-none !shadow-none !ring-0 focus:!outline-none focus:!shadow-none focus:!ring-0"
+            className="flex-1 min-w-0 text-[15px] font-medium text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))] !bg-transparent !border-0 !p-0 !outline-none !shadow-none !ring-0 focus:!outline-none focus:!shadow-none focus:!ring-0"
             style={{
               WebkitAppearance: 'none',
               MozAppearance: 'none',
@@ -803,7 +803,7 @@ export function T10LandingPageV3() {
               }}
               className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-slate-700 dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors"
             >
-              <Pencil size={15} className="text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)]" />
+              <Pencil size={15} className="text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" />
               Rename
             </button>
             <button
@@ -815,7 +815,7 @@ export function T10LandingPageV3() {
               }}
               className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-slate-700 dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors"
             >
-              <Archive size={15} className="text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)]" />
+              <Archive size={15} className="text-slate-400 dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" />
               Archive
             </button>
             <div className="my-1 border-t border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
