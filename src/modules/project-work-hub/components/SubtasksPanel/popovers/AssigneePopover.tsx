@@ -123,7 +123,7 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
               display: 'flex',
               flexDirection: 'column',
               background: token('elevation.surface.overlay', '#FFFFFF'),
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              border: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
               borderRadius: 6,
               boxShadow: '0 8px 24px rgba(9, 30, 66, 0.16)',
               zIndex: 9999,
@@ -131,7 +131,7 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
             onClick={(e) => e.stopPropagation()}
           >
             {/* Search bar */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderBottom: `1px solid ${token('color.border', '#DFE1E6')}` }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderBottom: `1px solid ${'var(--ds-border, #DFE1E6)'}` }}>
               <Search size={14} color="var(--ds-text-subtlest, #6B778C)" />
               <input
                 ref={searchRef}

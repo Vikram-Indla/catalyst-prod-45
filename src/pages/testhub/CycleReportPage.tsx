@@ -195,7 +195,7 @@ export default function CycleReportPage() {
       {/* Header */}
       <div style={{ padding: '20px 32px', backgroundColor: 'hsl(var(--card))', borderBottom: '1px solid hsl(var(--border))' }}>
         <button
-          onClick={() => navigate(`/testhub/cycles/${cycleId}`)}
+          onClick={() => navigate(`/test/cycles/${cycleId}`)}
           style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: '1px solid hsl(var(--border))', borderRadius: 8, backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--muted-foreground))', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}
         >
           <ArrowLeft size={16} /> Back to Cycle

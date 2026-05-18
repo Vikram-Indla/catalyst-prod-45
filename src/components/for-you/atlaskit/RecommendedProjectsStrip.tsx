@@ -104,7 +104,7 @@ export default function RecommendedProjectsStrip({ projects, maxCards = 3 }: Rec
         </h2>
         <button
           type="button"
-          onClick={() => navigate('/project-hub/projects')}
+          onClick={() => navigate('/project/projects')}
           style={{
             background: 'transparent',
             border: 'none',

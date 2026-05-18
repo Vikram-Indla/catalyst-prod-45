@@ -223,7 +223,7 @@ export default function TestRunsPage() {
                   <tr
                     key={r.id}
                     className="border-b border-border last:border-0 hover:bg-muted/20 cursor-pointer transition-colors"
-                    onClick={() => navigate(`/testhub/cycles/${r.cycle_id}/execute?testId=${r.id}`)}
+                    onClick={() => navigate(`/test/cycles/${r.cycle_id}/execute?testId=${r.id}`)}
                   >
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">

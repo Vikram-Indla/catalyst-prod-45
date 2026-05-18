@@ -919,7 +919,7 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
           }}
         >
           <button role="menuitem" style={menuItemStyle} onMouseEnter={menuItemHover} onMouseLeave={menuItemLeave}
-            onClick={() => { close(); navigate(`/project-hub/${project.project_key}/dashboard`); }}>
+            onClick={() => { close(); navigate(`/project/${project.project_key}/dashboard`); }}>
             Open project
           </button>
           <button role="menuitem" style={menuItemStyle} onMouseEnter={menuItemHover} onMouseLeave={menuItemLeave}
@@ -927,7 +927,7 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
             Rename
           </button>
           <button role="menuitem" style={menuItemStyle} onMouseEnter={menuItemHover} onMouseLeave={menuItemLeave}
-            onClick={() => { close(); navigate(`/project-hub/${project.project_key}/settings`); }}>
+            onClick={() => { close(); navigate(`/project/${project.project_key}/settings`); }}>
             Project settings
           </button>
           {/* Sync with Jira — only shown for projects mapped to a Jira board.
@@ -1125,7 +1125,7 @@ export function AllProjectsTable({
       displaySummary: p.name,
       projectId: p.id,
       projectName: p.name,
-      navPath: `/project-hub/${p.project_key}/dashboard`,
+      navPath: `/project/${p.project_key}/dashboard`,
     });
   }, [trackRecent]);
 
@@ -1180,7 +1180,7 @@ export function AllProjectsTable({
               size="small"
             />
             <RouterLink
-              to={`/project-hub/${p.project_key}/dashboard`}
+              to={`/project/${p.project_key}/dashboard`}
               onClick={() => recordProjectView(p)}
               title={p.name}
               style={{
@@ -1213,7 +1213,7 @@ export function AllProjectsTable({
       // aligned with the key and the starred functionality"). Previously
       // centered, which made the key drift away from the Name column's
       // left-aligned start, breaking the row's visual grid.
-      case 'project_key': return <td key={colKey} style={{ textAlign: 'left' }}><RouterLink to={`/project-hub/${p.project_key}/dashboard`} onClick={() => recordProjectView(p)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: token('color.text.subtle'), letterSpacing: '0.02em', textDecoration: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = String(token('color.link')); }} onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = String(token('color.text.subtle')); }}>{p.project_key}</RouterLink></td>;
+      case 'project_key': return <td key={colKey} style={{ textAlign: 'left' }}><RouterLink to={`/project/${p.project_key}/dashboard`} onClick={() => recordProjectView(p)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: token('color.text.subtle'), letterSpacing: '0.02em', textDecoration: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = String(token('color.link')); }} onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = String(token('color.text.subtle')); }}>{p.project_key}</RouterLink></td>;
       // 'type' column is permanently banned from the Projects list view.
       case 'lead': return <td key={colKey}><LeadReassignPopover project={p} currentUserId={currentUserId} /></td>;
       case 'members': return <td key={colKey}><MemberManagePopover project={p} currentUserId={currentUserId} /></td>;

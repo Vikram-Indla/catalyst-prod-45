@@ -1,16 +1,16 @@
 /** Maps a URL pathname to a canonical Catalyst hub name */
 export function deriveHubFromPath(pathname: string): string | undefined {
   const HUB_MAP: [string, string][] = [
-    ['/project-hub', 'ProjectHub'],
-    ['/release-hub', 'ReleaseHub'],
+    ['/project', 'ProjectHub'],
+    ['/release', 'ReleaseHub'],
     ['/releasehub', 'ReleaseHub'],
-    ['/incident-hub', 'IncidentHub'],
+    ['/incident', 'IncidentHub'],
     ['/task-hub', 'TaskHub'],
-    ['/taskhub', 'TaskHub'],
-    ['/testhub', 'TestHub'],
-    ['/planhub', 'PlanHub'],
+    ['/task', 'TaskHub'],
+    ['/test', 'TestHub'],
+    ['/plan', 'PlanHub'],
     ['/plan-hub', 'PlanHub'],
-    ['/producthub', 'ProductHub'],
+    ['/product', 'ProductHub'],
     ['/product', 'ProductHub'],
     ['/wiki', 'WikiHub'],
     ['/strategy', 'StrategyHub'],

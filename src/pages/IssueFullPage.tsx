@@ -125,7 +125,7 @@ export default function IssueFullPage() {
     // Try closing the tab first (works when opened via target="_blank")
     window.close();
     // Fallback: navigate to home if window.close() doesn't work
-    setTimeout(() => navigate('/for-you', { replace: true }), 100);
+    setTimeout(() => navigate('/home', { replace: true }), 100);
   };
 
   if (loading) {

@@ -35,25 +35,25 @@ const enterpriseSidebarConfig: SidebarConfig = {
       // "Strategic" prefix redundant.
       title: '',
       items: [
-        { id: 'strategy-room', title: 'Strategy Room', path: '/strategyhub', icon: LayoutDashboard, exact: true, activeMatchPaths: ['/strategyhub/executive-brief'] },
-        { id: 'themes', title: 'Themes', path: '/strategyhub/themes', icon: Layers, exact: false },
-        { id: 'goals', title: 'Goals & Key Results', path: '/strategyhub/goals', icon: Target, exact: false, badge: 12, badgeVariant: 'info' },
-        { id: 'investment', title: 'Investment Allocation', path: '/strategyhub/investment', icon: PieChart, exact: false },
-        { id: 'snapshots', title: 'Snapshots', path: '/strategyhub/snapshots', icon: Calendar, exact: false },
+        { id: 'strategy-room', title: 'Strategy Room', path: '/strategy', icon: LayoutDashboard, exact: true, activeMatchPaths: ['/strategy/executive-brief'] },
+        { id: 'themes', title: 'Themes', path: '/strategy/themes', icon: Layers, exact: false },
+        { id: 'goals', title: 'Goals & Key Results', path: '/strategy/goals', icon: Target, exact: false, badge: 12, badgeVariant: 'info' },
+        { id: 'investment', title: 'Investment Allocation', path: '/strategy/investment', icon: PieChart, exact: false },
+        { id: 'snapshots', title: 'Snapshots', path: '/strategy/snapshots', icon: Calendar, exact: false },
       ],
     },
     {
       title: 'Intelligence',
       items: [
-        { id: 'ai-insights', title: 'AI Insights', path: '/strategyhub/ai-insights', icon: Sparkles, exact: false, badge: 3, badgeVariant: 'purple' },
-        { id: 'team-alignment', title: 'Team Alignment', path: '/strategyhub/team-alignment', icon: Users, exact: false },
+        { id: 'ai-insights', title: 'AI Insights', path: '/strategy/ai-insights', icon: Sparkles, exact: false, badge: 3, badgeVariant: 'purple' },
+        { id: 'team-alignment', title: 'Team Alignment', path: '/strategy/team-alignment', icon: Users, exact: false },
       ],
     },
   ],
   footerItem: {
     id: 'settings',
     title: 'Settings',
-    path: '/strategyhub/settings',
+    path: '/strategy/settings',
     icon: Settings,
     exact: true,
   },

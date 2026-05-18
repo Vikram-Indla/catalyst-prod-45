@@ -404,7 +404,7 @@ export default function AtlaskitStoryBacklogPage({
   // Jira-style: click a row → opens the side detail panel (DOES NOT navigate away).
   const openStoryDetail = useCallback((s: BacklogStory) => {
     writeTicketOrigin({
-      fromUrl: `/project-hub/${projectKey}/story-backlog`,
+      fromUrl: `/project/${projectKey}/story-backlog`,
       fromLabel: 'Story backlog',
       fromType: 'story-backlog' as const,
     });

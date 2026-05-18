@@ -1218,7 +1218,7 @@ export default function KanbanBoardPage() {
         enableDensity={ENABLE_KANBAN_V2}
         density={density}
         onDensityChange={onDensityChange}
-        mapStatusesPath={`/project-hub/${key}/boards/map-statuses`}
+        mapStatusesPath={`/project/${key}/boards/map-statuses`}
         projectKey={key ?? ''}
         canArchive={canArchive}
         showArchived={showArchived}

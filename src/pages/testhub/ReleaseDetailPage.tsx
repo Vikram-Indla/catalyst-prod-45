@@ -79,7 +79,7 @@ export default function ReleaseDetailPage() {
       <div style={{ padding: '20px 32px', borderBottom: `1px solid ${'var(--cp-border, #E2E8F0)'}`, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface, #fff)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
           <button
-            onClick={() => navigate('/testhub/releases')}
+            onClick={() => navigate('/test/releases')}
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cp-text-tertiary, #64748B)', display: 'flex', alignItems: 'center', gap: 6 }}
           >
             <ArrowLeft style={{ width: 18, height: 18 }} />
@@ -242,7 +242,7 @@ function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isL
             return (
               <tr
                 key={c.id}
-                onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
+                onClick={() => navigate(`/test/cycles/${cycle.id}`)}
                 style={{ borderBottom: `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}`, cursor: 'pointer' }}
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--cp-bg-page, #F8FAFC)')}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = '')}

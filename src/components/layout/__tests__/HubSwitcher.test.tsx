@@ -78,18 +78,18 @@ describe('HubSwitcher v2 — sectioned popover with bespoke tiles', () => {
   beforeEach(() => vi.clearAllMocks());
 
   it('renders the trigger button with aria-label "Switch hub"', () => {
-    renderAt('/for-you');
+    renderAt('/home');
     expect(screen.getByRole('button', { name: /switch hub/i })).toBeInTheDocument();
   });
 
   it('renders 11 hub rows as anchors when the popover is open', () => {
-    renderAt('/for-you');
+    renderAt('/home');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     expect(screen.getAllByRole('link')).toHaveLength(11);
   });
 
   it('renders three section headings: DISCOVER, BUILD & SHIP, KNOWLEDGE', () => {
-    renderAt('/for-you');
+    renderAt('/home');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     expect(screen.getByText(/^discover$/i)).toBeInTheDocument();
     expect(screen.getByText(/^build & ship$/i)).toBeInTheDocument();
@@ -97,7 +97,7 @@ describe('HubSwitcher v2 — sectioned popover with bespoke tiles', () => {
   });
 
   it('strips the "Hub" suffix from every label', () => {
-    renderAt('/for-you');
+    renderAt('/home');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     const labels = screen.getAllByRole('link').map((el) => labelOf(el));
     for (const label of labels) {
@@ -106,7 +106,7 @@ describe('HubSwitcher v2 — sectioned popover with bespoke tiles', () => {
   });
 
   it('renders each row with a colored tile carrying data-hub-tile=<key>', () => {
-    const { container } = renderAt('/for-you');
+    const { container } = renderAt('/home');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     const expected = [
       'home', 'strategy', 'ideation', 'product', 'project',
@@ -119,28 +119,28 @@ describe('HubSwitcher v2 — sectioned popover with bespoke tiles', () => {
   });
 
   it('routes hrefs correctly for every hub', () => {
-    renderAt('/for-you');
+    renderAt('/home');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     const hrefByLabel = Object.fromEntries(
       screen
         .getAllByRole('link')
         .map((el) => [labelOf(el), el.getAttribute('href')]),
     );
-    expect(hrefByLabel.Home).toBe('/for-you');
-    expect(hrefByLabel.Strategy).toBe('/strategyhub');
+    expect(hrefByLabel.Home).toBe('/home');
+    expect(hrefByLabel.Strategy).toBe('/strategy');
     expect(hrefByLabel.Ideation).toBe('/ideation/backlog');
-    expect(hrefByLabel.Product).toBe('/product-hub');
-    expect(hrefByLabel.Project).toBe('/project-hub');
-    expect(hrefByLabel.Release).toBe('/release-hub/command-center');
-    expect(hrefByLabel.Test).toBe('/testhub/dashboard');
-    expect(hrefByLabel.Incident).toBe('/incident-hub');
-    expect(hrefByLabel.Task).toBe('/taskhub/boards');
-    expect(hrefByLabel.Plan).toBe('/planhub');
+    expect(hrefByLabel.Product).toBe('/product');
+    expect(hrefByLabel.Project).toBe('/project');
+    expect(hrefByLabel.Release).toBe('/release/command-center');
+    expect(hrefByLabel.Test).toBe('/test/dashboard');
+    expect(hrefByLabel.Incident).toBe('/incident');
+    expect(hrefByLabel.Task).toBe('/task/boards');
+    expect(hrefByLabel.Plan).toBe('/plan');
     expect(hrefByLabel.Wiki).toBe('/wiki');
   });
 
   it('marks the active row via aria-current="page" using pathname.startsWith', () => {
-    renderAt('/product-hub/roadmap');
+    renderAt('/product/roadmap');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     const active = screen
       .getAllByRole('link')
@@ -157,7 +157,7 @@ describe('HubSwitcher v2 — Step 7.3: Recent section + search-to-filter', () =>
   });
 
   it('does not render a Recent section when localStorage is empty', () => {
-    renderAt('/for-you');
+    renderAt('/home');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     expect(screen.queryByText(/^recent$/i)).not.toBeInTheDocument();
   });
@@ -167,7 +167,7 @@ describe('HubSwitcher v2 — Step 7.3: Recent section + search-to-filter', () =>
       'catalyst-recent-hubs',
       JSON.stringify(['ideation', 'home', 'project', 'wiki']),
     );
-    renderAt('/for-you');
+    renderAt('/home');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     expect(screen.getByText(/^recent$/i)).toBeInTheDocument();
     // 11 standard + 3 recent = 14 anchors — 'home' is filtered out of recents
@@ -184,7 +184,7 @@ describe('HubSwitcher v2 — Step 7.3: Recent section + search-to-filter', () =>
       'catalyst-recent-hubs',
       JSON.stringify(['home', 'home', 'home']),
     );
-    renderAt('/strategyhub');
+    renderAt('/strategy');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     // With only 'home' in the stored list and 'home' excluded, the Recent
     // section has no items to show — should not render at all.
@@ -192,7 +192,7 @@ describe('HubSwitcher v2 — Step 7.3: Recent section + search-to-filter', () =>
   });
 
   it('renders a search input that filters hubs as the user types', () => {
-    renderAt('/for-you');
+    renderAt('/home');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     const search = screen.getByPlaceholderText(/search hubs/i);
     expect(search).toBeInTheDocument();
@@ -205,7 +205,7 @@ describe('HubSwitcher v2 — Step 7.3: Recent section + search-to-filter', () =>
   });
 
   it('filter is case-insensitive and trims whitespace', () => {
-    renderAt('/for-you');
+    renderAt('/home');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     fireEvent.change(screen.getByPlaceholderText(/search hubs/i), {
       target: { value: '  STR  ' },
@@ -215,7 +215,7 @@ describe('HubSwitcher v2 — Step 7.3: Recent section + search-to-filter', () =>
   });
 
   it('hides empty sections when the filter excludes all their hubs', () => {
-    renderAt('/for-you');
+    renderAt('/home');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     fireEvent.change(screen.getByPlaceholderText(/search hubs/i), {
       target: { value: 'wiki' },
@@ -226,7 +226,7 @@ describe('HubSwitcher v2 — Step 7.3: Recent section + search-to-filter', () =>
   });
 
   it('records a hub in localStorage when its row is clicked', () => {
-    renderAt('/for-you');
+    renderAt('/home');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     const projectRow = screen
       .getAllByRole('link')
@@ -245,7 +245,7 @@ describe('HubSwitcher v2 — Step 7.4: ⌘1–⌘0 + ⌘- keyboard shortcuts', (
   });
 
   it('renders a keyboard shortcut chip on every hub row', () => {
-    const { container } = renderAt('/for-you');
+    const { container } = renderAt('/home');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     const chips = container.querySelectorAll('[data-hub-shortcut]');
     expect(chips.length).toBe(11);
@@ -263,18 +263,18 @@ describe('HubSwitcher v2 — Step 7.4: ⌘1–⌘0 + ⌘- keyboard shortcuts', (
   // "recents got written" proxy doesn't apply to that shortcut. Cmd+1
   // navigation correctness is covered by the row-click test for Home.
   it.each([
-    ['2', '/strategyhub'],
+    ['2', '/strategy'],
     ['3', '/ideation/backlog'],
-    ['4', '/product-hub'],
-    ['5', '/project-hub'],
-    ['6', '/release-hub/command-center'],
-    ['7', '/testhub/dashboard'],
-    ['8', '/incident-hub'],
-    ['9', '/taskhub/boards'],
-    ['0', '/planhub'],
+    ['4', '/product'],
+    ['5', '/project'],
+    ['6', '/release/command-center'],
+    ['7', '/test/dashboard'],
+    ['8', '/incident'],
+    ['9', '/task/boards'],
+    ['0', '/plan'],
     ['-', '/wiki'],
   ])('Cmd+%s navigates to %s', (key, expectedPath) => {
-    renderAt('/for-you');
+    renderAt('/home');
     fireEvent.keyDown(document, { key, metaKey: true });
     // The MemoryRouter doesn't expose a public observable, so we assert the
     // event was preventDefault'd as a proxy for "the handler claimed it".
@@ -294,14 +294,14 @@ describe('HubSwitcher v2 — Step 7.4: ⌘1–⌘0 + ⌘- keyboard shortcuts', (
   // Home is explicitly excluded from the Recent list. Cmd+1 still navigates
   // but must NOT write 'home' to the recents store.
   it('Cmd+1 navigates to Home WITHOUT polluting recents', () => {
-    renderAt('/strategyhub');
+    renderAt('/strategy');
     fireEvent.keyDown(document, { key: '1', metaKey: true });
     const stored = JSON.parse(window.localStorage.getItem('catalyst-recent-hubs') || '[]');
     expect(stored).not.toContain('home');
   });
 
   it('ignores the shortcut when an input has focus', () => {
-    renderAt('/for-you');
+    renderAt('/home');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     const search = screen.getByPlaceholderText(/search hubs/i);
     search.focus();
@@ -311,7 +311,7 @@ describe('HubSwitcher v2 — Step 7.4: ⌘1–⌘0 + ⌘- keyboard shortcuts', (
   });
 
   it('also accepts Ctrl+N on platforms without Cmd', () => {
-    renderAt('/for-you');
+    renderAt('/home');
     fireEvent.keyDown(document, { key: '5', ctrlKey: true });
     const stored = JSON.parse(window.localStorage.getItem('catalyst-recent-hubs') || '[]');
     expect(stored.length).toBeGreaterThan(0);

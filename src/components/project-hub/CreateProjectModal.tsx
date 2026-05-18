@@ -104,7 +104,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       queryClient.invalidateQueries({ queryKey: ['ph-projects-full-list'] });
       toast.success('Project created successfully');
       onClose();
-      navigate(`/project-hub/${details.key.toUpperCase()}/dashboard`);
+      navigate(`/project/${details.key.toUpperCase()}/dashboard`);
     } catch (err: any) {
       toast.error(err.message || 'Failed to create project');
     } finally {

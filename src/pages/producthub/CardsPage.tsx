@@ -203,13 +203,13 @@ const CardsPage: React.FC = () => {
 
         {/* View toggle */}
         <div className="pc-view-toggle">
-          <button className="pc-view-btn" onClick={() => navigate('/producthub/backlog')} title="Table view">
+          <button className="pc-view-btn" onClick={() => navigate('/product/backlog')} title="Table view">
             <LayoutList size={16} />
           </button>
           <button className="pc-view-btn pc-view-btn--active" title="Cards view">
             <LayoutGrid size={16} />
           </button>
-          <button className="pc-view-btn" onClick={() => navigate('/producthub/kanban')} title="Board view">
+          <button className="pc-view-btn" onClick={() => navigate('/product/kanban')} title="Board view">
             <Columns3 size={16} />
           </button>
         </div>

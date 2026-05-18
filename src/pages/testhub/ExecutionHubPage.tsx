@@ -211,7 +211,7 @@ export default function ExecutionHubPage() {
               <div
                 key={cycle.id}
                 className="bg-card border border-border rounded-xl p-5 hover:shadow-md transition-shadow cursor-pointer group"
-                onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
+                onClick={() => navigate(`/test/cycles/${cycle.id}`)}
               >
                 {/* Top row */}
                 <div className="flex items-start justify-between mb-3">
@@ -239,7 +239,7 @@ export default function ExecutionHubPage() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/testhub/cycles/${cycle.id}/execute`);
+                          navigate(`/test/cycles/${cycle.id}/execute`);
                         }}
                         className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-medium hover:bg-primary/90 transition-colors"
                       >

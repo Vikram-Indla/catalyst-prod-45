@@ -84,7 +84,7 @@ export function BrScoringSection({ request, onUpdate }: Props) {
                 padding: 12,
                 background: token('elevation.surface.sunken', '#F7F8F9'),
                 borderRadius: 4,
-                border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                border: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
               }}
             >
               <div

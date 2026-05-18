@@ -100,7 +100,7 @@ export function MoveIssueDialog({ open, onClose, source }: MoveIssueDialogProps)
       const newKey = (data as any)?.new_issue_key as string;
       toast.success(`Moved to ${newKey}`);
       onClose();
-      if (newKey) navigate(`/project-hub/${values.destination.value}/issue/${newKey}`);
+      if (newKey) navigate(`/project/${values.destination.value}/issue/${newKey}`);
     } finally {
       setSubmitting(false);
     }

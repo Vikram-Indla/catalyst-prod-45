@@ -248,9 +248,9 @@ export default function CommandCenterPage() {
 
       {/* Row 1: KPI Cards */}
       <div className="grid grid-cols-4 gap-4 mb-6">
-        <KPICard label="Active Releases" value={activeReleases} color="var(--ds-text-brand, #2563EB)" icon={Rocket} loading={isLoading} onClick={() => navigate('/release-hub/releases')} isDark={isDark} />
-        <KPICard label="Changes In Flight" value={changesInFlight} delta={`${changesInFlight} active`} deltaLabel="neutral" color="#0D9488" icon={ArrowLeftRight} loading={isLoading} onClick={() => navigate('/release-hub/changes')} isDark={isDark} />
-        <KPICard label="Sign-offs Pending" value={signoffsPending} color="var(--ds-text-danger, #DC2626)" icon={CheckSquare} loading={isLoading} onClick={() => navigate('/release-hub/sign-off-queue')} isDark={isDark} />
+        <KPICard label="Active Releases" value={activeReleases} color="var(--ds-text-brand, #2563EB)" icon={Rocket} loading={isLoading} onClick={() => navigate('/release/releases')} isDark={isDark} />
+        <KPICard label="Changes In Flight" value={changesInFlight} delta={`${changesInFlight} active`} deltaLabel="neutral" color="#0D9488" icon={ArrowLeftRight} loading={isLoading} onClick={() => navigate('/release/changes')} isDark={isDark} />
+        <KPICard label="Sign-offs Pending" value={signoffsPending} color="var(--ds-text-danger, #DC2626)" icon={CheckSquare} loading={isLoading} onClick={() => navigate('/release/sign-off-queue')} isDark={isDark} />
         <KPICard label="Test Cycles Running" value={kpis?.test_cycles_running ?? 0} color="var(--ds-text-success, #16A34A)" icon={FlaskConical} loading={isLoading} isDark={isDark} />
       </div>
 
@@ -293,7 +293,7 @@ export default function CommandCenterPage() {
         {/* Release Status Table */}
         <div className="rounded-[6px] overflow-hidden" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <div className="px-5 py-3.5">
-            <SectionHeader title="Release Status" isDark={isDark} action={<button onClick={() => navigate('/release-hub/releases')} className="text-[12px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:underline">View all</button>} />
+            <SectionHeader title="Release Status" isDark={isDark} action={<button onClick={() => navigate('/release/releases')} className="text-[12px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:underline">View all</button>} />
           </div>
           {relLoading ? <SkeletonRows count={3} /> : activeRels.length === 0 ? (
             <div className="px-5 py-8 text-center text-[13px]" style={{ color: 'var(--cp-text-muted, #94A3B8)' }}>No active releases</div>
@@ -335,7 +335,7 @@ export default function CommandCenterPage() {
       <div className="grid grid-cols-2 gap-4 mb-6">
         {/* Change Pipeline Funnel */}
         <div className="rounded-[6px] p-5" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
-          <SectionHeader title="Change Pipeline" isDark={isDark} action={<button onClick={() => navigate('/release-hub/changes')} className="text-[12px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:underline">View all</button>} />
+          <SectionHeader title="Change Pipeline" isDark={isDark} action={<button onClick={() => navigate('/release/changes')} className="text-[12px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:underline">View all</button>} />
           <div className="flex items-center gap-0 mt-4">
             {pipelineCols.map((col, i) => (
               <React.Fragment key={col.key}>
@@ -345,7 +345,7 @@ export default function CommandCenterPage() {
                   </svg>
                 )}
                 <button
-                  onClick={() => navigate(`/release-hub/changes?status=${col.key}`)}
+                  onClick={() => navigate(`/release/changes?status=${col.key}`)}
                   className="flex-1 rounded-[6px] p-4 text-center hover:opacity-80 transition-opacity"
                   style={{ background: col.loz.bg }}
                 >
@@ -463,7 +463,7 @@ export default function CommandCenterPage() {
               <h2 className="text-[14px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>Signoff Queue</h2>
               <span className="inline-flex items-center h-5 px-1.5 rounded text-[11px] font-bold" style={{ background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)' }}>AI Prioritized</span>
             </div>
-            <button onClick={() => navigate('/release-hub/sign-off-queue')} className="text-[12px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:underline">View all</button>
+            <button onClick={() => navigate('/release/sign-off-queue')} className="text-[12px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:underline">View all</button>
           </div>
           {pendingSignoffs.length === 0 ? (
             <div className="px-5 py-8 text-center">
@@ -498,7 +498,7 @@ export default function CommandCenterPage() {
         {/* Recent Production Events */}
         <div className="rounded-[6px] overflow-hidden" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <div className="px-5 py-3.5">
-            <SectionHeader title="Recent Production Events" isDark={isDark} action={<button onClick={() => navigate('/release-hub/production-events')} className="text-[12px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:underline">View all</button>} />
+            <SectionHeader title="Recent Production Events" isDark={isDark} action={<button onClick={() => navigate('/release/production-events')} className="text-[12px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:underline">View all</button>} />
           </div>
           {prodEvents.length === 0 ? (
             <div className="px-5 py-8 text-center text-[13px]" style={{ color: 'var(--cp-text-muted, #94A3B8)' }}>No production events</div>

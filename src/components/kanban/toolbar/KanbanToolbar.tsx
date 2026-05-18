@@ -151,7 +151,7 @@ export interface KanbanToolbarProps<TGroupBy extends string = string> {
   density?: KanbanDensity;
   onDensityChange?: (d: KanbanDensity) => void;
 
-  /* Map-statuses navigation target (e.g. "/project-hub/BAU/boards/map-statuses") */
+  /* Map-statuses navigation target (e.g. "/project/BAU/boards/map-statuses") */
   mapStatusesPath?: string;
 
   /* Project key for AdvancedFilterPanel (project-scoped advanced filter) */

@@ -323,7 +323,7 @@ export default function IncidentListPage() {
           rowsPerPage={25}
           page={page}
           onPageChange={setPage}
-          onRowClick={(r: any) => navigate(`/incident-hub/view/${r.id}`)}
+          onRowClick={(r: any) => navigate(`/incident/view/${r.id}`)}
           enableColumnReorder
           // 2026-05-17: Feature flags declare intent explicitly per canonical
           // governance framework. IncidentListPage has no group create affordances

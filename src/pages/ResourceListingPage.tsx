@@ -250,7 +250,7 @@ export default function ResourceListingPage() {
   };
 
   const navTo = (id: string, view: string) => {
-    navigate(`/project-hub/resources/${id}?view=${view}`);
+    navigate(`/project/resources/${id}?view=${view}`);
   };
 
   return (
@@ -483,7 +483,7 @@ export default function ResourceListingPage() {
                           icon={<Zap size={13} strokeWidth={1.9} />}
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/project-hub/resources/${r.id}?view=ring&intel=true`);
+                            navigate(`/project/resources/${r.id}?view=ring&intel=true`);
                           }}
                         />
                         <ActionBtn

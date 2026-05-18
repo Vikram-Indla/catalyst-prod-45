@@ -12,8 +12,8 @@ export default function TestHubPage() {
   const location = useLocation();
 
   // Redirect /testhub to /testhub/dashboard
-  if (location.pathname === '/testhub') {
-    return <Navigate to="/testhub/dashboard" replace />;
+  if (location.pathname === '/test') {
+    return <Navigate to="/test/dashboard" replace />;
   }
 
   return (

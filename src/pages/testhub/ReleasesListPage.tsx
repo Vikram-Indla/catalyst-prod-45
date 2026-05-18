@@ -209,7 +209,7 @@ function TableView({ releases, navigate }: { releases: Release[]; navigate: any 
             return (
               <tr
                 key={r.id}
-                onClick={() => navigate(`/testhub/releases/${r.id}`)}
+                onClick={() => navigate(`/test/releases/${r.id}`)}
                 style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer', transition: 'background 0.15s' }}
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--bg-1, #F8FAFC)')}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = '')}
@@ -278,7 +278,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
         return (
           <div
             key={r.id}
-            onClick={() => navigate(`/testhub/releases/${r.id}`)}
+            onClick={() => navigate(`/test/releases/${r.id}`)}
             style={{
               background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 12,
               padding: 20, cursor: 'pointer', transition: 'all 0.2s',

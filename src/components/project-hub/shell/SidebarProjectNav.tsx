@@ -98,7 +98,7 @@ export function SidebarProjectNav({
   const [recentsExpanded, setRecentsExpanded] = useState(true);
   const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
 
-  const basePath = `/project-hub/${projectKey}`;
+  const basePath = `/project/${projectKey}`;
 
   const isPathActive = (path: string) => {
     return location.pathname === `${basePath}/${path}` || location.pathname.startsWith(`${basePath}/${path}/`);
@@ -196,14 +196,14 @@ export function SidebarProjectNav({
           currentKey={projectKey}
           isOpen={switcherOpen}
           onClose={() => setSwitcherOpen(false)}
-          onSelect={(key) => { setSwitcherOpen(false); navigate(`/project-hub/${key}/dashboard`); }}
+          onSelect={(key) => { setSwitcherOpen(false); navigate(`/project/${key}/dashboard`); }}
         />
       </div>
 
       {/* Back to all projects */}
       <div style={{ padding: '8px 8px 0' }}>
         <button
-          onClick={() => navigate('/project-hub/projects')}
+          onClick={() => navigate('/project/projects')}
           className="flex items-center gap-2 w-full rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
           style={{
             height: 32, padding: collapsed ? '0' : '0 12px',

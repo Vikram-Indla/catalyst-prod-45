@@ -12,24 +12,24 @@ import { pathToHubTone, hubAccentToken } from '../hub-tone';
 
 describe('pathToHubTone', () => {
   it.each([
-    ['/for-you', 'blue'],
-    ['/for-you/anything', 'blue'],
-    ['/strategyhub', 'purple'],
-    ['/strategyhub/themes/123', 'purple'],
+    ['/home', 'blue'],
+    ['/home/anything', 'blue'],
+    ['/strategy', 'purple'],
+    ['/strategy/themes/123', 'purple'],
     ['/ideation/backlog', 'orange'],
     ['/ideation', 'orange'],
-    ['/product-hub', 'teal'],
-    ['/product-hub/roadmap', 'teal'],
-    ['/project-hub', 'green'],
-    ['/project-hub/foo/bar', 'green'],
-    ['/release-hub/command-center', 'magenta'],
-    ['/release-hub', 'magenta'],
-    ['/testhub/dashboard', 'lime'],
-    ['/testhub', 'lime'],
-    ['/incident-hub', 'red'],
-    ['/taskhub/boards', 'yellow'],
-    ['/taskhub', 'yellow'],
-    ['/planhub', 'gray'],
+    ['/product', 'teal'],
+    ['/product/roadmap', 'teal'],
+    ['/project', 'green'],
+    ['/project/foo/bar', 'green'],
+    ['/release/command-center', 'magenta'],
+    ['/release', 'magenta'],
+    ['/test/dashboard', 'lime'],
+    ['/test', 'lime'],
+    ['/incident', 'red'],
+    ['/task/boards', 'yellow'],
+    ['/task', 'yellow'],
+    ['/plan', 'gray'],
     ['/wiki', 'gray'],
     ['/wiki/space/anything', 'gray'],
   ])('maps %s → %s', (path, tone) => {
@@ -44,8 +44,8 @@ describe('pathToHubTone', () => {
 
 describe('hubAccentToken', () => {
   it('returns the ADS text-accent token for a known path', () => {
-    expect(hubAccentToken('/strategyhub')).toBe('var(--ds-text-accent-purple)');
-    expect(hubAccentToken('/incident-hub')).toBe('var(--ds-text-accent-red)');
+    expect(hubAccentToken('/strategy')).toBe('var(--ds-text-accent-purple)');
+    expect(hubAccentToken('/incident')).toBe('var(--ds-text-accent-red)');
     expect(hubAccentToken('/wiki')).toBe('var(--ds-text-accent-gray)');
   });
 

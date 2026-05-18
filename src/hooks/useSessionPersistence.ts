@@ -61,7 +61,7 @@ export function useTrackLastRoute() {
  * /home redirects to / which causes a double-hop blank-page race on first load.
  */
 export function getLastRoute(): string {
-  return '/for-you';
+  return '/home';
 }
 
 /**

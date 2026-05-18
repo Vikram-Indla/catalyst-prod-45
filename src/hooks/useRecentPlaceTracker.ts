@@ -90,17 +90,17 @@ export function useRecentPlaceTracker() {
    */
   const getPageLabel = (path: string): { pageKey: string; label: string; cleanPath: string } => {
     // Product Room pages
-    if (path === "/producthub" || path === "/producthub/") {
-      return { pageKey: "producthub", label: "Product Hub", cleanPath: "/producthub" };
+    if (path === "/product" || path === "/product/") {
+      return { pageKey: "producthub", label: "Product Hub", cleanPath: "/product" };
     }
-    if (path === "/producthub/roadmaps" || path.startsWith("/producthub/roadmaps")) {
-      return { pageKey: "roadmaps", label: "Roadmaps", cleanPath: "/producthub/roadmaps" };
+    if (path === "/product/roadmaps" || path.startsWith("/product/roadmaps")) {
+      return { pageKey: "roadmaps", label: "Roadmaps", cleanPath: "/product/roadmaps" };
     }
-    if (path.startsWith("/producthub/risks")) {
-      return { pageKey: "risks", label: "Risks", cleanPath: "/producthub/risks" };
+    if (path.startsWith("/product/risks")) {
+      return { pageKey: "risks", label: "Risks", cleanPath: "/product/risks" };
     }
-    if (path.startsWith("/producthub/milestones")) {
-      return { pageKey: "milestones", label: "Milestones", cleanPath: "/producthub/milestones" };
+    if (path.startsWith("/product/milestones")) {
+      return { pageKey: "milestones", label: "Milestones", cleanPath: "/product/milestones" };
     }
     
     // Default for other pages within a room
@@ -112,7 +112,7 @@ export function useRecentPlaceTracker() {
     const path = location.pathname;
 
     // Product Room - ALL pages within Product use the SAME room_id
-    if (path.startsWith("/producthub")) {
+    if (path.startsWith("/product")) {
       const { pageKey, label, cleanPath } = getPageLabel(path);
       return {
         roomType: "product" as RoomType,

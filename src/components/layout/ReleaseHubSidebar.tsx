@@ -38,24 +38,24 @@ const buildSections = (triageCount: number, pendingSignoffs: number): SidebarSec
   {
     title: '',
     items: [
-      { id: 'command-center', title: 'Command Center', path: '/release-hub/command-center', icon: LayoutDashboard, exact: true },
+      { id: 'command-center', title: 'Command Center', path: '/release/command-center', icon: LayoutDashboard, exact: true },
     ],
   },
   {
     title: 'Releases',
     items: [
-      { id: 'all-releases', title: 'All Releases', path: '/release-hub/releases', icon: Rocket, exact: false },
-      { id: 'compare', title: 'Release Compare', path: '/release-hub/compare', icon: GitCompareArrows, exact: false },
-      { id: 'triage', title: 'Triage Queue', path: '/release-hub/triage', icon: Activity, exact: false, badge: triageCount > 0 ? triageCount : undefined, badgeVariant: 'danger' as const },
-      { id: 'production-events', title: 'Production Events', path: '/release-hub/production-events', icon: Clock, exact: false },
+      { id: 'all-releases', title: 'All Releases', path: '/release/releases', icon: Rocket, exact: false },
+      { id: 'compare', title: 'Release Compare', path: '/release/compare', icon: GitCompareArrows, exact: false },
+      { id: 'triage', title: 'Triage Queue', path: '/release/triage', icon: Activity, exact: false, badge: triageCount > 0 ? triageCount : undefined, badgeVariant: 'danger' as const },
+      { id: 'production-events', title: 'Production Events', path: '/release/production-events', icon: Clock, exact: false },
     ],
   },
   {
     title: 'Change Management',
     items: [
-      { id: 'all-changes', title: 'All Changes', path: '/release-hub/changes', icon: ArrowLeftRight, exact: false },
-      { id: 'sign-off-queue', title: 'Signoff Queue', path: '/release-hub/sign-off-queue', icon: CheckSquare, exact: false, badge: pendingSignoffs > 0 ? pendingSignoffs : undefined, badgeVariant: 'danger' as const },
-      { id: 'freeze-windows', title: 'Freeze Windows', path: '/release-hub/freeze-windows', icon: CalendarOff, exact: true },
+      { id: 'all-changes', title: 'All Changes', path: '/release/changes', icon: ArrowLeftRight, exact: false },
+      { id: 'sign-off-queue', title: 'Signoff Queue', path: '/release/sign-off-queue', icon: CheckSquare, exact: false, badge: pendingSignoffs > 0 ? pendingSignoffs : undefined, badgeVariant: 'danger' as const },
+      { id: 'freeze-windows', title: 'Freeze Windows', path: '/release/freeze-windows', icon: CalendarOff, exact: true },
     ],
   },
 ];
@@ -69,7 +69,7 @@ export function ReleaseHubSidebar({ expanded, onToggle, className, triageCount =
     footerItem: {
       id: 'settings',
       title: 'Settings',
-      path: '/release-hub/settings',
+      path: '/release/settings',
       icon: Settings,
       exact: true,
     },

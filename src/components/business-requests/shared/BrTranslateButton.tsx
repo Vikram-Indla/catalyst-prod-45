@@ -40,7 +40,7 @@ export function BrTranslateButton({ loading, label, onClick }: BrTranslateButton
         alignItems: 'center',
         justifyContent: 'center',
         background: 'var(--ds-background-neutral, #F4F5F7)',
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
         borderRadius: 3,
         cursor: loading ? 'default' : 'pointer',
         color: token('color.text.subtle', '#44546F'),

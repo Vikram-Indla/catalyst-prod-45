@@ -306,7 +306,7 @@ export default function TraceabilityPage() {
                           return (
                             <button
                               key={tc.link_id || tc.test_case_id}
-                              onClick={() => navigate(`/testhub/repository?view=${tc.test_case_id}`)}
+                              onClick={() => navigate(`/test/repository?view=${tc.test_case_id}`)}
                               className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted/40 transition-colors text-left"
                             >
                               <FileText className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
@@ -319,7 +319,7 @@ export default function TraceabilityPage() {
                       </div>
                     )}
                     <button
-                      onClick={() => navigate(`/testhub/requirements/${req.id}`)}
+                      onClick={() => navigate(`/test/requirements/${req.id}`)}
                       className="mt-2 text-xs text-primary hover:underline"
                     >
                       View Requirement Details →

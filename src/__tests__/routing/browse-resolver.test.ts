@@ -34,9 +34,9 @@ describe('/browse/:issueKey — universal resolver', () => {
     expect(issueRouteMatch, '/issue/:issueKey should redirect to /browse/:issueKey').not.toBeNull();
   });
 
-  it('/project-hub/:key/issue/:issueKey redirects to /browse/:issueKey', () => {
+  it('/project/:key/issue/:issueKey redirects to /browse/:issueKey', () => {
     const full = readSource(FULL_ROUTES);
     const match = full.match(/path=["']\/project-hub\/:key\/issue\/:issueKey["'][^>]*element=\{[^}]*<(Navigate|IssueRedirectToBrowse)/);
-    expect(match, '/project-hub/:key/issue/:issueKey should redirect to /browse/:issueKey').not.toBeNull();
+    expect(match, '/project/:key/issue/:issueKey should redirect to /browse/:issueKey').not.toBeNull();
   });
 });

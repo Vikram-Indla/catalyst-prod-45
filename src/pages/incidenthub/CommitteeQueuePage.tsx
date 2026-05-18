@@ -80,7 +80,7 @@ export default function CommitteeQueuePage() {
                 }}
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'var(--cp-bg-elevated, #FFFFFF)')}
-                onClick={() => navigate(`/incident-hub/view/${item.incident_id}`)}
+                onClick={() => navigate(`/incident/view/${item.incident_id}`)}
               >
                 <div className="px-3">
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-brand, #2563EB)', backgroundColor: 'var(--cp-primary-light, #EFF6FF)', padding: '0 4px', borderRadius: 3 }}>

@@ -90,8 +90,8 @@ export default function PublishTab() {
 
   /**
    * Curated route options. Substring matches against `window.location.pathname`
-   * at runtime — `'/backlog'` matches `/project-hub/BAU/backlog`,
-   * `/project-hub/INV/backlog/BAU-5717`, etc. Empty string is the global
+   * at runtime — `'/backlog'` matches `/project/BAU/backlog`,
+   * `/project/INV/backlog/BAU-5717`, etc. Empty string is the global
    * fallback. "Custom..." switches the picker to a free-text Textfield.
    */
   const PREDEFINED_ROUTES: Array<{ label: string; value: string }> = [
@@ -100,10 +100,10 @@ export default function PublishTab() {
     { label: '/allwork (all-work tables)', value: '/allwork' },
     { label: '/board (kanban boards)', value: '/board' },
     { label: '/dashboard (project dashboards)', value: '/dashboard' },
-    { label: '/for-you (For You home)', value: '/for-you' },
+    { label: '/home (For You home)', value: '/home' },
     { label: '/incidents (incident list)', value: '/incidents' },
     { label: '/admin/ (admin pages)', value: '/admin/' },
-    { label: '/project-hub/ (any project)', value: '/project-hub/' },
+    { label: '/project/ (any project)', value: '/project/' },
   ];
   const routeIsPredefined = PREDEFINED_ROUTES.some(r => r.value === routeDraft);
   const [routeIsCustom, setRouteIsCustom] = useState(false);

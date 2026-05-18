@@ -34,12 +34,12 @@ const sections: SidebarSection[] = [
   {
     title: '',
     items: [
-      { id: 'incident-list', title: 'All Incidents', path: '/incident-hub', icon: List, exact: true, badgeVariant: 'danger' },
-      { id: 'analytics', title: 'Analytics', path: '/incident-hub/analytics', icon: BarChart3, exact: false },
-      { id: 'insights', title: 'Insights', path: '/incident-hub/insights', icon: Sparkles, exact: false },
-      { id: 'kanban', title: 'Kanban', path: '/incident-hub/kanban', icon: LayoutGrid, exact: false },
-      { id: 'reports', title: 'Reports', path: '/incident-hub/reports', icon: FileText, exact: false },
-      { id: 'committee-queue', title: 'Committee Queue', path: '/incident-hub/committee-queue', icon: Users, exact: false },
+      { id: 'incident-list', title: 'All Incidents', path: '/incident', icon: List, exact: true, badgeVariant: 'danger' },
+      { id: 'analytics', title: 'Analytics', path: '/incident/analytics', icon: BarChart3, exact: false },
+      { id: 'insights', title: 'Insights', path: '/incident/insights', icon: Sparkles, exact: false },
+      { id: 'kanban', title: 'Kanban', path: '/incident/kanban', icon: LayoutGrid, exact: false },
+      { id: 'reports', title: 'Reports', path: '/incident/reports', icon: FileText, exact: false },
+      { id: 'committee-queue', title: 'Committee Queue', path: '/incident/committee-queue', icon: Users, exact: false },
     ],
   },
 ];

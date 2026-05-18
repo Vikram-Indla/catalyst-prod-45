@@ -98,7 +98,7 @@ export default function CommandCenterPage() {
           color="primary"
           trend={trends_?.active_releases}
           trendSuffix=""
-          onClick={() => navigate('/testhub/releases')}
+          onClick={() => navigate('/test/releases')}
         />
         <KPICard
           label="Pass Rate"
@@ -109,7 +109,7 @@ export default function CommandCenterPage() {
           color={passRate >= 80 ? 'success' : passRate >= 60 ? 'warning' : 'danger'}
           trend={trends_?.pass_rate}
           trendSuffix="%"
-          onClick={() => navigate('/testhub/releases')}
+          onClick={() => navigate('/test/releases')}
         />
         <KPICard
           label="Execution Rate"
@@ -120,7 +120,7 @@ export default function CommandCenterPage() {
           color={execRate >= 70 ? 'success' : 'warning'}
           trend={trends_?.exec_rate}
           trendSuffix="%"
-          onClick={() => navigate('/testhub/execution-hub')}
+          onClick={() => navigate('/test/execution-hub')}
         />
         <KPICard
           label="Open Defects"
@@ -132,7 +132,7 @@ export default function CommandCenterPage() {
           trend={trends_?.open_defects}
           trendSuffix=""
           invertTrend
-          onClick={() => navigate('/testhub/defects')}
+          onClick={() => navigate('/test/defects')}
         />
         <KPICard
           label="Critical Blockers"
@@ -144,7 +144,7 @@ export default function CommandCenterPage() {
           trend={trends_?.critical_defects}
           trendSuffix=""
           invertTrend
-          onClick={() => navigate('/testhub/defects')}
+          onClick={() => navigate('/test/defects')}
         />
         <KPICard
           label="Active Testers"
@@ -155,7 +155,7 @@ export default function CommandCenterPage() {
           color="primary"
           trend={trends_?.active_testers}
           trendSuffix=""
-          onClick={() => navigate('/testhub/releases/command-center')}
+          onClick={() => navigate('/test/releases/command-center')}
         />
       </div>
 
@@ -288,7 +288,7 @@ export default function CommandCenterPage() {
           <h3 className="text-sm font-semibold text-foreground mb-3">Active Releases</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {releases.map(r => (
-              <ReleaseHealthCard key={r.id} release={r} onClick={() => navigate(`/testhub/releases/${r.id}`)} />
+              <ReleaseHealthCard key={r.id} release={r} onClick={() => navigate(`/test/releases/${r.id}`)} />
             ))}
           </div>
         </div>

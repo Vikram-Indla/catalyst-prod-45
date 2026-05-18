@@ -58,7 +58,7 @@ export function TopFailingTests({ tests }: Props) {
           return (
             <div
               key={test.test_case_id}
-              onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
+              onClick={() => navigate(`/test/repository?view=${test.test_case_id}`)}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', backgroundColor: 'var(--ds-background-danger, #FEF2F2)', borderRadius: 12, cursor: 'pointer', border: '1px solid color-mix(in srgb, var(--sem-danger) 20%, transparent)', transition: 'all 0.15s' }}
               onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#FEE2E2'; e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--sem-danger) 30%, transparent)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-background-danger, #FEF2F2)'; e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--sem-danger) 20%, transparent)'; }}

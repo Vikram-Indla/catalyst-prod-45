@@ -26,19 +26,19 @@ export function TestHubSidebar({
   const testManagementItems: NavItem[] = [
     {
       label: 'Test Cases',
-      href: '/testhub/repository',
+      href: '/test/repository',
       icon: <FileText style={{ width: 16, height: 16 }} />,
       count: testCaseCount,
     },
     {
       label: 'Shared Steps',
-      href: '/testhub/shared-steps',
+      href: '/test/shared-steps',
       icon: <List style={{ width: 16, height: 16 }} />,
       count: sharedStepCount,
     },
     {
       label: 'Test Cycles',
-      href: '/testhub/cycles',
+      href: '/test/cycles',
       icon: <Clock style={{ width: 16, height: 16 }} />,
       count: testCycleCount,
     },
@@ -47,13 +47,13 @@ export function TestHubSidebar({
   const releaseItems: NavItem[] = [
     {
       label: 'All Releases',
-      href: '/testhub/releases',
+      href: '/test/releases',
       icon: <Folder style={{ width: 16, height: 16 }} />,
       count: releaseCount,
     },
     {
       label: 'Quality Gates',
-      href: '/testhub/releases/quality-gates',
+      href: '/test/releases/quality-gates',
       icon: <Shield style={{ width: 16, height: 16 }} />,
     },
   ];
@@ -157,7 +157,7 @@ export function TestHubSidebar({
       <NavSection title="Settings" items={[
         {
           label: 'Verification',
-          href: '/testhub/verify',
+          href: '/test/verify',
           icon: <CheckSquare style={{ width: 16, height: 16 }} />,
         },
       ]} />

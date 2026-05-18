@@ -328,7 +328,7 @@ async function fetchStarredItems(params: {
         readyForSprint: t.ready_for_sprint || false,
         decisionRequired: t.decision_required || false,
         reviewStatus: t.review_status || 'none',
-        navPath: `/taskhub/tasks?taskId=${t.id}`,
+        navPath: `/task/tasks?taskId=${t.id}`,
       });
     });
   }
@@ -816,7 +816,7 @@ async function fetchPlanner(params: {
     decisionRequired: t.decision_required || false,
     reviewStatus: t.review_status || 'none',
     blocked: t.blocked || false,
-    navPath: `/taskhub/tasks?taskId=${t.id}`,
+    navPath: `/task/tasks?taskId=${t.id}`,
   }));
 
   // Client-side pagination

@@ -28,7 +28,7 @@ const mockRecentLocations = [
   {
     projectKey: 'BAU',
     projectName: 'Senaei BAU',
-    path: '/project-hub/BAU/backlog',
+    path: '/project/BAU/backlog',
     section: 'backlog',
     sectionLabel: 'Backlog',
     iconName: null,

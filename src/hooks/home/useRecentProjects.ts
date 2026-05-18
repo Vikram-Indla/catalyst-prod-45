@@ -191,7 +191,7 @@ function migrateLegacyIfNeeded() {
       .filter((e: any) => e && typeof e.projectKey === 'string')
       .map((e: any) => ({
         projectKey: e.projectKey,
-        path: `/project-hub/${e.projectKey}/dashboard`,
+        path: `/project/${e.projectKey}/dashboard`,
         section: 'dashboard',
         visitedAt: typeof e.visitedAt === 'number' ? e.visitedAt : Date.now(),
       }));
@@ -217,12 +217,12 @@ export function recordLocationVisit(input: {
 
   // Normalize path → section ROOT. The caller often passes
   // `location.pathname` verbatim, which on detail routes carries an issue
-  // key tail (e.g. `/project-hub/BAU/backlog/BAU-5717`). Storing the
+  // key tail (e.g. `/project/BAU/backlog/BAU-5717`). Storing the
   // verbatim path means every issue-detail click creates a new row that
   // all read "BAU › Backlog" in the sidebar (RCA 2026-05-17 — deep-path
   // dedup bypass). Section-root normalization is what the dedup-by-path
   // contract was always meant to imply.
-  const normalizedPath = `/project-hub/${projectKey}/${section}`;
+  const normalizedPath = `/project/${projectKey}/${section}`;
 
   // Dedup by (projectKey + section-family). Family collapses display-label
   // collisions (`backlog`, `epic-backlog`, `feature-backlog`, `story-
@@ -242,13 +242,13 @@ export function recordLocationVisit(input: {
 
 /**
  * Mount-once recorder — extracts (projectKey, section, path) from
- * `/project-hub/:key/:section/...` and writes a visit on each route
+ * `/project/:key/:section/...` and writes a visit on each route
  * change. Mounted in CatalystShell so it runs on every page.
  *
  * Skips:
  *   - non-project segments (`all-projects`, `resource-360`)
  *   - ticket-grain sections (`story`, `issue`, `epic`, `feature`)
- *   - the bare `/project-hub/:key` (route immediately redirects to
+ *   - the bare `/project/:key` (route immediately redirects to
  *     /dashboard, which we'll capture on the next tick)
  */
 export function useRecordProjectVisit() {

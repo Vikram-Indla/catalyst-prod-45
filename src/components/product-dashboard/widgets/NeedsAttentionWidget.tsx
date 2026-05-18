@@ -132,7 +132,7 @@ function AttentionRow({
         gap: 12,
         alignItems: 'center',
         padding: '10px 12px',
-        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderBottom: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
         cursor: 'pointer',
       }}
       onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = token('color.background.neutral.hovered', '#F1F2F4'); }}

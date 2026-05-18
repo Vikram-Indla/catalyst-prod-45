@@ -23,7 +23,7 @@ export function DangerZone({ projectId, projectName }: DangerZoneProps) {
         .eq('id', projectId);
       if (error) throw new Error(error.message);
       toast.success('Project archived.');
-      navigate('/project-hub/projects');
+      navigate('/project/projects');
     } catch (err: any) {
       toast.error(err.message || 'Failed to archive project');
     } finally {

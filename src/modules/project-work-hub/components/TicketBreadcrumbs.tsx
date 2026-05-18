@@ -94,7 +94,7 @@ export function TicketBreadcrumbs({
       key: 'project',
       text: projectName || projectKey,
       iconBefore: <ProjectAvatar projectKey={projectKey} size={14} />,
-      href: projectHref ?? `/project-hub/${projectKey}/list`,
+      href: projectHref ?? `/project/${projectKey}/list`,
       ariaLabel: `Project ${projectName || projectKey}`,
     });
   }

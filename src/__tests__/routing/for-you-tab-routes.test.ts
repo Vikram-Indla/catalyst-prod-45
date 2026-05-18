@@ -20,13 +20,13 @@ function source(): string {
   return readFileSync(APP, 'utf8');
 }
 
-describe('/for-you/{tab} — segment routing', () => {
+describe('/home/{tab} — segment routing', () => {
   it('declares /for-you/:tab route in App.tsx', () => {
     const src = source();
     expect(src).toMatch(/path=["']for-you\/:tab["']/);
   });
 
-  it('/for-you without tab still renders ForYouPage (index route or bare path)', () => {
+  it('/home without tab still renders ForYouPage (index route or bare path)', () => {
     const src = source();
     expect(src).toMatch(/path=["']for-you["']/);
   });

@@ -192,7 +192,7 @@ export function LinkSimilarItemsDialog({
                       gap: 12,
                       padding: 12,
                       borderRadius: 6,
-                      border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      border: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
                       background: linked ? token('color.background.success', '#E3FCEF') : token('elevation.surface', '#FFFFFF'),
                       alignItems: 'center',
                     }}

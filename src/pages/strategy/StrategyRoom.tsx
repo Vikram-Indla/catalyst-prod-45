@@ -61,7 +61,7 @@ export default function StrategyRoom() {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const isBriefRoute = location.pathname === '/strategyhub/executive-brief';
+  const isBriefRoute = location.pathname === '/strategy/executive-brief';
   const shouldAutoPrint = searchParams.get('print') === '1';
 
   /* ─── Live data from database ─── */
@@ -113,15 +113,15 @@ export default function StrategyRoom() {
   }, []);
 
   const handleOpenBrief = useCallback(() => {
-    navigate('/strategyhub/executive-brief');
+    navigate('/strategy/executive-brief');
   }, [navigate]);
 
   const handleDownloadBrief = useCallback(() => {
-    navigate('/strategyhub/executive-brief?print=1');
+    navigate('/strategy/executive-brief?print=1');
   }, [navigate]);
 
   const handleCloseBrief = useCallback(() => {
-    navigate('/strategyhub');
+    navigate('/strategy');
   }, [navigate]);
 
   useEffect(() => {
@@ -160,8 +160,8 @@ export default function StrategyRoom() {
         /* Brief renders INLINE in the content area — nav + sidebar stay visible */
         <RoomContentShell maxWidthValue="1600px" className="bg-background dark:bg-transparent">
           <Breadcrumbs items={[
-            { label: 'StrategyHub', path: '/strategyhub' },
-            { label: 'Strategy Room', path: '/strategyhub' },
+            { label: 'StrategyHub', path: '/strategy' },
+            { label: 'Strategy Room', path: '/strategy' },
             { label: 'Executive Brief' },
           ]} />
           <AIExecutiveBrief open={isBriefRoute} onClose={handleCloseBrief} onDownload={printBriefInNewWindow} />

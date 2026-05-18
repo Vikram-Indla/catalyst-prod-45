@@ -221,7 +221,7 @@ export default function RequirementDetailPage() {
       const { error } = await typedQuery('tm_requirements').delete().eq('id', requirement.id);
       if (error) throw error;
       catalystToast.success('Requirement deleted');
-      navigate('/testhub/requirements');
+      navigate('/test/requirements');
     } catch { catalystToast.error('Failed to delete requirement'); }
   };
 
@@ -249,7 +249,7 @@ export default function RequirementDetailPage() {
 
   return (
     <div style={{ padding: 24, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', minHeight: '100vh' }}>
-      <button onClick={() => navigate('/testhub/requirements')}
+      <button onClick={() => navigate('/test/requirements')}
         style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 8, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
         <ArrowLeft size={16} /> Back to Requirements
       </button>
@@ -342,7 +342,7 @@ export default function RequirementDetailPage() {
                   <p style={{ fontSize: 14, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>{test.title}</p>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <button onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
+                  <button onClick={() => navigate(`/test/repository?view=${test.test_case_id}`)}
                     style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '8px 12px', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 6, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-secondary, #334155)', fontSize: 12, cursor: 'pointer' }}>
                     View <ChevronRight size={14} />
                   </button>

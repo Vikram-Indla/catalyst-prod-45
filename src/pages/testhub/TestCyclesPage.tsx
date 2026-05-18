@@ -278,7 +278,7 @@ export default function TestCyclesPage() {
               <TestCycleCard
                 key={cycle.id}
                 cycle={cycle}
-                onView={() => navigate(`/testhub/cycles/${cycle.id}`)}
+                onView={() => navigate(`/test/cycles/${cycle.id}`)}
                 onEdit={() => setEditCycle(cycle)}
                 onClone={() => setCloneCycle(cycle)}
                 onDelete={() => setDeleteCycle(cycle)}

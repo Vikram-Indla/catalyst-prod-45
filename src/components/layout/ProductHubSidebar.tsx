@@ -79,7 +79,7 @@ function extractProductCode(pathname: string): string | null {
 }
 
 function buildPerProductConfig(product: ProductRow): SidebarConfig {
-  const base = `/product-hub/${product.code}`;
+  const base = `/product/${product.code}`;
   return {
     badge: product.code.slice(0, 2),
     label: product.name,
@@ -87,7 +87,7 @@ function buildPerProductConfig(product: ProductRow): SidebarConfig {
       {
         title: '',
         items: [
-          { id: 'all-products', title: 'All Products', path: '/product-hub/products', icon: ArrowLeft, exact: true },
+          { id: 'all-products', title: 'All Products', path: '/product/products', icon: ArrowLeft, exact: true },
         ],
       },
       {
@@ -117,7 +117,7 @@ const GLOBAL_CONFIG: SidebarConfig = {
         {
           id: 'all-products',
           title: 'All Products',
-          path: '/product-hub/products',
+          path: '/product/products',
           icon: LayoutGrid,
           exact: false,
         },
@@ -201,7 +201,7 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
         .from('user_recent_items')
         .select('id, entity_type, entity_id, entity_key, display_summary, nav_path, visited_at')
         .eq('user_id', user.id)
-        .ilike('nav_path', `/product-hub/${productCode}/%`)
+        .ilike('nav_path', `/product/${productCode}/%`)
         .order('visited_at', { ascending: false })
         .limit(50);
       if (error) { console.warn('[ProductHubSidebar] per-product recents error:', error.message); return []; }
@@ -303,7 +303,7 @@ export function ProductHubSidebar({ expanded, onToggle, className }: ProductHubS
               {group.items.map((br) => (
                 <div
                   key={br.id}
-                  onClick={() => navigate(`/product-hub/backlog?selectedRequest=${br.request_key}`)}
+                  onClick={() => navigate(`/product/backlog?selectedRequest=${br.request_key}`)}
                   className="group"
                   style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '5px 12px 5px 28px', cursor: 'pointer', borderRadius: 3, margin: '0 4px', transition: 'background 80ms ease' }}
                   onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); }}

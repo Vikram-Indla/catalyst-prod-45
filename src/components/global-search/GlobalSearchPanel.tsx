@@ -208,7 +208,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         kind: 'suggestion',
         id: 'sug-mywork',
         label: <>Show my <strong>work items</strong></>,
-        activate: () => { navigate('/for-you/assigned'); onClose(); },
+        activate: () => { navigate('/home/assigned'); onClose(); },
       });
       if (assigneeIds.length > 0) {
         const name = memberOptions.find((o) => o.id === assigneeIds[0])?.name ?? assigneeIds[0];
@@ -216,7 +216,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
           kind: 'suggestion',
           id: 'sug-assignee',
           label: <>Work items assigned to <strong>{name}</strong></>,
-          activate: () => { navigate('/for-you/assigned'); onClose(); },
+          activate: () => { navigate('/home/assigned'); onClose(); },
         });
       }
     }
@@ -228,7 +228,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         item: it,
         activate: () => {
           if (it.project_key) {
-            navigate(`/project-hub/${it.project_key}/allwork?issue=${encodeURIComponent(it.item_key)}`);
+            navigate(`/project/${it.project_key}/allwork?issue=${encodeURIComponent(it.item_key)}`);
           } else {
             navigate('/');
           }
@@ -297,7 +297,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         maxHeight: '60vh',
         background: token('elevation.surface.overlay', '#FFFFFF'),
         borderRadius: 8,
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
         boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
         display: 'flex',
         flexDirection: 'column',

@@ -316,8 +316,8 @@ export function CatalystViewBase({
   const navigate = useNavigate();
   const location = useLocation();
   const projectListHref = location.pathname.includes('/backlog/')
-    ? `/project-hub/${projectKey}/backlog`
-    : `/project-hub/${projectKey}/list`;
+    ? `/project/${projectKey}/backlog`
+    : `/project/${projectKey}/list`;
   const handleBack = useCallback(() => {
     if (fullPageMode) {
       if (projectKey) {

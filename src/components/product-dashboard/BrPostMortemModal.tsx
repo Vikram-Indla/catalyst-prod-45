@@ -64,7 +64,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: `${token('space.200', '16px')} ${token('space.250', '20px')}`,
-            borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderBottom: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
             flexShrink: 0,
           }}
         >

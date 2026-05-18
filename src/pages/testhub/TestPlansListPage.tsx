@@ -69,7 +69,7 @@ export default function TestPlansListPage() {
       project_id: template.project_id,
       template_id: templateId,
     });
-    if (result?.id) navigate(`/testhub/test-plans/${result.id}`);
+    if (result?.id) navigate(`/test/test-plans/${result.id}`);
     setShowFromTemplate(false);
   };
 
@@ -158,7 +158,7 @@ export default function TestPlansListPage() {
       {/* Create Plan Dialog */}
       <CreatePlanDialog open={showCreate} onClose={() => setShowCreate(false)} onCreate={async (data) => {
         const result = await createPlan.mutateAsync(data);
-        if (result?.id) navigate(`/testhub/test-plans/${result.id}`);
+        if (result?.id) navigate(`/test/test-plans/${result.id}`);
         setShowCreate(false);
       }} />
 

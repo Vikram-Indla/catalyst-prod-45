@@ -365,7 +365,7 @@ export function useCreateTestCycleFromSet() {
       queryClient.invalidateQueries({ queryKey: ['test-sets'] });
       toast.success(`Created cycle: ${(cycle as any).name}`);
       // Navigate to the new cycle after a brief delay
-      setTimeout(() => window.location.href = `/testhub/cycles/${(cycle as any).id}`, 500);
+      setTimeout(() => window.location.href = `/test/cycles/${(cycle as any).id}`, 500);
     },
     onError: (e) => { toast.error('Failed to create cycle'); console.error(e); },
   });

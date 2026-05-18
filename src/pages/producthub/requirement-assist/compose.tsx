@@ -120,7 +120,7 @@ export default function RequirementAssistCompose() {
         },
       });
 
-      navigate(`/producthub/requirement-assist/${doc.id}`);
+      navigate(`/product/requirement-assist/${doc.id}`);
     } catch (err: any) {
       toast.error(err.message || 'Failed to create document');
     }

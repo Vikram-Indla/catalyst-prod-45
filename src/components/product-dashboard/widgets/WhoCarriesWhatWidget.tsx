@@ -56,7 +56,7 @@ function WorkloadRow({
         alignItems: 'center',
         gap: 10,
         padding: '8px 0',
-        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderBottom: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
@@ -141,7 +141,7 @@ function WorkloadCol({
         style={{
           margin: '0 0 12px',
           paddingBottom: 8,
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderBottom: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
           fontSize: 11,
           fontWeight: 600,
           color: token('color.text.subtle', '#44546F'),

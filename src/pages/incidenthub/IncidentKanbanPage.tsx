@@ -14,7 +14,7 @@
  * are told to manage status in Jira.
  *
  * Preserved:
- *   - Click → navigate to `/incident-hub/view/:id` detail route.
+ *   - Click → navigate to `/incident/view/:id` detail route.
  *   - `New Incident` CTA wired through `createLabel` / `onCreate` →
  *     `NewIncidentModal`.
  *
@@ -74,7 +74,7 @@ export default function IncidentKanbanPage() {
 
   /* ═════ Card click → detail route (unchanged from legacy page). ═════ */
   const onCardClick = useCallback((cardId: string) => {
-    navigate(`/incident-hub/view/${cardId}`);
+    navigate(`/incident/view/${cardId}`);
   }, [navigate]);
 
   const rows = incidents as IncidentHubRow[];

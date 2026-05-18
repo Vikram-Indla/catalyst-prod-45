@@ -44,7 +44,7 @@ export default function CatalystViewFeature({
       displaySummary: issue.summary,
       projectId: projectId ?? undefined,
       projectName: issue.project_name ?? undefined,
-      navPath: `/project-hub/${issue.project_key ?? projectKey ?? ''}/issue/${issue.issue_key ?? issue.id}`,
+      navPath: `/project/${issue.project_key ?? projectKey ?? ''}/issue/${issue.issue_key ?? issue.id}`,
     });
   }, [isOpen, issue?.id, issue?.summary, issue?.issue_key, issue?.project_key, issue?.project_name, projectId, projectKey, trackRecent]);
 

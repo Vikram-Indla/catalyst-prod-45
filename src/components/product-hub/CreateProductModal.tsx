@@ -148,7 +148,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
       toast.success(`Product line "${data.name}" created`);
       queryClient.invalidateQueries({ queryKey: ['product-hub', 'products'] });
       onClose();
-      navigate(`/product-hub/${data.code}/dashboard`);
+      navigate(`/product/${data.code}/dashboard`);
     } catch (e: any) {
       setErrorMsg(e?.message || 'Failed to create product line');
       setSubmitting(false);

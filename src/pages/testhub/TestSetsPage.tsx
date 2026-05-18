@@ -133,7 +133,7 @@ export default function TestSetsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {sortedSets.map(set => (
-            <Card key={set.id} className="cursor-pointer transition-all hover:shadow-md hover:border-primary/30" onClick={() => navigate(`/testhub/test-sets/${set.id}`)}>
+            <Card key={set.id} className="cursor-pointer transition-all hover:shadow-md hover:border-primary/30" onClick={() => navigate(`/test/test-sets/${set.id}`)}>
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-2">
@@ -154,7 +154,7 @@ export default function TestSetsPage() {
                   <span>{formatDistanceToNow(new Date(set.updated_at), { addSuffix: true })}</span>
                 </div>
                 <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
-                  <button onClick={() => navigate(`/testhub/test-sets/${set.id}`)} className="flex-1 h-9 px-3 rounded-md border border-border hover:bg-muted transition-colors flex items-center justify-center gap-1 text-sm">
+                  <button onClick={() => navigate(`/test/test-sets/${set.id}`)} className="flex-1 h-9 px-3 rounded-md border border-border hover:bg-muted transition-colors flex items-center justify-center gap-1 text-sm">
                     <Play className="h-4 w-4" />View
                   </button>
                   <button onClick={() => setAddToCycleSet(set)} 

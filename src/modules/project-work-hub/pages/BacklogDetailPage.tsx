@@ -136,12 +136,12 @@ export default function BacklogDetailPage() {
   }, [issueKey]);
 
   const handleOpenItem = (itemId: string) => {
-    navigate(`/project-hub/${projectKey}/backlog/${itemId}`);
+    navigate(`/project/${projectKey}/backlog/${itemId}`);
   };
 
   const handleClose = () => {
     // Back to backlog list (not /list)
-    navigate(`/project-hub/${projectKey}/backlog`);
+    navigate(`/project/${projectKey}/backlog`);
   };
 
   if (loading) {

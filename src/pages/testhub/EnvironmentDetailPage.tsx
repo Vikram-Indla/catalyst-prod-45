@@ -133,7 +133,7 @@ export default function EnvironmentDetailPage() {
       const { error } = await typedQuery('tm_environments').delete().eq('id', environment.id);
       if (error) throw error;
       catalystToast.success('Environment deleted');
-      navigate('/testhub/environments');
+      navigate('/test/environments');
     } catch { catalystToast.error('Failed to delete environment'); }
   };
 
@@ -164,7 +164,7 @@ export default function EnvironmentDetailPage() {
 
   return (
     <div style={{ padding: 24, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', minHeight: '100vh' }}>
-      <button onClick={() => navigate('/testhub/environments')}
+      <button onClick={() => navigate('/test/environments')}
         style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
         <ArrowLeft size={16} /> Back to Environments
       </button>
@@ -308,7 +308,7 @@ export default function EnvironmentDetailPage() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {linkedCycles.map((cycle) => (
-                  <div key={cycle.cycle_id} onClick={() => navigate(`/testhub/cycles/${cycle.cycle_id}`)}
+                  <div key={cycle.cycle_id} onClick={() => navigate(`/test/cycles/${cycle.cycle_id}`)}
                     style={{ padding: 12, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 8, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '2px 6px', borderRadius: 4, marginRight: 8 }}>{cycle.cycle_key}</span>

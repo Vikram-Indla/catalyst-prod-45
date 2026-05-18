@@ -81,7 +81,7 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
         return {
           id: `fav-${p.id}`,
           title: p.name,
-          path: `/project-hub/${pk}/dashboard`,
+          path: `/project/${pk}/dashboard`,
           icon: FavIcon,
           exact: false,
           alwaysStarred: true,
@@ -91,7 +91,7 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
   }, [projects, favoriteIds]);
 
   if (projectKey) {
-    const base = `/project-hub/${projectKey}`;
+    const base = `/project/${projectKey}`;
 
     const projectConfig: SidebarConfig = {
       badge: projectKey.slice(0, 2).toUpperCase(),
@@ -225,7 +225,7 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
     {
       title: '',
       items: [
-        { id: 'all-projects', title: 'All Projects', path: '/project-hub/projects', icon: LayoutGrid, exact: false },
+        { id: 'all-projects', title: 'All Projects', path: '/project/projects', icon: LayoutGrid, exact: false },
       ],
     },
   ];

@@ -492,13 +492,13 @@ export default function FullAppRoutes() {
             CatalystShell's re-render loop swallows in-shell Navigate calls
             (same pattern as ProducthubLegacyRedirect). Drilldowns happen at
             /product-hub/{KEY}/dashboard|backlog|kanban|... */}
-        <Route path="/product-hub/products" element={<MG k="producthub" t="ProductHub"><S><AllProductsPage /></S></MG>} />
-        <Route path="/product-hub/backlog" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
-        <Route path="/product-hub/table" element={<MG k="producthub" t="ProductHub"><S><CatalystDemandTable /></S></MG>} />
-        <Route path="/product-hub/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
+        <Route path="/product/products" element={<MG k="producthub" t="ProductHub"><S><AllProductsPage /></S></MG>} />
+        <Route path="/product/backlog" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
+        <Route path="/product/table" element={<MG k="producthub" t="ProductHub"><S><CatalystDemandTable /></S></MG>} />
+        <Route path="/product/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
         {/* /product-hub/dashboard deprecated 2026-05-16 — redirects to products list */}
-        <Route path="/product-hub/dashboard" element={<Navigate to="/product-hub/products" replace />} />
-        <Route path="/product-hub/product-dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
+        <Route path="/product/dashboard" element={<Navigate to="/product/products" replace />} />
+        <Route path="/product/product-dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
         {/* Block D Phase 2.5 (2026-05-01) — product-scoped drilldown routes.
             Mirror of /project-hub/{KEY}/* on the project side.
             :key param resolves against public.products.code (INV/MINI/SEN/ENT).
@@ -507,47 +507,47 @@ export default function FullAppRoutes() {
             2026-05-16: renamed :code → :key so canonical components that read
             useParams().key work without adaptation. */}
         {/* Generic per-product routes — canonical components, same as project-hub */}
-        <Route path="/product-hub/:key/backlog" element={<MG k="producthub" t="ProductHub"><S><ProductHubBacklogAdapter /></S></MG>} />
-        <Route path="/product-hub/:key/boards" element={<MG k="producthub" t="ProductHub"><S><KanbanBoardPageLazy /></S></MG>} />
-        <Route path="/product-hub/:key/kanban" element={<MG k="producthub" t="ProductHub"><S><KanbanBoardPageLazy /></S></MG>} />
-        <Route path="/product-hub/:key/allwork" element={<MG k="producthub" t="ProductHub"><S><ProductHubAllWorkAdapter /></S></MG>} />
-        <Route path="/product-hub/:key/dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
-        <Route path="/product-hub/:key/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
-        <Route path="/product-hub/:key/cards" element={<MG k="producthub" t="ProductHub"><S><ProductCardsPage /></S></MG>} />
-        <Route path="/product-hub/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
-        <Route path="/product-hub/roadmaps" element={<Navigate to="/product-hub/roadmap" replace />} />
-        <Route path="/product-hub/roadmaps-v1" element={<MG k="producthub" t="ProductHub"><S><IndustryRoadmapPage /></S></MG>} />
-        <Route path="/product-hub/reports" element={<MG k="producthub" t="ProductHub"><S><IndustryComingSoon /></S></MG>} />
-        <Route path="/product-hub/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
-        <Route path="/product-hub/cards" element={<MG k="producthub" t="ProductHub"><S><ProductCardsPage /></S></MG>} />
+        <Route path="/product/:key/backlog" element={<MG k="producthub" t="ProductHub"><S><ProductHubBacklogAdapter /></S></MG>} />
+        <Route path="/product/:key/boards" element={<MG k="producthub" t="ProductHub"><S><KanbanBoardPageLazy /></S></MG>} />
+        <Route path="/product/:key/kanban" element={<MG k="producthub" t="ProductHub"><S><KanbanBoardPageLazy /></S></MG>} />
+        <Route path="/product/:key/allwork" element={<MG k="producthub" t="ProductHub"><S><ProductHubAllWorkAdapter /></S></MG>} />
+        <Route path="/product/:key/dashboard" element={<MG k="producthub" t="ProductHub"><S><ProductDashboardPageV2 /></S></MG>} />
+        <Route path="/product/:key/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
+        <Route path="/product/:key/cards" element={<MG k="producthub" t="ProductHub"><S><ProductCardsPage /></S></MG>} />
+        <Route path="/product/:key/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
+        <Route path="/product/roadmaps" element={<Navigate to="/product/roadmap" replace />} />
+        <Route path="/product/roadmaps-v1" element={<MG k="producthub" t="ProductHub"><S><IndustryRoadmapPage /></S></MG>} />
+        <Route path="/product/reports" element={<MG k="producthub" t="ProductHub"><S><IndustryComingSoon /></S></MG>} />
+        <Route path="/product/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
+        <Route path="/product/cards" element={<MG k="producthub" t="ProductHub"><S><ProductCardsPage /></S></MG>} />
         {/* Phase 6 (2026-05-02) — Ideation lifted out of Product Hub.
             /product-hub/ideation now redirects to the canonical peer hub
             at /ideation/intelligence. Submitters and reviewers no longer
             land "inside" Product Hub for ideation work. */}
-        <Route path="/product-hub/ideation" element={<Navigate to="/ideation/intelligence" replace />} />
-        <Route path="/product-hub/requirement-assist" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistWorkspace /></S></MG>} />
-        <Route path="/product-hub/requirement-assist/compose" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistCompose /></S></MG>} />
-        <Route path="/product-hub/requirement-assist/categories" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistCategories /></S></MG>} />
-        <Route path="/product-hub/requirement-assist/:id" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistOutput /></S></MG>} />
+        <Route path="/product/ideation" element={<Navigate to="/ideation/intelligence" replace />} />
+        <Route path="/product/requirement-assist" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistWorkspace /></S></MG>} />
+        <Route path="/product/requirement-assist/compose" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistCompose /></S></MG>} />
+        <Route path="/product/requirement-assist/categories" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistCategories /></S></MG>} />
+        <Route path="/product/requirement-assist/:id" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistOutput /></S></MG>} />
 
         {/* Legacy /producthub/* — redirect each to canonical /product-hub/X.
             /producthub root now lands on /products (workstream list) per
             Block C/D Phase-2 architecture. */}
-        <Route path="/producthub" element={<Navigate to="/product-hub/products" replace />} />
-        <Route path="/producthub/backlog" element={<Navigate to="/product-hub/backlog" replace />} />
-        <Route path="/producthub/table" element={<Navigate to="/product-hub/table" replace />} />
-        <Route path="/producthub/kanban" element={<Navigate to="/product-hub/kanban" replace />} />
-        <Route path="/producthub/dashboard" element={<Navigate to="/product-hub/products" replace />} />
-        <Route path="/producthub/roadmaps" element={<Navigate to="/product-hub/roadmap" replace />} />
-        <Route path="/producthub/roadmaps-v1" element={<Navigate to="/product-hub/roadmaps-v1" replace />} />
-        <Route path="/producthub/reports" element={<Navigate to="/product-hub/reports" replace />} />
-        <Route path="/producthub/roadmap" element={<Navigate to="/product-hub/roadmap" replace />} />
-        <Route path="/producthub/cards" element={<Navigate to="/product-hub/cards" replace />} />
-        <Route path="/producthub/ideation" element={<Navigate to="/ideation/intelligence" replace />} />
-        <Route path="/producthub/requirement-assist" element={<Navigate to="/product-hub/requirement-assist" replace />} />
-        <Route path="/producthub/requirement-assist/compose" element={<Navigate to="/product-hub/requirement-assist/compose" replace />} />
-        <Route path="/producthub/requirement-assist/categories" element={<Navigate to="/product-hub/requirement-assist/categories" replace />} />
-        <Route path="/producthub/requirement-assist/:id" element={<NavigateProducthubReqAssistId />} />
+        <Route path="/product" element={<Navigate to="/product/products" replace />} />
+        <Route path="/product/backlog" element={<Navigate to="/product/backlog" replace />} />
+        <Route path="/product/table" element={<Navigate to="/product/table" replace />} />
+        <Route path="/product/kanban" element={<Navigate to="/product/kanban" replace />} />
+        <Route path="/product/dashboard" element={<Navigate to="/product/products" replace />} />
+        <Route path="/product/roadmaps" element={<Navigate to="/product/roadmap" replace />} />
+        <Route path="/product/roadmaps-v1" element={<Navigate to="/product/roadmaps-v1" replace />} />
+        <Route path="/product/reports" element={<Navigate to="/product/reports" replace />} />
+        <Route path="/product/roadmap" element={<Navigate to="/product/roadmap" replace />} />
+        <Route path="/product/cards" element={<Navigate to="/product/cards" replace />} />
+        <Route path="/product/ideation" element={<Navigate to="/ideation/intelligence" replace />} />
+        <Route path="/product/requirement-assist" element={<Navigate to="/product/requirement-assist" replace />} />
+        <Route path="/product/requirement-assist/compose" element={<Navigate to="/product/requirement-assist/compose" replace />} />
+        <Route path="/product/requirement-assist/categories" element={<Navigate to="/product/requirement-assist/categories" replace />} />
+        <Route path="/product/requirement-assist/:id" element={<NavigateProducthubReqAssistId />} />
 
         {/* Phase 6 (2026-05-02) — Ideation peer hub at /ideation/*.
             Pages stay where they are (pages/producthub/Ideas*.tsx); only
@@ -575,28 +575,28 @@ export default function FullAppRoutes() {
         <Route path="/product/req-assist" element={<MG k="ai_features" t="Requirement Assist"><S><ReqAssistLibrary /></S></MG>} />
         <Route path="/product/req-assist/generate" element={<MG k="ai_features" t="Requirement Assist"><S><ReqAssistGenerate /></S></MG>} />
         <Route path="/req-assist/rag-audit" element={<MG k="ai_features" t="RAG Audit"><S><RAGAuditPage /></S></MG>} />
-        <Route path="/product-hub/req-assist" element={<Navigate to="/product/req-assist" replace />} />
-        <Route path="/product-hub/req-assist/generate" element={<Navigate to="/product/req-assist/generate" replace />} />
-        <Route path="/industry/*" element={<Navigate to="/product-hub" replace />} />
+        <Route path="/product/req-assist" element={<Navigate to="/product/req-assist" replace />} />
+        <Route path="/product/req-assist/generate" element={<Navigate to="/product/req-assist/generate" replace />} />
+        <Route path="/industry/*" element={<Navigate to="/product" replace />} />
         
         <Route path="/starred" element={<S><StarredPage /></S>} />
         <Route path="/search" element={<S><SearchPage /></S>} />
 
         {/* ═══ StrategyHub ═══ */}
-        <Route path="/strategyhub" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyRoom /></S></MG>} />
-        <Route path="/strategyhub/executive-brief" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyRoom /></S></MG>} />
-        <Route path="/strategyhub/themes" element={<MG k="strategyhub" t="StrategyHub"><S><StrategicThemesPage /></S></MG>} />
-        <Route path="/strategyhub/goals" element={<MG k="strategyhub" t="StrategyHub"><S><GoalsKeyResultsPage /></S></MG>} />
-        <Route path="/strategyhub/initiatives" element={<Navigate to="/producthub/backlog" replace />} />
-        <Route path="/strategyhub/investment" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Investment Allocation" /></S></MG>} />
-        <Route path="/strategyhub/snapshots" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Snapshots" /></S></MG>} />
-        <Route path="/strategyhub/ai-insights" element={<MG k="ai_features" t="AI Insights"><S><StrategyComingSoon title="AI Insights" /></S></MG>} />
-        <Route path="/strategyhub/team-alignment" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Team Alignment" /></S></MG>} />
-        <Route path="/strategyhub/settings" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Settings" /></S></MG>} />
-        <Route path="/strategy-room" element={<Navigate to="/strategyhub" replace />} />
-        <Route path="/strategyhub/strategy-room" element={<Navigate to="/strategyhub" replace />} />
-        <Route path="/strategyhub/roadmaps" element={<Navigate to="/strategyhub/risks" replace />} />
-        <Route path="/strategyhub/risks" element={<S><EnterpriseComingSoon /></S>} />
+        <Route path="/strategy" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyRoom /></S></MG>} />
+        <Route path="/strategy/executive-brief" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyRoom /></S></MG>} />
+        <Route path="/strategy/themes" element={<MG k="strategyhub" t="StrategyHub"><S><StrategicThemesPage /></S></MG>} />
+        <Route path="/strategy/goals" element={<MG k="strategyhub" t="StrategyHub"><S><GoalsKeyResultsPage /></S></MG>} />
+        <Route path="/strategy/initiatives" element={<Navigate to="/product/backlog" replace />} />
+        <Route path="/strategy/investment" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Investment Allocation" /></S></MG>} />
+        <Route path="/strategy/snapshots" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Snapshots" /></S></MG>} />
+        <Route path="/strategy/ai-insights" element={<MG k="ai_features" t="AI Insights"><S><StrategyComingSoon title="AI Insights" /></S></MG>} />
+        <Route path="/strategy/team-alignment" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Team Alignment" /></S></MG>} />
+        <Route path="/strategy/settings" element={<MG k="strategyhub" t="StrategyHub"><S><StrategyComingSoon title="Settings" /></S></MG>} />
+        <Route path="/strategy-room" element={<Navigate to="/strategy" replace />} />
+        <Route path="/strategy/strategy-room" element={<Navigate to="/strategy" replace />} />
+        <Route path="/strategy/roadmaps" element={<Navigate to="/strategy/risks" replace />} />
+        <Route path="/strategy/risks" element={<S><EnterpriseComingSoon /></S>} />
 
         <Route path="/portfolio/:portfolioId/*" element={<S><PortfolioRoutesShell /></S>} />
         <Route path="/program" element={<S><PlaceholderPage /></S>} />
@@ -614,14 +614,14 @@ export default function FullAppRoutes() {
 
         <Route path="/work-tree" element={<S><WorkTreePage /></S>} />
 
-        <Route path="/taskhub" element={<Navigate to="/taskhub/boards" replace />} />
-        <Route path="/taskhub/:view" element={<S><PlannerPage /></S>} />
-        <Route path="/taskhub-kanban" element={<S><KanbanPage /></S>} />
-        <Route path="/taskhub/my-tasks" element={<S><MyTasksPage /></S>} />
+        <Route path="/task" element={<Navigate to="/task/boards" replace />} />
+        <Route path="/task/:view" element={<S><PlannerPage /></S>} />
+        <Route path="/task-kanban" element={<S><KanbanPage /></S>} />
+        <Route path="/task/my-tasks" element={<S><MyTasksPage /></S>} />
 
         {/* ═══ TestHub ═══ */}
-        <Route path="/testhub" element={<MG k="testhub" t="TestHub"><S><TestHubPage /></S></MG>}>
-          <Route index element={<Navigate to="/testhub/dashboard" replace />} />
+        <Route path="/test" element={<MG k="testhub" t="TestHub"><S><TestHubPage /></S></MG>}>
+          <Route index element={<Navigate to="/test/dashboard" replace />} />
           <Route path="repository" element={<S><TestRepositoryPage /></S>} />
           <Route path="dashboard" element={<S><TestHubDashboardPage /></S>} />
           <Route path="shared-steps" element={<S><SharedStepsPage /></S>} />
@@ -661,55 +661,55 @@ export default function FullAppRoutes() {
         </Route>
 
         {/* ═══ IncidentHub ═══ */}
-        <Route path="/incident-hub" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubListPage /></S></MG>} />
-        <Route path="/incident-hub/kanban" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubKanbanPage /></S></MG>} />
-        <Route path="/incident-hub/analytics" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubAnalyticsPage /></S></MG>} />
-        <Route path="/incident-hub/insights" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubInsightsPage /></S></MG>} />
-        <Route path="/incident-hub/reports" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubReportsPage /></S></MG>} />
-        <Route path="/incident-hub/committee-queue" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubCommitteeQueuePage /></S></MG>} />
-        <Route path="/incident-hub/view/:id" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubDetailPage /></S></MG>} />
+        <Route path="/incident" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubListPage /></S></MG>} />
+        <Route path="/incident/kanban" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubKanbanPage /></S></MG>} />
+        <Route path="/incident/analytics" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubAnalyticsPage /></S></MG>} />
+        <Route path="/incident/insights" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubInsightsPage /></S></MG>} />
+        <Route path="/incident/reports" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubReportsPage /></S></MG>} />
+        <Route path="/incident/committee-queue" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubCommitteeQueuePage /></S></MG>} />
+        <Route path="/incident/view/:id" element={<MG k="incidenthub" t="IncidentHub"><S><IncidentHubDetailPage /></S></MG>} />
 
-        <Route path="/release-hub" element={<Navigate to="/release-hub/command-center" replace />} />
-        <Route path="/release-hub/command-center" element={<S><RH21CommandCenterPage /></S>} />
-        <Route path="/release-hub/releases" element={<S><RH21AllReleasesPage /></S>} />
-        <Route path="/release-hub/compare" element={<S><RH21ReleaseComparePage /></S>} />
-        <Route path="/release-hub/triage" element={<S><RH21TriageQueuePage /></S>} />
-        <Route path="/release-hub/changes" element={<S><RH21AllChangesPage /></S>} />
-        <Route path="/release-hub/sign-off-queue" element={<S><RH21SignOffQueuePage /></S>} />
-        <Route path="/release-hub/production-events" element={<S><ProductionEventsPageLazy /></S>} />
-        <Route path="/release-hub/freeze-windows" element={<S><RH21FreezeWindowsPage /></S>} />
+        <Route path="/release" element={<Navigate to="/release/command-center" replace />} />
+        <Route path="/release/command-center" element={<S><RH21CommandCenterPage /></S>} />
+        <Route path="/release/releases" element={<S><RH21AllReleasesPage /></S>} />
+        <Route path="/release/compare" element={<S><RH21ReleaseComparePage /></S>} />
+        <Route path="/release/triage" element={<S><RH21TriageQueuePage /></S>} />
+        <Route path="/release/changes" element={<S><RH21AllChangesPage /></S>} />
+        <Route path="/release/sign-off-queue" element={<S><RH21SignOffQueuePage /></S>} />
+        <Route path="/release/production-events" element={<S><ProductionEventsPageLazy /></S>} />
+        <Route path="/release/freeze-windows" element={<S><RH21FreezeWindowsPage /></S>} />
         
-        <Route path="/release-hub/:releaseId" element={<S><ReleaseDashboardV5Page /></S>} />
+        <Route path="/release/:releaseId" element={<S><ReleaseDashboardV5Page /></S>} />
 
         {/* Legacy releasehub redirects */}
-        <Route path="/releasehub" element={<Navigate to="/release-hub/command-center" replace />} />
-        <Route path="/releasehub/command-center" element={<Navigate to="/release-hub/command-center" replace />} />
-        <Route path="/releasehub/all-releases" element={<Navigate to="/release-hub/releases" replace />} />
-        <Route path="/releasehub/compare" element={<Navigate to="/release-hub/compare" replace />} />
-        <Route path="/releasehub/triage" element={<Navigate to="/release-hub/triage" replace />} />
-        <Route path="/releasehub/changes" element={<Navigate to="/release-hub/changes" replace />} />
-        <Route path="/releasehub/production-events" element={<Navigate to="/release-hub/production-events" replace />} />
-        <Route path="/releasehub/dashboard" element={<Navigate to="/release-hub/command-center" replace />} />
-        <Route path="/releasehub/all" element={<Navigate to="/release-hub/releases" replace />} />
+        <Route path="/releasehub" element={<Navigate to="/release/command-center" replace />} />
+        <Route path="/releasehub/command-center" element={<Navigate to="/release/command-center" replace />} />
+        <Route path="/releasehub/all-releases" element={<Navigate to="/release/releases" replace />} />
+        <Route path="/releasehub/compare" element={<Navigate to="/release/compare" replace />} />
+        <Route path="/releasehub/triage" element={<Navigate to="/release/triage" replace />} />
+        <Route path="/releasehub/changes" element={<Navigate to="/release/changes" replace />} />
+        <Route path="/releasehub/production-events" element={<Navigate to="/release/production-events" replace />} />
+        <Route path="/releasehub/dashboard" element={<Navigate to="/release/command-center" replace />} />
+        <Route path="/releasehub/all" element={<Navigate to="/release/releases" replace />} />
 
         <Route path="/priorities" element={<S><T10LandingPage /></S>} />
         <Route path="/priorities/completed" element={<S><T10CompletedPage /></S>} />
         <Route path="/priorities/list/:listId" element={<S><T10WeekPage /></S>} />
         <Route path="/priorities/list/:listId/week/:weekId" element={<S><T10WeekPageV3 /></S>} />
-        <Route path="/taskhub/task10" element={<Navigate to="/priorities" replace />} />
-        <Route path="/taskhub/task10/*" element={<Navigate to="/priorities" replace />} />
-        <Route path="/planner" element={<Navigate to="/taskhub/boards" replace />} />
-        <Route path="/planner/*" element={<Navigate to="/taskhub/boards" replace />} />
+        <Route path="/task/task10" element={<Navigate to="/priorities" replace />} />
+        <Route path="/task/task10/*" element={<Navigate to="/priorities" replace />} />
+        <Route path="/planner" element={<Navigate to="/task/boards" replace />} />
+        <Route path="/planner/*" element={<Navigate to="/task/boards" replace />} />
 
-        <Route path="/planhub" element={<S><PlanLibraryPage /></S>} />
-        <Route path="/planhub/plan/:planId" element={<S><PlanEditorPage /></S>} />
-        <Route path="/planhub/compare" element={<S><ScenarioComparePage /></S>} />
-        <Route path="/planhub/master" element={<S><MasterPlanPage /></S>} />
-        <Route path="/planhub/resources" element={<S><PlanHubResourcesPage /></S>} />
-        <Route path="/planhub/ai" element={<S><PlanHubAIPage /></S>} />
-        <Route path="/planhub/reports" element={<S><PlanHubReportsPage /></S>} />
-        <Route path="/planhub/capacity" element={<S><CapacityPlannerPage /></S>} />
-        <Route path="/planhub/budget-planner" element={<S><BudgetPlannerPage /></S>} />
+        <Route path="/plan" element={<S><PlanLibraryPage /></S>} />
+        <Route path="/plan/plan/:planId" element={<S><PlanEditorPage /></S>} />
+        <Route path="/plan/compare" element={<S><ScenarioComparePage /></S>} />
+        <Route path="/plan/master" element={<S><MasterPlanPage /></S>} />
+        <Route path="/plan/resources" element={<S><PlanHubResourcesPage /></S>} />
+        <Route path="/plan/ai" element={<S><PlanHubAIPage /></S>} />
+        <Route path="/plan/reports" element={<S><PlanHubReportsPage /></S>} />
+        <Route path="/plan/capacity" element={<S><CapacityPlannerPage /></S>} />
+        <Route path="/plan/budget-planner" element={<S><BudgetPlannerPage /></S>} />
 
         <Route path="/wiki" element={<S><WikiHomePage /></S>} />
         <Route path="/wiki/search" element={<S><WikiSearchPage /></S>} />
@@ -773,11 +773,11 @@ export default function FullAppRoutes() {
         <Route path="/projects/:projectKey" element={<Navigate to={`/projects`} replace />} />
         <Route path="/projects/:projectKey/summary" element={<Navigate to={`/projects`} replace />} />
         <Route path="/workhub/all-work" element={<S><WorkHubAllWork /></S>} />
-        <Route path="/workhub" element={<Navigate to="/project-hub" replace />} />
-        <Route path="/projecthub" element={<Navigate to="/project-hub" replace />} />
-        <Route path="/projecthub/resource360" element={<Navigate to="/project-hub/resource-360/009" replace />} />
+        <Route path="/workhub" element={<Navigate to="/project" replace />} />
+        <Route path="/projecthub" element={<Navigate to="/project" replace />} />
+        <Route path="/projecthub/resource360" element={<Navigate to="/project/resource-360/009" replace />} />
         <Route path="/projecthub/resource360/:id" element={<Resource360Redirect />} />
-        <Route path="/resource-360/:resourceId" element={<Navigate to="/project-hub/resource-360/009" replace />} />
+        <Route path="/resource-360/:resourceId" element={<Navigate to="/project/resource-360/009" replace />} />
 
         <Route path="/projects/:projectKey/settings" element={<S><ProjectSettingsPage /></S>} />
         <Route path="/projects/:projectId/features" element={<S><FeaturesPage /></S>} />
@@ -818,7 +818,7 @@ export default function FullAppRoutes() {
         <Route path="/stories" element={<S><Stories /></S>} />
         <Route path="/work-items/stories" element={<S><Stories /></S>} />
         <Route path="/work-items/subtasks" element={<S><Subtasks /></S>} />
-        <Route path="/releases/*" element={<Navigate to="/release-hub/command-center" replace />} />
+        <Route path="/releases/*" element={<Navigate to="/release/command-center" replace />} />
 
         <Route path="/unauthorized" element={<S><UnauthorizedPage /></S>} />
 
@@ -908,51 +908,51 @@ export default function FullAppRoutes() {
         <Route path="/profile" element={<S><UserProfile /></S>} />
         <Route path="/items/:type" element={<S><PlaceholderPage /></S>} />
 
-        <Route path="/project-hub" element={<Navigate to="/project-hub/projects" replace />} />
-        <Route path="/project-hub/projects" element={<S><AllProjectsPageLazy /></S>} />
+        <Route path="/project" element={<Navigate to="/project/projects" replace />} />
+        <Route path="/project/projects" element={<S><AllProjectsPageLazy /></S>} />
         <Route path="/project/all-projects" element={<S><AllProjectsPageLazy /></S>} />
-        <Route path="/project-hub/projects-legacy" element={<S><ProjectListPageLazy /></S>} />
-        <Route path="/project-hub/portfolio-health" element={<S><div className="flex h-full items-center justify-center" style={{ color: 'var(--text-3)' }}>Portfolio Health — Coming Soon</div></S>} />
+        <Route path="/project/projects-legacy" element={<S><ProjectListPageLazy /></S>} />
+        <Route path="/project/portfolio-health" element={<S><div className="flex h-full items-center justify-center" style={{ color: 'var(--text-3)' }}>Portfolio Health — Coming Soon</div></S>} />
         <Route path="/me" element={<S><MyResource360PageLazy /></S>} />
         <Route path="/my-team" element={<S><MyTeamPageLazy /></S>} />
         <Route path="/my-team/:resourceId" element={<S><R360MemberDetailLazy /></S>} />
-        <Route path="/project-hub/resources" element={<Navigate to="/admin/resources" replace />} />
-        <Route path="/project-hub/resources/:resourceId" element={<NavigateAdminResourceId />} />
-        <Route path="/project-hub/resources-v2" element={<Navigate to="/admin/resources" replace />} />
-        <Route path="/project-hub/resources-v2/:resourceId" element={<NavigateAdminResourceId />} />
-        <Route path="/project-hub/resource360" element={<Navigate to="/project-hub/resource-360/009" replace />} />
-        <Route path="/project-hub/resource360/:id" element={<Navigate to="/project-hub/resource-360/009" replace />} />
-        <Route path="/project-hub/resource-360/:resourceId" element={<S><Resource360PageNew /></S>} />
+        <Route path="/project/resources" element={<Navigate to="/admin/resources" replace />} />
+        <Route path="/project/resources/:resourceId" element={<NavigateAdminResourceId />} />
+        <Route path="/project/resources-v2" element={<Navigate to="/admin/resources" replace />} />
+        <Route path="/project/resources-v2/:resourceId" element={<NavigateAdminResourceId />} />
+        <Route path="/project/resource360" element={<Navigate to="/project/resource-360/009" replace />} />
+        <Route path="/project/resource360/:id" element={<Navigate to="/project/resource-360/009" replace />} />
+        <Route path="/project/resource-360/:resourceId" element={<S><Resource360PageNew /></S>} />
         <Route path="/resource360/members/:memberId" element={<S><Resource360MemberDetail /></S>} />
         <Route path="/resources" element={<S><R360ProfilePageLazy /></S>} />
-        <Route path="/project-hub/:key" element={<Navigate to="dashboard" replace />} />
-        <Route path="/project-hub/:key/dashboard" element={<S><ProjectDashboardPageLazy /></S>} />
-        <Route path="/project-hub/:key/settings" element={<S><PHProjectSettingsPageLazy /></S>} />
-        <Route path="/project-hub/:key/backlog" element={<S><UnifiedBacklogPageLazy /></S>} />
-        <Route path="/project-hub/:key/backlog/:issueKey" element={<S><BacklogDetailPageLazy /></S>} />
+        <Route path="/project/:key" element={<Navigate to="dashboard" replace />} />
+        <Route path="/project/:key/dashboard" element={<S><ProjectDashboardPageLazy /></S>} />
+        <Route path="/project/:key/settings" element={<S><PHProjectSettingsPageLazy /></S>} />
+        <Route path="/project/:key/backlog" element={<S><UnifiedBacklogPageLazy /></S>} />
+        <Route path="/project/:key/backlog/:issueKey" element={<S><BacklogDetailPageLazy /></S>} />
         {/* Legacy per-type backlog pages — deprecated 2026-04. The unified
             Backlog above combines all work-item types (Epics, Features,
             Stories, Tasks, QA Bugs, Production Incidents, Change Requests,
             Business Gaps, API Requirements). These three paths redirect so
             bookmarks keep working; the source files remain on disk untouched. */}
-        <Route path="/project-hub/:key/epic-backlog" element={<LegacyBacklogRedirect />} />
-        <Route path="/project-hub/:key/feature-backlog" element={<LegacyBacklogRedirect />} />
-        <Route path="/project-hub/:key/story-backlog" element={<LegacyBacklogRedirect />} />
-        <Route path="/project-hub/:key/story/:itemId" element={<S><StoryDetailPageLazy /></S>} />
-        <Route path="/project-hub/:key/issue/:issueKey" element={<IssueRedirectToBrowse />} />
-        <Route path="/project-hub/:key/board" element={<S><ProjectBoardPageLazy /></S>} />
-        <Route path="/project-hub/:key/boards" element={<S><KanbanBoardPageLazy /></S>} />
-        <Route path="/project-hub/:key/boards/map-statuses" element={<S><MapStatusesPageLazy /></S>} />
-        <Route path="/project-hub/:key/boards/:boardId" element={<S><KanbanBoardPageLazy /></S>} />
-        <Route path="/project-hub/:key/hierarchy/allwork" element={<HierarchyAllWorkRedirect />} />
-        <Route path="/project-hub/:key/hierarchy" element={<Navigate to="../allwork" replace />} />
-        <Route path="/project-hub/:key/list" element={<S><ProjectJiraLayoutLazy /></S>} />
-        <Route path="/project-hub/:key/allwork" element={<S><ProjectJiraLayoutLazy /></S>} />
-        <Route path="/project-hub/:key/timeline" element={<PHPlaceholder title="Timeline" phase="Phase 3" />} />
-        <Route path="/project-hub/:key/releases" element={<PHPlaceholder title="Releases" phase="Phase 3" />} />
-        <Route path="/project-hub/:key/reports" element={<PHPlaceholder title="Reports" phase="Phase 4" />} />
-        <Route path="/project-hub/:key/sprint-predictor" element={<PHPlaceholder title="Sprint Predictor" phase="Phase 5" />} />
-        <Route path="/project-hub/:key/risk-scanner" element={<PHPlaceholder title="Risk Scanner" phase="Phase 5" />} />
+        <Route path="/project/:key/epic-backlog" element={<LegacyBacklogRedirect />} />
+        <Route path="/project/:key/feature-backlog" element={<LegacyBacklogRedirect />} />
+        <Route path="/project/:key/story-backlog" element={<LegacyBacklogRedirect />} />
+        <Route path="/project/:key/story/:itemId" element={<S><StoryDetailPageLazy /></S>} />
+        <Route path="/project/:key/issue/:issueKey" element={<IssueRedirectToBrowse />} />
+        <Route path="/project/:key/board" element={<S><ProjectBoardPageLazy /></S>} />
+        <Route path="/project/:key/boards" element={<S><KanbanBoardPageLazy /></S>} />
+        <Route path="/project/:key/boards/map-statuses" element={<S><MapStatusesPageLazy /></S>} />
+        <Route path="/project/:key/boards/:boardId" element={<S><KanbanBoardPageLazy /></S>} />
+        <Route path="/project/:key/hierarchy/allwork" element={<HierarchyAllWorkRedirect />} />
+        <Route path="/project/:key/hierarchy" element={<Navigate to="../allwork" replace />} />
+        <Route path="/project/:key/list" element={<S><ProjectJiraLayoutLazy /></S>} />
+        <Route path="/project/:key/allwork" element={<S><ProjectJiraLayoutLazy /></S>} />
+        <Route path="/project/:key/timeline" element={<PHPlaceholder title="Timeline" phase="Phase 3" />} />
+        <Route path="/project/:key/releases" element={<PHPlaceholder title="Releases" phase="Phase 3" />} />
+        <Route path="/project/:key/reports" element={<PHPlaceholder title="Reports" phase="Phase 4" />} />
+        <Route path="/project/:key/sprint-predictor" element={<PHPlaceholder title="Sprint Predictor" phase="Phase 5" />} />
+        <Route path="/project/:key/risk-scanner" element={<PHPlaceholder title="Risk Scanner" phase="Phase 5" />} />
       </Routes>
       <CatyWidgetRouteGuard />
       <QAAssistantRouteGuard />

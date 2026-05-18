@@ -47,10 +47,10 @@ export function ProductChromeBand({
       <div style={{ paddingTop: 8, paddingBottom: 0 }}>
         <Breadcrumbs>
           <BreadcrumbsItem
-            href="/product-hub/products"
+            href="/product/products"
             text="Products"
             component={(props) => (
-              <RouterLink to="/product-hub/products" {...props} />
+              <RouterLink to="/product/products" {...props} />
             )}
           />
           <BreadcrumbsItem

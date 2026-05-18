@@ -21,7 +21,7 @@
  * Preserved
  *   - Back button + "Board Setup" + "Lean Analytics" controls rendered
  *     above the canonical shell in a light, breadcrumb-free header row
- *     (parity with `/project-hub/BAU/backlog` — no breadcrumb, single
+ *     (parity with `/project/BAU/backlog` — no breadcrumb, single
  *     title). The title itself is rendered by CatalystPageHeader inside
  *     the shell.
  *   - Loading + not-found + empty-board states (empty columns = CTA to
@@ -205,7 +205,7 @@ export default function KanbanBoardView() {
 /* ═══════════════════════════════════════════════════════════════════════
    BoardContextBar — slim back/setup/analytics row rendered above the
    canonical shell. No breadcrumb, single-level controls, matches the
-   `/project-hub/BAU/backlog` visual grammar (shell's CatalystPageHeader
+   `/project/BAU/backlog` visual grammar (shell's CatalystPageHeader
    owns the actual title).
    ═══════════════════════════════════════════════════════════════════════ */
 

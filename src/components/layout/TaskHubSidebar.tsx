@@ -73,12 +73,12 @@ const taskHubSidebarConfig: SidebarConfig = {
     {
       title: '',
       items: [
-        { id: 'dashboard', title: 'Overview', path: '/taskhub/dashboard', icon: LayoutDashboard, exact: true },
-        { id: 'workstreams', title: 'Workstreams', path: '/taskhub/workstreams', icon: Layers, exact: true },
-        { id: 'my-tasks', title: 'My Tasks', path: '/taskhub/my-tasks', icon: CheckSquare, exact: true },
-        { id: 'boards', title: 'Board', path: '/taskhub/boards', icon: LayoutGrid, exact: true },
-        { id: 'task-list', title: 'Task List', path: '/taskhub/task-list', icon: List, exact: true },
-        { id: 'timeline', title: 'Timeline', path: '/taskhub/timeline', icon: GanttChartSquare, exact: true },
+        { id: 'dashboard', title: 'Overview', path: '/task/dashboard', icon: LayoutDashboard, exact: true },
+        { id: 'workstreams', title: 'Workstreams', path: '/task/workstreams', icon: Layers, exact: true },
+        { id: 'my-tasks', title: 'My Tasks', path: '/task/my-tasks', icon: CheckSquare, exact: true },
+        { id: 'boards', title: 'Board', path: '/task/boards', icon: LayoutGrid, exact: true },
+        { id: 'task-list', title: 'Task List', path: '/task/task-list', icon: List, exact: true },
+        { id: 'timeline', title: 'Timeline', path: '/task/timeline', icon: GanttChartSquare, exact: true },
         {
           id: 'priorities',
           title: 'Priorities',
@@ -92,7 +92,7 @@ const taskHubSidebarConfig: SidebarConfig = {
   footerItem: {
     id: 'settings',
     title: 'Settings',
-    path: '/taskhub/settings',
+    path: '/task/settings',
     icon: Settings,
     exact: true,
   },

@@ -655,15 +655,15 @@ function CatalystTopNav() {
   const { isDark } = useTheme();
   const navigate = useNavigate();
   const HUBS = [
-    { label: 'Home', path: '/for-you' },
+    { label: 'Home', path: '/home' },
     { label: 'StrategyHub', path: '/strategy' },
-    { label: 'ProductHub', path: '/producthub' },
+    { label: 'ProductHub', path: '/product' },
     { label: 'ProjectHub', path: '/projecthub' },
     { label: 'ReleaseHub', path: '/releases' },
-    { label: 'TestHub', path: '/testhub' },
+    { label: 'TestHub', path: '/test' },
     { label: 'IncidentHub', path: '/incidents' },
     { label: 'TaskHub', path: '/tasks' },
-    { label: 'PlanHub', path: '/planhub' },
+    { label: 'PlanHub', path: '/plan' },
     { label: 'WikiHub', path: '/wikihub' },
   ];
   return (

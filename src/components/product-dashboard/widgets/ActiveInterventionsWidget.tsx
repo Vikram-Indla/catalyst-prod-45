@@ -39,7 +39,7 @@ function InterventionCard({
       data-testid={`intervention-item-${id}`}
       style={{
         padding: '10px 12px',
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
         borderLeft: `3px solid ${PHASE_PAUSED}`,
         borderRadius: 6,
         background: token('elevation.surface', '#FFFFFF'),
@@ -125,7 +125,7 @@ function ApprovalCard({
       data-testid={`intervention-item-${id}`}
       style={{
         padding: '10px 12px',
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
         borderLeft: `3px solid ${PHASE_APPROVAL}`,
         borderRadius: 6,
         background: token('elevation.surface', '#FFFFFF'),
@@ -191,7 +191,7 @@ function ColHeader({ label, summary }: { label: string; summary: string }) {
         justifyContent: 'space-between',
         alignItems: 'baseline',
         paddingBottom: 8,
-        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderBottom: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
         marginBottom: 4,
       }}
     >

@@ -14,7 +14,7 @@ const CatalystDetailRouter = lazy(() =>
   import('@/components/catalyst-detail-views/CatalystDetailRouter'),
 );
 
-const BACKLOG_URL = '/product-hub/INV/backlog';
+const BACKLOG_URL = '/product/INV/backlog';
 
 interface ResolvedIssue {
   id: string;

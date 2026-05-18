@@ -44,7 +44,7 @@ export function DefectStatsWidget({ stats }: Props) {
         cursor: 'pointer',
         transition: 'box-shadow .15s',
       }}
-      onClick={() => navigate('/testhub/defects')}
+      onClick={() => navigate('/test/defects')}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
       }}

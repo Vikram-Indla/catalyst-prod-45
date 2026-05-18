@@ -429,7 +429,7 @@ export default function MapStatusesPage() {
     if (hasChanges) {
       if (!window.confirm('You have unsaved changes. Discard them?')) return;
     }
-    navigate(`/project-hub/${key}/boards`);
+    navigate(`/project/${key}/boards`);
   }, [hasChanges, navigate, key]);
 
   // DnD handlers

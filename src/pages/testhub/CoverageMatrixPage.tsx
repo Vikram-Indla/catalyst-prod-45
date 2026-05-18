@@ -409,7 +409,7 @@ export default function CoverageMatrixPage() {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  onClick={(e) => { e.stopPropagation(); navigate(`/testhub/requirements/${req.id}`); }}
+                                  onClick={(e) => { e.stopPropagation(); navigate(`/test/requirements/${req.id}`); }}
                                 >
                                   <Plus className="h-3.5 w-3.5 mr-1" /> Link Test Case
                                 </Button>
@@ -428,7 +428,7 @@ export default function CoverageMatrixPage() {
                                   return (
                                     <button
                                       key={tc.link_id || tc.test_case_id}
-                                      onClick={(e) => { e.stopPropagation(); navigate(`/testhub/repository?view=${tc.test_case_id}`); }}
+                                      onClick={(e) => { e.stopPropagation(); navigate(`/test/repository?view=${tc.test_case_id}`); }}
                                       className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted/40 transition-colors text-left"
                                     >
                                       <FileText className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
@@ -444,7 +444,7 @@ export default function CoverageMatrixPage() {
                               </div>
                             )}
                             <button
-                              onClick={(e) => { e.stopPropagation(); navigate(`/testhub/requirements/${req.id}`); }}
+                              onClick={(e) => { e.stopPropagation(); navigate(`/test/requirements/${req.id}`); }}
                               className="mt-2 inline-flex items-center gap-1 text-xs text-primary hover:underline"
                             >
                               View Requirement <ExternalLink className="h-3 w-3" />
@@ -462,14 +462,14 @@ export default function CoverageMatrixPage() {
 
         {/* ── HEATMAP VIEW ── */}
         <TabsContent value="heatmap">
-          <HeatmapView requirements={filtered} onClickReq={(id) => navigate(`/testhub/requirements/${id}`)} />
+          <HeatmapView requirements={filtered} onClickReq={(id) => navigate(`/test/requirements/${id}`)} />
         </TabsContent>
 
         {/* ── GAP ANALYSIS ── */}
         <TabsContent value="gaps">
           <GapAnalysisView
             requirements={filtered.filter(r => r.coverage_percent === 0)}
-            onNavigateReq={(id) => navigate(`/testhub/requirements/${id}`)}
+            onNavigateReq={(id) => navigate(`/test/requirements/${id}`)}
           />
         </TabsContent>
       </Tabs>

@@ -125,7 +125,7 @@ export function ModuleGuard({ moduleCode, children, allowLinking = false }: Modu
           
           <Button 
             variant="outline" 
-            onClick={() => navigate('/for-you')}
+            onClick={() => navigate('/home')}
             className="w-full"
           >
             <Home className="h-4 w-4 mr-2" />

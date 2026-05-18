@@ -239,7 +239,7 @@ export function makeKeyCell(
    * the URL in a new tab) — matching Jira's UX exactly.
    *
    * `getHref` lets the caller supply the link URL (e.g. `?selectedIssue=<id>`
-   * or `/project-hub/:key/allwork?issue=<key>`). Defaults to `#` when omitted.
+   * or `/project/:key/allwork?issue=<key>`). Defaults to `#` when omitted.
    *
    * `getIcon` (2026-05-17 jira-compare): when provided, the cell renders a
    * leading icon before the key, matching Jira's "Work" column where the
@@ -770,8 +770,8 @@ export function makePriorityCell(getPriority: (row: any) => string | null) {
       level >= 4 ? token('color.icon.danger',  '#E5484D') :
       level >= 3 ? token('color.icon.warning', '#F59E0B') :
       level >= 1 ? token('color.icon.success', '#22C55E') :
-      token('color.border', '#DFE1E6');
-    const inactive = token('color.border', '#DFE1E6');
+      'var(--ds-border, #DFE1E6)';
+    const inactive = 'var(--ds-border, #DFE1E6)';
     return (
       <span style={{ display: 'inline-flex', gap: 2 }} title={p || 'No priority'}>
         {[1, 2, 3, 4].map((i) => (
@@ -856,7 +856,7 @@ export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
               alignItems: 'center',
               padding: '0 4px',
               borderRadius: 4,
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              border: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
               fontSize: 14,
               fontWeight: 400,
               lineHeight: '20px',
@@ -897,7 +897,7 @@ export function makeFixVersionsCell(getFixVersions: (row: any) => string[] | nul
             key={v}
             style={{
               display: 'inline-block',
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              border: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
               borderRadius: 3,
               padding: '2px 6px',
               fontSize: 12,

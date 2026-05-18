@@ -118,7 +118,7 @@ export function TestCycleCard({
         e.currentTarget.style.borderColor = 'var(--divider)';
         e.currentTarget.style.boxShadow = 'none';
       }}
-      onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
+      onClick={() => navigate(`/test/cycles/${cycle.id}`)}
     >
       {/* Header Row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
@@ -263,7 +263,7 @@ export function TestCycleCard({
           <Eye size={14} /> View
         </button>
         {cycle.status === 'active' && (
-          <button onClick={() => navigate(`/testhub/cycles/${cycle.id}`)} style={{
+          <button onClick={() => navigate(`/test/cycles/${cycle.id}`)} style={{
             height: 34, padding: '0 14px', background: 'linear-gradient(135deg, #10B981 0%, var(--sem-success) 100%)',
             border: 'none', borderRadius: 6, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 13, fontWeight: 600, cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -272,7 +272,7 @@ export function TestCycleCard({
           </button>
         )}
         {cycle.status === 'draft' && (
-          <button onClick={() => navigate(`/testhub/cycles/${cycle.id}`)} style={{
+          <button onClick={() => navigate(`/test/cycles/${cycle.id}`)} style={{
             height: 34, padding: '0 14px', background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
             border: 'none', borderRadius: 6, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 13, fontWeight: 600, cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: 6,

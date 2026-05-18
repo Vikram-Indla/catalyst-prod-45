@@ -143,16 +143,16 @@ Follow this exact order to test every module end-to-end:
 
 | # | Action | Route | What to verify |
 |---|--------|-------|----------------|
-| 1.1 | Create 2–3 **Folders** (e.g., "Login Module", "Payments", "API") | \`/testhub/repository\` (left panel) | Folder tree renders, rename/delete works |
-| 1.2 | Create 2–3 **Tags** | \`/testhub/tags\` | Tags list, edit, delete |
-| 1.3 | Create an **Environment** (e.g., "Staging", "Production") | \`/testhub/environments\` | Environment card renders with health status |
-| 1.4 | Create a **Shared Step** (e.g., "Login as Admin") | \`/testhub/shared-steps\` | Step appears in list, can be referenced later |
+| 1.1 | Create 2–3 **Folders** (e.g., "Login Module", "Payments", "API") | \`/test/repository\` (left panel) | Folder tree renders, rename/delete works |
+| 1.2 | Create 2–3 **Tags** | \`/test/tags\` | Tags list, edit, delete |
+| 1.3 | Create an **Environment** (e.g., "Staging", "Production") | \`/test/environments\` | Environment card renders with health status |
+| 1.4 | Create a **Shared Step** (e.g., "Login as Admin") | \`/test/shared-steps\` | Step appears in list, can be referenced later |
 
 ### 🔹 Step 2: Test Case Authoring
 
 | # | Action | Route | What to verify |
 |---|--------|-------|----------------|
-| 2.1 | Select a folder, click **"Create Test Case"** | \`/testhub/repository\` | Modal opens, folder is pre-selected |
+| 2.1 | Select a folder, click **"Create Test Case"** | \`/test/repository\` | Modal opens, folder is pre-selected |
 | 2.2 | Fill title, priority, type, add 3–5 **manual steps** | Create modal | Steps render in order with action/expected columns |
 | 2.3 | Add a **shared step** reference to one test case | Create/Edit modal | Shared step block renders inline |
 | 2.4 | Create 5+ test cases across different folders | Repository | Table/grid view shows all cases with correct folder |
@@ -164,16 +164,16 @@ Follow this exact order to test every module end-to-end:
 
 | # | Action | Route | What to verify |
 |---|--------|-------|----------------|
-| 3.1 | Create a **Requirement** | \`/testhub/requirements\` | Requirement card renders |
+| 3.1 | Create a **Requirement** | \`/test/requirements\` | Requirement card renders |
 | 3.2 | **Link** test cases to the requirement | Requirement detail | Linked cases appear in the list |
-| 3.3 | View the **Coverage Matrix** | \`/testhub/coverage-matrix\` | Matrix shows requirements vs. cases |
-| 3.4 | View the **Traceability** page | \`/testhub/traceability\` | End-to-end trace: Req → Case → Run → Defect |
+| 3.3 | View the **Coverage Matrix** | \`/test/coverage-matrix\` | Matrix shows requirements vs. cases |
+| 3.4 | View the **Traceability** page | \`/test/traceability\` | End-to-end trace: Req → Case → Run → Defect |
 
 ### 🔹 Step 4: Test Sets
 
 | # | Action | Route | What to verify |
 |---|--------|-------|----------------|
-| 4.1 | Create a **Test Set** (e.g., "Smoke Tests") | \`/testhub/test-sets\` | Set card renders |
+| 4.1 | Create a **Test Set** (e.g., "Smoke Tests") | \`/test/test-sets\` | Set card renders |
 | 4.2 | Add test cases to the set | Set detail page | Cases appear in the set with correct count |
 | 4.3 | Remove a case from the set | Set detail | Count decreases, case removed from list |
 
@@ -181,7 +181,7 @@ Follow this exact order to test every module end-to-end:
 
 | # | Action | Route | What to verify |
 |---|--------|-------|----------------|
-| 5.1 | Create a **Test Plan** (draft) | \`/testhub/test-plans\` | Plan card renders with "Draft" status |
+| 5.1 | Create a **Test Plan** (draft) | \`/test/test-plans\` | Plan card renders with "Draft" status |
 | 5.2 | Add **scope** (folders or individual cases) | Plan detail | Scope section lists included items |
 | 5.3 | Add **team members** with roles | Plan detail | Team grid renders with roles |
 | 5.4 | Add **milestones** with target dates | Plan detail | Milestone timeline renders |
@@ -192,22 +192,22 @@ Follow this exact order to test every module end-to-end:
 
 | # | Action | Route | What to verify |
 |---|--------|-------|----------------|
-| 6.1 | Create a **Test Cycle** (link to a release if available) | \`/testhub/cycles\` | Cycle card renders |
+| 6.1 | Create a **Test Cycle** (link to a release if available) | \`/test/cycles\` | Cycle card renders |
 | 6.2 | **Add test cases** to the cycle | Cycle detail | Cases listed with "Not Run" status |
 | 6.3 | **Assign testers** to cases | Cycle detail | Assignee avatar appears on each case |
 | 6.4 | **Start execution** — click "Run" on a test case | Cycle detail → Execute | Three-pane execution view opens |
 | 6.5 | Mark steps as **Pass/Fail/Blocked** | Execution page | Step status pills update in real-time |
 | 6.6 | Complete the run — set overall result | Execution page | Run result saved, progress bar updates |
 | 6.7 | Use **Quick Run** (modal execution for fast tests) | Cycle detail | Modal opens, result saved |
-| 6.8 | View **Cycle Report** | \`/testhub/cycles/:id/report\` | Charts + summary render correctly |
-| 6.9 | View **Execution Hub** | \`/testhub/execution\` | All active cycles shown with progress |
+| 6.8 | View **Cycle Report** | \`/test/cycles/:id/report\` | Charts + summary render correctly |
+| 6.9 | View **Execution Hub** | \`/test/execution\` | All active cycles shown with progress |
 
 ### 🔹 Step 7: Defect Management
 
 | # | Action | Route | What to verify |
 |---|--------|-------|----------------|
 | 7.1 | During a failed execution, click **"Log Defect"** | Execution page | Defect form pre-fills from failed step |
-| 7.2 | Create a **standalone defect** | \`/testhub/defects\` | Defect card renders with priority/severity |
+| 7.2 | Create a **standalone defect** | \`/test/defects\` | Defect card renders with priority/severity |
 | 7.3 | **Link** a defect to a test case | Defect detail | Link appears in both defect and case views |
 | 7.4 | Update defect **status** (Open → In Progress → Fixed) | Defect detail | Status badge updates, audit log records |
 | 7.5 | Add **comments** to a defect | Defect detail | Comment thread renders |
@@ -216,28 +216,28 @@ Follow this exact order to test every module end-to-end:
 
 | # | Action | Route | What to verify |
 |---|--------|-------|----------------|
-| 8.1 | View/create a **Release** | \`/testhub/releases\` | Release card renders |
+| 8.1 | View/create a **Release** | \`/test/releases\` | Release card renders |
 | 8.2 | Link test cycles to the release | Release detail or cycle creation | Cycles appear under the release |
-| 8.3 | View **Command Center** | \`/testhub/releases/command-center\` | Real-time quality dashboard renders |
-| 8.4 | Configure **Quality Gates** | \`/testhub/releases/quality-gates\` | Gate rules render (pass rate %, defect thresholds) |
+| 8.3 | View **Command Center** | \`/test/releases/command-center\` | Real-time quality dashboard renders |
+| 8.4 | Configure **Quality Gates** | \`/test/releases/quality-gates\` | Gate rules render (pass rate %, defect thresholds) |
 | 8.5 | Evaluate a gate (automated based on cycle data) | Quality gates page | Pass/Fail indicator updates |
 
 ### 🔹 Step 9: Intelligence & Reporting
 
 | # | Action | Route | What to verify |
 |---|--------|-------|----------------|
-| 9.1 | View the **Dashboard** | \`/testhub/dashboard\` | Widgets render with live data |
-| 9.2 | Generate a **Report** | \`/testhub/reports\` | Report renders with charts |
-| 9.3 | View **Activity Feed** | \`/testhub/activity\` | Chronological action log |
-| 9.4 | Use **CATY AI** | \`/testhub/caty\` | AI provides insights/suggestions |
-| 9.5 | View **My Test Scope** | \`/testhub/my-scope\` | Personal work queue with assigned items |
+| 9.1 | View the **Dashboard** | \`/test/dashboard\` | Widgets render with live data |
+| 9.2 | Generate a **Report** | \`/test/reports\` | Report renders with charts |
+| 9.3 | View **Activity Feed** | \`/test/activity\` | Chronological action log |
+| 9.4 | Use **CATY AI** | \`/test/caty\` | AI provides insights/suggestions |
+| 9.5 | View **My Test Scope** | \`/test/my-scope\` | Personal work queue with assigned items |
 
 ### 🔹 Step 10: Settings & Utilities
 
 | # | Action | Route | What to verify |
 |---|--------|-------|----------------|
-| 10.1 | View **Settings** | \`/testhub/settings\` | Configuration options render |
-| 10.2 | **Import/Export** test cases | \`/testhub/import-export\` | CSV/Excel upload & download |
+| 10.1 | View **Settings** | \`/test/settings\` | Configuration options render |
+| 10.2 | **Import/Export** test cases | \`/test/import-export\` | CSV/Excel upload & download |
 
 ---
 
@@ -357,28 +357,28 @@ tm_projects
 
 | Route | Module | Layer |
 |-------|--------|-------|
-| \`/testhub/dashboard\` | Dashboard | 7 - Intelligence |
-| \`/testhub/repository\` | Test Cases (Repository) | 2 - Authoring |
-| \`/testhub/shared-steps\` | Shared Steps | 1 - Foundation |
-| \`/testhub/tags\` | Tags | 1 - Foundation |
-| \`/testhub/environments\` | Environments | 1 - Foundation |
-| \`/testhub/requirements\` | Requirements | 2 - Authoring |
-| \`/testhub/test-sets\` | Test Sets | 3 - Grouping |
-| \`/testhub/test-plans\` | Test Plans | 3 - Grouping |
-| \`/testhub/cycles\` | Test Cycles | 4 - Execution |
-| \`/testhub/execution\` | Execution Hub | 4 - Execution |
-| \`/testhub/defects\` | Defects | 5 - Quality |
-| \`/testhub/coverage-matrix\` | Coverage Matrix | 5 - Quality |
-| \`/testhub/traceability\` | Traceability | 5 - Quality |
-| \`/testhub/releases\` | Releases | 6 - Release |
-| \`/testhub/releases/command-center\` | Command Center | 6 - Release |
-| \`/testhub/releases/quality-gates\` | Quality Gates | 6 - Release |
-| \`/testhub/reports\` | Reports | 7 - Intelligence |
-| \`/testhub/activity\` | Activity Feed | 7 - Intelligence |
-| \`/testhub/caty\` | CATY AI Assistant | 7 - Intelligence |
-| \`/testhub/my-scope\` | My Test Scope | 7 - Intelligence |
-| \`/testhub/settings\` | Settings | Config |
-| \`/testhub/import-export\` | Import/Export | Utility |
+| \`/test/dashboard\` | Dashboard | 7 - Intelligence |
+| \`/test/repository\` | Test Cases (Repository) | 2 - Authoring |
+| \`/test/shared-steps\` | Shared Steps | 1 - Foundation |
+| \`/test/tags\` | Tags | 1 - Foundation |
+| \`/test/environments\` | Environments | 1 - Foundation |
+| \`/test/requirements\` | Requirements | 2 - Authoring |
+| \`/test/test-sets\` | Test Sets | 3 - Grouping |
+| \`/test/test-plans\` | Test Plans | 3 - Grouping |
+| \`/test/cycles\` | Test Cycles | 4 - Execution |
+| \`/test/execution\` | Execution Hub | 4 - Execution |
+| \`/test/defects\` | Defects | 5 - Quality |
+| \`/test/coverage-matrix\` | Coverage Matrix | 5 - Quality |
+| \`/test/traceability\` | Traceability | 5 - Quality |
+| \`/test/releases\` | Releases | 6 - Release |
+| \`/test/releases/command-center\` | Command Center | 6 - Release |
+| \`/test/releases/quality-gates\` | Quality Gates | 6 - Release |
+| \`/test/reports\` | Reports | 7 - Intelligence |
+| \`/test/activity\` | Activity Feed | 7 - Intelligence |
+| \`/test/caty\` | CATY AI Assistant | 7 - Intelligence |
+| \`/test/my-scope\` | My Test Scope | 7 - Intelligence |
+| \`/test/settings\` | Settings | Config |
+| \`/test/import-export\` | Import/Export | Utility |
 
 ---
 

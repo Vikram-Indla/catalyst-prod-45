@@ -45,5 +45,5 @@ export default function ProjectBoardCanvasPage() {
     );
   }
 
-  return <BoardCanvasPage projectIdOverride={project.id} basePath={`/project-hub/${key}/boards`} />;
+  return <BoardCanvasPage projectIdOverride={project.id} basePath={`/project/${key}/boards`} />;
 }

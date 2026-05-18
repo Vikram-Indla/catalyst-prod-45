@@ -4,15 +4,15 @@ import { Logo } from '@/components/brand/Logo';
 import { UserAvatar } from './UserAvatar';
 
 const HUB_TABS = [
-  { label: 'Home', path: '/for-you' },
-  { label: 'StrategyHub', path: '/strategyhub' },
-  { label: 'ProductHub', path: '/producthub' },
-  { label: 'ProjectHub', path: '/project-hub' },
+  { label: 'Home', path: '/home' },
+  { label: 'StrategyHub', path: '/strategy' },
+  { label: 'ProductHub', path: '/product' },
+  { label: 'ProjectHub', path: '/project' },
   { label: 'ReleaseHub', path: '/releasehub' },
-  { label: 'TestHub', path: '/testhub' },
+  { label: 'TestHub', path: '/test' },
   { label: 'IncidentHub', path: '/release' },
-  { label: 'TaskHub', path: '/taskhub' },
-  { label: 'PlanHub', path: '/planhub' },
+  { label: 'TaskHub', path: '/task' },
+  { label: 'PlanHub', path: '/plan' },
 ];
 
 interface TopNavProps {
@@ -36,7 +36,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
     >
       {/* Logo */}
       <button
-        onClick={() => navigate('/for-you')}
+        onClick={() => navigate('/home')}
         className="flex items-center mr-6 flex-shrink-0"
         style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
       >
@@ -47,7 +47,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
       <nav className="flex items-center h-full flex-1" style={{ gap: 4 }}>
         {HUB_TABS.map(tab => {
           const isActive = tab.label === 'ProjectHub'
-            ? location.pathname.startsWith('/project-hub')
+            ? location.pathname.startsWith('/project')
             : location.pathname.startsWith(tab.path);
 
           return (

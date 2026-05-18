@@ -593,7 +593,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigate(`/testhub/defects?search=${encodeURIComponent(item.key)}`);
+                  navigate(`/test/defects?search=${encodeURIComponent(item.key)}`);
                 }}
                 style={{
                   flexShrink: 0,

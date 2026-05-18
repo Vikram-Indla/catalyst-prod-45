@@ -347,8 +347,8 @@ export default function TimeInStatusWidget({
                     width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                     textAlign: 'left',
                     padding: '10px 12px',
-                    borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-                    borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    borderBottom: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
+                    borderRight: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
                     // Header style mirrors QA Defects / Production
                     // Incidents header: 12px uppercase 700 letter-spaced
                     // 0.04em color.text.subtle.

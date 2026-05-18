@@ -19,7 +19,7 @@ describe('recordLocationVisit — deduplication', () => {
     for (let i = 0; i < 8; i++) {
       recordLocationVisit({
         projectKey: 'BAU',
-        path: '/project-hub/BAU/backlog',
+        path: '/project/BAU/backlog',
         section: 'backlog',
       });
     }
@@ -31,36 +31,36 @@ describe('recordLocationVisit — deduplication', () => {
     expect(stored).toHaveLength(1);
     expect(stored[0]).toMatchObject({
       projectKey: 'BAU',
-      path: '/project-hub/BAU/backlog',
+      path: '/project/BAU/backlog',
       section: 'backlog',
     });
   });
 
   it('should preserve distinct paths — BAU backlog vs BAU dashboard are separate', () => {
-    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/backlog', section: 'backlog' });
-    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/dashboard', section: 'dashboard' });
-    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/backlog', section: 'backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project/BAU/backlog', section: 'backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project/BAU/dashboard', section: 'dashboard' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project/BAU/backlog', section: 'backlog' });
 
     const stored = JSON.parse(localStorage.getItem('catalyst.recentLocations.v2') || '[]');
 
     // Should have 2 entries (one per unique path)
     expect(stored).toHaveLength(2);
     // Newest visit to backlog should be first
-    expect(stored[0].path).toBe('/project-hub/BAU/backlog');
-    expect(stored[1].path).toBe('/project-hub/BAU/dashboard');
+    expect(stored[0].path).toBe('/project/BAU/backlog');
+    expect(stored[1].path).toBe('/project/BAU/dashboard');
   });
 
   it('should update visitedAt when revisiting the same path', () => {
     const firstTime = Date.now();
     vi.useFakeTimers({ now: firstTime });
 
-    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/backlog', section: 'backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project/BAU/backlog', section: 'backlog' });
     const stored1 = JSON.parse(localStorage.getItem('catalyst.recentLocations.v2') || '[]');
     const firstVisit = stored1[0].visitedAt;
 
     // Move time forward and visit again
     vi.setSystemTime(firstTime + 5000);
-    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/backlog', section: 'backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project/BAU/backlog', section: 'backlog' });
     const stored2 = JSON.parse(localStorage.getItem('catalyst.recentLocations.v2') || '[]');
     const secondVisit = stored2[0].visitedAt;
 
@@ -77,7 +77,7 @@ describe('recordLocationVisit — deduplication', () => {
     for (let i = 0; i < 18; i++) {
       recordLocationVisit({
         projectKey: `PROJ${i}`,
-        path: `/project-hub/PROJ${i}/backlog`,
+        path: `/project/PROJ${i}/backlog`,
         section: 'backlog',
       });
     }
@@ -92,12 +92,12 @@ describe('recordLocationVisit — deduplication', () => {
   });
 
   it('should keep newest-first ordering on revisit', () => {
-    recordLocationVisit({ projectKey: 'A', path: '/project-hub/A/backlog', section: 'backlog' });
-    recordLocationVisit({ projectKey: 'B', path: '/project-hub/B/backlog', section: 'backlog' });
-    recordLocationVisit({ projectKey: 'C', path: '/project-hub/C/backlog', section: 'backlog' });
+    recordLocationVisit({ projectKey: 'A', path: '/project/A/backlog', section: 'backlog' });
+    recordLocationVisit({ projectKey: 'B', path: '/project/B/backlog', section: 'backlog' });
+    recordLocationVisit({ projectKey: 'C', path: '/project/C/backlog', section: 'backlog' });
 
     // Revisit A → should move to top
-    recordLocationVisit({ projectKey: 'A', path: '/project-hub/A/backlog', section: 'backlog' });
+    recordLocationVisit({ projectKey: 'A', path: '/project/A/backlog', section: 'backlog' });
 
     const stored = JSON.parse(localStorage.getItem('catalyst.recentLocations.v2') || '[]');
 
@@ -114,10 +114,10 @@ describe('recordLocationVisit — deduplication', () => {
   // "BAU › Backlog". Fix: dedup by (projectKey, section-family). One bucket per
   // display label per project.
   it('collapses all four backlog-variant sections into one entry per project (family dedup)', () => {
-    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/backlog',          section: 'backlog' });
-    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/epic-backlog',     section: 'epic-backlog' });
-    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/feature-backlog',  section: 'feature-backlog' });
-    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/story-backlog',    section: 'story-backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project/BAU/backlog',          section: 'backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project/BAU/epic-backlog',     section: 'epic-backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project/BAU/feature-backlog',  section: 'feature-backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project/BAU/story-backlog',    section: 'story-backlog' });
 
     const stored = JSON.parse(localStorage.getItem('catalyst.recentLocations.v2') || '[]');
 
@@ -125,7 +125,7 @@ describe('recordLocationVisit — deduplication', () => {
     expect(stored).toHaveLength(1);
     expect(stored[0].projectKey).toBe('BAU');
     expect(stored[0].section).toBe('story-backlog');
-    expect(stored[0].path).toBe('/project-hub/BAU/story-backlog');
+    expect(stored[0].path).toBe('/project/BAU/story-backlog');
   });
 
   // Regression: 2026-05-17 — duplicate "BAU › Backlog" entries on Home Recent rail.
@@ -133,16 +133,16 @@ describe('recordLocationVisit — deduplication', () => {
   // paths like /project-hub/BAU/backlog/BAU-5717 (BacklogDetailPage routes) bypassed
   // the path-equality dedup and produced N rows all labeled "BAU › Backlog".
   it('should dedupe deep paths to the section root — visiting 5 issues in the backlog stores 1 entry', () => {
-    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/backlog', section: 'backlog' });
-    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/backlog/BAU-5717', section: 'backlog' });
-    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/backlog/BAU-5803', section: 'backlog' });
-    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/backlog/BAU-1234', section: 'backlog' });
-    recordLocationVisit({ projectKey: 'BAU', path: '/project-hub/BAU/backlog/BAU-9999', section: 'backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project/BAU/backlog', section: 'backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project/BAU/backlog/BAU-5717', section: 'backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project/BAU/backlog/BAU-5803', section: 'backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project/BAU/backlog/BAU-1234', section: 'backlog' });
+    recordLocationVisit({ projectKey: 'BAU', path: '/project/BAU/backlog/BAU-9999', section: 'backlog' });
 
     const stored = JSON.parse(localStorage.getItem('catalyst.recentLocations.v2') || '[]');
 
     expect(stored).toHaveLength(1);
-    expect(stored[0].path).toBe('/project-hub/BAU/backlog');
+    expect(stored[0].path).toBe('/project/BAU/backlog');
     expect(stored[0].section).toBe('backlog');
     expect(stored[0].projectKey).toBe('BAU');
   });

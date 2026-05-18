@@ -26,13 +26,13 @@ function cfg(version: string, flags: Record<string, unknown> = {}): RuntimeCompo
 
 describe('pickRuntimeForPathname', () => {
   it('returns undefined when no rows exist for the component', () => {
-    const picked = pickRuntimeForPathname({}, '/project-hub/BAU/backlog');
+    const picked = pickRuntimeForPathname({}, '/project/BAU/backlog');
     expect(picked).toBeUndefined();
   });
 
   it('picks the global row when no specific route matches', () => {
     const map = { '': cfg('1.0.0', { enableX: true }) };
-    const picked = pickRuntimeForPathname(map, '/project-hub/BAU/backlog');
+    const picked = pickRuntimeForPathname(map, '/project/BAU/backlog');
     expect(picked?.active_version).toBe('1.0.0');
     expect(picked?.feature_flags.enableX).toBe(true);
   });
@@ -42,7 +42,7 @@ describe('pickRuntimeForPathname', () => {
       '': cfg('1.0.0', { enableX: false }),
       '/backlog': cfg('1.4.0', { enableX: true }),
     };
-    const picked = pickRuntimeForPathname(map, '/project-hub/BAU/backlog');
+    const picked = pickRuntimeForPathname(map, '/project/BAU/backlog');
     expect(picked?.active_version).toBe('1.4.0');
     expect(picked?.feature_flags.enableX).toBe(true);
   });
@@ -50,10 +50,10 @@ describe('pickRuntimeForPathname', () => {
   it('picks the longest matching route when several candidates match', () => {
     const map = {
       '': cfg('1.0.0'),
-      '/project-hub': cfg('1.1.0'),
-      '/project-hub/BAU/backlog': cfg('1.2.0'),
+      '/project': cfg('1.1.0'),
+      '/project/BAU/backlog': cfg('1.2.0'),
     };
-    const picked = pickRuntimeForPathname(map, '/project-hub/BAU/backlog/BAU-5717');
+    const picked = pickRuntimeForPathname(map, '/project/BAU/backlog/BAU-5717');
     expect(picked?.active_version).toBe('1.2.0');
   });
 
@@ -62,7 +62,7 @@ describe('pickRuntimeForPathname', () => {
       '': cfg('1.0.0', { enableX: false }),
       '/backlog': cfg('1.4.0', { enableX: true }),
     };
-    const picked = pickRuntimeForPathname(map, '/project-hub/BAU/allwork');
+    const picked = pickRuntimeForPathname(map, '/project/BAU/allwork');
     expect(picked?.active_version).toBe('1.0.0');
     expect(picked?.feature_flags.enableX).toBe(false);
   });
@@ -72,7 +72,7 @@ describe('pickRuntimeForPathname', () => {
       '/backlog': cfg('1.4.0'),
       '/admin/': cfg('1.5.0'),
     };
-    const picked = pickRuntimeForPathname(map, '/project-hub/BAU/dashboard');
+    const picked = pickRuntimeForPathname(map, '/project/BAU/dashboard');
     expect(picked).toBeUndefined();
   });
 

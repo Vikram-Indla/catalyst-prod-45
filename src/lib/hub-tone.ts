@@ -30,16 +30,16 @@ export type HubTone =
   | 'gray';
 
 const PATH_TO_TONE: Array<{ prefix: string; tone: HubTone }> = [
-  { prefix: '/for-you',                tone: 'blue'    },
-  { prefix: '/strategyhub',            tone: 'purple'  },
+  { prefix: '/home',                tone: 'blue'    },
+  { prefix: '/strategy',            tone: 'purple'  },
   { prefix: '/ideation',               tone: 'orange'  },
-  { prefix: '/product-hub',            tone: 'teal'    },
-  { prefix: '/project-hub',            tone: 'green'   },
-  { prefix: '/release-hub',            tone: 'magenta' },
-  { prefix: '/testhub',                tone: 'lime'    },
-  { prefix: '/incident-hub',           tone: 'red'     },
-  { prefix: '/taskhub',                tone: 'yellow'  },
-  { prefix: '/planhub',                tone: 'gray'    },
+  { prefix: '/product',            tone: 'teal'    },
+  { prefix: '/project',            tone: 'green'   },
+  { prefix: '/release',            tone: 'magenta' },
+  { prefix: '/test',                tone: 'lime'    },
+  { prefix: '/incident',           tone: 'red'     },
+  { prefix: '/task',                tone: 'yellow'  },
+  { prefix: '/plan',                tone: 'gray'    },
   { prefix: '/wiki',                   tone: 'gray'    },
 ];
 
@@ -47,8 +47,8 @@ const PATH_TO_TONE: Array<{ prefix: string; tone: HubTone }> = [
  * Returns the hub tone for a given URL path, or null if the path does
  * not belong to any registered hub.
  *
- * Matches by prefix so sub-paths like `/product-hub/roadmap/123` resolve
- * to the same tone as `/product-hub` itself.
+ * Matches by prefix so sub-paths like `/product/roadmap/123` resolve
+ * to the same tone as `/product` itself.
  */
 export function pathToHubTone(path: string): HubTone | null {
   for (const { prefix, tone } of PATH_TO_TONE) {

@@ -45,7 +45,7 @@ export function BrdEditorView({ document }: BrdEditorViewProps) {
       {/* Top toolbar */}
       <div className="sticky top-0 z-10 bg-white border-b border-[hsl(var(--border))] px-6 py-3 flex items-center gap-3">
         <button
-          onClick={() => navigate('/producthub/requirement-assist')}
+          onClick={() => navigate('/product/requirement-assist')}
           className="text-[13px] text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Workspace

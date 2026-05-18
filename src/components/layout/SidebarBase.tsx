@@ -35,17 +35,17 @@ import { useTheme } from '@/hooks/useTheme';
 // rather than nav links.
 //
 // Block A rule 7 (2026-05-01): canonical hub label casing matches HubSwitcher.
-// Block A rule 1 (2026-05-01): canonical URL prefix '/product-hub' (not /producthub).
+// Block A rule 1 (2026-05-01): canonical URL prefix '/product' (not /producthub).
 const HUB_ITEMS = [
-  { label: 'Home',         href: '/for-you',                    Icon: HomeIcon,            tone: '#42526E' },
-  { label: 'Strategy Hub', href: '/strategyhub',                Icon: OfficeBuildingIcon,  tone: '#8270DB' },
-  { label: 'Product Hub',  href: '/product-hub',                Icon: PortfolioIcon,       tone: '#0052CC' },
-  { label: 'Project Hub',  href: '/project-hub',                Icon: FolderIcon,          tone: '#00A3BF' },
-  { label: 'Release Hub',  href: '/release-hub/command-center', Icon: ShipIcon,            tone: '#FF8B00' },
-  { label: 'Test Hub',     href: '/testhub/dashboard',          Icon: CheckCircleIcon,     tone: '#36B37E' },
-  { label: 'Incident Hub', href: '/incident-hub',               Icon: WarningIcon,         tone: '#DE350B' },
-  { label: 'Task Hub',     href: '/taskhub/boards',             Icon: TaskIcon,            tone: '#FFAB00' },
-  { label: 'Plan Hub',     href: '/planhub',                    Icon: CalendarIcon,        tone: '#E774BB' },
+  { label: 'Home',         href: '/home',                    Icon: HomeIcon,            tone: '#42526E' },
+  { label: 'Strategy Hub', href: '/strategy',                Icon: OfficeBuildingIcon,  tone: '#8270DB' },
+  { label: 'Product Hub',  href: '/product',                Icon: PortfolioIcon,       tone: '#0052CC' },
+  { label: 'Project Hub',  href: '/project',                Icon: FolderIcon,          tone: '#00A3BF' },
+  { label: 'Release Hub',  href: '/release/command-center', Icon: ShipIcon,            tone: '#FF8B00' },
+  { label: 'Test Hub',     href: '/test/dashboard',          Icon: CheckCircleIcon,     tone: '#36B37E' },
+  { label: 'Incident Hub', href: '/incident',               Icon: WarningIcon,         tone: '#DE350B' },
+  { label: 'Task Hub',     href: '/task/boards',             Icon: TaskIcon,            tone: '#FFAB00' },
+  { label: 'Plan Hub',     href: '/plan',                    Icon: CalendarIcon,        tone: '#E774BB' },
   { label: 'Wiki Hub',     href: '/wiki',                       Icon: BookIcon,            tone: '#65BA43' },
 ] as const;
 
@@ -55,15 +55,15 @@ const HUB_ITEMS = [
  * dynamic import() that Vite will resolve to the same chunk as the lazy().
  */
 const ROUTE_PREFETCH_MAP: Record<string, () => Promise<unknown>> = {
-  '/project-hub/projects': () => import('../../pages/project-hub/AllProjectsPage'),
+  '/project/projects': () => import('../../pages/project-hub/AllProjectsPage'),
   '/admin/resources': () => import('../../pages/ResourceListingPage'),
-  '/producthub/kanban': () => import('../../pages/producthub/KanbanPage'),
+  '/product/kanban': () => import('../../pages/producthub/KanbanPage'),
   '/releasehub': () => import('../../pages/releasehub/AllReleasesPage'),
-  '/testhub': () => import('../../pages/testhub/TestHubPage'),
-  '/planhub': () => import('../../components/planhub/PlanHubShell'),
-  '/taskhub': () => import('../../modules/planner/PlannerPage'),
+  '/test': () => import('../../pages/testhub/TestHubPage'),
+  '/plan': () => import('../../components/planhub/PlanHubShell'),
+  '/task': () => import('../../modules/planner/PlannerPage'),
   '/incidenthub': () => import('../../pages/incidenthub/IncidentListPage'),
-  '/strategyhub': () => import('../../pages/strategyhub/StrategicThemesPage'),
+  '/strategy': () => import('../../pages/strategyhub/StrategicThemesPage'),
 };
 
 const prefetchedRoutes = new Set<string>();

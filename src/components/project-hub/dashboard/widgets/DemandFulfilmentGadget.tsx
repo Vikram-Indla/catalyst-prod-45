@@ -1059,7 +1059,7 @@ function KpiCell({
         flexDirection: 'column',
         gap: 2,
         padding: '10px 12px',
-        borderRight: last ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRight: last ? 'none' : `1px solid ${'var(--ds-border, #DFE1E6)'}`,
         minWidth: 0,
       }}
     >
@@ -1110,8 +1110,8 @@ function DemandRowItem({
   const { state, daysLeft } = computeRag(row.target_complete, threshold);
   const pct = row.total > 0 ? Math.round((row.done / row.total) * 100) : 0;
   const detailUrl = isUnlinkedEpic
-    ? `/project-hub/${projectKey}/allwork?issue=${row.initiative_key}`
-    : `/producthub/backlog?selectedIssue=${row.initiative_key}`;
+    ? `/project/${projectKey}/allwork?issue=${row.initiative_key}`
+    : `/product/backlog?selectedIssue=${row.initiative_key}`;
 
   // Track which linked epics are expanded (Mode 1 only).
   const [expandedEpics, setExpandedEpics] = useState<Set<string>>(new Set());
@@ -1124,7 +1124,7 @@ function DemandRowItem({
     });
 
   return (
-    <div style={{ borderBottom: `1px solid ${token('color.border', '#DFE1E6')}` }}>
+    <div style={{ borderBottom: `1px solid ${'var(--ds-border, #DFE1E6)'}` }}>
       <div
         onClick={onToggle}
         style={{
@@ -1302,7 +1302,7 @@ function DemandRowItem({
           ) : isUnlinkedEpic ? (
             // ── MODE 2: Unlinked epic — render its stories directly ──
             row.epics.map((story) => {
-              const storyUrl = `/project-hub/${projectKey}/allwork?issue=${story.issue_key}`;
+              const storyUrl = `/project/${projectKey}/allwork?issue=${story.issue_key}`;
               const storyAssignee = story.assignee_display_name ?? '—';
               return (
                 <div
@@ -1403,7 +1403,7 @@ function DemandRowItem({
                     : epic.done > 0
                     ? 'risk'
                     : 'overdue';
-                const epicUrl = `/project-hub/${projectKey}/allwork?issue=${epic.issue_key}`;
+                const epicUrl = `/project/${projectKey}/allwork?issue=${epic.issue_key}`;
                 const epicExpanded = expandedEpics.has(epic.id);
                 const hasStories = (epic.stories?.length ?? 0) > 0;
 
@@ -1490,7 +1490,7 @@ function DemandRowItem({
                     </div>
 
                     {epicExpanded && (epic.stories ?? []).map((story) => {
-                      const storyUrl = `/project-hub/${projectKey}/allwork?issue=${story.issue_key}`;
+                      const storyUrl = `/project/${projectKey}/allwork?issue=${story.issue_key}`;
                       const storyAssignee = story.assignee_display_name ?? '—';
                       return (
                         <div
@@ -1933,7 +1933,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
           alignItems: 'center',
           gap: 12,
           padding: `10px ${token('space.300', '24px')}`,
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderBottom: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
           background: token('elevation.surface.sunken', '#F7F8F9'),
           fontFamily: ATLAS_SANS,
           fontSize: 12,
@@ -1966,7 +1966,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
               header="No epics linked to demand tickets yet"
               description="MDTs exist for this quarter but no epics have been linked to them. Open ProductHub to link epics to MDTs so progress can be rolled up here."
               primaryAction={
-                <AkButton appearance="primary" onClick={() => navigate('/producthub/backlog')}>
+                <AkButton appearance="primary" onClick={() => navigate('/product/backlog')}>
                   Open ProductHub
                 </AkButton>
               }
@@ -1978,7 +1978,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
               header="No demand tickets for this period"
               description="There are no MDTs matching the selected scope. Create MDTs in ProductHub, set their target quarter, then link epics to track delivery here."
               primaryAction={
-                <AkButton appearance="primary" onClick={() => navigate('/producthub/backlog')}>
+                <AkButton appearance="primary" onClick={() => navigate('/product/backlog')}>
                   Create MDT in ProductHub
                 </AkButton>
               }
@@ -2128,8 +2128,8 @@ function DeliveredRow({ row, projectKey }: { row: DemandRow; projectKey: string 
       <CheckCircleIcon label="" color={token('color.icon.success', '#1F845A')} LEGACY_size="small" />
       <a
         href={row.isUnlinkedEpic
-          ? `/project-hub/${projectKey}/allwork?issue=${row.initiative_key}`
-          : `/producthub/backlog?selectedIssue=${row.initiative_key}`}
+          ? `/project/${projectKey}/allwork?issue=${row.initiative_key}`
+          : `/product/backlog?selectedIssue=${row.initiative_key}`}
         style={{
           fontSize: 11,
           fontWeight: 700,

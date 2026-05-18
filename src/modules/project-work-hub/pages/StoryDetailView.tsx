@@ -37,7 +37,7 @@ export default function StoryDetailView({ projectId, projectKey, itemId }: Story
 
   const handleClose = () => {
     if (projectKey) {
-      navigate(`/project-hub/${projectKey}/story-backlog`);
+      navigate(`/project/${projectKey}/story-backlog`);
     } else {
       navigate(-1);
     }

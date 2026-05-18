@@ -99,7 +99,7 @@ export default function IncidentDetailPage() {
         borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)',
       }}>
         <div className="flex items-center gap-1" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>
-          <span className="cursor-pointer hover:underline" onClick={() => navigate('/incident-hub')}>Incident List</span>
+          <span className="cursor-pointer hover:underline" onClick={() => navigate('/incident')}>Incident List</span>
           <ChevronRight size={12} />
           <span style={{ color: 'var(--cp-text-primary, #0F172A)', fontWeight: 650 }}>{incident.incident_key || incident.jira_key || 'INC'}</span>
         </div>

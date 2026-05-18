@@ -5,15 +5,15 @@ import { Logo } from '@/components/brand/Logo';
 import { KBPanel } from '@/components/kb/KBPanel';
 
 const HUB_TABS = [
-  { label: 'Home', path: '/for-you' },
-  { label: 'StrategyHub', path: '/strategyhub' },
-  { label: 'ProductHub', path: '/producthub' },
+  { label: 'Home', path: '/home' },
+  { label: 'StrategyHub', path: '/strategy' },
+  { label: 'ProductHub', path: '/product' },
   { label: 'ProjectHub', path: '/projecthub' },
   { label: 'ReleaseHub', path: '/releases' },
-  { label: 'TestHub', path: '/testhub' },
+  { label: 'TestHub', path: '/test' },
   { label: 'IncidentHub', path: '/incident' },
   { label: 'TaskHub', path: '/planner' },
-  { label: 'PlanHub', path: '/planhub' },
+  { label: 'PlanHub', path: '/plan' },
   { label: 'Wiki', path: '/wiki' },
 ];
 
@@ -23,10 +23,10 @@ export function TopNav() {
   const [kbOpen, setKbOpen] = useState(false);
 
   const isActive = (path: string) => {
-    if (path === '/producthub') return location.pathname.startsWith('/producthub');
-    if (path === '/planhub') return location.pathname.startsWith('/planhub');
-    if (path === '/strategyhub') return location.pathname.startsWith('/strategyhub') || location.pathname.startsWith('/strategy');
-    if (path === '/projecthub') return location.pathname.startsWith('/projecthub') || location.pathname.startsWith('/project-hub');
+    if (path === '/product') return location.pathname.startsWith('/product');
+    if (path === '/plan') return location.pathname.startsWith('/plan');
+    if (path === '/strategy') return location.pathname.startsWith('/strategy') || location.pathname.startsWith('/strategy');
+    if (path === '/projecthub') return location.pathname.startsWith('/projecthub') || location.pathname.startsWith('/project');
     if (path === '/wiki') return location.pathname.startsWith('/wiki');
     return location.pathname.startsWith(path);
   };
@@ -45,7 +45,7 @@ export function TopNav() {
       >
         {/* Logo */}
         <button
-          onClick={() => navigate('/for-you')}
+          onClick={() => navigate('/home')}
           style={{
             display: 'flex', alignItems: 'center', gap: 0,
             background: 'none', border: 'none', cursor: 'pointer',

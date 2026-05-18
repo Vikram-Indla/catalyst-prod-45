@@ -12,7 +12,7 @@ export default function PlanLibraryPage() {
   const navigate = useNavigate();
 
   const handlePlanSelect = (planId: string) => {
-    navigate(`/planhub/plan/${planId}`);
+    navigate(`/plan/plan/${planId}`);
   };
 
   return (

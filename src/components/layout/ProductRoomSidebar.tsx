@@ -61,19 +61,19 @@ const GLOBAL_CONFIG: SidebarConfig = {
     {
       title: '',
       items: [
-        { id: 'all-products',          title: 'All Products',    path: '/product-hub/products',            icon: LayoutGrid,    exact: true },
-        { id: 'backlog',               title: 'Product Backlog', path: '/product-hub/backlog',             icon: ClipboardList, exact: true },
-        { id: 'kanban',                title: 'Product Kanban',  path: '/product-hub/kanban',              icon: Columns3,      exact: true },
-        { id: 'roadmap',               title: 'Product Roadmap', path: '/product-hub/roadmap',             icon: GanttChart,    exact: false },
-        { id: 'cards',                 title: 'Product Cards',   path: '/product-hub/cards',               icon: LayoutGrid,    exact: true },
-        { id: 'req-assist-pipeline',   title: 'Req Assist™',    path: '/product-hub/requirement-assist',  icon: FileText,      exact: false, textBadge: 'AI' },
+        { id: 'all-products',          title: 'All Products',    path: '/product/products',            icon: LayoutGrid,    exact: true },
+        { id: 'backlog',               title: 'Product Backlog', path: '/product/backlog',             icon: ClipboardList, exact: true },
+        { id: 'kanban',                title: 'Product Kanban',  path: '/product/kanban',              icon: Columns3,      exact: true },
+        { id: 'roadmap',               title: 'Product Roadmap', path: '/product/roadmap',             icon: GanttChart,    exact: false },
+        { id: 'cards',                 title: 'Product Cards',   path: '/product/cards',               icon: LayoutGrid,    exact: true },
+        { id: 'req-assist-pipeline',   title: 'Req Assist™',    path: '/product/requirement-assist',  icon: FileText,      exact: false, textBadge: 'AI' },
       ],
     },
   ],
 };
 
 function buildPerProductConfig(product: { code: string; name: string }): SidebarConfig {
-  const base = `/product-hub/${product.code}`;
+  const base = `/product/${product.code}`;
   return {
     badge: product.code.slice(0, 2),
     label: product.name,
@@ -81,7 +81,7 @@ function buildPerProductConfig(product: { code: string; name: string }): Sidebar
       {
         title: '',
         items: [
-          { id: 'all-products', title: 'All Products', path: '/product-hub/products', icon: ArrowLeft, exact: true },
+          { id: 'all-products', title: 'All Products', path: '/product/products', icon: ArrowLeft, exact: true },
         ],
       },
       {
@@ -421,7 +421,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
           onClose={() => setSwitcherOpen(false)}
           onSelect={(code) => {
             setSwitcherOpen(false);
-            navigate(`/product-hub/${code}/dashboard`);
+            navigate(`/product/${code}/dashboard`);
           }}
         />
       )}

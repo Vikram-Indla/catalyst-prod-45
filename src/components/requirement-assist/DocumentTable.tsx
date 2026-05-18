@@ -46,7 +46,7 @@ export function DocumentTable() {
               documents.map((doc) => (
                 <tr
                   key={doc.id}
-                  onClick={() => navigate(`/producthub/requirement-assist/${doc.id}`)}
+                  onClick={() => navigate(`/product/requirement-assist/${doc.id}`)}
                   className="border-b border-[hsl(var(--border))] last:border-b-0 cursor-pointer hover:bg-zinc-25 transition-colors"
                   style={{ height: '44px' }}
                 >

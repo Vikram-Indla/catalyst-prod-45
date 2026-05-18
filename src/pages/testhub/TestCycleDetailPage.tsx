@@ -122,7 +122,7 @@ const CycleDefectsPanel = ({ cycleId, isDark }: { cycleId?: string; isDark: bool
             return (
               <tr key={d.id} style={{ height: 36, maxHeight: 36, borderBottom: `0.75px solid ${'var(--cp-bg-sunken, #F1F5F9)'}` }}>
                 <td style={{ padding: '0 12px' }}>
-                  <span onClick={() => navigate(`/testhub/defects/${d.id}`)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}>{d.defect_key}</span>
+                  <span onClick={() => navigate(`/test/defects/${d.id}`)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}>{d.defect_key}</span>
                 </td>
                 <td style={{ padding: '0 12px', fontSize: 14, color: 'var(--cp-text-secondary, #334155)' }}>{d.title}</td>
                 <td style={{ padding: '0 12px' }}>
@@ -310,7 +310,7 @@ export default function TestCycleDetailPage() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
       {/* Header */}
       <div style={{ padding: '20px 32px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderBottom: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
-        <button onClick={() => navigate(fromPlanId ? `/testhub/test-plans/${fromPlanId}` : '/testhub/cycles')} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: 0, border: 'none', backgroundColor: 'transparent', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 13, fontWeight: 500, cursor: 'pointer', marginBottom: 16 }}>
+        <button onClick={() => navigate(fromPlanId ? `/test/test-plans/${fromPlanId}` : '/test/cycles')} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: 0, border: 'none', backgroundColor: 'transparent', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 13, fontWeight: 500, cursor: 'pointer', marginBottom: 16 }}>
           <ArrowLeft size={16} /> {fromPlanId ? 'Back to Plan' : 'Back to Cycles'}
         </button>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -327,7 +327,7 @@ export default function TestCycleDetailPage() {
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Calendar size={14} />{formatDate(cycle.planned_start)} — {formatDate(cycle.planned_end)}</span>
               {(cycle.environment_id || cycle.environment) && (
                 <span
-                  onClick={() => cycle.environment_id ? navigate(`/testhub/environments/${cycle.environment_id}`) : undefined}
+                  onClick={() => cycle.environment_id ? navigate(`/test/environments/${cycle.environment_id}`) : undefined}
                   style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: cycle.environment_id ? 'pointer' : 'default', padding: '2px 8px', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', borderRadius: 6, color: 'var(--ds-text-brand, #2563EB)', fontWeight: 500 }}
                 >
                   <Server size={14} />
@@ -337,7 +337,7 @@ export default function TestCycleDetailPage() {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={() => navigate(`/testhub/cycles/${cycleId}/report`)}
+            <button onClick={() => navigate(`/test/cycles/${cycleId}/report`)}
               style={{ height: 40, padding: '0 16px', border: `1.5px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #334155)', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
               <BarChart3 size={16} /> Report
             </button>
@@ -405,7 +405,7 @@ export default function TestCycleDetailPage() {
               <button onClick={() => {
                 const notRun = testCases.find(tc => tc.current_status === 'not_run');
                 if (notRun) {
-                  navigate(`/testhub/cycles/${cycleId}/execute?testId=${notRun.id}`);
+                  navigate(`/test/cycles/${cycleId}/execute?testId=${notRun.id}`);
                 } else {
                   catalystToast.info('All test cases have been executed', { title: 'Complete' });
                 }
@@ -698,7 +698,7 @@ export default function TestCycleDetailPage() {
                         </td>
                         <td style={{ padding: '14px 16px', textAlign: 'center' }}>
                           {cycle.status === 'active' && (
-                            <button onClick={(e) => { e.stopPropagation(); navigate(`/testhub/cycles/${cycleId}/execute?testId=${ctc.id}`); }} style={{ height: 30, padding: '8px 12px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 6, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                            <button onClick={(e) => { e.stopPropagation(); navigate(`/test/cycles/${cycleId}/execute?testId=${ctc.id}`); }} style={{ height: 30, padding: '8px 12px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 6, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                               <Play size={12} /> Run
                             </button>
                           )}

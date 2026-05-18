@@ -278,7 +278,7 @@ export default function EnvironmentsListPage() {
             return (
               <div
                 key={env.id}
-                onClick={() => navigate(`/testhub/environments/${env.id}`)}
+                onClick={() => navigate(`/test/environments/${env.id}`)}
                 style={{
                   backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, padding: 20,
                   border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, cursor: 'pointer', transition: 'all 0.15s',

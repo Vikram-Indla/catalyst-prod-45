@@ -17,7 +17,7 @@ import {
 export const pageLayouts = [
   {
     name: 'Product Hub',
-    route: '/producthub',
+    route: '/product',
     description: 'Table-based view with filter bar, bulk actions, and inline editing',
     layout: {
       header: '72px page header with title + actions',

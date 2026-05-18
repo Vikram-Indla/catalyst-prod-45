@@ -86,7 +86,7 @@ export default function ReportDetailPage() {
       const { error } = await typedQuery('th_reports').delete().eq('id', report.id);
       if (error) throw error;
       catalystToast.success('Report deleted');
-      navigate('/testhub/reports');
+      navigate('/test/reports');
     } catch { catalystToast.error('Failed to delete report'); }
   };
 
@@ -128,7 +128,7 @@ export default function ReportDetailPage() {
 
   return (
     <div style={{ padding: 24, backgroundColor: pageBg, minHeight: '100vh' }}>
-      <button onClick={() => navigate('/testhub/reports')}
+      <button onClick={() => navigate('/test/reports')}
         style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: `1px solid ${borderColor}`, borderRadius: 8, backgroundColor: surfaceBg, color: textSecondary, fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
         <ArrowLeft size={16} /> Back to Reports
       </button>

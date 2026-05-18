@@ -492,7 +492,7 @@ export default function TestPlansPage() {
                   <TableRow
                     key={plan.id}
                     className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => navigate(`/testhub/test-plans/${plan.id}`)}
+                    onClick={() => navigate(`/test/test-plans/${plan.id}`)}
                   >
                     <TableCell onClick={e => e.stopPropagation()}>
                       <Checkbox
@@ -574,7 +574,7 @@ export default function TestPlansPage() {
               <Card
                 key={plan.id}
                 className="cursor-pointer hover:shadow-md transition-shadow"
-                onClick={() => navigate(`/testhub/test-plans/${plan.id}`)}
+                onClick={() => navigate(`/test/test-plans/${plan.id}`)}
               >
                 <CardContent className="p-4 space-y-4">
                   <div className="flex items-start justify-between">

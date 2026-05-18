@@ -216,7 +216,7 @@ export function ViewSharedStepModal({ isOpen, sharedStep, onClose, onEdit, onDel
                     key={tc.id}
                     onClick={() => {
                       onClose();
-                      navigate(`/testhub/test-repository?view=${tc.id}`);
+                      navigate(`/test/test-repository?view=${tc.id}`);
                     }}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',

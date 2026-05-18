@@ -124,28 +124,28 @@ export function PlanHubSidebar({ expanded, onToggle, className }: PlanHubSidebar
   // Build navigation items based on settings
   const buildNavItems = (): SidebarMenuItem[] => {
     const items: SidebarMenuItem[] = [
-      { id: 'library', title: 'Plan Library', path: '/planhub', icon: FolderOpen, exact: true },
+      { id: 'library', title: 'Plan Library', path: '/plan', icon: FolderOpen, exact: true },
     ];
 
     if (features?.scenario_compare) {
-      items.push({ id: 'compare', title: 'Scenario Compare', path: '/planhub/compare', icon: GitCompare });
+      items.push({ id: 'compare', title: 'Scenario Compare', path: '/plan/compare', icon: GitCompare });
     }
 
     if (features?.master_plan_view) {
-      items.push({ id: 'master', title: 'Master Plan', path: '/planhub/master', icon: Layers });
+      items.push({ id: 'master', title: 'Master Plan', path: '/plan/master', icon: Layers });
     }
 
     if (aiEnabled) {
-      items.push({ id: 'ai', title: 'AI Assistant', path: '/planhub/ai', icon: Bot });
+      items.push({ id: 'ai', title: 'AI Assistant', path: '/plan/ai', icon: Bot });
     }
 
     if (features?.report_center) {
-      items.push({ id: 'reports', title: 'Report Center', path: '/planhub/reports', icon: FileBarChart });
+      items.push({ id: 'reports', title: 'Report Center', path: '/plan/reports', icon: FileBarChart });
     }
 
     // Always show Capacity Planner and Budget Planner
-    items.push({ id: 'capacity', title: 'Capacity Planner', path: '/planhub/capacity', icon: Users });
-    items.push({ id: 'budget-planner', title: 'Budget Planner', path: '/planhub/budget-planner', icon: Wallet });
+    items.push({ id: 'capacity', title: 'Capacity Planner', path: '/plan/capacity', icon: Users });
+    items.push({ id: 'budget-planner', title: 'Budget Planner', path: '/plan/budget-planner', icon: Wallet });
 
     return items;
   };

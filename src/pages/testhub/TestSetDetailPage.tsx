@@ -46,7 +46,7 @@ function DraggableRow({ item, isSelected, onToggle, navigate }: any) {
       <span className="text-sm font-mono text-primary">{tc.case_key}</span>
       <span className="text-sm text-foreground truncate">{tc.title}</span>
       <Lozenge appearance={priorityAppearance[(tc.priority?.name || '').toLowerCase()] || 'default'}>{tc.priority?.name || '-'}</Lozenge>
-      <button onClick={() => navigate(`/testhub/repository?view=${tc.id}`)} className="h-7 w-7 p-0 flex items-center justify-center hover:bg-muted rounded transition-colors">
+      <button onClick={() => navigate(`/test/repository?view=${tc.id}`)} className="h-7 w-7 p-0 flex items-center justify-center hover:bg-muted rounded transition-colors">
         <ExternalLink className="h-4 w-4" />
       </button>
     </div>
@@ -103,7 +103,7 @@ export default function TestSetDetailPage() {
     return (
       <div className="p-6">
         <p className="text-foreground">Test set not found</p>
-        <Button variant="link" onClick={() => navigate('/testhub/test-sets')}>Back to Test Sets</Button>
+        <Button variant="link" onClick={() => navigate('/test/test-sets')}>Back to Test Sets</Button>
       </div>
     );
   }
@@ -130,7 +130,7 @@ export default function TestSetDetailPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/testhub/test-sets')}>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/test/test-sets')}>
             <ArrowLeft className="h-4 w-4 mr-1" />Back
           </Button>
           <div>

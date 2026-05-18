@@ -282,7 +282,7 @@ export default function MyTestScopePage() {
                             </span>
                           )}
                           <button
-                            onClick={() => navigate(`/testhub/cycles/${item.cycle_id}/execute`)}
+                            onClick={() => navigate(`/test/cycles/${item.cycle_id}/execute`)}
                             style={{
                               display: 'flex', alignItems: 'center', gap: 4,
                               height: 28, padding: '0 10px', border: 'none', borderRadius: 6,

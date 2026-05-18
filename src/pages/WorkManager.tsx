@@ -235,7 +235,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
 
   // Tab navigation handler
   const handleTabChange = (tabId: string) => {
-    navigate(`/taskhub/${tabId}`);
+    navigate(`/task/${tabId}`);
   };
 
   // Open task drawer

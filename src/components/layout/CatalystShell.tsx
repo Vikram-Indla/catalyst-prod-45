@@ -269,7 +269,7 @@ function CatalystShellContent() {
   // redirect to /ideation/*, but the redirect is a transient state and we
   // want IdeationSidebar to render the moment the new URL lands.
   const isIdeationRoute = location.pathname.startsWith('/ideation');
-  const isProductRoute = !isIdeationRoute && (location.pathname.startsWith('/producthub') || location.pathname.startsWith('/product'));
+  const isProductRoute = !isIdeationRoute && (location.pathname.startsWith('/product') || location.pathname.startsWith('/product'));
   
   // Check if on release route (Operations/Incidents)
   const isReleaseRoute = location.pathname.startsWith('/release');
@@ -278,33 +278,33 @@ function CatalystShellContent() {
   const isReleasesRoute = location.pathname.startsWith('/releases');
   
   // Check on releasehub route (new Release Management module)
-  const isReleaseHubRoute = location.pathname.startsWith('/release-hub') || location.pathname.startsWith('/releasehub');
+  const isReleaseHubRoute = location.pathname.startsWith('/release') || location.pathname.startsWith('/releasehub');
   
   // Check if on test management route
   const isTestsRoute = location.pathname.startsWith('/tests');
   
   // Check if on PlanHub route
-  const isPlanHubRoute = location.pathname.startsWith('/planhub');
+  const isPlanHubRoute = location.pathname.startsWith('/plan');
   
   // Check if on TaskHub route (includes /priorities which is part of TaskHub)
-  const isTaskHubRoute = location.pathname.startsWith('/taskhub') || location.pathname.startsWith('/priorities');
+  const isTaskHubRoute = location.pathname.startsWith('/task') || location.pathname.startsWith('/priorities');
   
   // Check if on TestHub route
-  const isTestHubRoute = location.pathname.startsWith('/testhub');
+  const isTestHubRoute = location.pathname.startsWith('/test');
 
   // Check if on ProductHub V5 route (/product-hub/*)
-  const isProductHubRoute = location.pathname.startsWith('/product-hub');
+  const isProductHubRoute = location.pathname.startsWith('/product');
 
   // Check if on ProjectHub V5 route (/project-hub/*)
-  const isProjectHubRoute = location.pathname.startsWith('/project-hub');
-  const isProjectHubAllWorkRoute = /\/project-hub\/[^/]+\/allwork(\/|$|\?)/.test(location.pathname);
+  const isProjectHubRoute = location.pathname.startsWith('/project');
+  const isProjectHubAllWorkRoute = /\/project\/[^/]+\/allwork(\/|$|\?)/.test(location.pathname);
   // Apr 27, 2026 (L67): backlog route also needs the fullpage flex chain
   // (flex-1 min-h-0 overflow-hidden) so the rail's internal scroll fires
   // instead of pushing the whole page taller than viewport. Without
   // min-h-0 on the wrapper, the rail's content height (1638px) leaks
   // up the chain and the table column extends with it. Adding backlog
   // to the same code path that allwork uses.
-  const isProjectHubBacklogRoute = /\/project-hub\/[^/]+\/backlog/.test(location.pathname);
+  const isProjectHubBacklogRoute = /\/project\/[^/]+\/backlog/.test(location.pathname);
 
   // Check if on full-screen issue view (/browse/:issueKey)
   const isIssueFullPageRoute = location.pathname.startsWith('/browse/');
@@ -359,21 +359,21 @@ function CatalystShellContent() {
   const isWikiRoute = location.pathname.startsWith('/wiki');
 
   // Check if on IncidentHub route
-  const isIncidentHubRoute = location.pathname.startsWith('/incident-hub');
+  const isIncidentHubRoute = location.pathname.startsWith('/incident');
 
   // Decision A (Apr 2026): Jira blue canvas (#E9F2FE) + white panel on all
   // hub routes. /for-you, Home, Wiki, Admin are intentionally excluded.
   const isHubSurfaceRoute =
-    location.pathname.startsWith('/strategyhub') ||
-    location.pathname.startsWith('/producthub') ||
+    location.pathname.startsWith('/strategy') ||
+    location.pathname.startsWith('/product') ||
     location.pathname.startsWith('/product/') ||      // /product/ideas/*, /product/room, etc.
-    location.pathname.startsWith('/product-hub') ||
-    location.pathname.startsWith('/project-hub') ||
-    location.pathname.startsWith('/release-hub') ||
+    location.pathname.startsWith('/product') ||
+    location.pathname.startsWith('/project') ||
+    location.pathname.startsWith('/release') ||
     location.pathname.startsWith('/releasehub') ||
-    location.pathname.startsWith('/testhub') ||
-    location.pathname.startsWith('/incident-hub') ||
-    location.pathname.startsWith('/taskhub') ||
+    location.pathname.startsWith('/test') ||
+    location.pathname.startsWith('/incident') ||
+    location.pathname.startsWith('/task') ||
     location.pathname.startsWith('/ideation') ||      // peer hub Ideation
     location.pathname.startsWith('/priorities');
 
@@ -382,7 +382,7 @@ function CatalystShellContent() {
   // canvas <main> bg so there's visual consistency.
   //   /project-hub/:key/backlog   → BacklogPage.atlaskit.tsx:1083
   const isSelfFramedRoute =
-    /^\/project-hub\/[^/]+\/backlog/.test(location.pathname) ||
+    /^\/project\/[^/]+\/backlog/.test(location.pathname) ||
     location.pathname.startsWith('/browse/');  // full-screen issue view
 
   // Hub routes that explicitly opt out of the Jira blue canvas — pure white
@@ -390,9 +390,9 @@ function CatalystShellContent() {
   // decision (Apr 2026): the All Projects landing should match Confluence's
   // Spaces page, not Jira's hub canvas.
   const isWhiteCanvasRoute =
-    location.pathname === '/project-hub/projects' ||
+    location.pathname === '/project/projects' ||
     location.pathname === '/project/all-projects' ||
-    location.pathname === '/product-hub/products';
+    location.pathname === '/product/products';
 
   const shouldWrapHubSurface = isHubSurfaceRoute && !isSelfFramedRoute && !isWhiteCanvasRoute;
   const isDarkTheme = useIsDarkTheme();
@@ -452,7 +452,7 @@ function CatalystShellContent() {
     // reading as a broken state rather than a deliberate "no nav".
     // HomeSidebar fills the rail with Pinned / Recent / Jump-to sections,
     // turning that real estate into the user's own navigation surface.
-    if (location.pathname === '/' || location.pathname === '/for-you') {
+    if (location.pathname === '/' || location.pathname === '/home') {
       // HomeSidebar now composes SidebarBase, so it shares the canonical
       // hub-rail props (expanded + onToggle) with every other panel —
       // identical density, active-state, and collapse behaviour.

@@ -39,29 +39,29 @@ const renderIcon = (Icon: React.ComponentType<any>, label: string) => createElem
 // text keeps the CamelCase id so analytics keys aren't disturbed.
 //
 // Block A rule 1 (2026-05-01): Product Hub canonical URL prefix is
-// `/product-hub` (not `/producthub`). Legacy `/producthub` stays in
+// `/product` (not `/product`). Legacy `/product` stays in
 // routeAliases below for back-compat; App.tsx adds a top-level redirect.
 export const HUBS: Hub[] = [
-  { id: 'enterprise', label: 'Strategy Hub', path: '/strategyhub', tileColor: 'purple', glyph: renderIcon(OfficeBuildingIcon, 'StrategyHub') },
-  { id: 'product', label: 'Product Hub', path: '/product-hub', tileColor: 'blue', glyph: renderIcon(PortfolioIcon, 'ProductHub') },
-  { id: 'project', label: 'Project Hub', path: '/project-hub', tileColor: 'teal', glyph: renderIcon(FolderIcon, 'ProjectHub') },
-  { id: 'release', label: 'Release Hub', path: '/release-hub/command-center', tileColor: 'orange', glyph: renderIcon(ShipIcon, 'ReleaseHub') },
-  { id: 'test', label: 'Test Hub', path: '/testhub/dashboard', tileColor: 'green', glyph: renderIcon(TaskIcon, 'TestHub') },
-  { id: 'incident', label: 'Incident Hub', path: '/incident-hub', tileColor: 'red', glyph: renderIcon(WarningIcon, 'IncidentHub') },
-  { id: 'task', label: 'Task Hub', path: '/taskhub/boards', tileColor: 'yellow', glyph: renderIcon(CheckCircleIcon, 'TaskHub') },
-  { id: 'plan', label: 'Plan Hub', path: '/planhub', tileColor: 'magenta', glyph: renderIcon(CalendarIcon, 'PlanHub') },
+  { id: 'enterprise', label: 'Strategy Hub', path: '/strategy', tileColor: 'purple', glyph: renderIcon(OfficeBuildingIcon, 'StrategyHub') },
+  { id: 'product', label: 'Product Hub', path: '/product', tileColor: 'blue', glyph: renderIcon(PortfolioIcon, 'ProductHub') },
+  { id: 'project', label: 'Project Hub', path: '/project', tileColor: 'teal', glyph: renderIcon(FolderIcon, 'ProjectHub') },
+  { id: 'release', label: 'Release Hub', path: '/release/command-center', tileColor: 'orange', glyph: renderIcon(ShipIcon, 'ReleaseHub') },
+  { id: 'test', label: 'Test Hub', path: '/test/dashboard', tileColor: 'green', glyph: renderIcon(TaskIcon, 'TestHub') },
+  { id: 'incident', label: 'Incident Hub', path: '/incident', tileColor: 'red', glyph: renderIcon(WarningIcon, 'IncidentHub') },
+  { id: 'task', label: 'Task Hub', path: '/task/boards', tileColor: 'yellow', glyph: renderIcon(CheckCircleIcon, 'TaskHub') },
+  { id: 'plan', label: 'Plan Hub', path: '/plan', tileColor: 'magenta', glyph: renderIcon(CalendarIcon, 'PlanHub') },
   { id: 'wiki', label: 'Wiki Hub', path: '/wiki', tileColor: 'lime', glyph: renderIcon(BookIcon, 'WikiHub') },
 ];
 
 const routeAliases: Record<string, string[]> = {
-  enterprise: ['/enterprise', '/strategyhub'],
-  product: ['/product', '/producthub'],
-  project: ['/project', '/project-hub'],
-  release: ['/release', '/release-hub'],
-  test: ['/test', '/testhub'],
-  incident: ['/incident', '/incident-hub'],
-  task: ['/task', '/taskhub', '/priorities'],
-  plan: ['/plan', '/planhub'],
+  enterprise: ['/enterprise', '/strategy'],
+  product: ['/product', '/product'],
+  project: ['/project', '/project'],
+  release: ['/release', '/release'],
+  test: ['/test', '/test'],
+  incident: ['/incident', '/incident'],
+  task: ['/task', '/task', '/priorities'],
+  plan: ['/plan', '/plan'],
   wiki: ['/wiki'],
 };
 

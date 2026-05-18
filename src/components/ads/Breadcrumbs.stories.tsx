@@ -136,7 +136,7 @@ export const TicketBreadcrumbsShape: Story = {
           key: 'parent',
           text: 'EPIC-102',
           iconBefore: <IconStub color="#904EE2" />,
-          href: '/project-hub/MOIM-INFRA/issue/EPIC-102',
+          href: '/project/MOIM-INFRA/issue/EPIC-102',
           ariaLabel: 'Parent EPIC-102',
         },
         {

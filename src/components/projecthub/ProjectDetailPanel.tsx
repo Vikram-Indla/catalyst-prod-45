@@ -130,7 +130,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
             Close
           </button>
           <button
-            onClick={() => window.open(`/project-hub/${project.project_key}/dashboard`, '_blank')}
+            onClick={() => window.open(`/project/${project.project_key}/dashboard`, '_blank')}
             className="flex items-center justify-center gap-2 flex-1 rounded-md transition-colors"
             style={{ height: 50, background: 'var(--cp-blue)', border: 'none', fontSize: 13, fontWeight: 600, color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}
           >

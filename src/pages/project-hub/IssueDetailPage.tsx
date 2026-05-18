@@ -117,7 +117,7 @@ export default function IssueDetailPage() {
 
   const handleClose = () => {
     if (projectKey) {
-      navigate(`/project-hub/${projectKey}/list`);
+      navigate(`/project/${projectKey}/list`);
     } else {
       navigate(-1);
     }

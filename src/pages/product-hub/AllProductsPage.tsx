@@ -533,7 +533,7 @@ export default function AllProductsPage() {
                 {p.code}
               </span>
               <RouterLink
-                to={`/product-hub/${p.code}/backlog`}
+                to={`/product/${p.code}/backlog`}
                 title={p.name}
                 style={{
                   fontSize: 14,
@@ -641,9 +641,9 @@ export default function AllProductsPage() {
               placement="bottom-end"
             >
               <DropdownItemGroup>
-                <DropdownItem href={`/product-hub/${p.code}/backlog`}>Open backlog</DropdownItem>
-                <DropdownItem href={`/product-hub/${p.code}/dashboard`}>Open dashboard</DropdownItem>
-                <DropdownItem href={`/product-hub/${p.code}/settings`}>Settings</DropdownItem>
+                <DropdownItem href={`/product/${p.code}/backlog`}>Open backlog</DropdownItem>
+                <DropdownItem href={`/product/${p.code}/dashboard`}>Open dashboard</DropdownItem>
+                <DropdownItem href={`/product/${p.code}/settings`}>Settings</DropdownItem>
               </DropdownItemGroup>
             </DropdownMenu>
           </td>

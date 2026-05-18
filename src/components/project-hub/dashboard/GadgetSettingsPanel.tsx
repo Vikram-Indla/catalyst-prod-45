@@ -463,7 +463,7 @@ export default function GadgetSettingsPanel({
         {gadgetType === 'items' && (
           <div
             style={{
-              borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderTop: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
               paddingTop: 14, marginTop: 14,
             }}
           >

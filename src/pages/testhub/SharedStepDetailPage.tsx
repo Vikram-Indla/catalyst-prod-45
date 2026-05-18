@@ -105,7 +105,7 @@ export default function SharedStepDetailPage() {
       {/* Header */}
       <div style={{ padding: '20px 32px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderBottom: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
         <button
-          onClick={() => navigate('/testhub/shared-steps')}
+          onClick={() => navigate('/test/shared-steps')}
           style={{ display: 'flex', alignItems: 'center', gap: 6, padding: 0, border: 'none', backgroundColor: 'transparent', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 13, fontWeight: 500, cursor: 'pointer', marginBottom: 16 }}
         >
           <ArrowLeft size={16} /> Shared Steps
@@ -172,7 +172,7 @@ export default function SharedStepDetailPage() {
                 {linkedCases.map((tc) => (
                   <tr
                     key={tc.test_case_id}
-                    onClick={() => navigate(`/testhub/repository?view=${tc.test_case_id}`)}
+                    onClick={() => navigate(`/test/repository?view=${tc.test_case_id}`)}
                     style={{ height: 36, maxHeight: 36, borderBottom: `0.75px solid ${'var(--cp-bg-sunken, #F1F5F9)'}`, cursor: 'pointer' }}
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--cp-bg-page, #F8FAFC)'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}

@@ -56,10 +56,10 @@ const DENSITY_OPTIONS = [
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
 
 const LANDING_PAGE_OPTIONS = [
-  { value: '/testhub/dashboard', label: 'Dashboard' },
-  { value: '/testhub/test-repository', label: 'Test Repository' },
-  { value: '/testhub/test-cycles', label: 'Test Cycles' },
-  { value: '/testhub/defects', label: 'Defects' },
+  { value: '/test/dashboard', label: 'Dashboard' },
+  { value: '/test/test-repository', label: 'Test Repository' },
+  { value: '/test/test-cycles', label: 'Test Cycles' },
+  { value: '/test/defects', label: 'Defects' },
 ];
 
 const CYCLE_VIEW_OPTIONS = [

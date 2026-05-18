@@ -149,7 +149,7 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
                 padding: '0 6px',
                 marginRight: 6,
                 borderRadius: 3,
-                border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                border: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
                 background: 'var(--ds-surface-sunken, #F4F5F7)',
                 color: token('color.text.subtle', '#626F86'),
                 fontSize: 11,

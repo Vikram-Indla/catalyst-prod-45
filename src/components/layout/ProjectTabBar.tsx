@@ -37,7 +37,7 @@ interface TabSpec {
 
 export function ProjectTabBar({ projectKey }: Props) {
   const loc = useLocation();
-  const base = `/project-hub/${projectKey}`;
+  const base = `/project/${projectKey}`;
   const tabs: TabSpec[] = [
     { id: 'backlog', label: 'Backlog', path: `${base}/backlog` },
     { id: 'board', label: 'Board', path: `${base}/board` },

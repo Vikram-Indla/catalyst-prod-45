@@ -1,7 +1,7 @@
 /**
  * IncidentHub BoardAdapter — Phase 5.
  *
- * Converts the IncidentHub kanban surface (`/incident-hub/kanban`) onto
+ * Converts the IncidentHub kanban surface (`/incident/kanban`) onto
  * the canonical BoardAdapter contract consumed by KanbanBoardShell.
  *
  *   Data source : useIncidentListView (`ph_issues` filtered to

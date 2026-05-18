@@ -144,7 +144,7 @@ export function EnterpriseTableView({
     if (onReleaseClick) {
       onReleaseClick(release);
     } else {
-      navigate(`/release-hub/${release.id}`);
+      navigate(`/release/${release.id}`);
     }
   };
 

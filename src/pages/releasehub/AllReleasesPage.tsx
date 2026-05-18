@@ -139,7 +139,7 @@ export default function AllReleasesPage() {
               ? `"${freezeConflicts[0].name}" targets a date within a freeze window.`
               : `${freezeConflicts.length} releases target dates within freeze windows.`}
             {' '}
-            <a href="/release-hub/freeze-windows"
+            <a href="/release/freeze-windows"
                style={{ color: '#B45309', textDecoration: 'underline', fontWeight: 600 }}>
               View freeze windows →
             </a>

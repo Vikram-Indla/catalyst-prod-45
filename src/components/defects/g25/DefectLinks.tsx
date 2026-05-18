@@ -20,10 +20,10 @@ const LINK_TYPE_CONFIG: Record<string, { icon: LucideIcon; label: string; color:
 };
 
 const NAVIGABLE: Record<string, (l: DefectLink) => string> = {
-  test_case:  (l) => `/testhub/repository?case=${l.linked_id}`,
-  test_run:   (l) => `/testhub/execution/${l.linked_id}`,
-  test_cycle: (l) => `/testhub/cycles/${l.linked_id}`,
-  test_plan:  (l) => `/testhub/test-plans/${l.linked_id}`,
+  test_case:  (l) => `/test/repository?case=${l.linked_id}`,
+  test_run:   (l) => `/test/execution/${l.linked_id}`,
+  test_cycle: (l) => `/test/cycles/${l.linked_id}`,
+  test_plan:  (l) => `/test/test-plans/${l.linked_id}`,
 };
 
 function getDisplayLabel(link: DefectLink): string {

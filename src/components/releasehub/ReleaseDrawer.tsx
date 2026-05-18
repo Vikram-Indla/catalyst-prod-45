@@ -595,7 +595,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
                 </button>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[13px] font-semibold" style={{ color: RH.ink1 }}>{cycle?.name || 'Cycle'}</span>
-                  <a href={`/testhub/cycles/${tc.test_cycle_id}`} className="text-[12px] text-[var(--ds-text-brand,#2563EB)] flex items-center gap-1 hover:underline mr-8">
+                  <a href={`/test/cycles/${tc.test_cycle_id}`} className="text-[12px] text-[var(--ds-text-brand,#2563EB)] flex items-center gap-1 hover:underline mr-8">
                     Open in TestHub <ExternalLink size={10} />
                   </a>
                 </div>

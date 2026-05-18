@@ -172,7 +172,7 @@ export function ProductScopedPageHeader({ product, activeView, stats }: Props) {
           return (
             <RouterLink
               key={v.key}
-              to={`/product-hub/${product.code}/${v.key}`}
+              to={`/product/${product.code}/${v.key}`}
               role="tab"
               aria-selected={isActive}
               className="flex items-center gap-1.5"

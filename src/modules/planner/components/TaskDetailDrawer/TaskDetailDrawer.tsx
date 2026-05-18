@@ -286,7 +286,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
           label: 'View Task',
           onClick: () => {
             handleClose();
-            navigate(`/taskhub/tasks?taskId=${newTask.id}`);
+            navigate(`/task/tasks?taskId=${newTask.id}`);
           }
         }
       );
@@ -319,7 +319,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   // Handle expand to full page - uses query param pattern per workItemRoutes.ts
   const handleExpand = () => {
     handleClose();
-    navigate(`/taskhub/tasks?taskId=${effectiveTaskId}`);
+    navigate(`/task/tasks?taskId=${effectiveTaskId}`);
   };
 
   return (

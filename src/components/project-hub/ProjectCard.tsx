@@ -14,7 +14,7 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
 
   return (
     <button
-      onClick={() => navigate(`/project-hub/${project.key}/dashboard`)}
+      onClick={() => navigate(`/project/${project.key}/dashboard`)}
       className="relative flex flex-col text-left rounded-[6px] transition-shadow duration-150 p-4 cursor-pointer bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border border-[var(--ds-border,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)] shadow-sm dark:shadow-none hover:shadow-md dark:hover:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)]"
     >
       {/* Star top-right */}

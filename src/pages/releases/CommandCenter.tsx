@@ -197,7 +197,7 @@ ${mockReleases.map(r => `- ${r.name} (${r.status}): ${r.health}% health`).join('
   };
 
   const handleCycleClick = (releaseId: string, cycleId: string) => {
-    navigate(`/testhub/cycles/${cycleId}`);
+    navigate(`/test/cycles/${cycleId}`);
   };
 
   return (

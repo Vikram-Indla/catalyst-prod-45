@@ -276,7 +276,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
               display: 'flex',
               gap: 12,
               alignItems: 'center',
-              borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderBottom: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
             }}
           >
             <span

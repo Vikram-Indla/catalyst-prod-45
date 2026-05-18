@@ -224,7 +224,7 @@ export default function ReportsListPage() {
             const status = STATUS_CONFIG[report.status] || STATUS_CONFIG.draft;
             const TypeIcon = type.icon;
             return (
-              <div key={report.id} onClick={() => navigate(`/testhub/reports/${report.id}`)}
+              <div key={report.id} onClick={() => navigate(`/test/reports/${report.id}`)}
                 style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', cursor: 'pointer', transition: 'all 0.15s' }}
                 onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border-strong, #CBD5E1)'; e.currentTarget.style.boxShadow = isDark ? '0 4px 12px rgba(0,0,0,0.2)' : '0 4px 12px rgba(0,0,0,0.05)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, #E2E8F0)'; e.currentTarget.style.boxShadow = 'none'; }}>
@@ -249,7 +249,7 @@ export default function ReportsListPage() {
                   </div>
                   <div style={{ display: 'flex', gap: 8 }}>
                     {report.status === 'ready' && (
-                      <button onClick={(e) => { e.stopPropagation(); navigate(`/testhub/reports/${report.id}`); }}
+                      <button onClick={(e) => { e.stopPropagation(); navigate(`/test/reports/${report.id}`); }}
                         style={{ width: 36, height: 50, border: '1px solid #E2E8F0', borderRadius: 8, backgroundColor: 'var(--ds-surface, #FFF)', color: '#059669', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Download size={16} />
                       </button>

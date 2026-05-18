@@ -25,7 +25,7 @@ export function TestPlanCard({ plan, onDelete }: Props) {
   };
 
   return (
-    <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate(`/testhub/test-plans/${plan.id}`)}>
+    <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate(`/test/test-plans/${plan.id}`)}>
       <CardContent className="p-3">
         <div className="flex items-start justify-between mb-2">
           <div className="flex-1 min-w-0">

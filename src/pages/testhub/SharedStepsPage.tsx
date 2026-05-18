@@ -621,7 +621,7 @@ export default function SharedStepsPage() {
                           </td>
                           <td style={{ padding: '12px 16px', textAlign: 'center' }}>
                             <button
-                              onClick={(e) => { e.stopPropagation(); navigate(`/testhub/shared-steps/${step.id}`); }}
+                              onClick={(e) => { e.stopPropagation(); navigate(`/test/shared-steps/${step.id}`); }}
                               style={{
                                 padding: '2px 8px', borderRadius: 12, fontSize: 12, fontWeight: 600,
                                 backgroundColor: step.usage_count > 0 ? ('var(--cp-success-light, #F0FDF4)') : ('var(--cp-bg-sunken, #F1F5F9)'),

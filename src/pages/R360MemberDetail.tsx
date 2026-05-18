@@ -75,7 +75,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
     ? '/my-team'
     : location.pathname.startsWith('/admin/resources')
     ? '/admin/resources'
-    : '/project-hub/resources';
+    : '/project/resources';
   const [searchParams] = useSearchParams();
   const initialView = (searchParams.get('view') as R360ViewType) || 'ring';
   const [view, setView] = useState<R360ViewType>(initialView);

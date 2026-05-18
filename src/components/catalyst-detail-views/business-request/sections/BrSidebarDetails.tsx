@@ -391,7 +391,7 @@ export function BrSidebarDetails({ request, onUpdate }: Props) {
         style={{
           marginTop: 16,
           paddingTop: 12,
-          borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderTop: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
           display: 'flex',
           flexDirection: 'column',
           gap: 4,

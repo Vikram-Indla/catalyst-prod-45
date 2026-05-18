@@ -31,7 +31,7 @@ function AkBtn({
         borderRadius: 4,
         border: primary
           ? `1px solid ${token('color.link', '#0C66E4')}`
-          : `1px solid ${token('color.border', '#DFE1E6')}`,
+          : `1px solid ${'var(--ds-border, #DFE1E6)'}`,
         background: primary
           ? hover ? '#0052CC' : token('color.link', '#0C66E4')
           : hover ? token('color.background.neutral.hovered', '#F1F2F4') : token('elevation.surface', '#FFFFFF'),
@@ -68,7 +68,7 @@ export function ProductDashboardPage() {
       <header
         style={{
           background: token('elevation.surface', '#FFFFFF'),
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderBottom: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
           padding: '14px 32px',
           display: 'flex',
           alignItems: 'center',
@@ -152,7 +152,7 @@ export function ProductDashboardPage() {
         data-testid="workflow-path-region"
         style={{
           padding: '8px 32px',
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderBottom: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
           flexShrink: 0,
           background: token('elevation.surface', '#FFFFFF'),
         }}

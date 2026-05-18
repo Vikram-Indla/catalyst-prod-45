@@ -22,27 +22,27 @@ export interface WorkspaceContext {
 export function deriveWorkspaceType(pathname: string): WorkspaceType {
   
   // WorkHub/ProjectHub module - Jira integration & portfolio management
-  if (pathname.startsWith('/workhub') || pathname.startsWith('/projecthub') || pathname.startsWith('/project-hub')) {
+  if (pathname.startsWith('/workhub') || pathname.startsWith('/projecthub') || pathname.startsWith('/project')) {
     return 'workhub';
   }
   
   // TestHub module - Test Case Repository & Execution
-  if (pathname.startsWith('/testhub')) {
+  if (pathname.startsWith('/test')) {
     return 'testhub';
   }
   
   // Taskhub module - includes /taskhub/*, /aqd/*, and /priorities/* (Priorities is part of Taskhub)
-  if (pathname.startsWith('/taskhub') || pathname.startsWith('/aqd') || pathname.startsWith('/priorities')) {
+  if (pathname.startsWith('/task') || pathname.startsWith('/aqd') || pathname.startsWith('/priorities')) {
     return 'taskhub';
   }
   
   // Home - includes /for-you which is the main home route
-  if (pathname === '/' || pathname === '/home' || pathname === '/for-you') {
+  if (pathname === '/' || pathname === '/home' || pathname === '/home') {
     return 'home';
   }
   
   // IncidentHub module - Incident Management
-  if (pathname.startsWith('/incident-hub')) {
+  if (pathname.startsWith('/incident')) {
     return 'incidenthub';
   }
   
@@ -67,7 +67,7 @@ export function deriveWorkspaceType(pathname: string): WorkspaceType {
   }
   
   // PlanHub routes (capacity planner, budget planner, etc.)
-  if (pathname.startsWith('/planhub')) {
+  if (pathname.startsWith('/plan')) {
     return 'planhub';
   }
   
@@ -82,7 +82,7 @@ export function deriveWorkspaceType(pathname: string): WorkspaceType {
   }
   
   // Product tier routes
-  if (pathname.startsWith('/product') || pathname.startsWith('/producthub') || pathname.startsWith('/mining')) {
+  if (pathname.startsWith('/product') || pathname.startsWith('/product') || pathname.startsWith('/mining')) {
     return 'product';
   }
   

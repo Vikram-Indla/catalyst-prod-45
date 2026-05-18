@@ -383,7 +383,7 @@ export default function TestHubDashboardPage() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 320px', gap: 12, flex: 1, minHeight: 0 }}>
 
           {/* ═ LEFT: Active Cycles ═ */}
-          <Card title="Active Cycles" badge={String(activeCycles.length)} onViewAll={() => navigate('/testhub/cycles')}>
+          <Card title="Active Cycles" badge={String(activeCycles.length)} onViewAll={() => navigate('/test/cycles')}>
              {activeCycles.length === 0 ? (
                <EmptyMini icon={<Play size={24} color="var(--ds-text-subtlest, #94A3B8)" />} text="No active cycles" />
              ) : (
@@ -398,7 +398,7 @@ export default function TestHubDashboardPage() {
                    const pct = csTotal > 0 ? Math.min(Math.round(((csPassed + csFailed + csBlocked) / csTotal) * 100), 100) : 0;
                    const barColor = pct === 0 ? 'var(--ds-text-disabled, #CBD5E1)' : pct <= 30 ? 'var(--ds-text-danger, #EF4444)' : pct <= 70 ? 'var(--ds-text-warning, #F59E0B)' : '#10B981';
                    return (
-                     <div key={cycle.id} onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
+                     <div key={cycle.id} onClick={() => navigate(`/test/cycles/${cycle.id}`)}
                        className="c10-row"
                        style={{
                          display: 'grid', gridTemplateColumns: '90px 1fr 100px 130px',
@@ -432,7 +432,7 @@ export default function TestHubDashboardPage() {
                      <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-muted, #94A3B8)' }}>
                        All {activeCycles.length} active cycle{activeCycles.length !== 1 ? 's' : ''} shown
                      </span>
-                     <a href="/testhub/cycles" style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', textDecoration: 'none', cursor: 'pointer' }}>
+                     <a href="/test/cycles" style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', textDecoration: 'none', cursor: 'pointer' }}>
                        View completed cycles →
                      </a>
                    </div>
@@ -457,7 +457,7 @@ export default function TestHubDashboardPage() {
                    {failingTests.length}
                  </span>
                </div>
-               <button onClick={() => navigate('/testhub/repository')} style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
+               <button onClick={() => navigate('/test/repository')} style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
                  View all <ChevronRight size={12} />
                </button>
              </div>
@@ -473,7 +473,7 @@ export default function TestHubDashboardPage() {
                        ? { bg: 'var(--cp-danger-light, #FEF2F2)', color: 'var(--ds-text-danger, #DC2626)' }
                        : { bg: 'var(--cp-warning-light, #FFFBEB)', color: 'var(--ds-text-warning, #D97706)' };
                      return (
-                       <div key={test.test_case_id} onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
+                       <div key={test.test_case_id} onClick={() => navigate(`/test/repository?view=${test.test_case_id}`)}
                          className="c10-row-danger"
                          style={{
                            display: 'grid', gridTemplateColumns: '72px 1fr 60px 64px',
@@ -518,7 +518,7 @@ export default function TestHubDashboardPage() {
                      {defectStats?.total_defects ?? 0}
                    </span>
                  </div>
-                 <button onClick={() => navigate('/testhub/defects')} style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
+                 <button onClick={() => navigate('/test/defects')} style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
                    View all <ChevronRight size={12} />
                  </button>
                </div>
@@ -631,9 +631,9 @@ export default function TestHubDashboardPage() {
                </div>
                {/* Quick Actions — pinned bottom */}
                <div style={{ display: 'flex', gap: 8, padding: '10px 16px', paddingRight: '80px', borderTop: `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}`, flexShrink: 0 }}>
-                 <QuickBtn label="New case" onClick={() => navigate('/testhub/repository')} />
-                 <QuickBtn label="Start cycle" onClick={() => navigate('/testhub/cycles')} />
-                 <QuickBtn label="Report" onClick={() => navigate('/testhub/reports')} />
+                 <QuickBtn label="New case" onClick={() => navigate('/test/repository')} />
+                 <QuickBtn label="Start cycle" onClick={() => navigate('/test/cycles')} />
+                 <QuickBtn label="Report" onClick={() => navigate('/test/reports')} />
                </div>
             </div>
           </div>

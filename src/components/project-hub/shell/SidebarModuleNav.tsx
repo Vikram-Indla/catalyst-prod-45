@@ -58,7 +58,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
 
       {/* Nav */}
       <div className="flex-1 py-2 px-1.5 space-y-0.5 overflow-y-auto">
-        <NavItem icon={LayoutGrid} label="All Projects" isActive={location.pathname === '/project-hub/projects' || location.pathname === '/project-hub'} onClick={() => navigate('/project-hub/projects')} collapsed={collapsed} />
+        <NavItem icon={LayoutGrid} label="All Projects" isActive={location.pathname === '/project/projects' || location.pathname === '/project'} onClick={() => navigate('/project/projects')} collapsed={collapsed} />
 
         {/* Favorites section */}
         {!collapsed && (

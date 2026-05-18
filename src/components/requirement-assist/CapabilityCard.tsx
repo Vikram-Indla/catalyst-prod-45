@@ -11,7 +11,7 @@ export function CapabilityCard({ config }: CapabilityCardProps) {
 
   return (
     <button
-      onClick={() => navigate(`/producthub/requirement-assist/compose?capability=${config.key}`)}
+      onClick={() => navigate(`/product/requirement-assist/compose?capability=${config.key}`)}
       className={cn(
         'relative text-left w-full bg-white border rounded-xl p-5 transition-all duration-150',
         'hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:-translate-y-px',

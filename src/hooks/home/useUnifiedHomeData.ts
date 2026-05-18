@@ -124,8 +124,8 @@ function generateNavigation(
   // Taskhub (Tasks) - domain is 'planner' for internal filtering
   if (domain === 'planner' || type === 'task') {
     return {
-      path: `/taskhub/tasks?taskId=${id}`,
-      fallbackPath: '/taskhub/tasks',
+      path: `/task/tasks?taskId=${id}`,
+      fallbackPath: '/task/tasks',
       openBehavior: 'push',
     };
   }
@@ -149,16 +149,16 @@ function generateNavigation(
 
   if (context.industryView) {
     return {
-      path: `/producthub?focusKey=${encodeURIComponent(key)}`,
-      fallbackPath: '/producthub',
+      path: `/product?focusKey=${encodeURIComponent(key)}`,
+      fallbackPath: '/product',
       openBehavior: 'push',
     };
   }
 
   // Default to producthub with focus
   return {
-    path: `/producthub?focusKey=${encodeURIComponent(key)}`,
-    fallbackPath: '/producthub',
+    path: `/product?focusKey=${encodeURIComponent(key)}`,
+    fallbackPath: '/product',
     openBehavior: 'push',
   };
 }

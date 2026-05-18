@@ -137,12 +137,12 @@ function getConsumerBreadcrumb(filePath: string): string {
   if (p.includes('/_graveyard/') || p.includes('/graveyard/')) return 'Graveyard';
   if (p.includes('/admin/components/')) return 'Admin > Component Library';
   if (p.includes('/admin/')) return 'Admin';
-  if (p.includes('BacklogPage') || p.includes('/project-hub/backlog/')) return 'Project > Backlog';
+  if (p.includes('BacklogPage') || p.includes('/project/backlog/')) return 'Project > Backlog';
   if (p.includes('StoryBacklog')) return 'Project > Story Backlog';
-  if (p.includes('/project-hub/allwork/') || p.includes('UWVTable') || p.includes('AllWork')) return 'Project > All Work';
-  if (p.includes('KanbanBoard') || p.includes('PragmaticBoard') || p.includes('/project-hub/kanban/')) return 'Project > Kanban';
-  if (p.includes('AllProjectsPage') || p.includes('AllProjectsTable') || p.includes('/project-hub/projects/')) return 'Project > Projects';
-  if (p.includes('/project-hub/')) return 'Project';
+  if (p.includes('/project/allwork/') || p.includes('UWVTable') || p.includes('AllWork')) return 'Project > All Work';
+  if (p.includes('KanbanBoard') || p.includes('PragmaticBoard') || p.includes('/project/kanban/')) return 'Project > Kanban';
+  if (p.includes('AllProjectsPage') || p.includes('AllProjectsTable') || p.includes('/project/projects/')) return 'Project > Projects';
+  if (p.includes('/project/')) return 'Project';
   if (p.includes('IncidentList') || p.includes('/incidenthub/')) return 'Incidents > List';
   if (p.includes('CatalystSidebarDetails')) return 'Issue > Detail > Sidebar';
   if (p.includes('CatalystViewBase')) return 'Issue > Detail > Shell';
@@ -165,8 +165,8 @@ function getConsumerBreadcrumb(filePath: string): string {
   if (p.includes('Notification')) return 'Shell > Notifications';
   if (p.includes('Sidebar') || p.includes('/navigation/')) return 'Shell > Navigation';
   if (p.includes('R360') || p.includes('Resource360') || p.includes('MyResource')) return 'Resources > R360';
-  if (p.includes('/testhub/') || p.includes('TestHub') || p.includes('TestRepository')) return 'Test Hub';
-  if (p.includes('/producthub/') || p.includes('ProductHub')) return 'Products';
+  if (p.includes('/test/') || p.includes('TestHub') || p.includes('TestRepository')) return 'Test Hub';
+  if (p.includes('/product/') || p.includes('ProductHub')) return 'Products';
   if (p.includes('/releases/') || p.includes('Release')) return 'Releases';
   if (p.includes('Caty') || p.includes('caty') || p.includes('CatyAI')) return 'AI > Caty';
   const parts = p.replace(/^src\//, '').split('/');

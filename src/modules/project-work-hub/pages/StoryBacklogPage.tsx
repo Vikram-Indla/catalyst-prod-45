@@ -200,12 +200,12 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   const openStoryDetail = useCallback((_id: string, issueKey: string | null | undefined) => {
     if (!issueKey) return;
     const origin = {
-      fromUrl: `/project-hub/${projectKey}/story-backlog`,
+      fromUrl: `/project/${projectKey}/story-backlog`,
       fromLabel: 'Story backlog',
       fromType: 'story-backlog' as const,
     };
     writeTicketOrigin(origin);
-    navigate(`/project-hub/${projectKey}/issue/${issueKey}`, { state: { ticketOrigin: origin } });
+    navigate(`/project/${projectKey}/issue/${issueKey}`, { state: { ticketOrigin: origin } });
   }, [projectKey, navigate]);
   const [panelMode, setPanelMode] = useState(false);
   const [panelDividerWidth, setPanelDividerWidth] = useState(55);

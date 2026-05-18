@@ -51,7 +51,7 @@ describe('RecommendedProjectsStrip — View all projects route', () => {
     const viewAll = screen.getByRole('button', { name: /view all projects/i });
     fireEvent.click(viewAll);
 
-    expect(mockNavigate).toHaveBeenCalledWith('/project-hub/projects');
+    expect(mockNavigate).toHaveBeenCalledWith('/project/projects');
     expect(mockNavigate).not.toHaveBeenCalledWith('/projects');
   });
 });

@@ -125,7 +125,7 @@ export default function StoryDetailPage() {
 
   const handleClose = () => {
     if (projectKey) {
-      navigate(`/project-hub/${projectKey}/story-backlog`);
+      navigate(`/project/${projectKey}/story-backlog`);
     } else {
       navigate(-1);
     }

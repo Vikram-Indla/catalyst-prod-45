@@ -286,7 +286,7 @@ export function IncidentListTable({
       toast.error('Cannot open incident: missing identifier');
       return;
     }
-    navigate(`/incident-hub/view/${incidentId}`);
+    navigate(`/incident/view/${incidentId}`);
   };
 
   const handleCopyLink = (incidentId: string, incidentKey: string) => {
@@ -433,13 +433,13 @@ export function IncidentListTable({
                       onMouseLeave={() => setHoveredId(null)}
                       tabIndex={0}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' && incident.id) navigate(`/incident-hub/view/${incident.id}`);
+                        if (e.key === 'Enter' && incident.id) navigate(`/incident/view/${incident.id}`);
                       }}
                     >
                       {/* Key - left aligned */}
                       <div className={cn(GRID_CELL_BASE, "pl-4 pr-2 flex items-center gap-2.5")}>
                         <Link 
-                          to={`/incident-hub/view/${incident.id}`} 
+                          to={`/incident/view/${incident.id}`} 
                           className="font-mono text-[13px] font-medium text-brand-primary hover:underline truncate"
                           onClick={(e) => e.stopPropagation()}
                         >
@@ -560,7 +560,7 @@ export function IncidentListTable({
                               className="text-xs cursor-pointer"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                navigate(`/incident-hub/view/${incident.id}`);
+                                navigate(`/incident/view/${incident.id}`);
                               }}
                             >
                               <Eye className="h-3.5 w-3.5 mr-2" />
@@ -570,7 +570,7 @@ export function IncidentListTable({
                               className="text-xs cursor-pointer"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                navigate(`/incident-hub/view/${incident.id}?mode=edit`);
+                                navigate(`/incident/view/${incident.id}?mode=edit`);
                               }}
                               disabled={isConverted}
                             >

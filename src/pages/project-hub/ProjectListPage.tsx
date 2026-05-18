@@ -314,7 +314,7 @@ export default function ProjectListPage() {
             }}
             onClick={e => e.stopPropagation()}
           >
-            <button onClick={() => { navigate(`/project-hub/${ctxMenu.project.key}/dashboard`); setCtxMenu(null); }}
+            <button onClick={() => { navigate(`/project/${ctxMenu.project.key}/dashboard`); setCtxMenu(null); }}
               className="w-full flex items-center gap-2.5 px-3 transition-colors"
               style={{ height: 50, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
               onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}
@@ -322,7 +322,7 @@ export default function ProjectListPage() {
             >
               <ExternalLink size={16} style={{ color: T.t3 }} /> Open
             </button>
-            <button onClick={() => { window.open(`/project-hub/${ctxMenu.project.key}/dashboard`, '_blank'); setCtxMenu(null); }}
+            <button onClick={() => { window.open(`/project/${ctxMenu.project.key}/dashboard`, '_blank'); setCtxMenu(null); }}
               className="w-full flex items-center gap-2.5 px-3 transition-colors"
               style={{ height: 50, fontSize: 13, color: T.t1, background: 'transparent', border: 'none', cursor: 'pointer' }}
               onMouseEnter={e => { e.currentTarget.style.background = T.hoverBg; }}

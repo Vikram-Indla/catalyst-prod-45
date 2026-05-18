@@ -414,7 +414,7 @@ function MoreActionsButton() {
         <div role="menu" style={{
           position: 'absolute', top: '100%', right: 0, marginTop: 4, zIndex: 10,
           background: token('elevation.surface.overlay', '#FFF'),
-          border: `1px solid ${token('color.border', '#DFE1E6')}`,
+          border: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
           borderRadius: 4, boxShadow: '0 4px 12px rgba(9,30,66,0.15)', minWidth: 160, padding: '4px 0',
         }}>
           <button role="menuitem" type="button" onClick={() => setOpen(false)}
@@ -538,7 +538,7 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
         style={{
-          border: `2px dashed ${dragOver ? token('color.border.brand', '#1868DB') : token('color.border', '#DFE1E6')}`,
+          border: `2px dashed ${dragOver ? token('color.border.brand', '#1868DB') : 'var(--ds-border, #DFE1E6)'}`,
           borderRadius: 4, padding: '20px 16px', textAlign: 'center', cursor: 'pointer',
           background: dragOver ? token('color.background.selected', '#E9F2FF') : token('color.background.input', '#FAFBFC'),
           transition: 'border-color 120ms, background 120ms',
@@ -595,7 +595,7 @@ function TranslateButton({ loading, label, onClick }: { loading: boolean; label:
         alignItems: 'center',
         justifyContent: 'center',
         background: loading ? 'var(--ds-background-neutral, #F4F5F7)' : 'var(--ds-background-neutral, #F4F5F7)',
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
         borderRadius: 3,
         cursor: loading ? 'default' : 'pointer',
         color: token('color.text.subtle', '#44546F'),

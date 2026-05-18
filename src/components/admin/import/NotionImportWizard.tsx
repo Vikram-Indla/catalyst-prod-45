@@ -481,7 +481,7 @@ export function NotionImportWizard() {
                       <span className="px-2.5 py-1 rounded-full bg-[#FEE2E2] text-[var(--ds-text-danger,#DC2626)]">{importResult.failed} failed</span>
                     )}
                   </div>
-                  <Button appearance="default" onClick={() => navigate('/producthub/backlog')} iconAfter={LinkExternalIcon}>
+                  <Button appearance="default" onClick={() => navigate('/product/backlog')} iconAfter={LinkExternalIcon}>
                     View in ProductHub
                   </Button>
                 </div>

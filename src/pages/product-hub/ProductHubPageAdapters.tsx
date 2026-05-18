@@ -72,7 +72,7 @@ function ProductNotFound({ code }: { code: string }) {
       fontFamily: 'var(--cp-font-body)',
     }}>
       Product <strong>{code}</strong> not found.{' '}
-      <a href="/product-hub/products" style={{ color: token('color.link') }}>
+      <a href="/product/products" style={{ color: token('color.link') }}>
         ← Back to products
       </a>
     </div>
@@ -93,7 +93,7 @@ export default function ProductHubBacklogAdapter() {
       projectId={product?.id ?? ''}
       projectKey={key ?? ''}
       displayName={product?.name}
-      baseUrl={`/product-hub/${key}`}
+      baseUrl={`/product/${key}`}
     />
   );
 }

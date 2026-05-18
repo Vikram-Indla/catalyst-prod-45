@@ -1465,7 +1465,7 @@ export function AllWorkToolbar({
         </DropdownItemGroup>
         <DropdownItemGroup>
           <DropdownItem
-            href={`/project-hub/${projectKey}/allwork`}
+            href={`/project/${projectKey}/allwork`}
             testId="catalyst-allwork-toolbar.more-actions.go-to-all-work"
           >
             Go to all work items

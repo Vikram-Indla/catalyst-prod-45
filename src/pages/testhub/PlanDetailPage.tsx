@@ -87,7 +87,7 @@ const PlanDefectsPanel = ({ planId }: { planId?: string }) => {
                 <tr key={d.id} className="border-b last:border-b-0" style={{ height: 36, maxHeight: 36 }}>
                   <td className="px-4 py-0">
                     <span
-                      onClick={() => navigate(`/testhub/defects/${d.id}`)}
+                      onClick={() => navigate(`/test/defects/${d.id}`)}
                       style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}
                     >
                       {d.defect_key}
@@ -188,7 +188,7 @@ export default function PlanDetailPage() {
     if (!plan) return;
     if (!confirm(`Delete ${plan.plan_key}? This action cannot be undone.`)) return;
     await deletePlan.mutateAsync(plan.id);
-    navigate('/testhub/test-plans');
+    navigate('/test/test-plans');
   };
 
   // DEF-S11-03: Derive plan execution state from linked cycles
@@ -224,7 +224,7 @@ export default function PlanDetailPage() {
       <div className="flex flex-col items-center justify-center h-96 text-center">
         <ClipboardList className="h-12 w-12 text-muted-foreground/40 mb-4" />
         <p className="text-lg font-medium">Plan not found</p>
-        <Button variant="outline" className="mt-4" onClick={() => navigate('/testhub/test-plans')}>
+        <Button variant="outline" className="mt-4" onClick={() => navigate('/test/test-plans')}>
           <ArrowLeft className="h-4 w-4 mr-2" />Back to Plans
         </Button>
       </div>
@@ -242,7 +242,7 @@ export default function PlanDetailPage() {
   return (
     <div className="p-6 space-y-6">
       {/* Back + Header */}
-      <Button variant="ghost" size="sm" onClick={() => navigate('/testhub/test-plans')}>
+      <Button variant="ghost" size="sm" onClick={() => navigate('/test/test-plans')}>
         <ArrowLeft className="h-4 w-4 mr-2" />Back to Plans
       </Button>
 
@@ -254,7 +254,7 @@ export default function PlanDetailPage() {
             {/* DEF-S11-04: Clickable release chip */}
             {plan.release && (
               <button
-                onClick={() => navigate(`/release-hub/${plan.release_id}`)}
+                onClick={() => navigate(`/release/${plan.release_id}`)}
                 className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded flex items-center gap-1 hover:bg-muted/80 transition-colors"
               >
                 {plan.release.name}
@@ -400,7 +400,7 @@ export default function PlanDetailPage() {
                           <tr key={lc.id} className="border-b last:border-b-0 hover:bg-muted/30 transition-colors" style={{ height: 50, maxHeight: 50 }}>
                             <td className="px-4 py-2">
                               <button
-                                onClick={() => navigate(`/testhub/cycles/${c.id}?fromPlanId=${plan.id}`)}
+                                onClick={() => navigate(`/test/cycles/${c.id}?fromPlanId=${plan.id}`)}
                                 className="font-mono text-xs text-primary hover:underline"
                               >
                                 {c.cycle_key}

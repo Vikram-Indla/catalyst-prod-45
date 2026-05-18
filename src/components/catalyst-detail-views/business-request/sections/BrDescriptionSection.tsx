@@ -119,8 +119,8 @@ export function BrDescriptionSection({ request, onUpdate }: Props) {
             minHeight: hasContent ? 60 : 80,
             background: 'transparent',
             border: hasContent
-              ? `1px solid ${token('color.border', '#DFE1E6')}`
-              : `1px dashed ${token('color.border', '#DFE1E6')}`,
+              ? `1px solid ${'var(--ds-border, #DFE1E6)'}`
+              : `1px dashed ${'var(--ds-border, #DFE1E6)'}`,
             borderRadius: 4,
             color: hasContent
               ? token('color.text', '#292A2E')

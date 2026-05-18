@@ -262,7 +262,7 @@ export default function RequirementsListPage() {
                 const priority = PRIORITY_CONFIG[req.priority] || PRIORITY_CONFIG.medium;
 
                 return (
-                  <tr key={req.id} onClick={() => navigate(`/testhub/requirements/${req.id}`)}
+                  <tr key={req.id} onClick={() => navigate(`/test/requirements/${req.id}`)}
                     style={{ cursor: 'pointer', height: 50, maxHeight: 50, borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #E2E8F0' }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--cp-interact-hover, rgba(0,0,0,0.04))'; }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}>

@@ -63,7 +63,7 @@ export default function RequirementAssistCategories() {
                     documents.map((doc) => (
                       <tr
                         key={doc.id}
-                        onClick={() => navigate(`/producthub/requirement-assist/${doc.id}`)}
+                        onClick={() => navigate(`/product/requirement-assist/${doc.id}`)}
                         className="border-b border-[hsl(var(--border))] last:border-b-0 cursor-pointer hover:bg-zinc-50 transition-colors"
                         style={{ height: '44px' }}
                       >

@@ -27,8 +27,8 @@ const S = ({ children }: { children: React.ReactNode }) => (
 export function EnterpriseRoutes() {
   return (
     <Routes>
-      <Route path="roadmaps" element={<Navigate to="/strategyhub/risks" replace />} />
-      <Route path="risks" element={<Navigate to="/strategyhub/risks" replace />} />
+      <Route path="roadmaps" element={<Navigate to="/strategy/risks" replace />} />
+      <Route path="risks" element={<Navigate to="/strategy/risks" replace />} />
       <Route path="work-tree" element={<S><WorkTreePage /></S>} />
       <Route path="kanban-boards" element={<S><EnterpriseComingSoon /></S>} />
       <Route path="epics" element={<S><EnterpriseEpics /></S>} />

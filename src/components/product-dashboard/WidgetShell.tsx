@@ -85,7 +85,7 @@ export function WidgetShell({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: collapsed ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderBottom: collapsed ? 'none' : `1px solid ${'var(--ds-border, #DFE1E6)'}`,
           gap: 12,
           cursor: 'pointer',
           userSelect: 'none',
@@ -142,7 +142,7 @@ export function WidgetShell({
             <div
               style={{
                 padding: '10px 24px',
-                borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+                borderTop: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
                 fontSize: 11,
                 lineHeight: '16px',
                 color: token('color.text.subtle', '#44546F'),

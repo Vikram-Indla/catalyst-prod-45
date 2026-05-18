@@ -32,11 +32,11 @@ export default function PlanEditorPage() {
   };
 
   const handleBack = () => {
-    navigate('/planhub');
+    navigate('/plan');
   };
 
   if (!planId) {
-    navigate('/planhub');
+    navigate('/plan');
     return null;
   }
 

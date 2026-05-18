@@ -126,7 +126,7 @@ export function T10CompletedItemsList({
               <td>
                 {item.taskhub_key ? (
                   <a
-                    href={`/taskhub/${item.taskhub_key}`}
+                    href={`/task/${item.taskhub_key}`}
                     className="t10-taskhub-link"
                     onClick={(e) => e.stopPropagation()}
                   >

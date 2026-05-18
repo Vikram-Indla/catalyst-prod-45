@@ -12,7 +12,7 @@ export function WidgetSettingsPanel({ onClose, children }: WidgetSettingsPanelPr
     <div
       data-testid="widget-settings-panel"
       style={{
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
         borderRadius: 6,
         background: token('color.background.neutral.subtle', '#FAFBFC'),
         padding: token('space.200', '16px'),

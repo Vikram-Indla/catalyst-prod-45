@@ -216,11 +216,11 @@ export function IndustryHeaderToolbarV2({
 
   const handleViewChange = (view: IndustryViewType) => {
     if (view === 'list') {
-      navigate('/producthub');
+      navigate('/product');
     } else if (view === 'board') {
-      navigate('/producthub/kanban');
+      navigate('/product/kanban');
     } else {
-      navigate('/producthub/table');
+      navigate('/product/table');
     }
   };
 

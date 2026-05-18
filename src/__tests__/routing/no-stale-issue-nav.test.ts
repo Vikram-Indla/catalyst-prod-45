@@ -46,7 +46,7 @@ describe('No stale /issue/{key} navigation links', () => {
       const hasValidBrowse = /\/browse\//.test(src) ||
         /\/project-hub\/[^/]+\/issue\//.test(src) === false; // Old pattern removed
 
-      // If the file previously had /issue/ patterns, they should now be /browse/ or /project-hub/
+      // If the file previously had /issue/ patterns, they should now be /browse/ or /project/
       expect(src).not.toMatch(/href\s*=\s*["'`]\/issue\//);
       expect(src).not.toMatch(/navigate\s*\(\s*["'`]\/[a-z0-9-]+\/issue\//);
     }

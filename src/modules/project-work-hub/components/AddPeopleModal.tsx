@@ -184,7 +184,7 @@ export function AddPeopleModal() {
                 width: '100%',
                 height: 36,
                 padding: '0 12px',
-                border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                border: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
                 borderRadius: 3,
                 background: token('elevation.surface', '#FFFFFF'),
                 color: token('color.text', '#292A2E'),
@@ -209,7 +209,7 @@ export function AddPeopleModal() {
             justifyContent: 'flex-end',
             gap: 8,
             padding: '12px 24px 20px',
-            borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderTop: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
           }}
         >
           <Button appearance="subtle" onClick={handleClose} isDisabled={submitting}>

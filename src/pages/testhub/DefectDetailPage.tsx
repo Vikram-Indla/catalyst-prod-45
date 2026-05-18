@@ -52,7 +52,7 @@ export default function DefectDetailPage() {
   const handleDelete = async () => {
     if (!defect || !confirm(`Delete ${defect.defect_key}?`)) return;
     await deleteDefect.mutateAsync(defect.id);
-    navigate('/testhub/defects');
+    navigate('/test/defects');
   };
 
   if (isLoading) return <div className="p-6 space-y-4"><Skeleton className="h-32 w-full" /><Skeleton className="h-48 w-full" /><Skeleton className="h-64 w-full" /></div>;
@@ -60,14 +60,14 @@ export default function DefectDetailPage() {
     <div className="p-6 text-center py-20">
       <Bug className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" />
       <p className="text-lg text-muted-foreground mb-4">Defect not found</p>
-      <Button variant="outline" onClick={() => navigate('/testhub/defects')}>Back to Defects</Button>
+      <Button variant="outline" onClick={() => navigate('/test/defects')}>Back to Defects</Button>
     </div>
   );
 
   return (
     <div className="p-6 space-y-6">
       {/* Back + Header */}
-      <Button variant="ghost" size="sm" className="mb-2" onClick={() => navigate('/testhub/defects')}>
+      <Button variant="ghost" size="sm" className="mb-2" onClick={() => navigate('/test/defects')}>
         <ChevronLeft className="h-4 w-4 mr-1" />Back to Defects
       </Button>
 
@@ -115,9 +115,9 @@ export default function DefectDetailPage() {
               <>
                 <div><span className="text-muted-foreground">Source</span><p className="font-medium">Execution</p></div>
                 {defect.source_test_case_id && (
-                  <div><span className="text-muted-foreground">Test Case</span><p className="font-medium"><a href={`/testhub/repository?case=${defect.source_test_case_id}`} style={{ color: 'var(--ds-text-brand, #2563EB)' }}>View Test Case</a></p></div>
+                  <div><span className="text-muted-foreground">Test Case</span><p className="font-medium"><a href={`/test/repository?case=${defect.source_test_case_id}`} style={{ color: 'var(--ds-text-brand, #2563EB)' }}>View Test Case</a></p></div>
                 )}
-                <div><span className="text-muted-foreground">Test Run</span><p className="font-medium"><a href={`/testhub/execution/${defect.source_test_run_id}`} style={{ color: 'var(--ds-text-brand, #2563EB)' }}>View Execution</a></p></div>
+                <div><span className="text-muted-foreground">Test Run</span><p className="font-medium"><a href={`/test/execution/${defect.source_test_run_id}`} style={{ color: 'var(--ds-text-brand, #2563EB)' }}>View Execution</a></p></div>
                 <div><span className="text-muted-foreground">Environment</span><p className="font-medium">{defect.environment ?? '—'}</p></div>
               </>
             ) : (
@@ -240,7 +240,7 @@ export default function DefectDetailPage() {
         <div className="flex items-center gap-3 p-3 bg-primary/5 border border-primary/20 rounded-lg">
           <Play className="h-4 w-4 text-primary flex-shrink-0" />
           <span className="text-sm text-muted-foreground">Created from execution run</span>
-          <Button variant="outline" size="sm" onClick={() => navigate(`/testhub/execution/${executionRunId}`)}>
+          <Button variant="outline" size="sm" onClick={() => navigate(`/test/execution/${executionRunId}`)}>
             View Execution
           </Button>
         </div>

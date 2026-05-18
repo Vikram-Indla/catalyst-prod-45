@@ -62,9 +62,9 @@ export default function ProjectSettingsPageNew() {
     <div className="ph-content-wrapper" style={{ fontFamily: 'var(--cp-font-body)' }}>
       <div className="ph-inner-content">
         <div className="flex items-center gap-1.5 mb-5">
-          <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)' }} onClick={() => navigate('/project-hub/projects')}>ProjectHub</span>
+          <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)' }} onClick={() => navigate('/project/projects')}>ProjectHub</span>
           <ChevronRight size={12} color="var(--ds-text-subtlest, #94A3B8)" />
-          <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)' }} onClick={() => navigate(`/project-hub/${key}/dashboard`)}>
+          <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)' }} onClick={() => navigate(`/project/${key}/dashboard`)}>
             {key?.toUpperCase()}{project ? ` — ${project.name}` : ''}
           </span>
           <ChevronRight size={12} color="var(--ds-text-subtlest, #94A3B8)" />

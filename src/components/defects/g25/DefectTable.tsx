@@ -458,7 +458,7 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => navigate(`/testhub/defects/${d.id}`)}>View Details</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate(`/test/defects/${d.id}`)}>View Details</DropdownMenuItem>
                 {d.external_url && <DropdownMenuItem onClick={() => window.open(d.external_url!, '_blank')}><ExternalLink className="h-4 w-4 mr-2" />Open External</DropdownMenuItem>}
                 <DropdownMenuItem className="text-destructive" onClick={() => onDelete(d)}>Delete</DropdownMenuItem>
               </DropdownMenuContent>
@@ -510,7 +510,7 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
             {sortedDefects.map(d => {
               const isSelected = selectedIds.has(d.id);
               return (
-                <tr key={d.id} className={cn('group', isSelected && 'pb-row-selected')} style={{ cursor: 'pointer' }} onClick={() => navigate(`/testhub/defects/${d.id}`)}>
+                <tr key={d.id} className={cn('group', isSelected && 'pb-row-selected')} style={{ cursor: 'pointer' }} onClick={() => navigate(`/test/defects/${d.id}`)}>
                   {visibleOrderedCols.map(c => renderCell(c.key, d, isSelected))}
                 </tr>
               );
