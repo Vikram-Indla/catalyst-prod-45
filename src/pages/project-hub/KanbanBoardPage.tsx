@@ -676,7 +676,7 @@ export default function KanbanBoardPage() {
   }, [issuesById, key, qc, toastSuccess, toastError]);
 
   const handleCopyLink = useCallback((issueKey: string) => {
-    const url = `${window.location.origin}/project-hub/${key}/issue/${issueKey}`;
+    const url = `${window.location.origin}/project/${key}/issue/${issueKey}`;
     navigator.clipboard.writeText(url).then(
       () => toastSuccess('Link copied'),
       () => toastError('Failed to copy link'),

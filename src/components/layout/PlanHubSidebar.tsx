@@ -157,7 +157,7 @@ export function PlanHubSidebar({ expanded, onToggle, className }: PlanHubSidebar
     footerItem: {
       id: 'settings',
       title: 'PlanHub Settings',
-      path: '/admin/planhub/general',
+      path: '/admin/plan/general',
       icon: Settings,
       exact: true,
     },

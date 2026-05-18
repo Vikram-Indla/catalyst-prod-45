@@ -6,7 +6,7 @@ import { Routes, Route, Navigate, useLocation, useParams, useSearchParams } from
 // destination URL, so we build it imperatively from useParams.
 function NavigateProducthubReqAssistId() {
   const { id } = useParams();
-  return <Navigate to={`/product-hub/requirement-assist/${id ?? ''}`} replace />;
+  return <Navigate to={`/product/requirement-assist/${id ?? ''}`} replace />;
 }
 
 function IssueRedirectToBrowse() {
@@ -77,7 +77,7 @@ function HierarchyAllWorkRedirect() {
   const legacy = next.get('selectedIssue');
   if (legacy) { next.delete('selectedIssue'); next.set('issue', legacy); }
   const qs = next.toString();
-  return <Navigate to={`/project-hub/${key}/allwork${qs ? `?${qs}` : ''}`} replace />;
+  return <Navigate to={`/project/${key}/allwork${qs ? `?${qs}` : ''}`} replace />;
 }
 const PHPlaceholderBase = lazy(() => import("../pages/project-hub/PhasePlaceholderPage"));
 
@@ -417,7 +417,7 @@ function MG({ k, t, children }: { k: string; t: string; children: React.ReactNod
 
 function Resource360Redirect() {
   const { id } = useParams();
-  return <Navigate to={`/project-hub/resource-360/${id || '009'}`} replace />;
+  return <Navigate to={`/project/resource-360/${id || '009'}`} replace />;
 }
 
 function NavigateAdminResourceId() {
@@ -433,25 +433,25 @@ function NavigateAdminResourceId() {
  */
 function LegacyBacklogRedirect() {
   const { key } = useParams<{ key: string }>();
-  return <Navigate to={`/project-hub/${key}/backlog`} replace />;
+  return <Navigate to={`/project/${key}/backlog`} replace />;
 }
 
 function CatyWidgetRouteGuard() {
   const location = useLocation();
-  const showCaty = location.pathname.startsWith('/planhub/capacity') || location.pathname.startsWith('/strategyhub/capacity') || location.pathname.startsWith('/enterprise/capacity');
+  const showCaty = location.pathname.startsWith('/plan/capacity') || location.pathname.startsWith('/strategy/capacity') || location.pathname.startsWith('/enterprise/capacity');
   if (!showCaty) return null;
   return <Suspense fallback={null}><CatyFabPlaceholderLazy /></Suspense>;
 }
 
 function QAAssistantRouteGuard() {
   const location = useLocation();
-  if (!location.pathname.startsWith('/testhub')) return null;
+  if (!location.pathname.startsWith('/test')) return null;
   return <Suspense fallback={null}><QAAssistantFabLazy /></Suspense>;
 }
 
 function KnowledgeAssistFabRouteGuard() {
   const location = useLocation();
-  if (location.pathname !== '/for-you') return null;
+  if (location.pathname !== '/home') return null;
   return <Suspense fallback={null}><KnowledgeAssistFabLazy /></Suspense>;
 }
 
@@ -479,12 +479,12 @@ export default function FullAppRoutes() {
 
         {/* ═══ Product Hub ═══
             Block A rule 1 (2026-05-01): canonical URL prefix is `/product-hub`.
-            All ProductHub routes registered under `/product-hub/*`. Each
-            legacy `/producthub/X` is preserved as a redirect to its
-            `/product-hub/X` counterpart so deep links and bookmarks survive.
+            All ProductHub routes registered under `/product/*`. Each
+            legacy `/product/X` is preserved as a redirect to its
+            `/product/X` counterpart so deep links and bookmarks survive.
             Specificity: react-router v6 picks the most-specific match, so the
             paired (legacy redirect, canonical destination) stays explicit per
-            route — a single `/producthub/*` splat is shadowed by the
+            route — a single `/product/*` splat is shadowed by the
             individual entries. */}
         {/* Canonical /product-hub/* (these own the rendering) */}
         {/* Block C/D (2026-05-01): /product-hub root → /product-hub/products
@@ -602,7 +602,7 @@ export default function FullAppRoutes() {
         <Route path="/program" element={<S><PlaceholderPage /></S>} />
         <Route path="/program/:programId/*" element={<S><ProgramRoutesShell /></S>} />
         <Route path="/programs" element={<S><ProgramDirectory /></S>} />
-        <Route path="/programs/program-board" element={<Navigate to="/for-you" replace />} />
+        <Route path="/programs/program-board" element={<Navigate to="/home" replace />} />
         <Route path="/programs/program-board/history" element={<S><ProgramBoardHistory /></S>} />
         <Route path="/programs/:programId/*" element={<S><ProgramsRoutesShell /></S>} />
 
@@ -759,9 +759,9 @@ export default function FullAppRoutes() {
         <Route path="/work-spend-grid" element={<S><WorkSpendGrid /></S>} />
         <Route path="/portfolio-insights" element={<S><EnterpriseComingSoon /></S>} />
 
-        <Route path="/program-room" element={<Navigate to="/for-you" replace />} />
+        <Route path="/program-room" element={<Navigate to="/home" replace />} />
         <Route path="/pis" element={<S><PlaceholderPage /></S>} />
-        <Route path="/program-board" element={<Navigate to="/for-you" replace />} />
+        <Route path="/program-board" element={<Navigate to="/home" replace />} />
         <Route path="/pi-objectives" element={<S><PIObjectives /></S>} />
         <Route path="/capacity" element={<S><CapacityPlanningPage /></S>} />
         <Route path="/risks" element={<S><RisksGridPage /></S>} />

@@ -91,7 +91,7 @@ function WorkflowSvg({ workflow, currentStateId }: { workflow: Workflow; current
   const allAnyToThis = workflow.states.every(s => s.anyToThis);
 
   return (
-    <div style={{ overflowX: 'auto', border: '1px solid #DFE1E6', borderRadius: 6, padding: 8, background: 'var(--ds-surface-sunken, #FAFBFC)' }}>
+    <div style={{ overflowX: 'auto', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 6, padding: 8, background: 'var(--ds-surface-sunken, #FAFBFC)' }}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">
         <defs>
           <marker id="wf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
@@ -187,7 +187,7 @@ function TransitionTable({ workflow }: { workflow: Workflow }) {
     );
   }
   return (
-    <div style={{ border: '1px solid #DFE1E6', borderRadius: 6, overflow: 'hidden' }}>
+    <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 6, overflow: 'hidden' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
         <thead>
           <tr style={{ background: 'var(--ds-surface-sunken, #F4F5F7)', textAlign: 'left' }}>

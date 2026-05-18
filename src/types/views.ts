@@ -54,7 +54,7 @@ export const STATUS_CONFIG: Record<WorkflowStatus, {
     // neutral — StatusLozenge grey (§5)
     label: 'Backlog',
     color: '#42526E',
-    bgColor: '#DFE1E6',
+    bgColor: 'var(--ds-border, #DFE1E6)',
     textColor: '#42526E'
   },
   design: {
@@ -122,7 +122,7 @@ export const STATUS_CONFIG: Record<WorkflowStatus, {
     // neutral
     label: 'On Hold',
     color: '#42526E',
-    bgColor: '#DFE1E6',
+    bgColor: 'var(--ds-border, #DFE1E6)',
     textColor: '#42526E'
   }
 };
@@ -159,7 +159,7 @@ export const PRIORITY_CONFIG: Record<Priority, {
     // neutral
     label: 'Low',
     color: '#42526E',
-    bgColor: '#DFE1E6'
+    bgColor: 'var(--ds-border, #DFE1E6)'
   }
 };
 
@@ -271,7 +271,7 @@ export const LINK_TYPE_CONFIG: Record<LinkType, {
     label: 'Duplicates',
     description: 'Duplicate of another',
     color: '#42526E',
-    bgColor: '#DFE1E6',
+    bgColor: 'var(--ds-border, #DFE1E6)',
     icon: 'Copy',
     inverse: 'duplicates'
   }

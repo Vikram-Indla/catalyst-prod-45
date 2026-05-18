@@ -255,7 +255,7 @@ export default function GadgetSettingsPanel({
             onClick={() => toggleField('date')}
             style={{
               display: 'flex', alignItems: 'center', minHeight: 36,
-              border: openField === 'date' ? '2px solid #4C9AFF' : '2px solid #DFE1E6',
+              border: openField === 'date' ? '2px solid #4C9AFF' : '2px solid var(--ds-border, #DFE1E6)',
               boxShadow: openField === 'date' ? '0 0 0 2px rgba(76,154,255,.25)' : 'none',
               borderRadius: 3, background: openField === 'date' ? 'var(--ds-surface, #fff)' : 'var(--ds-surface-sunken, #FAFBFC)',
               padding: '0 8px', cursor: 'pointer', width: '100%', gap: 8,
@@ -280,7 +280,7 @@ export default function GadgetSettingsPanel({
           </button>
 
           {openField === 'date' && (
-            <div style={{ background: 'var(--ds-surface, #fff)', border: '1px solid #DFE1E6',
+            <div style={{ background: 'var(--ds-surface, #fff)', border: '1px solid var(--ds-border, #DFE1E6)',
                           borderRadius: 3, boxShadow: '0 6px 16px rgba(9,30,66,.15)',
                           overflow: 'hidden' }}>
               {/* This period group */}
@@ -389,7 +389,7 @@ export default function GadgetSettingsPanel({
               title="Not applicable — this gadget displays all statuses by design"
               style={{
                 display: 'flex', alignItems: 'center', minHeight: 36,
-                border: '2px solid #DFE1E6', borderRadius: 3,
+                border: '2px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
                 background: 'var(--ds-surface-sunken, #F4F5F7)', padding: '0 10px',
                 cursor: 'not-allowed', opacity: 0.6,
                 fontSize: 13, color: '#7A869A', fontStyle: 'italic',
@@ -463,7 +463,7 @@ export default function GadgetSettingsPanel({
         {gadgetType === 'items' && (
           <div
             style={{
-              borderTop: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
+              borderTop: `1px solid ${'var(--ds-border, var(--ds-border, #DFE1E6))'}`,
               paddingTop: 14, marginTop: 14,
             }}
           >
@@ -504,7 +504,7 @@ export default function GadgetSettingsPanel({
                       fontSize: 12,
                       borderRadius: 3,
                       cursor: 'pointer',
-                      border: active ? '1px solid #0052CC' : '1px solid #DFE1E6',
+                      border: active ? '1px solid #0052CC' : '1px solid var(--ds-border, #DFE1E6)',
                       background: active ? '#DEEBFF' : 'var(--ds-surface-sunken, #F4F5F7)',
                       color: active ? '#0052CC' : '#42526E',
                       fontWeight: active ? 500 : 400,
@@ -594,7 +594,7 @@ export default function GadgetSettingsPanel({
             style={{
               height: 28,
               padding: '0 10px',
-              border: '1px solid #DFE1E6',
+              border: '1px solid var(--ds-border, #DFE1E6)',
               borderRadius: 3,
               background: 'var(--ds-text-inverse, #FFFFFF)',
               fontSize: 12,
@@ -699,7 +699,7 @@ function MultiSelectGeneric({
           minHeight: 32,
           width: '100%',
           padding: '4px 6px',
-          border: open ? '2px solid #4C9AFF' : '1px solid #DFE1E6',
+          border: open ? '2px solid #4C9AFF' : '1px solid var(--ds-border, #DFE1E6)',
           background: 'var(--ds-surface-sunken, #FAFBFC)',
           borderRadius: 3,
           textAlign: 'left',
@@ -753,7 +753,7 @@ function MultiSelectGeneric({
             right: 0,
             zIndex: 50,
             background: 'var(--ds-text-inverse, #FFFFFF)',
-            border: '1px solid #DFE1E6',
+            border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,.18)',
             maxHeight: 224,
@@ -849,7 +849,7 @@ function MultiSelectStatus({
           minHeight: 32,
           width: '100%',
           padding: '4px 6px',
-          border: open ? '2px solid #4C9AFF' : '1px solid #DFE1E6',
+          border: open ? '2px solid #4C9AFF' : '1px solid var(--ds-border, #DFE1E6)',
           background: 'var(--ds-surface-sunken, #FAFBFC)',
           borderRadius: 3,
           textAlign: 'left',
@@ -872,7 +872,7 @@ function MultiSelectStatus({
                 ? { bg: '#DEEBFF', fg: '#0747A6' }
                 : grp?.label === 'Paused'
                 ? { bg: '#FFF0B3', fg: '#974F0C' }
-                : { bg: 'var(--ds-border, #DFE1E6)', fg: '#42526E' };
+                : { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', fg: '#42526E' };
             return (
               <span
                 key={v}
@@ -917,7 +917,7 @@ function MultiSelectStatus({
             right: 0,
             zIndex: 50,
             background: 'var(--ds-text-inverse, #FFFFFF)',
-            border: '1px solid #DFE1E6',
+            border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,.18)',
             maxHeight: 280,
@@ -1100,7 +1100,7 @@ function GadgetSpecific({
                   padding: '2px 8px',
                   fontSize: 11,
                   borderRadius: 3,
-                  border: '1px solid #DFE1E6',
+                  border: '1px solid var(--ds-border, #DFE1E6)',
                   background: on ? '#0052CC' : 'var(--ds-text-inverse, #FFFFFF)',
                   color: on ? 'var(--ds-text-inverse, #FFFFFF)' : '#42526E',
                   cursor: 'pointer',
@@ -1138,7 +1138,7 @@ function GadgetSpecific({
                   padding: '2px 8px',
                   fontSize: 11,
                   borderRadius: 3,
-                  border: '1px solid #DFE1E6',
+                  border: '1px solid var(--ds-border, #DFE1E6)',
                   background: on ? '#0052CC' : 'var(--ds-text-inverse, #FFFFFF)',
                   color: on ? 'var(--ds-text-inverse, #FFFFFF)' : '#42526E',
                   cursor: 'pointer',
@@ -1164,7 +1164,7 @@ function GadgetSpecific({
           onChange={(e) => onChange('groupBy', e.currentTarget.value)}
           style={{
             height: 28,
-            border: '1px solid #DFE1E6',
+            border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 3,
             padding: '0 8px',
             fontSize: 12,
@@ -1189,7 +1189,7 @@ function GadgetSpecific({
     const showOnlyActive  = settings.showOnlyActive  ?? true;
 
     const numInput: React.CSSProperties = {
-      height: 28, width: '100%', border: '1px solid #DFE1E6', borderRadius: 3,
+      height: 28, width: '100%', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
       padding: '0 8px', fontSize: 12, background: 'var(--ds-text-inverse, #FFFFFF)', color: 'var(--ds-text, #172B4D)',
     };
 

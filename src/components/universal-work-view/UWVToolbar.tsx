@@ -196,7 +196,7 @@ export function UWVToolbar({
         <div
           style={{
             paddingTop: 8,
-            borderTop: '1px solid var(--ds-border, #DFE1E6)',
+            borderTop: '1px solid var(--ds-border, var(--ds-border, #DFE1E6))',
             marginTop: 4,
           }}
         >
@@ -217,7 +217,7 @@ export function UWVToolbar({
           display: 'flex',
           alignItems: 'center',
           padding: '0 16px',
-          borderBottom: '1px solid #DFE1E6',
+          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
           background: 'var(--ds-surface, #FFFFFF)',
           flexShrink: 0,
         }}
@@ -270,7 +270,7 @@ export function UWVToolbar({
               display: 'flex',
               gap: 6,
               background: 'var(--ds-surface, #FFFFFF)',
-              borderBottom: '1px solid #DFE1E6',
+              borderBottom: '1px solid var(--ds-border, #DFE1E6)',
               flexShrink: 0,
               flexWrap: 'wrap',
             }}
@@ -289,7 +289,7 @@ export function UWVToolbar({
                     height: 26,
                     padding: '0 10px',
                     borderRadius: 13,
-                    border: `1px solid ${active ? '#0C66E4' : 'var(--ds-border, #DFE1E6)'}`,
+                    border: `1px solid ${active ? '#0C66E4' : 'var(--ds-border, var(--ds-border, #DFE1E6))'}`,
                     background: active ? '#E9F2FF' : 'var(--ds-surface, #FFFFFF)',
                     color: active ? '#0C66E4' : 'var(--ds-text-subtle, #505258)',
                     fontSize: 12,
@@ -324,7 +324,7 @@ export function UWVToolbar({
             gap: 12,
             padding: '0 16px',
             background: '#F7F8F9',
-            borderBottom: '1px solid #DFE1E6',
+            borderBottom: '1px solid var(--ds-border, #DFE1E6)',
             flexShrink: 0,
           }}
         >

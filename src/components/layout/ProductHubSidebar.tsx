@@ -71,7 +71,7 @@ const RESERVED_HUB_PATHS = new Set([
 ]);
 
 function extractProductCode(pathname: string): string | null {
-  const m = pathname.match(/^\/product-hub\/([^/]+)(?:\/|$)/);
+  const m = pathname.match(/^\/product\/([^/]+)(?:\/|$)/);
   if (!m) return null;
   const seg = m[1];
   if (RESERVED_HUB_PATHS.has(seg.toLowerCase())) return null;

@@ -67,7 +67,7 @@ export const APPROVAL_STATUS_CONFIG = {
     // Canonical StatusLozenge grey (CLAUDE.md §5) — neutral.bold text on lozenge grey
     label: 'Waiting',
     color: '#42526E',
-    bgColor: '#DFE1E6',
+    bgColor: 'var(--ds-border, #DFE1E6)',
   },
   skipped: {
     // Canonical StatusLozenge grey, subtler bg

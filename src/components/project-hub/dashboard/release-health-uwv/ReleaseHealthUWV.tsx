@@ -196,7 +196,7 @@ function ReleaseItemsRows({
                   width: 24,
                   height: 24,
                   borderRadius: '50%',
-                  background: 'var(--ds-border, #DFE1E6)',
+                  background: 'var(--ds-border, var(--ds-border, #DFE1E6))',
                 }}
               />
             )}
@@ -235,7 +235,7 @@ function ReleaseRow({
           height: 44,
           padding: '0 16px',
           background: 'var(--ds-text-inverse, #FFFFFF)',
-          borderBottom: '1px solid #DFE1E6',
+          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
           cursor: 'pointer',
         }}
         onClick={onToggle}
@@ -284,7 +284,7 @@ function ReleaseRow({
               flex: 1,
               height: 6,
               borderRadius: 3,
-              background: 'var(--ds-border, #DFE1E6)',
+              background: 'var(--ds-border, var(--ds-border, #DFE1E6))',
               overflow: 'hidden',
             }}
           >
@@ -380,7 +380,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '16px 24px',
-          borderBottom: '1px solid #DFE1E6',
+          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
           background: 'var(--ds-text-inverse, #FFFFFF)',
         }}
       >
@@ -457,7 +457,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
           height: 36,
           padding: '0 16px',
           background: 'var(--ds-surface-sunken, #F4F5F7)',
-          borderBottom: '1px solid #DFE1E6',
+          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
           fontSize: 11,
           fontWeight: 700,
           color: '#5E6C84',

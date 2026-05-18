@@ -254,7 +254,7 @@ export function recordLocationVisit(input: {
 export function useRecordProjectVisit() {
   const location = useLocation();
   useEffect(() => {
-    const match = location.pathname.match(/^\/project-hub\/([^/]+)(?:\/([^/]+))?/);
+    const match = location.pathname.match(/^\/project\/([^/]+)(?:\/([^/]+))?/);
     if (!match) return;
     const projectKey = match[1];
     const section = match[2];

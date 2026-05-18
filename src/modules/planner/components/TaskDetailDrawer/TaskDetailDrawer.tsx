@@ -214,7 +214,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   ];
 
   const handleCopyLink = () => {
-    const url = `${window.location.origin}/taskhub/task-list?task=${task?.id}`;
+    const url = `${window.location.origin}/task/task-list?task=${task?.id}`;
     navigator.clipboard.writeText(url);
     toast.success('Link copied to clipboard');
   };

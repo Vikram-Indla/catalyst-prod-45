@@ -142,7 +142,7 @@ function BRTextareaEditor({ initialValue, placeholder, minHeight = 120, onSave, 
           width: '100%',
           minHeight,
           padding: '10px 12px',
-          border: '1px solid #DFE1E6',
+          border: '1px solid var(--ds-border, #DFE1E6)',
           borderRadius: 3,
           background: 'var(--ds-surface, #FFFFFF)',
           color: 'var(--ds-text, #172B4D)',
@@ -153,7 +153,7 @@ function BRTextareaEditor({ initialValue, placeholder, minHeight = 120, onSave, 
           outline: 'none',
         }}
         onFocus={e => (e.currentTarget.style.borderColor = '#4C9AFF')}
-        onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)')}
+        onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, var(--ds-border, #DFE1E6))')}
       />
       <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
         <button
@@ -334,7 +334,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
 
   // ─── Handlers ─────────────────────────────────
   const handleShare = useCallback(() => {
-    const url = `${window.location.origin}/producthub?request=${requestId}`;
+    const url = `${window.location.origin}/product?request=${requestId}`;
     navigator.clipboard.writeText(url);
     toast('Link copied to clipboard');
   }, [requestId]);
@@ -414,7 +414,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
   if (isLoading || !request) {
     return (
       <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(9, 30, 66, 0.54)' }} onClick={onClose}>
-        <div style={{ width: 48, height: 48, border: '3px solid #DFE1E6', borderTopColor: '#0052CC', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <div style={{ width: 48, height: 48, border: '3px solid var(--ds-border, #DFE1E6)', borderTopColor: '#0052CC', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       </div>
     );
   }
@@ -507,7 +507,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                 {showDotsMenu && (
                   <div style={{
                     position: 'absolute', right: 0, top: 36, background: 'var(--ds-surface, #FFF)',
-                    border: '1px solid #DFE1E6', borderRadius: 6,
+                    border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 6,
                     boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '6px 0',
                     zIndex: 50, minWidth: 200, animation: 'brm-slide-down 0.15s ease',
                   }}>
@@ -820,7 +820,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
               onMouseLeave={e => { if (!isDraggingRef.current) e.currentTarget.style.background = 'transparent'; }}
             >
-              <div style={{ width: 1.5, height: 32, borderRadius: 1, background: 'var(--ds-border, #DFE1E6)' }} />
+              <div style={{ width: 1.5, height: 32, borderRadius: 1, background: 'var(--ds-border, var(--ds-border, #DFE1E6))' }} />
             </div>
 
             {/* RIGHT PANEL — Sidebar */}
@@ -833,7 +833,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
               <div style={{ marginBottom: 14 }} ref={statusDropdownRef}>
                 <div style={{ position: 'relative' }}>
                   <button onClick={() => setShowStatusDropdown(!showStatusDropdown)} style={{
-                    backgroundColor: statusCategory === 'done' ? '#E3FCEF' : statusCategory === 'in_progress' ? '#DEEBFF' : 'var(--ds-border, #DFE1E6)',
+                    backgroundColor: statusCategory === 'done' ? '#E3FCEF' : statusCategory === 'in_progress' ? '#DEEBFF' : 'var(--ds-border, var(--ds-border, #DFE1E6))',
                     color: statusCategory === 'done' ? '#006644' : statusCategory === 'in_progress' ? '#0747A6' : 'var(--ds-text, #253858)',
                     padding: '6px 12px', borderRadius: 4, fontSize: 13, fontWeight: 700,
                     border: 'none', cursor: 'pointer', display: 'inline-flex',
@@ -858,7 +858,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                       {processSteps.map((step: any) => {
                         const isActive = formData.process_step === step.value;
                         const cat = resolveProcessStepCategory(step.value);
-                        const bg = cat === 'done' ? '#E3FCEF' : cat === 'in_progress' ? '#DEEBFF' : 'var(--ds-border, #DFE1E6)';
+                        const bg = cat === 'done' ? '#E3FCEF' : cat === 'in_progress' ? '#DEEBFF' : 'var(--ds-border, var(--ds-border, #DFE1E6))';
                         const color = cat === 'done' ? '#006644' : cat === 'in_progress' ? '#0747A6' : 'var(--ds-text, #253858)';
                         return (
                           <div key={step.value}
@@ -1160,7 +1160,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
             <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--ds-text, #172B4D)', marginBottom: 8 }}>Delete {request.request_key}?</h3>
             <p style={{ fontSize: 13, color: '#5E6C84', lineHeight: 1.6, marginBottom: 20 }}>This request will be moved to deleted items and can be restored within 30 days.</p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-              <button onClick={() => setShowDeleteConfirm(false)} style={{ padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface, #FFF)', border: '1px solid #DFE1E6', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#5E6C84' }}>Cancel</button>
+              <button onClick={() => setShowDeleteConfirm(false)} style={{ padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface, #FFF)', border: '1px solid var(--ds-border, #DFE1E6)', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#5E6C84' }}>Cancel</button>
               <button onClick={handleDelete} style={{ padding: '7px 16px', borderRadius: 4, background: '#DE350B', color: 'var(--ds-surface, #FFF)', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Delete</button>
             </div>
           </div>

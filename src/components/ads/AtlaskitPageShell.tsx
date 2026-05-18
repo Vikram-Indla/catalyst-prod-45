@@ -305,7 +305,7 @@ export function AtlaskitPageShell({
               display: 'flex',
               flexDirection: 'column',
               minHeight: 0,
-              borderLeft: '1px solid #DFE1E6',
+              borderLeft: '1px solid var(--ds-border, #DFE1E6)',
               overflow: 'hidden',
             }}
           >

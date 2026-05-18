@@ -107,7 +107,7 @@ export default function CommandCenterPage() {
 
   // Pipeline columns
   const pipelineCols = [
-    { key: 'new', label: 'NEW', loz: { bg: 'var(--cp-border, #DFE1E6)', text: 'var(--cp-text-secondary, #253858)' } },
+    { key: 'new', label: 'NEW', loz: { bg: 'var(--cp-border, var(--ds-border, #DFE1E6))', text: 'var(--cp-text-secondary, #253858)' } },
     { key: 'in_uat', label: 'IN UAT', loz: { bg: 'var(--cp-primary-light, #DEEBFF)', text: 'var(--cp-text-link, #0747A6)' } },
     { key: 'in_beta', label: 'IN BETA', loz: { bg: 'var(--cp-primary-light, #DEEBFF)', text: 'var(--cp-text-link, #0747A6)' } },
     { key: 'in_production', label: 'IN PROD', loz: { bg: 'var(--cp-success-light, #E3FCEF)', text: 'var(--cp-success-text, #006644)' } },
@@ -386,7 +386,7 @@ export default function CommandCenterPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 {[1,2,3,4].map(i => (
-                  <div key={i} className="rounded-[6px] p-3" style={{ border: `0.75px solid ${'var(--cp-border, #DFE1E6)'}`, borderLeft: `4px solid ${'var(--cp-border, #DFE1E6)'}` }}>
+                  <div key={i} className="rounded-[6px] p-3" style={{ border: `0.75px solid ${'var(--cp-border, var(--ds-border, #DFE1E6))'}`, borderLeft: `4px solid ${'var(--cp-border, var(--ds-border, #DFE1E6))'}` }}>
                     <div className="h-3 w-20 rounded animate-pulse mb-2" style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }} />
                     <div className="h-5 w-10 rounded animate-pulse mb-1" style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }} />
                     <div className="h-2.5 w-24 rounded animate-pulse" style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }} />
@@ -424,7 +424,7 @@ export default function CommandCenterPage() {
               <div className="grid grid-cols-2 gap-3">
                 {computed.gates.map(gate => {
                   const pass = !gate.noData && Math.round(gate.rate * 100) >= gate.threshold;
-                  const borderColor = gate.noData ? 'var(--ds-border, #DFE1E6)' : pass ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-danger, #DC2626)';
+                  const borderColor = gate.noData ? 'var(--ds-border, var(--ds-border, #DFE1E6))' : pass ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-danger, #DC2626)';
                   const GateIcon = gate.noData ? Minus : pass ? CheckCircle2 : XCircle;
                   const iconColor = gate.noData ? 'var(--ds-text-subtlest, #94A3B8)' : pass ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-danger, #DC2626)';
 

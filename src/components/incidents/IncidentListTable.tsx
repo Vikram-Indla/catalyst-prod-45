@@ -290,7 +290,7 @@ export function IncidentListTable({
   };
 
   const handleCopyLink = (incidentId: string, incidentKey: string) => {
-    const url = `${window.location.origin}/incident-hub/view/${incidentId}`;
+    const url = `${window.location.origin}/incident/view/${incidentId}`;
     navigator.clipboard.writeText(url);
     toast.success(`Link copied`, `${incidentKey} link copied to clipboard`);
   };

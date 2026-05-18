@@ -97,7 +97,7 @@ export function ContextMenu({ position, request, onAction, onClose }: ContextMen
       >
         Copy ID
       </MenuItem>
-      <MenuItem icon={<Link2 size={14} />} onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/producthub/request/${request.id}`); toast.success('Link copied!'); onClose(); }}>
+      <MenuItem icon={<Link2 size={14} />} onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/product/request/${request.id}`); toast.success('Link copied!'); onClose(); }}>
         Copy link
       </MenuItem>
 

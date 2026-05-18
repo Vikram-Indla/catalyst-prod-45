@@ -928,7 +928,7 @@ export default function AtlaskitStoryBacklogPage({
             onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
             onMouseLeave={(e) => { if (!isDraggingPanel.current) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
           >
-            <div style={{ width: 2, height: 40, borderRadius: 1, background: 'var(--ds-border, #DFE1E6)' }} />
+            <div style={{ width: 2, height: 40, borderRadius: 1, background: 'var(--ds-border, var(--ds-border, #DFE1E6))' }} />
           </div>
         )}
 
@@ -940,7 +940,7 @@ export default function AtlaskitStoryBacklogPage({
               minWidth: 0,
               overflow: 'hidden',
               transition: isDraggingPanel.current ? 'none' : 'flex 150ms ease',
-              borderLeft: '1px solid #DFE1E6',
+              borderLeft: '1px solid var(--ds-border, #DFE1E6)',
             }}
           >
             <Suspense fallback={<div style={{ padding: 24, color: 'var(--ds-text-subtlest, #6B778C)' }}>Loading…</div>}>
@@ -1086,7 +1086,7 @@ function InlineCreateRow({
         }}
         onMouseEnter={(e) => {
           (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)';
-          (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, #DFE1E6)';
+          (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, var(--ds-border, #DFE1E6))';
         }}
         onMouseLeave={(e) => {
           (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -1193,7 +1193,7 @@ function AssigneeStackFilter({
             padding: '0 8px',
             borderRadius: 13,
             border: '2px solid var(--ds-text-inverse, #FFFFFF)',
-            background: 'var(--ds-border, #DFE1E6)',
+            background: 'var(--ds-border, var(--ds-border, #DFE1E6))',
             color: '#42526E',
             fontSize: 11,
             fontWeight: 600,
@@ -1245,7 +1245,7 @@ const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
           width: iconOnly ? 28 : undefined,
           padding: iconOnly ? 0 : '0 10px',
           border: '1px solid',
-          borderColor: isSelected ? '#0C66E4' : 'var(--ds-border, #DFE1E6)',
+          borderColor: isSelected ? '#0C66E4' : 'var(--ds-border, var(--ds-border, #DFE1E6))',
           borderRadius: 4,
           background: isSelected ? '#E9F2FF' : 'var(--ds-text-inverse, #FFFFFF)',
           color: isSelected ? '#0055CC' : '#42526E',
@@ -1314,7 +1314,7 @@ function ToolbarMenu({ trigger, children, anchor = 'left', width = 220 }: Toolba
             zIndex: 50,
             minWidth: width,
             background: 'var(--ds-text-inverse, #FFFFFF)',
-            border: '1px solid #DFE1E6',
+            border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 4,
             boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18)',
             padding: 4,

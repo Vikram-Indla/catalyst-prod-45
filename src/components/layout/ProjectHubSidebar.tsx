@@ -48,7 +48,7 @@ interface ProjectHubSidebarProps {
 }
 
 function extractProjectKey(pathname: string): string | undefined {
-  const match = pathname.match(/^\/project-hub\/([^/]+)/);
+  const match = pathname.match(/^\/project\/([^/]+)/);
   if (!match) return undefined;
   const segment = match[1];
   if (['projects', 'resources', 'portfolio-health'].includes(segment)) return undefined;

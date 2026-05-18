@@ -48,12 +48,12 @@ export const RH = {
 };
 
 // ── STATUS LOZENGE 3-COLOR GUARDRAIL ──────────────────────────────
-// GREY:  bg=#DFE1E6 text=#253858 → NEW, ARCHIVED, NOT_STARTED
+// GREY:  bg=var(--ds-border, #DFE1E6) text=#253858 → NEW, ARCHIVED, NOT_STARTED
 // BLUE:  bg=#DEEBFF text=#0747A6 → IN_UAT, IN_BETA, IN_PROGRESS, PLANNING, WAITING
 // GREEN: bg=#E3FCEF text=#006644 → IN_PRODUCTION, RELEASED, DONE, APPROVED, PASS
 
 export const LOZENGE = {
-  grey:  { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' },
+  grey:  { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: '#42526E' },
   blue:  { bg: '#0C66E4', text: 'var(--ds-surface, #FFFFFF)' },
   green: { bg: '#1B7F37', text: 'var(--ds-surface, #FFFFFF)' },
 } as const;
@@ -95,17 +95,17 @@ export const CHG_STATUS_ORDER: string[] = ['new', 'in_uat', 'in_beta', 'in_produ
 
 // Risk badges
 export const RISK_BADGE: Record<string, { bg: string; text: string }> = {
-  standard: { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' },
-  low: { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' },
+  standard: { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: '#42526E' },
+  low: { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: '#42526E' },
   high: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #DC2626)' },
   emergency: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)' },
   critical: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)' },
-  medium: { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' },
+  medium: { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: '#42526E' },
 };
 
 // Source badges
 export const SOURCE_BADGE: Record<string, { bg: string; text: string }> = {
-  jira: { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' },
+  jira: { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: '#42526E' },
   catalyst: { bg: '#0C66E4', text: 'var(--ds-surface, #FFFFFF)' },
 };
 

@@ -139,7 +139,7 @@ export default function IdeationDrivesView() {
                 display: 'inline-flex', alignItems: 'center',
                 background: isActive
                   ? ('var(--cp-primary-light, #DEEBFF)')
-                  : ('var(--cp-border, #DFE1E6)'),
+                  : ('var(--cp-border, var(--ds-border, #DFE1E6))'),
                 color: isActive
                   ? ('var(--cp-text-link, #0747A6)')
                   : ('var(--cp-text-secondary, #253858)'),

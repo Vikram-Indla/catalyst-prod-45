@@ -56,7 +56,7 @@ const SMART_LINK_OVERRIDES = {
   inlineCard: (props: any) => <PlainSmartLink {...props} />,
   blockCard: (props: any) => (
     <div style={{
-      padding: '12px 16px', border: '1px solid #DFE1E6', borderRadius: 4,
+      padding: '12px 16px', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4,
       background: 'var(--ds-surface, #FFFFFF)', margin: '8px 0', fontSize: 14,
     }}>
       <PlainSmartLink {...props} />

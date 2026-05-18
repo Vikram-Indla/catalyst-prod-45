@@ -575,7 +575,7 @@ export function makeStatusEditCell<T>(opts: {
                       width: 8, height: 8, borderRadius: '50%',
                       background: dotBg,
                       flexShrink: 0,
-                      border: ap === 'default' ? '1px solid var(--ds-border, #DFE1E6)' : 'none',
+                      border: ap === 'default' ? '1px solid var(--ds-border, var(--ds-border, #DFE1E6))' : 'none',
                     }}
                   />
                   <span style={{ flex: 1 }}>{s}</span>
@@ -770,8 +770,8 @@ export function makePriorityCell(getPriority: (row: any) => string | null) {
       level >= 4 ? token('color.icon.danger',  '#E5484D') :
       level >= 3 ? token('color.icon.warning', '#F59E0B') :
       level >= 1 ? token('color.icon.success', '#22C55E') :
-      'var(--ds-border, #DFE1E6)';
-    const inactive = 'var(--ds-border, #DFE1E6)';
+      'var(--ds-border, var(--ds-border, #DFE1E6))';
+    const inactive = 'var(--ds-border, var(--ds-border, #DFE1E6))';
     return (
       <span style={{ display: 'inline-flex', gap: 2 }} title={p || 'No priority'}>
         {[1, 2, 3, 4].map((i) => (
@@ -838,7 +838,7 @@ export function makeDateCell(
 
 // ─── Labels Cell ─────────────────────────────────────────────────────────────
 // Renders label tags as Jira-style outlined chips. Measured from Jira live DOM:
-//   bg transparent, border 1px solid #DFE1E6, borderRadius 4px, padding 0px 4px,
+//   bg transparent, border 1px solid var(--ds-border, #DFE1E6), borderRadius 4px, padding 0px 4px,
 //   fontSize 14px, fontWeight 400, color #292A2E.
 export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
   return function LabelsCell({ row }: CellProps<any>) {
@@ -856,7 +856,7 @@ export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
               alignItems: 'center',
               padding: '0 4px',
               borderRadius: 4,
-              border: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
+              border: `1px solid ${'var(--ds-border, var(--ds-border, #DFE1E6))'}`,
               fontSize: 14,
               fontWeight: 400,
               lineHeight: '20px',
@@ -897,7 +897,7 @@ export function makeFixVersionsCell(getFixVersions: (row: any) => string[] | nul
             key={v}
             style={{
               display: 'inline-block',
-              border: `1px solid ${'var(--ds-border, #DFE1E6)'}`,
+              border: `1px solid ${'var(--ds-border, var(--ds-border, #DFE1E6))'}`,
               borderRadius: 3,
               padding: '2px 6px',
               fontSize: 12,

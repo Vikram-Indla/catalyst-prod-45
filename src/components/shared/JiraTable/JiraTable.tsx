@@ -54,7 +54,7 @@ import type { Column, JiraTableProps, SortOrder } from './types';
 const pageBtnStyle = (disabled: boolean): React.CSSProperties => ({
   padding: '4px 10px',
   fontSize: 13,
-  border: '1px solid #DFE1E6',
+  border: '1px solid var(--ds-border, #DFE1E6)',
   borderRadius: 3,
   background: disabled ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--ds-surface, #FFFFFF)',
   color: disabled ? '#A5ADBA' : '#42526E',
@@ -468,7 +468,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
          Phase 12 (2026-04-29): reverted to Atlaskit color.border via
          --ds-border CSS variable. Phase 11 made it flip natively. */
       .jira-table-grid table tbody > tr > td {
-        box-shadow: inset 0 -1px 0 0 var(--ds-border, #DFE1E6) !important;
+        box-shadow: inset 0 -1px 0 0 var(--ds-border, var(--ds-border, #DFE1E6)) !important;
       }
       /* Apr 27, 2026 (Vikram audit pass 4): Type column is icon-only, so
          the standard 12px L/R cell padding leaves ~14px of dead space
@@ -492,7 +492,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       }
       /* Focused row overrides the td shadow with its own blue bar */
       .jira-table-grid .jira-table-row-focused > td:first-child {
-        box-shadow: inset 3px 0 0 #0C66E4, inset 0 -1px 0 0 var(--ds-border, #DFE1E6) !important;
+        box-shadow: inset 3px 0 0 #0C66E4, inset 0 -1px 0 0 var(--ds-border, var(--ds-border, #DFE1E6)) !important;
       }
       /* Row hover. Apr 28, 2026 (jira-compare cycle 4): tokenized — was
          hardcoded #FAFBFC. --ds-background-neutral-subtle-hovered is the
@@ -808,7 +808,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         text-align: center;
         padding-left: 0 !important;
         padding-right: 0 !important;
-        border-right: 1px solid #DFE1E6 !important;
+        border-right: 1px solid var(--ds-border, #DFE1E6) !important;
       }
       .jira-table-grid table thead > tr > th:first-child > span,
       .jira-table-grid table tbody > tr > td:first-child > [data-jira-table-editor],
@@ -878,7 +878,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
          Most surfaces already use --ds-* tokens that flip natively under
          @atlaskit/tokens dark mode. The remaining hardcoded fallbacks
          (var(--ds-surface-sunken, #F4F5F7) group-row bg, #F7F8F9 sticky header, #0C66E4 focus bar,
-         var(--ds-border, #DFE1E6) grid line) need explicit .dark companions per Rule 3.
+         var(--ds-border, var(--ds-border, #DFE1E6)) grid line) need explicit .dark companions per Rule 3.
          ───────────────────────────────────────────────────────────────────── */
       .dark .jira-table-grid .jira-table-row-focused > td {
         background-color: var(--ds-background-selected, #1C2B41) !important;
@@ -1589,7 +1589,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         color: '#292A2E',
         outline: 'none',
         background: 'var(--ds-surface, #FFFFFF)',
-        border: '1px solid #DFE1E6',
+        border: '1px solid var(--ds-border, #DFE1E6)',
         // Apr 27, 2026 — jira-compare audit P2 #10: Jira's outer table
         // card uses 8px border-radius; Catalyst was 6px. Bumped to
         // match — minor token drift, single-line change.
@@ -1947,7 +1947,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             justifyContent: 'flex-end',
             gap: 8,
             padding: '8px 12px',
-            borderTop: '1px solid #DFE1E6',
+            borderTop: '1px solid var(--ds-border, #DFE1E6)',
             fontSize: 13,
             color: '#42526E',
             background: 'var(--ds-surface, #FFFFFF)',
@@ -1987,7 +1987,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               alignItems: 'center',
               justifyContent: 'center',
               padding: '8px 12px',
-              borderTop: '1px solid #DFE1E6',
+              borderTop: '1px solid var(--ds-border, #DFE1E6)',
               fontSize: 12,
               color: 'var(--ds-text-subtle, #505258)',
               background: 'var(--ds-surface, #FFFFFF)',
@@ -2011,7 +2011,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             left: filterMenu.left,
             zIndex: 9999,
             background: 'var(--ds-surface-overlay, #FFFFFF)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            border: '1px solid var(--ds-border, var(--ds-border, #DFE1E6))',
             borderRadius: 4,
             boxShadow: '0 8px 16px rgba(9,30,66,0.15)',
             minWidth: 220,
@@ -2041,7 +2041,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             zIndex: 1100,
             minWidth: 200,
             background: 'var(--ds-surface, #FFFFFF)',
-            border: '1px solid #DFE1E6',
+            border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 4,
             boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18)',
             padding: 4,
@@ -2229,7 +2229,7 @@ function ColumnManagerTrigger<TRow>({
             zIndex: 1000,
             minWidth: 260,
             background: 'var(--ds-surface, #FFFFFF)',
-            border: '1px solid #DFE1E6',
+            border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 4,
             boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18)',
             padding: 8,
@@ -2360,7 +2360,7 @@ function ColumnManagerTrigger<TRow>({
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '6px 8px 2px', fontSize: 11, color: '#7A869A',
-            borderTop: '1px solid #DFE1E6', marginTop: 4,
+            borderTop: '1px solid var(--ds-border, #DFE1E6)', marginTop: 4,
           }}>
             <span>{matchCount} of {totalInTab}</span>
           </div>

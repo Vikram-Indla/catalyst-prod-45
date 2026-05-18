@@ -57,7 +57,7 @@ export function useTrackLastRoute() {
 
 /**
  * Gets the default home route after login.
- * Returns /for-you — the canonical landing route inside CatalystShell.
+ * Returns /home — the canonical landing route inside CatalystShell.
  * /home redirects to / which causes a double-hop blank-page race on first load.
  */
 export function getLastRoute(): string {
