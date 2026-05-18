@@ -24,6 +24,7 @@ dist-ssr
 *.sln
 *.sw?
 supabase/.temp/
+.env
 
 # Storybook build output (generated from source by `npm run build-storybook`)
 storybook-static/
