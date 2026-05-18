@@ -170,8 +170,25 @@ describe('HubSwitcher v2 — Step 7.3: Recent section + search-to-filter', () =>
     renderAt('/for-you');
     fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
     expect(screen.getByText(/^recent$/i)).toBeInTheDocument();
-    // 11 standard + 3 recent = 14 anchors
+    // 11 standard + 3 recent = 14 anchors — 'home' is filtered out of recents
+    // (design-critique 2026-05-17 H8 P0), so the remaining 3 recent slots
+    // surface ideation, project, wiki.
     expect(screen.getAllByRole('link')).toHaveLength(14);
+  });
+
+  // Regression: 2026-05-17 — "Home" was appearing in the Recent list.
+  // Read-time filter must purge it even when older localStorage rows still
+  // contain it.
+  it('filters Home from Recent section at read time, even if stored', () => {
+    window.localStorage.setItem(
+      'catalyst-recent-hubs',
+      JSON.stringify(['home', 'home', 'home']),
+    );
+    renderAt('/strategyhub');
+    fireEvent.click(screen.getByRole('button', { name: /switch hub/i }));
+    // With only 'home' in the stored list and 'home' excluded, the Recent
+    // section has no items to show — should not render at all.
+    expect(screen.queryByText(/^recent$/i)).not.toBeInTheDocument();
   });
 
   it('renders a search input that filters hubs as the user types', () => {
@@ -241,8 +258,11 @@ describe('HubSwitcher v2 — Step 7.4: ⌘1–⌘0 + ⌘- keyboard shortcuts', (
     );
   });
 
+  // Cmd+1 → Home is intentionally NOT in this matrix — Home is excluded
+  // from the Recent list (design-critique 2026-05-17 H8 P0), so the
+  // "recents got written" proxy doesn't apply to that shortcut. Cmd+1
+  // navigation correctness is covered by the row-click test for Home.
   it.each([
-    ['1', '/for-you'],
     ['2', '/strategyhub'],
     ['3', '/ideation/backlog'],
     ['4', '/product-hub'],
@@ -267,13 +287,17 @@ describe('HubSwitcher v2 — Step 7.4: ⌘1–⌘0 + ⌘- keyboard shortcuts', (
     const stored = JSON.parse(window.localStorage.getItem('catalyst-recent-hubs') || '[]');
     expect(stored[0]).toBeDefined();
     expect(typeof stored[0]).toBe('string');
-    // We don't assert exact key here because some browsers strip event
-    // metaKey in jsdom — the test confirms the shortcut handler RAN, not
-    // which hub specifically (covered by the row-click test above).
-    // Defensive: if metaKey worked, the recent matches. If not, we still
-    // pass the "handler ran" proxy.
     void expectedPath;
     void key;
+  });
+
+  // Home is explicitly excluded from the Recent list. Cmd+1 still navigates
+  // but must NOT write 'home' to the recents store.
+  it('Cmd+1 navigates to Home WITHOUT polluting recents', () => {
+    renderAt('/strategyhub');
+    fireEvent.keyDown(document, { key: '1', metaKey: true });
+    const stored = JSON.parse(window.localStorage.getItem('catalyst-recent-hubs') || '[]');
+    expect(stored).not.toContain('home');
   });
 
   it('ignores the shortcut when an input has focus', () => {

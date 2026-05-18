@@ -1,0 +1,62 @@
+name: Design System Audit
+
+on:
+  push:
+    branches: [ main, ADS-migration ]
+    paths:
+      - 'src/**/*.tsx'
+      - 'src/**/*.ts'
+      - 'src/**/*.css'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'src/**/*.tsx'
+      - 'src/**/*.ts'
+      - 'src/**/*.css'
+
+jobs:
+  design-system-audit:
+    runs-on: ubuntu-latest
+    name: Design System Compliance Check
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Run Design System Audit
+        run: |
+          echo "🎯 Auditing design system compliance..."
+          node design-governance/rules/audit.js src/
+          AUDIT_EXIT_CODE=$?
+          
+          if [ $AUDIT_EXIT_CODE -ne 0 ]; then
+            echo "❌ Design system violations detected. Merge BLOCKED until violations are fixed."
+            exit 1
+          fi
+          echo "✅ Design system audit passed."
+          exit 0
+      
+      - name: Check Atlassian Sans CDN
+        run: |
+          if grep -q "fonts.atlassian.com\|atlassian-sans" public/index.html; then
+            echo "✅ Atlassian Sans CDN configured in index.html"
+          else
+            echo "⚠️ Warning: Atlassian Sans CDN not found in public/index.html"
+          fi
+      
+      - name: Post Audit Results (on failure)
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ **Design System Compliance Failed**\n\nThis PR violates the Catalyst Design System governance policy. Run `node design-governance/cli/index.js audit src/` locally to see violations.\n\n**Common fixes:**\n- Replace hardcoded colors with `var(--ds-*)` ADS tokens\n- Use `@atlaskit/*` components (not react-select, react-modal, etc.)\n- Use 4/8/16/24/32px spacing grid only\n- Use sentence-case labels (remove `text-transform: uppercase`)\n\nSee `design-governance/GOVERNANCE_POLICY.md` for full policy.'
+            })

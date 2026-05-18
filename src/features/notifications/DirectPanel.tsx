@@ -77,15 +77,33 @@ function mapNotification(
   const isCommentVerb = ['commented', 'mentioned'].includes(mapVerb(n.notification_type));
   const hasThread = !!(n.metadata?.comment_preview) || isCommentVerb;
 
+  // 2026-05-17 design-critique: actor resolution now uses 3 fallback layers
+  // so the row never renders a faceless silhouette when ANY actor data exists.
+  //   1. profile join (when actor_user_id is set)
+  //   2. notification.actor embedded object (when webhook stored a snapshot)
+  //   3. metadata.actor_display_name / metadata.actor_avatar_url
+  //      — this is where the Jira webhook actually stores the actor for
+  //      issues where the actor has no Catalyst profile (e.g. external Jira
+  //      users like "Nada alfassam" / "dalia abdullah"). Previously the
+  //      `actor: n.actor_user_id ? ... : null` ternary dropped this entirely.
+  const metadataActorName = (n.metadata as Record<string, unknown> | undefined)?.actor_display_name as string | undefined;
+  const metadataActorAvatar = (n.metadata as Record<string, unknown> | undefined)?.actor_avatar_url as string | undefined;
+  const resolvedDisplayName = profile?.full_name
+    ?? n.actor?.full_name
+    ?? (metadataActorName && metadataActorName.trim() ? metadataActorName : null);
+  const resolvedAvatarUrl = profile?.avatar_url
+    ?? n.actor?.avatar_url
+    ?? (metadataActorAvatar && metadataActorAvatar.trim() ? metadataActorAvatar : null);
+
   return {
     id: n.id,
     createdAt: n.created_at,
     readAt: n.read_at,
-    actor: n.actor_user_id
+    actor: (n.actor_user_id || resolvedDisplayName)
       ? {
-          id: n.actor_user_id,
-          displayName: profile?.full_name ?? (n.actor?.full_name ?? 'Unknown'),
-          avatarUrl: profile?.avatar_url ?? n.actor?.avatar_url ?? null,
+          id: n.actor_user_id ?? `metadata:${n.id}`,
+          displayName: resolvedDisplayName ?? 'Unknown',
+          avatarUrl: resolvedAvatarUrl,
         }
       : null,
     verb: mapVerb(n.notification_type),

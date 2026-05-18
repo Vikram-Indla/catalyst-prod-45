@@ -1,13 +1,21 @@
 /**
  * AssignedPanel — "Assigned to me" tab.
  *
- * B-1 (2026-05-16): Group by statusCategory (`new` → "Waiting",
- *   `indeterminate` → "Active"), NOT by raw status label text — avoids
- *   "Prioritized Backlog" appearing as a To Do group alongside In Progress
- *   items.
+ * 2026-05-17 jira-compare (LIVE Jira DOM probe):
+ *   Jira's /jira/for-you Assigned tab groups by RAW STATUS NAME, NOT by
+ *   statusCategory bucket. The visible section headers in the live DOM are
+ *   "In Progress", "In Development", "TODO", "In Requirements" — i.e. the
+ *   actual `issue.fields.status.name` values, NOT category labels.
+ *   The earlier Catalyst grouping invented "Waiting" / "Active" bucket
+ *   labels by rolling up statusCategory `new` / `indeterminate` — neither
+ *   label exists in Jira and confused the user ("what is Waiting? from
+ *   where? this doesn't exist?").
  *
- * B-2 (2026-05-16): Hide done items by default. Show "Show completed (N)"
- *   toggle at the bottom so the user's queue stays clean.
+ *   Ordering: Active statuses first (statusCategory indeterminate), Done
+ *   last, To Do family in the middle. Within each, alphabetical.
+ *
+ * Done items are hidden by default. "Show completed (N)" toggle appears at
+ * the bottom when there are any.
  */
 import React, { useMemo, useState } from 'react';
 import { token } from '@atlaskit/tokens';
@@ -16,29 +24,6 @@ import { ForYouEmptyState } from './helpers';
 import { text } from '@/lib/typography';
 import type { WorkItem } from '@/hooks/useForYouData';
 
-// ─── Status category → bucket mapping ────────────────────────────────────────
-// Jira's statusCategory values: 'new' (To Do family) | 'indeterminate' (active)
-// | 'done'. We map to goal-centric user labels per the handover spec.
-type StatusBucket = 'Active' | 'Waiting';
-
-const BUCKET_ORDER: StatusBucket[] = ['Active', 'Waiting'];
-
-function toBucket(statusCategory?: string, statusLabel?: string): StatusBucket | 'done' {
-  const cat = (statusCategory || '').toLowerCase().replace(/[\s_-]/g, '');
-  if (cat === 'done' || cat === 'closed') return 'done';
-  if (cat === 'indeterminate') return 'Active';
-  if (cat === 'new') return 'Waiting';
-
-  // Fallback: infer from status label text when statusCategory is missing
-  const s = (statusLabel || '').toLowerCase();
-  if (s.includes('done') || s.includes('closed') || s.includes('complet') || s.includes('approved')) return 'done';
-  if (
-    s.includes('progress') || s.includes('review') || s.includes('active') ||
-    s.includes('dev') || s.includes('testing') || s.includes('staging')
-  ) return 'Active';
-  return 'Waiting';
-}
-
 interface AssignedPanelProps {
   items: WorkItem[];
   isLoading: boolean;
@@ -46,27 +31,45 @@ interface AssignedPanelProps {
   onToggleStar: (id: string) => void;
 }
 
+function isDone(statusCategory?: string, status?: string): boolean {
+  const cat = (statusCategory || '').toLowerCase().replace(/[\s_-]/g, '');
+  if (cat === 'done' || cat === 'closed') return true;
+  const s = (status || '').toLowerCase();
+  return s.includes('done') || s.includes('closed') || s.includes('complet') || s.includes('approved');
+}
+
+function categoryRank(statusCategory?: string): number {
+  // Active (indeterminate) → 0 (top), To Do (new) → 1, Done → 2
+  const cat = (statusCategory || '').toLowerCase().replace(/[\s_-]/g, '');
+  if (cat === 'indeterminate') return 0;
+  if (cat === 'done' || cat === 'closed') return 2;
+  return 1;
+}
+
 export default function AssignedPanel({ items, isLoading, onSelect, onToggleStar }: AssignedPanelProps) {
   const [showDone, setShowDone] = useState(false);
 
-  const { buckets, doneCount } = useMemo(() => {
-    const b = new Map<StatusBucket, WorkItem[]>();
+  const { groups, doneCount } = useMemo(() => {
+    // Group by raw status NAME (preserves Jira's section labels exactly)
+    const byStatus = new Map<string, { status: string; statusCategory: string | undefined; items: WorkItem[] }>();
     let done = 0;
     for (const item of items) {
-      const bucket = toBucket(item.statusCategory, item.status);
-      if (bucket === 'done') {
+      if (isDone(item.statusCategory, item.status)) {
         done++;
-        if (showDone) {
-          // Flatten done items into Waiting group so they appear at the bottom
-          if (!b.has('Waiting')) b.set('Waiting', []);
-          b.get('Waiting')!.push(item);
-        }
-        continue;
+        if (!showDone) continue;
       }
-      if (!b.has(bucket)) b.set(bucket, []);
-      b.get(bucket)!.push(item);
+      const key = item.status || 'Unknown';
+      if (!byStatus.has(key)) byStatus.set(key, { status: key, statusCategory: item.statusCategory, items: [] });
+      byStatus.get(key)!.items.push(item);
     }
-    return { buckets: b, doneCount: done };
+    // Sort: by category rank first (Active → To Do → Done), then alphabetical
+    const ordered = Array.from(byStatus.values()).sort((a, b) => {
+      const ra = categoryRank(a.statusCategory);
+      const rb = categoryRank(b.statusCategory);
+      if (ra !== rb) return ra - rb;
+      return a.status.localeCompare(b.status);
+    });
+    return { groups: ordered, doneCount: done };
   }, [items, showDone]);
 
   if (isLoading) {
@@ -82,20 +85,17 @@ export default function AssignedPanel({ items, isLoading, onSelect, onToggleStar
     );
   }
 
-  const activeBuckets = BUCKET_ORDER.filter(b => (buckets.get(b)?.length ?? 0) > 0);
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      {activeBuckets.map(bucket => (
-        <div key={bucket}>
-          <SectionHeading label={bucket} count={buckets.get(bucket)!.length} />
-          {buckets.get(bucket)!.map(item => (
-            <ForYouRow key={item.id} item={item} onSelect={onSelect} onToggleStar={onToggleStar} />
+      {groups.map(group => (
+        <div key={group.status}>
+          <SectionHeading label={group.status} />
+          {group.items.map(item => (
+            <ForYouRow key={item.id} item={item} variant="jira-assigned" onSelect={onSelect} onToggleStar={onToggleStar} />
           ))}
         </div>
       ))}
 
-      {/* B-2: Show completed toggle */}
       {doneCount > 0 && (
         <button
           type="button"
@@ -128,25 +128,25 @@ export default function AssignedPanel({ items, isLoading, onSelect, onToggleStar
   );
 }
 
-function SectionHeading({ label, count }: { label: string; count: number }) {
+function SectionHeading({ label }: { label: string }) {
+  // 2026-05-17 jira-compare LIVE probe: section header is
+  //   14px / 500 / rgb(107,110,118) [subtlest] / textTransform:none
+  //   parent padding: 12px 0 4px
+  // Earlier 12/500/subtle was based on the user's spec sheet — live DOM is
+  // 14/500/subtlest. Trusting the live probe over the spec sheet.
   return (
     <div style={{
-      display: 'flex', alignItems: 'center', gap: 8,
-      paddingInline: 12, paddingBlockStart: 16, paddingBlockEnd: 8,
+      // 2026-05-17 LIVE Jira probe: section header parent has padding
+      // `12px 0 4px` — text sits at the panel's LEFT EDGE while rows
+      // indent 16px (row padding). Aligning to Jira exactly.
+      paddingInlineStart: 0, paddingInlineEnd: 0,
+      paddingBlockStart: 12, paddingBlockEnd: 4,
     }}>
       <span style={{
-        font: `500 14px/20px "Inter", system-ui, sans-serif`,
+        font: `500 14px/20px var(--ds-font-family-body, "Inter"), system-ui, sans-serif`,
         letterSpacing: 'normal', color: text.subtlest, textTransform: 'none',
       }}>
         {label}
-      </span>
-      <span style={{
-        font: `400 12px/16px "Inter", system-ui, sans-serif`,
-        color: text.subtle,
-        backgroundColor: token('elevation.surface.sunken', '#F7F8F9'),
-        paddingInline: 6, borderRadius: 999,
-      }}>
-        {count}
       </span>
     </div>
   );

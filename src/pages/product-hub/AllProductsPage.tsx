@@ -20,11 +20,12 @@
  * out of scope for this cycle.
  */
 
-import { useMemo, useState, useCallback, useEffect, lazy, Suspense } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMemo, useState, useCallback, useEffect, lazy, Suspense, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link as RouterLink } from 'react-router-dom';
-import { Plus, Star, MoreHorizontal } from '@/lib/atlaskit-icons';
+import { Plus, Star, MoreHorizontal, Search } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import Avatar from '@atlaskit/avatar';
 import Textfield from '@atlaskit/textfield';
 import DropdownMenu, {
@@ -33,6 +34,7 @@ import DropdownMenu, {
 } from '@atlaskit/dropdown-menu';
 import StarFilledIcon from '@atlaskit/icon/glyph/star-filled';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import Lozenge from '@atlaskit/lozenge';
 import { token } from '@atlaskit/tokens';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
@@ -58,6 +60,97 @@ interface Product {
 }
 
 const FAV_STORAGE_KEY = 'product-hub.favorites';
+
+// Utility: handle clicks outside a popover — close it when user clicks elsewhere
+function useClickOutside(
+  isOpen: boolean,
+  refs: Array<React.RefObject<HTMLElement | null>>,
+  onOutside: () => void,
+) {
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as Node;
+      const inside = refs.some(r => r.current?.contains(target));
+      if (!inside) onOutside();
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [isOpen, refs, onOutside]);
+}
+
+// Utility: position a popover using fixed positioning (not absolute) to avoid
+// containing-block weirdness from transformed ancestors or sticky headers.
+function useFixedPopupPosition(
+  isOpen: boolean,
+  triggerRef: React.RefObject<HTMLElement | null>,
+  popupWidth: number,
+): { top: number; left: number } | null {
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+
+  const recompute = useCallback(() => {
+    const el = triggerRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    // Default: anchor below the trigger, left-aligned. If popup would overflow
+    // the right edge, right-align it to the trigger instead.
+    let left = r.left;
+    if (left + popupWidth > window.innerWidth - 8) {
+      left = Math.max(8, r.right - popupWidth);
+    }
+    setPos({ top: r.bottom + 4, left });
+  }, [triggerRef, popupWidth]);
+
+  useEffect(() => {
+    if (!isOpen) { setPos(null); return; }
+    recompute();
+    window.addEventListener('scroll', recompute, true);
+    window.addEventListener('resize', recompute);
+    return () => {
+      window.removeEventListener('scroll', recompute, true);
+      window.removeEventListener('resize', recompute);
+    };
+  }, [isOpen, recompute]);
+
+  return pos;
+}
+
+// Hook: fetch all profiles from the profiles table for use in pickers
+function useAllProfiles() {
+  return useQuery({
+    queryKey: ['profiles-all'],
+    queryFn: async () => {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url, role')
+        .order('full_name');
+
+      const rows = (profiles || []).map(p => ({ ...p, display_name: p.full_name || '' }));
+
+      // Avatar fallback: if profiles.avatar_url is null, look up resource_inventory.avatar_url
+      const needsFallback = rows.filter(r => !r.avatar_url).map(r => r.id);
+      if (needsFallback.length > 0) {
+        const { data: resources } = await (supabase as any)
+          .from('resource_inventory')
+          .select('profile_id, avatar_url')
+          .in('profile_id', needsFallback)
+          .not('avatar_url', 'is', null);
+        const fallbackMap = new Map<string, string>(
+          (resources ?? []).map((r: { profile_id: string; avatar_url: string }) => [r.profile_id, r.avatar_url]),
+        );
+        rows.forEach(r => {
+          if (!r.avatar_url) {
+            const fb = fallbackMap.get(r.id);
+            if (fb) r.avatar_url = fb;
+          }
+        });
+      }
+
+      return rows;
+    },
+    staleTime: 60_000,
+  });
+}
 
 /**
  * Column shape mirrors Jira /jira/projects probe (Lane A) and AllProjectsTable:
@@ -98,6 +191,213 @@ function saveFavorites(favs: Set<string>): void {
   } catch {
     /* localStorage may be blocked — degrade silently */
   }
+}
+
+// Lead owner picker popover — single-select to assign a product owner
+function LeadOwnerPopover({ product }: { product: Product }) {
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const [updating, setUpdating] = useState(false);
+  const { data: profiles = [] } = useAllProfiles();
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(open, [triggerRef, popupRef], () => { setOpen(false); setSearch(''); });
+  const popupPos = useFixedPopupPosition(open, triggerRef, 300);
+
+  const handleSearchChange = useCallback((val: string) => {
+    setSearch(val);
+    clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => setDebouncedSearch(val), 150);
+  }, []);
+
+  // Filter profiles by search, exclude current owner from the list of alternatives
+  const filtered = useMemo(() => {
+    const q = debouncedSearch.toLowerCase();
+    return profiles
+      .filter(p => !q || p.display_name?.toLowerCase().includes(q))
+      .sort((a, b) => (a.display_name || '').localeCompare(b.display_name || ''));
+  }, [profiles, debouncedSearch]);
+
+  const currentOwner = useMemo(
+    () => profiles.find(p => p.id === product.owner_id),
+    [profiles, product.owner_id],
+  );
+
+  const handleSelectOwner = useCallback(async (userId: string) => {
+    setUpdating(true);
+    try {
+      const { error } = await supabase
+        .from('products')
+        .update({ owner_id: userId })
+        .eq('id', product.id);
+      if (error) throw error;
+
+      const newOwner = profiles.find(p => p.id === userId);
+      toast.success(`Lead changed to ${newOwner?.display_name || 'Unknown'}`);
+      setOpen(false);
+      setSearch('');
+      await queryClient.invalidateQueries({ queryKey: ['product-hub', 'products'] });
+    } catch (e) {
+      toast.error('Failed to update lead');
+    } finally {
+      setUpdating(false);
+    }
+  }, [product.id, profiles, queryClient]);
+
+  const handleClearOwner = useCallback(async () => {
+    if (!product.owner_id) return;
+    setUpdating(true);
+    try {
+      const { error } = await supabase
+        .from('products')
+        .update({ owner_id: null })
+        .eq('id', product.id);
+      if (error) throw error;
+
+      toast.success('Lead cleared');
+      setOpen(false);
+      setSearch('');
+      await queryClient.invalidateQueries({ queryKey: ['product-hub', 'products'] });
+    } catch (e) {
+      toast.error('Failed to clear lead');
+    } finally {
+      setUpdating(false);
+    }
+  }, [product.id, queryClient]);
+
+  const popupContent = () => (
+    <div
+      ref={popupRef}
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        width: 300,
+        background: token('elevation.surface.overlay'),
+        border: `1px solid ${token('color.border')}`,
+        borderRadius: 4,
+        boxShadow: token('elevation.shadow.overlay'),
+        overflow: 'hidden',
+        position: 'fixed',
+        ...(popupPos ? { top: popupPos.top, left: popupPos.left } : {}),
+        zIndex: 1000,
+      }}
+    >
+      <div style={{ padding: '10px 12px 6px' }}>
+        <Textfield
+          value={search}
+          onChange={(e) => handleSearchChange((e.target as HTMLInputElement).value)}
+          placeholder="Search people..."
+          autoFocus
+          elemBeforeInput={
+            <span style={{ paddingLeft: 8, display: 'inline-flex', alignItems: 'center', color: token('color.text.subtlest') }}>
+              <Search size={12} />
+            </span>
+          }
+        />
+      </div>
+      <div style={{ maxHeight: 280, overflowY: 'auto', paddingBottom: 6 }}>
+        {currentOwner && (
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => handleClearOwner()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClearOwner(); }
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '8px 12px',
+              cursor: 'pointer',
+              color: token('color.text'),
+              outline: 'none',
+              opacity: updating ? 0.6 : 1,
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+            aria-label={`Remove ${currentOwner.display_name} as lead`}
+          >
+            <Avatar src={currentOwner.avatar_url || undefined} name={currentOwner.display_name || '?'} size="small" />
+            <span style={{ fontSize: 13, flex: 1, fontFamily: 'var(--cp-font-body)' }}>
+              {currentOwner.display_name}
+            </span>
+            <Lozenge appearance="success" isBold={false}>Current</Lozenge>
+          </div>
+        )}
+        {filtered.filter(p => p.id !== product.owner_id).map((p) => (
+          <div
+            key={p.id}
+            role="button"
+            tabIndex={0}
+            onClick={() => handleSelectOwner(p.id)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSelectOwner(p.id); }
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '8px 12px',
+              cursor: 'pointer',
+              color: token('color.text'),
+              outline: 'none',
+              opacity: updating ? 0.6 : 1,
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+            aria-label={`Set ${p.display_name} as lead`}
+          >
+            <Avatar src={p.avatar_url || undefined} name={p.display_name || '?'} size="small" />
+            <span style={{ fontSize: 13, flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'var(--cp-font-body)' }}>
+              {p.display_name}
+            </span>
+          </div>
+        ))}
+        {filtered.filter(p => p.id !== product.owner_id).length === 0 && !currentOwner && (
+          <div style={{ fontSize: 12, color: token('color.text.subtlest'), textAlign: 'center', padding: '12px 0' }}>
+            No results
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      <div
+        ref={triggerRef}
+        role="button"
+        tabIndex={0}
+        onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setOpen(o => !o); } }}
+        aria-label={currentOwner ? `Lead: ${currentOwner.display_name}. Click to change.` : 'No lead assigned. Click to assign.'}
+        aria-expanded={open}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          cursor: 'pointer',
+          outline: 'none',
+        }}
+      >
+        <Avatar src={currentOwner?.avatar_url || undefined} name={currentOwner?.display_name || '?'} size="small" />
+        {currentOwner ? (
+          <span style={{ fontSize: 13, color: token('color.text'), fontFamily: 'var(--cp-font-body)' }}>
+            {currentOwner.display_name}
+          </span>
+        ) : (
+          <span style={{ fontSize: 13, color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-body)' }}>
+            Assign lead
+          </span>
+        )}
+      </div>
+      {open && popupContent()}
+    </>
+  );
 }
 
 export default function AllProductsPage() {
@@ -215,8 +515,9 @@ export default function AllProductsPage() {
               <span
                 aria-hidden="true"
                 style={{
-                  width: 24,
+                  minWidth: 24,
                   height: 24,
+                  padding: '0 4px',
                   borderRadius: 3,
                   background: p.color || token('color.background.brand.bold'),
                   color: token('color.text.inverse'),
@@ -229,7 +530,7 @@ export default function AllProductsPage() {
                   flexShrink: 0,
                 }}
               >
-                {p.code.slice(0, 2)}
+                {p.code}
               </span>
               <RouterLink
                 to={`/product-hub/${p.code}/backlog`}
@@ -284,14 +585,7 @@ export default function AllProductsPage() {
       case 'lead':
         return (
           <td key={colKey}>
-            {p.owner_id ? (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <Avatar size="small" />
-                <span style={{ fontSize: 13, color: token('color.text') }}>Owner</span>
-              </span>
-            ) : (
-              <span style={{ fontSize: 13, color: token('color.text.subtlest') }}>—</span>
-            )}
+            <LeadOwnerPopover product={p} />
           </td>
         );
 
@@ -593,6 +887,7 @@ export default function AllProductsPage() {
                       onDragEnd={onDragEnd}
                       sortDirection={null}
                       onSort={undefined}
+                      hideDragHandle
                     />
                   ))}
                 </tr>

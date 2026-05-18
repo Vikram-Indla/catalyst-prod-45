@@ -45,6 +45,7 @@ import { getAllConsumersByName } from '@/registry/usage-map.generated';
 interface HistoryRow {
   id: string;
   component_id: string;
+  route: string;
   version: string;
   feature_flags: Record<string, unknown>;
   action: 'publish' | 'update' | 'rollback' | 'reset' | 'delete';
@@ -130,19 +131,28 @@ export default function HistoryTab() {
     if (!rollbackTarget) return;
     setSubmitting(true);
     try {
+      // v3: rollback restores into the historical row's OWN route scope.
+      // Rolling back a `/backlog` history row writes back the `/backlog` row,
+      // not the global row.
+      const targetRoute = rollbackTarget.route ?? '';
       const { error } = await (supabase as any)
         .from('component_config')
-        .upsert({
-          component_id: rollbackTarget.component_id,
-          active_version: rollbackTarget.version,
-          feature_flags: rollbackTarget.feature_flags,
-          applied_at: new Date().toISOString(),
-          notes: `Rolled back to history ${rollbackTarget.id} (was applied ${new Date(rollbackTarget.applied_at).toLocaleString()})`,
-        });
+        .upsert(
+          {
+            component_id: rollbackTarget.component_id,
+            route: targetRoute,
+            active_version: rollbackTarget.version,
+            feature_flags: rollbackTarget.feature_flags,
+            applied_at: new Date().toISOString(),
+            notes: `Rolled back to history ${rollbackTarget.id} (was applied ${new Date(rollbackTarget.applied_at).toLocaleString()})`,
+          },
+          { onConflict: 'component_id,route' },
+        );
       if (error) throw error;
       await queryClient.invalidateQueries({ queryKey: COMPONENT_CONFIG_QUERY_KEY });
       await queryClient.invalidateQueries({ queryKey: HISTORY_QUERY_KEY });
-      toast.success(`Rolled back ${rollbackTarget.component_id} to v${rollbackTarget.version}`);
+      const scope = targetRoute === '' ? 'global' : targetRoute;
+      toast.success(`Rolled back ${rollbackTarget.component_id} (${scope}) to v${rollbackTarget.version}`);
       setRollbackTarget(null);
     } catch (e: unknown) {
       toast.error(`Rollback failed: ${(e as Error).message ?? 'unknown error'}`);
@@ -152,10 +162,15 @@ export default function HistoryTab() {
   }
 
   const rollbackEntry = rollbackTarget ? getComponentById(rollbackTarget.component_id) : undefined;
-  const rollbackCurrent = rollbackTarget ? configs?.[rollbackTarget.component_id] : undefined;
+  // v3: drill into the per-route map by the history row's own `route`, so the
+  // dry-run diff compares apples to apples (the same scope being rolled back).
+  const rollbackCurrent = rollbackTarget
+    ? configs?.[rollbackTarget.component_id]?.[rollbackTarget.route ?? '']
+    : undefined;
   const rollbackDiff = rollbackTarget ? diffFlags(rollbackCurrent?.feature_flags, rollbackTarget.feature_flags) : [];
   const rollbackChangedCount = rollbackDiff.filter(d => d.change !== 'unchanged').length;
   const rollbackConsumerCount = rollbackEntry ? getAllConsumersByName(rollbackEntry.name).length : 0;
+  const rollbackScopeLabel = (rollbackTarget?.route ?? '') === '' ? 'global' : (rollbackTarget?.route ?? '');
 
   return (
     <div
@@ -222,6 +237,7 @@ export default function HistoryTab() {
               <tr style={{ background: token('color.background.neutral.subtle', '#F7F8F9') }}>
                 <th style={{ padding: token('space.100', '8px'), textAlign: 'left' }}>When</th>
                 <th style={{ padding: token('space.100', '8px'), textAlign: 'left' }}>Component</th>
+                <th style={{ padding: token('space.100', '8px'), textAlign: 'left' }}>Route</th>
                 <th style={{ padding: token('space.100', '8px'), textAlign: 'left' }}>Action</th>
                 <th style={{ padding: token('space.100', '8px'), textAlign: 'left' }}>Version</th>
                 <th style={{ padding: token('space.100', '8px'), textAlign: 'left' }}>Notes</th>
@@ -236,6 +252,21 @@ export default function HistoryTab() {
                   </td>
                   <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace', fontSize: 12 }}>
                     {row.component_id}
+                  </td>
+                  <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top' }}>
+                    {(row.route ?? '') === '' ? (
+                      <Lozenge>global</Lozenge>
+                    ) : (
+                      <span
+                        style={{
+                          fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
+                          fontSize: 12,
+                          color: token('color.text', '#172B4D'),
+                        }}
+                      >
+                        {row.route}
+                      </span>
+                    )}
                   </td>
                   <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top' }}>
                     <ActionChip action={row.action} />
@@ -267,13 +298,14 @@ export default function HistoryTab() {
           <Modal onClose={() => setRollbackTarget(null)}>
             <ModalHeader>
               <ModalTitle>
-                Dry-run: rollback {rollbackTarget.component_id} to v{rollbackTarget.version}
+                Dry-run: rollback {rollbackTarget.component_id} ({rollbackScopeLabel}) to v{rollbackTarget.version}
               </ModalTitle>
             </ModalHeader>
             <ModalBody>
               <div style={{ fontSize: 13, color: token('color.text', '#172B4D'), marginBottom: token('space.200', '16px') }}>
                 This will affect <strong>{rollbackConsumerCount} consumer files</strong> that import{' '}
-                <code>{rollbackEntry?.name ?? rollbackTarget.component_id}</code>. {rollbackChangedCount}{' '}
+                <code>{rollbackEntry?.name ?? rollbackTarget.component_id}</code>{' '}
+                at the <strong>{rollbackScopeLabel}</strong> scope. {rollbackChangedCount}{' '}
                 {rollbackChangedCount === 1 ? 'flag' : 'flags'} will change.
               </div>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>

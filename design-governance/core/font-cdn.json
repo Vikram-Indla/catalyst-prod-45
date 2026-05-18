@@ -1,0 +1,27 @@
+{
+  "provider": "Atlassian Fonts",
+  "family": "Atlassian Sans v4",
+  "variants": ["400", "500", "600", "700"],
+  "subsets": ["latin", "latin-ext"],
+  "cdn": {
+    "preconnect": "https://fonts.atlassian.com",
+    "stylesheet": "https://fonts.atlassian.com/fonts/atlassian-sans/v4/atlassian-sans.css"
+  },
+  "cssVariable": "font-family: 'Atlassian Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;",
+  "fallbacks": [
+    "-apple-system",
+    "BlinkMacSystemFont",
+    "Segoe UI",
+    "sans-serif"
+  ],
+  "lineHeights": {
+    "tight": "1.2",
+    "normal": "1.5",
+    "relaxed": "1.75"
+  },
+  "integration": {
+    "htmlLocation": "index.html <head>",
+    "priority": "CRITICAL",
+    "loadingStrategy": "preload"
+  }
+}

@@ -6,7 +6,7 @@
  * AssigneePopover so click-to-reassign still works.
  */
 import React from 'react';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { AssigneePopover } from '../popovers/AssigneePopover';
 
@@ -45,10 +45,10 @@ export const AssigneeCell = React.memo(function AssigneeCell({
       disabled={readOnly}
     >
       {displayName ? (
-        <Avatar
+        <CatalystAvatar
           size="small"
           name={displayName}
-          src={resolveAvatarUrl(displayName) ?? avatarUrl ?? undefined}
+          src={resolveAvatarUrl(displayName) ?? avatarUrl}
           borderColor="transparent"
         />
       ) : (

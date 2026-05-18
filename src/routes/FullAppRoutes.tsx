@@ -16,6 +16,7 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 import { RouteRoleGuard } from "../components/RouteRoleGuard";
 
 const FeatureFlagsPage = lazy(() => import("../pages/admin/FeatureFlagsPage"));
+const GovernanceSettings = lazy(() => import("../pages/admin/GovernanceSettings"));
 const AdminIconsPage = lazy(() => import("../pages/admin/icons/AdminIconsPage"));
 const AdminAvatarsPage = lazy(() => import("../pages/admin/avatars/AdminAvatarsPage"));
 const ComponentsAdminPage = lazy(() => import("../pages/admin/components/ComponentsAdminPage"));
@@ -878,6 +879,7 @@ export default function FullAppRoutes() {
           <Route path="notification-triggers" element={<S><NotificationTriggers /></S>} />
           <Route path="settings/notifications" element={<S><UserNotificationSettingsPage /></S>} />
           <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
+          <Route path="governance" element={<S><GovernanceSettings /></S>} />
           {/* Design system pocket — preflight 2026-05-17 consolidation. */}
           <Route path="components" element={<S><ComponentsAdminPage /></S>} />
           {/* RESET ICONS — runtime asset override management. Admin-only. */}

@@ -20,6 +20,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { supabase } from '@/integrations/supabase/client';
 import { getComponentById } from './components.registry';
+import { pickRuntimeForPathname } from './pickRuntimeForPathname';
 import {
   resolveComponentConfig,
   type ResolvedComponentConfig,
@@ -28,14 +29,22 @@ import {
 
 const COMPONENT_CONFIG_QUERY_KEY = ['component_config'] as const;
 
+/**
+ * v3 shape — per-component map of `route → RuntimeComponentConfig`. Multiple
+ * rows may exist for one component (one per route scope). The hook then picks
+ * the most specific match for the current pathname via
+ * `pickRuntimeForPathname`. Empty-string route is the global fallback.
+ */
+export type ComponentConfigsByRoute = Record<string, Record<string, RuntimeComponentConfig>>;
+
 /** Bulk fetcher — one query for every row, cached globally. */
-async function fetchAllComponentConfigs(): Promise<Record<string, RuntimeComponentConfig>> {
+async function fetchAllComponentConfigs(): Promise<ComponentConfigsByRoute> {
   // The component_config table may not exist yet in test/preview environments
   // (PR-1 migration not applied). Swallow that case and return empty so the
   // resolver falls back to registry defaults cleanly.
   const { data, error } = await (supabase as any)
     .from('component_config')
-    .select('component_id, active_version, feature_flags, applied_at, applied_by, notes');
+    .select('component_id, route, active_version, feature_flags, applied_at, applied_by, notes');
   if (error) {
     if (import.meta.env.DEV) {
       // eslint-disable-next-line no-console
@@ -43,15 +52,19 @@ async function fetchAllComponentConfigs(): Promise<Record<string, RuntimeCompone
     }
     return {};
   }
-  const out: Record<string, RuntimeComponentConfig> = {};
-  for (const row of (data ?? []) as Array<RuntimeComponentConfig & { component_id: string }>) {
-    out[row.component_id] = {
+  const out: ComponentConfigsByRoute = {};
+  for (const row of (data ?? []) as Array<
+    RuntimeComponentConfig & { component_id: string; route?: string | null }
+  >) {
+    const route = row.route ?? '';
+    const cfg: RuntimeComponentConfig = {
       active_version: row.active_version,
       feature_flags: row.feature_flags ?? {},
       applied_at: row.applied_at,
       applied_by: row.applied_by,
       notes: row.notes,
     };
+    (out[row.component_id] ??= {})[route] = cfg;
   }
   return out;
 }
@@ -70,10 +83,17 @@ export function useAllComponentConfigs() {
  * Single-component hook for canonical components to resolve their config.
  * Returns the resolved config (already merged with props + registry default).
  * If the component_id isn't in the registry, returns registry-default-empty.
+ *
+ * v3: route scoping. The hook reads `window.location.pathname` and passes
+ * the per-component (route → config) map through `pickRuntimeForPathname`,
+ * which picks the longest-matching substring route. An explicit
+ * `opts.pathname` override is accepted so callers (and tests) can pin a
+ * specific URL without depending on the browser global.
  */
 export function useComponentConfig(
   componentId: string,
   props: Record<string, unknown> = {},
+  opts?: { pathname?: string },
 ): ResolvedComponentConfig {
   const { data } = useAllComponentConfigs();
   const entry = getComponentById(componentId);
@@ -86,7 +106,11 @@ export function useComponentConfig(
     return { activeVersion: '0.0.0', flags: {}, sources: {} };
   }
 
-  const runtime = data?.[componentId];
+  const pathname =
+    opts?.pathname ??
+    (typeof window !== 'undefined' && window.location ? window.location.pathname : '');
+  const routesForComponent = data?.[componentId] ?? {};
+  const runtime = pickRuntimeForPathname(routesForComponent, pathname);
   const resolved = resolveComponentConfig(entry, runtime, props);
 
   if (import.meta.env.DEV) {

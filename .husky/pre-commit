@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Pre-commit hook: Design System Audit
+# Runs before every commit to validate design system compliance
+
+echo "🔍 Running Design System Audit..."
+
+node design-governance/rules/audit.js src 2>&1 | grep -E "^(✅|⚠️|❌)" || true
+
+# Note: This hook is informational - it does not block commits
+# See GOVERNANCE_POLICY.md for enforcement mechanisms
+
+exit 0

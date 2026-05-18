@@ -1,6 +1,5 @@
 import { cn } from '@/lib/utils';
 import type { ProductSettingsTab } from '@/pages/admin/ProductSettings';
-import { useAdminSidebar } from '@/contexts/AdminSidebarContext';
 import BoardsIcon from '@atlaskit/icon/core/boards';
 import DatabaseIcon from '@atlaskit/icon/core/database';
 import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
@@ -23,13 +22,6 @@ const navItems: Array<{ id: ProductSettingsTab; label: string; icon: React.Eleme
 ];
 
 export function ProductSettingsNav({ activeTab, onTabChange }: ProductSettingsNavProps) {
-  const { collapse } = useAdminSidebar();
-
-  const handleTabChange = (tab: ProductSettingsTab) => {
-    collapse();
-    onTabChange(tab);
-  };
-
   return (
     <nav className="w-56 flex-shrink-0">
       <div className="bg-card border rounded-lg p-2 sticky top-0">
@@ -41,7 +33,7 @@ export function ProductSettingsNav({ activeTab, onTabChange }: ProductSettingsNa
             return (
               <li key={item.id}>
                 <button
-                  onClick={() => handleTabChange(item.id)}
+                  onClick={() => onTabChange(item.id)}
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors",
                     isActive 

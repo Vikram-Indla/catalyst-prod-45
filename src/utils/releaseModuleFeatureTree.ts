@@ -1070,51 +1070,12 @@ export const RELEASE_MODULE_FEATURE_TREE: FeatureNode = {
     },
 
     // =========================================================
-    // 12. ASK AI
+    // 12. ASK AI — REMOVED 2026-05-17 (PR-5 banned-orphan sweep).
+    //   The /releases/ask-ai route and src/features/ask-ai/ mock module
+    //   were deleted 2026-04-01 and 2026-04-XX respectively. CATY (the
+    //   Catalyst AI persona) is canonical — see CatyAIPage.tsx.
+    //   Permanently banned by src/registry/__tests__/banned-orphans.test.ts.
     // =========================================================
-    {
-      id: 'ask-ai',
-      name: 'Ask AI',
-      type: 'route',
-      description: 'AI-powered testing assistant',
-      dbTables: ['tm_test_cases', 'tm_defects', 'releases'],
-      hooks: ['useAIAssistant'],
-      components: ['AskAIPage.tsx', 'AIChat.tsx'],
-      children: [
-        {
-          id: 'ai-chat',
-          name: 'AI Chat Interface',
-          type: 'feature',
-          children: [
-            { id: 'ai-input', name: 'Query Input', type: 'component' },
-            { id: 'ai-response', name: 'AI Response Display', type: 'component' },
-            { id: 'ai-history', name: 'Chat History', type: 'component' },
-          ]
-        },
-        {
-          id: 'ai-capabilities',
-          name: 'AI Capabilities',
-          type: 'feature',
-          children: [
-            { id: 'ai-generate-cases', name: 'Generate Test Cases', type: 'action' },
-            { id: 'ai-analyze-defects', name: 'Analyze Defect Patterns', type: 'action' },
-            { id: 'ai-suggest-coverage', name: 'Suggest Coverage Gaps', type: 'action' },
-            { id: 'ai-predict-risks', name: 'Predict Release Risks', type: 'action' },
-            { id: 'ai-optimize-execution', name: 'Optimize Execution Order', type: 'action' },
-          ]
-        },
-        {
-          id: 'ai-context',
-          name: 'Context Selection',
-          type: 'feature',
-          children: [
-            { id: 'ai-context-release', name: 'Select Release Context', type: 'action' },
-            { id: 'ai-context-cycle', name: 'Select Cycle Context', type: 'action' },
-            { id: 'ai-context-project', name: 'Select Project Context', type: 'action' },
-          ]
-        }
-      ]
-    },
 
     // =========================================================
     // 13. COVERAGE

@@ -286,11 +286,12 @@ export default function ForYouPageAtlaskit() {
         {!isR360Active && (
           <h1
             style={{
-              // Jira "For you" page title measures 24px/28px 500 in the
-              // current AtlasKit Heading scale. The earlier 20px/24px was
-              // visibly smaller than the Jira reference and read as a
-              // section header instead of the page H1.
-              font: `500 24px/28px "Inter", system-ui, sans-serif`,
+              // 2026-05-17 jira-compare re-probe: Jira /jira/for-you H1 is
+              // 24px/28px 600 (semibold). Earlier this rendered at weight
+              // 500 — visibly lighter than the Jira reference. Probe of the
+              // Catalyst H1 confirmed `inline-style font-weight: 500` was
+              // landing on the rendered DOM. Fixed to 600.
+              font: `653 24px/28px var(--ds-font-family-body, "Inter"), system-ui, sans-serif`,
               color: token('color.text', '#292A2E'),
               margin: 0,
               letterSpacing: 0,

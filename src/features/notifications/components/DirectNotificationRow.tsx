@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import type React from 'react';
-import Avatar from '@atlaskit/avatar';
+import CatalystAvatar from '@/components/shared/CatalystAvatar';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
@@ -98,13 +98,15 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
       onFocus={() => setHovered(true)}
       onBlur={() => setHovered(false)}
     >
-      {/* Avatar — with real face photo when available */}
+      {/* Avatar — face photo when available, deterministic initials otherwise.
+          CatalystAvatar wraps Atlaskit Avatar so the row never shows the
+          faceless silhouette when we have a name. */}
       <div style={{ flexShrink: 0, marginTop: 2 }}>
-        <Avatar
-          name={actorName ?? 'System'}
+        <CatalystAvatar
+          name={actorName}
+          src={avatarSrc}
           size="large"
           appearance="circle"
-          src={avatarSrc}
         />
       </div>
 
@@ -399,7 +401,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
         {/* Aggregation row (multiple updates from same person) */}
         {aggregation && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6 }}>
-            <Avatar name={aggregation.actor.displayName} size="xsmall" appearance="circle" src={resolveAvatarUrl(aggregation.actor.displayName) ?? aggregation.actor.avatarUrl ?? undefined} />
+            <CatalystAvatar name={aggregation.actor.displayName} size="xsmall" appearance="circle" src={resolveAvatarUrl(aggregation.actor.displayName) ?? aggregation.actor.avatarUrl} />
             <span
               style={{
                 fontFamily: 'var(--cp-font-body)',
