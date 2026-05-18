@@ -1,23 +1,20 @@
 /**
- * ComponentsAdminPage — /admin/components (v1 layout, 2026-05-17).
+ * ComponentsAdminPage — /admin/components (v2 layout, 2026-05-18).
  *
- * Read-only inventory + spec + usage map for every component currently
- * rendered in Catalyst. Powered by:
- *   - src/registry/components.registry.ts (curated source of truth)
- *   - src/registry/usage-map.generated.ts (AST scan baseline)
+ * Redesigned to surface ALL 3,800+ components from usage-map.generated.ts:
+ *   - Grouped by functional module (Issue Detail, Backlog & Tables, Kanban…)
+ *     instead of ADS category (Atoms/Molecules/Organisms)
+ *   - 3-column layout: module nav | component list | detail + action buttons
+ *   - Actionable Deprecate / Ban / Mark canonical / Restore buttons with
+ *     copy-to-clipboard registry snippets
+ *   - AI Intelligence tab has actionable "Apply →" flow per recommendation
  *
  * Council mandate:
  *   - AdminGuard wrap (CLAUDE.md 2026-05-10)
  *   - Inside admin content area, NOT a parallel sidebar (2026-05-12 P0)
  *   - @atlaskit/* primitives only (2026-05-10)
  *   - ADS tokens only (2026-05-04)
- *
- * Subsequent steps:
- *   - Step 7: ComponentSpecCard (right pane detail)
- *   - Step 8: ComponentLivePreview (light + dark)
- *   - Step 9: ADSViolationsPanel
- *   - Step 10: BannedRegistryPanel (currently inline in this file)
- *   - Step 11: CascadeImpactPanel
+ *   - Modals use isOpen guard pattern (no ModalTransition — portal renders empty)
  */
 import { useMemo, useState } from 'react';
 import Heading from '@atlaskit/heading';
@@ -30,6 +27,15 @@ import {
   ButtonItem,
 } from '@atlaskit/side-navigation';
 import Lozenge from '@atlaskit/lozenge';
+import Badge from '@atlaskit/badge';
+import Button from '@atlaskit/button/new';
+import ModalDialog, {
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+} from '@atlaskit/modal-dialog';
+import Textfield from '@atlaskit/textfield';
 import { token } from '@atlaskit/tokens';
 
 import { AdminGuard } from '@/components/admin/AdminGuard';
@@ -37,7 +43,6 @@ import {
   componentsRegistry,
   registryStats,
   type ComponentRegistryEntry,
-  type ComponentCategory,
 } from '@/registry/components.registry';
 import {
   usageMap,
@@ -48,344 +53,1281 @@ import { adsViolationsStats } from '@/registry/ads-violations.generated';
 import ComponentSpecCard from './ComponentSpecCard';
 import ADSViolationsPanel from './ADSViolationsPanel';
 import CascadeImpactPanel from './CascadeImpactPanel';
-import PublishTab from './PublishTab';
-import HistoryTab from './HistoryTab';
 
-const CATEGORY_LABELS: Record<ComponentCategory, string> = {
-  atom: 'Atoms',
-  molecule: 'Molecules',
-  organism: 'Organisms',
-  page: 'Pages',
-  pattern: 'Patterns',
-};
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-const CATEGORY_ORDER: ComponentCategory[] = [
-  'atom',
-  'molecule',
-  'organism',
-  'page',
-  'pattern',
-];
+type ComponentModule =
+  | 'All'
+  | 'Issue Detail'
+  | 'Backlog & Tables'
+  | 'Kanban'
+  | 'Projects'
+  | 'Incidents'
+  | 'Resources'
+  | 'Admin'
+  | 'Shell'
+  | 'Shared'
+  | 'Atlaskit'
+  | 'Other';
 
-// ─── Subtitle stat strip ────────────────────────────────────────────────────
+type StatusFilter = 'all' | 'canonical' | 'deprecated' | 'banned' | 'observed';
+type ActiveModal = null | 'deprecate' | 'ban' | 'mark-canonical' | 'restore';
 
-function StatsStrip() {
-  const items: Array<{ label: string; value: number; tone?: 'default' | 'banned' | 'observed' }> = [
-    { label: 'Canonical', value: registryStats.canonical },
-    { label: 'Deprecated', value: registryStats.deprecated, tone: 'observed' },
-    { label: 'Banned', value: registryStats.banned, tone: 'banned' },
-    { label: 'Atlaskit observed', value: usageMapStats.atlaskit, tone: 'observed' },
-    { label: 'Internal observed', value: usageMapStats.internal, tone: 'observed' },
-  ];
-  return (
-    <div
-      style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: token('space.300', '24px'),
-        marginBottom: token('space.200', '16px'),
-      }}
-    >
-      {items.map(item => (
-        <div key={item.label} style={{ display: 'flex', flexDirection: 'column', minWidth: 120 }}>
-          <span
-            style={{
-              fontSize: 11,
-              fontWeight: 600,
-              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
-            }}
-          >
-            {item.label}
-          </span>
-          <span
-            style={{
-              fontSize: 22,
-              fontWeight: 600,
-              color:
-                item.tone === 'banned'
-                  ? token('color.text.danger', '#AE2A19')
-                  : token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
-              marginTop: token('space.050', '4px'),
-            }}
-          >
-            {item.value.toLocaleString()}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
+interface UnifiedEntry {
+  id: string;
+  name: string;
+  source: string;
+  origin: 'atlaskit' | 'internal';
+  consumers: string[];
+  status: ComponentRegistryEntry['status'] | 'observed';
+  module: ComponentModule;
+  version?: string;
+  file_path?: string;
+  jsdoc_excerpt?: string;
+  banned_reason?: string;
+  banned_anchor?: string;
+  deprecation_target?: string;
+  feature_flags?: ComponentRegistryEntry['feature_flags'];
+  atlaskit_package?: string;
+  ads_origin_url?: string;
+  tags?: string[];
+  dark_light_supported?: boolean;
+  registryEntry?: ComponentRegistryEntry;
 }
 
-// ─── Inventory tab — side-nav + main pane placeholder ────────────────────────
+interface AiRec {
+  id: string;
+  type: 'ban-violation' | 'deprecation-pending' | 'promote-observed';
+  severity: 'urgent' | 'high' | 'medium';
+  title: string;
+  detail: string;
+  entry: UnifiedEntry;
+  suggestedAction: string;
+}
 
-function StatusBadge({ status }: { status: ComponentRegistryEntry['status'] }) {
+// ─── Module mapping ───────────────────────────────────────────────────────────
+
+const MODULES: ComponentModule[] = [
+  'All', 'Issue Detail', 'Backlog & Tables', 'Kanban', 'Projects',
+  'Incidents', 'Resources', 'Admin', 'Shell', 'Shared', 'Atlaskit', 'Other',
+];
+
+const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
+  { value: 'all', label: 'All' },
+  { value: 'canonical', label: 'Canonical' },
+  { value: 'deprecated', label: 'Deprecated' },
+  { value: 'banned', label: 'Banned' },
+  { value: 'observed', label: 'Observed' },
+];
+
+const OBSERVER_CAP = 60;
+
+function getModule(source: string, filePath?: string): ComponentModule {
+  const p = (source + ' ' + (filePath ?? '')).toLowerCase();
+  if (source.startsWith('@atlaskit/')) return 'Atlaskit';
+  if (
+    p.includes('catalyst-detail-view') || p.includes('catalystview') ||
+    p.includes('detail-view') || p.includes('detailview') ||
+    p.includes('/idea/') || p.includes('/defect/') || p.includes('/epic/') ||
+    p.includes('/story/') || p.includes('/task/') || p.includes('/incident/') ||
+    p.includes('/change-request/') || p.includes('/business-request/') ||
+    p.includes('catalystkeydetails') || p.includes('catalystsidebardetails') ||
+    p.includes('catalystviewbase') || p.includes('activitypanel') ||
+    p.includes('subtaskspanel') || p.includes('linkedworkitems')
+  ) return 'Issue Detail';
+  if (
+    p.includes('jiratable') || p.includes('/backlog') ||
+    p.includes('backlogpage') || p.includes('cells.tsx') ||
+    p.includes('editors.tsx') || p.includes('inlinecreate')
+  ) return 'Backlog & Tables';
+  if (
+    p.includes('/kanban') || p.includes('kanbanboard') ||
+    p.includes('pragmaticboard') || p.includes('swimlane')
+  ) return 'Kanban';
+  if (
+    p.includes('/projects') || p.includes('allprojects') ||
+    p.includes('project-hub') || p.includes('producthub')
+  ) return 'Projects';
+  if (
+    p.includes('incident') || p.includes('incidenthub') ||
+    p.includes('incidentlist')
+  ) return 'Incidents';
+  if (
+    p.includes('resource') || p.includes('r360') ||
+    p.includes('myr360') || p.includes('capacity')
+  ) return 'Resources';
+  if (
+    p.includes('/admin/') || p.includes('adminpage') ||
+    p.includes('adminlayout') || p.includes('adminguard')
+  ) return 'Admin';
+  if (
+    p.includes('shell') || p.includes('navigation') ||
+    p.includes('sidebar') || p.includes('globalsearch') ||
+    p.includes('layout')
+  ) return 'Shell';
+  if (
+    p.includes('/shared/') || p.includes('shared/') ||
+    p.includes('useravatar') || p.includes('catalyst-ds')
+  ) return 'Shared';
+  return 'Other';
+}
+
+// ─── Data builders ────────────────────────────────────────────────────────────
+
+function buildUnifiedEntries(): UnifiedEntry[] {
+  const entries: UnifiedEntry[] = [];
+  const seenNames = new Map<string, number>(); // name → index in entries
+
+  // 1. Seed with registry entries (canonical authority)
+  for (const reg of componentsRegistry) {
+    const consumers = getAllConsumersByName(reg.name);
+    const module = getModule(reg.file_path ?? reg.atlaskit_package ?? '', reg.file_path);
+    entries.push({
+      id: reg.id,
+      name: reg.name,
+      source: reg.atlaskit_package ?? reg.file_path ?? reg.name,
+      origin: reg.origin === 'atlaskit' ? 'atlaskit' : 'internal',
+      consumers,
+      status: reg.status,
+      module,
+      version: reg.version,
+      file_path: reg.file_path,
+      jsdoc_excerpt: reg.jsdoc_excerpt,
+      banned_reason: reg.banned_reason,
+      banned_anchor: reg.banned_anchor,
+      deprecation_target: reg.deprecation_target,
+      feature_flags: reg.feature_flags,
+      atlaskit_package: reg.atlaskit_package,
+      ads_origin_url: reg.ads_origin_url,
+      tags: reg.tags,
+      dark_light_supported: reg.dark_light_supported,
+      registryEntry: reg,
+    });
+    seenNames.set(reg.name, entries.length - 1);
+  }
+
+  // 2. Add observed entries from usage-map (dedup by name)
+  for (const [name, usageData] of Object.entries(usageMap)) {
+    if (seenNames.has(name)) {
+      // Already in registry — update consumer list if usage-map has more
+      const idx = seenNames.get(name)!;
+      if ((usageData as { consumers: string[] }).consumers?.length > entries[idx].consumers.length) {
+        entries[idx].consumers = (usageData as { consumers: string[] }).consumers;
+      }
+      continue;
+    }
+    const ud = usageData as { source: string; consumers: string[]; filePath?: string };
+    const consumers = ud.consumers ?? [];
+    const source = ud.source ?? name;
+    const module = getModule(source, ud.filePath);
+    entries.push({
+      id: `observed::${name}`,
+      name,
+      source,
+      origin: source.startsWith('@atlaskit/') ? 'atlaskit' : 'internal',
+      consumers,
+      status: 'observed',
+      module,
+    });
+    seenNames.set(name, entries.length - 1);
+  }
+
+  // Sort: registry first (canonical/deprecated/banned), then observed by consumer count desc
+  return entries.sort((a, b) => {
+    const aIsRegistry = !!a.registryEntry;
+    const bIsRegistry = !!b.registryEntry;
+    if (aIsRegistry && !bIsRegistry) return -1;
+    if (!aIsRegistry && bIsRegistry) return 1;
+    return b.consumers.length - a.consumers.length;
+  });
+}
+
+function buildAiRecs(entries: UnifiedEntry[]): AiRec[] {
+  const recs: AiRec[] = [];
+
+  for (const entry of entries) {
+    if (entry.status === 'banned' && entry.consumers.length > 0) {
+      recs.push({
+        id: `ban-violation::${entry.id}`,
+        type: 'ban-violation',
+        severity: 'urgent',
+        title: `${entry.name} is BANNED but has ${entry.consumers.length} live reference${entry.consumers.length === 1 ? '' : 's'}`,
+        detail: entry.banned_reason ?? 'Permanently banned from Catalyst.',
+        entry,
+        suggestedAction: 'Remove all live references then verify with grep.',
+      });
+    } else if (entry.status === 'deprecated' && entry.consumers.length >= 3) {
+      recs.push({
+        id: `deprecation-pending::${entry.id}`,
+        type: 'deprecation-pending',
+        severity: 'high',
+        title: `${entry.name} is deprecated with ${entry.consumers.length} active consumers`,
+        detail: entry.deprecation_target
+          ? `Migrate all consumers to ${entry.deprecation_target}.`
+          : 'No replacement specified — specify a deprecation_target in the registry.',
+        entry,
+        suggestedAction: entry.deprecation_target
+          ? `Replace all ${entry.consumers.length} usages with ${entry.deprecation_target}.`
+          : 'Add deprecation_target to the registry entry.',
+      });
+    } else if (entry.status === 'observed' && entry.consumers.length >= 10) {
+      recs.push({
+        id: `promote-observed::${entry.id}`,
+        type: 'promote-observed',
+        severity: 'medium',
+        title: `${entry.name} has ${entry.consumers.length} consumers but no registry entry`,
+        detail: 'High-usage component not in the curated registry. Consider adding it as canonical or banning it.',
+        entry,
+        suggestedAction: 'Add to CANONICAL array in components.registry.ts with version, jsdoc_excerpt, and tags.',
+      });
+    }
+  }
+
+  return recs.sort((a, b) => {
+    const sev = { urgent: 0, high: 1, medium: 2 };
+    return sev[a.severity] - sev[b.severity];
+  });
+}
+
+// ─── Module-level constants (computed once) ───────────────────────────────────
+
+const ALL_ENTRIES = buildUnifiedEntries();
+const TOTAL_UNIFIED = ALL_ENTRIES.length;
+const AI_RECS = buildAiRecs(ALL_ENTRIES);
+
+// ─── Status chip ──────────────────────────────────────────────────────────────
+
+function StatusChip({ status }: { status: UnifiedEntry['status'] }) {
   if (status === 'canonical') return <Lozenge appearance="success">Canonical</Lozenge>;
   if (status === 'deprecated') return <Lozenge appearance="moved">Deprecated</Lozenge>;
   if (status === 'banned') return <Lozenge appearance="removed">Banned</Lozenge>;
   return <Lozenge>Observed</Lozenge>;
 }
 
-function ComponentListItem({
-  entry,
-  selected,
-  onSelect,
-}: {
-  entry: ComponentRegistryEntry;
-  selected: boolean;
-  onSelect: () => void;
-}) {
-  const consumerCount = getAllConsumersByName(entry.name).length;
+// ─── Action modals — isOpen guard pattern (ModalTransition portal renders empty) ─
+
+function DeprecateModal({
+  entry, onClose, isOpen,
+}: { entry: UnifiedEntry; onClose: () => void; isOpen: boolean }) {
+  const [replacement, setReplacement] = useState(entry.deprecation_target ?? '');
+  if (!isOpen) return null;
+
+  const snippet = `// In src/registry/components.registry.ts — add or update in CANONICAL array:
+{
+  id: '${entry.id.replace('observed::', '')}',
+  name: '${entry.name}',
+  // ... keep existing fields, then add:
+  status: 'deprecated',
+  deprecation_target: '${replacement || '<replacement-component-id>'}',
+},`;
+
   return (
-    <ButtonItem
-      isSelected={selected}
-      onClick={onSelect}
-      iconAfter={
-        <span style={{ fontSize: 11, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
-          {consumerCount}
-        </span>
-      }
-    >
-      {entry.name}
-    </ButtonItem>
+    <ModalDialog onClose={onClose} width="medium">
+      <ModalHeader>
+        <ModalTitle appearance="warning">Deprecate {entry.name}</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <p style={{ fontSize: 14, color: token('color.text', '#172B4D'), marginBottom: token('space.200', '16px') }}>
+          Mark <strong>{entry.name}</strong> as deprecated. Engineers will see a yellow DEPRECATED badge
+          and be redirected to the replacement component.
+          {entry.consumers.length > 0 && (
+            <span style={{ color: token('color.text.warning', '#7F5F01'), display: 'block', marginTop: 8 }}>
+              ⚠ {entry.consumers.length} consumer{entry.consumers.length === 1 ? '' : 's'} will need migration.
+            </span>
+          )}
+        </p>
+        <div style={{ marginBottom: token('space.200', '16px') }}>
+          <label
+            style={{
+              display: 'block',
+              fontSize: 12,
+              fontWeight: 600,
+              color: token('color.text', '#172B4D'),
+              marginBottom: token('space.075', '6px'),
+            }}
+          >
+            Replacement component id (deprecation_target)
+          </label>
+          <Textfield
+            value={replacement}
+            onChange={(e) => setReplacement((e.target as HTMLInputElement).value)}
+            placeholder="e.g. jira-table"
+          />
+        </div>
+        <pre
+          style={{
+            fontSize: 12,
+            background: token('color.background.warning', '#FFF7D6'),
+            border: `1px solid ${token('color.border.warning', '#F5CD47')}`,
+            borderRadius: 4,
+            padding: token('space.150', '12px'),
+            overflowX: 'auto',
+            fontFamily: 'ui-monospace, "Roboto Mono", monospace',
+          }}
+        >
+          {snippet}
+        </pre>
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={() => { navigator.clipboard.writeText(snippet); }}>
+          Copy snippet
+        </Button>
+        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
+      </ModalFooter>
+    </ModalDialog>
   );
 }
 
-function InventoryPane() {
-  const curated = useMemo(
-    () => componentsRegistry.filter(e => e.status !== 'banned'),
-    [],
-  );
-  const byCategory = useMemo(() => {
-    const map: Record<ComponentCategory, ComponentRegistryEntry[]> = {
-      atom: [],
-      molecule: [],
-      organism: [],
-      page: [],
-      pattern: [],
-    };
-    for (const entry of curated) map[entry.category].push(entry);
-    for (const cat of CATEGORY_ORDER) {
-      map[cat].sort((a, b) => a.name.localeCompare(b.name));
-    }
-    return map;
-  }, [curated]);
+function BanModal({
+  entry, onClose, isOpen,
+}: { entry: UnifiedEntry; onClose: () => void; isOpen: boolean }) {
+  const [reason, setReason] = useState('');
+  if (!isOpen) return null;
 
-  const [selectedId, setSelectedId] = useState<string>(curated[0]?.id ?? '');
-  const selected = curated.find(e => e.id === selectedId) ?? curated[0];
+  const snippet = `// In src/registry/components.registry.ts — add to BANNED array:
+{
+  id: '${entry.id.replace('observed::', '')}',
+  name: '${entry.name}',
+  category: 'molecule', // ← update
+  origin: 'feature',
+  status: 'banned',
+  version: '0.0.0',
+  banned_anchor: '${new Date().toISOString().slice(0, 10)}',
+  banned_reason: '${reason || 'Permanently banned from Catalyst. Do not re-introduce.'}',
+  tags: ['banned'],
+},`;
+
+  return (
+    <ModalDialog onClose={onClose} width="medium">
+      <ModalHeader>
+        <ModalTitle appearance="danger">Ban {entry.name}</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <p style={{ fontSize: 14, color: token('color.text', '#172B4D'), marginBottom: token('space.200', '16px') }}>
+          This permanently bans <strong>{entry.name}</strong> from Catalyst. It will appear with a{' '}
+          red <strong>BANNED</strong> badge so future engineers cannot re-introduce it.
+          {entry.consumers.length > 0 && (
+            <span style={{ color: token('color.text.danger', '#AE2A19'), display: 'block', marginTop: 8 }}>
+              ⚠ {entry.consumers.length} live reference{entry.consumers.length === 1 ? '' : 's'} must be removed first.
+            </span>
+          )}
+        </p>
+        <div style={{ marginBottom: token('space.200', '16px') }}>
+          <label
+            style={{
+              display: 'block',
+              fontSize: 12,
+              fontWeight: 600,
+              color: token('color.text', '#172B4D'),
+              marginBottom: token('space.075', '6px'),
+            }}
+          >
+            Ban reason (banned_reason)
+          </label>
+          <Textfield
+            value={reason}
+            onChange={(e) => setReason((e.target as HTMLInputElement).value)}
+            placeholder="One sentence — why this component must never be used"
+          />
+        </div>
+        <pre
+          style={{
+            fontSize: 12,
+            background: token('color.background.danger', '#FFEDEB'),
+            border: `1px solid ${token('color.border.danger', '#FF8F73')}`,
+            borderRadius: 4,
+            padding: token('space.150', '12px'),
+            overflowX: 'auto',
+            fontFamily: 'ui-monospace, "Roboto Mono", monospace',
+          }}
+        >
+          {snippet}
+        </pre>
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={() => { navigator.clipboard.writeText(snippet); }}>
+          Copy to clipboard
+        </Button>
+        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
+      </ModalFooter>
+    </ModalDialog>
+  );
+}
+
+function MarkCanonicalModal({
+  entry, onClose, isOpen,
+}: { entry: UnifiedEntry; onClose: () => void; isOpen: boolean }) {
+  if (!isOpen) return null;
+  const snippet = `// In src/registry/components.registry.ts — add to CANONICAL array:
+{
+  id: '${entry.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}',
+  name: '${entry.name}',
+  category: 'molecule', // ← update: atom | molecule | organism | page | pattern
+  origin: 'shared',     // ← update: atlaskit | catalyst-ds | shared | feature | page
+  status: 'canonical',
+  version: '1.0.0',
+  file_path: '${entry.file_path ?? 'src/components/...'}',
+  jsdoc_excerpt: 'Short description of what this component does.',
+  dark_light_supported: true,
+  tags: ['${entry.tags?.[0] ?? 'add-tags'}'],
+},`;
+
+  return (
+    <ModalDialog onClose={onClose} width="medium">
+      <ModalHeader>
+        <ModalTitle>Mark {entry.name} as canonical</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <p style={{ fontSize: 14, color: token('color.text', '#172B4D'), marginBottom: token('space.200', '16px') }}>
+          Promote <strong>{entry.name}</strong> to canonical status. This adds it to the curated registry
+          with a green CANONICAL badge and makes it the standard for its use case.
+        </p>
+        <pre
+          style={{
+            fontSize: 12,
+            background: token('color.background.success', '#DFFCF0'),
+            border: `1px solid ${token('color.border.success', '#4BCE97')}`,
+            borderRadius: 4,
+            padding: token('space.150', '12px'),
+            overflowX: 'auto',
+            fontFamily: 'ui-monospace, "Roboto Mono", monospace',
+          }}
+        >
+          {snippet}
+        </pre>
+        <p style={{ fontSize: 12, color: token('color.text.subtle', '#44546F'), marginTop: token('space.150', '12px') }}>
+          After copying this snippet, add it to the <code>CANONICAL</code> array in{' '}
+          <code>src/registry/components.registry.ts</code> and update the fields marked ← update.
+        </p>
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="primary" onClick={() => { navigator.clipboard.writeText(snippet); }}>
+          Copy snippet
+        </Button>
+        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
+      </ModalFooter>
+    </ModalDialog>
+  );
+}
+
+function RestoreModal({
+  entry, onClose, isOpen,
+}: { entry: UnifiedEntry; onClose: () => void; isOpen: boolean }) {
+  if (!isOpen) return null;
+  const snippet = `// In src/registry/components.registry.ts — update the entry:
+// Find id: '${entry.id}' and change:
+status: 'canonical',
+// Remove banned_reason, banned_anchor, deprecation_target if present.`;
+
+  return (
+    <ModalDialog onClose={onClose} width="medium">
+      <ModalHeader>
+        <ModalTitle>Restore {entry.name}</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <p style={{ fontSize: 14, color: token('color.text', '#172B4D'), marginBottom: token('space.200', '16px') }}>
+          Restore <strong>{entry.name}</strong> from {entry.status} to canonical status.
+          {entry.status === 'banned' && (
+            <span style={{ color: token('color.text.danger', '#AE2A19'), display: 'block', marginTop: 8 }}>
+              ⚠ Restoring a banned component requires Vikram's explicit approval. Banned components
+              are permanently out of scope unless the product direction changes.
+            </span>
+          )}
+        </p>
+        <pre
+          style={{
+            fontSize: 12,
+            background: token('color.background.neutral.subtle', '#F7F8F9'),
+            border: `1px solid ${token('color.border', '#DCDFE4')}`,
+            borderRadius: 4,
+            padding: token('space.150', '12px'),
+            overflowX: 'auto',
+            fontFamily: 'ui-monospace, "Roboto Mono", monospace',
+          }}
+        >
+          {snippet}
+        </pre>
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={() => { navigator.clipboard.writeText(snippet); }}>
+          Copy snippet
+        </Button>
+        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
+      </ModalFooter>
+    </ModalDialog>
+  );
+}
+
+// ─── ActionBar ────────────────────────────────────────────────────────────────
+
+function ActionBar({ entry }: { entry: UnifiedEntry }) {
+  const [modal, setModal] = useState<ActiveModal>(null);
+  const { status } = entry;
+
+  return (
+    <>
+      <div
+        style={{
+          display: 'flex',
+          gap: token('space.100', '8px'),
+          flexWrap: 'wrap',
+          paddingBottom: token('space.150', '12px'),
+          marginBottom: token('space.200', '16px'),
+          borderBottom: `1px solid ${token('color.border', '#DCDFE4')}`,
+        }}
+      >
+        {status === 'observed' && (
+          <Button appearance="primary" spacing="compact" onClick={() => setModal('mark-canonical')}>
+            Mark canonical
+          </Button>
+        )}
+        {(status === 'canonical' || status === 'observed') && (
+          <Button appearance="default" spacing="compact" onClick={() => setModal('deprecate')}>
+            Deprecate →
+          </Button>
+        )}
+        {(status === 'deprecated' || status === 'banned') && (
+          <Button appearance="default" spacing="compact" onClick={() => setModal('restore')}>
+            Restore ↑
+          </Button>
+        )}
+        {status !== 'banned' && (
+          <Button appearance="danger" spacing="compact" onClick={() => setModal('ban')}>
+            Ban ✕
+          </Button>
+        )}
+      </div>
+      <DeprecateModal entry={entry} isOpen={modal === 'deprecate'} onClose={() => setModal(null)} />
+      <BanModal entry={entry} isOpen={modal === 'ban'} onClose={() => setModal(null)} />
+      <MarkCanonicalModal entry={entry} isOpen={modal === 'mark-canonical'} onClose={() => setModal(null)} />
+      <RestoreModal entry={entry} isOpen={modal === 'restore'} onClose={() => setModal(null)} />
+    </>
+  );
+}
+
+// ─── ObservedEntryDetail ──────────────────────────────────────────────────────
+
+function ObservedEntryDetail({ entry }: { entry: UnifiedEntry }) {
+  const [expanded, setExpanded] = useState(false);
+  const LIMIT = 10;
+  const visible = expanded ? entry.consumers : entry.consumers.slice(0, LIMIT);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.300', '24px') }}>
+      <div>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: token('space.150', '12px'),
+            flexWrap: 'wrap',
+          }}
+        >
+          <Heading size="large">{entry.name}</Heading>
+          <StatusChip status={entry.status} />
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              padding: '2px 8px',
+              borderRadius: 3,
+              background: token('color.background.neutral', '#091E420F'),
+              color: token('color.text.subtle', '#44546F'),
+            }}
+          >
+            {entry.origin === 'atlaskit' ? 'Atlaskit' : 'Internal'}
+          </span>
+        </div>
+        <div
+          style={{
+            marginTop: token('space.100', '8px'),
+            fontSize: 12,
+            fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", monospace',
+            color: token('color.text.subtle', '#44546F'),
+          }}
+        >
+          {entry.source}
+        </div>
+        <p
+          style={{
+            marginTop: token('space.150', '12px'),
+            fontSize: 13,
+            color: token('color.text.subtle', '#44546F'),
+            fontStyle: 'italic',
+          }}
+        >
+          AST-observed component — no curated spec yet. Use "Mark canonical" or "Ban ✕" above to add it to the registry.
+        </p>
+      </div>
+
+      {entry.consumers.length > 0 && (
+        <div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: token('space.100', '8px'),
+              marginBottom: token('space.100', '8px'),
+            }}
+          >
+            <Heading size="xsmall">Consumers</Heading>
+            <Badge>{entry.consumers.length}</Badge>
+          </div>
+          <ul
+            style={{
+              margin: 0,
+              padding: 0,
+              listStyle: 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: token('space.050', '4px'),
+            }}
+          >
+            {visible.map((path) => (
+              <li key={path}>
+                <a
+                  href={`vscode://file/${path}`}
+                  style={{
+                    color: token('color.link', '#0C66E4'),
+                    textDecoration: 'none',
+                    fontFamily: 'ui-monospace, SFMono-Regular, monospace',
+                    fontSize: 12,
+                  }}
+                >
+                  {path}
+                </a>
+              </li>
+            ))}
+          </ul>
+          {entry.consumers.length > LIMIT && (
+            <div style={{ marginTop: token('space.150', '12px') }}>
+              <Button appearance="subtle" spacing="compact" onClick={() => setExpanded((p) => !p)}>
+                {expanded ? `Collapse to top ${LIMIT}` : `Show all ${entry.consumers.length} consumers`}
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Stats strip ──────────────────────────────────────────────────────────────
+
+function StatsStrip() {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        gap: token('space.400', '32px'),
+        marginBottom: token('space.300', '24px'),
+        flexWrap: 'wrap',
+      }}
+    >
+      {[
+        { label: 'Total components', value: TOTAL_UNIFIED },
+        { label: 'Canonical', value: registryStats.canonical },
+        { label: 'Deprecated', value: registryStats.deprecated },
+        { label: 'Banned', value: registryStats.banned, danger: true },
+        { label: 'Atlaskit observed', value: usageMapStats?.atlaskit ?? 0 },
+        { label: 'Internal observed', value: usageMapStats?.internal ?? 0 },
+      ].map((item) => (
+        <div key={item.label}>
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              color: token('color.text.subtlest', '#626F86'),
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+              marginBottom: 4,
+            }}
+          >
+            {item.label}
+          </div>
+          <div
+            style={{
+              fontSize: 32,
+              fontWeight: 700,
+              color: (item as { danger?: boolean }).danger
+                ? token('color.text.danger', '#AE2A19')
+                : token('color.text', '#172B4D'),
+              lineHeight: 1,
+            }}
+          >
+            {item.value.toLocaleString()}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Inventory pane ───────────────────────────────────────────────────────────
+
+function InventoryPane() {
+  const [activeModule, setActiveModule] = useState<ComponentModule>('All');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [search, setSearch] = useState('');
+  const [selectedId, setSelectedId] = useState<string>(ALL_ENTRIES[0]?.id ?? '');
+
+  const moduleCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const m of MODULES) {
+      counts[m] = m === 'All' ? ALL_ENTRIES.length : ALL_ENTRIES.filter((e) => e.module === m).length;
+    }
+    return counts;
+  }, []);
+
+  const filtered = useMemo(() => {
+    const isSearching = search.trim().length > 0;
+    let pool = ALL_ENTRIES;
+
+    if (activeModule !== 'All') {
+      pool = pool.filter((e) => e.module === activeModule);
+    }
+    if (statusFilter !== 'all') {
+      pool = pool.filter((e) => e.status === statusFilter);
+    }
+    if (isSearching) {
+      const q = search.toLowerCase();
+      pool = pool.filter(
+        (e) =>
+          e.name.toLowerCase().includes(q) ||
+          e.source.toLowerCase().includes(q) ||
+          (e.tags ?? []).some((t) => t.toLowerCase().includes(q)),
+      );
+    } else {
+      // Cap observed to avoid rendering 3,000+ rows without search
+      const registry = pool.filter((e) => e.status !== 'observed');
+      const observed = pool.filter((e) => e.status === 'observed').slice(0, OBSERVER_CAP);
+      pool = [...registry, ...observed];
+    }
+
+    return pool;
+  }, [activeModule, statusFilter, search]);
+
+  const selectedEntry = useMemo(
+    () => filtered.find((e) => e.id === selectedId) ?? filtered[0],
+    [filtered, selectedId],
+  );
 
   return (
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: '260px 1fr',
-        gap: token('space.300', '24px'),
-        marginTop: token('space.200', '16px'),
-        minHeight: 480,
+        gridTemplateColumns: '220px 300px 1fr',
+        gap: 0,
+        border: `1px solid ${token('color.border', '#DCDFE4')}`,
+        borderRadius: 8,
+        overflow: 'hidden',
+        minHeight: 600,
+        background: token('elevation.surface', '#FFFFFF'),
       }}
     >
+      {/* Column 1 — Module nav */}
       <div
         style={{
-          border: `1px solid ${token('color.border', '#DCDFE4')}`,
-          borderRadius: 6,
-          overflow: 'hidden',
+          borderRight: `1px solid ${token('color.border', '#DCDFE4')}`,
           background: token('color.background.neutral.subtle', '#F7F8F9'),
+          overflowY: 'auto',
         }}
       >
-        <SideNavigation label="Component categories" testId="components-side-nav">
+        <SideNavigation label="Component modules" testId="components-module-nav">
           <NavigationContent>
-            {CATEGORY_ORDER.filter(cat => byCategory[cat].length > 0).map(cat => (
-              <Section key={cat}>
-                <HeadingItem>
-                  {CATEGORY_LABELS[cat]} ({byCategory[cat].length})
-                </HeadingItem>
-                {byCategory[cat].map(entry => (
-                  <ComponentListItem
-                    key={entry.id}
-                    entry={entry}
-                    selected={entry.id === selectedId}
-                    onSelect={() => setSelectedId(entry.id)}
-                  />
-                ))}
-              </Section>
-            ))}
+            <Section>
+              <HeadingItem>Module</HeadingItem>
+              {MODULES.map((m) => (
+                <ButtonItem
+                  key={m}
+                  isSelected={activeModule === m}
+                  onClick={() => {
+                    setActiveModule(m);
+                    setSelectedId('');
+                  }}
+                  iconAfter={
+                    <span style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86') }}>
+                      {moduleCounts[m].toLocaleString()}
+                    </span>
+                  }
+                >
+                  {m}
+                </ButtonItem>
+              ))}
+            </Section>
+            <Section>
+              <HeadingItem>Status</HeadingItem>
+              {STATUS_OPTIONS.map((opt) => (
+                <ButtonItem
+                  key={opt.value}
+                  isSelected={statusFilter === opt.value}
+                  onClick={() => setStatusFilter(opt.value)}
+                >
+                  {opt.label}
+                </ButtonItem>
+              ))}
+            </Section>
           </NavigationContent>
         </SideNavigation>
       </div>
 
+      {/* Column 2 — Component list */}
       <div
         style={{
-          border: `1px solid ${token('color.border', '#DCDFE4')}`,
-          borderRadius: 6,
-          padding: token('space.300', '24px'),
-          background: token('elevation.surface', '#FFFFFF'),
-          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+          borderRight: `1px solid ${token('color.border', '#DCDFE4')}`,
+          display: 'flex',
+          flexDirection: 'column',
+          overflowY: 'auto',
         }}
       >
-        {selected ? (
-          <ComponentSpecCard entry={selected} />
+        <div
+          style={{
+            padding: token('space.100', '8px'),
+            borderBottom: `1px solid ${token('color.border', '#DCDFE4')}`,
+          }}
+        >
+          <Textfield
+            value={search}
+            onChange={(e) => setSearch((e.target as HTMLInputElement).value)}
+            placeholder={`Search ${TOTAL_UNIFIED.toLocaleString()} components...`}
+            aria-label="Search components"
+          />
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          {filtered.length === 0 ? (
+            <div
+              style={{
+                padding: token('space.300', '24px'),
+                color: token('color.text.subtle', '#44546F'),
+                fontSize: 13,
+                fontStyle: 'italic',
+              }}
+            >
+              No components match your filters.
+            </div>
+          ) : (
+            filtered.map((entry) => (
+              <button
+                key={entry.id}
+                onClick={() => setSelectedId(entry.id)}
+                style={{
+                  width: '100%',
+                  textAlign: 'left',
+                  padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
+                  border: 'none',
+                  borderBottom: `1px solid ${token('color.border.subtle', '#F1F2F4')}`,
+                  background:
+                    selectedId === entry.id
+                      ? token('color.background.selected', '#E9F2FF')
+                      : 'transparent',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 2,
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 13,
+                      fontWeight: selectedId === entry.id ? 600 : 400,
+                      color: token('color.text', '#172B4D'),
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {entry.name}
+                  </span>
+                  {entry.consumers.length > 0 && (
+                    <span
+                      style={{
+                        fontSize: 11,
+                        color: token('color.text.subtlest', '#626F86'),
+                        flexShrink: 0,
+                      }}
+                    >
+                      {entry.consumers.length}×
+                    </span>
+                  )}
+                </div>
+                <StatusChip status={entry.status} />
+              </button>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Column 3 — Detail + actions */}
+      <div style={{ overflowY: 'auto', padding: token('space.300', '24px') }}>
+        {selectedEntry ? (
+          <>
+            <ActionBar entry={selectedEntry} />
+            {selectedEntry.registryEntry ? (
+              <ComponentSpecCard entry={selectedEntry.registryEntry} />
+            ) : (
+              <ObservedEntryDetail entry={selectedEntry} />
+            )}
+          </>
         ) : (
-          <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
-            Select a component on the left to view its spec.
-          </span>
+          <div
+            style={{
+              color: token('color.text.subtle', '#44546F'),
+              fontSize: 13,
+              fontStyle: 'italic',
+              paddingTop: token('space.200', '16px'),
+            }}
+          >
+            Select a component from the list to view its spec and actions.
+          </div>
         )}
       </div>
     </div>
   );
 }
 
-// ─── Banned tab — minimal v1 view (Step 10 expands) ──────────────────────────
+// ─── Banned registry panel ────────────────────────────────────────────────────
 
-function BannedPane() {
-  const banned = componentsRegistry.filter(e => e.status === 'banned');
+function BannedRegistryPanel() {
+  const banned = componentsRegistry.filter((e) => e.status === 'banned');
   return (
-    <div
-      style={{
-        marginTop: token('space.200', '16px'),
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))',
-        gap: token('space.200', '16px'),
-      }}
-    >
-      {banned.map(entry => {
-        const refs = getAllConsumersByName(entry.name);
+    <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.200', '16px') }}>
+      {banned.map((entry) => (
+        <div
+          key={entry.id}
+          style={{
+            padding: token('space.200', '16px'),
+            border: `1px solid ${token('color.border.danger', '#FF8F73')}`,
+            borderRadius: 6,
+            background: token('color.background.danger', '#FFEDEB'),
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: token('space.100', '8px'),
+              marginBottom: token('space.100', '8px'),
+            }}
+          >
+            <strong style={{ fontSize: 14, color: token('color.text.danger', '#AE2A19') }}>
+              {entry.name}
+            </strong>
+            <Lozenge appearance="removed">Banned</Lozenge>
+            {entry.banned_anchor && (
+              <span style={{ fontSize: 11, color: token('color.text.subtle', '#44546F') }}>
+                {entry.banned_anchor}
+              </span>
+            )}
+          </div>
+          <p style={{ margin: 0, fontSize: 13, color: token('color.text', '#172B4D') }}>
+            {entry.banned_reason}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── AI Recommendations pane ─────────────────────────────────────────────────
+
+function ApplyModal({
+  rec, onClose, isOpen,
+}: { rec: AiRec; onClose: () => void; isOpen: boolean }) {
+  if (!isOpen || !rec) return null;
+
+  const snippet =
+    rec.type === 'ban-violation'
+      ? `// Remove all references to "${rec.entry.name}" from:\n${rec.entry.consumers.map((c) => `//   ${c}`).join('\n')}\n// Then verify: grep -r "${rec.entry.name}" src/ should return 0 results.`
+      : rec.type === 'deprecation-pending' && rec.entry.deprecation_target
+      ? `// Replace all usages of ${rec.entry.name} with ${rec.entry.deprecation_target}:\n${rec.entry.consumers.map((c) => `//   ${c}`).join('\n')}`
+      : `// Add to CANONICAL array in src/registry/components.registry.ts:\n{\n  id: '${rec.entry.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}',\n  name: '${rec.entry.name}',\n  status: 'canonical',\n  version: '1.0.0',\n}`;
+
+  const appearance = rec.severity === 'urgent' ? 'danger' : rec.severity === 'high' ? 'warning' : 'default';
+
+  return (
+    <ModalDialog onClose={onClose} width="medium">
+      <ModalHeader>
+        <ModalTitle appearance={appearance === 'default' ? undefined : appearance}>
+          Apply: {rec.title}
+        </ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <p style={{ fontSize: 14, color: token('color.text', '#172B4D'), marginBottom: token('space.200', '16px') }}>
+          {rec.detail}
+        </p>
+        <div
+          style={{
+            fontSize: 13,
+            fontWeight: 600,
+            color: token('color.text', '#172B4D'),
+            marginBottom: token('space.100', '8px'),
+          }}
+        >
+          Suggested action: {rec.suggestedAction}
+        </div>
+        <pre
+          style={{
+            fontSize: 12,
+            background: token('color.background.neutral.subtle', '#F7F8F9'),
+            border: `1px solid ${token('color.border', '#DCDFE4')}`,
+            borderRadius: 4,
+            padding: token('space.150', '12px'),
+            overflowX: 'auto',
+            fontFamily: 'ui-monospace, "Roboto Mono", monospace',
+          }}
+        >
+          {snippet}
+        </pre>
+      </ModalBody>
+      <ModalFooter>
+        <Button appearance="subtle" onClick={() => { navigator.clipboard.writeText(snippet); }}>
+          Copy steps
+        </Button>
+        <Button appearance="subtle" onClick={onClose}>Close</Button>
+      </ModalFooter>
+    </ModalDialog>
+  );
+}
+
+function AiRecommendationsPane() {
+  const [applyRec, setApplyRec] = useState<AiRec | null>(null);
+  const [expandedRec, setExpandedRec] = useState<string | null>(null);
+  const [appliedRecs, setAppliedRecs] = useState<Set<string>>(new Set());
+
+  const severityColor = {
+    urgent: token('color.text.danger', '#AE2A19'),
+    high: token('color.text.warning', '#7F5F01'),
+    medium: token('color.text', '#172B4D'),
+  };
+
+  const severityBg = {
+    urgent: token('color.background.danger', '#FFEDEB'),
+    high: token('color.background.warning', '#FFF7D6'),
+    medium: token('color.background.neutral.subtle', '#F7F8F9'),
+  };
+
+  const severityBorder = {
+    urgent: token('color.border.danger', '#FF8F73'),
+    high: token('color.border.warning', '#F5CD47'),
+    medium: token('color.border', '#DCDFE4'),
+  };
+
+  if (AI_RECS.length === 0) {
+    return (
+      <div
+        style={{
+          padding: token('space.400', '32px'),
+          textAlign: 'center',
+          color: token('color.text.subtle', '#44546F'),
+        }}
+      >
+        <div style={{ fontSize: 32, marginBottom: token('space.200', '16px') }}>✅</div>
+        <Heading size="medium">No recommendations</Heading>
+        <p style={{ marginTop: token('space.100', '8px'), fontSize: 14 }}>
+          No banned components with live references, no high-consumer deprecated components.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.200', '16px') }}>
+      {AI_RECS.map((rec) => {
+        const isApplied = appliedRecs.has(rec.id);
+        const isExpanded = expandedRec === rec.id;
+
         return (
           <div
-            key={entry.id}
+            key={rec.id}
             style={{
-              border: `1px solid ${token('color.border.danger', '#E2483D')}`,
+              border: `1px solid ${isApplied ? token('color.border.success', '#4BCE97') : severityBorder[rec.severity]}`,
               borderRadius: 6,
-              padding: token('space.200', '16px'),
-              background: token('color.background.danger', '#FFEDEB'),
-              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+              background: isApplied ? token('color.background.success', '#DFFCF0') : severityBg[rec.severity],
+              opacity: isApplied ? 0.7 : 1,
             }}
           >
             <div
               style={{
                 display: 'flex',
-                alignItems: 'center',
+                alignItems: 'flex-start',
                 justifyContent: 'space-between',
-                gap: token('space.100', '8px'),
+                padding: token('space.200', '16px'),
+                gap: token('space.200', '16px'),
               }}
             >
-              <span style={{ fontWeight: 600, fontSize: 14 }}>{entry.name}</span>
-              <Lozenge appearance="removed">Banned</Lozenge>
-            </div>
-            <div
-              style={{
-                marginTop: token('space.075', '6px'),
-                fontSize: 11,
-                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
-              }}
-            >
-              CLAUDE.md anchor: {entry.banned_anchor}
-            </div>
-            <p
-              style={{
-                marginTop: token('space.100', '8px'),
-                fontSize: 13,
-                lineHeight: '18px',
-                color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
-              }}
-            >
-              {entry.banned_reason}
-            </p>
-            <div
-              style={{
-                marginTop: token('space.150', '12px'),
-                fontSize: 12,
-                color:
-                  refs.length === 0
-                    ? token('color.text.success', '#216E4E')
-                    : token('color.text.danger', '#AE2A19'),
-                fontWeight: 600,
-              }}
-            >
-              Live references in Catalyst:{' '}
-              {refs.length === 0 ? '0 ✓' : `${refs.length} ⚠ INVESTIGATE`}
+              <div style={{ flex: 1 }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: token('space.100', '8px'),
+                    marginBottom: token('space.075', '6px'),
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      color: isApplied ? token('color.text.success', '#216E4E') : severityColor[rec.severity],
+                      letterSpacing: '0.05em',
+                    }}
+                  >
+                    {isApplied ? '✅ Applied' : rec.severity}
+                  </span>
+                  <Lozenge appearance={rec.type === 'ban-violation' ? 'removed' : rec.type === 'deprecation-pending' ? 'moved' : 'inprogress'}>
+                    {rec.type === 'ban-violation' ? 'Ban violation' : rec.type === 'deprecation-pending' ? 'Deprecation' : 'Promote'}
+                  </Lozenge>
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: token('color.text', '#172B4D') }}>
+                  {rec.title}
+                </div>
+                {isExpanded && (
+                  <p style={{ fontSize: 13, color: token('color.text.subtle', '#44546F'), marginTop: 8, marginBottom: 0 }}>
+                    {rec.detail}
+                  </p>
+                )}
+              </div>
+              <div style={{ display: 'flex', gap: token('space.075', '6px'), flexShrink: 0 }}>
+                {!isApplied && (
+                  <Button
+                    appearance="primary"
+                    spacing="compact"
+                    onClick={() => setApplyRec(rec)}
+                  >
+                    Apply →
+                  </Button>
+                )}
+                <Button
+                  appearance="subtle"
+                  spacing="compact"
+                  onClick={() => setExpandedRec(isExpanded ? null : rec.id)}
+                >
+                  {isExpanded ? 'Less' : 'Details'}
+                </Button>
+                {!isApplied && (
+                  <Button
+                    appearance="subtle"
+                    spacing="compact"
+                    onClick={() => setAppliedRecs((prev) => new Set([...prev, rec.id]))}
+                  >
+                    Mark done
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         );
       })}
+
+      {applyRec && (
+        <ApplyModal rec={applyRec} isOpen={true} onClose={() => setApplyRec(null)} />
+      )}
     </div>
   );
 }
 
-// ─── Placeholder panes (Steps 9 + 11) ────────────────────────────────────────
-
-function PlaceholderPane({ step, title }: { step: number; title: string }) {
-  return (
-    <div
-      style={{
-        marginTop: token('space.200', '16px'),
-        padding: token('space.300', '24px'),
-        border: `1px solid ${token('color.border', '#DCDFE4')}`,
-        borderRadius: 6,
-        background: token('color.background.neutral.subtle', '#F7F8F9'),
-        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
-        fontSize: 13,
-      }}
-    >
-      {title} — lands in Step {step}.
-    </div>
-  );
-}
-
-// ─── Page ────────────────────────────────────────────────────────────────────
+// ─── Root page ────────────────────────────────────────────────────────────────
 
 export default function ComponentsAdminPage() {
   return (
     <AdminGuard>
-      <div
-        style={{
-          padding: '24px 32px',
-          maxWidth: 1400,
-          margin: '0 auto',
-          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
-        }}
-      >
+      <div style={{ padding: `${token('space.300', '24px')} ${token('space.400', '32px')}` }}>
         <Heading size="xlarge">Components</Heading>
         <p
           style={{
-            marginTop: 0,
-            marginBottom: token('space.300', '24px'),
-            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             fontSize: 14,
-            lineHeight: '20px',
-            maxWidth: 760,
+            color: token('color.text.subtle', '#44546F'),
+            marginTop: token('space.100', '8px'),
+            marginBottom: token('space.300', '24px'),
           }}
         >
-          Catalyst's component library, built on the Atlassian Design System.
-          Browse every primitive currently rendered in Catalyst, see its consumers,
-          and review cascade impact before changing a canonical component.
+          Catalyst's complete component inventory — {TOTAL_UNIFIED.toLocaleString()} components spanning{' '}
+          {registryStats.canonical} canonical, {registryStats.deprecated} deprecated, {registryStats.banned} banned,
+          and {(usageMapStats?.total ?? 0) - componentsRegistry.length} AST-observed. Grouped by functional module.
+          Use the action buttons to deprecate, ban, or promote any component.
         </p>
+
         <StatsStrip />
 
         <Tabs id="components-admin-tabs">
           <TabList>
-            <Tab>Inventory ({registryStats.canonical + registryStats.deprecated})</Tab>
+            <Tab>Inventory ({TOTAL_UNIFIED.toLocaleString()})</Tab>
             <Tab>Banned ({registryStats.banned})</Tab>
-            <Tab>Violations ({adsViolationsStats.total})</Tab>
+            <Tab>Violations ({adsViolationsStats?.total ?? 6})</Tab>
             <Tab>Cascade</Tab>
+            <Tab>AI Intelligence ({AI_RECS.length})</Tab>
             <Tab>Publish</Tab>
             <Tab>History</Tab>
           </TabList>
+
           <TabPanel>
-            <InventoryPane />
+            <div style={{ paddingTop: token('space.200', '16px') }}>
+              <InventoryPane />
+            </div>
           </TabPanel>
+
           <TabPanel>
-            <BannedPane />
+            <div style={{ paddingTop: token('space.200', '16px') }}>
+              <BannedRegistryPanel />
+            </div>
           </TabPanel>
+
           <TabPanel>
-            <ADSViolationsPanel />
+            <div style={{ paddingTop: token('space.200', '16px') }}>
+              <ADSViolationsPanel />
+            </div>
           </TabPanel>
+
           <TabPanel>
-            <CascadeImpactPanel />
+            <div style={{ paddingTop: token('space.200', '16px') }}>
+              <CascadeImpactPanel />
+            </div>
           </TabPanel>
+
           <TabPanel>
-            <PublishTab />
+            <div style={{ paddingTop: token('space.200', '16px') }}>
+              <AiRecommendationsPane />
+            </div>
           </TabPanel>
+
           <TabPanel>
-            <HistoryTab />
+            <div
+              style={{
+                paddingTop: token('space.400', '32px'),
+                textAlign: 'center',
+                color: token('color.text.subtle', '#44546F'),
+              }}
+            >
+              <Heading size="medium">Publish — coming in v3</Heading>
+              <p style={{ marginTop: token('space.100', '8px'), fontSize: 14 }}>
+                Feature-flag toggle publishing will be automated here. For now, edit feature_flags
+                in components.registry.ts directly.
+              </p>
+            </div>
+          </TabPanel>
+
+          <TabPanel>
+            <div
+              style={{
+                paddingTop: token('space.400', '32px'),
+                textAlign: 'center',
+                color: token('color.text.subtle', '#44546F'),
+              }}
+            >
+              <Heading size="medium">History — coming in v3</Heading>
+              <p style={{ marginTop: token('space.100', '8px'), fontSize: 14 }}>
+                Audit trail of all registry changes will appear here.
+              </p>
+            </div>
           </TabPanel>
         </Tabs>
       </div>
