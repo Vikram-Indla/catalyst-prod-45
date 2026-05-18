@@ -157,7 +157,7 @@ export function computeProjectAllocations(
     projectId: '__buffer__',
     name: 'Buffer',
     key: 'BUF',
-    color: '#C1C7D0',
+    color: 'var(--ds-border-disabled, #C1C7D0)',
     role: 'buffer',
     allocationPct: BUFFER_PCT,
     isBuffer: true,

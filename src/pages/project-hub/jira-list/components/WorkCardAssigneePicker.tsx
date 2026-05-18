@@ -128,9 +128,9 @@ export function WorkCardAssigneePicker({
         }}>{fallbackInitials}</div>
       ) : (
         <div style={{
-          width: 28, height: 28, borderRadius: '50%', border: '1px dashed #C1C7D0',
+          width: 28, height: 28, borderRadius: '50%', border: '1px dashed var(--ds-border-disabled, #C1C7D0)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 14, color: '#C1C7D0',
+          fontSize: 14, color: 'var(--ds-border-disabled, #C1C7D0)',
         }}>?</div>
       )}
     </button>
@@ -186,9 +186,9 @@ export function WorkCardAssigneePicker({
             }}>
               <div style={{
                 width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-                border: '1px dashed #C1C7D0', display: 'flex',
+                border: '1px dashed var(--ds-border-disabled, #C1C7D0)', display: 'flex',
                 alignItems: 'center', justifyContent: 'center',
-                fontSize: 16, color: '#C1C7D0',
+                fontSize: 16, color: 'var(--ds-border-disabled, #C1C7D0)',
               }}>?</div>
               <span style={{ fontSize: 14, color: 'var(--cp-text-tertiary, #6B778C)', flex: 1 }}>Unassigned</span>
             </div>

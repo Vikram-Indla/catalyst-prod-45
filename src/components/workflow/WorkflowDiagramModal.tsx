@@ -126,7 +126,7 @@ function WorkflowSvg({ workflow, currentStateId }: { workflow: Workflow; current
             width={width - padding * 2 + 8}
             height={height - padding * 2 + 8}
             fill="none"
-            stroke="#C1C7D0"
+            stroke="var(--ds-border-disabled, #C1C7D0)"
             strokeWidth={1}
             strokeDasharray="4 4"
             rx={8}

@@ -176,7 +176,7 @@ function FilterSection({
                 width: 16,
                 height: 16,
                 borderRadius: 3,
-                border: checked ? 'none' : `1.5px solid ${dark ? 'var(--ds-border-bold, #454545)' : '#C1C7D0'}`,
+                border: checked ? 'none' : `1.5px solid ${dark ? 'var(--ds-border-bold, #454545)' : 'var(--ds-border-disabled, #C1C7D0)'}`,
                 backgroundColor: checked ? '#0052CC' : 'transparent',
               }}
             >

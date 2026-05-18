@@ -71,13 +71,13 @@ function ChevronButton({
       data-cv-nav-next={direction === 'next' ? '' : undefined}
       style={{
         ...BTN_BASE,
-        color: disabled ? '#C1C7D0' : '#42526E',
+        color: disabled ? 'var(--ds-border-disabled, #C1C7D0)' : '#42526E',
         cursor: disabled ? 'not-allowed' : 'pointer',
       }}
       onMouseEnter={e => {
         if (!disabled) {
           e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)';
-          e.currentTarget.style.borderColor = '#C1C7D0';
+          e.currentTarget.style.borderColor = 'var(--ds-border-disabled, #C1C7D0)';
         }
       }}
       onMouseLeave={e => {

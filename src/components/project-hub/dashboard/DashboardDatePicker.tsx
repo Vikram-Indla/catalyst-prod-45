@@ -506,7 +506,7 @@ function MonthGrid({
           const isToday = isSameDay(d, today);
 
           let bg = 'transparent';
-          let color = isOtherMonth ? '#C1C7D0' : 'var(--ds-text, #172B4D)';
+          let color = isOtherMonth ? 'var(--ds-border-disabled, #C1C7D0)' : 'var(--ds-text, #172B4D)';
           let radius = '3px';
           if (isStart || isEnd) {
             bg = '#0052CC';
