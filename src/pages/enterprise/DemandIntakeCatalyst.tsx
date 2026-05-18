@@ -451,7 +451,7 @@ export default function DemandIntakeCatalyst() {
               size="icon"
               onClick={() => setFiltersDialogOpen(true)}
               className={cn(
-                "h-8 w-8 border-border bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-[var(--ds-border,#2E2E2E)]",
+                "h-8 w-8 border-border bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]",
                 activeFilterCount > 0 && "border-brand-primary text-brand-primary"
               )}
               title="Filters"

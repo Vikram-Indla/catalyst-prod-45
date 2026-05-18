@@ -152,7 +152,7 @@ function ActivityPanel({
           {sortOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setSortOpen(false)} />
-              <div className="absolute right-0 top-full mt-1 z-50 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))] dark:border-[var(--ds-border,#2E2E2E)] rounded-md shadow-lg py-1 min-w-[140px]">
+              <div className="absolute right-0 top-full mt-1 z-50 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-md shadow-lg py-1 min-w-[140px]">
                 {(['newest', 'oldest'] as CdsSortOrder[]).map((order) => (
                   <button
                     key={order}
@@ -228,7 +228,7 @@ function ActivityPanel({
             shortcutHint="Pro tip: press **M** to comment"
           />
 
-          <div className="mt-4 divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,#2E2E2E)]">
+          <div className="mt-4 divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
             {(isLoadingComments || isLoadingHistory) ? (
               <div className="text-center py-8">
                 <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">Loading activity...</p>

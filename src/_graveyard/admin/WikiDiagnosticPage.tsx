@@ -40,7 +40,7 @@ function MetricCard({ label, value, subtitle, icon: Icon, status }: {
     neutral: 'text-white bg-[#0C66E4]',
   };
   return (
-    <div className="border border-[rgba(15,23,42,0.12)] dark:border-[#2E2E2E] rounded-md p-4 bg-white dark:bg-[#1A1A1A]">
+    <div className="border border-[rgba(15,23,42,0.12)] dark:border-[var(--cp-ink-1, #2E2E2E)] rounded-md p-4 bg-white dark:bg-[#1A1A1A]">
       <div className="flex items-center gap-2 mb-2">
         <div className={`w-8 h-8 rounded flex items-center justify-center ${colors[status]}`}>
           <Icon className="w-4 h-4" />
@@ -56,7 +56,7 @@ function MetricCard({ label, value, subtitle, icon: Icon, status }: {
 /* ─── section wrapper ─── */
 function Section({ title, icon: Icon, children }: { title: string; icon: React.ElementType; children: React.ReactNode }) {
   return (
-    <section className="border border-[rgba(15,23,42,0.12)] dark:border-[#2E2E2E] rounded-md bg-white dark:bg-[#1A1A1A]">
+    <section className="border border-[rgba(15,23,42,0.12)] dark:border-[var(--cp-ink-1, #2E2E2E)] rounded-md bg-white dark:bg-[#1A1A1A]">
       <div className="px-4 py-3 border-b border-[rgba(15,23,42,0.12)] flex items-center gap-2 bg-[#FAFBFC]">
         <Icon className="w-4 h-4 text-[var(--cp-text-secondary, #44546F)]" />
         <h3 className="text-sm font-semibold uppercase tracking-wide text-[var(--cp-ink-1, #0F172A)]">{title}</h3>
@@ -159,7 +159,7 @@ export default function WikiDiagnosticPage() {
   return (
     <div className="min-h-screen bg-[#FAFBFC]">
       {/* Header */}
-      <div className="bg-white dark:bg-[#1A1A1A] border-b border-[rgba(15,23,42,0.12)] dark:border-[#2E2E2E] px-7 py-4 flex items-center justify-between">
+      <div className="bg-white dark:bg-[#1A1A1A] border-b border-[rgba(15,23,42,0.12)] dark:border-[var(--cp-ink-1, #2E2E2E)] px-7 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Stethoscope className="w-6 h-6 text-[var(--cp-purple-60, #7C3AED)]" />
           <div>
@@ -330,7 +330,7 @@ export default function WikiDiagnosticPage() {
           </button>
           <button
             onClick={() => { runDiagnostics(); toast.success('Diagnostics refreshed'); }}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded border border-[rgba(15,23,42,0.12)] dark:border-[#2E2E2E] bg-white dark:bg-[#1A1A1A] text-[var(--cp-ink-1, #0F172A)] hover:bg-[#F4F5F7]"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded border border-[rgba(15,23,42,0.12)] dark:border-[var(--cp-ink-1, #2E2E2E)] bg-white dark:bg-[#1A1A1A] text-[var(--cp-ink-1, #0F172A)] hover:bg-[#F4F5F7]"
           >
             <Wrench className="w-4 h-4" /> Refresh All
           </button>

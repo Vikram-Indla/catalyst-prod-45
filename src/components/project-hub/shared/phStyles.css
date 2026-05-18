@@ -11,7 +11,7 @@
 }
 
 .dark .ph-skeleton {
-  background: linear-gradient(90deg, var(--ds-surface-overlay, #1F1F1F) 25%, var(--ds-border, #2E2E2E) 37%, var(--ds-surface-overlay, #1F1F1F) 63%) !important;
+  background: linear-gradient(90deg, var(--ds-surface-overlay, #1F1F1F) 25%, var(--ds-border, var(--cp-ink-1, #2E2E2E)) 37%, var(--ds-surface-overlay, #1F1F1F) 63%) !important;
 }
 
 /* Card enterprise styling override */
@@ -36,7 +36,7 @@
 }
 .dark .ph-content-wrapper ::-webkit-scrollbar-thumb,
 .dark .ph-inner-content ::-webkit-scrollbar-thumb {
-  background: var(--ds-border, #2E2E2E);
+  background: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   border-radius: 4px;
 }
 .dark .ph-content-wrapper ::-webkit-scrollbar-thumb:hover,

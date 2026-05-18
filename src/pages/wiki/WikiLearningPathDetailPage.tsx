@@ -19,7 +19,7 @@ export default function WikiLearningPathDetailPage() {
   const qc = useQueryClient();
   const { isDark } = useTheme();
 
-  const border = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.06)';
+  const border = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(0,0,0,0.06)';
 
   // Fetch path
   const { data: path, isLoading: pathLoading } = useQuery({

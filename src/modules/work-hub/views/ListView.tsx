@@ -441,14 +441,14 @@ export function ListView() {
 
         {/* Card container wrapping the table */}
         <div className="flex-1 p-4 overflow-hidden">
-          <div className="h-full flex flex-col rounded-lg border border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] overflow-hidden">
+          <div className="h-full flex flex-col rounded-lg border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] overflow-hidden">
             {/* Table container with horizontal scroll */}
             <div className="flex-1 overflow-auto">
               <table className="w-full border-collapse" style={{ minWidth: '1100px' }}>
                 <thead className="sticky top-0 z-10">
                   <tr>
                     {/* Checkbox column - center aligned */}
-                    <th scope="col" className="w-10 px-2 py-2 bg-slate-50 dark:bg-[#111111] border-b border-r border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] text-center">
+                    <th scope="col" className="w-10 px-2 py-2 bg-slate-50 dark:bg-[#111111] border-b border-r border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-center">
                       <div className="flex justify-center">
                         <Checkbox
                           checked={selectedItems.size === items.length && items.length > 0}
@@ -550,7 +550,7 @@ export function ListView() {
                         className="w-28"
                       />
                     )}
-                    <th scope="col" className="w-10 px-2 py-2 bg-slate-50 dark:bg-[#111111] border-b border-slate-200 dark:border-[var(--ds-border,#2E2E2E)]">
+                    <th scope="col" className="w-10 px-2 py-2 bg-slate-50 dark:bg-[#111111] border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                       <FieldPicker visibleFields={visibleFields} onToggleField={handleToggleField} />
                     </th>
                   </tr>
@@ -563,7 +563,7 @@ export function ListView() {
                           <React.Fragment key={groupKey}>
                             {groupBy !== 'none' && (
                               <tr className="bg-slate-50 dark:bg-[#111111]">
-                                <td colSpan={12} className="px-4 py-2 border-b border-slate-200 dark:border-[var(--ds-border,#2E2E2E)]">
+                                <td colSpan={12} className="px-4 py-2 border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                                   <div className="flex items-center gap-2">
                                     <ChevronDown className="h-4 w-4 text-slate-500" />
                                     <span className="text-[14px] font-semibold text-slate-900 dark:text-[var(--ds-text,#EDEDED)]">{groupKey}</span>
@@ -769,7 +769,7 @@ export function ListView() {
             </div>
 
             {/* Footer inside card */}
-            <div className="border-t border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] flex items-center justify-between px-4 py-2 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] flex-shrink-0">
+            <div className="border-t border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] flex items-center justify-between px-4 py-2 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] flex-shrink-0">
               <span className="text-[14px] text-slate-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
                 {selectedItems.size > 0 
                   ? `${selectedItems.size} item${selectedItems.size > 1 ? 's' : ''} selected`

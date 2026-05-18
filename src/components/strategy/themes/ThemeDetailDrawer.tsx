@@ -55,7 +55,7 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
   const t1 = isDark ? DK.t1 : 'var(--fg-1)';
   const t2 = isDark ? DK.t2 : 'var(--fg-3)';
   const t3 = isDark ? DK.t3 : 'var(--fg-4)';
-  const border = isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)';
+  const border = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)';
   const borderSubtle = isDark ? 'var(--ds-border, #292929)' : 'var(--bg-1)';
   const hoverBg = isDark ? 'var(--ds-border, #292929)' : 'var(--bg-1)';
   const cardBg = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--bg-1)';
@@ -147,7 +147,7 @@ function dk(isDark: boolean) {
     t1: isDark ? DK.t1 : 'var(--fg-1)',
     t2: isDark ? DK.t2 : 'var(--fg-3)',
     t3: isDark ? DK.t3 : 'var(--fg-4)',
-    border: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)',
+    border: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)',
     borderSubtle: isDark ? 'var(--ds-border, #292929)' : 'var(--bg-1)',
     cardBg: isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--bg-1)',
     hoverBg: isDark ? 'var(--ds-border, #292929)' : 'var(--bg-1)',
@@ -500,7 +500,7 @@ function ActivityTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?
       ) : (
         <div className="relative pl-6">
           {/* Timeline line */}
-          <div className="absolute left-[11px] top-2 bottom-2" style={{ width: 2, background: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)' }} />
+          <div className="absolute left-[11px] top-2 bottom-2" style={{ width: 2, background: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)' }} />
           {activities.map((a, i) => (
             <div key={i} className="relative flex items-start gap-3 mb-4">
               <div className="absolute left-[-17px] top-1.5 rounded-full" style={{ width: 10, height: 10, background: a.color, border: `2px solid ${isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)'}` }} />

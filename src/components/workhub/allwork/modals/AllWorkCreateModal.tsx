@@ -47,7 +47,7 @@ function CustomSelect({ label, required, value, options, onChange, placeholder, 
           onClick={() => setOpen(!open)}
           className="w-full flex items-center justify-between px-3 py-2 rounded-md border text-[13px] text-left transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
           style={{
-            borderColor: open ? 'var(--cp-blue)' : 'var(--bd-default, #2E2E2E)',
+            borderColor: open ? 'var(--cp-blue)' : 'var(--bd-default, var(--cp-ink-1, #2E2E2E))',
             color: value ? 'var(--fg-1)' : 'var(--fg-3)',
             fontFamily: 'var(--cp-font-body)',
           }}
@@ -60,7 +60,7 @@ function CustomSelect({ label, required, value, options, onChange, placeholder, 
         {open && (
           <div
             className="absolute top-full left-0 right-0 mt-1 rounded-lg border bg-white shadow-lg z-50 py-1 max-h-52 overflow-y-auto animate-scale-in"
-            style={{ borderColor: 'var(--bd-default, #2E2E2E)' }}
+            style={{ borderColor: 'var(--bd-default, var(--cp-ink-1, #2E2E2E))' }}
             role="listbox"
           >
             {isLoading ? (
@@ -160,7 +160,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
           {/* Project */}
           <div>
             <label className="text-[11px] uppercase font-semibold block mb-1" style={{ color: 'var(--fg-2)', letterSpacing: '0.05em', fontFamily: 'var(--cp-font-body)' }}>Project</label>
-            <div className="flex items-center gap-2 px-3 py-2 rounded-md border" style={{ borderColor: 'var(--bd-default, #2E2E2E)', backgroundColor: 'var(--hover, #1F1F1F)' }}>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-md border" style={{ borderColor: 'var(--bd-default, var(--cp-ink-1, #2E2E2E))', backgroundColor: 'var(--hover, #1F1F1F)' }}>
               <div className="w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold text-white" style={{ backgroundColor: 'var(--sem-success)' }}>B</div>
               <span className="text-[13px]" style={{ color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>Senaei BAU</span>
             </div>
@@ -195,7 +195,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
               onChange={e => setSummary(e.target.value)}
               placeholder="What needs to be done?"
               className="w-full px-3 py-2 rounded-md border text-[13px] transition-colors duration-[80ms] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus:outline-none"
-              style={{ borderColor: 'var(--bd-default, #2E2E2E)', color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
+              style={{ borderColor: 'var(--bd-default, var(--cp-ink-1, #2E2E2E))', color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
               autoFocus
             />
           </div>
@@ -209,7 +209,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
               placeholder="Add more details..."
               rows={3}
               className="w-full px-3 py-2 rounded-md border text-[13px] resize-none transition-colors duration-[80ms] focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus:outline-none"
-              style={{ borderColor: 'var(--bd-default, #2E2E2E)', color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
+              style={{ borderColor: 'var(--bd-default, var(--cp-ink-1, #2E2E2E))', color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
             />
           </div>
         </div>

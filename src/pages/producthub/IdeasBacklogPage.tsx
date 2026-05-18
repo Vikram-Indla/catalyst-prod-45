@@ -343,16 +343,16 @@ export default function IdeasBacklogPage() {
 function StatusBadge({ status }: { status: string }) {
   const { isDark } = useTheme();
   const darkColors: Record<string, { bg: string; text: string }> = {
-    'Draft':                    { bg: 'var(--ds-border, #2E2E2E)', text: 'rgba(255,255,255,0.72)' },
-    'Submitted':                { bg: 'var(--ds-border, #2E2E2E)', text: 'rgba(255,255,255,0.72)' },
+    'Draft':                    { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'rgba(255,255,255,0.72)' },
+    'Submitted':                { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'rgba(255,255,255,0.72)' },
     'Under Review':             { bg: 'rgba(59,130,246,0.15)', text: '#93C5FD' },
     'Approved':                 { bg: 'rgba(59,130,246,0.15)', text: '#93C5FD' },
-    'Rejected':                 { bg: 'var(--ds-border, #2E2E2E)', text: 'rgba(255,255,255,0.72)' },
+    'Rejected':                 { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'rgba(255,255,255,0.72)' },
     'Converted':                { bg: 'rgba(22,163,74,0.15)', text: '#86EFAC' },
     'Converted to Request':  { bg: 'rgba(22,163,74,0.15)', text: '#86EFAC' },
   };
   const s = isDark
-    ? (darkColors[status] ?? { bg: 'var(--ds-border, #2E2E2E)', text: 'var(--ds-text-subtlest, #A1A1A1)' })
+    ? (darkColors[status] ?? { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'var(--ds-text-subtlest, #A1A1A1)' })
     : (STATUS_LOZENGE_COLORS[status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: '#42526E' });
   const label = status === 'Converted to Request' ? 'CONVERTED' : status.toUpperCase();
   return (

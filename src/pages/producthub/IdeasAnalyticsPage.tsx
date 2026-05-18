@@ -18,7 +18,7 @@ const STATUS_TEXT_COLORS: Record<string, string> = {
   'Draft': '#42526E', 'Submitted': '#42526E', 'Under Review': 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', 'Approved': 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', 'Converted to Request': 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
 };
 const STATUS_BAR_COLORS_DARK: Record<string, string> = {
-  'Draft': 'var(--ds-border, #2E2E2E)', 'Submitted': 'var(--ds-border, #2E2E2E)', 'Under Review': 'rgba(59,130,246,0.15)',
+  'Draft': 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', 'Submitted': 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', 'Under Review': 'rgba(59,130,246,0.15)',
   'Approved': 'rgba(59,130,246,0.15)', 'Converted to Request': 'rgba(22,163,74,0.15)',
 };
 const STATUS_TEXT_COLORS_DARK: Record<string, string> = {
@@ -123,7 +123,7 @@ export default function IdeasAnalyticsPage() {
                   <div style={{ flex: 1, height: '28px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
                     <div style={{
                       width: `${Math.max((s.count / maxFunnel) * 100, s.count > 0 ? 8 : 0)}%`, height: '100%',
-                      background: isDark ? (STATUS_BAR_COLORS_DARK[s.status] || 'var(--ds-border, #2E2E2E)') : (STATUS_BAR_COLORS[s.status] || 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))'),
+                      background: isDark ? (STATUS_BAR_COLORS_DARK[s.status] || 'var(--ds-border, var(--cp-ink-1, #2E2E2E))') : (STATUS_BAR_COLORS[s.status] || 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))'),
                       borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px',
                       color: isDark ? (STATUS_TEXT_COLORS_DARK[s.status] || dk.t2) : (STATUS_TEXT_COLORS[s.status] || '#42526E'),
                       fontSize: '12px', fontWeight: 700, minWidth: s.count > 0 ? '32px' : undefined,

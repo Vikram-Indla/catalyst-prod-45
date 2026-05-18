@@ -129,7 +129,7 @@ export function RoadmapFiltersDialog({
                     "px-3 py-1.5 rounded-full text-sm font-medium border transition-all",
                     localFilters.activePlatformFilter === pf.id
                       ? "bg-brand-primary text-white border-brand-primary"
-                      : "bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] text-foreground border-border dark:border-[var(--ds-border,#2E2E2E)] hover:bg-muted/50 hover:border-muted-foreground/30"
+                      : "bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] text-foreground border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] hover:bg-muted/50 hover:border-muted-foreground/30"
                   )}
                   onClick={() => handlePlatformFilterClick(pf.id)}
                 >

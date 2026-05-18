@@ -1255,7 +1255,7 @@
 
 /* Period toggle */
 .dark #r360-root .r3-period-toggle {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark #r360-root .r3-period-toggle button {
   background: var(--cp-bg-surface, #242528) !important;
@@ -1281,18 +1281,18 @@
 .dark #r360-root .r3-board-card,
 .dark #r360-root .r3-chrono-card {
   background: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Ring canvas + actual ring classes used by this page */
 .dark #r360-root .r3-ring-canvas {
   background: var(--cp-bg-page, #1F1F21) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark #r360-root .r3-ring-card,
 .dark #r360-root .r3-ring-center,
 .dark #r360-root .r3-spoke-label {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark #r360-root .r3-ring-card,
 .dark #r360-root .r3-spoke-label {
@@ -1362,7 +1362,7 @@
 .dark #r360-root .r3-filter-pill,
 .dark #r360-root select {
   background: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   color: var(--ds-text-subtlest, #A1A1A1) !important;
 }
 
@@ -1393,11 +1393,11 @@
 /* ─── RING VIEW — Dark overrides ─── */
 .dark #r360-root .r3-ring-canvas {
   background: var(--cp-bg-page, #1F1F21) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark #r360-root .r3-ring-card {
   background: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   box-shadow: none !important;
 }
 .dark #r360-root .r3-ring-card:hover {
@@ -1424,12 +1424,12 @@
 }
 .dark #r360-root .r3-spoke-label {
   background: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   color: var(--ds-text-subtlest, #A1A1A1) !important;
 }
 .dark #r360-root .r3-ring-spokes line,
 .dark #r360-root .r3-ring-spokes path {
-  stroke: var(--ds-border, #2E2E2E) !important;
+  stroke: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* ─── PROFILE HEADER — Dark overrides ─── */
@@ -1443,12 +1443,12 @@
   color: var(--ds-text-subtlest, #A1A1A1) !important;
 }
 .dark #r360-root .r3-profile-avatar {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Tabs — Dark overrides */
 .dark #r360-root .r3-tabs {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark #r360-root .r3-tab {
   color: var(--ds-text-subtlest, #878787) !important;
@@ -1465,7 +1465,7 @@
 .dark #r360-root .r3-btn-outline {
   background: var(--cp-bg-surface, #242528) !important;
   color: var(--ds-text, #EDEDED) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark #r360-root .r3-btn-outline:hover {
   background: var(--ds-surface-overlay, #1F1F1F) !important;
@@ -1475,10 +1475,10 @@
 /* Drawer / side panel */
 .dark #r360-root .item-drawer {
   background: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark #r360-root .item-drawer .drawer-header {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Board column backgrounds */
@@ -1545,7 +1545,7 @@
 .dark #r360-root [style*="border: 1px solid var(--cp-border, #E2E8F0)"],
 .dark #r360-root [style*="border-color: var(--cp-border, #E2E8F0)"],
 .dark #r360-root [style*="border-color:var(--cp-border, #E2E8F0)"] {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark #r360-root [style*="color: var(--cp-ink-1, #0F172A)"],
 .dark #r360-root [style*="color:var(--cp-ink-1, #0F172A)"],
@@ -1587,7 +1587,7 @@
 .dark #r360-root [style*="border-bottom: 1px solid var(--cp-border, #E2E8F0)"],
 .dark #r360-root [style*="borderBottom: 1px solid var(--cp-bg-sunken, #F1F5F9)"],
 .dark #r360-root [style*="border-color: var(--cp-border, #E2E8F0)"] {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Light text colors → ADS text hierarchy */
@@ -1615,6 +1615,6 @@
 /* Divider lines using light-mode colors */
 .dark #r360-root [style*="background: var(--cp-border, #E2E8F0)"],
 .dark #r360-root [style*="background: var(--cp-bg-sunken, #F1F5F9)"] {
-  background: var(--ds-border, #2E2E2E) !important;
+  background: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 

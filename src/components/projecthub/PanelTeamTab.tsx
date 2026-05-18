@@ -132,9 +132,9 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
       <div className="space-y-3 p-4">
         {[1, 2, 3].map(i => (
           <div key={i} className="animate-pulse flex items-center gap-3">
-            <div className="bg-slate-200 dark:bg-[var(--ds-border,#2E2E2E)]" style={{ width: 40, height: 40, borderRadius: '50%' }} />
+            <div className="bg-slate-200 dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ width: 40, height: 40, borderRadius: '50%' }} />
             <div className="flex-1 space-y-1.5">
-              <div className="h-3 bg-slate-200 dark:bg-[var(--ds-border,#2E2E2E)] rounded w-1/2" />
+              <div className="h-3 bg-slate-200 dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded w-1/2" />
               <div className="h-2.5 bg-slate-100 dark:bg-[var(--ds-border,#292929)] rounded w-1/3" />
             </div>
           </div>
@@ -147,7 +147,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
     <div>
       {/* Search + Add button */}
       <div className="flex items-center gap-2 mx-4 mt-3 mb-2">
-        <div className="flex items-center gap-2 flex-1 rounded-lg bg-white dark:bg-transparent border border-[var(--ds-text-disabled,#CBD5E1)] dark:border-[var(--ds-border,#2E2E2E)]" style={{ height: 38, padding: '8px 12px' }}>
+        <div className="flex items-center gap-2 flex-1 rounded-lg bg-white dark:bg-transparent border border-[var(--ds-text-disabled,#CBD5E1)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ height: 38, padding: '8px 12px' }}>
           <Search size={14} className="shrink-0 text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-[#7D7D7D]" />
           <input
             value={search}
@@ -168,8 +168,8 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
 
       {/* Search suggestions */}
       {searchSuggestions.length > 0 && (
-        <div className="mx-4 mb-3 rounded-lg overflow-hidden border border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)] bg-white dark:bg-transparent">
-          <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] dark:text-[var(--ds-text-subtlest,#878787)] bg-[var(--ds-surface-sunken,#F8FAFC)] dark:bg-transparent border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] dark:border-[var(--ds-border,#2E2E2E)]" style={{ padding: '6px 12px', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+        <div className="mx-4 mb-3 rounded-lg overflow-hidden border border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-transparent">
+          <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] dark:text-[var(--ds-text-subtlest,#878787)] bg-[var(--ds-surface-sunken,#F8FAFC)] dark:bg-transparent border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ padding: '6px 12px', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Add from directory
           </div>
           {searchSuggestions.map(u => (
@@ -224,7 +224,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{g.category}</span>
                 <span className="rounded-full bg-[var(--ds-background-selected,#EFF6FF)] dark:bg-[rgba(59,130,246,0.15)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] dark:text-[var(--ds-text-brand,#60A5FA)]" style={{ padding: '1px 7px', fontSize: 10, fontWeight: 700 }}>{g.members.length}</span>
-                <div className="flex-1 bg-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:bg-[var(--ds-border,#2E2E2E)]" style={{ height: 1 }} />
+                <div className="flex-1 bg-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ height: 1 }} />
               </div>
 
               <div className="space-y-0.5">

@@ -32,7 +32,7 @@ const LOZENGE_STYLES_LIGHT: Record<LozengeColor, { bg: string; text: string }> =
 };
 
 const LOZENGE_STYLES_DARK: Record<LozengeColor, { bg: string; text: string }> = {
-  default:    { bg: 'var(--ds-border, #2E2E2E)',            text: 'var(--ds-text-subtlest, #A1A1A1)' },
+  default:    { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',            text: 'var(--ds-text-subtlest, #A1A1A1)' },
   inprogress: { bg: 'rgba(59,130,246,0.10)',  text: '#7DB8FC' },
   success:    { bg: 'rgba(74,222,128,0.10)',  text: '#4ADE80' },
   removed:    { bg: 'rgba(248,113,113,0.10)', text: '#F87171' },

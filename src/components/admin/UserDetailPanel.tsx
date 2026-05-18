@@ -302,7 +302,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
   const user = data?.data;
 
   const T = isDark ? {
-    surface: 'var(--ds-surface, #0A0A0A)', border: 'var(--ds-border, #2E2E2E)', text1: 'var(--ds-text, #EDEDED)',
+    surface: 'var(--ds-surface, #0A0A0A)', border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text1: 'var(--ds-text, #EDEDED)',
     text2: 'var(--ds-text-subtlest, #A1A1A1)', text3: 'var(--ds-text-subtlest, #878787)', sunken: 'var(--ds-surface, #0A0A0A)',
     elevated: 'var(--ds-surface-raised, #1A1A1A)', inputBg: 'var(--ds-surface-raised, #1A1A1A)',
   } : {

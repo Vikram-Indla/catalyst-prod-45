@@ -123,7 +123,7 @@ export function WeeklySummaryView() {
             <div 
               key={kpi.label}
               className={cn(
-                "bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-lg p-4 border border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] text-center transition-all hover:-translate-y-0.5 hover:shadow-md",
+                "bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-lg p-4 border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-center transition-all hover:-translate-y-0.5 hover:shadow-md",
                 kpi.highlight && "border-emerald-400 bg-emerald-50"
               )}
             >
@@ -136,8 +136,8 @@ export function WeeklySummaryView() {
         {/* Dashboard Grid - 2 columns */}
         <div className="grid grid-cols-2 gap-4">
           {/* Releases Card */}
-          <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,#2E2E2E)]">
+          <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
               <div className="flex items-center gap-2">
                 <Rocket className="w-5 h-5 text-blue-600" />
                 <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">Releases</h3>
@@ -169,8 +169,8 @@ export function WeeklySummaryView() {
           </div>
 
           {/* Incidents Card */}
-          <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,#2E2E2E)]">
+          <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-amber-600" />
                 <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">Incidents</h3>
@@ -206,8 +206,8 @@ export function WeeklySummaryView() {
           </div>
 
           {/* Defects Card */}
-          <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,#2E2E2E)]">
+          <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
               <div className="flex items-center gap-2">
                 <Bug className="w-5 h-5 text-red-600" />
                 <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">Defects</h3>
@@ -242,8 +242,8 @@ export function WeeklySummaryView() {
           </div>
 
           {/* Stories Card */}
-          <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,#2E2E2E)]">
+          <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
               <div className="flex items-center gap-2">
                 <GitBranch className="w-5 h-5 text-purple-600" />
                 <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">Stories</h3>

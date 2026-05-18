@@ -38,7 +38,7 @@ export default function WikiSubscriptionsPage() {
   const [newTag, setNewTag] = useState('');
   const { isDark } = useTheme();
 
-  const border = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.06)';
+  const border = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(0,0,0,0.06)';
 
   // Fetch subscriptions
   const { data: subs = [], isLoading } = useQuery({
@@ -167,7 +167,7 @@ export default function WikiSubscriptionsPage() {
           placeholder="Add a tag..."
           style={{
             height: 32, padding: '8px 12px', fontSize: 12, borderRadius: 6,
-            border: `0.75px solid ${isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.1)'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            border: `0.75px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(0,0,0,0.1)'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             outline: 'none', width: 180, color: isDark ? 'var(--ds-text, #EDEDED)' : undefined,
           }}
         />

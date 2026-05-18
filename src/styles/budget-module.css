@@ -122,7 +122,7 @@
   --slate-500: #7D7D7D;
   --slate-400: var(--fg-4, rgba(237,237,237,0.30));
   --slate-300: var(--ds-border-bold, #454545);
-  --slate-200: var(--ds-border, #2E2E2E);
+  --slate-200: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --slate-100: var(--ds-border, #292929);
   --slate-50: var(--ds-surface-overlay, #1F1F1F);
   --white: var(--cp-bg-surface, #242528);
@@ -133,14 +133,14 @@
   --budget-text-primary: var(--fg-1, #EDEDED);
   --budget-text-secondary: var(--fg-2, #A1A1A1);
   --budget-text-muted: var(--fg-3, #878787);
-  --budget-border: var(--ds-border, #2E2E2E);
+  --budget-border: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --budget-border-strong: var(--ds-border-bold, #454545);
 
   /* Legacy aliases */
   --budget-bg: var(--cp-bg-page, #1F1F21);
   --budget-surface: var(--cp-bg-surface, #242528);
   --budget-text: var(--fg-1, #EDEDED);
-  --budget-border-light: var(--ds-border, #2E2E2E);
+  --budget-border-light: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 
   /* Primary surfaces used in info/expanded rows */
   --budget-primary-bg: rgba(59,130,246,0.10);

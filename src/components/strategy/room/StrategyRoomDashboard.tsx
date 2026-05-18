@@ -87,7 +87,7 @@ const TOKENS = `
   --srd-bg: var(--ds-surface, #0A0A0A);
   --srd-bg-2: var(--ds-surface, #0A0A0A);
   --srd-bg-3: var(--ds-border, #292929);
-  --srd-bdr: var(--ds-border, #2E2E2E);
+  --srd-bdr: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --srd-bdr-s: var(--ds-border-bold, #454545);
   --srd-blue: var(--ds-text-brand, #3B82F6);
   --srd-blue-h: var(--ds-text-brand, #60A5FA);

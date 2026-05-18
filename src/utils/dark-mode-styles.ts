@@ -24,11 +24,11 @@ export const DK: DarkTokens = {
   cardBg:        'var(--cp-bg-elevated, #22272B)',
   headerBg:      'var(--cp-bg-elevated, #22272B)',
   tableHeaderBg: 'var(--cp-bg-sunken, #161A1D)',
-  hoverBg:       'var(--cp-interact-hover, #2E2E2E)',
+  hoverBg:       'var(--cp-interact-hover, var(--cp-ink-1, #2E2E2E))',
   selectedBg:    'var(--cp-interact-selected, rgba(59,130,246,0.15))',
   floatBg:       'var(--cp-float, #1A1A1A)',
   chipBg:        'var(--cp-bg-sunken, #292929)',
-  progressTrack: 'var(--cp-border-default, #2E2E2E)',
+  progressTrack: 'var(--cp-border-default, var(--cp-ink-1, #2E2E2E))',
   iconBg:        'var(--cp-bg-sunken, #292929)',
 
   t1: 'var(--cp-text-primary, #EDEDED)',
@@ -36,7 +36,7 @@ export const DK: DarkTokens = {
   t3: 'var(--cp-text-tertiary, #A1A1A1)',
   t4: 'var(--cp-text-tertiary, #878787)',
 
-  border:       'var(--cp-border-default, #2E2E2E)',
+  border:       'var(--cp-border-default, var(--cp-ink-1, #2E2E2E))',
   borderStrong: 'var(--cp-border-strong, #454545)',
   divider:      'var(--cp-border-default, #292929)',
 

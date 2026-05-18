@@ -89,7 +89,7 @@ export function ColumnsPanel({
     >
       <div 
         className="px-4 py-3 border-b flex items-center justify-between"
-        style={{ borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)' }}
+        style={{ borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)' }}
       >
         <span 
           className="text-sm font-semibold"
@@ -141,7 +141,7 @@ export function ColumnsPanel({
       <div 
         className="px-4 py-3 border-t flex gap-2"
         style={{ 
-          borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)',
+          borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)',
           backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--surface-2)',
         }}
       >

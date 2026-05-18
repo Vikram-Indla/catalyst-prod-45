@@ -50,7 +50,7 @@ export function ReleasesToolbar({
           placeholder="Search releases..."
           value={filter.search}
           onChange={(e) => onSearch(e.target.value)}
-          className="pl-10 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-slate-200 dark:border-[var(--ds-border,#2E2E2E)]"
+          className="pl-10 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]"
         />
         {filter.search && (
           <button

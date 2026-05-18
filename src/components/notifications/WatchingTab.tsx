@@ -233,7 +233,7 @@ export default function WatchingTab({ unreadOnly, isDark }: WatchingTabProps) {
   if (visible.length === 0) return <EmptyState isDark={isDark} />;
 
   const groups = groupByDate(visible);
-  const dividerColor = isDark ? 'var(--ds-border, #2E2E2E)' : token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)');
+  const dividerColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)');
 
   return (
     <Box xcss={panelXcss}>

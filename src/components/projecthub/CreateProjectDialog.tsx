@@ -126,8 +126,8 @@ export function CreateProjectDialog({ open, onClose }: Props) {
   const textPrimary = dk ? 'rgba(255,255,255,0.92)' : 'var(--fg-1)';
   const textSecondary = dk ? 'rgba(255,255,255,0.72)' : 'var(--fg-2)';
   const textMuted = dk ? 'rgba(255,255,255,0.55)' : 'var(--fg-4)';
-  const border = dk ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)';
-  const divider = dk ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)';
+  const border = dk ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)';
+  const divider = dk ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)';
   const inputBg = dk ? 'transparent' : 'var(--bg-app)';
   const closeHoverBg = dk ? 'var(--ds-border, #292929)' : 'var(--cp-bd-zone)';
   const cancelBg = dk ? 'transparent' : 'var(--bg-app)';

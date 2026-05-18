@@ -153,10 +153,10 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)]">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
           <button
             onClick={step === 0 ? onClose : () => setStep(s => s - 1)}
-            className="rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,#F8FAFC)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] bg-white dark:bg-transparent border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)] text-[var(--cp-ink-2, var(--cp-ink-2, #334155))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]"
+            className="rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,#F8FAFC)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] bg-white dark:bg-transparent border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--cp-ink-2, var(--cp-ink-2, #334155))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]"
             style={{
               height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500,
               borderRadius: 6, cursor: 'pointer',

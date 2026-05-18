@@ -42,7 +42,7 @@ export function T10RenameModal({ isOpen, onClose, currentName, onRename }: T10Re
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-[var(--ds-border,#2E2E2E)]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
           <h2 className="text-lg font-semibold text-slate-900 dark:text-[var(--ds-text,#EDEDED)]">Rename List</h2>
           <button
             type="button"
@@ -72,7 +72,7 @@ export function T10RenameModal({ isOpen, onClose, currentName, onRename }: T10Re
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] bg-slate-50 dark:bg-[#111111]">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50 dark:bg-[#111111]">
           <button
             type="button"
             onClick={onClose}

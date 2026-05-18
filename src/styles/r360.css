@@ -412,11 +412,11 @@
 .dark #r360-root .r3-table th {
   background: var(--ds-surface-overlay, #1F1F1F);
   color: var(--ds-text-subtlest, #878787);
-  border-bottom-color: var(--ds-border, #2E2E2E);
+  border-bottom-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 .dark #r360-root .r3-table td {
   color: var(--ds-text, #EDEDED);
-  border-bottom-color: var(--ds-border, #2E2E2E);
+  border-bottom-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 .dark #r360-root .r3-table tbody tr:hover {
   background: var(--ds-surface-overlay, #1F1F1F);
@@ -431,7 +431,7 @@
 /* FIX 5: Action icons — neutral at rest, brighter on hover */
 .dark #r360-root .r3-btn {
   background: transparent;
-  border-color: var(--ds-border, #2E2E2E);
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   color: var(--ds-text-subtlest, #878787);
 }
 .dark #r360-root .r3-btn:hover {
@@ -443,7 +443,7 @@
 /* FIX 6: Filter chips dark mode */
 .dark #r360-root .r3-chip {
   background: transparent;
-  border-color: var(--ds-border, #2E2E2E);
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   color: var(--ds-text-subtlest, #A1A1A1);
 }
 .dark #r360-root .r3-chip:hover {
@@ -478,7 +478,7 @@
 }
 .dark #r360-root .r3-search {
   background-color: transparent;
-  border-color: var(--ds-border, #2E2E2E);
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   color: var(--ds-text, #EDEDED);
 }
 .dark #r360-root .r3-search:focus {
@@ -502,14 +502,14 @@
 /* Profile card */
 .dark #r360-root .r3-profile {
   background: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* KPI cards */
 .dark #r360-root .r3-kpi--stale,
 .dark #r360-root .r3-kpi {
   background: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Tab bar */
@@ -532,7 +532,7 @@
 .dark #r360-root .r3-toggle button {
   background: var(--cp-bg-surface, #242528) !important;
   color: var(--ds-text-subtlest, #A1A1A1) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark #r360-root .r3-toggle button.active {
   background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) !important;
@@ -567,7 +567,7 @@
 .dark #r360-root .r3-status-chip {
   background: var(--cp-bg-surface, #242528) !important;
   color: var(--ds-text-subtlest, #A1A1A1) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark #r360-root .r3-status-chip.active {
   background: rgba(37,99,235,0.12) !important;
@@ -589,13 +589,13 @@
 .dark #r360-root .r3-ring-canvas,
 .dark .r3-ring-canvas {
   background: var(--cp-bg-page, #1F1F21) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Ring view cards */
 .dark #r360-root .r3-ring-card {
   background: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   box-shadow: none !important;
 }
 .dark #r360-root .r3-ring-card:hover {
@@ -609,7 +609,7 @@
 }
 .dark #r360-root .r3-board-item {
   background: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark #r360-root .r3-board-item:hover {
   box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
@@ -624,19 +624,19 @@
 }
 .dark #r360-root .r3-chrono-item {
   background: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Detail panel / drawer */
 .dark #r360-root .r3-detail-panel {
   background: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Search input */
 .dark #r360-root .r3-search {
   background: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   color: var(--ds-text, #EDEDED) !important;
 }
 
@@ -644,7 +644,7 @@
 .dark #r360-root .r3-quarter-picker,
 .dark #r360-root .r3-nav-btn {
   background: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   color: var(--ds-text-subtlest, #A1A1A1) !important;
 }
 
@@ -668,7 +668,7 @@
 }
 .dark #r360-root [style*="border-color: var(--cp-border, #E2E8F0)"],
 .dark #r360-root [style*="border: 1px solid var(--cp-border, #E2E8F0)"] {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark #r360-root [style*="color: var(--cp-ink-1, #0F172A)"],
 .dark #r360-root [style*="color: #020617"],

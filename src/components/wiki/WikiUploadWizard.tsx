@@ -44,7 +44,7 @@ function DocStatusPoller({ docId, fileName }: { docId: string; fileName: string 
       ) : (
         steps.map((s, si) => (
           <div key={si} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '3px 0', fontSize: 11, color: s.done ? 'var(--cp-success-60)' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-muted)') }}>
-            {s.done ? <Check size={12} /> : <span style={{ width: 8, height: 8, borderRadius: '50%', background: si === 0 && !isDone ? 'var(--cp-primary-60)' : (isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--cp-border-default)'), animation: si === 0 && !isDone ? 'wiki-pulse 1.5s ease-in-out infinite' : 'none' }} />}
+            {s.done ? <Check size={12} /> : <span style={{ width: 8, height: 8, borderRadius: '50%', background: si === 0 && !isDone ? 'var(--cp-primary-60)' : (isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--cp-border-default)'), animation: si === 0 && !isDone ? 'wiki-pulse 1.5s ease-in-out infinite' : 'none' }} />}
             {s.label}
           </div>
         ))
@@ -305,7 +305,7 @@ export function WikiUploadWizard({ open, onClose }: Props) {
               onClick={() => { if (step === 3) { setStep(4); handleProcess(); } else setStep(s => s + 1); }}
               style={{
                 fontSize: 12, fontWeight: 600, padding: '6px 16px', borderRadius: 4, border: 'none', cursor: 'pointer',
-                background: files.length === 0 && step === 1 ? (isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--cp-border-default)') : 'var(--cp-primary-60)', color: 'var(--cp-on-primary)',
+                background: files.length === 0 && step === 1 ? (isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--cp-border-default)') : 'var(--cp-primary-60)', color: 'var(--cp-on-primary)',
                 display: 'flex', alignItems: 'center', gap: 4, opacity: files.length === 0 && step === 1 ? 0.5 : 1,
               }}>
               {step === 3 ? 'Start Processing' : 'Next'} <ChevronRight size={14} />

@@ -73,7 +73,7 @@ export default function WikiAllArticlesPage() {
 
   const F = { sora: "'Sora', sans-serif", mono: "'JetBrains Mono', monospace" };
 
-  const borderColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.06)';
+  const borderColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(0,0,0,0.06)';
 
   return (
     <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, #F8FAFC)', minHeight: '100%', padding: '24px 40px 48px' }}>

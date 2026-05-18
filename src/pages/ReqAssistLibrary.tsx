@@ -252,7 +252,7 @@ export default function ReqAssistLibrary() {
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '0 14px', height: 50, fontSize: 13, fontWeight: 500,
-              border: `1px solid ${isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(15,23,42,0.18)'}`, borderRadius: 6,
+              border: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(15,23,42,0.18)'}`, borderRadius: 6,
               background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-secondary, #374151)', cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)',
               transition: 'background 80ms ease',

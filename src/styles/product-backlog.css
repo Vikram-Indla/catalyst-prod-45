@@ -123,16 +123,16 @@
   --cp-text-link: var(--ds-text-brand, #60A5FA);
 
   --cp-border-subtle: var(--ds-border, #292929);
-  --cp-border-default: var(--ds-border, #2E2E2E);
+  --cp-border-default: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --cp-border-strong: var(--ds-border-bold, #454545);
 
   --cp-interact-hover: var(--ds-surface-overlay, #1F1F1F);
-  --cp-interact-press: var(--ds-border, #2E2E2E);
+  --cp-interact-press: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --cp-interact-selected: rgba(59,130,246,0.10);
   --cp-interact-selected-hover: rgba(59,130,246,0.15);
 
   --cp-toolbar-bg: var(--ds-border, #292929);
-  --cp-toolbar-bg-hover: var(--ds-border, #2E2E2E);
+  --cp-toolbar-bg-hover: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --cp-toolbar-bg-press: var(--ds-border-bold, #454545);
   --cp-toolbar-bg-active: rgba(59,130,246,0.12);
 
@@ -168,7 +168,7 @@
 .dark .pb-table thead th , [data-theme="dark"] .pb-table thead th {
   background-color: var(--cp-bg-page, #1F1F21) !important;
   color: #7D7D7D;
-  border-bottom-color: var(--ds-border, #2E2E2E);
+  border-bottom-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 .dark .pb-table thead th:hover,
 .dark .pb-table thead th:hover , [data-theme="dark"] .pb-table thead th:hover {

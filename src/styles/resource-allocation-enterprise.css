@@ -448,7 +448,7 @@
   --ra-white: var(--cp-bg-surface, #242528);
   --ra-slate-50: var(--ds-surface-overlay, #1F1F1F);
   --ra-slate-100: var(--ds-border, #292929);
-  --ra-slate-200: var(--ds-border, #2E2E2E);
+  --ra-slate-200: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --ra-slate-300: var(--ds-border-bold, #454545);
   --ra-slate-400: var(--fg-4, rgba(237,237,237,0.30));
   --ra-slate-500: #7D7D7D;
@@ -458,10 +458,10 @@
 
   /* CELL */
   --ra-cell-bg: var(--cp-bg-surface, #242528);
-  --ra-cell-border: var(--ds-border, #2E2E2E);
+  --ra-cell-border: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 
   /* BAR TRACK */
-  --ra-bar-track-bg: var(--ds-border, #2E2E2E);
+  --ra-bar-track-bg: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 
   /* TEXT */
   --ra-text-percent: var(--fg-1, #EDEDED);

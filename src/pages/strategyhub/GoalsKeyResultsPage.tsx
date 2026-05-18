@@ -24,8 +24,8 @@ const DK = {
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
   t4: 'var(--cp-t4)',
-  border: 'var(--ds-border, #2E2E2E)',
-  borderSubtle: 'var(--ds-border, #2E2E2E)',
+  border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
+  borderSubtle: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
   hover: 'var(--ds-surface-overlay, #1F1F1F)',
 };
 

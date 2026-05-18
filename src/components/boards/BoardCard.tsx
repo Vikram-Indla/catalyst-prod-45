@@ -80,7 +80,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
         onMouseLeave={() => setHover(false)}
         style={{
           background: 'var(--bg-app)',
-          border: `0.75px solid ${isDark ? (hover ? 'var(--ds-border-bold, #454545)' : 'var(--ds-border, #2E2E2E)') : (hover ? 'rgba(15,23,42,0.18)' : 'rgba(15,23,42,0.12)')}`,
+          border: `0.75px solid ${isDark ? (hover ? 'var(--ds-border-bold, #454545)' : 'var(--ds-border, var(--cp-ink-1, #2E2E2E))') : (hover ? 'rgba(15,23,42,0.18)' : 'rgba(15,23,42,0.12)')}`,
           borderRadius: 8, cursor: 'pointer', position: 'relative',
           transition: 'box-shadow 150ms, border-color 150ms',
           boxShadow: hover ? (isDark ? '0 4px 16px rgba(0,0,0,0.30)' : '0 4px 16px rgba(15,23,42,0.10)') : 'none',

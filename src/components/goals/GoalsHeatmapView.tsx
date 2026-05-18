@@ -15,8 +15,8 @@ const DK = {
   t1: 'var(--cp-t1)',
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
-  border: 'var(--ds-border, #2E2E2E)',
-  borderSubtle: 'var(--ds-border, #2E2E2E)',
+  border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
+  borderSubtle: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
 };
 
 const QUARTERS = ['Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026'];

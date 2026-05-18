@@ -302,17 +302,17 @@
    DARK MODE — DARK MODE overrides
    ═══════════════════════════════════════════ */
 .dark .ap-heading { color: var(--ds-text, #EDEDED); }
-.dark .ap-tab-bar { border-color: var(--ds-border, #2E2E2E); }
+.dark .ap-tab-bar { border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .ap-tab { color: var(--ds-text-subtlest, #878787); }
 .dark .ap-tab:hover { color: var(--ds-text, #EDEDED); }
 .dark .ap-tab.active { color: #4C9AFF; border-bottom-color: #4C9AFF; }
 .dark .ap-sort-btn { color: var(--ds-text-subtlest, #878787); }
 .dark .ap-sort-btn:hover { background: var(--ds-surface-overlay, #1F1F1F); color: var(--ds-text, #EDEDED); }
 
-.dark .ap-composer-collapsed { border-color: var(--ds-border, #2E2E2E); }
+.dark .ap-composer-collapsed { border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .ap-composer-collapsed:hover { border-color: var(--ds-border-bold, #454545); }
 .dark .ap-composer-placeholder { color: var(--ds-text-subtlest, #878787); }
-.dark .ap-quick-btn { border-color: var(--ds-border, #2E2E2E); color: var(--ds-text-subtlest, #878787); }
+.dark .ap-quick-btn { border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); color: var(--ds-text-subtlest, #878787); }
 .dark .ap-quick-btn:hover { background: var(--ds-surface-overlay, #1F1F1F); color: var(--ds-text, #EDEDED); }
 
 .dark .ap-composer-editor .atlaskit-editor-wrapper { border-color: var(--ds-border-bold, #454545); }
@@ -325,7 +325,7 @@
 .dark .ap-quick-link { color: var(--ds-text-subtlest, #878787); }
 .dark .ap-quick-link:hover { color: #4C9AFF; }
 .dark .ap-pro-tip { color: var(--ds-text-subtlest, #878787); }
-.dark .ap-kbd { border-color: var(--ds-border, #2E2E2E); background: var(--cp-bg-surface, #242528); color: var(--ds-text, #EDEDED); }
+.dark .ap-kbd { border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); background: var(--cp-bg-surface, #242528); color: var(--ds-text, #EDEDED); }
 
 .dark .ap-timeline-name { color: var(--ds-text, #EDEDED); }
 .dark .ap-timeline-time { color: var(--ds-text-subtlest, #878787); }

@@ -530,7 +530,7 @@
 
 .dark .jf-trigger-btn {
   background: transparent;
-  border-color: var(--ds-border, #2E2E2E);
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   color: var(--ds-text, #EDEDED);
 }
 .dark .jf-trigger-btn:hover {
@@ -545,13 +545,13 @@
 
 .dark .jf-panel {
   background: var(--cp-bg-surface, #242528);
-  border-color: var(--ds-border, #2E2E2E);
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   color: var(--ds-text, #EDEDED);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
 }
 
 .dark .jf-tabs-container {
-  border-color: var(--ds-border, #2E2E2E);
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 .dark .jf-tab {
   color: var(--ds-text-subtlest, #878787);
@@ -566,7 +566,7 @@
 }
 
 .dark .jf-left-pane::after {
-  background-color: var(--ds-border, #2E2E2E);
+  background-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 .dark .jf-category-item {
   color: var(--ds-text-subtlest, #A1A1A1);
@@ -589,7 +589,7 @@
 
 .dark .jf-search-box {
   background: #111111;
-  border-color: var(--ds-border, #2E2E2E);
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 .dark .jf-search-box:focus-within {
   border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
@@ -625,7 +625,7 @@
 
 .dark .jf-footer {
   background-color: #111111;
-  border-top-color: var(--ds-border, #2E2E2E);
+  border-top-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 .dark .jf-shortcut {
   color: var(--ds-text-subtlest, #878787);

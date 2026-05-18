@@ -28,7 +28,7 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
             className="rounded-xl border cursor-pointer overflow-hidden"
             style={{
               background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)',
-              borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)',
+              borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)',
               transition: 'transform 200ms ease, box-shadow 200ms ease',
               animation: `fadeUp 300ms ease ${i * 60}ms both`,
             }}
@@ -107,7 +107,7 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
       })}
 
       {themes.length === 0 && (
-        <div className="col-span-full flex items-center justify-center rounded-xl border" style={{ height: 200, borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)', color: isDark ? DK.t3 : 'var(--fg-4)', fontSize: 13 }}>
+        <div className="col-span-full flex items-center justify-center rounded-xl border" style={{ height: 200, borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)', color: isDark ? DK.t3 : 'var(--fg-4)', fontSize: 13 }}>
           No themes match the current filters.
         </div>
       )}

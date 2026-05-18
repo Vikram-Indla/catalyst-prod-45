@@ -62,12 +62,12 @@ export default function TriageQueuePage() {
       {isLoading ? (
         <SkeletonRows count={5} />
       ) : unlinked.length === 0 ? (
-        <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,#2E2E2E)] p-10 flex flex-col items-center gap-2">
+        <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] p-10 flex flex-col items-center gap-2">
           <CheckCircle size={24} className="text-[#15803D]" />
           <span className="text-[14px] font-bold text-[#15803D]" style={{ fontFamily: RH.fontDisplay }}>No unlinked work items — pipeline is clean ✓</span>
         </div>
       ) : (
-        <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,#2E2E2E)] overflow-hidden">
+        <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
             <thead>
               <tr style={{ background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
@@ -119,7 +119,7 @@ export default function TriageQueuePage() {
                           <TriageLinkDropdown releases={releases} onLink={(releaseId) => linkChangeToRelease(c.id, releaseId)} />
                         )}
                         <button onClick={() => ignoreTriageItem(c.id)}
-                          className="h-7 px-3 rounded text-[11px] font-medium border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,#2E2E2E)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] hover:text-[var(--ds-text-subtle,#475569)]">
+                          className="h-7 px-3 rounded text-[11px] font-medium border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] hover:text-[var(--ds-text-subtle,#475569)]">
                           Ignore
                         </button>
                       </div>
@@ -140,13 +140,13 @@ function TriageLinkDropdown({ releases, onLink }: { releases: any[]; onLink: (re
   return (
     <div className="relative">
       <button onClick={() => setOpen(!open)}
-        className="h-7 px-3 rounded text-[11px] font-semibold border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,#2E2E2E)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] flex items-center gap-1">
+        className="h-7 px-3 rounded text-[11px] font-semibold border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] flex items-center gap-1">
         Link Release <ChevronDown size={10} />
       </button>
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute top-full right-0 mt-1 w-48 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-md shadow-lg border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,#2E2E2E)] z-50 py-1 max-h-48 overflow-y-auto">
+          <div className="absolute top-full right-0 mt-1 w-48 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-md shadow-lg border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] z-50 py-1 max-h-48 overflow-y-auto">
             {releases.length === 0 ? (
               <div className="px-3 py-2 text-[12px] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]">No releases available</div>
             ) : releases.map((r: any) => (

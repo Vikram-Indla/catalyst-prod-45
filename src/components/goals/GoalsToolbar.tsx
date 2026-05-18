@@ -27,7 +27,7 @@ const DK = {
   t1: 'var(--cp-t1)',
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
-  border: 'var(--ds-border, #2E2E2E)',
+  border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
   hover: 'var(--ds-surface-overlay, #1F1F1F)',
   float: 'var(--ds-surface-raised, #1A1A1A)',
 };
@@ -147,7 +147,7 @@ export function GoalsToolbar({
                 padding: '5px 12px', fontSize: 12,
                 fontWeight: active ? 600 : 500,
                 color: active ? (isDark ? 'var(--bg-app)' : 'var(--fg-1)') : (isDark ? 'var(--fg-4)' : 'var(--fg-3)'),
-                background: active ? (isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--bg-app)') : 'transparent',
+                background: active ? (isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bg-app)') : 'transparent',
                 border: 'none', borderRadius: 6, cursor: 'pointer',
                 boxShadow: active && !isDark ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
                 transition: 'all 150ms',

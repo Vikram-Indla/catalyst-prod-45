@@ -76,7 +76,7 @@ function useTokens(dk: boolean) {
     elevatedBg:   dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     headerBg:     dk ? '#111111' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     hoverBg:      dk ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--ds-surface-sunken, #F8FAFC)',
-    border:       dk ? 'var(--ds-border, #2E2E2E)' : 'var(--ds-border, var(--cp-border, #E2E8F0))',
+    border:       dk ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, var(--cp-border, #E2E8F0))',
     borderSubtle: dk ? 'var(--ds-border, #292929)' : '#f3f4f6',
     borderInput:  dk ? 'var(--ds-border-bold, #454545)' : '#DDDEE1',
     borderFocus:  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',

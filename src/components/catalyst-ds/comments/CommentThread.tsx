@@ -94,7 +94,7 @@ function CommentThread({
             <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">{emptyMessage}</p>
           </div>
         ) : (
-          <div className="divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,#2E2E2E)]">
+          <div className="divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
             {sortedComments.map((comment) => {
               if (editingId === comment.id) {
                 return (

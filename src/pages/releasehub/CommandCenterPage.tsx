@@ -357,7 +357,7 @@ export default function CommandCenterPage() {
           </div>
 
           {/* AI Conflict Alert — computed */}
-          <div className="mt-4 rounded-[6px] p-3.5" style={{ background: isDark ? 'rgba(37,99,235,0.08)' : alertBgColor, border: `0.75px solid ${isDark ? 'var(--ds-border, #2E2E2E)' : alertBorderColor + '33'}` }}>
+          <div className="mt-4 rounded-[6px] p-3.5" style={{ background: isDark ? 'rgba(37,99,235,0.08)' : alertBgColor, border: `0.75px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : alertBorderColor + '33'}` }}>
             <div className="flex items-center gap-1.5 mb-1">
               <Sparkles size={12} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
               <span className="text-[11px] font-bold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] uppercase">AI Conflict Alert</span>

@@ -30,9 +30,9 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
   const noDates = themes.filter(t => !t.start_date || !t.target_completion);
 
   return (
-    <div className="rounded-xl border overflow-hidden bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-slate-200 dark:border-[var(--ds-border,#2E2E2E)]">
+    <div className="rounded-xl border overflow-hidden bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
       {/* Header */}
-      <div className="flex border-b border-slate-200 dark:border-[var(--ds-border,#2E2E2E)]">
+      <div className="flex border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
         <div className="shrink-0 flex items-center bg-slate-50 dark:bg-[var(--ds-surface-overlay,#1F1F1F)]" style={{ width: 220, height: 50, padding: '8px 12px' }}>
           <span className="text-[10.5px] font-semibold text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)] uppercase tracking-wide">Theme</span>
         </div>
@@ -75,7 +75,7 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
             </div>
 
             {/* Timeline area */}
-            <div className="flex-1 relative border-l border-slate-200 dark:border-[var(--ds-border,#2E2E2E)]">
+            <div className="flex-1 relative border-l border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
               {/* Month gridlines + alternating shading */}
               {MONTHS.map((_, i) => (
                 <div key={i} className="absolute top-0 bottom-0 border-l border-dashed border-slate-100 dark:border-[var(--ds-surface-overlay,#1F1F1F)]" style={{
@@ -126,7 +126,7 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
             <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: theme.color }} />
             <span className="truncate text-xs font-medium text-slate-900 dark:text-[var(--ds-text,#EDEDED)]">{theme.title}</span>
           </div>
-          <div className="flex-1 flex items-center justify-center border-l border-slate-200 dark:border-[var(--ds-border,#2E2E2E)]">
+          <div className="flex-1 flex items-center justify-center border-l border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
             <span className="text-[11px] text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)]">No dates set</span>
           </div>
         </div>

@@ -14,7 +14,7 @@ export default function WikiVerificationPage() {
   const [refreshing, setRefreshing] = useState(false);
   const { isDark } = useTheme();
 
-  const border = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.06)';
+  const border = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(0,0,0,0.06)';
 
   const handleVerify = async (id: string) => {
     const { data: session } = await supabase.auth.getSession();

@@ -229,13 +229,13 @@ export function Toolbar({
       </DropdownMenu>
 
       {/* View Toggle */}
-      <div className="flex border border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] rounded-md overflow-hidden">
+      <div className="flex border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-md overflow-hidden">
         {views.map(({ mode, icon, label }) => (
           <button
             key={mode}
             onClick={() => onViewModeChange(mode)}
             className={cn(
-              "h-[34px] flex items-center gap-1.5 px-3 border-r border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] last:border-r-0 transition-colors text-xs font-medium",
+              "h-[34px] flex items-center gap-1.5 px-3 border-r border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] last:border-r-0 transition-colors text-xs font-medium",
               viewMode === mode
                 ? "bg-blue-50 text-blue-600"
                 : "text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)] hover:text-slate-600 dark:hover:text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"

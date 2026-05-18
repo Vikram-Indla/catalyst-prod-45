@@ -26,7 +26,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
 
   return (
     <header
-      className="flex items-center flex-shrink-0 bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-b border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)]"
+      className="flex items-center flex-shrink-0 bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-b border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]"
       style={{
         height: 48,
         paddingLeft: 16,
@@ -100,7 +100,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
 
         {/* Search bar */}
         <div
-          className="flex items-center gap-2 rounded-md bg-[var(--ds-surface-sunken,#F8FAFC)] dark:bg-transparent border border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)]"
+          className="flex items-center gap-2 rounded-md bg-[var(--ds-surface-sunken,#F8FAFC)] dark:bg-transparent border border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]"
           style={{
             height: 32,
             padding: '0 10px',
@@ -113,7 +113,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
             Search anything...
           </span>
           <kbd
-            className="bg-white dark:bg-transparent border border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-[#7D7D7D]"
+            className="bg-white dark:bg-transparent border border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-[#7D7D7D]"
             style={{
               fontSize: 10,
               fontWeight: 500,

@@ -100,7 +100,7 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
             Select users from the organization directory to add to this project.
           </p>
 
-          <div className="flex items-center gap-2 rounded-lg bg-white dark:bg-transparent border border-[var(--ds-text-disabled,#CBD5E1)] dark:border-[var(--ds-border,#2E2E2E)]" style={{ height: 40, padding: '0 14px' }}>
+          <div className="flex items-center gap-2 rounded-lg bg-white dark:bg-transparent border border-[var(--ds-text-disabled,#CBD5E1)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ height: 40, padding: '0 14px' }}>
             <Search size={15} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-[#7D7D7D]" />
             <input
               value={search}
@@ -113,7 +113,7 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
           </div>
         </div>
 
-        <div className="border-t border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)]" style={{ maxHeight: 380, overflowY: 'auto' }}>
+        <div className="border-t border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ maxHeight: 380, overflowY: 'auto' }}>
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 size={20} className="animate-spin text-slate-400 dark:text-[#7D7D7D]" />
@@ -127,7 +127,7 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
               {available.map(u => (
                 <div
                   key={u.id}
-                  className="flex items-center gap-3 px-5 py-2.5 transition-colors hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] cursor-pointer group border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] dark:border-[var(--ds-border,#2E2E2E)]"
+                  className="flex items-center gap-3 px-5 py-2.5 transition-colors hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] cursor-pointer group border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]"
                   onClick={() => handleAdd(u)}
                 >
                   {u.avatar_url ? (
@@ -164,13 +164,13 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
           )}
         </div>
 
-        <div className="px-5 py-3 flex items-center justify-between border-t border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)]">
+        <div className="px-5 py-3 flex items-center justify-between border-t border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
           <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-[#7D7D7D]" style={{ fontSize: 11 }}>
             {available.length} user{available.length !== 1 ? 's' : ''} available
           </span>
           <button
             onClick={onClose}
-            className="rounded-md bg-white dark:bg-transparent border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text-subtle,#475569)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]"
+            className="rounded-md bg-white dark:bg-transparent border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--ds-text-subtle,#475569)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]"
             style={{ height: 32, padding: '0 16px', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
           >
             Done

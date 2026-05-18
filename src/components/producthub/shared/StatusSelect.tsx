@@ -86,7 +86,7 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
 
       {open && (
         <div
-          className="absolute z-50 mt-1 w-full bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border dark:border-[var(--ds-border,#2E2E2E)] rounded-lg overflow-hidden max-h-72 overflow-y-auto"
+          className="absolute z-50 mt-1 w-full bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg overflow-hidden max-h-72 overflow-y-auto"
           style={{
             borderColor: 'var(--divider)',
             boxShadow: '0 12px 40px rgba(0,0,0,0.14)',

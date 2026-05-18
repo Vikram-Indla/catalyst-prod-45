@@ -219,7 +219,7 @@ export function CanonicalDrawerShell({
         <SheetContent
           side="right"
           hideClose
-          className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-l border-[#E1E4E8] dark:border-[var(--ds-border,#2E2E2E)]`}
+          className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-l border-[#E1E4E8] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]`}
         >
           <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
             {/* Primary Header Row */}

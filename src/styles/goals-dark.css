@@ -13,7 +13,7 @@
 /* ── Stats Strip Cards ── */
 .dark .goals-stats-grid > div , [data-theme="dark"] .goals-stats-grid > div {
   background: var(--cp-bg-page, #1F1F21) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   box-shadow: none !important;
 }
 
@@ -22,13 +22,13 @@
 [data-theme="dark"] [data-goals-page] > div > div[style*="border: 1px solid"][style*="borderRadius"],
 .dark .heatmap-scroll , [data-theme="dark"] .heatmap-scroll {
   background: var(--cp-bg-page, #1F1F21) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* ── Table Header Rows ── */
 .dark .goals-tree-container > div:first-child , [data-theme="dark"] .goals-tree-container > div:first-child {
   background: var(--ds-surface-overlay, #1F1F1F) !important;
-  border-bottom-color: var(--ds-border, #2E2E2E) !important;
+  border-bottom-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   color: var(--ds-text-subtlest, #878787) !important;
 }
 
@@ -37,7 +37,7 @@
 [data-theme="dark"] .goals-tree-container div[style*="background: var(--cp-bg-sunken, #F1F5F9)"],
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(241, 245, 249)"][style*="borderLeft"] {
   background: var(--ds-surface-overlay, #1F1F1F) !important;
-  border-bottom-color: var(--ds-border, #2E2E2E) !important;
+  border-bottom-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* ── Goal Row ── */
@@ -62,7 +62,7 @@
 [data-theme="dark"] .goals-tree-container > div:last-of-type[style*="background: rgb(248, 250, 252)"],
 .dark .goals-tree-container > div:last-of-type[style*="background: #F8FAFC"] , [data-theme="dark"] .goals-tree-container > div:last-of-type[style*="background: #F8FAFC"] {
   background: var(--ds-surface-overlay, #1F1F1F) !important;
-  border-top-color: var(--ds-border, #2E2E2E) !important;
+  border-top-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -113,7 +113,7 @@
 [data-theme="dark"] [data-goals-page] button[style*="background: var(--cp-bg-elevated, #FFFFFF)"],
 .dark [data-goals-page] button[style*="background: #FFFFFF"] , [data-theme="dark"] [data-goals-page] button[style*="background: #FFFFFF"] {
   background: transparent !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   color: var(--ds-text-subtlest, #A1A1A1) !important;
   box-shadow: none !important;
 }
@@ -122,13 +122,13 @@
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="borderRadius: 10"],
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="borderRadius: 8"] {
   background: transparent !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Search/input container */
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="padding: 5px 10px"] {
   background: transparent !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark [data-goals-page] input , [data-theme="dark"] [data-goals-page] input {
   color: var(--ds-text, #EDEDED) !important;
@@ -137,7 +137,7 @@
 /* Filter dropdown panels (float layer) */
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="boxShadow"][style*="position: absolute"] {
   background: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
 }
 .dark [data-goals-page] div[style*="position: absolute"] label , [data-theme="dark"] [data-goals-page] div[style*="position: absolute"] label {
@@ -161,7 +161,7 @@
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(226, 232, 240)"][style*="borderRadius: 3"],
 [data-theme="dark"] [data-goals-page] div[style*="background: var(--cp-border, #E2E8F0)"][style*="borderRadius: 3"],
 [data-theme="dark"] [data-goals-page] div[role="progressbar"][style*="background: rgb(226, 232, 240)"] {
-  background: var(--ds-border, #2E2E2E) !important;
+  background: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* ── Connector lines ── */
@@ -169,13 +169,13 @@
 [data-theme="dark"] [data-goals-page] div[style*="background: var(--cp-border, #E2E8F0)"][style*="width: 1"],
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(226, 232, 240)"][style*="height: 1"],
 .dark [data-goals-page] div[style*="background: var(--cp-border, #E2E8F0)"][style*="height: 1"] , [data-theme="dark"] [data-goals-page] div[style*="background: var(--cp-border, #E2E8F0)"][style*="height: 1"] {
-  background: var(--ds-border, #2E2E2E) !important;
+  background: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* ── Goal Key / KR Key badges (F1F5F9 bg) ── */
 [data-theme="dark"] [data-goals-page] span[style*="background: rgb(241, 245, 249)"][style*="fontFamily"],
 .dark [data-goals-page] span[style*="background: var(--cp-bg-sunken, #F1F5F9)"][style*="fontFamily"] , [data-theme="dark"] [data-goals-page] span[style*="background: var(--cp-bg-sunken, #F1F5F9)"][style*="fontFamily"] {
-  background: var(--ds-border, #2E2E2E) !important;
+  background: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   color: var(--ds-text-subtlest, #878787) !important;
 }
 
@@ -226,13 +226,13 @@
 
 .dark .heatmap-scroll , [data-theme="dark"] .heatmap-scroll {
   background: var(--cp-bg-page, #1F1F21) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Heatmap header */
 .dark .heatmap-scroll > div:first-child , [data-theme="dark"] .heatmap-scroll > div:first-child {
   background: var(--ds-surface-overlay, #1F1F1F) !important;
-  border-bottom-color: var(--ds-border, #2E2E2E) !important;
+  border-bottom-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   color: var(--ds-text-subtlest, #878787) !important;
 }
 
@@ -280,7 +280,7 @@
 [data-theme="dark"] [data-goals-page] div[style*="background: #FFFFFF"][style*="width: 520px"],
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="position: fixed"] {
   background: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* ── Border color overrides ── */
@@ -291,7 +291,7 @@
 [data-theme="dark"] [data-goals-page] [style*="borderBottom: 2px solid rgb(226, 232, 240)"],
 [data-theme="dark"] [data-goals-page] [style*="borderBottom: 2px solid var(--cp-border, #E2E8F0)"],
 [data-theme="dark"] [data-goals-page] [style*="borderTop: 1px solid rgb(226, 232, 240)"] {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Shadow removal */

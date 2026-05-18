@@ -48,7 +48,7 @@ const STATUS_CONFIG: Record<string, {
     bgColor: 'transparent',
     borderColor: 'var(--ds-border, #e2e8f0)',
     darkBgColor: 'transparent',
-    darkBorderColor: 'var(--ds-border, #2E2E2E)',
+    darkBorderColor: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
   },
   'planned': {
     label: 'Planned',
@@ -56,7 +56,7 @@ const STATUS_CONFIG: Record<string, {
     bgColor: 'transparent',
     borderColor: 'var(--ds-border, #e2e8f0)',
     darkBgColor: 'transparent',
-    darkBorderColor: 'var(--ds-border, #2E2E2E)',
+    darkBorderColor: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
   },
   'in-progress': {
     label: 'In Progress',
@@ -80,7 +80,7 @@ const STATUS_CONFIG: Record<string, {
     bgColor: 'transparent',
     borderColor: 'var(--ds-border, #e2e8f0)',
     darkBgColor: 'transparent',
-    darkBorderColor: 'var(--ds-border, #2E2E2E)',
+    darkBorderColor: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
   },
   'done': {
     label: 'Done',

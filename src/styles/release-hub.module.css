@@ -901,7 +901,7 @@
   --rh-text-tertiary: var(--fg-3, #878787);
   --rh-text-muted: var(--fg-4, rgba(237,237,237,0.30));
   --rh-border-subtle: var(--ds-border, #292929);
-  --rh-border-default: var(--ds-border, #2E2E2E);
+  --rh-border-default: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --rh-border-strong: var(--ds-border-bold, #454545);
   --rh-success-bg: rgba(74,222,128,0.12);
   --rh-warning-bg: rgba(253,230,138,0.10);

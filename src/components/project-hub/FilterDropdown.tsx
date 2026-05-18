@@ -46,7 +46,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
         className={`flex items-center gap-1.5 rounded-[6px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] ${
           hasFilters
             ? dark ? 'bg-[#0D1526] border-[#1E3A5F] text-[#4C9AFF]' : 'bg-[#DEEBFF] border-[#B3D4FF] text-[var(--cp-primary-60, #0052CC)]'
-            : dark ? 'bg-transparent border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text-subtlest,#A1A1A1)]' : 'bg-white border-[var(--ds-border,var(--cp-border, #E2E8F0))] text-[#42526E]'
+            : dark ? 'bg-transparent border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--ds-text-subtlest,#A1A1A1)]' : 'bg-white border-[var(--ds-border,var(--cp-border, #E2E8F0))] text-[#42526E]'
         }`}
         style={{
           height: 32,
@@ -73,7 +73,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
 
       {open && (
         <div
-          className={`absolute top-full left-0 mt-1 z-50 ${dark ? 'bg-[var(--ds-surface-raised,#1A1A1A)] border-[var(--ds-border,#2E2E2E)]' : 'bg-white border-[var(--ds-border,var(--cp-border, #E2E8F0))]'}`}
+          className={`absolute top-full left-0 mt-1 z-50 ${dark ? 'bg-[var(--ds-surface-raised,#1A1A1A)] border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]' : 'bg-white border-[var(--ds-border,var(--cp-border, #E2E8F0))]'}`}
           style={{
             width: 280,
             borderRadius: 8,
@@ -102,7 +102,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
             />
           </div>
 
-          <div className="flex items-center justify-between px-3 py-2" style={{ borderTop: `1px solid ${dark ? 'var(--ds-border, #2E2E2E)' : 'var(--ds-border, var(--cp-border, #E2E8F0))'}` }}>
+          <div className="flex items-center justify-between px-3 py-2" style={{ borderTop: `1px solid ${dark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, var(--cp-border, #E2E8F0))'}` }}>
             <button
               onClick={() => onChange({ statuses: [], healths: [] })}
               style={{ fontSize: 12, color: dark ? '#7D7D7D' : 'var(--ds-text-subtlest, #6B778C)', background: 'transparent', border: 'none', cursor: 'pointer' }}

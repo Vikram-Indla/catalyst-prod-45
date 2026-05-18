@@ -53,7 +53,7 @@
   --wh-sf: var(--cp-bg-page, #1F1F21);
   --wh-sf2: var(--cp-bg-surface, #242528);
   --wh-sf3: var(--cp-bg-surface, #242528);
-  --wh-bdr: var(--ds-border, #2E2E2E);
+  --wh-bdr: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 
   /* Text — warm white ladder */
   --wh-tx: var(--ds-text, #EDEDED);

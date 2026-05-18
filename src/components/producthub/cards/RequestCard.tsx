@@ -52,8 +52,8 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
       className={cn(
         'group border rounded-xl border-l-4 cursor-pointer transition-all duration-200',
         'bg-white dark:bg-transparent dark:shadow-none',
-        'border-zinc-200 dark:border-[var(--ds-border,#2E2E2E)]',
-        'hover:shadow-lg hover:border-zinc-300 hover:-translate-y-0.5 dark:hover:shadow-none dark:hover:border-[var(--ds-border,#2E2E2E)]',
+        'border-zinc-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]',
+        'hover:shadow-lg hover:border-zinc-300 hover:-translate-y-0.5 dark:hover:shadow-none dark:hover:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]',
         getScoreBorderClass(request.computed_score),
         isCancelled && 'opacity-60'
       )}
@@ -289,7 +289,7 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
       )}
 
       {/* Footer */}
-      <div className="border-t border-zinc-100 dark:border-[var(--ds-border,#2E2E2E)] px-4 py-2">
+      <div className="border-t border-zinc-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] px-4 py-2">
         <span className="text-[10px] text-zinc-400 dark:text-[var(--ds-text-subtlest,#878787)]">
           {gridSize === 'large'
             ? `Created ${format(new Date(request.created_at), 'MMM dd')} · Updated ${relativeTime(request.updated_at)}`

@@ -33,9 +33,9 @@ export function DailyScorecardView() {
     <ScrollArea className="h-full">
       <div className="p-6 bg-slate-50 dark:bg-[#111111] min-h-full">
         {/* Main Card */}
-        <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl shadow-md border border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] overflow-hidden">
+        <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl shadow-md border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] overflow-hidden">
           {/* Hero Section */}
-          <div className="px-8 py-7 border-b border-slate-100 dark:border-[var(--ds-border,#2E2E2E)]">
+          <div className="px-8 py-7 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
             <div className="flex items-start justify-between">
               <div>
                 <h1 className="font-serif text-[28px] font-bold text-slate-900 dark:text-[var(--ds-text,#EDEDED)] mb-1">
@@ -52,27 +52,27 @@ export function DailyScorecardView() {
             </div>
 
             {/* Summary Stats Row */}
-            <div className="flex items-center gap-6 mt-6 pt-5 border-t border-slate-100 dark:border-[var(--ds-border,#2E2E2E)]">
+            <div className="flex items-center gap-6 mt-6 pt-5 border-t border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
               <div className="text-center">
                 <div className="text-2xl font-bold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">{data.summary.workstreams}</div>
                 <div className="text-[10px] font-medium text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase mt-1">Workstreams</div>
               </div>
-              <div className="w-px h-10 bg-slate-200 dark:bg-[var(--ds-border,#2E2E2E)]" />
+              <div className="w-px h-10 bg-slate-200 dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
               <div className="text-center">
                 <div className="text-2xl font-bold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">{data.summary.totalTasks}</div>
                 <div className="text-[10px] font-medium text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase mt-1">Total Tasks</div>
               </div>
-              <div className="w-px h-10 bg-slate-200 dark:bg-[var(--ds-border,#2E2E2E)]" />
+              <div className="w-px h-10 bg-slate-200 dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
               <div className="text-center">
                 <div className="text-2xl font-bold text-emerald-600">{data.summary.completed}</div>
                 <div className="text-[10px] font-medium text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase mt-1">Completed</div>
               </div>
-              <div className="w-px h-10 bg-slate-200 dark:bg-[var(--ds-border,#2E2E2E)]" />
+              <div className="w-px h-10 bg-slate-200 dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
               <div className="text-center">
                 <div className="text-2xl font-bold text-amber-600">{data.summary.overdue}</div>
                 <div className="text-[10px] font-medium text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase mt-1">Overdue</div>
               </div>
-              <div className="w-px h-10 bg-slate-200 dark:bg-[var(--ds-border,#2E2E2E)]" />
+              <div className="w-px h-10 bg-slate-200 dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
               <div className="text-center">
                 <div className={cn(
                   "text-2xl font-bold",
@@ -93,9 +93,9 @@ export function DailyScorecardView() {
               </div>
             ) : (
               data.workstreams.map(team => (
-                <div key={team.id} className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] rounded-[14px] overflow-hidden hover:border-slate-300 dark:hover:border-[var(--ds-border-bold,#454545)] hover:shadow-lg transition-all">
+                <div key={team.id} className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-[14px] overflow-hidden hover:border-slate-300 dark:hover:border-[var(--ds-border-bold,#454545)] hover:shadow-lg transition-all">
                   {/* Team Header */}
-                  <div className="p-5 flex items-center gap-3.5 border-b border-slate-100 dark:border-[var(--ds-border,#2E2E2E)]">
+                  <div className="p-5 flex items-center gap-3.5 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                     <div 
                       className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold text-lg"
                       style={{ background: `linear-gradient(135deg, ${team.gradient.from}, ${team.gradient.to})` }}
@@ -150,7 +150,7 @@ export function DailyScorecardView() {
                             </div>
                             <div className="text-[9px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase">Overdue</div>
                           </div>
-                          <div className="w-[100px] h-1.5 bg-slate-200 dark:bg-[var(--ds-border,#2E2E2E)] rounded-full overflow-hidden">
+                          <div className="w-[100px] h-1.5 bg-slate-200 dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-full overflow-hidden">
                             <div 
                               className={cn(
                                 "h-full rounded-full transition-all duration-500",

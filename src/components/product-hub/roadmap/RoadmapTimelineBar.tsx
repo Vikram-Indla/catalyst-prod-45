@@ -62,7 +62,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
 
   const tooltipBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
   const tooltipShadow = isDark ? '0 20px 60px rgba(0,0,0,0.4)' : '0 20px 60px rgba(0,0,0,0.12)';
-  const progressTrackBg = isDark ? 'var(--ds-border, #2E2E2E)' : surface.borderLight;
+  const progressTrackBg = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : surface.borderLight;
 
   return (
     <>

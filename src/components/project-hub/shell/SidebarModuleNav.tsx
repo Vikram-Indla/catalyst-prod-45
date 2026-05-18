@@ -15,7 +15,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
     <div
       role="navigation"
       aria-label="ProjectHub modules"
-      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-r border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)]"
+      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-r border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]"
       style={{
         width: collapsed ? 56 : 220,
         transition: 'width 200ms ease',
@@ -25,7 +25,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
     >
       {/* Header */}
       <div
-        className="flex items-center gap-2 flex-shrink-0 border-b border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)]"
+        className="flex items-center gap-2 flex-shrink-0 border-b border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]"
         style={{ padding: '12px 10px' }}
       >
         <div

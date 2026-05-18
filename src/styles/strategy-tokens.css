@@ -113,7 +113,7 @@
   --catalyst-text-link: #7DB8FC;
   --catalyst-text-on-primary: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 
-  --catalyst-border-default: var(--ds-border, #2E2E2E);
+  --catalyst-border-default: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --catalyst-border-strong: var(--ds-border-bold, #454545);
   --catalyst-border-focus: var(--ds-text-brand, #3B82F6);
   --catalyst-border-interactive: var(--ds-text-brand, #3B82F6);

@@ -37,10 +37,10 @@ function StatusLozenge({ status }: { status: string }) {
     'in progress':{ bg: ['#DEEBFF', 'rgba(59,130,246,0.10)'], color: ['#0747A6', '#7DB8FC'], label: 'IN PROGRESS' },
     review:       { bg: ['#DEEBFF', 'rgba(59,130,246,0.10)'], color: ['#0747A6', '#7DB8FC'], label: 'IN REVIEW' },
     needs_review: { bg: ['#DEEBFF', 'rgba(59,130,246,0.10)'], color: ['#0747A6', '#7DB8FC'], label: 'NEEDS REVIEW' },
-    draft:        { bg: ['var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', 'var(--ds-border, #2E2E2E)'],               color: ['var(--ds-text, #253858)', 'var(--ds-text-subtlest, #A1A1A1)'], label: 'DRAFT' },
-    archived:     { bg: ['var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', 'var(--ds-border, #2E2E2E)'],               color: ['var(--ds-text, #253858)', 'var(--ds-text-subtlest, #A1A1A1)'], label: 'ARCHIVED' },
+    draft:        { bg: ['var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', 'var(--ds-border, var(--cp-ink-1, #2E2E2E))'],               color: ['var(--ds-text, #253858)', 'var(--ds-text-subtlest, #A1A1A1)'], label: 'DRAFT' },
+    archived:     { bg: ['var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', 'var(--ds-border, var(--cp-ink-1, #2E2E2E))'],               color: ['var(--ds-text, #253858)', 'var(--ds-text-subtlest, #A1A1A1)'], label: 'ARCHIVED' },
   };
-  const d = { bg: ['var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', 'var(--ds-border, #2E2E2E)'] as [string, string], color: ['var(--ds-text, #253858)', 'var(--ds-text-subtlest, #A1A1A1)'] as [string, string], label: (status || '—').toUpperCase() };
+  const d = { bg: ['var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', 'var(--ds-border, var(--cp-ink-1, #2E2E2E))'] as [string, string], color: ['var(--ds-text, #253858)', 'var(--ds-text-subtlest, #A1A1A1)'] as [string, string], label: (status || '—').toUpperCase() };
   const v = map[s] || d;
   return (
     <span style={{
@@ -665,7 +665,7 @@ export default function WikiArticlePage() {
                       transition: 'border-color 120ms',
                     }}
                       onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'}
-                      onMouseLeave={e => e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(15,23,42,0.12)'}
+                      onMouseLeave={e => e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(15,23,42,0.12)'}
                     >
                       <div style={{ fontSize: 13, fontWeight: 600, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 6 }}>{r.title}</div>
                       <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>

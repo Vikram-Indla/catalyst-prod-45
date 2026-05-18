@@ -282,10 +282,10 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
 
         {showLeadPicker && (
           <div
-            className="absolute left-0 right-0 z-50 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)] rounded-lg shadow-lg"
+            className="absolute left-0 right-0 z-50 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg shadow-lg"
             style={{ top: '100%', marginTop: 4, maxHeight: 260, display: 'flex', flexDirection: 'column' }}
           >
-            <div className="p-2 border-b border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)]">
+            <div className="p-2 border-b border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
               <div className="relative">
                 <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]" />
                 <input
@@ -293,7 +293,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
                   value={leadFilter}
                   onChange={e => setLeadFilter(e.target.value)}
                   placeholder="Search people..."
-                  className="w-full text-[13px] pl-8 pr-3 py-1.5 rounded border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)] bg-transparent outline-none"
+                  className="w-full text-[13px] pl-8 pr-3 py-1.5 rounded border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-transparent outline-none"
                   style={{ height: 32, color: 'var(--fg-1)' }}
                 />
               </div>
@@ -350,7 +350,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
       </div>
 
       {/* Jira Link Toggle */}
-      <div className="rounded-lg border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)] p-4">
+      <div className="rounded-lg border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] p-4">
         <div className="flex items-center justify-between">
           <div>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Link to Jira project</div>

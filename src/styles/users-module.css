@@ -147,7 +147,7 @@
   --ct-bg-hover: var(--ds-surface-overlay, #1F1F1F);
   --ct-bg-active: var(--ds-border, #292929);
   --ct-bg-muted: var(--ds-border, #292929);
-  --ct-border: var(--ds-border, #2E2E2E);
+  --ct-border: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --ct-border-light: var(--ds-border, #292929);
   --ct-border-focus: var(--ds-text-brand, #3B82F6);
   --ct-shadow-sm: none;
@@ -178,7 +178,7 @@
 [data-theme="dark"] .ct-dropdown-panel,
 .dark .ct-licenses-widget , [data-theme="dark"] .ct-licenses-widget {
   background: var(--cp-bg-page, #1F1F21) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   box-shadow: none !important;
 }
 .dark .ct-table thead,
@@ -187,7 +187,7 @@
 .dark .ct-table th , [data-theme="dark"] .ct-table th {
   background: var(--ds-surface-overlay, #1F1F1F) !important;
   color: var(--ds-text-subtlest, #878787) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark .ct-table tbody tr,
 .dark .ct-table tbody tr , [data-theme="dark"] .ct-table tbody tr {
@@ -222,19 +222,19 @@
 .dark .ct-dropdown-trigger,
 .dark .ct-dropdown-trigger , [data-theme="dark"] .ct-dropdown-trigger {
   background: var(--cp-bg-page, #1F1F21) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   color: var(--ds-text-subtlest, #A1A1A1) !important;
 }
 .dark .ct-search input,
 .dark .ct-search input , [data-theme="dark"] .ct-search input {
   background: var(--cp-bg-page, #1F1F21) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   color: var(--ds-text, #EDEDED) !important;
 }
 .dark .ct-pagination,
 .dark .ct-pagination , [data-theme="dark"] .ct-pagination {
   background: var(--cp-bg-page, #1F1F21) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* ================================================================

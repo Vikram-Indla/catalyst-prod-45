@@ -184,7 +184,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
   ];
 
   return (
-    <div className="flex h-full gap-0 rounded border overflow-hidden" style={{ borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--bd-default, #2E2E2E)', borderRadius: 4 }}>
+    <div className="flex h-full gap-0 rounded border overflow-hidden" style={{ borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bd-default, var(--cp-ink-1, #2E2E2E))', borderRadius: 4 }}>
       {/* Left card list — 320px */}
       <div className="flex flex-col" style={{ width: 320, borderRight: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)' }}>
         <div className="flex items-center justify-between px-3 py-2" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>
@@ -228,7 +228,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               <div
                 className="absolute top-full left-0 mt-1 w-48 rounded-lg border shadow-lg z-50 py-1 animate-scale-in"
                 style={{
-                  borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--bd-default, #2E2E2E)',
+                  borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bd-default, var(--cp-ink-1, #2E2E2E))',
                   backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)',
                 }}
                 role="listbox"
@@ -491,7 +491,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                       aria-label="Add child issue, attachment, or link"
                       className="inline-flex items-center gap-1 text-[12px] px-2 h-7 rounded border transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
                       style={{
-                        borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--bd-default, #2E2E2E)',
+                        borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bd-default, var(--cp-ink-1, #2E2E2E))',
                         color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)',
                         backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
                         fontFamily: 'var(--cp-font-body)',
@@ -507,7 +507,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                       <div
                         className="absolute top-full left-0 mt-1 w-52 rounded-lg border shadow-lg z-50 py-1 animate-scale-in"
                         style={{
-                          borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--bd-default, #2E2E2E)',
+                          borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bd-default, var(--cp-ink-1, #2E2E2E))',
                           backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)',
                         }}
                         role="menu"
@@ -616,7 +616,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                       <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0" style={{ backgroundColor: '#4C6EF5' }}>
                         U
                       </div>
-                      <div className="flex-1 rounded-lg border px-3 py-2 focus-within:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] transition-colors duration-[80ms]" style={{ borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--bd-default, #2E2E2E)' }}>
+                      <div className="flex-1 rounded-lg border px-3 py-2 focus-within:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] transition-colors duration-[80ms]" style={{ borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bd-default, var(--cp-ink-1, #2E2E2E))' }}>
                         <input
                           ref={commentInputRef}
                           id="aw-comment-input"

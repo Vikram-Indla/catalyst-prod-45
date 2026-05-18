@@ -567,7 +567,7 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
                 onSelectionChange(newSelection);
               }
             }}
-            className="border-[var(--ds-border,#2E2E2E)] data-[state=checked]:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] data-[state=checked]:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]"
+            className="border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] data-[state=checked]:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] data-[state=checked]:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]"
           />
         </td>
       )}
@@ -708,7 +708,7 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
                           onSelectionChange(checked ? processedData.map(row => row.id) : []);
                         }
                       }}
-                      className="border-[var(--ds-border,#2E2E2E)] data-[state=checked]:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] data-[state=checked]:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]"
+                      className="border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] data-[state=checked]:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] data-[state=checked]:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]"
                     />
                   </th>
                 )}

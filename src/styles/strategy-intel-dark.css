@@ -6,7 +6,7 @@
 /* Panel container */
 .dark .strategy-intel-panel {
   background: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   color: var(--ds-text, #EDEDED) !important;
 }
 
@@ -37,10 +37,10 @@
 /* Borders */
 .dark .strategy-intel-panel .border-slate-200,
 .dark .strategy-intel-panel .border-slate-100 {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark .strategy-intel-panel .border-l {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Hover states */
@@ -51,10 +51,10 @@
 
 /* Tab bar */
 .dark .strategy-intel-panel .border-b {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark .strategy-intel-panel .border-t {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Footer */
@@ -65,7 +65,7 @@
 /* Metric cards in Executive Brief tab */
 .dark .strategy-intel-panel .border.border-slate-200.rounded-lg {
   background: var(--ds-surface-overlay, #1F1F1F) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Close button */
@@ -80,13 +80,13 @@
 
 /* Markdown content */
 .dark .strategy-intel-panel h2.border-b {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Status banner left border cards */
 .dark .strategy-intel-panel .p-4.bg-white.border.border-slate-200 {
   background: var(--ds-surface-overlay, #1F1F1F) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Chain breadcrumb badges — keep colored backgrounds */
@@ -101,5 +101,5 @@
 
 /* Health bars */
 .dark .strategy-intel-panel .bg-slate-100.rounded-full {
-  background: var(--ds-border, #2E2E2E) !important;
+  background: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }

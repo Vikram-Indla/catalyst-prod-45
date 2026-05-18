@@ -132,7 +132,7 @@ export function SidebarProjectNav({
 
   return (
     <div
-      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-r border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)]"
+      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-r border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]"
       style={{
         width: collapsed ? 56 : 220,
         transition: 'width 200ms ease',
@@ -141,7 +141,7 @@ export function SidebarProjectNav({
       }}
     >
       {/* Header */}
-      <div className="relative flex-shrink-0 border-b border-[#EBECF0] dark:border-[var(--ds-border,#2E2E2E)] flex flex-col justify-center" style={{ minHeight: 77 }}>
+      <div className="relative flex-shrink-0 border-b border-[#EBECF0] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] flex flex-col justify-center" style={{ minHeight: 77 }}>
         <div className="flex items-center gap-2.5" style={{ padding: collapsed ? '12px 10px' : '12px 12px' }}>
           <div
             className="flex items-center justify-center flex-shrink-0"
@@ -216,7 +216,7 @@ export function SidebarProjectNav({
         </button>
       </div>
 
-      <div style={{ height: 1, background: '#EBECF0', margin: '8px 12px 4px' }} className="dark:bg-[var(--ds-border,#2E2E2E)]" />
+      <div style={{ height: 1, background: '#EBECF0', margin: '8px 12px 4px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
 
       {/* Project nav */}
       <div className="flex-1 py-1 overflow-y-auto" style={{ padding: '4px 6px' }}>
@@ -224,7 +224,7 @@ export function SidebarProjectNav({
           <NavItem key={item.path} icon={item.icon} label={item.label} isActive={isPathActive(item.path)} collapsed={collapsed} onClick={() => navigate(`${basePath}/${item.path}`)} />
         ))}
 
-        <div style={{ height: 1, background: '#EBECF0', margin: '8px 8px 6px' }} className="dark:bg-[var(--ds-border,#2E2E2E)]" />
+        <div style={{ height: 1, background: '#EBECF0', margin: '8px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
 
         {!collapsed && (
           <div className="dark:text-[#7D7D7D]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, #6B778C)' }}>
@@ -235,7 +235,7 @@ export function SidebarProjectNav({
           <NavItem key={item.path} icon={item.icon} label={item.label} isActive={isPathActive(item.path)} onClick={() => navigate(`${basePath}/${item.path}`)} collapsed={collapsed} />
         ))}
 
-        <div style={{ height: 1, background: '#EBECF0', margin: '10px 8px 6px' }} className="dark:bg-[var(--ds-border,#2E2E2E)]" />
+        <div style={{ height: 1, background: '#EBECF0', margin: '10px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
 
         {!collapsed && (
           <div className="dark:text-[#7D7D7D]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, #6B778C)' }}>
@@ -246,7 +246,7 @@ export function SidebarProjectNav({
           <NavItem key={item.path} icon={item.icon} label={item.label} isActive={isPathActive(item.path)} onClick={() => navigate(`${basePath}/${item.path}`)} collapsed={collapsed} />
         ))}
 
-        <div style={{ height: 1, background: '#EBECF0', margin: '10px 8px 6px' }} className="dark:bg-[var(--ds-border,#2E2E2E)]" />
+        <div style={{ height: 1, background: '#EBECF0', margin: '10px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
 
         {!collapsed && (
           <div className="dark:text-[#7D7D7D]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '6px 12px 6px', color: 'var(--ds-text-subtlest, #6B778C)' }}>
@@ -259,7 +259,7 @@ export function SidebarProjectNav({
         {/* ═══ RECENTS SECTION ═══ */}
         {!collapsed && recentItems.length > 0 && (
           <>
-            <div style={{ height: 1, background: '#EBECF0', margin: '10px 8px 6px' }} className="dark:bg-[var(--ds-border,#2E2E2E)]" />
+            <div style={{ height: 1, background: '#EBECF0', margin: '10px 8px 6px' }} className="dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
 
             <button
               onClick={() => setRecentsExpanded(p => !p)}
@@ -327,7 +327,7 @@ export function SidebarProjectNav({
       </div>
 
       {/* Settings pinned to bottom */}
-      <div className="border-t border-[#EBECF0] dark:border-[var(--ds-border,#2E2E2E)]" style={{ padding: '8px 6px' }}>
+      <div className="border-t border-[#EBECF0] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ padding: '8px 6px' }}>
         <NavItem icon={Settings} label="Settings" isActive={isPathActive('settings')} onClick={() => navigate(`${basePath}/settings`)} collapsed={collapsed} />
       </div>
     </div>

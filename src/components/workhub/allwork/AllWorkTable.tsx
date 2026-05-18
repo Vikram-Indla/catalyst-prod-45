@@ -150,7 +150,7 @@ export function AllWorkTable({
             height: 44,
             maxHeight: 44,
             backgroundColor: 'var(--bg-app)',
-            borderBottom: '1px solid var(--bd-default, #2E2E2E)',
+            borderBottom: '1px solid var(--bd-default, var(--cp-ink-1, #2E2E2E))',
           }}
         >
           <div className="flex justify-center" role="columnheader">

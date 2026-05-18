@@ -27,8 +27,8 @@ const DK = {
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
   t4: 'var(--cp-t4)',
-  border: 'var(--ds-border, #2E2E2E)',
-  borderSubtle: 'var(--ds-border, #2E2E2E)',
+  border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
+  borderSubtle: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
   hover: 'var(--ds-surface-overlay, #1F1F1F)',
 };
 
@@ -57,7 +57,7 @@ function statusBadge(status: string, isDark = false) {
 function progressBar(pct: number, height = 6, isDark = false) {
   const color = pct >= 60 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
   return (
-    <div style={{ width: 80, height, background: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
+    <div style={{ width: 80, height, background: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
       <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 4, transition: 'width 300ms ease' }} />
     </div>
   );
@@ -73,7 +73,7 @@ function ConfidenceDots({ level, isDark = false }: { level: number; isDark?: boo
             width: 5, height: 5, borderRadius: '50%',
             background: i <= level
               ? (level >= 4 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : level >= 3 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)')
-              : (isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)'),
+              : (isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)'),
           }}
         />
       ))}
@@ -262,7 +262,7 @@ export function GoalsTreeView({
   const goalRowHover = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--bg-1)';
   const krRowBg = isDark ? '#111111' : 'var(--bg-1)';
   const krRowHover = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)';
-  const connectorColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)';
+  const connectorColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)';
   const footerBg = isDark ? '#111111' : 'var(--bg-1)';
 
   return (

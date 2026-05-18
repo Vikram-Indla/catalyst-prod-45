@@ -13,8 +13,8 @@ const DK = {
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
   t4: 'var(--cp-t4)',
-  border: 'var(--ds-border, #2E2E2E)',
-  borderSubtle: 'var(--ds-border, #2E2E2E)',
+  border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
+  borderSubtle: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
 };
 
 const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
@@ -148,7 +148,7 @@ export function GoalsListView({ goals, themes, onGoalClick, isDark = false }: Go
               )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} style={{ width: 60, height: 5, background: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
+              <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} style={{ width: 60, height: 5, background: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
                 <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 3 }} />
               </div>
               <span style={{ fontSize: 13, fontWeight: 600, color: barColor }}>{pct}%</span>

@@ -124,16 +124,16 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
   };
 
   return (
-    <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] shadow-sm overflow-hidden">
         {/* Controls Row */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100 dark:border-[var(--ds-border,#2E2E2E)] bg-slate-50/50 dark:bg-[#111111]">
-          <div className="flex border border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] rounded-md overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50/50 dark:bg-[#111111]">
+          <div className="flex border border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-md overflow-hidden">
             {(['week', 'month', 'quarter'] as ZoomLevel[]).map(level => (
               <button
                 key={level}
                 onClick={() => setZoom(level)}
                 className={cn(
-                  "px-3 py-1 text-xs font-medium capitalize transition-colors border-r border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] last:border-r-0",
+                  "px-3 py-1 text-xs font-medium capitalize transition-colors border-r border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] last:border-r-0",
                   zoom === level
                     ? "bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] text-slate-900 dark:text-[var(--ds-text,#EDEDED)] shadow-sm"
                     : "text-slate-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:text-slate-700 dark:hover:text-[var(--ds-text,#EDEDED)] hover:bg-white/50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
@@ -170,13 +170,13 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
         </div>
 
         {/* Header Row */}
-        <div className="flex border-b border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] bg-slate-50 dark:bg-[#111111]">
-          <div className="w-[240px] shrink-0 px-4 py-2.5 border-r border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] flex items-center">
+        <div className="flex border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-slate-50 dark:bg-[#111111]">
+          <div className="w-[240px] shrink-0 px-4 py-2.5 border-r border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] flex items-center">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Release ↕</span>
           </div>
           <div className="flex-1 flex">
             {columns.map((col, i) => (
-              <div key={i} className="flex-1 px-1 py-2.5 text-center border-r border-slate-100 dark:border-[var(--ds-border,#2E2E2E)] last:border-r-0">
+              <div key={i} className="flex-1 px-1 py-2.5 text-center border-r border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] last:border-r-0">
                 <span className="text-[11px] font-semibold text-slate-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">{col.label}</span>
               </div>
             ))}
@@ -205,14 +205,14 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
           return (
             <div
               key={release.id}
-              className="flex border-b border-slate-100 dark:border-[var(--ds-border,#2E2E2E)] last:border-b-0 hover:bg-slate-50/50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] cursor-pointer transition-colors"
+              className="flex border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] last:border-b-0 hover:bg-slate-50/50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] cursor-pointer transition-colors"
               style={{ height: '42px' }}
               onClick={() => onReleaseClick?.(release)}
               role="img"
               aria-label={`Release ${release.version}, ${release.plannedDate ? format(new Date(release.plannedDate), 'MMM d') : 'no date'}, ${progress}% progress, ${health} health`}
             >
               {/* Release Label */}
-              <div className="w-[240px] shrink-0 px-3 flex items-center gap-2.5 border-r border-slate-200 dark:border-[var(--ds-border,#2E2E2E)]">
+              <div className="w-[240px] shrink-0 px-3 flex items-center gap-2.5 border-r border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                 <div
                   className="px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0 leading-tight"
                   style={{ background: vBadge.bg, color: vBadge.text }}
@@ -230,7 +230,7 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
                 {/* Gridlines */}
                 <div className="absolute inset-0 flex pointer-events-none">
                   {columns.map((_, i) => (
-                    <div key={i} className="flex-1 border-r border-dashed border-slate-100 dark:border-[var(--ds-border,#2E2E2E)] last:border-r-0" />
+                    <div key={i} className="flex-1 border-r border-dashed border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] last:border-r-0" />
                   ))}
                 </div>
 

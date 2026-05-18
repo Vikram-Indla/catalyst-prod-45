@@ -30,14 +30,14 @@
   --pk-surface: var(--cp-bg-page, #1F1F21);
   --pk-surface-column: var(--ds-surface-overlay, #1F1F1F);
   --pk-surface-tertiary: var(--ds-border, #292929);
-  --pk-border: var(--ds-border, #2E2E2E);
+  --pk-border: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --pk-border-strong: var(--ds-border-bold, #454545);
   --pk-primary-bg: rgba(59,130,246,0.12);
 }
 .dark .pk-card,
 .dark .pk-card , [data-theme="dark"] .pk-card {
   background: transparent;
-  border-color: var(--ds-border, #2E2E2E);
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 .dark .pk-card:hover,
 .dark .pk-card:hover , [data-theme="dark"] .pk-card:hover {
@@ -52,7 +52,7 @@
 .dark .pk-chip , [data-theme="dark"] .pk-chip {
   color: var(--ds-text-subtlest, #A1A1A1) !important;
   background: transparent !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark .pk-chip:hover,
 .dark .pk-chip:hover , [data-theme="dark"] .pk-chip:hover {

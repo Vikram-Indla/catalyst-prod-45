@@ -41,7 +41,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           color: 'var(--bg-app)', fontSize: 9, fontWeight: 800,
         }}>MIM</div>
-        <div style={{ width: 1, height: 20, background: 'var(--ds-border, #2E2E2E)' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' }} />
         <span style={{ color: 'var(--divider)', fontSize: 14, fontWeight: 600, flex: 1 }}>
           {slide === 0 ? 'Ideas Roadmap — FY 2026' : `${QUARTERS[slide - 1]} 2026 — Delivery Plan`}
         </span>
@@ -74,7 +74,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
       }}>
         <button onClick={() => setSlide(s => Math.max(0, s - 1))} disabled={slide === 0}
           style={{
-            width: 30, height: 30, borderRadius: '50%', background: 'var(--ds-border, #2E2E2E)',
+            width: 30, height: 30, borderRadius: '50%', background: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
             border: 'none', color: 'var(--ds-surface, #fff)', cursor: 'pointer', opacity: slide === 0 ? 0.3 : 1,
             fontSize: 14,
           }}>←</button>
@@ -90,7 +90,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
         </div>
         <button onClick={() => setSlide(s => Math.min(TOTAL_SLIDES - 1, s + 1))} disabled={slide === TOTAL_SLIDES - 1}
           style={{
-            width: 30, height: 30, borderRadius: '50%', background: 'var(--ds-border, #2E2E2E)',
+            width: 30, height: 30, borderRadius: '50%', background: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
             border: 'none', color: 'var(--ds-surface, #fff)', cursor: 'pointer', opacity: slide === TOTAL_SLIDES - 1 ? 0.3 : 1,
             fontSize: 14,
           }}>→</button>

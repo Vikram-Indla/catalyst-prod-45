@@ -55,7 +55,7 @@ export function ExportDialog({ open, onClose, projects }: Props) {
             <button
               key={f.key}
               onClick={() => handleExport(f.action)}
-              className="flex flex-col items-center gap-2 rounded-lg transition-all hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] bg-[var(--ds-surface-sunken,#F8FAFC)] dark:bg-[var(--ds-surface-overlay,#1F1F1F)] border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)]"
+              className="flex flex-col items-center gap-2 rounded-lg transition-all hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] bg-[var(--ds-surface-sunken,#F8FAFC)] dark:bg-[var(--ds-surface-overlay,#1F1F1F)] border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]"
               style={{ padding: '20px 12px', cursor: 'pointer' }}
             >
               <f.icon size={24} color="var(--cp-blue)" />

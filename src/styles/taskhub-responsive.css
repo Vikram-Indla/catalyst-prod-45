@@ -898,7 +898,7 @@
 
 .dark .mobile-bottom-nav , [data-theme="dark"] .mobile-bottom-nav {
   background: var(--cp-bg-surface, #242528);
-  border-top-color: var(--ds-border, #2E2E2E);
+  border-top-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 
 .dark .mobile-bottom-nav-item , [data-theme="dark"] .mobile-bottom-nav-item {
@@ -920,10 +920,10 @@
 
 .dark .modal-header , [data-theme="dark"] .modal-header {
   background: var(--cp-bg-surface, #242528);
-  border-bottom-color: var(--ds-border, #2E2E2E);
+  border-bottom-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 
 .dark .modal-footer , [data-theme="dark"] .modal-footer {
   background: var(--cp-bg-surface, #242528);
-  border-top-color: var(--ds-border, #2E2E2E);
+  border-top-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }

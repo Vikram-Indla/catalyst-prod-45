@@ -78,7 +78,7 @@ function ActivityFeed({
 
   return (
     <div ref={scrollRef} className={cn('overflow-y-auto', className)}>
-      <div className="divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,#2E2E2E)]">
+      <div className="divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
         {sortedItems.map((item) => (
           <ActivityItem key={item.id} item={item} jiraUserMap={jiraUserMap} />
         ))}

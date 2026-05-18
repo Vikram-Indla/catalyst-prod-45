@@ -65,7 +65,7 @@ function SimpleDateInput({ label, value, onChange, helperText, isDark }: {
           onChange={e => onChange(e.target.value)}
           style={{
             width: '100%', padding: '7px 10px', fontSize: 12, borderRadius: 4,
-            border: `0.75px solid ${isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(15,23,42,0.12)'}`,
+            border: `0.75px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(15,23,42,0.12)'}`,
             background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', fontFamily: 'var(--cp-font-body)',
           }}
@@ -164,7 +164,7 @@ export default function WikiTemplatesPage() {
     navigate(`/wiki/${slug}`);
   };
 
-  const borderColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.06)';
+  const borderColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(0,0,0,0.06)';
   const cardBorderHover = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
 
   return (
@@ -205,7 +205,7 @@ export default function WikiTemplatesPage() {
       <div style={{
         marginBottom: 20, padding: '14px 16px', borderRadius: 6,
         background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-        border: `0.75px solid ${isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(15,23,42,0.08)'}`,
+        border: `0.75px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(15,23,42,0.08)'}`,
       }}>
         <button onClick={() => setShowScheduling(!showScheduling)} style={{
           fontSize: 12, fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', background: 'transparent',

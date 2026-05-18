@@ -96,7 +96,7 @@ export default function WikiSearchPage() {
   const confColor = (c: number) => c >= 90 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : c >= 70 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : isDark ? '#FCD34D' : '#9A5402';
   const confBg = (c: number) => c >= 90 ? 'var(--cp-lozenge-green-bg, #1B7F37)' : c >= 70 ? '#0C66E4' : isDark ? 'rgba(251,191,36,0.12)' : '#FEF3C7';
 
-  const borderColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(15,23,42,0.12)';
+  const borderColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(15,23,42,0.12)';
 
   return (
     <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, #F8FAFC)', minHeight: '100%' }}>

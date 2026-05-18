@@ -42,8 +42,8 @@ const TOKENS = `
   --sri-ink-m: rgba(255,255,255,0.70);
   --sri-bg: var(--ds-surface-raised, #1A1A1A);
   --sri-bg-2: var(--ds-surface-overlay, #1F1F1F);
-  --sri-bg-3: var(--ds-border, #2E2E2E);
-  --sri-bdr: var(--ds-border, #2E2E2E);
+  --sri-bg-3: var(--ds-border, var(--cp-ink-1, #2E2E2E));
+  --sri-bdr: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --sri-bdr-s: var(--ds-border-bold, #454545);
   --sri-ai: var(--ds-text-brand, #3B82F6);
   --sri-ai-d: var(--ds-text-brand, #60A5FA);

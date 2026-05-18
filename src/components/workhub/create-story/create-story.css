@@ -476,12 +476,12 @@
 .dark .csRequiredNote { color: var(--ds-text-subtlest, #878787); }
 .dark .csHeaderBtn { color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .csHeaderBtn:hover { background: var(--ds-border, #292929); color: var(--ds-text, #EDEDED); }
-.dark .csModalFooter { border-color: var(--ds-border, #2E2E2E); }
+.dark .csModalFooter { border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .csLabel { color: var(--ds-text, #EDEDED); }
 .dark .csInput { color: var(--ds-text, #EDEDED); border-color: var(--ds-border-bold, #454545); }
 .dark .csInput:focus { border-color: #0C66E4; }
 .dark .csSelect { background: var(--ds-border, #292929); border-color: var(--ds-border-bold, #454545); color: var(--ds-text, #EDEDED); }
-.dark .csDropdown { background: var(--cp-bg-surface, #242528); border-color: var(--ds-border, #2E2E2E); }
+.dark .csDropdown { background: var(--cp-bg-surface, #242528); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .csDropdownItem { color: var(--ds-text, #EDEDED); }
 .dark .csDropdownItem:hover { background: var(--ds-border, #292929); }
 .dark .csDropdownItem.selected { background: rgba(12,102,228,0.15); }
@@ -495,11 +495,11 @@
 .dark .csCancel { color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .csCancel:hover { background: var(--ds-border, #292929); }
 .dark .csHelpText { color: var(--ds-text-subtlest, #878787); }
-.dark .csDivider { background: var(--ds-border, #2E2E2E); }
+.dark .csDivider { background: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .csLearnLink { color: #4C9AFF; }
 .dark .csProjectIcon { background: #0C66E4; }
 .dark .csParentBadge { background: var(--ds-border-bold, #454545); color: var(--ds-text-subtlest, #A1A1A1); }
-.dark .csShowDoneLabel { color: var(--ds-text-subtlest, #A1A1A1); border-color: var(--ds-border, #2E2E2E); }
+.dark .csShowDoneLabel { color: var(--ds-text-subtlest, #A1A1A1); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 
 /* ── ADF Editor in Create modal ──────────────────────────────────────
    The @atlaskit/editor-core "comment" appearance renders its own

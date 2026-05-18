@@ -135,10 +135,10 @@
   --cp-t4:              #555555;
 
   /* Borders — ADS solid hex */
-  --cp-bd:              var(--ds-border, #2E2E2E);
-  --cp-bd-zone:         var(--ds-border, #2E2E2E);
+  --cp-bd:              var(--ds-border, var(--cp-ink-1, #2E2E2E));
+  --cp-bd-zone:         var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --cp-bd-hover:        var(--ds-border-bold, #454545);
-  --cp-bd-table:        var(--ds-border, #2E2E2E);
+  --cp-bd-table:        var(--ds-border, var(--cp-ink-1, #2E2E2E));
 
   /* Interactive — ADS solid hex */
   --cp-hover:           var(--ds-surface-overlay, #1F1F1F);
@@ -187,7 +187,7 @@
   --cp-prg-bg:          var(--ds-border, #292929);
 
   /* Scrollbar */
-  --cp-scroll:          var(--ds-border, #2E2E2E);
+  --cp-scroll:          var(--ds-border, var(--cp-ink-1, #2E2E2E));
 
   /* Chart Palette */
   --cp-chart-1: var(--ds-text-brand, #60A5FA);

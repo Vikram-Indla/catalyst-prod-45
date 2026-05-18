@@ -100,7 +100,7 @@ export function BoardTaskCard({ task, onClick, isDragging }: BoardTaskCardProps)
       {...listeners}
       onClick={onClick}
       className={cn(
-        'boards-card dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-[var(--ds-border,#2E2E2E)] dark:hover:bg-[var(--ds-surface-raised,#1A1A1A)] dark:hover:border-[var(--ds-border-bold,#454545)]',
+        'boards-card dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] dark:hover:bg-[var(--ds-surface-raised,#1A1A1A)] dark:hover:border-[var(--ds-border-bold,#454545)]',
         // Priority left border (NOT floating icon)
         task.priority === 'critical' && 'boards-card--priority-critical',
         task.priority === 'high' && 'boards-card--priority-high',
