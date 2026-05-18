@@ -81,7 +81,7 @@ export default function SignOffQueuePage() {
         <div className="rounded-[6px] overflow-hidden" style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: 'var(--cp-bg-elevated, #FFFFFF)' }}>
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
             <thead>
-              <tr style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }}>
+              <tr style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
                 {['CHANGE', 'TITLE', 'GATE', 'APPROVER', 'RISK', 'STATUS', 'ACTIONS'].map(h => (
                   <th key={h} className="text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 50, padding: '8px 12px', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{h}</th>
                 ))}
@@ -135,7 +135,7 @@ export default function SignOffQueuePage() {
           </DialogHeader>
           {actionModal && (
             <div className="space-y-4">
-              <div className="rounded-[6px] p-3" style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }}>
+              <div className="rounded-[6px] p-3" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
                 <p className="text-[12px] mb-1" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Gate: <span className="font-bold" style={{ color: 'var(--cp-text-secondary, #334155)' }}>{actionModal.signoff.signoff_role || actionModal.signoff.stage}</span></p>
                 <p className="text-[12px]" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Change: <span style={{ fontFamily: RH.fontMono, fontWeight: 650, color: 'var(--ds-text-brand, #2563EB)' }}>{actionModal.signoff.rh_changes?.chg_number}</span> — {actionModal.signoff.rh_changes?.title}</p>
                 {actionModal.signoff.rh_changes?.risk_level && <div className="mt-2"><RiskBadge risk={actionModal.signoff.rh_changes.risk_level} /></div>}

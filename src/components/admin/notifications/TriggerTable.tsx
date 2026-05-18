@@ -148,7 +148,7 @@ function CategoryAccordion({
 
         {/* Right side — progress bar */}
         <div className="flex items-center gap-3">
-          <div className="w-24 h-1.5 bg-[var(--ds-surface-sunken,#F1F5F9)] rounded-full overflow-hidden">
+          <div className="w-24 h-1.5 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] rounded-full overflow-hidden">
             <div
               className="h-full bg-[var(--ds-text-brand,#2563EB)] rounded-full transition-all duration-300"
               style={{ width: `${group.totalCount > 0 ? (group.enabledCount / group.totalCount) * 100 : 0}%` }}

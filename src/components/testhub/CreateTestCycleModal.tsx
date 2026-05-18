@@ -306,13 +306,13 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                         onClick={() => { setCycleStatus(opt.value); setStatusDropdownOpen(false); }}
                         style={{
                           width: '100%', padding: '8px 12px', border: 'none',
-                          backgroundColor: cycleStatus === opt.value ? ('var(--cp-bg-sunken, #F1F5F9)') : 'transparent',
+                          backgroundColor: cycleStatus === opt.value ? ('var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))') : 'transparent',
                           display: 'flex', alignItems: 'center', gap: 8,
                           cursor: 'pointer', fontSize: 14, color: 'var(--cp-text-secondary, #334155)',
                           fontFamily: 'var(--cp-font-body)',
                         }}
                         onMouseEnter={(e) => { (e.target as HTMLElement).style.backgroundColor = 'var(--cp-bg-page, #F8FAFC)'; }}
-                        onMouseLeave={(e) => { (e.target as HTMLElement).style.backgroundColor = cycleStatus === opt.value ? ('var(--cp-bg-sunken, #F1F5F9)') : 'transparent'; }}
+                        onMouseLeave={(e) => { (e.target as HTMLElement).style.backgroundColor = cycleStatus === opt.value ? ('var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))') : 'transparent'; }}
                       >
                         <span style={{
                           display: 'inline-block', padding: '0 6px', height: 20,

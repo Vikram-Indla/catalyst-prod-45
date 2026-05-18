@@ -241,7 +241,7 @@ export function WriteBackQueueTab() {
                 <tr key={q.id} className="border-b border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-surface-raised,#1A1A1A)]" style={{ height: 50, maxHeight: 50 }}>
                   <td className={tdClass} style={tdStyle}>{q.ph_work_items?.title || q.ph_work_item_id}</td>
                   <td style={tdStyle}>
-                    <span className="inline-block bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtle,#334155)] dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-gray-300" style={{ fontSize: 11, fontWeight: 600, borderRadius: 4, padding: '2px 6px', textTransform: 'uppercase' }}>
+                    <span className="inline-block bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtle,#334155)] dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-gray-300" style={{ fontSize: 11, fontWeight: 600, borderRadius: 4, padding: '2px 6px', textTransform: 'uppercase' }}>
                       {q.operation}
                     </span>
                   </td>

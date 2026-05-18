@@ -94,7 +94,7 @@ export function StatusMapping() {
             Category Mapping
           </h2>
           <span style={{
-            fontSize: 10, background: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', padding: '2px 8px',
+            fontSize: 10, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', padding: '2px 8px',
             borderRadius: 4, fontWeight: 500,
           }}>{totalCount} statuses</span>
         </div>

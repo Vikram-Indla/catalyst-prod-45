@@ -80,7 +80,7 @@ export function ActivityFeed({ workItemId }: Props) {
                 {quickReplies.map(q => (
                   <button
                     key={q}
-                    className="text-[12px] px-2.5 py-0.5 rounded-full hover:bg-[var(--ds-surface-sunken,#F1F5F9)]"
+                    className="text-[12px] px-2.5 py-0.5 rounded-full hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]"
                     style={{ border: '1px solid var(--divider)', color: 'var(--fg-2)' }}
                     onClick={() => setCommentText(q.replace('...', ''))}
                   >
@@ -180,7 +180,7 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
         <div className="relative">
           <button
             onClick={() => setPickerOpen(!pickerOpen)}
-            className="p-1 rounded hover:bg-[var(--ds-surface-sunken,#F1F5F9)] transition-colors"
+            className="p-1 rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] transition-colors"
             style={{ color: 'var(--fg-4)' }}
           >
             <SmilePlus size={14} />
@@ -194,7 +194,7 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
                 <button
                   key={e}
                   onClick={() => { onToggleReaction(e); setPickerOpen(false); }}
-                  className="w-7 h-7 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,#F1F5F9)] text-[16px]"
+                  className="w-7 h-7 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[16px]"
                 >
                   {e}
                 </button>

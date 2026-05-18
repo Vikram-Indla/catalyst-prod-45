@@ -40,7 +40,7 @@ export function AIInsightsBar({ insights, onActionClick }: AIInsightsBarProps) {
   const getBgColor = (type: AIReleaseInsight['type']) => {
     switch (type) {
       case 'critical': return 'bg-red-50 border-red-100';
-      case 'warning': return 'bg-[var(--ds-surface-sunken,#F1F5F9)] border-[rgba(15,23,42,0.12)]';
+      case 'warning': return 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] border-[rgba(15,23,42,0.12)]';
       case 'positive': return 'bg-green-50 border-green-100';
     }
   };

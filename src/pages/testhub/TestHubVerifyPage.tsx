@@ -265,7 +265,7 @@ export default function TestHubVerifyPage() {
             { label: 'PASSED', value: passCount, bg: '#E3FCEF', color: '#006644' },
             { label: 'WARNINGS', value: warnCount, bg: '#FFFBEB', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
             { label: 'FAILED', value: failCount, bg: '#FFEBE6', color: '#BF2600' },
-            { label: 'TOTAL', value: checks.length, bg: 'var(--ds-surface-sunken, #F1F5F9)', color: '#374151' },
+            { label: 'TOTAL', value: checks.length, bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: '#374151' },
           ].map(chip => (
             <div key={chip.label} style={{
               backgroundColor: chip.bg,
@@ -532,7 +532,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
                 {s.passed}/{s.total} checks · {s.pct}%
               </div>
               {/* Progress bar */}
-              <div style={{ width: '100%', height: 4, backgroundColor: 'var(--ds-surface-sunken, #F1F5F9)', borderRadius: 2 }}>
+              <div style={{ width: '100%', height: 4, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', borderRadius: 2 }}>
                 <div style={{ width: `${s.pct}%`, height: 4, backgroundColor: fill, borderRadius: 4, transition: 'width 0.3s' }} />
               </div>
               {/* Sub-lines for Test Assets */}

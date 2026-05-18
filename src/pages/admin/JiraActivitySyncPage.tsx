@@ -100,7 +100,7 @@ function ChangeTypeBadge({ type }: { type: string }) {
       display: 'inline-block', padding: '2px 6px', borderRadius: 3,
       fontSize: 10, fontWeight: 600, letterSpacing: '0.04em',
       textTransform: 'uppercase',
-      background: 'var(--cp-hover, #F1F5F9)', color: 'var(--cp-t2, #475569)',
+      background: 'var(--cp-hover, var(--cp-bg-sunken, #F1F5F9))', color: 'var(--cp-t2, #475569)',
       border: '1px solid var(--cp-bd, var(--cp-border, #E2E8F0))',
     }}>
       {label}
@@ -161,7 +161,7 @@ function SummaryStats({ items }: { items: SyncActivity[] }) {
   }, [items]);
 
   const pills: { label: string; value: number; color: string; bg: string }[] = [
-    { label: 'Total', value: stats.total, color: 'var(--cp-t1, var(--cp-ink-1, #0F172A))', bg: 'var(--cp-hover, #F1F5F9)' },
+    { label: 'Total', value: stats.total, color: 'var(--cp-t1, var(--cp-ink-1, #0F172A))', bg: 'var(--cp-hover, var(--cp-bg-sunken, #F1F5F9))' },
     { label: 'Inbound', value: stats.inbound, color: 'var(--ds-text-brand, #2563EB)', bg: 'rgba(37,99,235,0.08)' },
     { label: 'Outbound', value: stats.outbound, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'rgba(217,119,6,0.08)' },
     { label: 'Success', value: stats.success, color: 'var(--quality-high, #059669)', bg: 'rgba(5,150,105,0.08)' },

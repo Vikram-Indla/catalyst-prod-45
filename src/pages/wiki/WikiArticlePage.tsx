@@ -123,7 +123,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
                   fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 700,
                   color: i === 0 ? 'var(--ds-text-brand, #2563EB)' : isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
                   padding: '2px 6px', borderRadius: 4,
-                  background: i === 0 ? (isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F1F5F9)'),
+                  background: i === 0 ? (isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))'),
                 }}>v{v.version_number}</span>
                 {i === 0 && (
                   <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--quality-high, #059669)', textTransform: 'uppercase' as const }}>CURRENT</span>
@@ -215,7 +215,7 @@ function CrossModuleLinks({ links }: { links: any[] }) {
       </div>
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
         {links.map((link: any) => {
-          const mod = MODULE_COLORS[link.target_module] || { bg: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', label: link.target_module };
+          const mod = MODULE_COLORS[link.target_module] || { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', label: link.target_module };
           return (
             <span key={link.id} style={{
               display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px',
@@ -520,7 +520,7 @@ export default function WikiArticlePage() {
                 {tags.map(t => (
                   <span key={t} style={{
                     fontSize: 10, padding: '2px 8px', borderRadius: 4,
-                    background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F1F5F9)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 500,
+                    background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 500,
                   }}>{t}</span>
                 ))}
               </div>

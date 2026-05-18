@@ -112,7 +112,7 @@ function TypeLayoutPanel({ workTypeId, typeName }: { workTypeId: string; typeNam
                       <span
                         style={{
                           fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 10,
-                          background: f.is_visible ? '#DCFCE7' : '#F1F5F9',
+                          background: f.is_visible ? '#DCFCE7' : 'var(--cp-bg-sunken, #F1F5F9)',
                           color: f.is_visible ? '#15803D' : 'var(--cp-ink-4, #94A3B8)',
                         }}
                       >

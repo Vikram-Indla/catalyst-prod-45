@@ -94,7 +94,7 @@ function DocumentsTable() {
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >
                 <td style={{ padding: '8px 12px' }}>
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, padding: '2px 6px', borderRadius: 4, background: 'var(--cp-bg-sunken, #F1F5F9)' }}>{d.domain_code ?? '—'}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, padding: '2px 6px', borderRadius: 4, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>{d.domain_code ?? '—'}</span>
                 </td>
                 <td style={{ padding: '8px 12px', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={d.original_filename || d.filename}>{d.original_filename || d.filename || '—'}</td>
                 <td style={{ padding: '8px 12px', fontSize: 11 }}>{d.doc_type || d.mime_type || '—'}</td>

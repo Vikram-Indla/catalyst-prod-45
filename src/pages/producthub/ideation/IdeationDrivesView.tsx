@@ -127,7 +127,7 @@ export default function IdeationDrivesView() {
               {/* V12: Lucide icon container */}
               <div style={{
                 width: 36, height: 50, borderRadius: 8,
-                background: 'var(--cp-bg-sunken, #F1F5F9)', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
+                background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexShrink: 0, color: 'var(--cp-text-secondary, #475569)',
               }}>
@@ -164,7 +164,7 @@ export default function IdeationDrivesView() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
               <div style={{
                 flex: 1, height: 6, borderRadius: 4,
-                background: 'var(--ds-surface-sunken, #F1F5F9)', overflow: 'hidden',
+                background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', overflow: 'hidden',
                 border: '1px solid var(--cp-border, #E2E8F0)',
               }}>
                 <div style={{

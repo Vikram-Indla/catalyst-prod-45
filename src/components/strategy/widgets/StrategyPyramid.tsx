@@ -301,7 +301,7 @@ export function StrategyPyramid() {
                 padding: '8px 12px',
                 borderRadius: 6,
                 cursor: 'pointer',
-                background: hoveredLayer === layer.key ? 'var(--exec-bg-hover, #F1F5F9)' : 'transparent',
+                background: hoveredLayer === layer.key ? 'var(--exec-bg-hover, var(--cp-bg-sunken, #F1F5F9))' : 'transparent',
                 transition: 'background 120ms cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >

@@ -155,7 +155,7 @@
   --cp-surface: #F8FAFC;
   --cp-card: #FFFFFF;
   --cp-border: var(--cp-border, #E2E8F0);
-  --cp-border-lt: #F1F5F9;
+  --cp-border-lt: var(--cp-bg-sunken, #F1F5F9);
   --cp-success: var(--cp-success, #16A34A);
   --cp-success-light: #E3FCEF;
   --cp-success-text: #006644;
@@ -193,7 +193,7 @@
      already declared bg.surface light = #FFFFFF. The grey-card aesthetic
      was never the design — it was a value drift. */
   --cp-bg-surface: #FFFFFF;
-  --cp-bg-sunken: #F1F5F9;
+  --cp-bg-sunken: var(--cp-bg-sunken, #F1F5F9);
   --cp-bg-elevated: #FFFFFF;
   --cp-text-primary: var(--cp-text-primary, #172B4D);
   --cp-text-secondary: var(--cp-text-secondary, #44546F);
@@ -323,7 +323,7 @@
   --cp-neutral-0: #FFFFFF;
   --cp-neutral-5: #FAFAFA;
   --cp-neutral-10: #F5F5F5;
-  --cp-neutral-15: #F1F5F9;
+  --cp-neutral-15: var(--cp-bg-sunken, #F1F5F9);
   --cp-neutral-20: #E5E5E5;
   --cp-neutral-25: var(--cp-border, #E2E8F0);
   --cp-neutral-30: #D4D4D4;
@@ -903,17 +903,17 @@ html:has(body[data-scroll-locked]) {
     --nav-underline: #2563EB;               /* V11: 2px active underline */
     --nav-border: var(--cp-border, #E2E8F0);                  /* V11: Header bottom border */
     --nav-shadow: 0 1px 0 rgba(15, 23, 42, 0.06); /* V11: Subtle shadow */
-    --nav-logo-separator: #F1F5F9;          /* V11: Logo right divider */
+    --nav-logo-separator: var(--cp-bg-sunken, #F1F5F9);          /* V11: Logo right divider */
     --sidebar-bg: #FFFFFF;                  /* V11: Sidebar background */
     --sidebar-border: var(--cp-border, #E2E8F0);             /* V11: Sidebar right border */
     --sidebar-shadow: 1px 0 0 rgba(15, 23, 42, 0.06); /* V11: Sidebar shadow */
     --sidebar-section-label: var(--cp-ink-4, #94A3B8);      /* V11: Section headers */
     --sidebar-item-text: #334155;          /* V11: Default nav item text */
-    --sidebar-item-hover-bg: #F1F5F9;      /* V11: Item hover bg */
+    --sidebar-item-hover-bg: var(--cp-bg-sunken, #F1F5F9);      /* V11: Item hover bg */
     --sidebar-item-active-bg: #EFF6FF;     /* V11: Active item bg */
     --sidebar-item-active-text: #2563EB;   /* V11: Active item text */
     --sidebar-accent-bar: #2563EB;         /* V11: 3px left accent */
-    --sidebar-divider: #F1F5F9;            /* V11: Collapsed section divider */
+    --sidebar-divider: var(--cp-bg-sunken, #F1F5F9);            /* V11: Collapsed section divider */
     
     /* Legacy HEX aliases (DO NOT override canonical HSL tokens above) */
     --brand-active-hex: #2563eb;

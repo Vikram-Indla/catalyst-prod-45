@@ -14,8 +14,8 @@ import { CreateReleaseModal } from '@/components/testhub/releases/CreateReleaseM
 import { format } from 'date-fns';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  planning: { label: 'Planning', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: Clock },
-  planned: { label: 'Planned', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: Clock },
+  planning: { label: 'Planning', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: Clock },
+  planned: { label: 'Planned', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: Clock },
   development: { label: 'Development', color: '#8B5CF6', bg: '#F5F3FF', icon: Settings2 },
   testing: { label: 'Testing', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', icon: Beaker },
   uat: { label: 'UAT', color: '#EA580C', bg: '#FFF7ED', icon: Monitor },
@@ -210,7 +210,7 @@ function TableView({ releases, navigate }: { releases: Release[]; navigate: any 
               <tr
                 key={r.id}
                 onClick={() => navigate(`/testhub/releases/${r.id}`)}
-                style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer', transition: 'background 0.15s' }}
+                style={{ borderBottom: '1px solid var(--cp-bg-sunken, #F1F5F9)', cursor: 'pointer', transition: 'background 0.15s' }}
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--bg-1, #F8FAFC)')}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = '')}
               >
@@ -301,7 +301,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
                 {sc.label}
               </span>
               {r.vehicle && (
-                <span style={{ padding: '2px 8px', borderRadius: 6, backgroundColor: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontSize: 11, fontWeight: 500 }}>
+                <span style={{ padding: '2px 8px', borderRadius: 6, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontSize: 11, fontWeight: 500 }}>
                   {r.vehicle.name}
                 </span>
               )}
@@ -313,7 +313,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
                 <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>Test Progress</span>
                 <span style={{ fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))' }}>{execPct}%</span>
               </div>
-              <div style={{ height: 6, backgroundColor: 'var(--ds-surface-sunken, #F1F5F9)', borderRadius: 3 }}>
+              <div style={{ height: 6, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', borderRadius: 3 }}>
                 <div style={{ height: '100%', width: `${execPct}%`, backgroundColor: execPct >= 80 ? 'var(--ds-text-success, #22C55E)' : execPct >= 50 ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : 'var(--ds-text-brand, #3B82F6)', borderRadius: 4, transition: 'width 0.3s' }} />
               </div>
             </div>

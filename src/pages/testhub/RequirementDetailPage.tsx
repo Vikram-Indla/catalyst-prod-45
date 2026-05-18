@@ -55,9 +55,9 @@ const COVERAGE_CONFIG: Record<string, { label: string; color: string; bg: string
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   functional: { label: 'Functional', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)' },
-  non_functional: { label: 'Non-Functional', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
+  non_functional: { label: 'Non-Functional', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
   user_story: { label: 'User Story', color: '#0891B2', bg: '#ECFEFF' },
-  epic: { label: 'Epic', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
+  epic: { label: 'Epic', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
   feature: { label: 'Feature', color: 'var(--quality-high, #059669)', bg: '#ECFDF5' },
   bug_fix: { label: 'Bug Fix', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)' },
 };
@@ -266,7 +266,7 @@ export default function RequirementDetailPage() {
               padding: '2px 6px', borderRadius: 4, height: 20, display: 'inline-flex', alignItems: 'center',
             }}>{status.label}</span>
             {requirement.external_id && (
-              <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', backgroundColor: 'var(--ds-surface-sunken, #F1F5F9)', padding: '4px 10px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '4px 10px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
                 <ExternalLink size={12} /> {requirement.external_id}
               </span>
             )}

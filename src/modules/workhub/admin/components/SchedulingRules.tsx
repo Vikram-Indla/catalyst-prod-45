@@ -95,7 +95,7 @@ export function SchedulingRules() {
         {priorities.map((p, i) => (
           <div key={i} style={{
             display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0',
-            borderBottom: i < 2 ? '1px solid #F1F5F9' : 'none',
+            borderBottom: i < 2 ? '1px solid var(--cp-bg-sunken, #F1F5F9)' : 'none',
           }}>
             <Toggle checked={priorityToggles[i]} onChange={(v) => {
               const copy = [...priorityToggles]
@@ -170,11 +170,11 @@ export function SchedulingRules() {
                 When a FixVersion has no releaseDate, Catalyst attempts to extract a date from the version name:
               </p>
               <div style={{ marginTop: 8, fontSize: 11, color: '#92400E', lineHeight: 2 }}>
-                <code style={{ fontFamily: 'var(--cp-font-mono)', background: 'var(--ds-surface-sunken, #F1F5F9)', padding: '1px 5px', borderRadius: 2 }}>2026 02</code>
+                <code style={{ fontFamily: 'var(--cp-font-mono)', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '1px 5px', borderRadius: 2 }}>2026 02</code>
                 {' → 2026-02-28  '}
-                <code style={{ fontFamily: 'var(--cp-font-mono)', background: 'var(--ds-surface-sunken, #F1F5F9)', padding: '1px 5px', borderRadius: 2 }}>2026 Q1</code>
+                <code style={{ fontFamily: 'var(--cp-font-mono)', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '1px 5px', borderRadius: 2 }}>2026 Q1</code>
                 {' → 2026-03-31  '}
-                <code style={{ fontFamily: 'var(--cp-font-mono)', background: 'var(--ds-surface-sunken, #F1F5F9)', padding: '1px 5px', borderRadius: 2 }}>Release 3.0</code>
+                <code style={{ fontFamily: 'var(--cp-font-mono)', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '1px 5px', borderRadius: 2 }}>Release 3.0</code>
                 {' → '}
                 <span style={{ color: 'var(--ds-text-danger, #EF4444)', fontWeight: 600 }}>Cannot parse</span>
               </div>

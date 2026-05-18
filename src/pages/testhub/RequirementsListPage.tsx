@@ -35,9 +35,9 @@ interface Requirement {
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   functional: { label: 'Functional', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)' },
-  non_functional: { label: 'Non-Functional', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
+  non_functional: { label: 'Non-Functional', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
   user_story: { label: 'User Story', color: '#0891B2', bg: '#ECFEFF' },
-  epic: { label: 'Epic', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
+  epic: { label: 'Epic', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
   feature: { label: 'Feature', color: 'var(--quality-high, #059669)', bg: '#ECFDF5' },
   bug_fix: { label: 'Bug Fix', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)' },
 };
@@ -272,7 +272,7 @@ export default function RequirementsListPage() {
                       <span style={{ fontSize: 11, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '2px 8px', borderRadius: 4 }}>{type.label}</span>
                     </td>
                     <td style={{ padding: '8px 12px' }}>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: '#374151', backgroundColor: 'var(--ds-surface-sunken, #F1F5F9)', padding: '2px 8px', borderRadius: 4 }}>{priority.label}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#374151', backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '2px 8px', borderRadius: 4 }}>{priority.label}</span>
                     </td>
                     <td style={{ padding: '8px 12px' }}>
                       <span style={{

@@ -228,7 +228,7 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
             <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>Team Distribution</div>
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '16px' }}>
               {teamStats.map(([team, count]) => (
-                <span key={team} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 600, background: 'var(--cp-bg-sunken, #F1F5F9)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, color: 'var(--cp-text-secondary, #475569)', padding: '4px 10px', borderRadius: '4px' }}>
+                <span key={team} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 600, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, color: 'var(--cp-text-secondary, #475569)', padding: '4px 10px', borderRadius: '4px' }}>
                   {team} <span style={{ fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{count}</span>
                 </span>
               ))}
@@ -278,7 +278,7 @@ function TriageCard({ badge, ideaKey, title, body, aiSuggestion, primary, second
   return (
     <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: '12px', padding: '16px', marginBottom: '10px', boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--cp-bg-sunken, #F1F5F9)', color: 'var(--cp-text-secondary, #475569)', padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', color: 'var(--cp-text-secondary, #475569)', padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
           <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
           {badge}
         </span>

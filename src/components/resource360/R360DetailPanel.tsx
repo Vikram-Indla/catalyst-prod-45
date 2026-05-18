@@ -229,7 +229,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
           </div>
 
           {/* Hierarchy */}
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid #F1F5F9' }}>
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--cp-bg-sunken, #F1F5F9)' }}>
             <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--fg-2)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '10px' }}>Hierarchy</div>
             {item.parent_key ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>

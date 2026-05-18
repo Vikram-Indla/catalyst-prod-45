@@ -58,7 +58,7 @@ function restoreStatus(entry: AuditEntry): { label: string; bg: string; color: s
   }
   const deadline = new Date(entry.restore_deadline);
   if (deadline < new Date()) {
-    return { label: 'EXPIRED', bg: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', border: 'var(--ds-border, var(--cp-border, #E2E8F0))' };
+    return { label: 'EXPIRED', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', border: 'var(--ds-border, var(--cp-border, #E2E8F0))' };
   }
   const daysLeft = Math.max(0, Math.ceil((deadline.getTime() - Date.now()) / 86400_000));
   return { label: `RESTORABLE \u00B7 ${daysLeft}d left`, bg: '#FFFBEB', color: '#92400E', border: '#FCD34D' };
@@ -320,7 +320,7 @@ export default function AuditTrailPage() {
                 return (
                   <tr
                     key={entry.id}
-                    style={{ borderBottom: '0.75px solid #F1F5F9', height: 52 }}
+                    style={{ borderBottom: '0.75px solid var(--cp-bg-sunken, #F1F5F9)', height: 52 }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F8FAFC)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface, #ffffff)')}
                   >

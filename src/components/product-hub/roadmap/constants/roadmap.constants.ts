@@ -47,7 +47,7 @@ export const SURFACE = {
   page: 'var(--bg-1, #F8FAFC)',
   card: 'var(--ds-text-inverse, #FFFFFF)',
   border: 'var(--bd-default, var(--cp-border, #E2E8F0))',
-  borderLight: 'var(--ds-surface-sunken, #F1F5F9)',
+  borderLight: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
 };
 
 // ── Dark Mode Variants (Dark mode One Surface Model) ──

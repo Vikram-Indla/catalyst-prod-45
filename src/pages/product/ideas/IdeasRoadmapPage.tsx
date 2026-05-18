@@ -49,7 +49,7 @@ import { useLocation } from 'react-router-dom';
 const TEAMS = ['All Teams', 'Senaie BAU', 'Integration Team', 'Mobile App Team'];
 
 function SkeletonCard({ isDark }: { isDark?: boolean }) {
-  return <div style={{ height: 80, background: 'var(--cp-bg-sunken, #F1F5F9)', borderRadius: 8, animation: 'shimmer 1.5s infinite' }} />;
+  return <div style={{ height: 80, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', borderRadius: 8, animation: 'shimmer 1.5s infinite' }} />;
 }
 
 function LoadingSkeleton({ isDark }: { isDark?: boolean }) {
@@ -60,7 +60,7 @@ function LoadingSkeleton({ isDark }: { isDark?: boolean }) {
           flex: 1, minWidth: 220, display: 'flex', flexDirection: 'column', gap: 8,
           borderRadius: 8, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', padding: 12,
         }}>
-          <div style={{ height: 20, width: 100, background: 'var(--cp-bg-sunken, #F1F5F9)', borderRadius: 4, marginBottom: 8 }} />
+          <div style={{ height: 20, width: 100, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', borderRadius: 4, marginBottom: 8 }} />
           {[1, 2, 3].map(i => <SkeletonCard key={i} isDark={isDark} />)}
         </div>
       ))}

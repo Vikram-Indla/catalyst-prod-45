@@ -59,7 +59,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
   const sortIndicator = (field: SortField) => sortField === field ? (sortDir === 'asc' ? ' ↑' : ' ↓') : '';
 
   const borderColor = isDark ? DK.border : 'var(--divider)';
-  const borderSubtle = isDark ? DK.borderSubtle : 'var(--ds-surface-sunken, #F1F5F9)';
+  const borderSubtle = isDark ? DK.borderSubtle : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))';
 
   const colHeaderStyle: React.CSSProperties = {
     fontSize: 10.5, fontWeight: 600,

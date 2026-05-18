@@ -4,10 +4,10 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 const CATEGORY_PILL: Record<string, { bg: string; text: string; label: string }> = {
-  todo: { bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', label: 'To Do' },
+  todo: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', label: 'To Do' },
   in_progress: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)', label: 'In Progress' },
   done: { bg: '#F0FDFA', text: 'var(--cp-teal-60, #0D9488)', label: 'Done' },
-  terminal: { bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', label: 'Terminal' },
+  terminal: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', label: 'Terminal' },
 };
 
 interface StatusRowProps {

@@ -165,7 +165,7 @@ export default function WikiAnalyticsPage() {
           <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', overflow: 'hidden' }}>
             <div style={{
               display: 'grid', gridTemplateColumns: '1fr 60px 60px 60px',
-              background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F1F5F9)', padding: '0 14px', height: 32, alignItems: 'center',
+              background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '0 14px', height: 32, alignItems: 'center',
               fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
               color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
             }}>
@@ -197,7 +197,7 @@ export default function WikiAnalyticsPage() {
           <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', overflow: 'hidden' }}>
             <div style={{
               display: 'grid', gridTemplateColumns: '1fr 60px 60px',
-              background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F1F5F9)', padding: '0 14px', height: 32, alignItems: 'center',
+              background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '0 14px', height: 32, alignItems: 'center',
               fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
               color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
             }}>

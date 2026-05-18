@@ -127,7 +127,7 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
               {available.map(u => (
                 <div
                   key={u.id}
-                  className="flex items-center gap-3 px-5 py-2.5 transition-colors hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] cursor-pointer group border-b border-[var(--ds-surface-sunken,#F1F5F9)] dark:border-[var(--ds-border,#2E2E2E)]"
+                  className="flex items-center gap-3 px-5 py-2.5 transition-colors hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] cursor-pointer group border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] dark:border-[var(--ds-border,#2E2E2E)]"
                   onClick={() => handleAdd(u)}
                 >
                   {u.avatar_url ? (

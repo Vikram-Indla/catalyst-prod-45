@@ -141,7 +141,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
 
   if (!item) return null;
 
-  const statusInfo = STATUS_PILL[item.status] || { color: 'var(--ds-text-subtle, #334155)', bg: 'var(--ds-surface-sunken, #F1F5F9)' };
+  const statusInfo = STATUS_PILL[item.status] || { color: 'var(--ds-text-subtle, #334155)', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' };
   const ownerProfile = approvedProfiles?.find(p => p.id === item.rawAssigneeId);
 
   return createPortal(

@@ -80,7 +80,7 @@ export function HierarchyContextMenu({
     background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
   };
 
-  const sep = <div style={{ borderTop: '1px solid #F1F5F9', margin: '4px 0' }} />;
+  const sep = <div style={{ borderTop: '1px solid var(--cp-bg-sunken, #F1F5F9)', margin: '4px 0' }} />;
 
   return createPortal(
     <div data-ctx-menu style={{ ...menuStyle, top: adjustedY, left: adjustedX }}

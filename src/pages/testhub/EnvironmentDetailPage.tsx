@@ -51,13 +51,13 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> 
   staging: { label: 'Staging', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB' },
   uat: { label: 'UAT', color: '#0891B2', bg: '#ECFEFF' },
   production: { label: 'Production', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)' },
-  other: { label: 'Other', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
+  other: { label: 'Other', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   active: { label: 'Active', color: 'var(--quality-high, #059669)', bg: '#ECFDF5' },
   maintenance: { label: 'Maintenance', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB' },
-  inactive: { label: 'Inactive', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
+  inactive: { label: 'Inactive', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
   deprecated: { label: 'Deprecated', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--ds-surface-sunken, #F8FAFC)' },
 };
 
@@ -65,7 +65,7 @@ const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string; 
   healthy: { label: 'Healthy', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
   degraded: { label: 'Degraded', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', icon: AlertTriangle },
   down: { label: 'Down', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', icon: XCircle },
-  unknown: { label: 'Unknown', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: HelpCircle },
+  unknown: { label: 'Unknown', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: HelpCircle },
 };
 
 export default function EnvironmentDetailPage() {

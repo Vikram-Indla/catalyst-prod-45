@@ -344,7 +344,7 @@
 }
 
 .lwi-skeleton__pulse {
-  background: var(--ds-surface-sunken, #F1F5F9);
+  background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
   border-radius: 4px;
   animation: lwi-pulse 1.5s ease-in-out infinite;
 }

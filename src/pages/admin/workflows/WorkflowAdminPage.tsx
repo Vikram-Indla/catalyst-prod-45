@@ -52,7 +52,7 @@ export default function WorkflowAdminPage() {
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ds-border,var(--cp-border, #E2E8F0))]">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[var(--ds-surface-sunken,#F1F5F9)] flex items-center justify-center border border-[var(--ds-border,var(--cp-border, #E2E8F0))]">
+          <div className="w-9 h-9 rounded-lg bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] flex items-center justify-center border border-[var(--ds-border,var(--cp-border, #E2E8F0))]">
             <BoardsIcon label="" size="small" />
           </div>
           <div>

@@ -6,7 +6,7 @@ export const RH = {
   pageBg: 'var(--ds-surface, #FFFFFF)',
   cardBg: 'var(--ds-surface, #FFFFFF)',
   surfaceBg: 'var(--bg-1, #F8FAFC)',
-  sunkenBg: 'var(--ds-surface-sunken, #F1F5F9)',
+  sunkenBg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
 
   // Borders
   borderDefault: 'rgba(15,23,42,0.12)',

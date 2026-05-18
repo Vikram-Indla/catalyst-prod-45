@@ -39,7 +39,7 @@ function DataTable({ data }: { data: any[] }) {
         {data.map((row: any, i: number) => (
           <tr key={i} style={{ background: i % 2 === 0 ? "var(--ds-surface-sunken, #FAFBFC)" : "var(--ds-surface, #FFF)" }}>
             {keys.map((k) => (
-              <td key={k} style={{ padding: "4px 8px", borderBottom: "1px solid #F1F5F9" }}>{String(row[k] ?? "—")}</td>
+              <td key={k} style={{ padding: "4px 8px", borderBottom: "1px solid var(--cp-bg-sunken, #F1F5F9)" }}>{String(row[k] ?? "—")}</td>
             ))}
           </tr>
         ))}

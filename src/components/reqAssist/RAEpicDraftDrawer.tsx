@@ -232,7 +232,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                     {/* D01: Epic key badge — neutral grey, not purple */}
                     <span style={{
                       display: 'inline-flex', alignItems: 'center',
-                      background: 'var(--cp-bg-sunken, #F1F5F9)',
+                      background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
                       border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #CBD5E1',
                       borderRadius: 4,
                       padding: '2px 8px',

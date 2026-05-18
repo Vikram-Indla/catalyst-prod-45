@@ -157,12 +157,12 @@ export default function FreezeWindowsPage() {
       {isLoading ? (
         <div className="space-y-1">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-9 rounded animate-pulse" style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }} />
+            <div key={i} className="h-9 rounded animate-pulse" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }} />
           ))}
         </div>
       ) : windows.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }}>
+          <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
             <CalendarOff className="w-8 h-8" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }} />
           </div>
           <h3 className="font-semibold text-lg mb-1" style={{ color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>No freeze windows defined</h3>
@@ -172,7 +172,7 @@ export default function FreezeWindowsPage() {
         <div className="rounded-lg overflow-hidden" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
             <thead>
-              <tr style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }}>
+              <tr style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
                 {['NAME', 'START DATE', 'END DATE', 'DURATION', 'REASON', 'ACTIONS'].map(h => (
                   <th key={h} className="px-3 py-0 h-9 text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{h}</th>
                 ))}
@@ -237,7 +237,7 @@ export default function FreezeWindowsPage() {
           </div>
           <DialogFooter>
             <button onClick={() => { setShowModal(false); setForm({ name: '', start_date: '', end_date: '', reason: '' }); setFormError(''); }}
-              className="h-9 px-4 rounded-md text-[13px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[var(--ds-surface-sunken,#F1F5F9)] transition-colors">
+              className="h-9 px-4 rounded-md text-[13px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] transition-colors">
               Cancel
             </button>
             <button onClick={handleCreate} disabled={createMut.isPending}

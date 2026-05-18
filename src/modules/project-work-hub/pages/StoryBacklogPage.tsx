@@ -1163,7 +1163,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
           <div
             onMouseDown={handlePanelMouseDown}
             style={{ width: 6, minWidth: 6, cursor: 'col-resize', flexShrink: 0, background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s', position: 'relative', zIndex: 10 }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F1F5F9)')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))')}
             onMouseLeave={e => { if (!isDraggingPanel.current) e.currentTarget.style.background = 'transparent'; }}
           >
             <div style={{ width: 1.5, height: 40, borderRadius: 1, background: 'var(--ds-border, var(--cp-border, #E2E8F0))' }} />

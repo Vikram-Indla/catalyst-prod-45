@@ -463,7 +463,7 @@ const JiraUserSync: React.FC = () => {
                           textTransform: 'uppercase', cursor: 'pointer',
                           border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                           background: assignPermLevel === lvl
-                            ? lvl === 'full' ? 'var(--ds-background-success, #DCFCE7)' : lvl === 'edit' ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface-sunken, #F1F5F9)'
+                            ? lvl === 'full' ? 'var(--ds-background-success, #DCFCE7)' : lvl === 'edit' ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))'
                             : 'transparent',
                           color: assignPermLevel === lvl
                             ? lvl === 'full' ? '#006644' : lvl === 'edit' ? 'var(--ds-background-brand-bold-hovered, #1D4ED8)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'
@@ -505,7 +505,7 @@ const JiraUserSync: React.FC = () => {
                         <span className="jira-chip"
                           style={{
                             fontSize: '10px', fontWeight: 700, fontFamily: 'var(--cp-font-mono)', padding: '1px 5px', borderRadius: '4px',
-                            background: 'var(--cp-border-lt, #F1F5F9)',
+                            background: 'var(--cp-border-lt, var(--cp-bg-sunken, #F1F5F9))',
                             color: 'var(--cp-text-secondary, #374151)',
                           }}>
                           {proj.project_key}
@@ -561,7 +561,7 @@ const JiraUserSync: React.FC = () => {
         <div className="flex-1 overflow-y-auto overflow-x-auto">
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px' }}>
             <thead>
-              <tr className="jira-table-header" style={{ background: 'var(--cp-bg-sunken, #F1F5F9)', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}>
+              <tr className="jira-table-header" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}>
                 <th style={{ width: '36px', padding: '10px 12px', textAlign: 'center' }}>
                   <input
                     ref={headerCheckRef}
@@ -595,7 +595,7 @@ const JiraUserSync: React.FC = () => {
                         <div className="jira-skeleton animate-pulse" style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--cp-border, var(--cp-border, #E2E8F0))' }} />
                         <div>
                           <div className="jira-skeleton animate-pulse" style={{ width: 120, height: 10, borderRadius: 4, marginBottom: 4, background: 'var(--cp-border, var(--cp-border, #E2E8F0))' }} />
-                          <div className="jira-skeleton animate-pulse" style={{ width: 160, height: 8, borderRadius: 4, background: 'var(--cp-border-lt, #F1F5F9)' }} />
+                          <div className="jira-skeleton animate-pulse" style={{ width: 160, height: 8, borderRadius: 4, background: 'var(--cp-border-lt, var(--cp-bg-sunken, #F1F5F9))' }} />
                         </div>
                       </div>
                     </td>
@@ -722,7 +722,7 @@ const JiraUserSync: React.FC = () => {
                               style={{
                                 display: 'inline-flex', alignItems: 'center', gap: '3px', padding: '2px 6px', borderRadius: '4px',
                                 fontSize: '11px', fontWeight: 600, whiteSpace: 'nowrap',
-                                background: 'var(--cp-border-lt, #F1F5F9)',
+                                background: 'var(--cp-border-lt, var(--cp-bg-sunken, #F1F5F9))',
                                 color: 'var(--cp-text-secondary, #374151)',
                               }}>
                               {dotColor && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: dotColor, flexShrink: 0 }} />}

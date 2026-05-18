@@ -5,7 +5,7 @@
 }
 
 .ph-skeleton {
-  background: linear-gradient(90deg, var(--ds-surface-sunken, #F1F5F9) 25%, #E8EDF2 37%, var(--ds-surface-sunken, #F1F5F9) 63%) !important;
+  background: linear-gradient(90deg, var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9)) 25%, #E8EDF2 37%, var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9)) 63%) !important;
   background-size: 200% 100% !important;
   animation: ph-shimmer 1.5s ease-in-out infinite;
 }
@@ -51,7 +51,7 @@
   font-family: var(--cp-font-heading);
   padding-bottom: 12px;
   margin-bottom: 16px;
-  border-bottom: 1px solid var(--ds-surface-sunken, #F1F5F9);
+  border-bottom: 1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
 }
 
 .dark .ph-card-title {

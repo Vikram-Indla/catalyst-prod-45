@@ -360,7 +360,7 @@ export default function WikiSearchPage() {
                           {(r.tags as string[]).slice(0, 4).map(t => (
                             <span key={t} style={{
                               fontSize: 9, padding: '1px 6px', borderRadius: 4,
-                              background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F1F5F9)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 500,
+                              background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 500,
                             }}>{t}</span>
                           ))}
                         </div>

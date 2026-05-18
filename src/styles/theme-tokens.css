@@ -15,7 +15,7 @@
      wash and Atlassian-slate wash both retire here. */
   --cp-bg-canvas:       var(--ds-surface, #FFFFFF);
   --cp-bg-sidebar-hdr:  var(--ds-surface-sunken, #F8FAFC);
-  --cp-bg-sunken:       var(--ds-surface-sunken, #F1F5F9);
+  --cp-bg-sunken:       var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
   --cp-float:           var(--ds-surface, #FFFFFF);
   /* Bridge gap closure (2026-04-28): src/theme/ads/tokens.ts declared
      overlay/inset/disabled values in TS but no CSS rule emitted them
@@ -24,7 +24,7 @@
      counterpart. Light values mirror tokens.ts adsTokens.bg.* and
      text.disabled. */
   --cp-bg-overlay:      var(--ds-surface-sunken, #F8FAFC);
-  --cp-bg-inset:        var(--ds-surface-sunken, #F1F5F9);
+  --cp-bg-inset:        var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
   --cp-text-disabled:   var(--ds-text-disabled, #CBD5E1);
 
   /* Text */

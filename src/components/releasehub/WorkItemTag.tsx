@@ -13,7 +13,7 @@ interface Props {
 const STATUS_MINI: Record<string, { bg: string; text: string }> = {
   done: { bg: 'var(--ds-background-success, #DCFCE7)', text: '#15803D' },
   in_progress: { bg: '#DBEAFE', text: '#1E40AF' },
-  todo: { bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtle, #475569)' },
+  todo: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--ds-text-subtle, #475569)' },
 };
 
 export function WorkItemTag({ workItemKey, title, type, status, onClick }: Props) {

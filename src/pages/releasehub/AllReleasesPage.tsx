@@ -163,7 +163,7 @@ export default function AllReleasesPage() {
             }>
             {s.label}
             <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full text-[10px] font-bold"
-              style={{ background: 'var(--cp-bg-sunken, #F1F5F9)', color: 'var(--cp-text-secondary, #475569)' }}>{s.count}</span>
+              style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', color: 'var(--cp-text-secondary, #475569)' }}>{s.count}</span>
           </button>
         ))}
       </div>
@@ -232,7 +232,7 @@ export default function AllReleasesPage() {
                     <p className="text-[11px]" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>No changes yet</p>
                   ) : (
                     <>
-                      <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }}>
+                      <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
                         <div className="h-full rounded-full transition-all" style={{
                           width: progress.pct + '%',
                           background: accentColor(r.status)
@@ -252,7 +252,7 @@ export default function AllReleasesPage() {
         <div className="rounded overflow-hidden" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
             <thead>
-              <tr style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }}>
+              <tr style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
                 {['RELEASE', 'SOURCE', 'STATUS', 'TARGET DATE', 'CHANGES', 'PROGRESS'].map(h => (
                   <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{h}</th>
                 ))}
@@ -293,7 +293,7 @@ export default function AllReleasesPage() {
                         <span className="text-[11px]" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>No changes yet</span>
                       ) : (
                         <div className="flex items-center gap-2">
-                          <div className="w-16 h-1 rounded-full overflow-hidden" style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }}>
+                          <div className="w-16 h-1 rounded-full overflow-hidden" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
                             <div className="h-full rounded-full" style={{ width: progress.pct + '%', background: accentColor(r.status) }} />
                           </div>
                           <span className="text-[11px]" style={{ fontFamily: RH.fontMono, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{progress.pct}%</span>

@@ -28,8 +28,8 @@ interface WorkType {
 const LEVEL_STYLES: Record<string, { bg: string; text: string }> = {
   top:   { bg: '#F5F3FF', text: 'var(--cp-purple-60, #7C3AED)' },
   mid:   { bg: '#EFF6FF', text: '#2563EB' },
-  work:  { bg: '#F1F5F9', text: '#334155' },
-  child: { bg: '#F1F5F9', text: 'var(--cp-ink-4, #94A3B8)' },
+  work:  { bg: 'var(--cp-bg-sunken, #F1F5F9)', text: '#334155' },
+  child: { bg: 'var(--cp-bg-sunken, #F1F5F9)', text: 'var(--cp-ink-4, #94A3B8)' },
 };
 
 const COL_WIDTHS = {

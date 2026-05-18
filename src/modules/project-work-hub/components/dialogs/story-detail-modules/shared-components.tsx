@@ -69,7 +69,7 @@ export function JiraStatusPill({ status, category: _category }: { status: string
 
 /* ── Skel ──────────────────────────────────── */
 export function Skel({ w, h = 14 }: { w: number | string; h?: number }) {
-  return <div style={{ width: w, height: h, borderRadius: 4, background: 'var(--ds-surface-sunken, #F1F5F9)', animation: 'sdm-pulse 1.5s ease-in-out infinite' }} />;
+  return <div style={{ width: w, height: h, borderRadius: 4, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', animation: 'sdm-pulse 1.5s ease-in-out infinite' }} />;
 }
 
 /* ── DetailRow ─────────────────────────────── */

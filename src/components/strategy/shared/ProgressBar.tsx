@@ -28,7 +28,7 @@ export function ProgressBar({ value, color, height = 6, showLabel = false, anima
           flex: 1,
           height,
           borderRadius: height / 2,
-          background: 'var(--exec-bg-hover, #F1F5F9)',
+          background: 'var(--exec-bg-hover, var(--cp-bg-sunken, #F1F5F9))',
           overflow: 'hidden',
         }}
       >

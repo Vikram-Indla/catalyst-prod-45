@@ -457,15 +457,15 @@ export default function FeatureFlagsPage() {
   if (isLoading) {
     return (
       <div className={`flex-1 min-w-0 ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`} style={{ padding: '24px 32px' }}>
-        <div className="h-7 w-48 bg-[var(--ds-surface-sunken,#F1F5F9)] rounded mb-1 animate-pulse" />
-        <div className="h-4 w-80 bg-[var(--ds-surface-sunken,#F1F5F9)] rounded mb-6 animate-pulse" />
-        <div className="h-14 bg-[var(--ds-surface-sunken,#F1F5F9)] rounded-md mb-4 animate-pulse" style={{ border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }} />
+        <div className="h-7 w-48 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] rounded mb-1 animate-pulse" />
+        <div className="h-4 w-80 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] rounded mb-6 animate-pulse" />
+        <div className="h-14 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] rounded-md mb-4 animate-pulse" style={{ border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }} />
         <div className="flex gap-2 mb-3">
-          <div className="h-9 w-64 bg-[var(--ds-surface-sunken,#F1F5F9)] rounded animate-pulse" />
-          <div className="h-9 w-16 bg-[var(--ds-surface-sunken,#F1F5F9)] rounded animate-pulse" />
+          <div className="h-9 w-64 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] rounded animate-pulse" />
+          <div className="h-9 w-16 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] rounded animate-pulse" />
         </div>
         <div className={`overflow-hidden ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`} style={{ border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }}>
-          <div style={{ height: 40, background: 'var(--cp-bg-sunken, #F1F5F9)', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }} />
+          <div style={{ height: 40, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }} />
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className={`animate-pulse ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`} style={{ height: 52, borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }} />
           ))}
@@ -533,7 +533,7 @@ export default function FeatureFlagsPage() {
             padding: '10px 16px',
             border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`,
             borderRadius: 6,
-            background: 'var(--cp-bg-sunken, #F1F5F9)',
+            background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
             gap: 0,
           }}
         >
@@ -711,14 +711,14 @@ export default function FeatureFlagsPage() {
           transition: 'opacity 200ms ease',
         }}
       >
-        {/* Header — thead on var(--ds-surface-sunken, #F1F5F9) */}
+        {/* Header — thead on var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9)) */}
         <div
           role="row"
           className="grid items-center gap-0"
           style={{
             gridTemplateColumns: GRID_COLS,
             height: 40,
-            background: 'var(--cp-bg-sunken, #F1F5F9)',
+            background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
             borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`,
             fontFamily: 'var(--cp-font-body)',
             fontSize: 11,

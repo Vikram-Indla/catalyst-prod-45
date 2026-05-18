@@ -88,7 +88,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
             style={{
               minWidth: periodMinWidth,
               width: `${100 / periods.length}%`,
-              borderRight: `1px solid ${isQuarterBoundary ? borderColor : 'var(--ds-surface-sunken, #F1F5F9)'}`,
+              borderRight: `1px solid ${isQuarterBoundary ? borderColor : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))'}`,
               background: period.isCurrent ? 'rgba(37,99,235,0.03)' : 'transparent',
             }}
           />
@@ -145,7 +145,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                         fontSize: 10,
                         fontWeight: 600,
                         color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
-                        background: 'var(--ds-surface-sunken, #F1F5F9)',
+                        background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
                         borderRadius: 12,
                         padding: '2px 7px',
                         fontFamily: 'var(--cp-font-mono)',
@@ -168,7 +168,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                         style={{
                           height: 40,
                           backgroundColor: isSelected ? 'rgba(37,99,235,0.06)' : 'transparent',
-                          borderBottom: '1px solid #F1F5F9',
+                          borderBottom: '1px solid var(--cp-bg-sunken, #F1F5F9)',
                         }}
                         onClick={() => onItemClick(item.id)}
                         onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #FAFBFC)'; }}

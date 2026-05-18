@@ -48,7 +48,7 @@ const SectionHeader = React.memo(({ title, count, rightLabel, rightAction, isDar
     <div style={{ width: 3, height: 16, borderRadius: 4, background: 'var(--ds-text-brand, #2563EB)' }} />
     <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 600, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>{title}</span>
     {count !== undefined && (
-      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F1F5F9)', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{count}</span>
+      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{count}</span>
     )}
     {rightLabel && (
       <span onClick={rightAction} style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 650, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -255,7 +255,7 @@ export default function WikiHomePage() {
         <div style={{ borderRadius: 8, border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', overflow: 'hidden', marginBottom: 40 }}>
           <div style={{
             display: 'grid', gridTemplateColumns: '3% 34% 8% 12% 8% 8% 14% 5% 3%',
-            background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F1F5F9)', padding: '8px 12px', height: 50, alignItems: 'center', borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)',
+            background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '8px 12px', height: 50, alignItems: 'center', borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)',
             fontFamily: 'var(--cp-font-heading)', fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', letterSpacing: '0.05em',
           }}>
             <span></span><span>Article</span><span>Domain</span><span>Status</span><span>Confidence</span><span>Helpful</span><span>Tags</span><span>Ver.</span><span></span>
@@ -326,7 +326,7 @@ const DOMAIN_COLORS: Record<string, { bg: string; fg: string }> = {
 
 /* ── Quick Ref Card ── */
 const QuickRefCard = React.memo(({ qr, onClick, isDark }: { qr: any; onClick: () => void; isDark?: boolean }) => {
-  const dc = DOMAIN_COLORS[qr.domain_code] || { bg: 'var(--ds-surface-sunken, #F1F5F9)', fg: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' };
+  const dc = DOMAIN_COLORS[qr.domain_code] || { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', fg: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' };
   const Icon = DOMAIN_ICONS[qr.domain_code] || FileText;
   return (
     <div onClick={onClick} style={{
@@ -353,7 +353,7 @@ QuickRefCard.displayName = 'QuickRefCard';
 const DomainCard = React.memo(({ d, Icon, navigate, isDark }: { d: any; Icon: React.ComponentType<any>; navigate: any; isDark?: boolean }) => {
   const [hovered, setHovered] = useState(false);
   const tagStyle = TAG_STYLES[d.tag] || TAG_STYLES.SUPPORT;
-  const dc = DOMAIN_COLORS[d.domain_code] || { bg: 'var(--ds-surface-sunken, #F1F5F9)', fg: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' };
+  const dc = DOMAIN_COLORS[d.domain_code] || { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', fg: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' };
   const coverageColor = d.coverage_percent >= 80 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d.coverage_percent >= 60 ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
 
   return (
@@ -366,7 +366,7 @@ const DomainCard = React.memo(({ d, Icon, navigate, isDark }: { d: any; Icon: Re
           <div style={{ width: 32, height: 32, borderRadius: 6, flexShrink: 0, background: isDark ? 'rgba(37,99,235,0.12)' : dc.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 150ms' }}>
             <Icon size={16} style={{ color: dc.fg }} />
           </div>
-          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 700, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F1F5F9)', padding: '1px 5px', borderRadius: 3 }}>{d.domain_code}</span>
+          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 700, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '1px 5px', borderRadius: 3 }}>{d.domain_code}</span>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 12.5, fontWeight: 600, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>{d.name}</div>
           </div>
@@ -466,7 +466,7 @@ const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDa
       </div>
 
       {/* Domain */}
-      <span style={{ fontSize: 9, fontWeight: 650, padding: '1px 5px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F1F5F9)', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', width: 'fit-content' }}>{a.domain_code}</span>
+      <span style={{ fontSize: 9, fontWeight: 650, padding: '1px 5px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', width: 'fit-content' }}>{a.domain_code}</span>
 
       {/* Verification Status */}
       <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: verBadge.bg, color: verBadge.color, width: 'fit-content' }}>{verBadge.label}</span>
@@ -480,7 +480,7 @@ const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDa
       {/* Tags — grey pills */}
       <div style={{ display: 'flex', gap: 3, overflow: 'hidden' }}>
         {tags.map((t: string) => (
-          <span key={t} style={{ fontSize: 9.5, fontWeight: 500, padding: '1px 6px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F1F5F9)', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', border: isDark ? '0.75px solid #292929' : '0.75px solid rgba(0,0,0,0.06)', whiteSpace: 'nowrap' }}>{t}</span>
+          <span key={t} style={{ fontSize: 9.5, fontWeight: 500, padding: '1px 6px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', border: isDark ? '0.75px solid #292929' : '0.75px solid rgba(0,0,0,0.06)', whiteSpace: 'nowrap' }}>{t}</span>
         ))}
       </div>
 

@@ -823,7 +823,7 @@
 }
 .sp-skeleton-pulse {
   border-radius: 4px;
-  background: var(--ds-background-neutral, #F1F5F9);
+  background: var(--ds-background-neutral, var(--cp-bg-sunken, #F1F5F9));
   animation: sp-pulse 1.5s ease-in-out infinite;
 }
 @keyframes sp-pulse {

@@ -55,7 +55,7 @@ export type ProjectView = 'backlog' | 'board' | 'list' | 'timeline';
 
 /** Status display config */
 export const STATUS_CONFIG: Record<IssueStatus, { label: string; color: string; bg: string }> = {
-  backlog:    { label: 'Backlog',    color: 'var(--cp-ink-3, #64748B)', bg: '#F1F5F9' },
+  backlog:    { label: 'Backlog',    color: 'var(--cp-ink-3, #64748B)', bg: 'var(--cp-bg-sunken, #F1F5F9)' },
   ready:      { label: 'Ready',     color: '#2563EB', bg: '#EFF6FF' },
   in_dev:     { label: 'In Dev',    color: '#2563EB', bg: '#EFF6FF' },
   in_qa:      { label: 'In QA',     color: 'var(--cp-warning, #D97706)', bg: '#FFFBEB' },

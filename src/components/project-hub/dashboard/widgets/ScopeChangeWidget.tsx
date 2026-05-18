@@ -134,7 +134,7 @@ export default function ScopeChangeWidget({
               style={{
                 height: 56,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', '#F1F5F9'),
+                background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, #F1F5F9)'),
               }}
             />
           ))}
