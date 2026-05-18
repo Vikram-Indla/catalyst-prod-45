@@ -25,12 +25,12 @@ interface ScopeItem {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  not_run:     { label: 'NOT RUN',     color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
+  not_run:     { label: 'NOT RUN',     color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
   in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
   passed:      { label: 'PASSED',      color: '#006644', bg: '#E3FCEF' },
-  failed:      { label: 'FAILED',      color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
-  blocked:     { label: 'BLOCKED',     color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
-  skipped:     { label: 'SKIPPED',     color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
+  failed:      { label: 'FAILED',      color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
+  blocked:     { label: 'BLOCKED',     color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
+  skipped:     { label: 'SKIPPED',     color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
 };
 
 type StatusFilter = 'all' | 'not_run' | 'in_progress' | 'passed' | 'failed' | 'blocked';

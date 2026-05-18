@@ -308,7 +308,7 @@ export const CYCLE_STATUS_CONFIG: Record<CycleStatus, { label: string; color: st
     // neutral
     label: 'archived',
     color: '#42526E',
-    bgColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))'
+    bgColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'
   },
 };
 

@@ -61,7 +61,7 @@ function ResizableHeaderCell({ width, onResize, children }: ResizableHeaderCellP
   const handleColor = dragging
     ? token('color.border.brand', '#0C66E4')
     : hovered
-      ? token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')
+      ? token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')
       : 'transparent';
 
   return (

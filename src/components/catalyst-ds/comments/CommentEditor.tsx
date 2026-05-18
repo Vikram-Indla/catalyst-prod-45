@@ -72,7 +72,7 @@ function ToolbarButton({ icon, title, onClick, active }: ToolbarButtonProps) {
 }
 
 function ToolbarSep() {
-  return <div className="w-px h-4 bg-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))] dark:bg-[var(--ds-border-bold,#454545)] mx-0.5" />;
+  return <div className="w-px h-4 bg-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] dark:bg-[var(--ds-border-bold,#454545)] mx-0.5" />;
 }
 
 const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
@@ -188,13 +188,13 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
             <div
               className={cn(
                 'rounded-md border transition-colors duration-150',
-                'border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]',
+                'border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]',
                 isFocused && 'border-[#4C9AFF] dark:border-[#4C9AFF] ring-1 ring-[#4C9AFF]/30',
                 'bg-[var(--ds-surface-sunken,#FAFBFC)] dark:bg-[var(--ds-surface-raised,#1A1A1A)]'
               )}
             >
               {isExpanded && (
-                <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+                <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                   <ToolbarButton icon={<Bold />} title="Bold (Ctrl+B)" onClick={() => wrapText('**', '**')} />
                   <ToolbarButton icon={<Italic />} title="Italic (Ctrl+I)" onClick={() => wrapText('_', '_')} />
                   <ToolbarButton icon={<Underline />} title="Underline" onClick={() => wrapText('<u>', '</u>')} />

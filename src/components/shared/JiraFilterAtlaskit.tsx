@@ -218,7 +218,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
           height: 32,
           padding: '0 12px',
           borderRadius: 3,
-          border: `1px solid ${isOpen ? token('color.border.selected', '#0C66E4') : token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+          border: `1px solid ${isOpen ? token('color.border.selected', '#0C66E4') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
           background: isOpen ? token('color.background.selected', '#E9F2FF') : token('elevation.surface', '#FFFFFF'),
           color: isOpen ? token('color.text.selected', '#0055CC') : token('color.text', '#292A2E'),
           fontSize: 13,
@@ -267,7 +267,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
             maxHeight: 'calc(100vh - 160px)',
             overflowY: 'auto',
             background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 4,
             boxShadow: token('elevation.shadow.overlay', '0 8px 24px -4px rgba(9,30,66,0.18)'),
             color: token('color.text', '#292A2E'),
@@ -279,7 +279,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
           <div
             style={{
               padding: '12px 16px',
-              borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+              borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -476,7 +476,7 @@ function Section({
     <div
       style={{
         padding: '16px 16px 18px',
-        borderBottom: noBorder ? 'none' : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+        borderBottom: noBorder ? 'none' : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
       }}
     >
       <div
@@ -564,7 +564,7 @@ function AvatarGrid({
             width: 32,
             height: 32,
             borderRadius: '50%',
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             background: token('elevation.surface', '#FFFFFF'),
             color: token('color.text.subtle', '#42526E'),
             cursor: 'pointer',
@@ -617,7 +617,7 @@ function StatusChipGrid({
               gap: 8,
               padding: '6px 12px',
               borderRadius: 16,
-              border: `1px solid ${isSel ? token('color.border.selected', '#0C66E4') : token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+              border: `1px solid ${isSel ? token('color.border.selected', '#0C66E4') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               background: isSel ? token('color.background.selected', '#E9F2FF') : token('elevation.surface', '#FFFFFF'),
               cursor: 'pointer',
             }}
@@ -637,7 +637,7 @@ function StatusChipGrid({
             width: 32,
             height: 32,
             borderRadius: '50%',
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             background: token('elevation.surface', '#FFFFFF'),
             color: token('color.text.subtle', '#42526E'),
             cursor: 'pointer',
@@ -693,7 +693,7 @@ function WorkTypeChipGrid({
               gap: 6,
               padding: '6px 12px',
               borderRadius: 16,
-              border: `1px solid ${isSel ? token('color.border.selected', '#0C66E4') : token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+              border: `1px solid ${isSel ? token('color.border.selected', '#0C66E4') : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               background: isSel ? token('color.background.selected', '#E9F2FF') : token('color.background.neutral.subtle', '#FAFBFC'),
               color: isSel ? token('color.text.selected', '#0055CC') : token('color.text', '#292A2E'),
               fontSize: 13,
@@ -720,7 +720,7 @@ function WorkTypeChipGrid({
             width: 32,
             height: 32,
             borderRadius: '50%',
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             background: token('elevation.surface', '#FFFFFF'),
             color: token('color.text.subtle', '#42526E'),
             cursor: 'pointer',
@@ -804,7 +804,7 @@ function PillChipGrid({
             width: 28,
             height: 28,
             borderRadius: '50%',
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             background: token('elevation.surface', '#FFFFFF'),
             color: token('color.text.subtle', '#42526E'),
             cursor: 'pointer',

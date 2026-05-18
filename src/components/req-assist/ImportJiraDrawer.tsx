@@ -23,7 +23,7 @@ const getAvatarColor = (key: string) => PROJECT_COLORS[key] || '#3F3F46';
 function ProjectTicketCountBadge({ projectKey }: { projectKey: string }) {
   const { data: count } = useProjectTicketCount(projectKey);
   return (
-    <span style={{ background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#374151', fontSize: 11, fontWeight: 600, borderRadius: 4, padding: '2px 6px', fontFamily: 'var(--cp-font-body)' }}>
+    <span style={{ background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#374151', fontSize: 11, fontWeight: 600, borderRadius: 4, padding: '2px 6px', fontFamily: 'var(--cp-font-body)' }}>
       {count ?? '…'}
     </span>
   );
@@ -32,14 +32,14 @@ function ProjectTicketCountBadge({ projectKey }: { projectKey: string }) {
 const PRIORITY_STYLES: Record<string, { bg: string; color: string }> = {
   HIGH:     { bg: '#FEF3C7', color: '#92400E' },
   CRITICAL: { bg: '#FEF3C7', color: '#92400E' },
-  MEDIUM:   { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#374151' },
-  LOW:      { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#374151' },
+  MEDIUM:   { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#374151' },
+  LOW:      { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#374151' },
 };
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
-  'Open':        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' },
-  'To Do':       { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' },
-  'Backlog':     { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' },
+  'Open':        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'To Do':       { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'Backlog':     { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
   'In Progress': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   'In Review':   { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   'Done':        { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
@@ -48,7 +48,7 @@ const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
 };
 
 function Lozenge({ label, styles }: { label: string; styles: Record<string, { bg: string; color: string }> }) {
-  const s = styles[label] || { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' };
+  const s = styles[label] || { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' };
   return (
     <span title={label} style={{
       display: 'inline-block', padding: '2px 6px', borderRadius: 4,

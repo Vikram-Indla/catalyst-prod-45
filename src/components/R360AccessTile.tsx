@@ -22,7 +22,7 @@ export function R360AccessTile() {
         gap: 6,
         padding: '6px 12px',
         borderRadius: 4,
-        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         background: token('color.background.neutral.subtle', '#F4F5F7'),
         color: token('color.text', '#292A2E'),
         fontSize: 13,

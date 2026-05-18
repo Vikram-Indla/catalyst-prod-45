@@ -148,8 +148,8 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
     .cv-desc-body table, .adf-description-content table { border-collapse: collapse; width: 100%; margin: 12px 0; }
     .cv-desc-body th, .adf-description-content th { background: var(--ds-surface-sunken, #F4F5F7); font-weight: 600; text-align: left; }
     .cv-desc-body th, .cv-desc-body td,
-    .adf-description-content th, .adf-description-content td { border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6)); padding: 8px 12px; font-size: 14px; vertical-align: top; }
-    .cv-desc-body blockquote, .adf-description-content blockquote { border-left: 2px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6)); padding: 8px 12px; margin: 8px 0; color: var(--ds-text-subtle, #5E6C84); }
+    .adf-description-content th, .adf-description-content td { border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))); padding: 8px 12px; font-size: 14px; vertical-align: top; }
+    .cv-desc-body blockquote, .adf-description-content blockquote { border-left: 2px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))); padding: 8px 12px; margin: 8px 0; color: var(--ds-text-subtle, #5E6C84); }
     .cv-desc-body pre, .adf-description-content pre { background: var(--ds-surface-sunken, #F4F5F7); padding: 12px; border-radius: 4px; font-size: 13px; overflow-x: auto; margin: 4px 0 8px; font-family: var(--cp-font-mono); }
     .cv-desc-body code, .adf-description-content code { background: var(--ds-surface-sunken, #F4F5F7); padding: 2px 4px; border-radius: 3px; font-size: 12px; font-family: var(--cp-font-mono); }
     .cv-desc-body pre code, .adf-description-content pre code { background: none; padding: 0; }
@@ -200,7 +200,7 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
     }
     .cv-desc-body a, .adf-description-content a { color: var(--ds-link, var(--cp-primary-60, #0052CC)); text-decoration: none; }
     .cv-desc-body a:hover, .adf-description-content a:hover { text-decoration: underline; }
-    .cv-desc-body hr, .adf-description-content hr { border: none; border-top: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6)); margin: 16px 0; }
+    .cv-desc-body hr, .adf-description-content hr { border: none; border-top: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))); margin: 16px 0; }
     .cv-desc-body img, .adf-description-content img { max-width: 100%; border-radius: 4px; cursor: pointer; }
 
     /* Bidi — Jira parity. Applying \`unicode-bidi: plaintext\` to every text

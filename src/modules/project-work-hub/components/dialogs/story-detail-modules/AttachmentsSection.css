@@ -126,7 +126,7 @@
   right: 0;
   top: 28px;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6));
+  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 4px;
   box-shadow: 0 4px 16px rgba(9, 30, 66, 0.18);
   padding: 4px 0;
@@ -156,7 +156,7 @@
 }
 
 .att-menu-badge {
-  background: var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6));
+  background: var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   color: var(--ds-text-subtle, #42526E);
   font-size: 11px;
   font-weight: 600;
@@ -456,7 +456,7 @@
 }
 .att-upload-row--error { background: rgba(222, 53, 11, 0.06); }
 .att-upload-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ds-text, #292A2E); }
-.att-upload-bar { height: 6px; background: var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6)); border-radius: 3px; overflow: hidden; }
+.att-upload-bar { height: 6px; background: var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))); border-radius: 3px; overflow: hidden; }
 .att-upload-bar-fill { height: 100%; background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); transition: width 0.2s ease; }
 .att-upload-pct { font-size: 11px; color: var(--ds-text-accent-gray, #505258); text-align: right; font-variant-numeric: tabular-nums; }
 .att-upload-error { color: var(--ds-text-danger, #DE350B); font-size: 12px; grid-column: 2 / span 2; }

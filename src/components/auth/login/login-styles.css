@@ -42,7 +42,7 @@
   --clmp-bg-tint:    #F0F5FF;
 
   --clmp-bd-subtle:  var(--ds-border-disabled, #EBECF0);
-  --clmp-bd-default: var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6));
+  --clmp-bd-default: var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   --clmp-bd-strong:  var(--ds-border-bold, #C1C7D0);
 
   --clmp-shadow-raised:  var(--ds-shadow-raised, 0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31));
@@ -1289,7 +1289,7 @@
   width: 100%;
   padding: 9px 16px;
   border-radius: 4px;
-  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6));
+  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   background: var(--ds-background-neutral-subtle, #F7F8F9);
   color: var(--ds-text, var(--cp-text-primary, #172B4D));
   font-size: 14px;

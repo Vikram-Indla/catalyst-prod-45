@@ -69,7 +69,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
                 Favorites
               </div>
               <div
-                className="flex items-center gap-2 mx-2 my-1 rounded-[6px] border border-dashed border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))] dark:border-[var(--ds-border-bold,#454545)]"
+                className="flex items-center gap-2 mx-2 my-1 rounded-[6px] border border-dashed border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] dark:border-[var(--ds-border-bold,#454545)]"
                 style={{ padding: '10px 12px' }}
               >
                 <Star size={14} className="text-[#C1C7D0] dark:text-[#7D7D7D] flex-shrink-0" />

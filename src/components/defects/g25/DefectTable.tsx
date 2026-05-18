@@ -34,7 +34,7 @@ const SEVERITY_MAP: Record<string, { label: string; bg: string; text: string; bo
   critical: { label: 'CRITICAL', bg: '#FFECEC', text: '#AE2A19', border: '#FFBDAD' },
   high:     { label: 'HIGH',     bg: '#FFF4EC', text: '#974F0C', border: '#FFD2A7' },
   medium:   { label: 'MEDIUM',   bg: 'var(--ds-surface-sunken, #F4F5F7)', text: '#42526E', border: 'var(--ds-border-disabled, #C1C7D0)' },
-  low:      { label: 'LOW',      bg: 'var(--ds-surface-sunken, #F4F5F7)', text: 'var(--ds-text-subtlest, #6B778C)', border: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
+  low:      { label: 'LOW',      bg: 'var(--ds-surface-sunken, #F4F5F7)', text: 'var(--ds-text-subtlest, #6B778C)', border: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
 };
 
 function SeverityPill({ severity }: { severity: string }) {
@@ -80,7 +80,7 @@ function JiraBadge() {
     <span style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       height: 16, padding: '0 4px', borderRadius: 3,
-      backgroundColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)',
+      backgroundColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)',
       fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', lineHeight: '16px',
       marginLeft: 4,
     }}>
@@ -94,7 +94,7 @@ function getStatusDotColor(statusCategory: string | null): string {
   const cat = (statusCategory || '').toLowerCase();
   if (cat === 'done' || cat === 'closed' || cat === 'resolved') return '#36B37E';
   if (cat === 'in progress' || cat === 'indeterminate' || cat === 'active') return '#0065FF';
-  return 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))';
+  return 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
 }
 
 // ── Work item type icon component ──

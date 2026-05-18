@@ -65,7 +65,7 @@
   --cp-ai-t:            var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
 
   /* StatusLozenge */
-  --cp-lz-gy-bg:        var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6));
+  --cp-lz-gy-bg:        var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   --cp-lz-gy-t:         #42526E;
   --cp-lz-bl-bg:        #0C66E4;
   --cp-lz-bl-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
@@ -75,7 +75,7 @@
   --cp-lz-rd-t:         #BF2600;
 
   /* StatusBadge — Jira-grade pill tokens */
-  --status-todo-bg:         var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6));
+  --status-todo-bg:         var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   --status-todo-text:       #42526E;
   --status-inprogress-bg:   #0C66E4;
   --status-inprogress-text: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));

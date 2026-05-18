@@ -37,10 +37,10 @@ function StatusLozenge({ status }: { status: string }) {
     'in progress':{ bg: ['#DEEBFF', 'rgba(59,130,246,0.10)'], color: ['#0747A6', '#7DB8FC'], label: 'IN PROGRESS' },
     review:       { bg: ['#DEEBFF', 'rgba(59,130,246,0.10)'], color: ['#0747A6', '#7DB8FC'], label: 'IN REVIEW' },
     needs_review: { bg: ['#DEEBFF', 'rgba(59,130,246,0.10)'], color: ['#0747A6', '#7DB8FC'], label: 'NEEDS REVIEW' },
-    draft:        { bg: ['var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', 'var(--ds-border, var(--cp-ink-1, #2E2E2E))'],               color: ['var(--ds-text, #253858)', 'var(--ds-text-subtlest, #A1A1A1)'], label: 'DRAFT' },
-    archived:     { bg: ['var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', 'var(--ds-border, var(--cp-ink-1, #2E2E2E))'],               color: ['var(--ds-text, #253858)', 'var(--ds-text-subtlest, #A1A1A1)'], label: 'ARCHIVED' },
+    draft:        { bg: ['var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', 'var(--ds-border, var(--cp-ink-1, #2E2E2E))'],               color: ['var(--ds-text, #253858)', 'var(--ds-text-subtlest, #A1A1A1)'], label: 'DRAFT' },
+    archived:     { bg: ['var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', 'var(--ds-border, var(--cp-ink-1, #2E2E2E))'],               color: ['var(--ds-text, #253858)', 'var(--ds-text-subtlest, #A1A1A1)'], label: 'ARCHIVED' },
   };
-  const d = { bg: ['var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', 'var(--ds-border, var(--cp-ink-1, #2E2E2E))'] as [string, string], color: ['var(--ds-text, #253858)', 'var(--ds-text-subtlest, #A1A1A1)'] as [string, string], label: (status || '—').toUpperCase() };
+  const d = { bg: ['var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', 'var(--ds-border, var(--cp-ink-1, #2E2E2E))'] as [string, string], color: ['var(--ds-text, #253858)', 'var(--ds-text-subtlest, #A1A1A1)'] as [string, string], label: (status || '—').toUpperCase() };
   const v = map[s] || d;
   return (
     <span style={{
@@ -366,7 +366,7 @@ export default function WikiArticlePage() {
     ? { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'Verified', icon: <ShieldCheck size={10} /> }
     : verStatus === 'needs_review'
     ? { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'Needs Review', icon: null }
-    : { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--cp-text-secondary, #44546F)', label: 'Unverified', icon: null };
+    : { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--cp-text-secondary, #44546F)', label: 'Unverified', icon: null };
   const tags = ((page as any).tags ?? []) as string[];
   const tldr = (page as any).tldr as string | null;
   const authorName = (page as any).author_name as string | null;

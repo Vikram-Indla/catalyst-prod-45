@@ -56,7 +56,7 @@ export function SectionTitle({ children }: { children: React.ReactNode }) {
 
 export function R360StatusLozenge({ status }: { status: string }) {
   const s = (status ?? '').toLowerCase().replace(/[\s_-]/g, '');
-  let bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))';
+  let bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
   let color = '#42526E';
   if (['done', 'closed', 'completed', 'approved', 'resolved'].includes(s)) {
     bg = 'var(--cp-lozenge-green-bg, #1B7F37)'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
@@ -112,7 +112,7 @@ export function FilteredListPanel({
           <span style={{ fontSize: 13, fontWeight: 600, color: INK1 }}>{label}</span>
           <span style={{
             display: 'inline-flex', alignItems: 'center',
-            backgroundColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E',
+            backgroundColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E',
             fontSize: '11px', fontWeight: 700, padding: '0 6px', height: '20px', borderRadius: '4px',
           }}>{items.length} item{items.length !== 1 ? 's' : ''}</span>
         </div>

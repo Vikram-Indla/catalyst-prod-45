@@ -626,7 +626,7 @@ export function ProductBacklogListTable({
           display: 'flex',
           gap: 12,
           padding: '12px 16px',
-          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
           alignItems: 'center',
         }}
       >

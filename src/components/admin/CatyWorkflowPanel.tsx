@@ -254,14 +254,14 @@ export function CatyWorkflowPanel({
         display: 'flex',
         flexDirection: 'column',
         background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-        borderLeft: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))',
+        borderLeft: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
         boxShadow: '-4px 0 20px rgba(9,30,66,0.12)',
       }}
     >
       {/* Header */}
       <div style={{
         padding: '14px 16px',
-        borderBottom: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))',
+        borderBottom: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
         display: 'flex',
         alignItems: 'center',
         gap: 10,
@@ -307,7 +307,7 @@ export function CatyWorkflowPanel({
                 style={{
                   display: 'block', width: '100%', textAlign: 'left',
                   padding: '7px 10px', marginBottom: 5, borderRadius: 4,
-                  border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))',
+                  border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
                   background: 'var(--ds-surface-sunken,#F7F8F9)',
                   color: 'var(--ds-text-subtle,#42526E)', fontSize: 12,
                   cursor: 'pointer',
@@ -342,7 +342,7 @@ export function CatyWorkflowPanel({
       </div>
 
       {/* Input */}
-      <div style={{ padding: '10px 14px', borderTop: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))', display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+      <div style={{ padding: '10px 14px', borderTop: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', display: 'flex', gap: 8, alignItems: 'flex-end' }}>
         <div style={{ flex: 1 }}>
           <Textfield
             value={input}
@@ -366,7 +366,7 @@ export function CatyWorkflowPanel({
 
       {/* Restore footer — only when changes have been applied */}
       {hasUnappliedChanges && (
-        <div style={{ padding: '8px 14px', borderTop: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))' }}>
+        <div style={{ padding: '8px 14px', borderTop: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }}>
           <Button appearance="danger" onClick={restoreSession} shouldFitContainer>
             ↩ Restore to session start
           </Button>

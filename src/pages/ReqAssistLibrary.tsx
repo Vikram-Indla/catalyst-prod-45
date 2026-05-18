@@ -794,7 +794,7 @@ function StatusBadge({ status, epicCount, pipelineStage }: { status: string; epi
   const ps = pipelineStage ?? status;
 
   if (ps === 'failed') {
-    bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))'; color = '#42526E'; label = 'FAILED';
+    bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'; color = '#42526E'; label = 'FAILED';
   } else if (epicCount > 0) {
     // Having epics = document is usable regardless of pipeline_stage
     bg = 'var(--cp-lozenge-green-bg, #1B7F37)'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; label = 'READY';
@@ -805,7 +805,7 @@ function StatusBadge({ status, epicCount, pipelineStage }: { status: string; epi
     bg = '#0C66E4'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; label = 'PROCESSING';
   } else {
     // intake, pending, or unknown
-    bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))'; color = '#42526E'; label = 'PENDING';
+    bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'; color = '#42526E'; label = 'PENDING';
   }
 
   return (

@@ -9,7 +9,7 @@ import { format } from 'date-fns';
 
 const EVENT_TYPE_LOZENGE: Record<string, { bg: string; color: string; label: string }> = {
   DEPLOYMENT: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'DEPLOYMENT' },
-  HOTFIX: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E', label: 'HOTFIX' },
+  HOTFIX: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E', label: 'HOTFIX' },
   ROLLBACK: { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #991B1B)', label: 'ROLLBACK' },
 };
 

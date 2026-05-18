@@ -207,7 +207,7 @@ export function RichTextCommentEditor({
   return (
     <div style={{ position: 'relative' }}>
       <div style={{
-        border: `1px solid ${isFocused ? 'var(--ds-border-focused, #4C9AFF)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))'}`,
+        border: `1px solid ${isFocused ? 'var(--ds-border-focused, #4C9AFF)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'}`,
         borderRadius: 6, overflow: 'hidden',
         boxShadow: isFocused ? '0 0 0 1px var(--ds-border-focused, #4C9AFF)' : 'none',
         transition: 'border-color 0.15s, box-shadow 0.15s',
@@ -229,7 +229,7 @@ export function RichTextCommentEditor({
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           ><TextUnderlineIcon label="Underline" /></button>
-          <div style={{ width: 1, height: 16, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', margin: '0 4px' }} />
+          <div style={{ width: 1, height: 16, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', margin: '0 4px' }} />
           <button style={toolbarBtnStyle} onClick={() => execCmd('insertUnorderedList')} title="Bullet list"
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
@@ -250,7 +250,7 @@ export function RichTextCommentEditor({
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           ><LinkIcon label="Insert link" /></button>
-          <div style={{ width: 1, height: 16, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', margin: '0 4px' }} />
+          <div style={{ width: 1, height: 16, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', margin: '0 4px' }} />
           <button style={toolbarBtnStyle} onClick={() => execCmd('undo')} title="Undo"
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #EBECF0)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
@@ -286,7 +286,7 @@ export function RichTextCommentEditor({
         {mentionQuery !== null && filteredMembers.length > 0 && mentionPos && (
           <div style={{
             position: 'absolute', top: mentionPos.top + 48, left: mentionPos.left + 8,
-            background: 'var(--ds-surface, #FFF)', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderRadius: 6,
+            background: 'var(--ds-surface, #FFF)', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 6,
             boxShadow: '0 4px 16px rgba(9,30,66,0.18)', zIndex: 100, minWidth: 240,
             maxHeight: 200, overflowY: 'auto',
           }}>

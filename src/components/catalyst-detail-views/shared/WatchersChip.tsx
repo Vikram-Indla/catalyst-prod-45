@@ -131,7 +131,7 @@ export function WatchersChip({ issueKey }: Props) {
             position: 'absolute', top: 'calc(100% + 4px)', right: 0,
             minWidth: 260, maxWidth: 320, zIndex: 200,
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-            border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
+            border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
             borderRadius: 6,
             boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.15))',
             padding: '12px 0',

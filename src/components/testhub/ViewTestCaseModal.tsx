@@ -123,18 +123,18 @@ const STATUS_BTN: Record<string, string> = {
 
 // --- STATUS PILL COLORS ---
 const STATUS_PILL: Record<string, { bg: string; color: string }> = {
-  draft:      { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' },
+  draft:      { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
   ready:      { bg: '#E3FCEF', color: '#006644' },
   approved:   { bg: '#DEEBFF', color: '#0747A6' },
-  deprecated: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' },
+  deprecated: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
 };
 
 // --- RESULT LOZENGE (3-colour guardrail) ---
 const RESULT_LOZENGE: Record<string, { bg: string; color: string }> = {
   passed:  { bg: '#E3FCEF', color: '#006644' },
   failed:  { bg: '#FFEBE6', color: '#BF2600' },
-  blocked: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' },
-  skipped: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' },
+  blocked: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
+  skipped: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
 };
 
 // ═══════════════════════════════════════
@@ -362,7 +362,7 @@ function LinkAccordionSection({
         <span style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           height: 20, minWidth: 20, padding: '0 6px', borderRadius: 3,
-          fontSize: 11, fontWeight: 700, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)',
+          fontSize: 11, fontWeight: 700, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)',
         }}>{links.length}</span>
         <button
           onClick={(e) => { e.stopPropagation(); onAdd(); }}

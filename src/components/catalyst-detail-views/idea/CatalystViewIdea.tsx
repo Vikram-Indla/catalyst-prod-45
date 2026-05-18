@@ -426,7 +426,7 @@ export default function CatalystViewIdea({
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', height: 20,
                         padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700,
-                        background: QUARTER_BADGE[localQuarter]?.bg || 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
+                        background: QUARTER_BADGE[localQuarter]?.bg || 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
                         color: QUARTER_BADGE[localQuarter]?.text || 'var(--ds-text-subtlest, #5E6C84)',
                       }}>
                         {localQuarter} 2026

@@ -28,7 +28,7 @@ interface Props {
 function StatusLozenge({ status }: { status: string | null }) {
   const s = status || 'draft';
   const map: Record<string, { bg: string; color: string; label: string }> = {
-    draft:     { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E', label: 'DRAFT' },
+    draft:     { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E', label: 'DRAFT' },
     reviewed:  { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'REVIEWED' },
     published: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'PUBLISHED' },
   };

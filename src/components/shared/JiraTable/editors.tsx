@@ -121,7 +121,7 @@ function EditorPopover({ trigger, children, width = 240, align = 'start' }: Edit
             zIndex: 1000,
             minWidth: width,
             background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 4,
             boxShadow: token('elevation.shadow.overlay', '0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18)'),
             padding: 4,
@@ -625,7 +625,7 @@ export function makeSummaryInlineEditCell<T>({
                   }}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
-                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))';
+                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -663,7 +663,7 @@ export function makeSummaryInlineEditCell<T>({
                   }}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
-                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))';
+                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -937,7 +937,7 @@ function ParentChip({ choice }: { choice: { key: string | null; label: string; i
         gap: 6,
         maxWidth: 260,
         padding: '2px 8px',
-        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         borderRadius: 3,
         fontSize: 14,
         lineHeight: '20px',
@@ -1143,7 +1143,7 @@ export function makeRowActionsCell<T>({
             ))}
             {danger.length > 0 && (
               <>
-                <div style={{ height: 1, background: token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)'), margin: '4px 0' }} />
+                <div style={{ height: 1, background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'), margin: '4px 0' }} />
                 {danger.map((a) => (
                   <button
                     key={a.id}
@@ -1423,7 +1423,7 @@ function LabelsPopoverContent<T>({ row, labels, onChange, close }: {
         <button
           type="button"
           onClick={close}
-          style={{ fontSize: 12, padding: '4px 8px', border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`, borderRadius: 3, background: 'transparent', cursor: 'pointer', color: token('color.text', 'var(--cp-text-primary, #172B4D)') }}
+          style={{ fontSize: 12, padding: '4px 8px', border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, borderRadius: 3, background: 'transparent', cursor: 'pointer', color: token('color.text', 'var(--cp-text-primary, #172B4D)') }}
         >
           Done
         </button>

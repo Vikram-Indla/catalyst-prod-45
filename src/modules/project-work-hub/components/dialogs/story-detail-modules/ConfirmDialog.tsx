@@ -34,7 +34,7 @@ export function ConfirmDialog({
         <p style={{ fontSize: 13, color: 'var(--ds-text-subtle, #5E6C84)', lineHeight: 1.6, marginBottom: 20 }}>{message}</p>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button onClick={onCancel} style={{
-            padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface, #FFF)', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
+            padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface, #FFF)', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
             fontSize: 13, fontWeight: 500, cursor: 'pointer', color: 'var(--ds-text-subtle, #5E6C84)',
             transition: 'background 0.15s',
           }}

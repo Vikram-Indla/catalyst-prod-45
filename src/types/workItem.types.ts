@@ -85,12 +85,12 @@ export interface ProjectInfo {
 export const STATUS_LOZENGE_MAP: Record<WorkItemStatus, {
   bg: string; text: string; label: string;
 }> = {
-  backlog:          { bg: 'var(--cp-lozenge-grey-bg, #DFE1E6)', text: '#253858', label: 'BACKLOG' },
+  backlog:          { bg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', text: '#253858', label: 'BACKLOG' },
   in_progress:      { bg: '#DEEBFF', text: '#0747A6', label: 'IN PROGRESS' },
   done:             { bg: '#E3FCEF', text: '#006644', label: 'DONE' },
   in_production:    { bg: '#E3FCEF', text: '#006644', label: 'IN PRODUCTION' },
   ready_for_qa:     { bg: '#E3FCEF', text: '#006644', label: 'READY FOR QA' },
-  in_requirements:  { bg: 'var(--cp-lozenge-grey-bg, #DFE1E6)', text: '#253858', label: 'IN REQUIREMENTS' },
+  in_requirements:  { bg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', text: '#253858', label: 'IN REQUIREMENTS' },
   in_uat:           { bg: '#E3FCEF', text: '#006644', label: 'IN UAT' },
   in_qa:            { bg: '#DEEBFF', text: '#0747A6', label: 'IN QA' },
   in_dev:           { bg: '#DEEBFF', text: '#0747A6', label: 'IN DEV' },

@@ -115,7 +115,7 @@ const CAT_SHORT: Record<number, string> = {
 // ── Status Lozenge ──────────────────────────────
 function StatusLozenge({ value }: { value: string }) {
   const lower = (value || '').toLowerCase();
-  let bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color = 'var(--ds-text, #253858)';
+  let bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color = 'var(--ds-text, #253858)';
   if (lower.includes('progress') || lower.includes('review') || lower.includes('active') || lower.includes('integration') || lower.includes('ready for development')) {
     bg = '#DEEBFF'; color = '#0747A6';
   } else if (lower.includes('done') || lower.includes('approved') || lower.includes('complete')) {

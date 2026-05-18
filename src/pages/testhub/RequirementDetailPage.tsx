@@ -49,8 +49,8 @@ const COVERAGE_CONFIG: Record<string, { label: string; color: string; bg: string
   'Passed':  { label: 'PASSED',  color: '#006644', bg: '#E3FCEF' },
   'Failed':  { label: 'FAILED',  color: '#BF2600', bg: '#FFEBE6' },
   'Blocked': { label: 'BLOCKED', color: '#FF8B00', bg: '#FFFAE6' },
-  'Skipped': { label: 'SKIPPED', color: 'var(--ds-text-subtlest, #6B778C)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
-  'Not Run': { label: 'NOT RUN', color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
+  'Skipped': { label: 'SKIPPED', color: 'var(--ds-text-subtlest, #6B778C)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
+  'Not Run': { label: 'NOT RUN', color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
 };
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
@@ -63,18 +63,18 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> 
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  draft:        { label: 'DRAFT',        color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
+  draft:        { label: 'DRAFT',        color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
   approved:     { label: 'APPROVED',     color: '#0747A6', bg: '#DEEBFF' },
   in_progress:  { label: 'IN PROGRESS',  color: '#0747A6', bg: '#DEEBFF' },
   implemented:  { label: 'IMPLEMENTED',  color: '#006644', bg: '#E3FCEF' },
   verified:     { label: 'VERIFIED',     color: '#006644', bg: '#E3FCEF' },
-  deprecated:   { label: 'DEPRECATED',   color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
+  deprecated:   { label: 'DEPRECATED',   color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
 };
 
 const defectStatusColors: Record<string, { bg: string; color: string }> = {
-  open:        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' },
-  new:         { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' },
-  deferred:    { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' },
+  open:        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
+  new:         { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
+  deferred:    { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
   in_progress: { bg: '#DEEBFF', color: '#0747A6' },
   reopened:    { bg: '#DEEBFF', color: '#0747A6' },
   fixed:       { bg: '#E3FCEF', color: '#006644' },
@@ -111,7 +111,7 @@ const RequirementDefectsPanel = ({ requirementId }: { requirementId?: string }) 
         </thead>
         <tbody>
           {defects.map((d: any) => {
-            const sc = defectStatusColors[d.status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' };
+            const sc = defectStatusColors[d.status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' };
             return (
               <tr key={d.id} style={{ height: 36, backgroundColor: 'var(--ds-surface-raised, #1A1A1A)', borderBottom: '0.75px solid #2E2E2E' }}>
                 <td style={{ padding: '8px 12px' }}>

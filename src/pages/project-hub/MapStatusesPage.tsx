@@ -40,7 +40,7 @@ function StatusPill({
         ? '#0747A6' : 'var(--ds-text, #253858)')
     : 'var(--ds-text, #253858)';
 
-  const catBg = catColor === '#006644' ? '#E3FCEF' : catColor === '#0747A6' ? '#DEEBFF' : 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))';
+  const catBg = catColor === '#006644' ? '#E3FCEF' : catColor === '#0747A6' ? '#DEEBFF' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
 
   return (
     <div

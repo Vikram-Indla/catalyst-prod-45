@@ -382,7 +382,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                             backgroundColor:
                               jiraData.jira_sync_status === 'synced' || jiraData.jira_sync_status === 'pushed' ? '#E3FCEF' :
                               jiraData.jira_sync_status === 'queued' || jiraData.jira_sync_status === 'approval_pending' ? '#DEEBFF' :
-                              'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
+                              'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
                             color:
                               jiraData.jira_sync_status === 'synced' || jiraData.jira_sync_status === 'pushed' ? '#006644' :
                               jiraData.jira_sync_status === 'queued' || jiraData.jira_sync_status === 'approval_pending' ? '#0747A6' :

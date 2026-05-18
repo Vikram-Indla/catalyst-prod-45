@@ -23,7 +23,7 @@ export interface LozengeConfig {
 }
 
 const LOZENGE_STYLES_LIGHT: Record<LozengeColor, { bg: string; text: string }> = {
-  default:    { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: 'var(--ds-text, #253858)' },
+  default:    { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text, #253858)' },
   inprogress: { bg: '#DEEBFF', text: '#0747A6' },
   success:    { bg: '#E3FCEF', text: '#006644' },
   removed:    { bg: '#FFEBE6', text: '#BF2600' },

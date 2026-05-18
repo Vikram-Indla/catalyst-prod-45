@@ -55,7 +55,7 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
     <div ref={ref} style={{ position: 'relative', flexShrink: 0 }}>
       <button onClick={() => setOpen(o => !o)} style={{
         display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 8px',
-        border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', borderRadius: 3, background: 'var(--ds-surface, #fff)', cursor: 'pointer',
+        border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3, background: 'var(--ds-surface, #fff)', cursor: 'pointer',
         fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontFamily: 'inherit',
       }}>
         <span style={{ display: 'flex', width: 16, height: 16 }}>{current.icon}</span>
@@ -65,7 +65,7 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
       {open && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 2px)', left: 0, minWidth: 160,
-          background: 'var(--ds-surface, #fff)', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', borderRadius: 4,
+          background: 'var(--ds-surface, #fff)', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 4,
           boxShadow: '0 4px 8px rgba(9,30,66,.25)', zIndex: 60, overflow: 'hidden',
         }}>
           {TYPE_OPTIONS.map(opt => (
@@ -121,7 +121,7 @@ function InlineStatusDropdown({ item, onUpdate }: { item: PhIssueRow; onUpdate: 
       {open && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 4px)', right: 0, minWidth: 200, maxHeight: 320, overflowY: 'auto',
-          background: 'var(--ds-surface, #fff)', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', borderRadius: 6,
+          background: 'var(--ds-surface, #fff)', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 6,
           boxShadow: '0 8px 24px rgba(9,30,66,.25)', zIndex: 80, padding: '4px 0',
         }}>
           {STATUS_OPTION_GROUPS.map(group => (
@@ -419,13 +419,13 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
         {creating && children.length > 0 && (
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
-            border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', borderRadius: 8, margin: '0 0 4px 0',
+            border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 8, margin: '0 0 4px 0',
             background: 'var(--ds-surface-sunken, #FAFBFC)',
           }}>
             <AiChatIcon label="" />
             <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', flex: 1 }}>Create suggested work items</span>
             <button style={{
-              height: 28, padding: '0 12px', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', borderRadius: 3,
+              height: 28, padding: '0 12px', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3,
               background: 'var(--ds-surface, #fff)', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontFamily: 'inherit',
             }}>Suggest</button>
           </div>
@@ -434,7 +434,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
         {/* Progress bar */}
         {children.length > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0 6px', marginBottom: 2 }}>
-            <div style={{ flex: 1, height: 6, borderRadius: 3, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', overflow: 'hidden' }}>
+            <div style={{ flex: 1, height: 6, borderRadius: 3, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', overflow: 'hidden' }}>
               <div style={{ width: `${donePercent}%`, height: '100%', borderRadius: 3, background: 'var(--ds-background-success-bold, #36B37E)', transition: 'width 0.3s ease' }} />
             </div>
             <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0, fontWeight: 500 }}>{donePercent}% Done</span>
@@ -445,7 +445,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
         {sorted.length > 0 && (
           <div style={{
             display: 'flex', alignItems: 'center',
-            padding: '6px 12px 6px 40px', borderBottom: '2px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
+            padding: '6px 12px 6px 40px', borderBottom: '2px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
           }}>
             <div style={{ flex: 1 }}>
               <SortableHeader label="Work" sortKey="work" currentSort={sortKey} currentDir={sortDir} onSort={handleSort} />
@@ -514,7 +514,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
                 background: 'transparent',
               }}
             />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0 8px', borderLeft: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0 8px', borderLeft: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }}>
               <TypeSelector value={draftType} onChange={setDraftType} />
               <button
                 onClick={() => { if (draftSummary.trim()) createMutation.mutate(draftSummary); }}
@@ -522,7 +522,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
                 title="Create (Enter)"
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  width: 28, height: 28, border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', borderRadius: 3,
+                  width: 28, height: 28, border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3,
                   background: 'var(--ds-surface-sunken, #F4F5F7)', cursor: draftSummary.trim() ? 'pointer' : 'not-allowed',
                   color: 'var(--ds-text-subtlest, #6B778C)', opacity: draftSummary.trim() ? 1 : 0.5,
                 }}

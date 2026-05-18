@@ -168,7 +168,7 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
               maxHeight: 360,
               overflowY: 'auto',
               background: token('elevation.surface.overlay', '#FFFFFF'),
-              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               borderRadius: 6,
               boxShadow: '0 8px 24px rgba(9, 30, 66, 0.16)',
               padding: '4px 0',
@@ -263,7 +263,7 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
                 matches Jira's status picker footer (probed BAU-5609). Stubs for now;
                 clicking either opens a toast until workflow viewer is built. */}
             <div style={{
-              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+              borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               padding: '4px 0',
               marginTop: 4,
             }}>

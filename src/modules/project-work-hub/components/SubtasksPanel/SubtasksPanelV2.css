@@ -5,7 +5,7 @@
  * styling is never touched.
  *
  * Tokens follow Jira/Atlaskit colours already used throughout sp-*:
- *   var(--cp-primary-60, #0052CC) focus blue · var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6)) border · var(--ds-text, var(--cp-text-primary, #172B4D)) ink · var(--ds-text-subtlest, #6B778C) muted ·
+ *   var(--cp-primary-60, #0052CC) focus blue · var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) border · var(--ds-text, var(--cp-text-primary, #172B4D)) ink · var(--ds-text-subtlest, #6B778C) muted ·
  *   var(--ds-surface-sunken, #F4F5F7) subtle surface.
  */
 

@@ -32,7 +32,7 @@ const BOARD_ACCENT: Record<string, string> = {
 /* ── StatusLozenge V12 3-color guardrail ── */
 function StatusLozenge({ status }: { status: string }) {
   const s = status.toLowerCase().replace(/[\s_-]+/g, '');
-  let bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color = '#42526E', label = status.toUpperCase();
+  let bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color = '#42526E', label = status.toUpperCase();
   let leftBorder: string | undefined;
 
   // Blue: in-progress family

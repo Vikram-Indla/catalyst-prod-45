@@ -52,14 +52,14 @@ interface CycleTestCase {
 }
 
 const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
-  draft:       { label: 'DRAFT',       color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
-  planned:     { label: 'PLANNED',     color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
+  draft:       { label: 'DRAFT',       color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
+  planned:     { label: 'PLANNED',     color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
   active:      { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
   in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
   completed:   { label: 'COMPLETED',   color: '#006644', bg: '#E3FCEF' },
   done:        { label: 'DONE',        color: '#006644', bg: '#E3FCEF' },
-  archived:    { label: 'ARCHIVED',    color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
-  paused:      { label: 'PAUSED',      color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
+  archived:    { label: 'ARCHIVED',    color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
+  paused:      { label: 'PAUSED',      color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
 };
 
 const executionStatusConfig: Record<string, { label: string; color: string; bg: string; Icon: any }> = {
@@ -78,9 +78,9 @@ const priorityConfig: Record<string, { color: string; bg: string }> = {
 };
 
 const defectStatusColors: Record<string, { bg: string; color: string }> = {
-  open:        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' },
-  new:         { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' },
-  deferred:    { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' },
+  open:        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
+  new:         { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
+  deferred:    { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
   in_progress: { bg: '#DEEBFF', color: '#0747A6' },
   reopened:    { bg: '#DEEBFF', color: '#0747A6' },
   fixed:       { bg: '#E3FCEF', color: '#006644' },
@@ -118,7 +118,7 @@ const CycleDefectsPanel = ({ cycleId, isDark }: { cycleId?: string; isDark: bool
         </thead>
         <tbody>
           {defects.map((d: any) => {
-            const sc = defectStatusColors[d.status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' };
+            const sc = defectStatusColors[d.status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' };
             return (
               <tr key={d.id} style={{ height: 36, maxHeight: 36, borderBottom: `0.75px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}` }}>
                 <td style={{ padding: '0 12px' }}>

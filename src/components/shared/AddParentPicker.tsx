@@ -446,7 +446,7 @@ export function AddParentPicker({
                   boxSizing: 'border-box',
                 }}
               />
-              <div style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderTop: 'none', borderRadius: '0 0 4px 4px', background: 'var(--ds-surface, #FFF)' }}>
+              <div style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderTop: 'none', borderRadius: '0 0 4px 4px', background: 'var(--ds-surface, #FFF)' }}>
                 {parentKey && (
                   <button
                     onClick={() => { handleSelect(null); handleReset(); }}

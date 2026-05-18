@@ -77,7 +77,7 @@ function WorkflowCard({
   return (
     <section
       style={{
-        border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
+        border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
         borderRadius: 8,
         padding: 20,
         background: 'var(--ds-surface, #fff)',

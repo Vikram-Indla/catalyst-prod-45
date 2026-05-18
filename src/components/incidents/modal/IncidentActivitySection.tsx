@@ -198,7 +198,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
         <div className="flex-1">
           {!isComposerExpanded ? (
             <div
-              className="border border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))] rounded p-3 cursor-text hover:border-[#A5ADBA] text-sm text-[#A5ADBA]"
+              className="border border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] rounded p-3 cursor-text hover:border-[#A5ADBA] text-sm text-[#A5ADBA]"
               onClick={() => setIsComposerExpanded(true)}
             >
               Add a comment...
@@ -236,7 +236,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
       {isLoading ? (
         <div className="space-y-4 animate-pulse">
           {[1, 2, 3].map(i => (
-            <div key={i} className="flex gap-3 py-4 border-t border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))]">
+            <div key={i} className="flex gap-3 py-4 border-t border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))]">
               <div className="w-8 h-8 rounded-full bg-[var(--ds-surface-sunken,#F4F5F7)]" />
               <div className="flex-1 space-y-2">
                 <div className="h-3 bg-[var(--ds-surface-sunken,#F4F5F7)] rounded w-1/3" />
@@ -252,7 +252,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
       ) : (
         <div className="space-y-0">
           {filtered.map(entry => (
-            <div key={entry.id} className="flex gap-3 py-4 border-t border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))] first:border-t-0">
+            <div key={entry.id} className="flex gap-3 py-4 border-t border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] first:border-t-0">
               <div className={cn('w-8 h-8 shrink-0 rounded-full text-white text-xs font-medium flex items-center justify-center', avatarColor(entry.author_name ?? ''))}>
                 {initials(entry.author_name)}
               </div>
@@ -274,13 +274,13 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
                 {entry.type === 'history' && (entry.old_value || entry.new_value) && (
                   <div className="flex items-center gap-2 mt-1">
                     {entry.old_value && (
-                      <span className="text-[11px] font-medium px-2 py-0.5 rounded border border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))] bg-white text-[var(--ds-text,var(--cp-text-primary, #172B4D))]">
+                      <span className="text-[11px] font-medium px-2 py-0.5 rounded border border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] bg-white text-[var(--ds-text,var(--cp-text-primary, #172B4D))]">
                         {entry.old_value}
                       </span>
                     )}
                     {entry.old_value && entry.new_value && <span className="text-[#A5ADBA]">→</span>}
                     {entry.new_value && (
-                      <span className="text-[11px] font-medium px-2 py-0.5 rounded border border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))] bg-white text-[var(--ds-text,var(--cp-text-primary, #172B4D))]">
+                      <span className="text-[11px] font-medium px-2 py-0.5 rounded border border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] bg-white text-[var(--ds-text,var(--cp-text-primary, #172B4D))]">
                         {entry.new_value}
                       </span>
                     )}

@@ -71,7 +71,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
         width: 420,
         height: '100%',
         background: token('elevation.surface.overlay', '#FFFFFF'),
-        borderLeft: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+        borderLeft: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         boxShadow: token('elevation.shadow.overlay', '-4px 0 12px rgba(0,0,0,0.12)'),
         display: 'flex',
         flexDirection: 'column',
@@ -85,7 +85,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: `${token('space.200', '16px')} ${token('space.200', '16px')} ${token('space.150', '12px')}`,
-          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         }}
       >
         <h2
@@ -190,7 +190,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
                       padding: `6px ${token('space.100', '8px')}`,
                       borderRadius: 4,
                       background: token('color.background.neutral.subtle', '#FAFBFC'),
-                      border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+                      border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                     }}
                   >
                     <div
@@ -228,7 +228,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
                       onClick={e => { e.stopPropagation(); setPostMortem({ id: br.id, title: br.title }); }}
                       style={{
                         background: 'none',
-                        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+                        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                         borderRadius: 4,
                         cursor: 'pointer',
                         fontSize: 11,
@@ -291,7 +291,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
       <div
         data-testid="stage-owner-footer"
         style={{
-          borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+          borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
           padding: token('space.150', '12px'),
           background: token('color.background.neutral.subtle', '#FAFBFC'),
         }}

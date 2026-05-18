@@ -181,7 +181,7 @@ function LoadingState({ isDark }: { isDark: boolean }) {
             alignItems: 'center',
             gap: 12,
             padding: '12px 16px',
-            borderBottom: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+            borderBottom: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
           }}
           aria-hidden="true"
         >
@@ -293,7 +293,7 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
   }
 
   const groups = groupByDate(visible);
-  const dividerColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)');
+  const dividerColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))');
 
   return (
     <Box xcss={panelXcss}>

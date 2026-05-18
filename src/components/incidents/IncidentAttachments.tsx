@@ -102,7 +102,7 @@ export function IncidentAttachments({
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
           onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))] rounded-lg p-6 text-center cursor-pointer hover:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/5 transition-colors"
+          className="border-2 border-dashed border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] rounded-lg p-6 text-center cursor-pointer hover:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/5 transition-colors"
         >
           <Upload className="w-8 h-8 text-[#8C8C8C] mx-auto mb-2" />
           <p className="text-sm text-[#5C5C5C]">

@@ -38,7 +38,7 @@ interface Props {
 }
 
 const CATEGORY_CONFIG: Record<string, { label: string; dot: string; bg: string; text: string }> = {
-  todo:        { label: 'To Do',       dot: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: 'var(--ds-text, #253858)' },
+  todo:        { label: 'To Do',       dot: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text, #253858)' },
   in_progress: { label: 'In Progress', dot: '#DEEBFF', bg: '#DEEBFF', text: '#0747A6' },
   done:        { label: 'Done',        dot: '#E3FCEF', bg: '#E3FCEF', text: '#006644' },
 };
@@ -71,7 +71,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
         name: newStatusName.trim(),
         slug: slugify(newStatusName),
         category: newStatusCategory,
-        color: CATEGORY_CONFIG[newStatusCategory]?.bg || 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
+        color: CATEGORY_CONFIG[newStatusCategory]?.bg || 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
         position: statuses.length,
         is_initial: statuses.length === 0,
         is_final: false,
@@ -108,7 +108,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
   async function handleUpdateCategory(statusId: string, category: string) {
     try {
       const { error } = await typedQuery('catalyst_workflow_statuses')
-        .update({ category, color: CATEGORY_CONFIG[category]?.bg || 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' })
+        .update({ category, color: CATEGORY_CONFIG[category]?.bg || 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' })
         .eq('id', statusId);
       if (error) throw error;
       invalidateAll();

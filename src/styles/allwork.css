@@ -145,7 +145,7 @@
   justify-content: center;
   font: 600 10px/1 system-ui;
   color: var(--aw-text-subtle);
-  background: var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6));
+  background: var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border: 2px solid var(--ds-surface, #fff);
   position: relative;
 }
@@ -791,7 +791,7 @@
   flex: 1;
   height: 6px;
   border-radius: 3px;
-  background: var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6));
+  background: var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   overflow: hidden;
 }
 .awProgressFill {
@@ -887,7 +887,7 @@
   display: inline-block;
   padding: 1px 8px;
   border-radius: 3px;
-  background: var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6));
+  background: var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   color: var(--aw-text);
   font: 400 12px/18px system-ui;
   margin-right: 4px;
@@ -1015,7 +1015,7 @@
 .awToolbarDivider {
   width: 1px;
   height: 16px;
-  background: var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6));
+  background: var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   margin: 0 4px;
 }
 
@@ -1399,7 +1399,7 @@
   display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
 }
 .sp-progress-track {
-  flex: 1; height: 6px; background: var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6)); border-radius: 3px; overflow: hidden;
+  flex: 1; height: 6px; background: var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))); border-radius: 3px; overflow: hidden;
 }
 .sp-progress-fill {
   height: 100%; background: #5B7F24; border-radius: 3px; transition: width 0.3s ease;
@@ -1580,7 +1580,7 @@
 .sp-empty-sub { font-size: 13px; color: var(--ds-text-subtlest, #6B778C); }
 .sp-empty-cta {
   margin-top: 8px; padding: 6px 16px;
-  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6)); border-radius: 3px;
+  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))); border-radius: 3px;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); font-size: 13px; color: var(--ds-text, var(--cp-text-primary, #172B4D));
   cursor: pointer; font-family: inherit; transition: background 0.12s;
 }

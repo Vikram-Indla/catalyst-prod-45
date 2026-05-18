@@ -50,7 +50,7 @@ export function DescriptionEditMode({
           fontSize: '13px',
           lineHeight: 1.5,
           backgroundColor: '#FFFFFF',
-          border: error ? '2px solid #AE2A19' : isNearLimit ? '2px solid #974F0C' : '2px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
+          border: error ? '2px solid #AE2A19' : isNearLimit ? '2px solid #974F0C' : '2px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
           borderRadius: '4px',
           fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
           resize: 'vertical',
@@ -66,7 +66,7 @@ export function DescriptionEditMode({
           e.currentTarget.style.borderColor = 'var(--cp-primary-60, #0052CC)';
         }}
         onBlur={(e) => {
-          e.currentTarget.style.borderColor = error ? '#AE2A19' : isNearLimit ? '#974F0C' : 'var(--cp-lozenge-grey-bg, #DFE1E6)';
+          e.currentTarget.style.borderColor = error ? '#AE2A19' : isNearLimit ? '#974F0C' : 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))';
         }}
       />
 

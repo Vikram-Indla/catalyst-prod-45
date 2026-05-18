@@ -2,7 +2,7 @@ import type { StatusType } from "@/types/notifications";
 import { useTheme } from "@/hooks/useTheme";
 
 const LIGHT_STYLES: Record<StatusType, { bg: string; text: string }> = {
-  gray:  { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: 'var(--ds-text, #253858)' },
+  gray:  { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text, #253858)' },
   blue:  { bg: '#DEEBFF', text: '#0747A6' },
   green: { bg: '#E3FCEF', text: '#006644' },
 };

@@ -12,7 +12,7 @@ function getLozengeStyle(status: string, statusCategory?: string): { bg: string;
   if (cat === 'inprogress' || cat === 'indeterminate' || cat === 'started')
     return { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: (status || 'IN PROGRESS').toUpperCase() };
   if (cat === 'new' || cat === 'todo')
-    return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E', label: (status || 'TO DO').toUpperCase() };
+    return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E', label: (status || 'TO DO').toUpperCase() };
 
   // 2. Fallback: string-match raw status name
   const s = (status || '').toLowerCase();
@@ -26,7 +26,7 @@ function getLozengeStyle(status: string, statusCategory?: string): { bg: string;
        'deferred for int', 'awaiting info', 'on hold', 'active'].some(k => s === k))
     return { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: status.toUpperCase() };
   // Grey (default — never "Unknown")
-  return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E', label: (status || 'TO DO').toUpperCase() };
+  return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E', label: (status || 'TO DO').toUpperCase() };
 }
 
 function StatusLozenge({ status, statusCategory }: { status: string; statusCategory?: string }) {

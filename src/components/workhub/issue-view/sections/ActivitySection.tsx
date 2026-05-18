@@ -198,7 +198,7 @@ export function ActivitySection({
       {createComment && (
         <div className={cn(
           'flex items-start gap-2 p-3 rounded-lg border mb-3',
-          isDark ? 'border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]' : 'border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))]',
+          isDark ? 'border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]' : 'border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))]',
         )}>
           <textarea
             value={commentText}
@@ -238,7 +238,7 @@ export function ActivitySection({
           <Loader2 className={cn('w-4 h-4 animate-spin', isDark ? 'text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text-accent-gray,#505258)]')} />
         </div>
       ) : mergedActivity.length > 0 ? (
-        <div className={cn('divide-y', isDark ? 'divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]' : 'divide-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))]')}>
+        <div className={cn('divide-y', isDark ? 'divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]' : 'divide-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))]')}>
           {mergedActivity.map((item, i) => (
             item.type === 'comment'
               ? <CommentItem key={`c-${item.data.id ?? i}`} comment={item.data} isDark={isDark} />

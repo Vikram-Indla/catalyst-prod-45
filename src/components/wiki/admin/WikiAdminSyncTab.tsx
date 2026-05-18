@@ -402,7 +402,7 @@ export function StatusLoz({ status }: { status: string }) {
     complete: { bg: '#E3FCEF', color: '#006644' },
     running: { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
     failed: { bg: 'rgba(220,38,38,0.08)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
-    partial: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--cp-text-secondary, #44546F)' },
+    partial: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--cp-text-secondary, #44546F)' },
   };
   const s = map[status] ?? map.failed;
   return (

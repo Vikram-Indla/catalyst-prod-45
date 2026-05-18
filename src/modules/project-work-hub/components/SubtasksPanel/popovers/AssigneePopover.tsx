@@ -123,7 +123,7 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
               display: 'flex',
               flexDirection: 'column',
               background: token('elevation.surface.overlay', '#FFFFFF'),
-              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               borderRadius: 6,
               boxShadow: '0 8px 24px rgba(9, 30, 66, 0.16)',
               zIndex: 9999,
@@ -131,7 +131,7 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
             onClick={(e) => e.stopPropagation()}
           >
             {/* Search bar */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}` }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}` }}>
               <Search size={14} color="var(--ds-text-subtlest, #6B778C)" />
               <input
                 ref={searchRef}
@@ -159,7 +159,7 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
                 onMouseLeave={(e) => { if (currentAccountId) e.currentTarget.style.background = 'transparent'; }}
                 onClick={() => { onChange({ accountId: null, displayName: null }); setIsOpen(false); }}
               >
-                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtlest, #6B778C)' }}>
                   <UserX size={12} />
                 </span>
                 <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Unassigned</span>

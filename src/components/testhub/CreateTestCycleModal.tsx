@@ -4,12 +4,12 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useTheme } from '@/hooks/useTheme';
 
 const CYCLE_STATUS_OPTIONS = [
-  { value: 'draft', label: 'DRAFT', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: 'var(--ds-text, #253858)' },
+  { value: 'draft', label: 'DRAFT', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text, #253858)' },
   { value: 'planned', label: 'PLANNED', bg: '#DEEBFF', text: '#0747A6' },
   { value: 'active', label: 'IN PROGRESS', bg: '#DEEBFF', text: '#0747A6' },
   { value: 'completed', label: 'COMPLETED', bg: '#E3FCEF', text: '#006644' },
-  { value: 'paused', label: 'PAUSED', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: 'var(--ds-text, #253858)' },
-  { value: 'archived', label: 'ARCHIVED', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: 'var(--ds-text, #253858)' },
+  { value: 'paused', label: 'PAUSED', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text, #253858)' },
+  { value: 'archived', label: 'ARCHIVED', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text, #253858)' },
 ] as const;
 import { catalystToast } from '@/components/ui/CatalystToast';
 

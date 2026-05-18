@@ -353,7 +353,7 @@ function StatusBadge({ status }: { status: string }) {
   };
   const s = isDark
     ? (darkColors[status] ?? { bg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', text: 'var(--ds-text-subtlest, #A1A1A1)' })
-    : (STATUS_LOZENGE_COLORS[status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: '#42526E' });
+    : (STATUS_LOZENGE_COLORS[status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: '#42526E' });
   const label = status === 'Converted to Request' ? 'CONVERTED' : status.toUpperCase();
   return (
     <span style={{

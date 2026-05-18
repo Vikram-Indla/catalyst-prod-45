@@ -77,13 +77,13 @@ const ICON_COLOR_MAP: Record<string, { bg: string; text: string }> = {
   blue:    { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   teal:    { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   red:     { bg: '#FFEBE6', text: '#BF2600' },
-  neutral: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: '#42526E' },
+  neutral: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: '#42526E' },
 };
 
 // V12 StatusLozenge: LIVE=Green, DRAFT=Grey, BETA=Blue
 const STATUS_LOZENGE: Record<string, { bg: string; text: string }> = {
   live:  { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  draft: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: '#42526E' },
+  draft: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: '#42526E' },
   beta:  { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
 };
 
@@ -554,7 +554,7 @@ export default function FeatureFlagsPage() {
 
           {/* Center: progress */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--cp-border, var(--cp-lozenge-grey-bg, #DFE1E6))' }}>
+            <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }}>
               <div
                 className="h-full rounded-full"
                 style={{

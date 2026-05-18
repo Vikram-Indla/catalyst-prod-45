@@ -43,12 +43,12 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> 
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  draft:        { label: 'DRAFT',        color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
+  draft:        { label: 'DRAFT',        color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
   approved:     { label: 'APPROVED',     color: '#0747A6', bg: '#DEEBFF' },
   in_progress:  { label: 'IN PROGRESS',  color: '#0747A6', bg: '#DEEBFF' },
   implemented:  { label: 'IMPLEMENTED',  color: '#006644', bg: '#E3FCEF' },
   verified:     { label: 'VERIFIED',     color: '#006644', bg: '#E3FCEF' },
-  deprecated:   { label: 'DEPRECATED',   color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
+  deprecated:   { label: 'DEPRECATED',   color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
 };
 
 const PRIORITY_CONFIG: Record<string, { label: string }> = {

@@ -206,7 +206,7 @@ export function ModalFooter({ children }: { children: ReactNode }) {
   return (
     <div style={{
       padding: '16px 24px',
-      borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+      borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
       display: 'flex',
       alignItems: 'center',
       gap: 8,

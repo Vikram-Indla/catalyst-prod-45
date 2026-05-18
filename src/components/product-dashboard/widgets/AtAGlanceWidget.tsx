@@ -89,7 +89,7 @@ function KpiCell({
       style={{
         flex: 1,
         padding: '18px 22px',
-        borderRight: borderRight ? `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}` : 'none',
+        borderRight: borderRight ? `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}` : 'none',
         display: 'flex',
         flexDirection: 'column',
         gap: 6,
@@ -169,7 +169,7 @@ function SettingsPanel() {
       data-testid="widget-settings-panel"
       style={{
         padding: '12px 18px',
-        borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+        borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         background: token('color.background.neutral.subtle', '#FAFBFC'),
         fontSize: 13,
         color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),

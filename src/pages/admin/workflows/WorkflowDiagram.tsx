@@ -553,7 +553,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
         position: 'absolute', top: 12, left: 12, right: 12, zIndex: 10,
         display: 'flex', alignItems: 'center', gap: 8,
         background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-        border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))',
+        border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
         borderRadius: 8, padding: '8px 12px',
         boxShadow: '0 1px 4px rgba(9,30,66,0.08)',
       }}>
@@ -622,7 +622,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
         <div style={{
           position: 'absolute', top: 64, right: 12, zIndex: 20,
           background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))',
+          border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
           borderRadius: 8,
           boxShadow: '0 4px 16px rgba(9,30,66,0.12)',
           padding: 16, width: 280,
@@ -661,7 +661,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
                   onClick={() => setNewStatusCat(cat)}
                   style={{
                     flex: 1, padding: '5px 4px', borderRadius: 4,
-                    border: `1.5px solid ${isActive ? strokeColor[cat] : 'var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))'}`,
+                    border: `1.5px solid ${isActive ? strokeColor[cat] : 'var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'}`,
                     background: isActive
                       ? cat === 'done'
                         ? 'var(--ds-background-success,#DCFFF1)'
@@ -682,7 +682,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
               onClick={() => setShowAddStatus(false)}
               style={{
                 flex: 1, padding: '7px 0', borderRadius: 4,
-                border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))',
+                border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
                 background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 color: 'var(--ds-text-subtle,#42526E)',
                 fontSize: 12, cursor: 'pointer',
@@ -755,14 +755,14 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
           variant={BackgroundVariant.Dots}
           gap={24}
           size={1.2}
-          color="var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))"
+          color="var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))"
         />
         <Controls
           position="bottom-left"
           showFitView={false}
           style={{
             boxShadow: '0 1px 4px rgba(9,30,66,0.08)',
-            border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))',
+            border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
             borderRadius: 6,
             bottom: 16,
           }}
@@ -780,7 +780,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
           maskColor="rgba(200,215,230,0.25)"
           style={{
             background: 'var(--ds-surface-sunken,#F0F2F5)',
-            border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))',
+            border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
             borderRadius: 6,
             height: 100,
           }}
@@ -791,7 +791,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
       <div style={{
         position: 'absolute', top: 64, left: 12, zIndex: 10,
         background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-        border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))',
+        border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
         borderRadius: 8,
         padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 6,
         boxShadow: '0 1px 4px rgba(9,30,66,0.06)',

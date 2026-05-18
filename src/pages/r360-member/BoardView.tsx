@@ -43,7 +43,7 @@ export function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect
                 <div style={{
                   padding: '20px 12px', textAlign: 'center' as const,
                   fontSize: 12, color: 'var(--ds-text-subtlest, #626F86)',
-                  border: '1px dashed var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', borderRadius: 8,
+                  border: '1px dashed var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 8,
                 }}>
                   {col.key === 'done' ? 'No completed items this period' : 'Nothing here'}
                 </div>

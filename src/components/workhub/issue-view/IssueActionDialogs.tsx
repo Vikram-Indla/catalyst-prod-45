@@ -46,7 +46,7 @@ const labelStyle: React.CSSProperties = {
   fontSize: 13, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', display: 'block', marginBottom: 6,
 };
 const inputStyle: React.CSSProperties = {
-  width: '100%', padding: '8px 12px', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
+  width: '100%', padding: '8px 12px', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
   borderRadius: 4, fontSize: 14, outline: 'none',
 };
 
@@ -199,7 +199,7 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
         position: 'fixed', top: pos.top, left: pos.left,
         background: 'var(--ds-surface, #fff)', borderRadius: 8, width: 360, padding: '20px 24px',
         boxShadow: '0 8px 28px rgba(9,30,66,0.25)', zIndex: 100,
-        border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
+        border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
           <Flag size={18} color="#DE350B" />
@@ -214,7 +214,7 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
             ? 'Optional: let your team know why the flag was removed'
             : 'Optional: let your team know why this work item has been flagged'}
           style={{
-            width: '100%', padding: '10px 12px', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
+            width: '100%', padding: '10px 12px', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
             borderRadius: 4, fontSize: 14, outline: 'none', resize: 'vertical',
             minHeight: 80, fontFamily: 'var(--cp-font-body)', color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
             lineHeight: '1.5',
@@ -313,7 +313,7 @@ export function CloneWizard({ issueId, issueKey, item, projectKey, onClose }: {
           {STEPS.map((s, i) => (
             <div key={i} style={{
               flex: 1, height: 3, borderRadius: 2,
-              background: i <= step ? '#0C66E4' : 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
+              background: i <= step ? '#0C66E4' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
             }} />
           ))}
         </div>
@@ -480,7 +480,7 @@ export function MoveWizard({ issueId, issueKey, item, projectKey, onClose }: {
         </div>
         <div style={{ padding: '12px 24px', display: 'flex', gap: 8 }}>
           {STEPS.map((_, i) => (
-            <div key={i} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= step ? '#0C66E4' : 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' }} />
+            <div key={i} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= step ? '#0C66E4' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }} />
           ))}
         </div>
         <p style={{ padding: '0 24px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', margin: '0 0 12px' }}>

@@ -337,7 +337,7 @@ export function HubSwitcher() {
             alignItems: 'center',
             gap: 8,
             padding: '10px 12px',
-            borderBottom: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
+            borderBottom: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
           }}
         >
           <span style={{ color: 'var(--ds-text-subtlest, #626F86)', display: 'inline-flex' }}>

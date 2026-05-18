@@ -24,7 +24,7 @@ function StatusLozenge({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
     active:    { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
     completed: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-    planning:  { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' },
+    planning:  { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
   };
   const m = map[status] ?? map.planning;
   return (

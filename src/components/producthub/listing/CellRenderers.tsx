@@ -147,7 +147,7 @@ export const AssigneeCell = React.memo(function AssigneeCell({
         position: 'fixed', top: pos.top, left: pos.left, zIndex: 99999,
         width: 240, maxHeight: 280, overflowY: 'auto',
         background: 'var(--ds-surface-overlay, #fff)',
-        border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
+        border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
         borderRadius: 4, boxShadow: '0 4px 16px rgba(0,0,0,0.16)',
         fontFamily: 'var(--cp-font-body)',
       }}

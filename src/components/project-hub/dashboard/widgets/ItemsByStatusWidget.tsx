@@ -213,7 +213,7 @@ function KpiHeadline({
         flexDirection: 'column',
         gap: 2,
         padding: '10px 12px',
-        borderRight: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+        borderRight: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
       }}
     >
       <span
@@ -246,7 +246,7 @@ function KpiHeadline({
         display: 'flex',
         background: token('elevation.surface.sunken', '#F7F8F9'),
         borderRadius: token('border.radius', '4px'),
-        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         overflow: 'hidden',
       }}
     >

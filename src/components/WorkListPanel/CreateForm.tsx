@@ -57,7 +57,7 @@ export const CreateForm = memo(function CreateForm({
         onChange={handleSummaryChange}
         style={{
           padding: '8px 12px',
-          border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
+          border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
           borderRadius: '3px',
           fontSize: '14px',
           fontFamily: 'inherit',
@@ -69,7 +69,7 @@ export const CreateForm = memo(function CreateForm({
         onChange={handleDescriptionChange}
         style={{
           padding: '8px 12px',
-          border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
+          border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
           borderRadius: '3px',
           fontSize: '14px',
           minHeight: '100px',

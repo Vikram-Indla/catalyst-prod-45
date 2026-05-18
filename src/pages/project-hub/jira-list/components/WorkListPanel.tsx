@@ -90,12 +90,12 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
       {showInnerSearch && (
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
-        padding: '8px 12px', borderBottom: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, #DFE1E6))', background: 'transparent',
+        padding: '8px 12px', borderBottom: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', background: 'transparent',
         flexWrap: 'nowrap',
       }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0,
-          border: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, #DFE1E6))', borderRadius: 6, padding: '0 8px', height: 32,
+          border: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 6, padding: '0 8px', height: 32,
           background: 'transparent',
         }}>
           <span style={{ opacity: 0.5, flexShrink: 0, display: 'inline-flex' }}>
@@ -115,7 +115,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
         </div>
 
         <button style={{
-          height: 32, padding: '0 10px', border: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, #DFE1E6))',
+          height: 32, padding: '0 10px', border: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
           background: 'transparent', borderRadius: 6, cursor: 'pointer',
           fontSize: 13, fontFamily: 'var(--cp-font-body)', display: 'inline-flex',
           alignItems: 'center', gap: 4, color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))', flexShrink: 0,
@@ -129,7 +129,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
       {/* Sort header */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '8px 12px', borderBottom: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, #DFE1E6))', background: 'transparent',
+        padding: '8px 12px', borderBottom: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', background: 'transparent',
       }}>
         <button
           onClick={() => setSortDir(d => (d === 'asc' ? 'desc' : 'asc'))}
@@ -174,7 +174,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
                 // card contains a nested interactive avatar picker, and
                 // <button> inside <button> is invalid HTML that breaks the
                 // inner click handler in some browsers.
-                //   - NO hard border (was 1px/var(--cp-lozenge-grey-bg, #DFE1E6))
+                //   - NO hard border (was 1px/var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))
                 //   - Double shadow: 0 1px 1px rgba(30,31,33,0.25), 0 0 1px rgba(30,31,33,0.31)
                 //   - 4px radius (was 8px)
                 //   - Selected: #E9F2FE bg + 1px blue inner-shadow ring (no outline)
@@ -277,7 +277,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
             <button
               onClick={() => setPageSize(s => s + 50)}
               style={{
-                background: 'transparent', border: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, #DFE1E6))',
+                background: 'transparent', border: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
                 borderRadius: 6, padding: '4px 12px', cursor: 'pointer',
                 fontSize: 12, color: 'var(--cp-text-info, #1868DB)', fontWeight: 500,
                 fontFamily: 'var(--cp-font-body)',

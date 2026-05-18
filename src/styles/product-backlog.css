@@ -62,7 +62,7 @@
   --cp-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
   --cp-shadow-focus: 0 0 0 2px rgba(37, 99, 235, 0.18);
 
-  --cp-lozenge-grey-bg: var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6));
+  --cp-lozenge-grey-bg: var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   --cp-lozenge-grey-text: var(--ds-text, #253858);
   --cp-lozenge-blue-bg: #DEEBFF;
   --cp-lozenge-blue-text: #0747A6;
