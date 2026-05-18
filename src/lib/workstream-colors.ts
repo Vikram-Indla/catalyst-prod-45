@@ -34,122 +34,122 @@ export interface WorkstreamColorSet {
 export const WORKSTREAM_COLORS: Record<string, WorkstreamColorSet> = {
   // Catalyst — Indigo palette (A1)
   'Catalyst Track': {
-    primary: '#6366f1',      // Indigo
-    light: '#e0e7ff',        // Indigo-200 (REFINED - 25% saturation)
-    border: '#a5b4fc',       // Indigo-300
-    hex: '#6366f1',
-    hexLight: '#e0e7ff',
-    hexFill: '#e0e7ff',
-    textPrimary: '#4338ca',  // Indigo-700
-    textDark: '#3730a3',     // Indigo-800
+    primary: 'var(--cp-workstream-catalyst-primary)',      // Indigo
+    light: 'var(--cp-workstream-catalyst-light)',        // Indigo-200 (REFINED - 25% saturation)
+    border: 'var(--cp-workstream-catalyst-border)',       // Indigo-300
+    hex: 'var(--cp-workstream-catalyst-primary)',
+    hexLight: 'var(--cp-workstream-catalyst-light)',
+    hexFill: 'var(--cp-workstream-catalyst-light)',
+    textPrimary: 'var(--cp-workstream-catalyst-text-primary)',  // Indigo-700
+    textDark: 'var(--cp-workstream-catalyst-text-dark)',     // Indigo-800
   },
   'Catalyst': {
-    primary: '#6366f1',
-    light: '#e0e7ff',
-    border: '#a5b4fc',
-    hex: '#6366f1',
-    hexLight: '#e0e7ff',
-    hexFill: '#e0e7ff',
-    textPrimary: '#4338ca',
-    textDark: '#3730a3',
+    primary: 'var(--cp-workstream-catalyst-primary)',
+    light: 'var(--cp-workstream-catalyst-light)',
+    border: 'var(--cp-workstream-catalyst-border)',
+    hex: 'var(--cp-workstream-catalyst-primary)',
+    hexLight: 'var(--cp-workstream-catalyst-light)',
+    hexFill: 'var(--cp-workstream-catalyst-light)',
+    textPrimary: 'var(--cp-workstream-catalyst-text-primary)',
+    textDark: 'var(--cp-workstream-catalyst-text-dark)',
   },
 
   // Data & AI — Purple palette (A2)
   'Data & AI Track': {
-    primary: '#8b5cf6',      // Purple
-    light: '#ede9fe',        // Violet-200 (REFINED - 25% saturation)
-    border: '#c4b5fd',       // Violet-300
-    hex: '#8b5cf6',
-    hexLight: '#ede9fe',
-    hexFill: '#ede9fe',
-    textPrimary: '#6d28d9',  // Violet-700
-    textDark: '#5b21b6',     // Violet-800
+    primary: 'var(--cp-workstream-data-ai-primary)',      // Purple
+    light: 'var(--cp-workstream-data-ai-light)',        // Violet-200 (REFINED - 25% saturation)
+    border: 'var(--cp-workstream-data-ai-border)',       // Violet-300
+    hex: 'var(--cp-workstream-data-ai-primary)',
+    hexLight: 'var(--cp-workstream-data-ai-light)',
+    hexFill: 'var(--cp-workstream-data-ai-light)',
+    textPrimary: 'var(--cp-workstream-data-ai-text-primary)',  // Violet-700
+    textDark: 'var(--cp-workstream-data-ai-text-dark)',     // Violet-800
   },
   'Data & AI': {
-    primary: '#8b5cf6',
-    light: '#ede9fe',
-    border: '#c4b5fd',
-    hex: '#8b5cf6',
-    hexLight: '#ede9fe',
-    hexFill: '#ede9fe',
-    textPrimary: '#6d28d9',
-    textDark: '#5b21b6',
+    primary: 'var(--cp-workstream-data-ai-primary)',
+    light: 'var(--cp-workstream-data-ai-light)',
+    border: 'var(--cp-workstream-data-ai-border)',
+    hex: 'var(--cp-workstream-data-ai-primary)',
+    hexLight: 'var(--cp-workstream-data-ai-light)',
+    hexFill: 'var(--cp-workstream-data-ai-light)',
+    textPrimary: 'var(--cp-workstream-data-ai-text-primary)',
+    textDark: 'var(--cp-workstream-data-ai-text-dark)',
   },
 
   // Delivery — Pink palette (A3)
   'Delivery Track': {
-    primary: '#ec4899',      // Pink
-    light: '#fce7f3',        // Pink-200 (REFINED - 25% saturation)
-    border: '#f9a8d4',       // Pink-300
-    hex: '#ec4899',
-    hexLight: '#fce7f3',
-    hexFill: '#fce7f3',
-    textPrimary: '#be185d',  // Pink-700
-    textDark: '#9d174d',     // Pink-800
+    primary: 'var(--cp-workstream-delivery-primary)',      // Pink
+    light: 'var(--cp-workstream-delivery-light)',        // Pink-200 (REFINED - 25% saturation)
+    border: 'var(--cp-workstream-delivery-border)',       // Pink-300
+    hex: 'var(--cp-workstream-delivery-primary)',
+    hexLight: 'var(--cp-workstream-delivery-light)',
+    hexFill: 'var(--cp-workstream-delivery-light)',
+    textPrimary: 'var(--cp-workstream-delivery-text-primary)',  // Pink-700
+    textDark: 'var(--cp-workstream-delivery-text-dark)',     // Pink-800
   },
   'Delivery': {
-    primary: '#ec4899',
-    light: '#fce7f3',
-    border: '#f9a8d4',
-    hex: '#ec4899',
-    hexLight: '#fce7f3',
-    hexFill: '#fce7f3',
-    textPrimary: '#be185d',
-    textDark: '#9d174d',
+    primary: 'var(--cp-workstream-delivery-primary)',
+    light: 'var(--cp-workstream-delivery-light)',
+    border: 'var(--cp-workstream-delivery-border)',
+    hex: 'var(--cp-workstream-delivery-primary)',
+    hexLight: 'var(--cp-workstream-delivery-light)',
+    hexFill: 'var(--cp-workstream-delivery-light)',
+    textPrimary: 'var(--cp-workstream-delivery-text-primary)',
+    textDark: 'var(--cp-workstream-delivery-text-dark)',
   },
 
   // MIM — Gray palette (A4)
   'MIM': {
-    primary: '#64748b',      // Gray
-    light: '#e2e8f0',        // Slate-200 (REFINED - 25% saturation)
-    border: '#94a3b8',       // Slate-400
-    hex: '#64748b',
-    hexLight: '#e2e8f0',
-    hexFill: '#e2e8f0',
-    textPrimary: '#475569',  // Slate-600
-    textDark: '#334155',     // Slate-700
+    primary: 'var(--cp-color-slate-500)',      // Gray
+    light: 'var(--cp-color-slate-200)',        // Slate-200 (REFINED - 25% saturation)
+    border: 'var(--cp-color-slate-400)',       // Slate-400
+    hex: 'var(--cp-color-slate-500)',
+    hexLight: 'var(--cp-color-slate-200)',
+    hexFill: 'var(--cp-color-slate-200)',
+    textPrimary: 'var(--cp-color-slate-600)',  // Slate-600
+    textDark: 'var(--cp-color-slate-700)',     // Slate-700
   },
   'MIM Website': {
-    primary: '#64748b',
-    light: '#e2e8f0',
-    border: '#94a3b8',
-    hex: '#64748b',
-    hexLight: '#e2e8f0',
-    hexFill: '#e2e8f0',
-    textPrimary: '#475569',
-    textDark: '#334155',
+    primary: 'var(--cp-color-slate-500)',
+    light: 'var(--cp-color-slate-200)',
+    border: 'var(--cp-color-slate-400)',
+    hex: 'var(--cp-color-slate-500)',
+    hexLight: 'var(--cp-color-slate-200)',
+    hexFill: 'var(--cp-color-slate-200)',
+    textPrimary: 'var(--cp-color-slate-600)',
+    textDark: 'var(--cp-color-slate-700)',
   },
   'MIM Website Track': {
-    primary: '#64748b',
-    light: '#e2e8f0',
-    border: '#94a3b8',
-    hex: '#64748b',
-    hexLight: '#e2e8f0',
-    hexFill: '#e2e8f0',
-    textPrimary: '#475569',
-    textDark: '#334155',
+    primary: 'var(--cp-color-slate-500)',
+    light: 'var(--cp-color-slate-200)',
+    border: 'var(--cp-color-slate-400)',
+    hex: 'var(--cp-color-slate-500)',
+    hexLight: 'var(--cp-color-slate-200)',
+    hexFill: 'var(--cp-color-slate-200)',
+    textPrimary: 'var(--cp-color-slate-600)',
+    textDark: 'var(--cp-color-slate-700)',
   },
 
   // Senaei — Teal palette (A5)
   'Senaei': {
-    primary: '#14b8a6',      // Teal
-    light: '#ccfbf1',        // Teal-200 (REFINED - 25% saturation)
-    border: '#5eead4',       // Teal-300
-    hex: '#14b8a6',
-    hexLight: '#ccfbf1',
-    hexFill: '#ccfbf1',
-    textPrimary: '#0f766e',  // Teal-700
-    textDark: '#115e59',     // Teal-800
+    primary: 'var(--cp-workstream-senaei-primary)',      // Teal
+    light: 'var(--cp-workstream-senaei-light)',        // Teal-200 (REFINED - 25% saturation)
+    border: 'var(--cp-workstream-senaei-border)',       // Teal-300
+    hex: 'var(--cp-workstream-senaei-primary)',
+    hexLight: 'var(--cp-workstream-senaei-light)',
+    hexFill: 'var(--cp-workstream-senaei-light)',
+    textPrimary: 'var(--cp-workstream-senaei-text-primary)',  // Teal-700
+    textDark: 'var(--cp-workstream-senaei-text-dark)',     // Teal-800
   },
   'Senaei Track': {
-    primary: '#14b8a6',
-    light: '#ccfbf1',
-    border: '#5eead4',
-    hex: '#14b8a6',
-    hexLight: '#ccfbf1',
-    hexFill: '#ccfbf1',
-    textPrimary: '#0f766e',
-    textDark: '#115e59',
+    primary: 'var(--cp-workstream-senaei-primary)',
+    light: 'var(--cp-workstream-senaei-light)',
+    border: 'var(--cp-workstream-senaei-border)',
+    hex: 'var(--cp-workstream-senaei-primary)',
+    hexLight: 'var(--cp-workstream-senaei-light)',
+    hexFill: 'var(--cp-workstream-senaei-light)',
+    textPrimary: 'var(--cp-workstream-senaei-text-primary)',
+    textDark: 'var(--cp-workstream-senaei-text-dark)',
   },
   'Senaie': {
     primary: '#14b8a6',

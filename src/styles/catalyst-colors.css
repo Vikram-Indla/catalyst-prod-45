@@ -1,0 +1,278 @@
+/**
+ * Catalyst V5 Color System - CSS Custom Properties
+ * All color definitions centralized for design system compliance
+ */
+
+:root {
+  /* ============= CATALYST V5 PRIMARY COLORS ============= */
+  --cp-color-teal: #0d9488;
+  --cp-color-teal-hover: #0f766e;
+  --cp-color-teal-light: #14b8a6;
+  --cp-color-teal-lighter: #ccfbf1;
+  --cp-color-teal-lightest: #f0fdfa;
+
+  --cp-color-blue: #2563eb;
+  --cp-color-blue-hover: #1d4ed8;
+  --cp-color-blue-light: #3b82f6;
+  --cp-color-blue-lighter: #dbeafe;
+  --cp-color-blue-lightest: #eff6ff;
+
+  --cp-color-orange: #d97706;
+  --cp-color-orange-hover: #b45309;
+  --cp-color-orange-light: #f59e0b;
+  --cp-color-orange-lighter: #fef3c7;
+  --cp-color-orange-lightest: #fffbeb;
+
+  --cp-color-red: #ef4444;
+  --cp-color-red-hover: #dc2626;
+  --cp-color-red-light: #f87171;
+  --cp-color-red-lighter: #fee2e2;
+  --cp-color-red-lightest: #fef2f2;
+
+  /* ============= CATALYST SLATE SYSTEM ============= */
+  --cp-color-slate-900: #0f172a;
+  --cp-color-slate-800: #1e293b;
+  --cp-color-slate-700: #334155;
+  --cp-color-slate-600: #475569;
+  --cp-color-slate-500: #64748b;
+  --cp-color-slate-400: #94a3b8;
+  --cp-color-slate-300: #cbd5e1;
+  --cp-color-slate-200: #e2e8f0;
+  --cp-color-slate-100: #f1f5f9;
+  --cp-color-slate-50: #f8fafc;
+
+  /* ============= CATALYST GREY SYSTEM ============= */
+  --cp-color-grey-900: #0a0a0a;
+  --cp-color-grey-700: #404040;
+  --cp-color-grey-600: #525252;
+  --cp-color-grey-500: #737373;
+  --cp-color-grey-400: #a3a3a3;
+  --cp-color-grey-300: #d4d4d4;
+  --cp-color-grey-200: #e5e5e5;
+  --cp-color-grey-100: #f5f5f4;
+  --cp-color-grey-50: #fafafa;
+
+  /* ============= CATALYST BG COLORS (with alpha) ============= */
+  --cp-bg-teal-light: rgba(13, 148, 136, 0.08);
+  --cp-bg-blue-light: rgba(37, 99, 235, 0.08);
+  --cp-bg-orange-light: rgba(217, 119, 6, 0.08);
+  --cp-bg-red-light: rgba(239, 68, 68, 0.08);
+
+  /* ============= TEST STATUS COLORS ============= */
+  --cp-status-passed-bg: #ccfbf1;
+  --cp-status-passed-text: #0d9488;
+  --cp-status-passed-border: #0d9488;
+
+  --cp-status-failed-bg: #fee2e2;
+  --cp-status-failed-text: #ef4444;
+  --cp-status-failed-border: #ef4444;
+
+  --cp-status-blocked-bg: #fef3c7;
+  --cp-status-blocked-text: #d97706;
+  --cp-status-blocked-border: #d97706;
+
+  --cp-status-in-progress-bg: #dbeafe;
+  --cp-status-in-progress-text: #2563eb;
+  --cp-status-in-progress-border: #2563eb;
+
+  --cp-status-not-started-bg: #f1f5f9;
+  --cp-status-not-started-text: #475569;
+  --cp-status-not-started-border: #cbd5e1;
+
+  /* ============= TEST PRIORITY COLORS ============= */
+  --cp-priority-critical-bg: #fee2e2;
+  --cp-priority-critical-text: #ef4444;
+
+  --cp-priority-high-bg: #fef3c7;
+  --cp-priority-high-text: #d97706;
+
+  --cp-priority-medium-bg: #dbeafe;
+  --cp-priority-medium-text: #2563eb;
+
+  --cp-priority-low-bg: #f1f5f9;
+  --cp-priority-low-text: #475569;
+
+  /* ============= ASSIGNMENT THEME COLORS ============= */
+  --cp-theme-senaei-bau-bg: #eff6ff;
+  --cp-theme-senaei-bau-text: #1e40af;
+  --cp-theme-senaei-bau-accent: #2563eb;
+
+  --cp-theme-innovation-bg: #eff6ff;
+  --cp-theme-innovation-text: #1e3a8a;
+  --cp-theme-innovation-accent: #1d4ed8;
+
+  --cp-theme-inspection-bg: #f0fdfa;
+  --cp-theme-inspection-text: #115e59;
+  --cp-theme-inspection-accent: #0d9488;
+
+  --cp-theme-international-bg: #f0fdfa;
+  --cp-theme-international-text: #134e4a;
+  --cp-theme-international-accent: #0f766e;
+
+  --cp-theme-mim-bg: #f0fdfa;
+  --cp-theme-mim-text: #115e59;
+  --cp-theme-mim-accent: #14b8a6;
+
+  --cp-theme-senaei-ops-bg: #eff6ff;
+  --cp-theme-senaei-ops-text: #1e40af;
+  --cp-theme-senaei-ops-accent: #3b82f6;
+
+  --cp-theme-sectorial-bg: #f8fafc;
+  --cp-theme-sectorial-text: #475569;
+  --cp-theme-sectorial-accent: #64748b;
+
+  --cp-theme-tahommena-bg: #f0fdfa;
+  --cp-theme-tahommena-text: #0f766e;
+  --cp-theme-tahommena-accent: #0d9488;
+
+  --cp-theme-data-platform-bg: #dbeafe;
+  --cp-theme-data-platform-text: #1e40af;
+  --cp-theme-data-platform-accent: #3b82f6;
+
+  --cp-theme-unassigned-bg: #f8fafc;
+  --cp-theme-unassigned-text: #64748b;
+  --cp-theme-unassigned-accent: #94a3b8;
+
+  /* ============= DEFECT SEVERITY COLORS ============= */
+  --cp-severity-critical-dot: #ef4444;
+  --cp-severity-critical-bg: #fee2e2;
+  --cp-severity-critical-text: #ef4444;
+  --cp-severity-critical-border: rgba(239, 68, 68, 0.19);
+
+  --cp-severity-high-dot: #d97706;
+  --cp-severity-high-bg: #fef3c7;
+  --cp-severity-high-text: #d97706;
+  --cp-severity-high-border: rgba(217, 119, 6, 0.19);
+
+  --cp-severity-medium-dot: #2563eb;
+  --cp-severity-medium-bg: #dbeafe;
+  --cp-severity-medium-text: #2563eb;
+  --cp-severity-medium-border: rgba(37, 99, 235, 0.19);
+
+  --cp-severity-low-dot: #94a3b8;
+  --cp-severity-low-bg: #f1f5f9;
+  --cp-severity-low-text: #64748b;
+  --cp-severity-low-border: rgba(148, 163, 184, 0.19);
+
+  --cp-severity-major-dot: #d97706;
+  --cp-severity-major-bg: #fef3c7;
+  --cp-severity-major-text: #d97706;
+  --cp-severity-major-border: rgba(217, 119, 6, 0.19);
+
+  --cp-severity-minor-dot: #2563eb;
+  --cp-severity-minor-bg: #dbeafe;
+  --cp-severity-minor-text: #2563eb;
+  --cp-severity-minor-border: rgba(37, 99, 235, 0.19);
+
+  --cp-severity-trivial-dot: #94a3b8;
+  --cp-severity-trivial-bg: #f1f5f9;
+  --cp-severity-trivial-text: #64748b;
+  --cp-severity-trivial-border: rgba(148, 163, 184, 0.19);
+
+  /* ============= DEFECT STATUS COLORS ============= */
+  --cp-defect-status-new-bg: #fef2f2;
+  --cp-defect-status-new-text: #ef4444;
+  --cp-defect-status-new-border: rgba(239, 68, 68, 0.19);
+
+  --cp-defect-status-open-bg: #fef2f2;
+  --cp-defect-status-open-text: #ef4444;
+  --cp-defect-status-open-border: rgba(239, 68, 68, 0.19);
+
+  --cp-defect-status-triaged-bg: #fffbeb;
+  --cp-defect-status-triaged-text: #d97706;
+  --cp-defect-status-triaged-border: rgba(217, 119, 6, 0.19);
+
+  --cp-defect-status-in-progress-bg: #eff6ff;
+  --cp-defect-status-in-progress-text: #2563eb;
+  --cp-defect-status-in-progress-border: rgba(37, 99, 235, 0.19);
+
+  --cp-defect-status-fixed-bg: #f0fdfa;
+  --cp-defect-status-fixed-text: #0d9488;
+  --cp-defect-status-fixed-border: rgba(13, 148, 136, 0.19);
+
+  --cp-defect-status-verified-bg: #f0fdfa;
+  --cp-defect-status-verified-text: #0d9488;
+  --cp-defect-status-verified-border: rgba(13, 148, 136, 0.19);
+
+  --cp-defect-status-resolved-bg: #f0fdfa;
+  --cp-defect-status-resolved-text: #0d9488;
+  --cp-defect-status-resolved-border: rgba(13, 148, 136, 0.19);
+
+  --cp-defect-status-closed-bg: #f1f5f9;
+  --cp-defect-status-closed-text: #64748b;
+  --cp-defect-status-closed-border: rgba(203, 213, 225, 0.19);
+
+  --cp-defect-status-rejected-bg: #f1f5f9;
+  --cp-defect-status-rejected-text: #64748b;
+  --cp-defect-status-rejected-border: rgba(203, 213, 225, 0.19);
+
+  --cp-defect-status-reopened-bg: #fffbeb;
+  --cp-defect-status-reopened-text: #d97706;
+  --cp-defect-status-reopened-border: rgba(217, 119, 6, 0.19);
+
+  /* ============= DEFECT PRIORITY COLORS ============= */
+  --cp-defect-priority-critical-bg: #fff1f2;
+  --cp-defect-priority-critical-text: #e11d48;
+  --cp-defect-priority-critical-border: rgba(225, 29, 72, 0.19);
+
+  --cp-defect-priority-high-bg: #fffbeb;
+  --cp-defect-priority-high-text: #d97706;
+  --cp-defect-priority-high-border: rgba(217, 119, 6, 0.19);
+
+  --cp-defect-priority-medium-bg: transparent;
+  --cp-defect-priority-medium-text: #475569;
+  --cp-defect-priority-medium-border: transparent;
+
+  --cp-defect-priority-low-bg: transparent;
+  --cp-defect-priority-low-text: #94a3b8;
+  --cp-defect-priority-low-border: transparent;
+
+  /* ============= WORKSTREAM COLORS ============= */
+  /* Catalyst Track — Indigo */
+  --cp-workstream-catalyst-primary: #6366f1;
+  --cp-workstream-catalyst-light: #e0e7ff;
+  --cp-workstream-catalyst-border: #a5b4fc;
+  --cp-workstream-catalyst-text-primary: #4338ca;
+  --cp-workstream-catalyst-text-dark: #3730a3;
+
+  /* Data & AI Track — Purple */
+  --cp-workstream-data-ai-primary: #8b5cf6;
+  --cp-workstream-data-ai-light: #ede9fe;
+  --cp-workstream-data-ai-border: #c4b5fd;
+  --cp-workstream-data-ai-text-primary: #6d28d9;
+  --cp-workstream-data-ai-text-dark: #5b21b6;
+
+  /* Delivery Track — Pink */
+  --cp-workstream-delivery-primary: #ec4899;
+  --cp-workstream-delivery-light: #fce7f3;
+  --cp-workstream-delivery-border: #f9a8d4;
+  --cp-workstream-delivery-text-primary: #be185d;
+  --cp-workstream-delivery-text-dark: #9d174d;
+
+  /* MIM — Gray */
+  --cp-workstream-mim-primary: #64748b;
+  --cp-workstream-mim-light: #e2e8f0;
+  --cp-workstream-mim-border: #94a3b8;
+  --cp-workstream-mim-text-primary: #475569;
+  --cp-workstream-mim-text-dark: #334155;
+
+  /* Senaei — Teal */
+  --cp-workstream-senaei-primary: #14b8a6;
+  --cp-workstream-senaei-light: #ccfbf1;
+  --cp-workstream-senaei-border: #5eead4;
+  --cp-workstream-senaei-text-primary: #0f766e;
+  --cp-workstream-senaei-text-dark: #115e59;
+
+  /* Tahommona — Orange */
+  --cp-workstream-tahommona-primary: #f97316;
+  --cp-workstream-tahommona-light: #ffedd5;
+  --cp-workstream-tahommona-border: #fdba74;
+  --cp-workstream-tahommona-text-primary: #c2410c;
+  --cp-workstream-tahommona-text-dark: #9a3412;
+
+  /* Status dots */
+  --cp-workstream-backlog: #94a3b8;
+  --cp-workstream-planned: #3b82f6;
+  --cp-workstream-in-progress: #f59e0b;
+  --cp-workstream-review: #8b5cf6;
+}

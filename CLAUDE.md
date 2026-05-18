@@ -807,3 +807,104 @@ Surface-level "measured X column widths" reports without per-issue-type round-ro
 **Surface:** Created/Updated/Due date cells in BacklogPage table
 **Pattern:** The makeDateCell renderer added a bordered pill (`border: 1px solid`, `borderRadius: 3`, `padding: 2px 8px`) that was documented as "Jira-parity". Fresh DOM probe shows Jira's date cells have no border — just calendar icon + text with no wrapping box.
 **Rule:** Before adding visual chrome to a cell (borders, backgrounds, radius), probe the live Jira DOM first. Catalyst opinions that "look like Jira" often aren't.
+
+---
+
+## 2026-05-18 — ON-DEMAND BRANCH CREATION — CLEAN SLATE PER CONVERSATION
+
+**Every conversation starts completely clean.** No branch exists until you explicitly request implementation work. When you ask for a task, I immediately create and activate a named feature branch based ONLY on your request in THIS conversation. Existing branches are ignored unless you specifically reference them.
+
+### Branch Naming Convention (with Numeric Identifier)
+
+```
+{Project}-{SideMenu}-{Component}-{NN}
+```
+
+Where `{NN}` = two-digit branch identifier: `01`, `02`, `03`, etc.
+This identifier links to the Obsidian handover for context retrieval.
+
+**Components:**
+- **Project** (from Hub): `BAU`, `INV`, `Projects`, `Incidents`, `Reports`, `Admin`, `Products`, `Releases` (derived from screenshot or task context)
+- **SideMenu** (from left sidebar): `backlog`, `allwork`, `detail`, `incidents`, `projects`, `products`, `releases`, `admin`, `resources`, `settings`, etc.
+- **Component** (main element): `table`, `filter`, `modal`, `sidebar`, `detail-view`, `dashboard`, `panel`, `form`, etc.
+
+**Examples:**
+- `BAU-backlog-table-01` — Building/fixing the backlog list table in BAU project (first branch)
+- `BAU-backlog-table-02` — Second iteration of backlog table work
+- `Incidents-detail-view-01` — Work on incident detail panel
+- `Projects-dashboard-filter-01` — Projects module dashboard filters
+- `Admin-users-management-01` — Admin users page
+- `General-deploy-01` — Deployment automation
+- `General-hotfix-01` — Urgent production fix
+
+**Exception: Infrastructure Tasks**
+- `General-deploy` — Deployment, CI/CD, infrastructure changes
+- `General-hotfix` — Emergency production fixes
+- `General-refactor` — Codebase-wide refactoring
+
+### Enforcement Rules
+
+1. **Immediate Activation**
+   - When a task/feature is requested in chat, STOP immediately before writing any code
+   - Read the task context (screenshot, conversation, Jira link, or description)
+   - Derive: Project (Hub key), SideMenu (sidebar item), Component (main element)
+   - Run: `git -C $PROJECT_DIR switch --create <branch-name>` or `git -C $PROJECT_DIR switch <branch-name>` if exists
+   - Confirm branch is active: `git -C $PROJECT_DIR branch --show-current`
+
+2. **Branch Persistence**
+   - All commits in this conversation go to the named branch
+   - Push to `origin <branch-name>` (not main)
+   - GitHub PR title and description reference the branch
+   - Do NOT merge to main without explicit Vikram approval
+
+3. **Context Derivation Rules**
+   - **Project**: If task mentions "BAU project" or screenshot shows BAU hub → `BAU`. If ambiguous, ask in chat: "Which hub are we working in?"
+   - **SideMenu**: From current sidebar context or explicitly stated. If ambiguous: "Which sidebar menu item?"
+   - **Component**: The main element being built/fixed. If it spans multiple components, name the primary one or use a descriptor like `integration`, `refactor`, `audit`.
+   - If ANY part is ambiguous, halt and ask the user to clarify before creating the branch.
+
+4. **One-Off Branches (Ad-Hoc Tasks)**
+   - If the conversation is purely research, explanation, or no code changes → no branch needed
+   - If the conversation turns into implementation mid-way, create the branch at that point
+   - Example: "Explain how X works" (no branch) → "Now fix X" (create branch immediately)
+
+5. **Multi-Task Conversations**
+   - If a conversation covers multiple tasks (e.g., "fix table AND add filter"), create the FIRST feature branch for the primary task
+   - After completing the primary task and pushing, explicitly ask: "Move to next task?" before creating a new branch
+   - Do NOT try to cram multiple unrelated tasks into one branch
+
+### Implementation (On-Demand)
+
+Branch creation is triggered ONLY when you request implementation work in the conversation:
+
+- `.claude/scripts/branch-manager.sh` utility handles branch creation and validation
+- When you ask for a task, I derive the branch name from your request
+- I echo the derived branch name and wait for confirmation before creating it
+- The branch is created fresh based on THIS conversation, not pre-existing branches
+- CLAUDE.md (this section) serves as the enforcement spec
+
+### Commit Messages
+
+All commits on the feature branch follow this format (unchanged from existing CLAUDE.md rules):
+```
+<imperative verb> <what>
+
+- Optional: bullet-point details
+- Reference Jira keys if applicable (BAU-1234)
+```
+
+Example: `Add bulk-edit footer bar to backlog table`
+
+### Before Pushing
+
+1. Ensure all commits are on the feature branch: `git -C $PROJECT_DIR log --oneline -5`
+2. Confirm tests pass (if applicable)
+3. Confirm design-audit passes: `node design-governance/cli/index.js audit src/`
+4. Push: `git -C $PROJECT_DIR push origin <branch-name>`
+5. GitHub Actions will run CI — address any failures before requesting PR review
+
+### After Pushing
+
+- Create a PR with the branch name as the title
+- Link any associated Jira tickets
+- Await Vikram's review and approval before merging to main
