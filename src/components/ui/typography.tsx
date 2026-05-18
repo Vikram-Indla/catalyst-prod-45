@@ -171,9 +171,9 @@ export const Text = React.forwardRef<HTMLElement, TextProps>(
     const Component = as || defaultElementForVariant[variant];
     const effectiveTone = tone || defaultToneForVariant[variant];
 
-    // bodyEmphasis uses weight 650 which isn't a standard Tailwind class
+    // bodyEmphasis uses slightly elevated weight; clamped to 600 for ADS token compliance
     const inlineStyle = variant === "bodyEmphasis"
-      ? { fontWeight: 650, ...((props as any).style || {}) }
+      ? { fontWeight: 600, ...((props as any).style || {}) }
       : (props as any).style;
 
     return (

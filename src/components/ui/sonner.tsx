@@ -1,9 +1,9 @@
 /**
  * Catalyst V5 Toast / Notifications Styling
- * - Success: Light teal background (#f0fdfa) with teal text (#0d9488)
- * - Error: Light red background (var(--ds-background-danger, #fef2f2)) with red text (var(--ds-text-danger, #dc2626))
- * - Warning: Light amber background (#fffbeb) with amber text (var(--ds-text-warning, #d97706))
- * - Info: Light blue background (var(--ds-background-selected, #eff6ff)) with blue text (var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)))
+ * - Success: Light teal background (var(--ds-background-success)) with teal text (var(--ds-background-success-bold))
+ * - Error: Light red background (var(--ds-background-danger)) with red text (var(--ds-text-danger))
+ * - Warning: Light amber background (var(--ds-background-warning)) with amber text (var(--ds-text-warning))
+ * - Info: Light blue background (var(--ds-background-selected)) with blue text (var(--ds-text-brand, var(--cp-workstream-catalyst-primary)))
  */
 import { useTheme } from "next-themes";
 import { Toaster as Sonner, toast } from "sonner";
@@ -29,10 +29,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
           actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
           cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
           // Catalyst V5: Light semantic backgrounds with matching text
-          success: "group-[.toast]:!bg-[#f0fdfa] group-[.toast]:!text-[#0d9488] group-[.toast]:!border-[#99f6e4]",
-          error: "group-[.toast]:!bg-[var(--ds-background-danger,#fef2f2)] group-[.toast]:!text-[var(--ds-text-danger,#dc2626)] group-[.toast]:!border-[#fecaca]",
-          warning: "group-[.toast]:!bg-[#fffbeb] group-[.toast]:!text-[var(--ds-text-warning,#d97706)] group-[.toast]:!border-[#fde68a]",
-          info: "group-[.toast]:!bg-[var(--ds-background-selected,#eff6ff)] group-[.toast]:!text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] group-[.toast]:!border-[#bfdbfe]",
+          success: "group-[.toast]:!bg-[var(--ds-background-success)] group-[.toast]:!text-[var(--ds-background-success-bold)] group-[.toast]:!border-[var(--ds-background-success)]",
+          error: "group-[.toast]:!bg-[var(--ds-background-danger)] group-[.toast]:!text-[var(--ds-text-danger)] group-[.toast]:!border-[var(--ds-background-danger)]",
+          warning: "group-[.toast]:!bg-[var(--ds-background-warning)] group-[.toast]:!text-[var(--ds-text-warning)] group-[.toast]:!border-[var(--ds-background-warning)]",
+          info: "group-[.toast]:!bg-[var(--ds-background-selected)] group-[.toast]:!text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))] group-[.toast]:!border-[var(--ds-background-information)]",
         },
       }}
       {...props}

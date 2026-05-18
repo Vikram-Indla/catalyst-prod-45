@@ -39,18 +39,18 @@ export function SyncStatusIndicator() {
         return {
           icon: Loader2,
           label: `Saving ${pendingChanges} change${pendingChanges !== 1 ? 's' : ''}...`,
-          color: 'text-blue-500',
-          bgColor: 'bg-blue-50 dark:bg-blue-900/20',
-          dotColor: 'bg-blue-500',
+          color: 'text-[var(--ds-text-brand)]',
+          bgColor: 'bg-[var(--ds-background-information)] dark:bg-[var(--ds-background-information)]',
+          dotColor: 'bg-[var(--ds-background-brand-bold)]',
           animate: true,
         };
       case 'error':
         return {
           icon: AlertCircle,
           label: errorMessage || 'Sync failed',
-          color: 'text-red-500',
-          bgColor: 'bg-red-50 dark:bg-red-900/20',
-          dotColor: 'bg-red-500',
+          color: 'text-[var(--ds-text-danger)]',
+          bgColor: 'bg-[var(--ds-background-danger)] dark:bg-[var(--ds-background-danger)]',
+          dotColor: 'bg-[var(--ds-background-danger-bold)]',
         };
       case 'offline':
         return {

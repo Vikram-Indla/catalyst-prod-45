@@ -57,7 +57,7 @@ class ADSTokenScanner {
       }
 
       // Check for hardcoded px spacing (but allow in specific contexts)
-      if (this.hardcodedPxPattern.test(line) && line.includes('padding') || line.includes('margin')) {
+      if (this.hardcodedPxPattern.test(line) && (line.includes('padding') || line.includes('margin'))) {
         if (!line.includes('var(') && !line.includes('token(')) {
           this.violations.push({
             file: filePath,

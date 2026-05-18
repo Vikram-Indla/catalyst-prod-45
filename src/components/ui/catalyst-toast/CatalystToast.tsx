@@ -29,7 +29,7 @@ const variantConfig: Record<CatalystToastType, {
   icon: React.ReactNode;
 }> = {
   success: {
-    bg: 'bg-[#0d9488]', // Teal
+    bg: 'bg-[var(--ds-background-success-bold)]', // Teal
     iconBg: 'bg-white/20',
     icon: <Check className="w-5 h-5 text-white" />,
   },
@@ -39,12 +39,12 @@ const variantConfig: Record<CatalystToastType, {
     icon: <X className="w-5 h-5 text-white" />,
   },
   warning: {
-    bg: 'bg-[var(--ds-text-warning,#f59e0b)]', // Amber
+    bg: 'bg-[var(--ds-text-warning)]', // Amber
     iconBg: 'bg-white/20',
     icon: <AlertTriangle className="w-5 h-5 text-white" />,
   },
   info: {
-    bg: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]', // Blue
+    bg: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]', // Blue
     iconBg: 'bg-white/20',
     icon: <Info className="w-5 h-5 text-white" />,
   },
@@ -54,7 +54,7 @@ const variantConfig: Record<CatalystToastType, {
     icon: <Trash2 className="w-5 h-5 text-white" />,
   },
   loading: {
-    bg: 'bg-blue-600',
+    bg: 'bg-[var(--ds-background-brand-bold)]',
     iconBg: 'bg-white/20',
     icon: <Loader2 className="w-5 h-5 text-white animate-spin" />,
   },

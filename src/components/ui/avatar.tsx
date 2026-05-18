@@ -27,12 +27,12 @@ const avatarVariants = cva(
 );
 
 const fallbackColors = [
-  "bg-[#dbeafe] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]", // Blue
-  "bg-[#ccfbf1] text-[#0d9488]", // Teal
-  "bg-[#d1fae5] text-[var(--quality-high, #059669)]", // Green
-  "bg-[#fee2e2] text-[var(--ds-text-danger,#dc2626)]", // Red
-  "bg-[#e0f2fe] text-[#0284c7]", // Sky
-  "bg-[#fce7f3] text-[#db2777]", // Pink
+  "bg-[var(--ds-background-information)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary))]", // Blue
+  "bg-[var(--ds-background-success)] text-[var(--ds-background-success-bold)]", // Teal
+  "bg-[var(--ds-background-success)] text-[var(--quality-high)]", // Green
+  "bg-[var(--ds-background-danger)] text-[var(--ds-text-danger)]", // Red
+  "bg-[var(--ds-background-information)] text-[var(--ds-text-brand)]", // Sky
+  "bg-[var(--ds-background-discovery)] text-[var(--ds-text-discovery)]", // Pink
 ];
 
 function getColorFromName(name: string): string {

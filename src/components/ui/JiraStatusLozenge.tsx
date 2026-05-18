@@ -2,7 +2,7 @@
  * JiraStatusLozenge — Jira-parity status badge
  *
  * jira-compare Patch #1 (2026-04-28):
- *   - Drop `text-transform: uppercase` (Jira renders status name verbatim).
+ *   - Removed uppercase transform (Jira renders status name verbatim).
  *   - Drop letter-spacing.
  *   - Change font-weight 700 → 600 to match Atlaskit @atlaskit/lozenge.
  *   - Update STATUS_MAP labels to sentence-case strings exactly as Jira
@@ -11,16 +11,16 @@
 import { ChevronDown } from '@/lib/atlaskit-icons';
 
 const STATUS_MAP: Record<string, { bg: string; text: string; label: string }> = {
-  backlog:         { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text, #253858)', label: 'Backlog' },
-  in_progress:     { bg: '#FFF7D6', text: '#7F5F01', label: 'In Progress' },
-  done:            { bg: '#DCFFF1', text: '#216E4E', label: 'Done' },
-  in_production:   { bg: '#DCFFF1', text: '#216E4E', label: 'In Production' },
-  ready_for_qa:    { bg: '#DCFFF1', text: '#216E4E', label: 'Ready for QA' },
-  in_requirements: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text, #253858)', label: 'In Requirements' },
-  in_uat:          { bg: '#DCFFF1', text: '#216E4E', label: 'In UAT' },
-  in_qa:           { bg: '#DCFFF1', text: '#216E4E', label: 'In QA' },
-  in_dev:          { bg: '#FFF7D6', text: '#7F5F01', label: 'In Dev' },
-  closed:          { bg: '#DCFFF1', text: '#216E4E', label: 'Closed' },
+  backlog:         { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text)', label: 'Backlog' },
+  in_progress:     { bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)', label: 'In Progress' },
+  done:            { bg: 'var(--ds-background-success)', text: 'var(--ds-background-success-bold)', label: 'Done' },
+  in_production:   { bg: 'var(--ds-background-success)', text: 'var(--ds-background-success-bold)', label: 'In Production' },
+  ready_for_qa:    { bg: 'var(--ds-background-success)', text: 'var(--ds-background-success-bold)', label: 'Ready for QA' },
+  in_requirements: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))', text: 'var(--ds-text)', label: 'In Requirements' },
+  in_uat:          { bg: 'var(--ds-background-success)', text: 'var(--ds-background-success-bold)', label: 'In UAT' },
+  in_qa:           { bg: 'var(--ds-background-success)', text: 'var(--ds-background-success-bold)', label: 'In QA' },
+  in_dev:          { bg: 'var(--ds-background-warning)', text: 'var(--ds-text-warning)', label: 'In Dev' },
+  closed:          { bg: 'var(--ds-background-success)', text: 'var(--ds-background-success-bold)', label: 'Closed' },
 };
 
 interface Props {
@@ -33,8 +33,8 @@ export function JiraStatusLozenge({ status, interactive = false, onStatusChange 
   // Cycle 1 §1.4: guard unknown status — never crash. For unknown values,
   // pass the string through unchanged (Jira does the same).
   const config = STATUS_MAP[status] ?? {
-    bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
-    text: 'var(--ds-text, #253858)',
+    bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral)))',
+    text: 'var(--ds-text)',
     label: status ?? 'Unknown',
   };
 
@@ -67,7 +67,7 @@ export function JiraStatusLozenge({ status, interactive = false, onStatusChange 
         border: 'none',
         background: config.bg,
         color: config.text,
-        fontSize: '11px',
+        fontSize: 'var(--cp-font-size-status, 11px)',
         fontWeight: 600,
         fontFamily: 'var(--cp-font-body)',
         whiteSpace: 'nowrap',
