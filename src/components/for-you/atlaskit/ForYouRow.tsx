@@ -244,7 +244,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
               // Key is the primary identifier — render at color.text.subtle
               // so it sits above project name in the meta-row hierarchy.
               font: `400 12px/16px "Inter", system-ui, sans-serif`,
-              color: token('color.text.subtle', '#44546F'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
               letterSpacing: 0,
             }}
           >

@@ -402,7 +402,7 @@
   gap: 4px;
   border: none;
   background: transparent;
-  color: #44546F;
+  color: var(--cp-text-secondary, #44546F);
   font-size: 14px;
   font-family: inherit;
   cursor: pointer;

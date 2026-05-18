@@ -187,7 +187,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
               alignItems: 'center',
               marginTop: 6,
               fontSize: 11,
-              color: token('color.text.subtle', '#44546F'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
             }}
           >
             <span>
@@ -264,7 +264,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                   style={{
                     fontSize: 11,
                     fontWeight: 500,
-                    color: token('color.text.subtle', '#44546F'),
+                    color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
                     marginTop: 4,
                     minHeight: 28,
                     lineHeight: '14px',

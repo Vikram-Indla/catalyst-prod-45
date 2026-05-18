@@ -143,7 +143,7 @@ export default function ModulesPackages() {
             >
               Modules &amp; Packages
             </h1>
-            <p className="text-sm truncate" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+            <p className="text-sm truncate" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
               Configure which Catalyst modules are available for this organization
             </p>
           </div>
@@ -185,7 +185,7 @@ export default function ModulesPackages() {
           <h2 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
             Assigned Package
           </h2>
-          <p style={{ margin: '0 0 12px', fontSize: '14px', color: 'var(--ds-text-subtle, #44546F)' }}>
+          <p style={{ margin: '0 0 12px', fontSize: '14px', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
             Select a package to apply default module settings, or choose Custom to configure individually
           </p>
           <div className="max-w-md">
@@ -196,7 +196,7 @@ export default function ModulesPackages() {
               placeholder="Select a package"
             />
             {selectedPackage !== 'CUSTOM' && (
-              <p className="text-xs mt-2" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+              <p className="text-xs mt-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
                 Selecting a package pre-populates module settings. You can override individual modules below.
               </p>
             )}
@@ -208,7 +208,7 @@ export default function ModulesPackages() {
           <h2 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
             Module Configuration
           </h2>
-          <p style={{ margin: '0 0 16px', fontSize: '14px', color: 'var(--ds-text-subtle, #44546F)' }}>
+          <p style={{ margin: '0 0 16px', fontSize: '14px', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
             Toggle modules on or off for your organization
           </p>
           <div className="space-y-4">
@@ -238,11 +238,11 @@ export default function ModulesPackages() {
                           {isEnabled ? 'Enabled' : 'Disabled'}
                         </Lozenge>
                       </div>
-                      <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                      <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
                         {module.description}
                       </p>
                       {includedInPackages.length > 0 && (
-                        <p className="text-xs" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                        <p className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
                           Included in: {includedInPackages.join(', ')}
                         </p>
                       )}

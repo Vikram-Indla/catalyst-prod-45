@@ -256,7 +256,7 @@ export function BrAttachmentsSection({ request }: Props) {
         <div
           style={{
             fontSize: 13,
-            color: token('color.text.subtle', '#44546F'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
             fontFamily: 'var(--cp-font-body)',
             marginTop: 4,
           }}

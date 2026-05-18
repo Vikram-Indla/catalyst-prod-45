@@ -279,7 +279,7 @@ export default function RecommendedPanel({
                   {/* Author name carries weight 600 — Jira screenshot shows it
                       visibly bolder than the "mentioned you on" connector. */}
                   <span style={{ color: token('color.text', '#292A2E'), fontWeight: 600 }}>{m.mentionerName}</span>
-                  <span style={{ color: token('color.text.subtle', '#44546F'), fontWeight: 400 }}>{' '}mentioned you on{' '}</span>
+                  <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'), fontWeight: 400 }}>{' '}mentioned you on{' '}</span>
                   <HeadlineIssueTitle issueType={m.issueType} issueSummary={m.issueSummary} />
                 </>
               ),
@@ -308,7 +308,7 @@ export default function RecommendedPanel({
               headline: (
                 <>
                   <span style={{ color: token('color.text', '#292A2E'), fontWeight: 600 }}>{c.authorName}</span>
-                  <span style={{ color: token('color.text.subtle', '#44546F'), fontWeight: 400 }}>{' '}commented on{' '}</span>
+                  <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'), fontWeight: 400 }}>{' '}commented on{' '}</span>
                   <HeadlineIssueTitle issueType={c.issueType} issueSummary={c.issueSummary} />
                 </>
               ),
@@ -427,7 +427,7 @@ function FeedSection({
       <p
         style={{
           font: `400 14px/20px "Inter", system-ui, sans-serif`,
-          color: token('color.text.subtle', '#44546F'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
           margin: 0,
           marginBlockEnd: 4,
         }}
@@ -613,7 +613,7 @@ function FeedCard({
         <div
           style={{
             font: `400 12px/16px "Inter", system-ui, sans-serif`,
-            color: token('color.text.subtle', '#44546F'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
             display: 'flex',
             alignItems: 'center',
             gap: 6,
@@ -634,7 +634,7 @@ function FeedCard({
         <div
           style={{
             font: `400 14px/20px "Inter", system-ui, sans-serif`,
-            color: token('color.text.subtle', '#44546F'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
             whiteSpace: 'pre-wrap',
             wordBreak: 'break-word',
             marginBlockStart: 2,
@@ -812,7 +812,7 @@ function ReplyComposer({
                   padding: '4px 10px',
                   borderRadius: 3,
                   font: `500 14px/20px "Inter", system-ui, sans-serif`,
-                  color: token('color.text.subtle', '#44546F'),
+                  color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
                 }}
               >
                 Cancel
@@ -1209,7 +1209,7 @@ function renderCommentWithMentions(body: string): React.ReactNode {
         <React.Fragment key={`l${lineIdx}`}>
           {lineIdx > 0 ? '\n' : null}
           {preText ? renderInlineAtMentions(preText) : null}
-          <span style={{ color: token('color.text.subtle', '#44546F') }}>{`${ccLiteral}: `}</span>
+          <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)') }}>{`${ccLiteral}: `}</span>
           {nameTokens.map((tok, j) => {
             const normalized = tok.startsWith('@') ? tok : `@${tok}`;
             return (

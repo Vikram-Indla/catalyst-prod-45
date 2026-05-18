@@ -66,7 +66,7 @@ function InterventionCard({
             fontWeight: 600,
             color: overdue
               ? token('color.text.danger', '#AE2A19')
-              : token('color.text.subtle', '#44546F'),
+              : token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
             fontVariantNumeric: 'tabular-nums',
             whiteSpace: 'nowrap',
           }}
@@ -93,7 +93,7 @@ function InterventionCard({
           alignItems: 'center',
           marginTop: 8,
           fontSize: 11,
-          color: token('color.text.subtle', '#44546F'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
         }}
       >
         <span>Paused at: {stage}</span>
@@ -152,7 +152,7 @@ function ApprovalCard({
             fontWeight: 600,
             color: overdue
               ? token('color.text.danger', '#AE2A19')
-              : token('color.text.subtle', '#44546F'),
+              : token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
             fontVariantNumeric: 'tabular-nums',
             whiteSpace: 'nowrap',
           }}
@@ -171,7 +171,7 @@ function ApprovalCard({
           justifyContent: 'space-between',
           marginTop: 8,
           fontSize: 11,
-          color: token('color.text.subtle', '#44546F'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
         }}
       >
         <span>{assigneeName ? `Approver: ${assigneeName}` : ''}</span>
@@ -198,7 +198,7 @@ function ColHeader({ label, summary }: { label: string; summary: string }) {
       <span style={{ fontSize: 16, fontWeight: 600, color: token('color.text', 'var(--cp-text-primary, #172B4D)') }}>
         {label}
       </span>
-      <span style={{ fontSize: 11, color: token('color.text.subtle', '#44546F') }}>
+      <span style={{ fontSize: 11, color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)') }}>
         {summary}
       </span>
     </div>

@@ -356,7 +356,7 @@ export default function UserAccessPage() {
             <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><PersonIcon label="" size="medium" /></span>
             User Access
           </h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+          <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
             Manage resource roster, product role assignments, and Catalyst login provisioning
           </p>
         </div>
@@ -374,7 +374,7 @@ export default function UserAccessPage() {
       {/* Search */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-md">
-          <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, #44546F)', zIndex: 10 }}><SearchIcon label="" size="small" /></span>
+          <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))', zIndex: 10 }}><SearchIcon label="" size="small" /></span>
           <div style={{ paddingLeft: '36px' }}>
             <Textfield
               placeholder="Search by name, email, RID, or role..."
@@ -405,24 +405,24 @@ export default function UserAccessPage() {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-8" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                  <td colSpan={6} className="text-center py-8" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
                     Loading resources...
                   </td>
                 </tr>
               ) : filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-8" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                  <td colSpan={6} className="text-center py-8" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
                     No resources found
                   </td>
                 </tr>
               ) : (
                 filteredUsers.map((user) => (
                   <tr key={user.id} style={{ borderTop: '1px solid var(--ds-border-layout, #EBECF0)' }}>
-                    <td className="px-4 py-3 font-mono text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                    <td className="px-4 py-3 font-mono text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
                       {user.rid || '—'}
                     </td>
                     <td className="px-4 py-3 font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{user.name}</td>
-                    <td className="px-4 py-3" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                    <td className="px-4 py-3" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
                       {editingEmailId === user.id ? (
                         <div className="flex items-center gap-1">
                           <div style={{ width: '180px' }}>
@@ -453,7 +453,7 @@ export default function UserAccessPage() {
                             className="h-7 w-7 flex items-center justify-center rounded"
                             onClick={() => { setEditingEmailId(null); setEditingEmailValue(''); }}
                           >
-                            <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><CrossIcon label="" size="small" /></span>
+                            <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}><CrossIcon label="" size="small" /></span>
                           </button>
                         </div>
                       ) : (
@@ -461,7 +461,7 @@ export default function UserAccessPage() {
                           className="flex items-center gap-1.5 group cursor-pointer transition-colors"
                           onClick={() => { setEditingEmailId(user.id); setEditingEmailValue(user.email || ''); }}
                           onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, #172B4D))')}
-                          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)')}
+                          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))')}
                         >
                           {user.email ? (
                             <>
@@ -471,7 +471,7 @@ export default function UserAccessPage() {
                           ) : (
                             <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontStyle: 'italic' }}>No email</span>
                           )}
-                          <span className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><EditIcon label="" size="small" /></span>
+                          <span className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}><EditIcon label="" size="small" /></span>
                         </div>
                       )}
                     </td>
@@ -502,7 +502,7 @@ export default function UserAccessPage() {
                           );
                         })()
                       ) : (
-                        <span className="text-xs italic flex items-center gap-1" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                        <span className="text-xs italic flex items-center gap-1" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
                           <span style={{ display: 'inline-flex' }}><ShieldIcon label="" size="small" /></span>
                           No email
                         </span>
@@ -530,11 +530,11 @@ export default function UserAccessPage() {
                           </Button>
                         </div>
                       ) : user.email ? (
-                        <span className="text-xs italic" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                        <span className="text-xs italic" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
                           Assign role to authorize
                         </span>
                       ) : (
-                        <span className="text-xs italic" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                        <span className="text-xs italic" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
                           No email
                         </span>
                       )}
@@ -561,7 +561,7 @@ export default function UserAccessPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
               This will create a new Catalyst login. The user will receive a password reset email to set their own password.
             </p>
           </div>
@@ -596,7 +596,7 @@ export default function UserAccessPage() {
           <div className="py-4 space-y-3">
             {bulkProgress ? (
               <div className="space-y-2">
-                <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
                   Creating accounts… {bulkProgress.done} / {bulkProgress.total}
                 </p>
                 <div className="w-full rounded-full h-2" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
@@ -615,10 +615,10 @@ export default function UserAccessPage() {
               </div>
             ) : (
               <>
-                <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
                   Each user will receive a password reset email to set their own password on first login.
                 </p>
-                <div className="max-h-32 overflow-y-auto text-xs rounded p-2" style={{ color: 'var(--ds-text-subtle, #44546F)', border: '1px solid var(--ds-border, #DCDFE4)' }}>
+                <div className="max-h-32 overflow-y-auto text-xs rounded p-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))', border: '1px solid var(--ds-border, #DCDFE4)' }}>
                   {usersNeedingAccounts.map(u => (
                     <p key={u.id}>{u.name} ({u.email})</p>
                   ))}

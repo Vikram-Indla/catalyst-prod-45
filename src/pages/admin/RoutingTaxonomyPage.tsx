@@ -137,7 +137,7 @@ export default function RoutingTaxonomyPage() {
                 <td style={{ padding: '8px 12px' }}>
                   <span style={{ fontFamily: 'monospace', fontSize: 11 }}>{v.rule_id}</span>
                   <br />
-                  <span style={{ color: token('color.text.subtle', '#44546F') }}>{v.rule_name}</span>
+                  <span style={{ color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)') }}>{v.rule_name}</span>
                 </td>
                 <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontSize: 11 }}>
                   {v.file}:{v.line}

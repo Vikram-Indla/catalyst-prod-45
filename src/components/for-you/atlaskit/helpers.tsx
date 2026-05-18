@@ -186,7 +186,7 @@ export function ForYouEmptyState({
               style={{
                 padding: '6px 14px',
                 background: 'transparent',
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
                 border: 'none',
                 borderRadius: 3,
                 cursor: 'pointer',

@@ -415,7 +415,7 @@ const BG_GRADIENTS: Array<{ name: string; value: string }> = [
   { name: 'Sunset',   value: 'linear-gradient(135deg, var(--ds-icon-accent-red, #C9372C), #E54787)' },
   { name: 'Forest',   value: 'linear-gradient(135deg, #1F845A, var(--ds-icon-accent-green, #22A06B))' },
   { name: 'Lavender', value: 'linear-gradient(135deg, #8270DB, #5E4DB2)' },
-  { name: 'Slate',    value: 'linear-gradient(135deg, #44546F, var(--ds-text-subtlest, #6B6E76))' },
+  { name: 'Slate',    value: 'linear-gradient(135deg, var(--cp-text-secondary, #44546F), var(--ds-text-subtlest, #6B6E76))' },
 ];
 
 interface ProjectBackground {
@@ -3152,7 +3152,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   display: 'block',
                   fontSize: 14,
                   fontWeight: 400,
-                  color: token('color.text.subtle', '#44546F'),
+                  color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
                   textAlign: 'center',
                   marginBottom: 16,
                 }}>
@@ -3479,7 +3479,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                       />
                       <div>
                         <div style={{ fontSize: 14, fontWeight: 600, color: '#292A2E', marginBottom: 2 }}>{opt.label}</div>
-                        <div style={{ fontSize: 13, color: '#44546F' }}>{opt.description}</div>
+                        <div style={{ fontSize: 13, color: 'var(--cp-text-secondary, #44546F)' }}>{opt.description}</div>
                       </div>
                     </label>
                   ))}
@@ -5972,7 +5972,7 @@ function BulkActionsBar({
   // Re-styled 2026-04-26 to match Jira's list-view bulk action bar:
   //   - floating bottom dark pill (NOT a top-of-table inline blue bar)
   //   - portal-mounted to <body> so panel/scroll can't clip it
-  //   - dark surface #44546F, white text, 14px/500
+  //   - dark surface var(--cp-text-secondary, #44546F), white text, 14px/500
   //   - X close on left → vertical divider → "N work item(s) selected"
   //     → vertical divider → action buttons → red Delete
   //   - hover state: white/10 overlay
@@ -5999,7 +5999,7 @@ function BulkActionsBar({
           alignItems: 'center',
           gap: 0,
           height: 44,
-          background: '#44546F',
+          background: 'var(--cp-text-secondary, #44546F)',
           color: 'var(--ds-text-inverse, #FFFFFF)',
           borderRadius: 8,
           boxShadow: '0 8px 32px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.12)',

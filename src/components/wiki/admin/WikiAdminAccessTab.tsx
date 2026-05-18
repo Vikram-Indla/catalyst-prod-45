@@ -88,7 +88,7 @@ export function WikiAdminAccessTab() {
                           cursor: entry ? 'pointer' : 'default',
                           fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
                           background: hasAccess ? 'var(--cp-lozenge-green-bg, #1B7F37)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
-                          color: hasAccess ? '#0D7331' : '#44546F',
+                          color: hasAccess ? '#0D7331' : 'var(--cp-text-secondary, #44546F)',
                           opacity: entry ? 1 : 0.5, outline: 'none',
                         }}
                         onFocus={(e) => { if (entry) e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}

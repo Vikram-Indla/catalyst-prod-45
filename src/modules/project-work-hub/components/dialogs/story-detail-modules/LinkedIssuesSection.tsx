@@ -298,9 +298,9 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <button
           onClick={onCreateNew}
-          style={{ display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text-subtle, #44546F)', fontFamily: 'inherit', fontWeight: 400, padding: 0, textDecoration: 'none' }}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))', fontFamily: 'inherit', fontWeight: 400, padding: 0, textDecoration: 'none' }}
           onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = 'var(--ds-text, #292A2E)'; }}
-          onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = 'var(--ds-text-subtle, #44546F)'; }}
+          onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))'; }}
         >
           <AddIcon label="" /> Create linked work item
         </button>

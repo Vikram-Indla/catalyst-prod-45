@@ -72,7 +72,7 @@ vi.mock('@atlaskit/avatar', () => ({ default: () => <span>AV</span> }));
 vi.mock('@atlaskit/lozenge', () => ({ default: ({ children }: { children: React.ReactNode }) => <span>{children}</span> }));
 vi.mock('@atlaskit/tooltip', () => ({ default: ({ children }: { children: React.ReactNode }) => <>{children}</> }));
 vi.mock('@/lib/avatars', () => ({ resolveAvatarUrl: () => null }));
-vi.mock('@/lib/typography', () => ({ text: { subtlest: '#626F86', subtle: '#44546F' } }));
+vi.mock('@/lib/typography', () => ({ text: { subtlest: '#626F86', subtle: 'var(--cp-text-secondary, #44546F)' } }));
 vi.mock('@/lib/jira-issue-type-icons', () => ({ JiraIssueTypeIcon: () => <span>icon</span> }));
 
 // Forward-declare the component import after mocks

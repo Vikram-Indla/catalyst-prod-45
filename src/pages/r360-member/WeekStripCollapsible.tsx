@@ -56,7 +56,7 @@ export function WeekStripCollapsible({
 
         <div style={{ width: '1px', height: '20px', background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' }} />
         <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{'\u{1F4C5}'} {period.label}</span>
-        <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ds-text-subtle, #44546F)' }}>{period.range}</span>
+        <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>{period.range}</span>
 
         {/* Mode Badge */}
         <span className={`r3-mode-badge ${isLive ? 'live' : 'snapshot'}`}>

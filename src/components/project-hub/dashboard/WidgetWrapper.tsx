@@ -269,7 +269,7 @@ export default function WidgetWrapper({
                 justifyContent: 'center',
                 width: 24,
                 height: 24,
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
                 cursor: 'grab',
                 flexShrink: 0,
               }}
@@ -288,7 +288,7 @@ export default function WidgetWrapper({
                 style={{
                   fontSize: 13,
                   fontWeight: 400,
-                  color: token('color.text.subtle', '#44546F'),
+                  color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
                   lineHeight: '18px',
                   marginTop: 2,
                 }}

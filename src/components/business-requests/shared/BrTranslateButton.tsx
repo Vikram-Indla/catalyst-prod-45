@@ -43,7 +43,7 @@ export function BrTranslateButton({ loading, label, onClick }: BrTranslateButton
         border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
         borderRadius: 3,
         cursor: loading ? 'default' : 'pointer',
-        color: token('color.text.subtle', '#44546F'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
         transition: 'background 120ms',
         outline: 'none',
       }}

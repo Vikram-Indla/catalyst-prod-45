@@ -37,7 +37,7 @@ export function ConfirmArchiveDialog({
             'Archive this issue?'
           )}
         </p>
-        <p style={{ margin: 0, fontSize: 13, color: 'var(--ds-text-subtle, #44546F)' }}>
+        <p style={{ margin: 0, fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
           Archived items can be restored later.
         </p>
       </ModalBody>

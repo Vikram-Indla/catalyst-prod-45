@@ -45,10 +45,10 @@ function MetricCard({ label, value, subtitle, icon: Icon, status }: {
         <div className={`w-8 h-8 rounded flex items-center justify-center ${colors[status]}`}>
           <Icon className="w-4 h-4" />
         </div>
-        <span className="text-xs font-semibold uppercase tracking-wide text-[#44546F]">{label}</span>
+        <span className="text-xs font-semibold uppercase tracking-wide text-[var(--cp-text-secondary, #44546F)]">{label}</span>
       </div>
       <p className="text-2xl font-bold font-[var(--cp-font-mono,monospace)] text-[var(--cp-ink-1, #0F172A)]">{value}</p>
-      {subtitle && <p className="text-xs text-[#44546F] mt-0.5">{subtitle}</p>}
+      {subtitle && <p className="text-xs text-[var(--cp-text-secondary, #44546F)] mt-0.5">{subtitle}</p>}
     </div>
   );
 }
@@ -58,7 +58,7 @@ function Section({ title, icon: Icon, children }: { title: string; icon: React.E
   return (
     <section className="border border-[rgba(15,23,42,0.12)] dark:border-[#2E2E2E] rounded-md bg-white dark:bg-[#1A1A1A]">
       <div className="px-4 py-3 border-b border-[rgba(15,23,42,0.12)] flex items-center gap-2 bg-[#FAFBFC]">
-        <Icon className="w-4 h-4 text-[#44546F]" />
+        <Icon className="w-4 h-4 text-[var(--cp-text-secondary, #44546F)]" />
         <h3 className="text-sm font-semibold uppercase tracking-wide text-[var(--cp-ink-1, #0F172A)]">{title}</h3>
       </div>
       <div className="p-0">{children}</div>
@@ -74,7 +74,7 @@ function DiagTable({ headers, rows }: { headers: string[]; rows: React.ReactNode
         <thead>
           <tr className="bg-[#FAFBFC]">
             {headers.map((h, i) => (
-              <th key={i} className="text-left px-4 py-2 text-[10px] font-semibold uppercase tracking-wider text-[#44546F] border-b border-[rgba(15,23,42,0.12)]">{h}</th>
+              <th key={i} className="text-left px-4 py-2 text-[10px] font-semibold uppercase tracking-wider text-[var(--cp-text-secondary, #44546F)] border-b border-[rgba(15,23,42,0.12)]">{h}</th>
             ))}
           </tr>
         </thead>
@@ -87,7 +87,7 @@ function DiagTable({ headers, rows }: { headers: string[]; rows: React.ReactNode
             </tr>
           ))}
           {rows.length === 0 && (
-            <tr><td colSpan={headers.length} className="px-4 py-6 text-center text-xs text-[#44546F]">No data</td></tr>
+            <tr><td colSpan={headers.length} className="px-4 py-6 text-center text-xs text-[var(--cp-text-secondary, #44546F)]">No data</td></tr>
           )}
         </tbody>
       </table>
@@ -164,7 +164,7 @@ export default function WikiDiagnosticPage() {
           <Stethoscope className="w-6 h-6 text-[var(--cp-purple-60, #7C3AED)]" />
           <div>
             <h1 className="text-lg font-bold text-[var(--cp-ink-1, #0F172A)]">Wiki Pipeline Diagnostic</h1>
-            <p className="text-xs text-[#44546F]">Live health checks against all wiki-related tables</p>
+            <p className="text-xs text-[var(--cp-text-secondary, #44546F)]">Live health checks against all wiki-related tables</p>
           </div>
         </div>
         <button
@@ -267,7 +267,7 @@ export default function WikiDiagnosticPage() {
               r.source_table,
               <span className="max-w-[200px] truncate block">{r.source_key}</span>,
               r.chunks,
-              <span className="max-w-[300px] truncate block text-[#44546F]">{(r.preview || '').substring(0, 80)}</span>,
+              <span className="max-w-[300px] truncate block text-[var(--cp-text-secondary, #44546F)]">{(r.preview || '').substring(0, 80)}</span>,
             ])}
           />
         </Section>
@@ -301,7 +301,7 @@ export default function WikiDiagnosticPage() {
         {/* G: Wiki Pages */}
         <Section title="Wiki Pages" icon={FileText}>
           {(data?.pages || []).length === 0 ? (
-            <div className="px-4 py-8 text-center text-sm text-[#44546F]">No wiki articles generated yet.</div>
+            <div className="px-4 py-8 text-center text-sm text-[var(--cp-text-secondary, #44546F)]">No wiki articles generated yet.</div>
           ) : (
             <DiagTable
               headers={['Domain', 'Slug', 'Title', 'Status', 'Confidence', 'Version', 'Updated']}

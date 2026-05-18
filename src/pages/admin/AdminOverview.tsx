@@ -46,14 +46,14 @@ const T = {
   borderLayout:   'var(--ds-border-layout, #EBECF0)',
   borderSelected: 'var(--ds-border-selected, #0C66E4)',
   text:           'var(--ds-text, var(--cp-text-primary, #172B4D))',
-  textSubtle:     'var(--ds-text-subtle, #44546F)',
+  textSubtle:     'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
   textSubtlest:   'var(--ds-text-subtlest, #626F86)',
   textBrand:      'var(--ds-text-brand, #0C66E4)',
   bgPage:         'var(--ds-background-accent-gray-subtlest, #F7F8F9)',
   bgNeutralHover: 'var(--ds-background-neutral-hovered, #F1F2F4)',
   bgBrandSubtle:  'var(--ds-background-selected, #E9F2FF)',
   iconBrand:      'var(--ds-icon-brand, #0C66E4)',
-  iconSubtle:     'var(--ds-icon-subtle, #44546F)',
+  iconSubtle:     'var(--ds-icon-subtle, var(--cp-text-secondary, #44546F))',
 };
 
 /** Quick actions — all paths registered in REGISTERED_ADMIN_ROUTES. */

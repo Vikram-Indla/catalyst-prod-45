@@ -182,7 +182,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {[
-              { count: todoTasks.length, label: 'To Do', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#44546F' },
+              { count: todoTasks.length, label: 'To Do', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--cp-text-secondary, #44546F)' },
               { count: progressTasks.length, label: 'In Progress', bg: '#0C66E4', color: 'var(--bg-app)' },
               { count: doneTasks.length, label: 'Done', bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--bg-app)' },
             ].map(s => (

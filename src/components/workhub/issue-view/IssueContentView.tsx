@@ -113,7 +113,7 @@ function StatusPill({ status, statusCategory, issueId, onStatusChange }: { statu
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const cat = (statusCategory ?? '').toLowerCase();
-  let bg = '#44546F';
+  let bg = 'var(--cp-text-secondary, #44546F)';
   const color = 'var(--ds-text-inverse, #FFFFFF)';
   if (cat.includes('done') || cat === 'complete') { bg = '#1B845D'; }
   else if (cat.includes('progress') || cat === 'indeterminate') { bg = '#0C66E4'; }

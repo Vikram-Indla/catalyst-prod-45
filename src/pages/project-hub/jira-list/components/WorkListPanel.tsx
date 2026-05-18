@@ -118,7 +118,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
           height: 32, padding: '0 10px', border: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, #DFE1E6))',
           background: 'transparent', borderRadius: 6, cursor: 'pointer',
           fontSize: 13, fontFamily: 'var(--cp-font-body)', display: 'inline-flex',
-          alignItems: 'center', gap: 4, color: 'var(--cp-text-secondary, #44546F)', flexShrink: 0,
+          alignItems: 'center', gap: 4, color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))', flexShrink: 0,
         }}>
           <FilterIcon label="" size="small" />
           Filter

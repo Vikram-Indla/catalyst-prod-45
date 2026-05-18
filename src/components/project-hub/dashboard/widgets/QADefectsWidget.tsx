@@ -102,7 +102,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         fontWeight: 700,
         textTransform: 'uppercase',
         letterSpacing: '0.04em',
-        color: token('color.text.subtle', '#44546F'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
       }}
     >
       {label}
@@ -221,7 +221,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
               style={{
                 fontSize: 13,
                 fontWeight: 500,
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
                 fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                 whiteSpace: 'nowrap',
               }}

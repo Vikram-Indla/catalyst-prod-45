@@ -92,7 +92,7 @@ export function RolesList({ roles, selectedRoleId, onSelectRole, isLoading }: Ro
         </ul>
 
         {filteredRoles.length === 0 && (
-          <p className="text-sm text-center py-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+          <p className="text-sm text-center py-4" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
             No roles found matching your search.
           </p>
         )}

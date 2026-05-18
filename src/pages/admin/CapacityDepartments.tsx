@@ -114,7 +114,7 @@ export default function CapacityDepartmentsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Resource Departments</h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+          <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
             Configure departments for resource management. Changes sync in real-time.
           </p>
         </div>
@@ -144,7 +144,7 @@ export default function CapacityDepartmentsPage() {
                   onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)')}
                   onMouseLeave={e => (e.currentTarget.style.background = '')}
                 >
-                  <td className="px-4 py-3" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                  <td className="px-4 py-3" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
                     <span style={{ display: 'inline-flex', cursor: 'grab' }}><DragHandlerIcon label="" size="small" /></span>
                   </td>
                   <td className="px-4 py-3">
@@ -154,9 +154,9 @@ export default function CapacityDepartmentsPage() {
                         <button
                           onClick={() => copyToClipboard(dept.department_id)}
                           className="w-6 h-6 rounded flex items-center justify-center transition-colors"
-                          style={{ color: 'var(--ds-text-subtle, #44546F)' }}
+                          style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}
                           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, #172B4D))'; }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)'; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))'; }}
                         >
                           <CopyIcon label="" size="small" />
                         </button>
@@ -171,18 +171,18 @@ export default function CapacityDepartmentsPage() {
                       <button
                         onClick={() => openEdit(dept)}
                         className="w-8 h-8 rounded flex items-center justify-center transition-colors"
-                        style={{ color: 'var(--ds-text-subtle, #44546F)' }}
+                        style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}
                         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, #172B4D))'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))'; }}
                       >
                         <EditIcon label="" size="small" />
                       </button>
                       <button
                         onClick={() => handleDeleteClick(dept)}
                         className="w-8 h-8 rounded flex items-center justify-center transition-colors"
-                        style={{ color: 'var(--ds-text-subtle, #44546F)' }}
+                        style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}
                         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(202,53,33,0.1)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-icon-danger, #CA3521)'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))'; }}
                       >
                         <TrashIcon label="" size="small" />
                       </button>
@@ -192,7 +192,7 @@ export default function CapacityDepartmentsPage() {
               ))}
               {departments.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-4 py-8 text-center" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                  <td colSpan={4} className="px-4 py-8 text-center" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
                     No departments configured. Click "Add Department" to create one.
                   </td>
                 </tr>
@@ -289,7 +289,7 @@ export default function CapacityDepartmentsPage() {
                         </div>
                       ))}
                     </div>
-                    <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                    <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
                       Please reassign or remove these resources before deleting this department.
                     </p>
                   </div>

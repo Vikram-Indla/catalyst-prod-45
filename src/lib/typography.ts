@@ -91,7 +91,7 @@ export const text = {
   primary: token('color.text', '#292A2E'),
 
   /** Subtle — verbs, meta, labels, placeholders-within-context. */
-  subtle: token('color.text.subtle', '#44546F'),
+  subtle: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
 
   /** Subtlest — placeholder, disabled-but-readable, ghost text. */
   subtlest: token('color.text.subtlest', '#626F86'),

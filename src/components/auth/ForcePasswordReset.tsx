@@ -106,7 +106,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
         <p style={{
           margin: 0,
           fontSize: 14,
-          color: 'var(--ds-text-subtle, #44546F)',
+          color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
         }}>
           Set a strong password to access your account.
         </p>
@@ -123,7 +123,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <label
             htmlFor="fpr-new"
-            style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)' }}
+            style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}
           >
             New password
           </label>
@@ -172,7 +172,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
                   gap: 6,
                   color: r.passed
                     ? 'var(--ds-text-success, #216E4E)'
-                    : 'var(--ds-text-subtle, #44546F)',
+                    : 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
                   transition: 'color 0.15s',
                 }}
               >
@@ -187,7 +187,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <label
             htmlFor="fpr-confirm"
-            style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #44546F)' }}
+            style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}
           >
             Confirm password
           </label>

@@ -295,7 +295,7 @@ export function HubSwitcher() {
                   ? 'var(--ds-background-neutral-pressed, rgba(9,30,66,0.14))'
                   : 'transparent',
                 cursor: 'pointer',
-                color: 'var(--cp-text-secondary, #44546F)',
+                color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))',
                 transition: 'background 120ms ease',
               }}
               onMouseEnter={(e) => {

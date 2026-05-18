@@ -202,7 +202,7 @@ export default function CascadeImpactPanel() {
             marginTop: token('space.075', '6px'),
             marginBottom: 0,
             fontSize: 13,
-            color: token('color.text.subtle', '#44546F'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
             maxWidth: 760,
           }}
         >
@@ -228,7 +228,7 @@ export default function CascadeImpactPanel() {
               fontWeight: 600,
               textTransform: 'uppercase',
               letterSpacing: '0.04em',
-              color: token('color.text.subtle', '#44546F'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
               display: 'block',
               marginBottom: token('space.075', '6px'),
             }}
@@ -249,7 +249,7 @@ export default function CascadeImpactPanel() {
               fontWeight: 600,
               textTransform: 'uppercase',
               letterSpacing: '0.04em',
-              color: token('color.text.subtle', '#44546F'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
               display: 'block',
               marginBottom: token('space.075', '6px'),
             }}
@@ -266,7 +266,7 @@ export default function CascadeImpactPanel() {
             style={{
               marginTop: token('space.075', '6px'),
               fontSize: 12,
-              color: token('color.text.subtle', '#44546F'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
             }}
           >
             {changeOption.description}
@@ -290,12 +290,12 @@ export default function CascadeImpactPanel() {
         >
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
             <strong style={{ fontSize: 16 }}>{entry.name}</strong>
-            <span style={{ fontSize: 13, color: token('color.text.subtle', '#44546F') }}>
+            <span style={{ fontSize: 13, color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)') }}>
               v{entry.version} → v{nextVersion}
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: token('space.150', '12px') }}>
-            <span style={{ fontSize: 13, color: token('color.text.subtle', '#44546F') }}>
+            <span style={{ fontSize: 13, color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)') }}>
               {reviewed.size} of {consumers.length} reviewed
             </span>
             {allReviewed ? (
@@ -326,7 +326,7 @@ export default function CascadeImpactPanel() {
             border: `1px solid ${token('color.border', '#DCDFE4')}`,
             borderRadius: 6,
             background: token('color.background.neutral.subtle', '#F7F8F9'),
-            color: token('color.text.subtle', '#44546F'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
             fontSize: 13,
           }}
         >
@@ -356,7 +356,7 @@ export default function CascadeImpactPanel() {
                     borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
                     fontSize: 12,
                     fontWeight: 600,
-                    color: token('color.text.subtle', '#44546F'),
+                    color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',

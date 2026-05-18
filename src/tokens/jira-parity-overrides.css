@@ -41,7 +41,7 @@
   --cp-jira-status-new-bg: rgb(184, 172, 246);
 
   /* StatusPill foreground — same for all appearances */
-  /* JIRA-PARITY: probed 2026-05-07 BAU list — ADS text.subtle=#44546F, actual=rgb(41,42,46) */
+  /* JIRA-PARITY: probed 2026-05-07 BAU list — ADS text.subtle=var(--cp-text-secondary, #44546F), actual=rgb(41,42,46) */
   --cp-jira-status-fg: rgb(41, 42, 46);
 
   /* ─── Parent / Epic chip — table cell parent lozenge ────────────────────

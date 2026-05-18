@@ -55,11 +55,11 @@ export default function ThemeGroups() {
       case 'proposed':
         return { label: 'Proposed', style: { background: 'rgba(59,130,246,0.12)', color: '#1d4ed8' } };
       case 'done':
-        return { label: 'Done', style: { background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtle, #44546F)' } };
+        return { label: 'Done', style: { background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' } };
       case 'cancelled':
-        return { label: 'Inactive', style: { background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtle, #44546F)' } };
+        return { label: 'Inactive', style: { background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' } };
       default:
-        return { label: status, style: { background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtle, #44546F)' } };
+        return { label: status, style: { background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' } };
     }
   };
 
@@ -72,7 +72,7 @@ export default function ThemeGroups() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Strategic Themes</h1>
-            <p className="mt-2" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+            <p className="mt-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
               Manage strategic theme configurations and linked items
             </p>
           </div>
@@ -109,14 +109,14 @@ export default function ThemeGroups() {
         <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <div style={{ marginBottom: '12px' }}>
             <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Theme Configuration</h2>
-            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
               Configure themes for strategic organization. Toggle status or manage linked items.
             </p>
           </div>
           <div>
             <div className="flex items-center gap-4 mb-4">
               <div className="relative flex-1">
-                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, #44546F)' }}><SearchIcon label="" size="small" /></span>
+                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}><SearchIcon label="" size="small" /></span>
                 <Textfield
                   placeholder="Search themes..."
                   value={searchTerm}
@@ -171,7 +171,7 @@ export default function ThemeGroups() {
                               {theme.name}
                             </div>
                           </td>
-                          <td className="p-3 text-sm max-w-md truncate" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                          <td className="p-3 text-sm max-w-md truncate" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
                             {theme.description || '—'}
                           </td>
                           <td className="p-3 text-sm">
@@ -187,7 +187,7 @@ export default function ThemeGroups() {
                                 </Lozenge>
                               )}
                               {!hasLinkedItems && (
-                                <span className="text-xs" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>None</span>
+                                <span className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>None</span>
                               )}
                             </div>
                           </td>

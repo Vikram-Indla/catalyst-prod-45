@@ -112,7 +112,7 @@ export default function AssignedPanel({ items, isLoading, onSelect, onToggleStar
           }}
           onMouseEnter={e => {
             const b = e.currentTarget;
-            b.style.color = token('color.text.subtle', '#44546F');
+            b.style.color = token('color.text.subtle', 'var(--cp-text-secondary, #44546F)');
             b.style.textDecorationColor = 'currentColor';
           }}
           onMouseLeave={e => {

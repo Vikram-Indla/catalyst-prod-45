@@ -105,7 +105,7 @@ export function RoleDetails({
           )}
         </div>
         <div style={{ padding: '16px' }}>
-          <p className="text-sm mb-3" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+          <p className="text-sm mb-3" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
             {role.description || 'No description provided'}
           </p>
 

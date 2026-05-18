@@ -366,7 +366,7 @@ export default function WikiArticlePage() {
     ? { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)', label: 'Verified', icon: <ShieldCheck size={10} /> }
     : verStatus === 'needs_review'
     ? { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)', label: 'Needs Review', icon: null }
-    : { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#44546F', label: 'Unverified', icon: null };
+    : { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--cp-text-secondary, #44546F)', label: 'Unverified', icon: null };
   const tags = ((page as any).tags ?? []) as string[];
   const tldr = (page as any).tldr as string | null;
   const authorName = (page as any).author_name as string | null;

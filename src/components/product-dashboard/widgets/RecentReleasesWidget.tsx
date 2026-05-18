@@ -74,7 +74,7 @@ function TypePill({ label }: { label: string }) {
         lineHeight: '16px',
         fontWeight: 500,
         background: token('color.background.neutral.subtle', '#F4F5F7'),
-        color: token('color.text.subtle', '#44546F'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
       }}
     >
       {label}
@@ -182,7 +182,7 @@ export function RecentReleasesWidget() {
                       borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
                       fontSize: 11,
                       fontWeight: 600,
-                      color: token('color.text.subtle', '#44546F'),
+                      color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
                       textTransform: 'uppercase',
                       letterSpacing: '0.04em',
                       whiteSpace: 'nowrap',
@@ -227,7 +227,7 @@ export function RecentReleasesWidget() {
                       {item.title}
                     </div>
                     {item.assignee && (
-                      <div style={{ fontSize: 11, color: token('color.text.subtle', '#44546F'), marginTop: 2 }}>
+                      <div style={{ fontSize: 11, color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'), marginTop: 2 }}>
                         {item.process_step} · Assignee: {item.assignee}
                       </div>
                     )}

@@ -349,7 +349,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
         <span
           style={{
             ...type.meta,
-            color: token('color.text.subtle', '#44546F'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
             whiteSpace: 'nowrap',
           }}
         >
@@ -370,7 +370,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
       <p
         style={{
           ...type.body,
-          color: token('color.text.subtle', '#44546F'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
           margin: 0,
         }}
       >

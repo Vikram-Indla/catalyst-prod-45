@@ -718,7 +718,7 @@ const DatePill = ({ state, daysLeft, dateStr }: { state: RagState; daysLeft: num
         style={{
           fontSize: 13,
           fontWeight: 500,
-          color: token('color.text.subtle', '#44546F'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
         }}
       >
         No target date
@@ -1246,7 +1246,7 @@ function DemandRowItem({
               color:
                 pct === 100
                   ? 'var(--ds-text-accent-green-bolder, #216E4E)'
-                  : token('color.text.subtle', '#44546F'),
+                  : token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
               whiteSpace: 'nowrap',
             }}
           >
@@ -1286,7 +1286,7 @@ function DemandRowItem({
                 lineHeight: '16px',
                 fontWeight: 400,
                 fontFamily: ATLAS_SANS,
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
                 fontStyle: 'italic',
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -1364,7 +1364,7 @@ function DemandRowItem({
                       fontSize: 12,
                       lineHeight: '16px',
                       fontFamily: ATLAS_SANS,
-                      color: token('color.text.subtle', '#44546F'),
+                      color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
                       whiteSpace: 'nowrap',
                     }}
                   >
@@ -1552,7 +1552,7 @@ function DemandRowItem({
                               fontSize: 12,
                               lineHeight: '16px',
                               fontFamily: ATLAS_SANS,
-                              color: token('color.text.subtle', '#44546F'),
+                              color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
                               whiteSpace: 'nowrap',
                             }}
                           >
@@ -1886,7 +1886,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                 style={{
                   fontSize: 12,
                   fontWeight: 500,
-                  color: token('color.text.subtle', '#44546F'),
+                  color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
                   marginRight: 4,
                 }}
               >
@@ -1940,7 +1940,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
           fontWeight: 700,
           textTransform: 'uppercase',
           letterSpacing: '0.04em',
-          color: token('color.text.subtle', '#44546F'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, #44546F)'),
         }}
       >
         <span />

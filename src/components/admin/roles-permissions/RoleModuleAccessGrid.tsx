@@ -167,7 +167,7 @@ export function RoleModuleAccessGrid({ roleId, roleName }: RoleModuleAccessGridP
       <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Module Access</h2>
-          <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+          <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
             <span className="flex items-center gap-1">
               <span className="h-2 w-2 rounded-full bg-emerald-500" />
               Full: {fullCount}
@@ -185,7 +185,7 @@ export function RoleModuleAccessGrid({ roleId, roleName }: RoleModuleAccessGridP
       </div>
       <div style={{ padding: '16px' }}>
         {canEdit && (
-          <p className="text-xs mb-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+          <p className="text-xs mb-4" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
             Click on any access level to toggle between Hide → View → Full
           </p>
         )}

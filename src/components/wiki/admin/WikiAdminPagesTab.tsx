@@ -202,9 +202,9 @@ function PagBtn({ disabled, onClick, children }: { disabled: boolean; onClick: (
 function PageStatusLoz({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
     published: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: '#0D7331' },
-    draft: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#44546F' },
+    draft: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--cp-text-secondary, #44546F)' },
     review: { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-    archived: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#44546F' },
+    archived: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--cp-text-secondary, #44546F)' },
   };
   const s = map[status] ?? map.draft;
   return (

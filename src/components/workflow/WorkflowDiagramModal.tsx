@@ -41,7 +41,7 @@ export function WorkflowDiagramModal({ workflow, currentStateId, onClose }: Prop
           <ModalTitle>{workflow.name} workflow</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <p style={{ color: '#44546F', margin: '0 0 16px 0', fontSize: 14 }}>
+          <p style={{ color: 'var(--cp-text-secondary, #44546F)', margin: '0 0 16px 0', fontSize: 14 }}>
             Bound to issue types: <strong>{workflow.issueTypes.join(', ')}</strong>.
             {allAnyToThis && ' Every state can transition to every other state (Any-to-Any).'}
           </p>
@@ -181,7 +181,7 @@ function TransitionTable({ workflow }: { workflow: Workflow }) {
   const byId = new Map(workflow.states.map(s => [s.id, s]));
   if (workflow.transitions.length === 0) {
     return (
-      <p style={{ fontSize: 13, color: '#44546F' }}>
+      <p style={{ fontSize: 13, color: 'var(--cp-text-secondary, #44546F)' }}>
         No explicit transitions — this workflow uses Any-to-Any.
       </p>
     );
@@ -206,7 +206,7 @@ function TransitionTable({ workflow }: { workflow: Workflow }) {
                 <td style={{ padding: '8px 12px' }}>
                   <JiraStatusLozengeForState state={from} variant="subtle" />
                 </td>
-                <td style={{ padding: '8px 12px', color: '#44546F' }}>{t.verb}</td>
+                <td style={{ padding: '8px 12px', color: 'var(--cp-text-secondary, #44546F)' }}>{t.verb}</td>
                 <td style={{ padding: '8px 12px' }}>
                   <JiraStatusLozengeForState state={to} />
                 </td>

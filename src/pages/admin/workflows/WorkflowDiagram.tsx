@@ -288,7 +288,7 @@ function buildFlowEdges(
         target: t.to_status_id,
         type: 'bezier',
         label: t.name || `${fromStatus.name} → ${toStatus.name}`,
-        labelStyle: { fontSize: 9, fill: '#44546F', fontWeight: 500 },
+        labelStyle: { fontSize: 9, fill: 'var(--cp-text-secondary, #44546F)', fontWeight: 500 },
         labelBgStyle: { fill: '#ffffff', fillOpacity: 0.8 },
         style: { stroke: strokeColor, strokeWidth: 1.5 },
         markerEnd: { type: MarkerType.ArrowClosed, color: strokeColor, width: 14, height: 14 },

@@ -196,7 +196,7 @@
   --cp-bg-sunken: #F1F5F9;
   --cp-bg-elevated: #FFFFFF;
   --cp-text-primary: var(--cp-text-primary, #172B4D);
-  --cp-text-secondary: #44546F;
+  --cp-text-secondary: var(--cp-text-secondary, #44546F);
   --cp-text-tertiary: #626F86;
   --cp-text-muted: #626F86;
   --cp-text-link: var(--cp-primary-60, #0052CC);
