@@ -851,7 +851,7 @@ function PeopleTab() {
 
       {/* Table */}
       {isLoading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><Spinner /></div>
+        <PeopleTableSkeleton />
       ) : (
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
           <thead>
