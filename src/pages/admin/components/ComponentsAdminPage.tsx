@@ -1101,29 +1101,29 @@ function AiRecommendationsPane() {
               </div>
               <div style={{ display: 'flex', gap: token('space.075', '6px'), flexShrink: 0 }}>
                 {!isApplied && (
-                  <Button
-                    appearance="primary"
-                    spacing="compact"
+                  <button
+                    type="button"
+                    style={{ padding: '4px 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('color.background.brand.bold', '#0C66E4'), color: '#fff' }}
                     onClick={() => setApplyRec(rec)}
                   >
                     Apply →
-                  </Button>
+                  </button>
                 )}
-                <Button
-                  appearance="subtle"
-                  spacing="compact"
+                <button
+                  type="button"
+                  style={{ padding: '4px 10px', borderRadius: 3, border: `1px solid ${token('color.border', '#DCDFE4')}`, cursor: 'pointer', fontSize: 13, background: token('elevation.surface', '#FFFFFF'), color: token('color.text', '#172B4D') }}
                   onClick={() => setExpandedRec(isExpanded ? null : rec.id)}
                 >
                   {isExpanded ? 'Less' : 'Details'}
-                </Button>
+                </button>
                 {!isApplied && (
-                  <Button
-                    appearance="subtle"
-                    spacing="compact"
+                  <button
+                    type="button"
+                    style={{ padding: '4px 10px', borderRadius: 3, border: `1px solid ${token('color.border', '#DCDFE4')}`, cursor: 'pointer', fontSize: 13, background: token('elevation.surface', '#FFFFFF'), color: token('color.text', '#172B4D') }}
                     onClick={() => setAppliedRecs((prev) => new Set([...prev, rec.id]))}
                   >
                     Mark done
-                  </Button>
+                  </button>
                 )}
               </div>
             </div>
