@@ -908,3 +908,52 @@ Example: `Add bulk-edit footer bar to backlog table`
 - Create a PR with the branch name as the title
 - Link any associated Jira tickets
 - Await Vikram's review and approval before merging to main
+
+---
+
+## 2026-05-19 — CRUD Phase 5 (RE-PROBE): Design System Governance Admin — Schema Field Name Mismatch Blocks Data Rendering
+
+**Surface:** /admin/design-system (Design System Governance violations table)
+**Pattern:** CRUD Phase 5 read-verification revealed violations table rendering empty despite confirmed test data in Supabase database (8 violations). Root cause: TypeScript `Violation` interface had incorrect field names mismatching the actual Supabase database columns:
+- Interface declared: `rule: string` — actual column: `rule_name: string`
+- Interface declared: `module_id: string` — actual column: does not exist
+- Interface declared: `id: string` — actual type: `number` (bigint)
+
+When Supabase API returned objects with actual column names (`rule_name`, no `module_id`), React component attempted to access `violation.rule` (undefined) and `violation.module_id` (undefined), causing silent rendering failure. The data was correctly fetched from the database; the component failed to render it.
+
+**Fix:**
+1. **design-audit.ts**: Updated `Violation` interface to match actual Supabase schema:
+   ```typescript
+   export interface Violation {
+     id: number;              // was: string
+     surface_id: string;
+     rule_name: string;       // was: rule
+     severity: 'P0' | 'P1' | 'P2';
+     description: string;
+     created_at: string;
+     updated_at: string;
+     // removed: module_id (non-existent column)
+   }
+   ```
+2. **DesignSystemAdmin.tsx**: Updated rendering to use correct field name:
+   - Line 530: `{violation.rule_name}` (was: `{violation.rule}`)
+
+**CRUD Verification Results:**
+- **Phase 5.1 (Read):** ✅ PASSED — Violations table now displays all 8 project-hub violations after schema fix
+- **Phase 5.2 (Update):** ✅ PASSED — SQL UPDATE successfully changed violation id=1 severity from P0 to P1; database confirmed via RETURNING clause
+- **Phase 5.3 (Delete):** ✅ PASSED — SQL DELETE successfully removed violation id=1; remaining project-hub violations: 7 records (ids 2,3,4,5,7,8,9)
+
+**Final Database State (project-hub):**
+- Total violations: 7 (down from 8)
+- P0 blockers: 3 (banned-column-mdt-ref, hardcoded-hex-color, banned-column-story-points)
+- P1 issues: 3 (uppercase-labels × 3)
+- Compliance score: ~64%
+
+**Lesson:** TypeScript interface field name mismatches between code and database schema are SILENT FAILURES — no compile errors, no console warnings, but complete rendering failure. Before declaring a data-loading feature complete:
+1. Verify interface field names match actual database column names via information_schema query
+2. Verify all interface fields have corresponding database columns (no phantom fields)
+3. Verify field types match (number vs string for numeric PK columns)
+4. Test the full READ→DISPLAY path, not just the API query
+5. Default to: query the actual Supabase schema first, then define the interface to match, not the reverse
+
+**Severity:** P1 (silent data incompleteness — feature appears non-functional until the interface is corrected)
