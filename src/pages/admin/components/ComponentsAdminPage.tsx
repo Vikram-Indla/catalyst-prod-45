@@ -116,6 +116,75 @@ const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
 
 const OBSERVER_CAP = 60;
 
+// ─── Hub filter types & utilities ─────────────────────────────────────────────
+
+type HubFilter = 'All' | 'Projects' | 'Products' | 'Home' | 'Incidents' | 'Admin';
+
+const HUB_COLORS: Record<string, string> = {
+  Projects:  '#0C66E4',
+  Products:  '#6E5DC6',
+  Home:      '#1F845A',
+  Incidents: '#AE2A19',
+  Admin:     '#626F86',
+  Shared:    '#758195',
+  Other:     '#9FADBC',
+  Deferred:  '#C7D1DB',
+};
+
+const HUB_ORDER = ['Projects', 'Products', 'Home', 'Incidents', 'Admin', 'Shared', 'Other', 'Deferred'];
+const ACTIVE_HUBS: HubFilter[] = ['Projects', 'Products', 'Home', 'Incidents', 'Admin'];
+const HUB_ROUTES: Record<string, string> = {
+  Projects:  '/project-hub',
+  Products:  '/products',
+  Home:      '/home',
+  Incidents: '/incidents',
+  Admin:     '/admin',
+  Shared:    '/project-hub',
+  Other:     '/',
+  Deferred:  '/',
+};
+const REPO_ROOT_ABS = '/Users/vikramindla/Documents/GitHub/catalyst-prod-45';
+
+/** Abbreviates large integers — 3275 → "3.3k" to prevent truncation in 220px nav column. */
+function formatCount(n: number): string {
+  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}k`;
+  return String(n);
+}
+
+/** Map an absolute file path to its Catalyst hub. */
+function getHubForFile(filePath: string): string {
+  const p = filePath.toLowerCase().replace(/\\/g, '/');
+  if (
+    p.includes('/project-hub') || p.includes('project-work-hub') ||
+    p.includes('/backlog') || p.includes('/allwork') ||
+    p.includes('kanbanboard') || p.includes('jiratable') ||
+    p.includes('backlogpage') || p.includes('pragmaticboard') ||
+    p.includes('uwvtable') || p.includes('inlinecreate')
+  ) return 'Projects';
+  if (p.includes('/product') || p.includes('producthub') || p.includes('/products/')) return 'Products';
+  if (
+    p.includes('/home') || p.includes('/dashboard') ||
+    p.includes('homepage') || p.includes('for-you') || p.includes('foryou') ||
+    p.includes('myr360') || p.includes('r360panel')
+  ) return 'Home';
+  if (p.includes('/incident') || p.includes('incidenthub') || p.includes('incident-hub')) return 'Incidents';
+  if (p.includes('/admin')) return 'Admin';
+  if (p.includes('/releases') || p.includes('/test') || p.includes('/wiki')) return 'Deferred';
+  if (p.includes('/shared/') || p.includes('shared/')) return 'Shared';
+  return 'Other';
+}
+
+/** Group a consumer list by hub name. */
+function getConsumersByHub(consumers: string[]): Record<string, string[]> {
+  const byHub: Record<string, string[]> = {};
+  for (const c of consumers) {
+    const hub = getHubForFile(c);
+    if (!byHub[hub]) byHub[hub] = [];
+    byHub[hub].push(c);
+  }
+  return byHub;
+}
+
 function getModule(source: string, filePath?: string): ComponentModule {
   const p = (source + ' ' + (filePath ?? '')).toLowerCase();
   if (source.startsWith('@atlaskit/')) return 'Atlaskit';
@@ -526,6 +595,284 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
   );
 }
 
+// ─── HubBreakdownPanel ────────────────────────────────────────────────────────
+// Renders per-hub publish panels with VSCode file links, test plan snippet,
+// copy button, and direct "Open [Hub] ↗" link. Zero static text — every row
+// has a "Publish to X →" action.
+
+function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
+  const [openHub, setOpenHub] = useState<string | null>(null);
+  const byHub = useMemo(() => getConsumersByHub(entry.consumers), [entry.consumers]);
+
+  const hubEntries = Object.entries(byHub)
+    .filter(([, files]) => files.length > 0)
+    .sort(([a], [b]) => HUB_ORDER.indexOf(a) - HUB_ORDER.indexOf(b));
+
+  if (hubEntries.length === 0) return null;
+
+  return (
+    <div style={{ marginBottom: token('space.300', '24px') }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: token('space.100', '8px'),
+          marginBottom: token('space.100', '8px'),
+        }}
+      >
+        <Heading size="xsmall">Hub breakdown</Heading>
+        <span style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86') }}>
+          {hubEntries.length} hub{hubEntries.length === 1 ? '' : 's'} · tap to publish targeted
+        </span>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.075', '6px') }}>
+        {hubEntries.map(([hub, files]) => {
+          const isOpen = openHub === hub;
+          const color = HUB_COLORS[hub] ?? '#9FADBC';
+          const route = HUB_ROUTES[hub] ?? '/';
+          const isDeferred = hub === 'Deferred';
+
+          const testPlan = [
+            `# ${entry.name} — ${hub} Hub Test Plan`,
+            `# Generated: ${new Date().toISOString().slice(0, 10)}`,
+            `# Source: ${entry.source}`,
+            `# Consumers in ${hub}: ${files.length}`,
+            '',
+            '## Open each consumer in VSCode',
+            ...files.map((f) => `# vscode://file/${REPO_ROOT_ABS}/${f}`),
+            '',
+            '## Grep to verify usage',
+            `grep -r "${entry.name}" src/ --include="*.tsx" --include="*.ts" -l`,
+            '',
+            '## Navigate to hub for visual verification',
+            `# http://localhost:8080${route}`,
+          ].join('\n');
+
+          return (
+            <div
+              key={hub}
+              style={{
+                border: `1px solid ${isOpen ? color : token('color.border', '#DCDFE4')}`,
+                borderRadius: 6,
+                overflow: 'hidden',
+              }}
+            >
+              {/* Hub row */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: token('space.100', '8px'),
+                  padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`,
+                  background: isOpen ? `${color}18` : 'transparent',
+                }}
+              >
+                <span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    background: color,
+                    flexShrink: 0,
+                    display: 'inline-block',
+                  }}
+                />
+                <span
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: token('color.text', '#172B4D'),
+                    flex: 1,
+                  }}
+                >
+                  {hub}
+                </span>
+                <span
+                  style={{
+                    fontSize: 11,
+                    color: token('color.text.subtlest', '#626F86'),
+                    marginRight: token('space.075', '6px'),
+                  }}
+                >
+                  {files.length} file{files.length === 1 ? '' : 's'}
+                </span>
+                {isDeferred ? (
+                  <span
+                    style={{
+                      fontSize: 11,
+                      color: token('color.text.disabled', '#8590A2'),
+                      fontStyle: 'italic',
+                    }}
+                  >
+                    Deferred
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    style={{
+                      padding: '3px 10px',
+                      borderRadius: 3,
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: 12,
+                      fontWeight: 600,
+                      background: isOpen ? color : `${color}22`,
+                      color: isOpen ? '#fff' : color,
+                    }}
+                    onClick={() => setOpenHub(isOpen ? null : hub)}
+                  >
+                    {isOpen ? 'Close ✕' : `Publish to ${hub} →`}
+                  </button>
+                )}
+              </div>
+
+              {/* Expanded publish panel */}
+              {isOpen && (
+                <div
+                  style={{
+                    padding: token('space.150', '12px'),
+                    borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
+                    background: token('color.background.neutral.subtle', '#F7F8F9'),
+                  }}
+                >
+                  {/* File list with hub dots */}
+                  <div
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      color: token('color.text.subtlest', '#626F86'),
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.04em',
+                      marginBottom: token('space.075', '6px'),
+                    }}
+                  >
+                    {files.length} consumer{files.length === 1 ? '' : 's'} in {hub}
+                  </div>
+                  <ul
+                    style={{
+                      margin: 0,
+                      padding: 0,
+                      listStyle: 'none',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 3,
+                      marginBottom: token('space.150', '12px'),
+                    }}
+                  >
+                    {files.map((f) => (
+                      <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span
+                          style={{
+                            width: 6,
+                            height: 6,
+                            borderRadius: '50%',
+                            background: color,
+                            flexShrink: 0,
+                            display: 'inline-block',
+                          }}
+                        />
+                        <a
+                          href={`vscode://file/${REPO_ROOT_ABS}/${f}`}
+                          style={{
+                            color: token('color.link', '#0C66E4'),
+                            textDecoration: 'none',
+                            fontFamily: 'ui-monospace, SFMono-Regular, monospace',
+                            fontSize: 11,
+                          }}
+                        >
+                          {f}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* Test plan snippet */}
+                  <div
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      color: token('color.text.subtlest', '#626F86'),
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.04em',
+                      marginBottom: 4,
+                    }}
+                  >
+                    Test plan
+                  </div>
+                  <code style={{ ...SNIPPET_STYLE, fontSize: 11 }}>{testPlan}</code>
+
+                  {/* Actions — no static text, all are clickable */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: token('space.100', '8px'),
+                      marginTop: token('space.150', '12px'),
+                      flexWrap: 'wrap',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <button
+                      type="button"
+                      style={{
+                        padding: '4px 12px',
+                        borderRadius: 3,
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: 12,
+                        fontWeight: 600,
+                        background: color,
+                        color: '#fff',
+                      }}
+                      onClick={() => navigator.clipboard.writeText(testPlan)}
+                    >
+                      Copy test plan
+                    </button>
+                    <a
+                      href={`http://localhost:8080${route}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        padding: '4px 12px',
+                        borderRadius: 3,
+                        border: `1px solid ${color}`,
+                        cursor: 'pointer',
+                        fontSize: 12,
+                        fontWeight: 600,
+                        background: 'transparent',
+                        color,
+                        textDecoration: 'none',
+                        display: 'inline-block',
+                      }}
+                    >
+                      Open {hub} ↗
+                    </a>
+                    <button
+                      type="button"
+                      style={{
+                        padding: '4px 10px',
+                        borderRadius: 3,
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: 12,
+                        background: 'transparent',
+                        color: token('color.text.subtle', '#44546F'),
+                      }}
+                      onClick={() => setOpenHub(null)}
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ─── ObservedEntryDetail ──────────────────────────────────────────────────────
 
 function ObservedEntryDetail({ entry }: { entry: UnifiedEntry }) {
@@ -604,21 +951,36 @@ function ObservedEntryDetail({ entry }: { entry: UnifiedEntry }) {
               gap: token('space.050', '4px'),
             }}
           >
-            {visible.map((path) => (
-              <li key={path}>
-                <a
-                  href={`vscode://file/${path}`}
-                  style={{
-                    color: token('color.link', '#0C66E4'),
-                    textDecoration: 'none',
-                    fontFamily: 'ui-monospace, SFMono-Regular, monospace',
-                    fontSize: 12,
-                  }}
-                >
-                  {path}
-                </a>
-              </li>
-            ))}
+            {visible.map((path) => {
+              const hub = getHubForFile(path);
+              const hubColor = HUB_COLORS[hub] ?? '#9FADBC';
+              return (
+                <li key={path} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span
+                    title={hub}
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: '50%',
+                      background: hubColor,
+                      flexShrink: 0,
+                      display: 'inline-block',
+                    }}
+                  />
+                  <a
+                    href={`vscode://file/${path}`}
+                    style={{
+                      color: token('color.link', '#0C66E4'),
+                      textDecoration: 'none',
+                      fontFamily: 'ui-monospace, SFMono-Regular, monospace',
+                      fontSize: 12,
+                    }}
+                  >
+                    {path}
+                  </a>
+                </li>
+              );
+            })}
           </ul>
           {entry.consumers.length > LIMIT && (
             <div style={{ marginTop: token('space.150', '12px') }}>
@@ -689,13 +1051,26 @@ function StatsStrip() {
 function InventoryPane() {
   const [activeModule, setActiveModule] = useState<ComponentModule>('All');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [hubFilter, setHubFilter] = useState<HubFilter>('All');
   const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState<string>(ALL_ENTRIES[0]?.id ?? '');
 
+  /** Module counts (static — never changes at runtime). */
   const moduleCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const m of MODULES) {
       counts[m] = m === 'All' ? ALL_ENTRIES.length : ALL_ENTRIES.filter((e) => e.module === m).length;
+    }
+    return counts;
+  }, []);
+
+  /** Per-hub counts: how many entries have ≥1 consumer in each hub. */
+  const hubCounts = useMemo(() => {
+    const counts: Record<string, number> = { All: ALL_ENTRIES.length };
+    for (const hub of ACTIVE_HUBS) {
+      counts[hub] = ALL_ENTRIES.filter((e) =>
+        e.consumers.some((c) => getHubForFile(c) === hub),
+      ).length;
     }
     return counts;
   }, []);
@@ -709,6 +1084,12 @@ function InventoryPane() {
     }
     if (statusFilter !== 'all') {
       pool = pool.filter((e) => e.status === statusFilter);
+    }
+    if (hubFilter !== 'All') {
+      // Keep entries that have at least one consumer in the selected hub
+      pool = pool.filter((e) =>
+        e.consumers.some((c) => getHubForFile(c) === hubFilter),
+      );
     }
     if (isSearching) {
       const q = search.toLowerCase();
@@ -726,7 +1107,7 @@ function InventoryPane() {
     }
 
     return pool;
-  }, [activeModule, statusFilter, search]);
+  }, [activeModule, statusFilter, hubFilter, search]);
 
   const selectedEntry = useMemo(
     () => filtered.find((e) => e.id === selectedId) ?? filtered[0],
@@ -737,7 +1118,7 @@ function InventoryPane() {
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: '220px 300px 1fr',
+        gridTemplateColumns: '240px 300px 1fr',
         gap: 0,
         border: `1px solid ${token('color.border', '#DCDFE4')}`,
         borderRadius: 8,
@@ -746,7 +1127,7 @@ function InventoryPane() {
         background: token('elevation.surface', '#FFFFFF'),
       }}
     >
-      {/* Column 1 — Module nav */}
+      {/* Column 1 — Module + Status + Hub nav (240px — k-notation avoids truncation) */}
       <div
         style={{
           borderRight: `1px solid ${token('color.border', '#DCDFE4')}`,
@@ -754,8 +1135,9 @@ function InventoryPane() {
           overflowY: 'auto',
         }}
       >
-        <SideNavigation label="Component modules" testId="components-module-nav">
+        <SideNavigation label="Component filters" testId="components-module-nav">
           <NavigationContent>
+            {/* ── Module section ── */}
             <Section>
               <HeadingItem>Module</HeadingItem>
               {MODULES.map((m) => (
@@ -768,7 +1150,7 @@ function InventoryPane() {
                   }}
                   iconAfter={
                     <span style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86') }}>
-                      {moduleCounts[m].toLocaleString()}
+                      {formatCount(moduleCounts[m])}
                     </span>
                   }
                 >
@@ -776,17 +1158,77 @@ function InventoryPane() {
                 </ButtonItem>
               ))}
             </Section>
+
+            {/* ── Status section ── */}
             <Section>
               <HeadingItem>Status</HeadingItem>
               {STATUS_OPTIONS.map((opt) => (
                 <ButtonItem
                   key={opt.value}
                   isSelected={statusFilter === opt.value}
-                  onClick={() => setStatusFilter(opt.value)}
+                  onClick={() => {
+                    setStatusFilter(opt.value);
+                    setSelectedId('');
+                  }}
                 >
                   {opt.label}
                 </ButtonItem>
               ))}
+            </Section>
+
+            {/* ── Hub section — active hubs are clickable; deferred are labeled ── */}
+            <Section>
+              <HeadingItem>Hub</HeadingItem>
+              <ButtonItem
+                isSelected={hubFilter === 'All'}
+                onClick={() => { setHubFilter('All'); setSelectedId(''); }}
+                iconAfter={
+                  <span style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86') }}>
+                    {formatCount(ALL_ENTRIES.length)}
+                  </span>
+                }
+              >
+                All hubs
+              </ButtonItem>
+              {ACTIVE_HUBS.map((hub) => (
+                <ButtonItem
+                  key={hub}
+                  isSelected={hubFilter === hub}
+                  onClick={() => {
+                    setHubFilter(hubFilter === hub ? 'All' : hub);
+                    setSelectedId('');
+                  }}
+                  iconAfter={
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <span
+                        style={{
+                          width: 6,
+                          height: 6,
+                          borderRadius: '50%',
+                          background: HUB_COLORS[hub],
+                          display: 'inline-block',
+                        }}
+                      />
+                      <span style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86') }}>
+                        {formatCount(hubCounts[hub] ?? 0)}
+                      </span>
+                    </span>
+                  }
+                >
+                  {hub}
+                </ButtonItem>
+              ))}
+              {/* Deferred hubs — visible but disabled */}
+              <ButtonItem
+                isDisabled
+                iconAfter={
+                  <span style={{ fontSize: 10, color: token('color.text.disabled', '#8590A2'), fontStyle: 'italic' }}>
+                    soon
+                  </span>
+                }
+              >
+                Releases / Test / Wiki
+              </ButtonItem>
             </Section>
           </NavigationContent>
         </SideNavigation>
@@ -814,6 +1256,72 @@ function InventoryPane() {
             aria-label="Search components"
           />
         </div>
+        {/* Active filters summary — actionable clear buttons */}
+        {(activeModule !== 'All' || statusFilter !== 'all' || hubFilter !== 'All') && (
+          <div
+            style={{
+              padding: `${token('space.075', '6px')} ${token('space.100', '8px')}`,
+              borderBottom: `1px solid ${token('color.border', '#DCDFE4')}`,
+              display: 'flex',
+              gap: 4,
+              flexWrap: 'wrap',
+              background: token('color.background.neutral.subtle', '#F7F8F9'),
+            }}
+          >
+            {activeModule !== 'All' && (
+              <button
+                type="button"
+                style={{
+                  padding: '2px 8px',
+                  borderRadius: 12,
+                  border: `1px solid ${token('color.border', '#DCDFE4')}`,
+                  background: token('color.background.neutral', '#091E420F'),
+                  fontSize: 11,
+                  cursor: 'pointer',
+                  color: token('color.text', '#172B4D'),
+                }}
+                onClick={() => { setActiveModule('All'); setSelectedId(''); }}
+              >
+                {activeModule} ✕
+              </button>
+            )}
+            {statusFilter !== 'all' && (
+              <button
+                type="button"
+                style={{
+                  padding: '2px 8px',
+                  borderRadius: 12,
+                  border: `1px solid ${token('color.border', '#DCDFE4')}`,
+                  background: token('color.background.neutral', '#091E420F'),
+                  fontSize: 11,
+                  cursor: 'pointer',
+                  color: token('color.text', '#172B4D'),
+                }}
+                onClick={() => { setStatusFilter('all'); setSelectedId(''); }}
+              >
+                {statusFilter} ✕
+              </button>
+            )}
+            {hubFilter !== 'All' && (
+              <button
+                type="button"
+                style={{
+                  padding: '2px 8px',
+                  borderRadius: 12,
+                  border: `1px solid ${HUB_COLORS[hubFilter] ?? token('color.border', '#DCDFE4')}`,
+                  background: `${HUB_COLORS[hubFilter] ?? '#0C66E4'}18`,
+                  fontSize: 11,
+                  cursor: 'pointer',
+                  color: HUB_COLORS[hubFilter] ?? token('color.text', '#172B4D'),
+                  fontWeight: 600,
+                }}
+                onClick={() => { setHubFilter('All'); setSelectedId(''); }}
+              >
+                {hubFilter} ✕
+              </button>
+            )}
+          </div>
+        )}
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {filtered.length === 0 ? (
             <div
@@ -821,75 +1329,109 @@ function InventoryPane() {
                 padding: token('space.300', '24px'),
                 color: token('color.text.subtle', '#44546F'),
                 fontSize: 13,
-                fontStyle: 'italic',
               }}
             >
-              No components match your filters.
-            </div>
-          ) : (
-            filtered.map((entry) => (
+              <div style={{ fontWeight: 600, marginBottom: 8 }}>No components match your filters.</div>
               <button
-                key={entry.id}
-                onClick={() => setSelectedId(entry.id)}
+                type="button"
                 style={{
-                  width: '100%',
-                  textAlign: 'left',
-                  padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
-                  border: 'none',
-                  borderBottom: `1px solid ${token('color.border.subtle', '#F1F2F4')}`,
-                  background:
-                    selectedId === entry.id
-                      ? token('color.background.selected', '#E9F2FF')
-                      : 'transparent',
+                  padding: '4px 12px',
+                  borderRadius: 3,
+                  border: `1px solid ${token('color.border', '#DCDFE4')}`,
+                  background: token('elevation.surface', '#FFFFFF'),
                   cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 2,
+                  fontSize: 12,
+                  color: token('color.text', '#172B4D'),
+                }}
+                onClick={() => {
+                  setActiveModule('All');
+                  setStatusFilter('all');
+                  setHubFilter('All');
+                  setSearch('');
                 }}
               >
-                <div
+                Clear all filters
+              </button>
+            </div>
+          ) : (
+            filtered.map((entry) => {
+              const topHub = Object.entries(getConsumersByHub(entry.consumers))
+                .sort(([a], [b]) => HUB_ORDER.indexOf(a) - HUB_ORDER.indexOf(b))[0]?.[0];
+              return (
+                <button
+                  key={entry.id}
+                  onClick={() => setSelectedId(entry.id)}
                   style={{
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
+                    border: 'none',
+                    borderBottom: `1px solid ${token('color.border.subtle', '#F1F2F4')}`,
+                    background:
+                      selectedId === entry.id
+                        ? token('color.background.selected', '#E9F2FF')
+                        : 'transparent',
+                    cursor: 'pointer',
                     display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: 'column',
+                    gap: 2,
                   }}
                 >
-                  <span
+                  <div
                     style={{
-                      fontSize: 13,
-                      fontWeight: selectedId === entry.id ? 600 : 400,
-                      color: token('color.text', '#172B4D'),
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      gap: 4,
                     }}
                   >
-                    {entry.name}
-                  </span>
-                  {entry.consumers.length > 0 && (
                     <span
                       style={{
-                        fontSize: 11,
-                        color: token('color.text.subtlest', '#626F86'),
-                        flexShrink: 0,
+                        fontSize: 13,
+                        fontWeight: selectedId === entry.id ? 600 : 400,
+                        color: token('color.text', '#172B4D'),
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        flex: 1,
                       }}
                     >
-                      {entry.consumers.length}×
+                      {entry.name}
                     </span>
-                  )}
-                </div>
-                <StatusChip status={entry.status} />
-              </button>
-            ))
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                      {topHub && (
+                        <span
+                          title={topHub}
+                          style={{
+                            width: 6,
+                            height: 6,
+                            borderRadius: '50%',
+                            background: HUB_COLORS[topHub] ?? '#9FADBC',
+                            display: 'inline-block',
+                          }}
+                        />
+                      )}
+                      {entry.consumers.length > 0 && (
+                        <span style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86') }}>
+                          {formatCount(entry.consumers.length)}×
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                  <StatusChip status={entry.status} />
+                </button>
+              );
+            })
           )}
         </div>
       </div>
 
-      {/* Column 3 — Detail + actions */}
+      {/* Column 3 — Detail + hub breakdown + actions */}
       <div style={{ overflowY: 'auto', padding: token('space.300', '24px') }}>
         {selectedEntry ? (
           <>
             <ActionBar entry={selectedEntry} />
+            <HubBreakdownPanel entry={selectedEntry} />
             {selectedEntry.registryEntry ? (
               <ComponentSpecCard entry={selectedEntry.registryEntry} />
             ) : (
@@ -901,11 +1443,25 @@ function InventoryPane() {
             style={{
               color: token('color.text.subtle', '#44546F'),
               fontSize: 13,
-              fontStyle: 'italic',
               paddingTop: token('space.200', '16px'),
             }}
           >
-            Select a component from the list to view its spec and actions.
+            <div style={{ fontWeight: 600, marginBottom: 8 }}>No component selected.</div>
+            <button
+              type="button"
+              style={{
+                padding: '4px 12px',
+                borderRadius: 3,
+                border: `1px solid ${token('color.border', '#DCDFE4')}`,
+                background: token('elevation.surface', '#FFFFFF'),
+                cursor: 'pointer',
+                fontSize: 12,
+                color: token('color.text', '#172B4D'),
+              }}
+              onClick={() => setSelectedId(ALL_ENTRIES[0]?.id ?? '')}
+            >
+              Select first component
+            </button>
           </div>
         )}
       </div>
