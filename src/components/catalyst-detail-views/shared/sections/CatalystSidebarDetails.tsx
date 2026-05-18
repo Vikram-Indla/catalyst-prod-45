@@ -69,6 +69,7 @@ function FieldRow({
     onMouseLeave={(e) => {
       e.currentTarget.style.backgroundColor = 'transparent';
     }}
+    >
       <div style={{
         fontSize: 11, fontWeight: 600, lineHeight: '16px',
         color: 'var(--ds-text-subtle, #505258)',

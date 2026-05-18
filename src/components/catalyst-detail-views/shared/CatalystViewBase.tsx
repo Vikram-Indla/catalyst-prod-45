@@ -390,7 +390,7 @@ export function CatalystViewBase({
         <div style={{
           display: 'flex', alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '10px 20px', minHeight: 44, flexShrink: 0,
+          padding: '8px 16px', minHeight: 40, flexShrink: 0,
           borderBottom: '1px solid var(--ds-border-subtle, #EBECF0)',
           ...((!panelMode && !fullPageMode) ? {} : {
             position: 'sticky',
@@ -403,7 +403,22 @@ export function CatalystViewBase({
               item has no parent and the owning view has wired onParentChange,
               we swap the default "+ Add parent" text link for the canonical
               AddParentPicker (Jira-parity bordered pencil chip). */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, flex: 1 }}>
+            {/* Back button — fullPageMode only. Positioned inline with breadcrumb. */}
+            {fullPageMode && (
+              <Tooltip content="Back">
+                <IconButton
+                  appearance="subtle"
+                  icon={() => (
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
+                  label="Back"
+                  onClick={handleBack}
+                />
+              </Tooltip>
+            )}
             {projectKey ? (
               <TicketBreadcrumbs
                 projectKey={projectKey}
@@ -572,7 +587,7 @@ export function CatalystViewBase({
               cv-drawer-body (overflowY:auto) is now the scroll container.
               Panel/modal modes keep overflow-y:auto for independent column scroll. */}
           <div className="cv-drawer-left" data-sdm-scope style={{
-            flex: 1, padding: '20px 24px 32px 0',
+            flex: 1, padding: '16px 16px 32px 0',
             borderRight: '1px solid var(--ds-border-subtle, #EBECF0)', minWidth: 0, minHeight: 0,
             // fullPageMode: cap field rows at ~1200px (Jira parity). Without this, fields like
             // Priority and Severity stretch to fill the full viewport width.
