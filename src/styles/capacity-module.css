@@ -57,7 +57,7 @@
   --ct-text: var(--ds-text, #0f172a);
   --ct-text-secondary: var(--ds-text-subtle, #475569);
   --ct-text-muted: var(--ds-text-subtlest, #64748b); /* WCAG AA compliant (4.7:1 contrast) */
-  --ct-border: var(--ds-border, #e2e8f0);
+  --ct-border: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --ct-border-light: var(--ds-surface-sunken, #f1f5f9);
 
   /* Typography */

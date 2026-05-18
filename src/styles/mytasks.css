@@ -71,7 +71,7 @@
      ======================================== */
   
   --mytasks-border-light: var(--ds-surface-sunken, #f1f5f9);
-  --mytasks-border-default: var(--ds-border, #e2e8f0);
+  --mytasks-border-default: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --mytasks-border-row: var(--ds-surface-sunken, #f1f5f9);
   --mytasks-border-overdue: var(--ds-text-danger, #ef4444);     /* 3px left accent */
   --mytasks-border-today: #6366f1;       /* Optional: indigo accent */
@@ -270,7 +270,7 @@
 
 .mytasks-search__shortcut {
   padding: 3px 6px;
-  background-color: var(--ds-border, #e2e8f0);
+  background-color: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 4px;
   font-size: 10px;
   font-weight: 500;
@@ -704,7 +704,7 @@
 .mytasks-loading__spinner {
   width: 32px;
   height: 32px;
-  border: 2px solid var(--ds-border, #e2e8f0);
+  border: 2px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-top-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   border-radius: 50%;
   animation: mytasks-spin 0.8s linear infinite;
@@ -794,7 +794,7 @@
 /* MUTED gray header — NOT green per spec */
 .mytasks-section-header--completed {
   background-color: var(--ds-surface-sunken, #f1f5f9);  /* slate-100, NOT green */
-  border-bottom: 1px solid var(--ds-border, #e2e8f0);  /* slate-200 */
+  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));  /* slate-200 */
   cursor: pointer;
   width: 100%;
   text-align: left;

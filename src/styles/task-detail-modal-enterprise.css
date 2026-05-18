@@ -31,7 +31,7 @@
   --tm-surface-selected: var(--ds-background-selected, #eff6ff);
 
   /* Borders */
-  --tm-border-default: var(--ds-border, #e2e8f0);
+  --tm-border-default: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --tm-border-subtle: var(--ds-surface-sunken, #f1f5f9);
   --tm-border-strong: var(--ds-text-disabled, #cbd5e1);
   --tm-border-focus: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
@@ -838,7 +838,7 @@
 .task-modal-v3__main {
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--ds-border, #e2e8f0);
+  border-right: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   min-height: 0;
 }
 
@@ -847,7 +847,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 20px;
-  border-bottom: 1px solid var(--ds-border, #e2e8f0);
+  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
 }
 
 .task-modal-v3__breadcrumb {
@@ -890,7 +890,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--ds-border, #e2e8f0);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   background: transparent;
   color: var(--ds-text-subtlest, #64748b);
   border-radius: 6px;
@@ -930,7 +930,7 @@
 
 .task-modal-v3__title:hover {
   background: var(--ds-surface-sunken, #f8fafc);
-  border-color: var(--ds-border, #e2e8f0);
+  border-color: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
 }
 
 .task-modal-v3__title:focus {
@@ -944,7 +944,7 @@
   display: flex;
   gap: 0;
   padding: 0 20px;
-  border-bottom: 1px solid var(--ds-border, #e2e8f0);
+  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
 }
 
 .task-modal-v3__tab {
@@ -990,7 +990,7 @@
   height: 18px;
   padding: 0 5px;
   margin-left: 6px;
-  background: var(--ds-border, #e2e8f0);
+  background: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 8px;
   font-size: 11px;
   font-weight: 600;
@@ -1054,7 +1054,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--ds-border, #e2e8f0);
+  background: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
@@ -1067,7 +1067,7 @@
   gap: 8px;
   padding: 8px 12px;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  border: 1px solid var(--ds-border, #e2e8f0);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 6px;
   font-size: 14px;
   color: var(--ds-text, #0f172a);
@@ -1095,7 +1095,7 @@
 .task-modal-v3__sidebar-footer {
   margin-top: auto;
   padding-top: 20px;
-  border-top: 1px solid var(--ds-border, #e2e8f0);
+  border-top: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
 }
 
 .task-modal-v3__timestamps {
@@ -1131,7 +1131,7 @@
   gap: 6px;
   padding: 8px 12px;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  border: 1px solid var(--ds-border, #e2e8f0);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 6px;
   font-size: 13px;
   font-weight: 500;
@@ -1191,7 +1191,7 @@
   
   .task-modal-v3__main {
     border-right: none;
-    border-bottom: 1px solid var(--ds-border, #e2e8f0);
+    border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   }
   
   .task-modal-v3__sidebar {

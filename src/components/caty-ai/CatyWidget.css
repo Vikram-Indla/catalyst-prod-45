@@ -65,7 +65,7 @@
   --caty-bg-subtle: var(--ds-surface-sunken, #f8fafc);
   
   /* Borders */
-  --caty-border-light: var(--ds-border, #e2e8f0);
+  --caty-border-light: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --caty-border-default: var(--ds-text-disabled, #cbd5e1);
   
   /* Shadows */
@@ -127,7 +127,7 @@
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   background-image: none !important;
   background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
-  border-bottom: 1px solid var(--ds-border, #e2e8f0) !important;
+  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
   flex-shrink: 0;
 }
 

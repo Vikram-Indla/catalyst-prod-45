@@ -75,7 +75,7 @@ export function T10SearchBarV3({ value, onChange }: T10SearchBarV3Props) {
           e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
         }}
         onBlur={(e) => {
-          e.target.style.borderColor = 'var(--ds-border, #e2e8f0)';
+          e.target.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))';
           e.target.style.boxShadow = 'none';
         }}
       />

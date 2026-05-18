@@ -104,7 +104,7 @@ td {
 }
 
 .dark td[data-ra-processed] {
-  color: var(--ds-border, #e2e8f0) !important;
+  color: var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
   background: hsl(var(--card)) !important;
 }
 

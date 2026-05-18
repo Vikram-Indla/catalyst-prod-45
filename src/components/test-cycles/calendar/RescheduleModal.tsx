@@ -67,7 +67,7 @@ export function RescheduleModal({
             <div
               className={cn(
                 'p-4 rounded-lg border-2 cursor-pointer',
-                mode === 'shift' ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] bg-[var(--ds-background-selected,#eff6ff)]' : 'border-[var(--ds-border,#e2e8f0)]'
+                mode === 'shift' ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] bg-[var(--ds-background-selected,#eff6ff)]' : 'border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]'
               )}
               onClick={() => setMode('shift')}
             >
@@ -88,7 +88,7 @@ export function RescheduleModal({
                         variant="outline"
                         size="icon"
                         onClick={() => handleShift(-1)}
-                        className="h-10 w-10 border-[var(--ds-border,#e2e8f0)]"
+                        className="h-10 w-10 border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]"
                       >
                         <Minus className="h-4 w-4" />
                       </Button>
@@ -103,7 +103,7 @@ export function RescheduleModal({
                         variant="outline"
                         size="icon"
                         onClick={() => handleShift(1)}
-                        className="h-10 w-10 border-[var(--ds-border,#e2e8f0)]"
+                        className="h-10 w-10 border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]"
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
@@ -117,7 +117,7 @@ export function RescheduleModal({
             <div
               className={cn(
                 'p-4 rounded-lg border-2 cursor-pointer',
-                mode === 'range' ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] bg-[var(--ds-background-selected,#eff6ff)]' : 'border-[var(--ds-border,#e2e8f0)]'
+                mode === 'range' ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] bg-[var(--ds-background-selected,#eff6ff)]' : 'border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]'
               )}
               onClick={() => setMode('range')}
             >

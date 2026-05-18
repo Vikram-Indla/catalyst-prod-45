@@ -217,7 +217,7 @@ const bulkModalCSS = `
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid var(--ds-border, #e2e8f0);
+  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
 }
 
 .ct-modal-header h2 {
@@ -270,7 +270,7 @@ const bulkModalCSS = `
 /* Field Card - V8: WHITE background, NOT gray */
 .ct-field-card {
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  border: 1px solid var(--ds-border, #e2e8f0);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 12px;
   padding: 16px 20px;
   transition: all 0.15s ease;
@@ -322,7 +322,7 @@ const bulkModalCSS = `
   font-weight: 500;
   color: #1e293b;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  border: 1px solid var(--ds-border, #e2e8f0);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -370,7 +370,7 @@ const bulkModalCSS = `
   left: 0;
   right: 0;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  border: 1px solid var(--ds-border, #e2e8f0);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   padding: 8px;
@@ -426,7 +426,7 @@ const bulkModalCSS = `
   justify-content: flex-end;
   gap: 12px;
   padding: 16px 24px;
-  border-top: 1px solid var(--ds-border, #e2e8f0);
+  border-top: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   background: var(--ds-surface-sunken, #f8fafc);
   border-radius: 0 0 12px 12px;
 }
@@ -442,7 +442,7 @@ const bulkModalCSS = `
   font-size: 14px;
   font-weight: 500;
   border-radius: 8px;
-  border: 1px solid var(--ds-border, #e2e8f0);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   color: var(--ds-text, #0f172a);
   cursor: pointer;

@@ -27,7 +27,7 @@ const COLORS = {
   white: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   gray50: 'var(--ds-surface-sunken, #f8fafc)',
   gray100: 'var(--ds-surface-sunken, #f1f5f9)',
-  gray200: 'var(--ds-border, #e2e8f0)',
+  gray200: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
   gray300: 'var(--ds-text-disabled, #cbd5e1)',
   gray400: 'var(--ds-text-subtlest, #94a3b8)',
   gray500: 'var(--ds-text-subtlest, #64748b)',

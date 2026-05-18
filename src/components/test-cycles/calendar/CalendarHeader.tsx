@@ -38,7 +38,7 @@ export function CalendarHeader({
   const views: CalendarView[] = ['month', 'week', 'day'];
 
   return (
-    <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ds-border,#e2e8f0)] bg-white">
+    <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] bg-white">
       {/* Left: Navigation */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-1">
@@ -46,7 +46,7 @@ export function CalendarHeader({
             variant="outline"
             size="icon"
             onClick={() => onNavigate('prev')}
-            className="h-8 w-8 border-[var(--ds-border,#e2e8f0)]"
+            className="h-8 w-8 border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]"
           >
             <ChevronLeft className="h-4 w-4 text-[var(--ds-text-subtle,#475569)]" />
           </Button>
@@ -54,7 +54,7 @@ export function CalendarHeader({
             variant="outline"
             size="icon"
             onClick={() => onNavigate('next')}
-            className="h-8 w-8 border-[var(--ds-border,#e2e8f0)]"
+            className="h-8 w-8 border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]"
           >
             <ChevronRight className="h-4 w-4 text-[var(--ds-text-subtle,#475569)]" />
           </Button>

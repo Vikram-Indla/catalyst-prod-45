@@ -611,7 +611,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                 }}
                 style={{ ...statCardStyle, cursor: 'pointer', transition: 'all 0.15s ease' }}
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f1f5f9)'; e.currentTarget.style.borderColor = 'var(--ds-text-disabled, #cbd5e1)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f8fafc)'; e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f8fafc)'; e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))'; }}
               >
                 <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--ds-text, #0f172a)', lineHeight: 1 }}>{taskCount}</div>
                 <div style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '4px' }}>Total Tasks</div>
@@ -623,7 +623,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                 }}
                 style={{ ...statCardStyle, cursor: 'pointer', transition: 'all 0.15s ease' }}
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-background-danger, #fef2f2)'; e.currentTarget.style.borderColor = '#fecaca'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f8fafc)'; e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f8fafc)'; e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))'; }}
               >
                 <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--ds-text-danger, #dc2626)', lineHeight: 1 }}>{workstream.overdueCount || 0}</div>
                 <div style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '4px' }}>Overdue</div>
@@ -640,7 +640,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                 <span style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, #64748b)' }}>Task Completion</span>
                 <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>{progress}% complete</span>
               </div>
-              <div style={{ height: '8px', backgroundColor: 'var(--ds-border, #e2e8f0)', borderRadius: '4px', overflow: 'hidden' }}>
+              <div style={{ height: '8px', backgroundColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', borderRadius: '4px', overflow: 'hidden' }}>
                 <div style={{ height: '100%', width: `${progress}%`, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', borderRadius: '4px', transition: 'width 0.3s ease' }} />
               </div>
             </div>

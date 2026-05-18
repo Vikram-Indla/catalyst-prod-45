@@ -56,9 +56,9 @@ export function DayDetailPanel({
   const statusOrder: CalendarEventStatus[] = ['blocked', 'failed', 'in_progress', 'not_started', 'passed'];
 
   return (
-    <div className="fixed inset-y-0 right-0 w-96 bg-white shadow-xl z-50 flex flex-col border-l border-[var(--ds-border,#e2e8f0)]">
+    <div className="fixed inset-y-0 right-0 w-96 bg-white shadow-xl z-50 flex flex-col border-l border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
       {/* Header */}
-      <div className="p-4 border-b border-[var(--ds-border,#e2e8f0)]">
+      <div className="p-4 border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-lg font-semibold text-[var(--ds-text,#0f172a)]">
@@ -182,7 +182,7 @@ export function DayDetailPanel({
       </ScrollArea>
 
       {/* Footer */}
-      <div className="p-4 border-t border-[var(--ds-border,#e2e8f0)]">
+      <div className="p-4 border-t border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
         <Button className="w-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white">
           Add Test to This Day
         </Button>

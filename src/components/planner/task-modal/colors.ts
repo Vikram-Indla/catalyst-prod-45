@@ -16,7 +16,7 @@ export const COLORS = {
   surfaceHover: 'var(--ds-surface-sunken, #f1f5f9)',
   
   // Borders
-  borderLight: 'var(--ds-border, #e2e8f0)',
+  borderLight: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
   borderDefault: 'var(--ds-text-disabled, #cbd5e1)',
   borderFocus: 'var(--ds-text-brand, #3b82f6)',
   

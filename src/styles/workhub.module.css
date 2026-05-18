@@ -36,7 +36,7 @@
   --wh-bg: var(--ds-surface-sunken, #f8fafc);
   --wh-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --wh-surface-elevated: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  --wh-border: var(--ds-border, #e2e8f0);
+  --wh-border: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --wh-border-light: var(--ds-surface-sunken, #f1f5f9);
   --wh-border-focus: var(--wh-primary);
 

@@ -35,7 +35,7 @@ export function BulkOpsHistory({ onClose }: BulkOpsHistoryProps) {
       className="animate-in slide-in-from-top-2 duration-200 mb-4"
       style={{
         background: 'var(--wh-surface, #fff)',
-        border: '1px solid var(--wh-border, #e2e8f0)',
+        border: '1px solid var(--wh-border, var(--cp-bg-sunken, #e2e8f0))',
         borderRadius: 'var(--wh-radius-lg, 12px)',
         maxHeight: 400,
         overflow: 'hidden',

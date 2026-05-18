@@ -60,7 +60,7 @@
   --slate-500: var(--ds-text-subtlest, #64748b);
   --slate-400: var(--ds-text-subtlest, #94a3b8);
   --slate-300: var(--ds-text-disabled, #cbd5e1);
-  --slate-200: var(--ds-border, #e2e8f0);
+  --slate-200: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --slate-100: var(--ds-surface-sunken, #f1f5f9);
   --slate-50: var(--ds-surface-sunken, #f8fafc);
   --white: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
@@ -70,14 +70,14 @@
   --budget-text-primary: var(--ds-text, #0f172a);
   --budget-text-secondary: var(--cp-ink-2, var(--cp-ink-2, #334155));
   --budget-text-muted: var(--ds-text-subtlest, #64748b);
-  --budget-border: var(--ds-border, #e2e8f0);
+  --budget-border: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --budget-border-strong: var(--ds-text-disabled, #cbd5e1);
 
   /* Legacy aliases for compatibility */
   --budget-bg: var(--ds-surface-sunken, #f8fafc);
   --budget-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --budget-text: var(--ds-text, #0f172a);
-  --budget-border-light: var(--ds-border, #e2e8f0);
+  --budget-border-light: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
 
   /* ============================================
      V8 SHADOWS

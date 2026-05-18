@@ -23,7 +23,7 @@
   --pln-cal-text-adjacent: var(--ds-text-disabled, #cbd5e1);
   
   /* ==================== BORDERS ==================== */
-  --pln-cal-border: var(--ds-border, #e2e8f0);
+  --pln-cal-border: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --pln-cal-border-light: var(--ds-surface-sunken, #f1f5f9);
   --pln-cal-border-focus: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   

@@ -61,7 +61,7 @@ export function ReleaseVelocityChart({ data }: Props) {
               <Cell key={i} fill={entry.color || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))'} />
             ))}
           </Bar>
-          <Bar yAxisId="right" dataKey="totalItems" name="Total Items" fill="var(--ds-border, #e2e8f0)" radius={[4, 4, 0, 0]} barSize={40} opacity={0.5} />
+          <Bar yAxisId="right" dataKey="totalItems" name="Total Items" fill="var(--ds-border, var(--cp-bg-sunken, #e2e8f0))" radius={[4, 4, 0, 0]} barSize={40} opacity={0.5} />
         </BarChart>
       </ResponsiveContainer>
     </div>

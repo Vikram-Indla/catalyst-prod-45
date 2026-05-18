@@ -72,7 +72,7 @@
   box-shadow: var(--ra-card-shadow) !important;
   
   /* Smoother border */
-  border: 1px solid var(--ds-border, #e2e8f0) !important;
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
   
   /* Increased height */
   min-height: 56px !important;
@@ -100,7 +100,7 @@
 .ra-polish [class*="alloc-bar-track"] {
   height: var(--ra-bar-height-polish) !important;
   border-radius: var(--ra-bar-radius-polish) !important;
-  background: var(--ds-border, #e2e8f0) !important;
+  background: var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
 }
 
 .ra-polish .allocation-bar > div,
@@ -183,7 +183,7 @@
 .ra-polish [class*="cell--end"],
 .ra-polish [data-status="end"] > div {
   background: var(--ra-end-pattern-polish) !important;
-  border: 1px solid var(--ds-border, #e2e8f0) !important;
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
   box-shadow: none !important;
 }
 
@@ -257,7 +257,7 @@
   letter-spacing: 0.5px !important;
   color: var(--ds-text-subtle, #475569) !important;
   background: var(--ds-surface-sunken, #f8fafc) !important;
-  border-bottom: 2px solid var(--ds-border, #e2e8f0) !important;
+  border-bottom: 2px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────

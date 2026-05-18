@@ -38,7 +38,7 @@ export function CalendarDayCell({
     <div
       onClick={onClick}
       className={cn(
-        'min-h-[120px] p-1.5 border-r border-b border-[var(--ds-border,#e2e8f0)] cursor-pointer',
+        'min-h-[120px] p-1.5 border-r border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] cursor-pointer',
         'transition-colors hover:bg-[var(--ds-surface-sunken,#f8fafc)]',
         isOutsideMonth && 'bg-[var(--ds-surface-sunken,#f1f5f9)]',
         !isOutsideMonth && isWeekendDay && 'bg-[var(--ds-surface-sunken,#f8fafc)]',

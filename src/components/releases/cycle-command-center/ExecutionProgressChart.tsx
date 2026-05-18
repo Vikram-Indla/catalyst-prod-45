@@ -52,11 +52,11 @@ export function ExecutionProgressChart({ cycleId }: ExecutionProgressChartProps)
         <div className="h-[280px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} barGap={0}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--ds-border, #e2e8f0)" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--ds-border, var(--cp-bg-sunken, #e2e8f0))" />
               <XAxis 
                 dataKey="date" 
                 tick={{ fontSize: 11, fill: 'var(--ds-text-subtlest, #64748b)' }}
-                axisLine={{ stroke: 'var(--ds-border, #e2e8f0)' }}
+                axisLine={{ stroke: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }}
                 tickLine={false}
               />
               <YAxis 

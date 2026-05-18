@@ -24,7 +24,7 @@
   
   /* Borders */
   --t10-border-subtle: var(--ds-surface-sunken, #f1f5f9);
-  --t10-border-default: var(--ds-border, #e2e8f0);
+  --t10-border-default: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --t10-border-strong: var(--ds-text-disabled, #cbd5e1);
   
   /* Accent (Catalyst V5 Blue) */
@@ -116,7 +116,7 @@
   
   /* Borders */
   --t10-border-subtle: var(--ds-surface-sunken, #f1f5f9);
-  --t10-border-default: var(--ds-border, #e2e8f0);
+  --t10-border-default: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --t10-border-strong: var(--ds-text-disabled, #cbd5e1);
   
   /* Accent (Catalyst V5 Blue) */
@@ -2633,14 +2633,14 @@
 /* Card Skeleton */
 .t10-card-skeleton {
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  border: 1px solid var(--ds-border, #e2e8f0);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 12px;
   padding: 20px 24px;
   margin-bottom: 12px;
 }
 
 .t10-skeleton {
-  background: linear-gradient(90deg, var(--ds-border, #e2e8f0) 25%, var(--ds-surface-sunken, #f1f5f9) 50%, var(--ds-border, #e2e8f0) 75%);
+  background: linear-gradient(90deg, var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) 25%, var(--ds-surface-sunken, #f1f5f9) 50%, var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) 75%);
   background-size: 200% 100%;
   animation: t10-shimmer 1.5s ease-in-out infinite;
   border-radius: 4px;
@@ -2663,7 +2663,7 @@
   display: flex;
   gap: 4px;
   margin-bottom: 16px;
-  border-bottom: 1px solid var(--ds-border, #e2e8f0);
+  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
 }
 
 .t10-tab-button {
@@ -2779,7 +2779,7 @@
 .t10-key-badge--muted {
   color: var(--ds-text-subtlest, #64748b);
   background: var(--ds-surface-sunken, #f1f5f9);
-  border-color: var(--ds-border, #e2e8f0);
+  border-color: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -2792,7 +2792,7 @@
   gap: 16px;
   padding: 16px 20px;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  border: 1px solid var(--ds-border, #e2e8f0);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 12px;
   margin-bottom: 10px;
   cursor: pointer;
@@ -2868,7 +2868,7 @@
   gap: 16px;
   padding: 16px 20px;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  border: 1px solid var(--ds-border, #e2e8f0);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 12px;
   margin-bottom: 10px;
   opacity: 0.85;
@@ -2972,7 +2972,7 @@
   padding: 60px 20px;
   text-align: center;
   background: var(--ds-surface-sunken, #f8fafc);
-  border: 1px dashed var(--ds-border, #e2e8f0);
+  border: 1px dashed var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 12px;
 }
 
@@ -3019,7 +3019,7 @@
   font-weight: 500;
   color: var(--ds-text-subtlest, #64748b);
   background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  border: 1px solid var(--ds-border, #e2e8f0);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -3087,7 +3087,7 @@
   min-width: 280px;
   max-width: 320px;
   background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  border: 1px solid var(--ds-border, #e2e8f0);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   z-index: 100001;
@@ -3133,7 +3133,7 @@
   font-size: 13px;
   color: var(--ds-text, #0f172a);
   background-color: var(--ds-surface-sunken, #f8fafc);
-  border: 1px solid var(--ds-border, #e2e8f0);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 6px;
   transition: all 0.15s ease;
 }
@@ -3279,7 +3279,7 @@
 
 .t10-module-v2 .t10-dropdown-footer-btn-clear:hover {
   color: var(--ds-text, #0f172a);
-  background-color: var(--ds-border, #e2e8f0);
+  background-color: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
 }
 
 .t10-module-v2 .t10-dropdown-footer-btn-clear:disabled {
@@ -3320,7 +3320,7 @@
   font-size: 13px;
   color: var(--ds-text, #0f172a);
   background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  border: 1px solid var(--ds-border, #e2e8f0);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 6px;
 }
 

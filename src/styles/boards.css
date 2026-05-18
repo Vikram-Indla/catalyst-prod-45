@@ -55,9 +55,9 @@
      COLORS — BORDERS
      ======================================== */
   
-  --boards-border-card: var(--ds-border, #e2e8f0);
+  --boards-border-card: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --boards-border-card-hover: var(--ds-text-disabled, #cbd5e1);
-  --boards-border-empty: var(--ds-border, #e2e8f0);
+  --boards-border-empty: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   
   /* Priority Left Borders */
   --boards-priority-critical: var(--ds-text-danger, #dc2626);
@@ -759,7 +759,7 @@
 .boards-loading__spinner {
   width: 24px;
   height: 24px;
-  border: 2px solid var(--ds-border, #e2e8f0);
+  border: 2px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-top-color: var(--ds-text-brand, #3b82f6);
   border-radius: 50%;
   animation: boards-spin 0.8s linear infinite;

@@ -17,7 +17,7 @@ interface Props {
 const C = {
   primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', success: '#0d9488', warning: 'var(--ds-text-warning, #d97706)', danger: 'var(--ds-text-danger, #ef4444)',
   textPrimary: 'var(--ds-text, #0f172a)', textSecondary: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', textTertiary: 'var(--ds-text-subtle, #475569)',
-  surface: 'var(--ds-surface-sunken, #f8fafc)', surfaceAlt: 'var(--ds-surface-sunken, #f1f5f9)', border: 'var(--ds-border, #e2e8f0)', bg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+  surface: 'var(--ds-surface-sunken, #f8fafc)', surfaceAlt: 'var(--ds-surface-sunken, #f1f5f9)', border: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', bg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   insightBg: 'var(--ds-background-selected, #eff6ff)', insightText: '#1e40af', insightBorder: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   gapBg: 'var(--ds-background-danger, #fef2f2)', gapText: 'var(--ds-text-danger, #991b1b)', gapBody: '#7f1d1d', gapBorder: 'var(--ds-text-danger, #ef4444)',
 } as const;

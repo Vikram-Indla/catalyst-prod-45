@@ -21,7 +21,7 @@ export const COLORS = {
   surfaceSelected: '#dbeafe',
 
   // Borders
-  borderLight: 'var(--ds-border, #e2e8f0)',
+  borderLight: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
   borderDefault: 'var(--ds-text-disabled, #cbd5e1)',
 
   // Brand

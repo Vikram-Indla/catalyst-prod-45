@@ -129,9 +129,9 @@ function ListCard({
           <div className="text-right">
             {/* Progress Bar */}
             {list.total_count === 0 ? (
-              <div className="w-[140px] h-1.5 rounded-full mb-2" style={{ background: 'var(--ds-border, #e2e8f0)' }} />
+              <div className="w-[140px] h-1.5 rounded-full mb-2" style={{ background: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }} />
             ) : (
-              <div className="w-[140px] h-1.5 rounded-full mb-2 overflow-hidden" style={{ background: 'var(--ds-border, #e2e8f0)' }}>
+              <div className="w-[140px] h-1.5 rounded-full mb-2 overflow-hidden" style={{ background: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }}>
                 <div
                   className="h-full bg-gradient-to-r from-blue-600 to-blue-500 rounded-full transition-all duration-300"
                   style={{ width: `${getProgressPercent()}%` }}

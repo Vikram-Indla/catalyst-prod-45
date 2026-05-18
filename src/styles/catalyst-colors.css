@@ -37,7 +37,7 @@
   --cp-color-slate-500: #64748b;
   --cp-color-slate-400: #94a3b8;
   --cp-color-slate-300: #cbd5e1;
-  --cp-color-slate-200: #e2e8f0;
+  --cp-color-slate-200: var(--cp-bg-sunken, #e2e8f0);
   --cp-color-slate-100: #f1f5f9;
   --cp-color-slate-50: #f8fafc;
 
@@ -251,7 +251,7 @@
 
   /* MIM — Gray */
   --cp-workstream-mim-primary: #64748b;
-  --cp-workstream-mim-light: #e2e8f0;
+  --cp-workstream-mim-light: var(--cp-bg-sunken, #e2e8f0);
   --cp-workstream-mim-border: #94a3b8;
   --cp-workstream-mim-text-primary: #475569;
   --cp-workstream-mim-text-dark: var(--cp-ink-2, #334155);

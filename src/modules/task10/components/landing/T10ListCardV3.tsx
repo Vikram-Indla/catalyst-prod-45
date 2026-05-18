@@ -95,7 +95,7 @@ export function T10ListCardV3({
         e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)';
+        e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))';
         e.currentTarget.style.boxShadow = 'none';
       }}
     >
@@ -262,7 +262,7 @@ export function T10ListCardV3({
           </p>
           
           {/* Progress Bar */}
-          <div style={{ height: '6px', backgroundColor: 'var(--ds-border, #e2e8f0)', borderRadius: '4px', marginBottom: '8px', overflow: 'hidden' }}>
+          <div style={{ height: '6px', backgroundColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', borderRadius: '4px', marginBottom: '8px', overflow: 'hidden' }}>
             <div
               style={{
                 height: '100%',

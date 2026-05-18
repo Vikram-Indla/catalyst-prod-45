@@ -539,7 +539,7 @@ export default function AllReleasesPage() {
   return (
     <div className="all-releases-page flex flex-col overflow-hidden" style={{ height: 'calc(100vh - 52px)' }}>
       {/* ═══ PAGE HEADER (52px) ═══ */}
-      <header className="flex items-center justify-between px-6 border-b" style={{ height: '52px', flexShrink: 0, borderColor: 'var(--ds-border, #e2e8f0)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+      <header className="flex items-center justify-between px-6 border-b" style={{ height: '52px', flexShrink: 0, borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
         <div className="flex items-center gap-3">
           <CatalystPageHeader title="All Releases" />
           <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--ds-text-subtlest, #94a3b8)' }}>{releases.length} releases</span>
@@ -559,7 +559,7 @@ export default function AllReleasesPage() {
                 <DropdownItem icon={<FileText className="w-3.5 h-3.5" />} label="Export as CSV" onClick={handleExportCSV} />
                 <DropdownItem icon={<FileSpreadsheet className="w-3.5 h-3.5" />} label="Export as Excel" onClick={() => { toast.info('Coming soon'); setIsExportDropdownOpen(false); }} />
                 <DropdownItem icon={<FileDown className="w-3.5 h-3.5" />} label="Export as PDF" onClick={() => { toast.info('Coming soon'); setIsExportDropdownOpen(false); }} />
-                <div style={{ height: '1px', background: 'var(--ds-border, #e2e8f0)', margin: '4px 0' }} />
+                <div style={{ height: '1px', background: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', margin: '4px 0' }} />
                 <DropdownItem icon={<Clipboard className="w-3.5 h-3.5" />} label="Copy to Clipboard" onClick={handleCopyClipboard} />
               </div>
             )}
@@ -613,7 +613,7 @@ export default function AllReleasesPage() {
             className="focus:outline-none"
             style={{ width: '200px', height: '32px', paddingLeft: '32px', paddingRight: searchQuery ? '28px' : '8px', border: '1px solid #e2e8f0', borderRadius: '6px', fontSize: '13px', background: 'var(--ds-surface-sunken, #f8fafc)' }}
             onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))')}
-            onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)')}
+            onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))')}
           />
           {searchQuery && (
             <button onClick={() => { setSearchQuery(''); }} className="absolute right-2 top-1/2 -translate-y-1/2" style={{ color: 'var(--ds-text-subtlest, #94a3b8)', background: 'none', border: 'none', cursor: 'pointer' }}>
@@ -839,7 +839,7 @@ export default function AllReleasesPage() {
         <>
           <div className="fixed inset-0 z-[200]" style={{ background: 'rgba(0,0,0,0.3)' }} onClick={() => setDetailRelease(null)} />
           <div className="fixed right-0 top-0 bottom-0 z-[201] overflow-y-auto" style={{ width: '480px', background: 'var(--bg-app, #fff)', boxShadow: '-4px 0 20px rgba(0,0,0,0.1)', animation: 'slideInRight 200ms ease' }}>
-            <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--ds-border, #e2e8f0)' }}>
+            <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }}>
               <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>{detailRelease.name}</h2>
               <button onClick={() => setDetailRelease(null)} style={closeBtnStyle}>✕</button>
             </div>
@@ -887,7 +887,7 @@ export default function AllReleasesPage() {
         <>
           <div className="fixed inset-0 z-[200]" style={{ background: 'rgba(0,0,0,0.2)' }} onClick={() => setIsAIDrawerOpen(false)} />
           <div className="fixed right-0 top-0 bottom-0 z-[201] overflow-y-auto" style={{ width: '400px', background: 'var(--bg-app, #fff)', boxShadow: '-4px 0 20px rgba(0,0,0,0.1)', animation: 'slideInRight 200ms ease' }}>
-            <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--ds-border, #e2e8f0)' }}>
+            <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }}>
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4" style={{ color: '#8b5cf6' }} />
                 <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>AI Insights</h2>
@@ -1057,7 +1057,7 @@ function StatItem({ number, label, dotColor }: { number: number; label: string; 
 function StatusPill({ status }: { status: string }) {
   const c = getStatusConfig(status);
   return (
-    <span className="inline-flex items-center gap-1" style={{ padding: '0 8px', borderRadius: '11px', background: c.bg, color: c.text, fontSize: '11px', fontWeight: 500, height: '22px', lineHeight: '22px', border: `1px solid ${c.bg === 'var(--ds-surface-sunken, #f1f5f9)' ? 'var(--ds-border, #e2e8f0)' : 'transparent'}` }}>
+    <span className="inline-flex items-center gap-1" style={{ padding: '0 8px', borderRadius: '11px', background: c.bg, color: c.text, fontSize: '11px', fontWeight: 500, height: '22px', lineHeight: '22px', border: `1px solid ${c.bg === 'var(--ds-surface-sunken, #f1f5f9)' ? 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' : 'transparent'}` }}>
       <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: c.dot }} />
       {c.label}
     </span>
@@ -1120,7 +1120,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
       <td style={{ ...cellStyle, width: '100px' }}><StatusPill status={r.status} /></td>
       <td style={{ ...cellStyle, width: '130px' }}>
         <div className="flex items-center gap-2">
-          <div style={{ width: '64px', height: '6px', background: 'var(--ds-border, #e2e8f0)', borderRadius: '4px', overflow: 'hidden' }}>
+          <div style={{ width: '64px', height: '6px', background: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', borderRadius: '4px', overflow: 'hidden' }}>
             <div style={{ width: `${r.progress}%`, height: '100%', background: r.progress <= 30 ? 'var(--ds-text-danger, #ef4444)' : r.progress <= 60 ? 'var(--ds-text-warning, #d97706)' : '#0d9488', borderRadius: '4px' }} />
           </div>
           <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ds-text-subtlest, #64748b)', fontFamily: 'var(--cp-font-mono)' }}>{r.progress}%</span>
@@ -1128,7 +1128,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
       </td>
       <td style={cellStyle}>
         <div className="flex items-center gap-2">
-          <div className="flex" style={{ width: '60px', height: '6px', borderRadius: '4px', overflow: 'hidden', background: 'var(--ds-border, #e2e8f0)' }}>
+          <div className="flex" style={{ width: '60px', height: '6px', borderRadius: '4px', overflow: 'hidden', background: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }}>
             {r.testsTotal > 0 && (
               <>
                 <div style={{ width: `${testRatio * 100}%`, background: testBarColor }} />
@@ -1145,7 +1145,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
       <td style={{ ...cellStyle, width: '100px' }}>
         {r.coverage !== null ? (
           <div className="flex items-center gap-2">
-            <div style={{ width: '48px', height: '4px', background: 'var(--ds-border, #e2e8f0)', borderRadius: '4px', overflow: 'hidden' }}>
+            <div style={{ width: '48px', height: '4px', background: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', borderRadius: '4px', overflow: 'hidden' }}>
               <div style={{ width: `${r.coverage}%`, height: '100%', background: covColor, borderRadius: '4px' }} />
             </div>
             <span style={{ fontSize: '13px', fontWeight: 500, color: covColor, fontFamily: 'var(--cp-font-mono)' }}>{r.coverage}%</span>
@@ -1204,7 +1204,7 @@ function FilterPill({ label, active, count, isOpen, onToggle, children }: {
         className="flex items-center gap-1 transition-colors"
         style={{
           height: '32px', padding: '8px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: 500, cursor: 'pointer',
-          border: `1px solid ${active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-border, #e2e8f0)'}`,
+          border: `1px solid ${active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))'}`,
           background: active ? '#dbeafe' : 'var(--ds-surface, #fff)',
           color: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
         }}
@@ -1274,18 +1274,18 @@ function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => voi
     <>
       <div className="fixed inset-0 z-50" style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)' }} onClick={onClose} />
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" style={{ width: '500px', background: 'var(--bg-app, #fff)', borderRadius: '12px', boxShadow: '0 20px 60px rgba(0,0,0,0.15)', animation: 'scaleIn 200ms ease' }}>
-        <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--ds-border, #e2e8f0)' }}>
+        <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }}>
           <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>Create New Release</h2>
           <button onClick={onClose} style={closeBtnStyle}>✕</button>
         </div>
         <div className="px-6 py-5 space-y-4">
           <div>
             <label style={labelStyle}>RELEASE NAME</label>
-            <input value={name} onChange={e => setName(e.target.value)} style={inputStyle} placeholder="e.g. Q2 2026 Release" autoFocus onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)')} />
+            <input value={name} onChange={e => setName(e.target.value)} style={inputStyle} placeholder="e.g. Q2 2026 Release" autoFocus onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))')} />
           </div>
           <div>
             <label style={labelStyle}>VERSION</label>
-            <input value={version} onChange={e => setVersion(e.target.value)} style={inputStyle} onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)')} />
+            <input value={version} onChange={e => setVersion(e.target.value)} style={inputStyle} onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))')} />
           </div>
           <div className="flex gap-4">
             <div className="flex-1">
@@ -1299,15 +1299,15 @@ function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => voi
             </div>
             <div className="flex-1">
               <label style={labelStyle}>TARGET DATE</label>
-              <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={inputStyle} onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)')} />
+              <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={inputStyle} onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))')} />
             </div>
           </div>
           <div>
             <label style={labelStyle}>DESCRIPTION (optional)</label>
-            <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2} style={{ ...inputStyle, resize: 'vertical' }} onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)')} />
+            <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2} style={{ ...inputStyle, resize: 'vertical' }} onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))')} />
           </div>
         </div>
-        <div className="flex justify-end gap-2 px-6 py-4 border-t" style={{ borderColor: 'var(--ds-border, #e2e8f0)' }}>
+        <div className="flex justify-end gap-2 px-6 py-4 border-t" style={{ borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' }}>
           <button onClick={onClose} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid #e2e8f0', background: 'var(--bg-app, #fff)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
           <button
             onClick={handleSubmit}
@@ -1348,13 +1348,13 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
               className="group cursor-pointer transition-all relative"
               style={{
                 background: selected ? 'var(--ds-background-selected, #eff6ff)' : 'var(--ds-surface, #fff)',
-                border: `1px solid ${selected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-border, #e2e8f0)'}`,
+                border: `1px solid ${selected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))'}`,
                 borderRadius: '8px', padding: '16px',
                 animation: `fadeInUp 0.3s ease both`,
                 animationDelay: `${i * 30}ms`,
               }}
               onMouseEnter={e => { if (!selected) { e.currentTarget.style.borderColor = 'var(--ds-text-disabled, #cbd5e1)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'; } }}
-              onMouseLeave={e => { if (!selected) { e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)'; e.currentTarget.style.boxShadow = 'none'; } }}
+              onMouseLeave={e => { if (!selected) { e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))'; e.currentTarget.style.boxShadow = 'none'; } }}
             >
               <input
                 type="checkbox"
@@ -1374,7 +1374,7 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
                 </span>
               </div>
               <div className="flex items-center gap-2 mb-2">
-                <div style={{ flex: 1, height: '4px', background: 'var(--ds-border, #e2e8f0)', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ flex: 1, height: '4px', background: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', borderRadius: '4px', overflow: 'hidden' }}>
                   <div style={{ width: `${r.health}%`, height: '100%', background: getHealthColor(r.health), borderRadius: '4px', transition: 'width 400ms ease-out' }} />
                 </div>
                 <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)' }}>{r.health}</span>
@@ -1407,7 +1407,7 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
                 <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, #64748b)' }}>
                   {r.coverage !== null ? (
                     <span className="inline-flex items-center gap-1">
-                      <span style={{ display: 'inline-block', width: '32px', height: '3px', background: 'var(--ds-border, #e2e8f0)', borderRadius: '4px', overflow: 'hidden', verticalAlign: 'middle' }}>
+                      <span style={{ display: 'inline-block', width: '32px', height: '3px', background: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', borderRadius: '4px', overflow: 'hidden', verticalAlign: 'middle' }}>
                         <span style={{ display: 'block', width: `${r.coverage}%`, height: '100%', background: r.coverage <= 30 ? 'var(--ds-text-danger, #ef4444)' : r.coverage <= 60 ? 'var(--ds-text-warning, #d97706)' : '#0d9488', borderRadius: '4px' }} />
                       </span>
                       <span style={{ fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{r.coverage}%</span>

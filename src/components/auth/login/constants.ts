@@ -38,7 +38,7 @@ export const loginColors = {
 
   // Form Surface
   formSurface: 'var(--ds-surface-sunken, #f8fafc)',
-  formBorder: 'var(--ds-border, #e2e8f0)',
+  formBorder: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
 
   // Hero Panel Background
   heroDark: '#070a0f',

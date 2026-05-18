@@ -92,7 +92,7 @@
 /* === MIM — Gray === */
 .task-bar[data-workstream*="MIM"],
 [data-workstream*="MIM"] .task-bar {
-  background-color: var(--ds-border, #e2e8f0) !important;  /* slate-200 */
+  background-color: var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;  /* slate-200 */
   border: 1px solid var(--ds-text-subtlest, #94a3b8) !important;  /* slate-400 */
 }
 
@@ -126,7 +126,7 @@
 /* === STAND-ALONE — Gray === */
 .task-bar[data-workstream*="Stand-Alone"],
 [data-workstream*="Stand-Alone"] .task-bar {
-  background-color: var(--ds-border, #e2e8f0) !important;
+  background-color: var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
   border: 1px solid var(--ds-text-subtlest, #94a3b8) !important;
 }
 
@@ -158,7 +158,7 @@
    ============================================================================ */
 
 .task-bar:not([data-workstream]) {
-  background-color: var(--ds-border, #e2e8f0) !important;
+  background-color: var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
   border: 1px solid var(--ds-text-subtlest, #94a3b8) !important;
 }
 
@@ -416,7 +416,7 @@
 }
 
 .dark .day-number {
-  color: var(--ds-border, #e2e8f0) !important;
+  color: var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
 }
 
 /* Today column highlight */
@@ -540,7 +540,7 @@
 [style*="background-color: rgb(251, 207, 232)"], /* light pink */
 [style*="background: rgb(14, 165, 233)"],
 [style*="background: rgb(253, 164, 175)"] {
-  background-color: var(--ds-border, #e2e8f0) !important;
+  background-color: var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
 }
 
 /* ============================================================================

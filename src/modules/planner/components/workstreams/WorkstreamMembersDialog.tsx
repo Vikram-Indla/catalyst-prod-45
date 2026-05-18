@@ -30,7 +30,7 @@ const COLORS = {
   textPrimary: 'var(--ds-text, #0f172a)',
   textSecondary: 'var(--ds-text-subtlest, #64748b)',
   textMuted: 'var(--ds-text-subtlest, #94a3b8)',
-  borderLight: 'var(--ds-border, #e2e8f0)',
+  borderLight: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
   surfaceHover: 'var(--ds-surface-sunken, #f8fafc)',
 };
 

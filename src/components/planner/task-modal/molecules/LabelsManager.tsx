@@ -22,7 +22,7 @@ const COLORS = {
   surfaceCard: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   surfacePage: 'var(--ds-surface-sunken, #f8fafc)',
   surfaceHover: 'var(--ds-surface-sunken, #f1f5f9)',
-  borderLight: 'var(--ds-border, #e2e8f0)',
+  borderLight: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
   borderDefault: 'var(--ds-text-disabled, #cbd5e1)',
   accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   accentLight: '#dbeafe'

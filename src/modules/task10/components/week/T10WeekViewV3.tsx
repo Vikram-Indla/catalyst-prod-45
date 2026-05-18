@@ -733,7 +733,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const progressBarTrackStyle: React.CSSProperties = {
     width: 100,
     height: 6,
-    background: 'var(--ds-border, #e2e8f0)',
+    background: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
     borderRadius: 4,
     overflow: 'hidden',
   };
@@ -1129,7 +1129,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                 ...kbdStyle,
                 background: newItemText.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 color: newItemText.trim() ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtle, #475569)',
-                borderColor: newItemText.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-border, #e2e8f0)',
+                borderColor: newItemText.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
               }}>Enter</kbd>
               <span>to add</span>
             </button>
@@ -1260,7 +1260,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.background = 'transparent';
-                        e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)';
+                        e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))';
                         e.currentTarget.style.color = 'var(--ds-text-subtlest, #94a3b8)';
                       }}
                       title="Remove from buffer"

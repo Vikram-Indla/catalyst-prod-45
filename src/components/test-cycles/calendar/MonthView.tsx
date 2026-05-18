@@ -37,7 +37,7 @@ export function MonthView({
   return (
     <div className="flex-1 flex flex-col bg-white overflow-hidden">
       {/* Day headers */}
-      <div className="grid grid-cols-7 border-b border-[var(--ds-border,#e2e8f0)] bg-[var(--ds-surface-sunken,#f8fafc)]">
+      <div className="grid grid-cols-7 border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] bg-[var(--ds-surface-sunken,#f8fafc)]">
         {DAY_NAMES.map((day) => (
           <div
             key={day}

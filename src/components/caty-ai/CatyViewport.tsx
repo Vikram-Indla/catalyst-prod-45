@@ -124,7 +124,7 @@ interface MetricTileProps {
 }
 
 const variantColors = {
-  neutral: { bg: 'var(--ds-surface-sunken, #f8fafc)', border: 'var(--ds-border, #e2e8f0)', text: 'var(--ds-text-subtle, #475569)', accent: 'var(--ds-text-subtlest, #64748b)' },
+  neutral: { bg: 'var(--ds-surface-sunken, #f8fafc)', border: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', text: 'var(--ds-text-subtle, #475569)', accent: 'var(--ds-text-subtlest, #64748b)' },
   danger: { bg: 'var(--ds-background-danger, #fef2f2)', border: '#fecaca', text: 'var(--ds-text-danger, #dc2626)', accent: 'var(--ds-text-danger, #dc2626)' },
   warning: { bg: '#fffbeb', border: '#fde68a', text: 'var(--ds-text-warning, #d97706)', accent: 'var(--ds-text-warning, #f59e0b)' },
   info: { bg: 'var(--ds-background-selected, #eff6ff)', border: '#bfdbfe', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', accent: 'var(--ds-text-brand, #3b82f6)' },
@@ -255,7 +255,7 @@ function IssueTile({ question, accentColor, onClick }: IssueTileProps) {
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
-        e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)';
+        e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))';
       }}
     >
       {/* Left Accent Bar */}
@@ -299,7 +299,7 @@ function getTagStyle(type: string): React.CSSProperties {
       return { background: '#faf5ff', color: '#7c3aed', borderColor: '#e9d5ff' };
     case 'count':
     default:
-      return { background: 'var(--ds-surface-sunken, #f1f5f9)', color: 'var(--ds-text-subtle, #475569)', borderColor: 'var(--ds-border, #e2e8f0)' };
+      return { background: 'var(--ds-surface-sunken, #f1f5f9)', color: 'var(--ds-text-subtle, #475569)', borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))' };
   }
 }
 

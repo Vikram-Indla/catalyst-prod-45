@@ -57,7 +57,7 @@
   --ct-bg-active: var(--ds-surface-sunken, #f1f5f9);
   --ct-bg-muted: var(--ds-surface-sunken, #f1f5f9);
 
-  --ct-border: var(--ds-border, #e2e8f0);
+  --ct-border: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --ct-border-light: var(--ds-surface-sunken, #f1f5f9);
   --ct-border-focus: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 
@@ -1608,7 +1608,7 @@
 /* Individual Widget Card */
 .ct-runrate-card {
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  border: 1px solid var(--ct-border, #e2e8f0);
+  border: 1px solid var(--ct-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: var(--ct-radius-xl, 12px);
   padding: var(--ct-space-5, 20px);
   transition: var(--ct-transition-normal, 0.2s ease);
@@ -1706,7 +1706,7 @@
 .ct-runrate-footer {
   margin-top: var(--ct-space-3, 12px);
   padding-top: var(--ct-space-3, 12px);
-  border-top: 1px solid var(--ct-border, #e2e8f0);
+  border-top: 1px solid var(--ct-border, var(--cp-bg-sunken, #e2e8f0));
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -1779,7 +1779,7 @@
    ================================================================ */
 .ct-licenses-widget {
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  border: 1px solid var(--ct-border, #e2e8f0);
+  border: 1px solid var(--ct-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: var(--ct-radius-xl, 12px);
   padding: var(--ct-space-5, 20px);
   position: relative;
@@ -1879,7 +1879,7 @@
 .ct-licenses-footer {
   margin-top: auto;
   padding-top: var(--ct-space-3, 12px);
-  border-top: 1px solid var(--ct-border, #e2e8f0);
+  border-top: 1px solid var(--ct-border, var(--cp-bg-sunken, #e2e8f0));
 }
 
 .ct-licenses-yearly {

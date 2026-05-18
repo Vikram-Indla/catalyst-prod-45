@@ -36,9 +36,9 @@ export function WeekView({
   return (
     <div className="flex-1 flex flex-col bg-white overflow-hidden">
       {/* Header with day names and dates */}
-      <div className="flex border-b border-[var(--ds-border,#e2e8f0)] bg-[var(--ds-surface-sunken,#f8fafc)]">
+      <div className="flex border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] bg-[var(--ds-surface-sunken,#f8fafc)]">
         {/* Time column spacer */}
-        <div className="w-16 shrink-0 border-r border-[var(--ds-border,#e2e8f0)]" />
+        <div className="w-16 shrink-0 border-r border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]" />
         
         {/* Day headers */}
         {days.map((day) => {
@@ -51,7 +51,7 @@ export function WeekView({
             <div
               key={day.toISOString()}
               className={cn(
-                'flex-1 px-2 py-3 text-center border-r border-[var(--ds-border,#e2e8f0)] last:border-r-0',
+                'flex-1 px-2 py-3 text-center border-r border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] last:border-r-0',
                 isInRange && 'bg-[var(--ds-background-selected,#eff6ff)]',
                 isCurrentDay && 'border-t-2 border-t-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]'
               )}
@@ -77,8 +77,8 @@ export function WeekView({
       </div>
 
       {/* All-day events row */}
-      <div className="flex border-b border-[var(--ds-border,#e2e8f0)] min-h-[60px]">
-        <div className="w-16 shrink-0 px-2 py-2 text-xs font-medium text-[var(--ds-text-subtlest,#64748b)] border-r border-[var(--ds-border,#e2e8f0)]">
+      <div className="flex border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] min-h-[60px]">
+        <div className="w-16 shrink-0 px-2 py-2 text-xs font-medium text-[var(--ds-text-subtlest,#64748b)] border-r border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
           All day
         </div>
         {days.map((day) => {
@@ -90,7 +90,7 @@ export function WeekView({
             <div
               key={dateKey}
               className={cn(
-                'flex-1 p-1 border-r border-[var(--ds-border,#e2e8f0)] last:border-r-0 space-y-1 overflow-hidden',
+                'flex-1 p-1 border-r border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] last:border-r-0 space-y-1 overflow-hidden',
                 isInRange && 'bg-[var(--ds-background-selected,#eff6ff)]/50'
               )}
             >
@@ -115,7 +115,7 @@ export function WeekView({
       {/* Time grid */}
       <div className="flex-1 flex overflow-auto">
         {/* Time column */}
-        <div className="w-16 shrink-0 border-r border-[var(--ds-border,#e2e8f0)]">
+        <div className="w-16 shrink-0 border-r border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
           {HOURS.map((hour) => (
             <div
               key={hour}
@@ -135,7 +135,7 @@ export function WeekView({
             <div
               key={day.toISOString()}
               className={cn(
-                'flex-1 border-r border-[var(--ds-border,#e2e8f0)] last:border-r-0 relative',
+                'flex-1 border-r border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] last:border-r-0 relative',
                 isInRange && 'bg-[var(--ds-background-selected,#eff6ff)]/30'
               )}
             >

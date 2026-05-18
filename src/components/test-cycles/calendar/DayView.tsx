@@ -54,7 +54,7 @@ export function DayView({
       {/* Main content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Time column */}
-        <div className="w-16 shrink-0 border-r border-[var(--ds-border,#e2e8f0)]">
+        <div className="w-16 shrink-0 border-r border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
           {HOURS.map((hour) => (
             <div
               key={hour}
@@ -99,8 +99,8 @@ export function DayView({
       </div>
 
       {/* Summary panel */}
-      <div className="w-80 shrink-0 border-l border-[var(--ds-border,#e2e8f0)] bg-[var(--ds-surface-sunken,#f8fafc)] overflow-auto">
-        <div className="p-4 border-b border-[var(--ds-border,#e2e8f0)]">
+      <div className="w-80 shrink-0 border-l border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] bg-[var(--ds-surface-sunken,#f8fafc)] overflow-auto">
+        <div className="p-4 border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
           <div className="flex items-center gap-2 mb-2">
             <h3 className="font-semibold text-[var(--ds-text,#0f172a)]">
               {format(currentDate, 'EEEE, MMMM d')}
@@ -113,7 +113,7 @@ export function DayView({
         </div>
 
         {/* Status breakdown */}
-        <div className="p-4 border-b border-[var(--ds-border,#e2e8f0)]">
+        <div className="p-4 border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
           <h4 className="text-xs font-semibold text-[var(--ds-text-subtlest,#64748b)] uppercase tracking-wide mb-3">
             By Status
           </h4>

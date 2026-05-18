@@ -190,7 +190,7 @@ export function CatyChatTab() {
           disabled={!input.trim() || isTyping}
           className="w-8 h-8 rounded-lg flex items-center justify-center transition-all disabled:opacity-50"
           style={{
-            backgroundColor: input.trim() && !isTyping ? 'var(--wh-primary)' : 'var(--ds-border, #e2e8f0)',
+            backgroundColor: input.trim() && !isTyping ? 'var(--wh-primary)' : 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
           }}
         >
           <Send

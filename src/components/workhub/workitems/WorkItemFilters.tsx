@@ -76,7 +76,7 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
         onClick={() => setOpen(!open)}
         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-medium rounded-md border transition-all"
         style={{
-          borderColor: isActive ? 'var(--wh-primary, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--wh-border, #e2e8f0)',
+          borderColor: isActive ? 'var(--wh-primary, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--wh-border, var(--cp-bg-sunken, #e2e8f0))',
           backgroundColor: isActive ? 'var(--ds-background-selected, #eff6ff)' : 'var(--wh-surface, #fff)',
           color: isActive ? 'var(--wh-primary, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--wh-text-secondary, #64748b)',
         }}
@@ -101,12 +101,12 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
           style={{
             zIndex: 9999,
             boxShadow: '0 10px 40px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08)',
-            borderColor: 'var(--wh-border, #e2e8f0)',
+            borderColor: 'var(--wh-border, var(--cp-bg-sunken, #e2e8f0))',
             maxHeight: '380px',
           }}
         >
           {/* Search Input */}
-          <div className="p-2 border-b" style={{ borderColor: 'var(--wh-border, #e2e8f0)' }}>
+          <div className="p-2 border-b" style={{ borderColor: 'var(--wh-border, var(--cp-bg-sunken, #e2e8f0))' }}>
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: 'var(--ds-text-subtlest, #94a3b8)' }} />
               <input
@@ -117,19 +117,19 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
                 onChange={e => setSearch(e.target.value)}
                 className="w-full pl-8 pr-3 py-1.5 text-xs rounded-md border outline-none transition-colors"
                 style={{
-                  borderColor: 'var(--wh-border, #e2e8f0)',
+                  borderColor: 'var(--wh-border, var(--cp-bg-sunken, #e2e8f0))',
                   color: 'var(--wh-text-primary, #0f172a)',
                   backgroundColor: 'var(--ds-surface-sunken, #f8fafc)',
                 }}
                 onFocus={e => (e.target.style.borderColor = 'var(--wh-primary, var(--cp-workstream-catalyst-primary, #2563eb))')}
-                onBlur={e => (e.target.style.borderColor = 'var(--wh-border, #e2e8f0)')}
+                onBlur={e => (e.target.style.borderColor = 'var(--wh-border, var(--cp-bg-sunken, #e2e8f0))')}
               />
             </div>
           </div>
 
           {/* Select All / None */}
           {options.length > 0 && (
-            <div className="flex items-center justify-between px-3 py-1.5 border-b" style={{ borderColor: 'var(--wh-border, #e2e8f0)' }}>
+            <div className="flex items-center justify-between px-3 py-1.5 border-b" style={{ borderColor: 'var(--wh-border, var(--cp-bg-sunken, #e2e8f0))' }}>
               <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ds-text-subtlest, #94a3b8)' }}>
                 {filtered.length} option{filtered.length !== 1 ? 's' : ''}
               </span>
@@ -204,7 +204,7 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
           {selected.length > 0 && (
             <div
               className="px-3 py-2 border-t flex items-center justify-between"
-              style={{ borderColor: 'var(--wh-border, #e2e8f0)', backgroundColor: 'var(--ds-surface-sunken, #f8fafc)' }}
+              style={{ borderColor: 'var(--wh-border, var(--cp-bg-sunken, #e2e8f0))', backgroundColor: 'var(--ds-surface-sunken, #f8fafc)' }}
             >
               <span className="text-[11px] font-medium" style={{ color: 'var(--ds-text-subtlest, #64748b)' }}>
                 {selected.length} selected
@@ -384,11 +384,11 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
           style={{
             height: '50px',
             fontSize: '13px',
-            borderColor: 'var(--wh-border, #e2e8f0)',
+            borderColor: 'var(--wh-border, var(--cp-bg-sunken, #e2e8f0))',
             color: 'var(--wh-text-primary, #0f172a)',
           }}
           onFocus={e => (e.target.style.borderColor = 'var(--wh-primary, var(--cp-workstream-catalyst-primary, #2563eb))')}
-          onBlur={e => (e.target.style.borderColor = 'var(--wh-border, #e2e8f0)')}
+          onBlur={e => (e.target.style.borderColor = 'var(--wh-border, var(--cp-bg-sunken, #e2e8f0))')}
         />
       </div>
     </div>

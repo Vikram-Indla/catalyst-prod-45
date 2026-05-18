@@ -468,7 +468,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
             TOP BAR - Title, Today, Date Nav, View Mode Toggle
             ============================================================ */}
         {/* M5: Container background var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ds-border,#e2e8f0)] dark:border-slate-800 bg-white dark:bg-slate-950 flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] dark:border-slate-800 bg-white dark:bg-slate-950 flex-shrink-0">
           {/* Left: Title */}
           <div>
             <h1 className="text-xl font-bold text-[var(--ds-text,#0f172a)] dark:text-slate-100">Timeline</h1>
@@ -489,7 +489,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
             </Button>
 
             {/* Today Button */}
-            <Button variant="outline" size="sm" onClick={goToToday} className="gap-2 h-9 border-[var(--ds-border,#e2e8f0)]">
+            <Button variant="outline" size="sm" onClick={goToToday} className="gap-2 h-9 border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
               <CalendarDays className="w-4 h-4" />
               Today
             </Button>
@@ -530,7 +530,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
         {/* ============================================================
             FILTER BAR (Section F: Status Legend positioned here)
             ============================================================ */}
-        <div className="flex items-center gap-3 px-6 py-3 border-b border-[var(--ds-border,#e2e8f0)] dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex-shrink-0">
+        <div className="flex items-center gap-3 px-6 py-3 border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex-shrink-0">
           {/* Search */}
           <div className="relative w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--ds-text-subtlest,#94a3b8)]" />
@@ -540,7 +540,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
               placeholder="Search tasks... (⌘K)"
               value={filters.search}
               onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-              className="pl-9 h-9 border-[var(--ds-border,#e2e8f0)]"
+              className="pl-9 h-9 border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]"
             />
             {filters.search && (
               <button
@@ -559,7 +559,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                 variant="outline"
                 size="sm"
                 className={cn(
-                  "h-9 border-[var(--ds-border,#e2e8f0)] filter-btn",
+                  "h-9 border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] filter-btn",
                   filters.workstream !== 'all' && "bg-blue-50 border-blue-300 text-blue-700"
                 )}
               >
@@ -602,7 +602,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                 variant="outline"
                 size="sm"
                 className={cn(
-                  "h-9 border-[var(--ds-border,#e2e8f0)] filter-btn",
+                  "h-9 border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] filter-btn",
                   filters.status !== 'all' && "bg-blue-50 border-blue-300 text-blue-700"
                 )}
               >
@@ -639,7 +639,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                 variant="outline"
                 size="sm"
                 className={cn(
-                  "h-9 border-[var(--ds-border,#e2e8f0)] filter-btn",
+                  "h-9 border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] filter-btn",
                   filters.priority !== 'all' && "bg-blue-50 border-blue-300 text-blue-700"
                 )}
               >
@@ -693,10 +693,10 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
             ============================================================ */}
         <div className="flex-1 overflow-hidden flex flex-col">
           {/* Column headers */}
-          <div className="flex flex-shrink-0 border-b border-[var(--ds-border,#e2e8f0)] dark:border-slate-800 bg-white dark:bg-slate-950">
+          <div className="flex flex-shrink-0 border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] dark:border-slate-800 bg-white dark:bg-slate-950">
             {/* Left header */}
             <div
-              className="flex items-center px-4 border-r border-[var(--ds-border,#e2e8f0)] dark:border-slate-800 bg-slate-50 dark:bg-slate-900 font-medium text-xs text-[var(--ds-text-subtlest,#64748b)] dark:text-slate-400 uppercase tracking-wide"
+              className="flex items-center px-4 border-r border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] dark:border-slate-800 bg-slate-50 dark:bg-slate-900 font-medium text-xs text-[var(--ds-text-subtlest,#64748b)] dark:text-slate-400 uppercase tracking-wide"
               style={{ width: LEFT_PANEL_WIDTH, height: DATE_HEADER_HEIGHT }}
             >
               Workstream
@@ -768,7 +768,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
             <div className="relative flex">
               {/* Left panel (Section I) */}
               <div
-                className="workstream-panel flex-shrink-0 bg-white dark:bg-slate-950 border-r border-[var(--ds-border,#e2e8f0)] dark:border-slate-800"
+                className="workstream-panel flex-shrink-0 bg-white dark:bg-slate-950 border-r border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] dark:border-slate-800"
                 style={{ width: LEFT_PANEL_WIDTH }}
               >
                 {swimlanes.map((lane) => {
@@ -777,7 +777,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                     <div key={lane.id} data-workstream={lane.name}>
                       {/* Workstream Header */}
                       <div
-                        className="workstream-row w-full flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/70 border-b border-[var(--ds-border,#e2e8f0)] dark:border-slate-700 hover:bg-[var(--ds-surface-sunken,#f1f5f9)] dark:hover:bg-slate-800 transition-colors text-left overflow-hidden"
+                        className="workstream-row w-full flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/70 border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] dark:border-slate-700 hover:bg-[var(--ds-surface-sunken,#f1f5f9)] dark:hover:bg-slate-800 transition-colors text-left overflow-hidden"
                         style={{ height: SWIMLANE_HEADER_HEIGHT }}
                       >
                         {/* I6: Expand/collapse chevron */}
@@ -887,7 +887,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                           <div key={lane.id} data-workstream={lane.name}>
                             {/* Swimlane Header Row (grid side) */}
                             <div
-                              className="relative flex bg-slate-50 dark:bg-slate-900/70 border-b border-[var(--ds-border,#e2e8f0)] dark:border-slate-700"
+                              className="relative flex bg-slate-50 dark:bg-slate-900/70 border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))] dark:border-slate-700"
                               style={{ height: SWIMLANE_HEADER_HEIGHT }}
                             >
                               {/* J5: Weekend shading */}

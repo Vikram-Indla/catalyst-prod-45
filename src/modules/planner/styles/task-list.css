@@ -20,7 +20,7 @@
   --tl-text-muted: var(--ds-text-subtlest, #94a3b8);         /* gray-400 */
   
   /* === Borders (H, N6) === */
-  --tl-border: var(--ds-border, #e2e8f0);             /* H2, N6: default */
+  --tl-border: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));             /* H2, N6: default */
   --tl-border-light: var(--ds-surface-sunken, #f1f5f9);
   --tl-border-strong: var(--ds-text-disabled, #cbd5e1);      /* N6 */
   --tl-border-focus: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));       /* I6 */
@@ -405,7 +405,7 @@
   border-radius: 0.375rem !important;    /* H3: 6px */
   font-size: 0.75rem !important;
   font-weight: 500 !important;
-  border: 1px solid var(--ds-border, #e2e8f0) !important;  /* A3.2, A3.4, A3.5 */
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;  /* A3.2, A3.4, A3.5 */
   background: transparent !important;
   cursor: pointer;
   transition: all 0.1s;
@@ -628,7 +628,7 @@
   flex: 1;
   min-width: 60px;
   height: 6px;
-  background: var(--ds-border, #e2e8f0);     /* L1 */
+  background: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));     /* L1 */
   border-radius: 4px;      /* H6 */
   overflow: hidden;
 }
@@ -884,7 +884,7 @@
 /* Force status badge outline style - no filled backgrounds */
 .planner-task-list-content .tl-status-badge {
   background-color: transparent !important;
-  border: 1px solid var(--ds-border, #e2e8f0) !important;
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
 }
 
 /* Only "in-progress" gets subtle amber tint */

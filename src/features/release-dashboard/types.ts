@@ -153,7 +153,7 @@ export const CATALYST_COLORS = {
   gray: {
     50: 'var(--ds-surface-sunken, #f8fafc)',
     100: 'var(--ds-surface-sunken, #f1f5f9)',
-    200: 'var(--ds-border, #e2e8f0)',
+    200: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
     300: 'var(--ds-text-disabled, #cbd5e1)',
     400: 'var(--ds-text-subtlest, #94a3b8)',
     500: 'var(--ds-text-subtlest, #64748b)',

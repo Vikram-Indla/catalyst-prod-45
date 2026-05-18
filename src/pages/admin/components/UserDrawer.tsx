@@ -611,7 +611,7 @@ const drawerCSS = `
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid var(--ds-border, #e2e8f0);
+  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
 }
 .um-drawer-header h2 {
   font-size: 18px;
@@ -655,7 +655,7 @@ const drawerCSS = `
   align-items: center;
   gap: 8px;
   padding: 16px 24px;
-  border-top: 1px solid var(--ds-border, #e2e8f0);
+  border-top: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   background: var(--ds-surface-sunken, #f8fafc);
 }
 
@@ -697,7 +697,7 @@ const drawerCSS = `
   height: 40px;
   padding: 0 12px;
   font-size: 14px;
-  border: 1px solid var(--ds-border, #e2e8f0);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 8px;
   transition: all 0.15s;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
@@ -726,7 +726,7 @@ const drawerCSS = `
   font-size: 13px;
   font-weight: 500;
   border-radius: 6px;
-  border: 1px solid var(--ds-border, #e2e8f0);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   color: var(--ds-text, #0f172a);
   cursor: pointer;

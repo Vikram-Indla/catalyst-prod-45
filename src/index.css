@@ -832,7 +832,7 @@ html:has(body[data-scroll-locked]) {
     --users-text: 222 47% 11%;              /* #0f172a */
     --users-text-secondary: 215 16% 47%;    /* #475569 */
     --users-text-muted: 215 16% 47%;        /* #64748b - WCAG AA compliant */
-    --users-border: 214 32% 91%;            /* #e2e8f0 */
+    --users-border: 214 32% 91%;            /* var(--cp-bg-sunken, #e2e8f0) */
     --users-border-light: 213 27% 96%;      /* #f1f5f9 */
     --shadow-elev-3: 0 8px 24px rgba(0, 0, 0, 0.12);
     --shadow-brand: 0 4px 14px -2px rgba(37, 99, 235, 0.25);
@@ -1394,7 +1394,7 @@ html:has(body[data-scroll-locked]) {
        ═══════════════════════════════════════════════════════════════ */
     --nav-bg: var(--bg-2);
     --nav-text: #94a3b8;                    /* V10: Inactive nav items (dark) */
-    --nav-text-hover: #e2e8f0;              /* V10: Nav hover state (dark) */
+    --nav-text-hover: var(--cp-bg-sunken, #e2e8f0);              /* V10: Nav hover state (dark) */
     --nav-active: #60a5fa;                  /* V10: Active nav text (lighter blue in dark) */
     --nav-hover-bg: transparent;            /* V10: NO background on hover */
     --nav-active-bg: transparent;           /* V10: NO background on active */
