@@ -1,8 +1,26 @@
 # Obsidian Handover Skill — Branch Context Management
 
+## ⚠️ CRITICAL REQUIREMENT — CLAUDE.MD MUST BE READ FIRST
+
+**Every single invocation of `/obsidian` commands MUST follow this sequence:**
+
+1. **READ CLAUDE.md** (`.claude/CLAUDE.md`) — Load enforcement rules, branch naming, guidelines
+2. **VERIFY RULES** — Confirm branch validation regex, constraints, project context
+3. **RETRIEVE HANDOVER** — Load transcript from `.claude/obsidian-handovers/`
+4. **DISPLAY CONTEXT** — Show full task state, progress, commits, next steps
+5. **PROVIDE RESUME POINT** — Clear next actions and file locations
+
+**Exceptions:** None. CLAUDE.md is always read first, before any handover retrieval.
+
+**Why:** Handovers are context snapshots, but CLAUDE.md is the living source of truth for rules, constraints, and current project state. Without reading CLAUDE.md first, enforced patterns (branch naming, design system, banned fields, etc.) from when the handover was saved may be stale or conflicting with updated rules.
+
+---
+
 ## Overview
 
-The `/obsidian` skill manages detailed handovers and branch context in the Obsidian vault. It captures full conversation state, progress, and metadata when transitioning between branches or conversations, and retrieves that context when resuming work.
+The `/obsidian` skill manages detailed handovers and branch context in the centralized Obsidian vault (`.claude/obsidian-handovers/`). It captures full conversation state, progress, and metadata when transitioning between branches or conversations, and retrieves that context when resuming work.
+
+**Centralization Model:** All handovers are stored in `.claude/obsidian-handovers/` (git version-controlled), making them immediately accessible from any local machine working on the GitHub repo. No Obsidian vault setup required — just `git pull origin main`.
 
 ## Commands
 
@@ -47,7 +65,15 @@ Retrieves and hydrates context from a previous branch.
 /obsidian branch 01
 ```
 
+**MANDATORY SEQUENCE (on every invocation):**
+1. **Read CLAUDE.md first** — Load all enforcement rules, constraints, and guidelines from `CLAUDE.md`
+2. **Verify branch rules** — Confirm branch naming convention and validation rules
+3. **Retrieve handover** — Load the handover transcript from `.claude/obsidian-handovers/`
+4. **Display full context** — Show task, progress, files, commits, and next steps
+5. **Ready to continue** — Provide resume point and next actions
+
 **What it restores:**
+- CLAUDE.md rules and enforcement context (read first)
 - Full branch context and task description
 - File changes made
 - Commits and their messages
@@ -61,27 +87,49 @@ Retrieves and hydrates context from a previous branch.
 - Hydrates all context from Obsidian vault
 - Displays previous progress and next steps
 - Suggests resume point
+- **ALWAYS reads CLAUDE.md before retrieving handover** (non-negotiable)
 
 **Example:**
 ```
 You: /obsidian branch 01
-Claude: Retrieving handover for BAU-backlog-table-01...
-✓ Branch exists locally
-✓ Context loaded
-✓ Last saved: 2 days ago
-✓ Progress: 60% complete
+Claude: 
+  [Reading CLAUDE.md § 2026-05-18...]
+  ✓ Branch naming rules loaded: {Project}-{SideMenu}-{Component}-{NN}
+  ✓ Design system guardrail verified: @atlaskit/*, var(--ds-*) tokens only
+  ✓ On-demand branch creation rule confirmed
+  ✓ CLAUDE.md constraints and rules loaded
+  
+  [Retrieving handover 01...]
+  ✓ Handover found: BAU-backlog-table-01-01.md
+  ✓ Branch exists locally
+  ✓ Context loaded
+  ✓ Last saved: 2 days ago
+  ✓ Progress: 60% complete
+
+═══════════════════════════════════════════════════════════════
+HANDOVER CONTEXT (01)
+═══════════════════════════════════════════════════════════════
 
 Task: Build backlog list table in BAU project
-Previous work:
-  - Created columns: Key, Summary, Status, Comments
-  - Wired up sorting and filtering
+
+Branch: BAU-backlog-table-01 (ID: 01)
+Status: in_progress (60% complete)
+Last saved: 2026-05-16T14:30:00Z
+
+Previous work (verified against CLAUDE.md rules):
+  ✓ Created columns: Key, Summary, Status, Comments
+  ✓ Wired up sorting and filtering (@atlaskit/table + var(--ds-*) tokens)
+  ✓ Design system audit passed
   
-Remaining work:
+Remaining work (per CLAUDE.md constraints):
   - Add drag-and-drop row reordering
-  - Implement bulk actions footer
-  - Wire up to CRUD API
+  - Implement bulk actions footer (Atlaskit + ADS tokens)
+  - Wire up to CRUD API (CLAUDE.md 2026-05-12 data model)
+  - Run design-critique before marking complete
 
 Continue from: Add drag-and-drop row reordering
+Next: Follow branch-manager.sh validation (BAU-backlog-table-01 naming confirmed)
+═══════════════════════════════════════════════════════════════
 ```
 
 ---
@@ -295,15 +343,69 @@ Before every conversation, check for available handovers:
 2. If current git branch exists in handover → Offer to restore
 3. If new conversation → Start clean (no handover)
 
-## Multi-Machine Access
+## Multi-Machine Access — Centralized Obsidian Vault
 
-All handovers are stored in `.claude/obsidian-handovers/` which is:
-- ✅ Version-controlled in git
-- ✅ Shared across all machines via GitHub
-- ✅ Accessible to all users on the project
-- ✅ Safe to push to origin
+All handovers are stored in **`.claude/obsidian-handovers/`** which is the **centralized, authoritative source for all branch context** across the entire project:
 
-When you `git pull` on a new machine, all handovers are immediately available.
+### Centralization Guarantee
+- ✅ **Version-controlled in git** — All handovers committed to GitHub
+- ✅ **Shared across all machines** — Pull origin/main → handovers available instantly
+- ✅ **Accessible to all team members** — No setup, no Obsidian app required
+- ✅ **Authoritative & singular** — One source of truth per branch ID
+- ✅ **Safe to push to origin** — Design is for multi-machine git sync
+- ✅ **No external dependencies** — Works on any machine with git
+
+### How to Access Handovers from Any Local Machine
+
+**On any machine working on this GitHub repo:**
+
+```bash
+# Step 1: Pull latest handovers from GitHub
+git pull origin main
+
+# Step 2: List available handovers
+/obsidian list
+# Output shows all branch IDs (01, 02, 03, etc.) with progress
+
+# Step 3: Retrieve specific handover
+/obsidian branch 01
+# Reads CLAUDE.md first, then displays full context
+
+# Step 4: Continue work
+git switch BAU-backlog-table-01
+git pull origin BAU-backlog-table-01
+[resume from handover's next steps]
+```
+
+### Handover Storage
+
+```
+.claude/obsidian-handovers/
+├── metadata.json                    ← Index of all branch IDs
+├── BAU-backlog-table-01.md          ← Handover for ID 01
+├── Incidents-detail-view-02.md      ← Handover for ID 02
+├── Projects-dashboard-filter-01.md  ← Handover for ID 01 (different project)
+└── .archive/                        ← Soft-deleted handovers
+```
+
+All files are **git-tracked** and **automatically synced** via `git pull`. No Obsidian vault app, no external service, no manual sync required.
+
+### Example: Same Handover, Different Machine
+
+**Machine 1 (MacBook):**
+```bash
+/obsidian save BAU-backlog-table-01 01 75
+git push origin BAU-backlog-table-01
+```
+
+**Machine 2 (Linux, same repo):**
+```bash
+git pull origin main
+/obsidian branch 01
+# Output: [Full handover loaded, CLAUDE.md rules verified, context ready]
+```
+
+**Result:** Same context, different machines, zero setup.
 
 ## Best Practices
 
@@ -316,11 +418,20 @@ When you `git pull` on a new machine, all handovers are immediately available.
 ## Skill Triggers
 
 The `/obsidian` skill is triggered by:
-- `/obsidian save` — Explicit save command
-- `/obsidian branch {NN}` — Explicit context retrieval
-- `/obsidian list` — List all handovers
-- `/obsidian delete {NN}` — Archive a handover
-- Auto-detection when starting a conversation with a branch ID in the context
+- `/obsidian save` — Explicit save command (reads CLAUDE.md first for rules context)
+- `/obsidian branch {NN}` — Explicit context retrieval (ALWAYS reads CLAUDE.md first before handover)
+- `/obsidian list` — List all handovers (reads CLAUDE.md first for validation rules)
+- `/obsidian delete {NN}` — Archive a handover (reads CLAUDE.md first)
+- Auto-detection when starting a conversation with a branch ID in the context (reads CLAUDE.md first)
+
+**Execution Order (MANDATORY for all triggers):**
+```
+1. Read .claude/CLAUDE.md (full file, § 2026-05-18 section minimum)
+2. Parse enforcement rules (branch naming, validation, constraints)
+3. Execute requested operation (save/retrieve/list/delete)
+4. Verify output against rules read in step 1
+5. Display result with CLAUDE.md context embedded in response
+```
 
 ---
 
