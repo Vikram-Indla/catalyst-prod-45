@@ -59,10 +59,18 @@ function FieldRow({
   return (
     <div style={{
       display: 'flex', flexDirection: 'column',
-      gap: 4, padding: '8px 0',
-    }}>
+      gap: 4, padding: '8px 4px',
+      borderRadius: 4,
+      transition: 'background-color 0.15s ease-out',
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.backgroundColor = 'var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.08))';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.backgroundColor = 'transparent';
+    }}
       <div style={{
-        fontSize: 14, fontWeight: 500, lineHeight: '20px',
+        fontSize: 11, fontWeight: 600, lineHeight: '16px',
         color: 'var(--ds-text-subtle, #505258)',
       }}>
         {label}
@@ -333,7 +341,7 @@ export function CatalystSidebarDetails({
         <div style={{ marginBottom: 14 }}>
           {/* jira-compare A2 (2026-04-28): label every right-rail field for
               consistency with Fix versions / Assignee / Reporter / Labels. */}
-          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-primary, #292A2E)', marginBottom: 4 }}>Status</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #505258)', marginBottom: 4 }}>Status</div>
           <StatusTransitionDropdown
             issueType={issue?.issue_type ?? 'Defect'}
             currentStateId={currentWorkflowState.id}
