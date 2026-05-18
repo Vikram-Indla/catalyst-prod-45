@@ -318,6 +318,17 @@ export interface BuildTeamProgramBoardAdapterArgs {
   /* ── Primary CTA on toolbar (add card). ── */
   onCreate?: () => void;
   createLabel?: string;
+
+  /* ── Inline create (PragmaticBoard column footer). ── */
+  onCreateCard?: (issue: {
+    issueId: string;
+    issueKey: string;
+    issueType: string;
+    summary: string;
+    status: string;
+    dueDate?: string;
+    assigneeId?: string;
+  }) => void;
 }
 
 export function buildTeamProgramBoardAdapter(
@@ -333,6 +344,7 @@ export function buildTeamProgramBoardAdapter(
     onCardClick,
     onCreate,
     createLabel,
+    onCreateCard,
   } = args;
 
   /* ── Derive column defs dynamically from DB rows. ── */
@@ -456,5 +468,6 @@ export function buildTeamProgramBoardAdapter(
 
     createLabel: createLabel ?? 'Add card',
     onCreate,
+    onCreateCard,
   };
 }

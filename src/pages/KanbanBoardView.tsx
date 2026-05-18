@@ -45,6 +45,7 @@ import {
   useKanbanColumns,
   useKanbanCards,
   useMoveCard,
+  useAddCard,
 } from '@/hooks/useKanbanBoards';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
@@ -107,14 +108,47 @@ export default function KanbanBoardView() {
     [moveCard],
   );
 
+  /* ═════ Create-card mutation (inline card creation). ═════ */
+  const addCard = useAddCard();
+  const onCreateCard = useCallback(
+    async (issue: {
+      issueId: string;
+      issueKey: string;
+      issueType: string;
+      summary: string;
+      status: string;
+      dueDate?: string;
+      assigneeId?: string;
+    }) => {
+      if (!boardId) return;
+      try {
+        await addCard.mutateAsync({
+          board_id: boardId,
+          column_id: issue.status,
+          work_item_id: issue.issueId,
+          card_type: issue.issueType.toLowerCase(),
+          swim_lane_id: null,
+          sort_order: 0,
+        });
+        toast.success('Card added to board');
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Failed to add card');
+      }
+    },
+    [boardId, addCard],
+  );
+
   /* ═════ Build adapter. ═════ */
   const adapter = useMemo(() => {
     if (!board) return null;
+    // Extract project key from board context (defaults to BAU for fallback)
+    const projectKey = (board as any).project_key || 'BAU';
     return buildTeamProgramBoardAdapter({
       board,
       columns,
       cards,
       avatarsByName,
+      projectKey,
       search,
       onSearchChange: setSearch,
       selAssignees,
@@ -125,11 +159,12 @@ export default function KanbanBoardView() {
       groupBy,
       onGroupByChange: setGroupBy,
       onMoveCard,
+      onCreateCard,
     });
   }, [
     board, columns, cards, avatarsByName,
     search, selAssignees, filterSelected, groupBy,
-    onFilterChange, onClearFilters, onMoveCard,
+    onFilterChange, onClearFilters, onMoveCard, onCreateCard,
   ]);
 
   /* ═════ Loading state. ═════ */
