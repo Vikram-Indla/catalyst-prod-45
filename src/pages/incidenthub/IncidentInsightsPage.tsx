@@ -14,11 +14,11 @@ export default function IncidentInsightsPage() {
   const breachedCount = incidents?.filter(i => i.resolution_breached).length || 0;
 
   // DARK MODE tokens
-  const pageBg = 'var(--cp-bg-elevated, #FFFFFF)';
-  const surfaceBg = 'var(--cp-bg-elevated, #FFFFFF)';
-  const textPrimary = 'var(--cp-text-primary, #0F172A)';
-  const textSecondary = 'var(--cp-text-tertiary, #64748B)';
-  const textBody = 'var(--cp-text-secondary, #334155)';
+  const pageBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+  const surfaceBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+  const textPrimary = 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))';
+  const textSecondary = 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
+  const textBody = 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))';
   const borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';
 
   return (
@@ -27,11 +27,11 @@ export default function IncidentInsightsPage() {
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: 'var(--cp-purple-5, #F3E8FF)' }}>
-            <Sparkles size={18} style={{ color: '#7C3AED' }} />
+            <Sparkles size={18} style={{ color: 'var(--cp-purple-60, #7C3AED)' }} />
           </div>
           <div className="flex items-center gap-2">
             <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: textPrimary }}>Insights</h1>
-            <span className="px-1.5 py-0.5" style={{ fontSize: 10, fontWeight: 700, backgroundColor: 'var(--cp-purple-5, #F3E8FF)', color: '#7C3AED', borderRadius: 3 }}>AI</span>
+            <span className="px-1.5 py-0.5" style={{ fontSize: 10, fontWeight: 700, backgroundColor: 'var(--cp-purple-5, #F3E8FF)', color: 'var(--cp-purple-60, #7C3AED)', borderRadius: 3 }}>AI</span>
           </div>
           <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: textSecondary, marginLeft: 'auto' }}>Pattern analysis and recommendations</p>
         </div>
@@ -41,9 +41,9 @@ export default function IncidentInsightsPage() {
           <div className="flex items-start gap-3">
             <div className="shrink-0 rounded-full flex items-center justify-center" style={{
               width: 36, height: 50,
-              background: 'linear-gradient(135deg, #7C3AED, #0D9488)',
+              background: 'linear-gradient(135deg, var(--cp-purple-60, #7C3AED), var(--cp-teal-60, #0D9488))',
             }}>
-              <Sparkles size={18} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
+              <Sparkles size={18} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
             </div>
             <div>
               <h3 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 650, color: textPrimary, marginBottom: 4 }}>
@@ -63,7 +63,7 @@ export default function IncidentInsightsPage() {
           {/* Risk Signals */}
           <div className="p-4" style={{ border: `1px solid ${borderColor}`, borderRadius: 6 }}>
             <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: textPrimary }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-danger, #DC2626)', display: 'inline-block' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', display: 'inline-block' }} />
               Risk Signals
             </h3>
             <div className="space-y-3">
@@ -86,7 +86,7 @@ export default function IncidentInsightsPage() {
           {/* Improvements */}
           <div className="p-4" style={{ border: `1px solid ${borderColor}`, borderRadius: 6 }}>
             <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: textPrimary }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-success, #16A34A)', display: 'inline-block' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-success, var(--cp-success, #16A34A))', display: 'inline-block' }} />
               Improvements
             </h3>
             <div className="space-y-3">

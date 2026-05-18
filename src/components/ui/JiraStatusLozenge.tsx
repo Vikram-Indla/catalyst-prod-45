@@ -11,12 +11,12 @@
 import { ChevronDown } from '@/lib/atlaskit-icons';
 
 const STATUS_MAP: Record<string, { bg: string; text: string; label: string }> = {
-  backlog:         { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)', label: 'Backlog' },
+  backlog:         { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text, #253858)', label: 'Backlog' },
   in_progress:     { bg: '#FFF7D6', text: '#7F5F01', label: 'In Progress' },
   done:            { bg: '#DCFFF1', text: '#216E4E', label: 'Done' },
   in_production:   { bg: '#DCFFF1', text: '#216E4E', label: 'In Production' },
   ready_for_qa:    { bg: '#DCFFF1', text: '#216E4E', label: 'Ready for QA' },
-  in_requirements: { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)', label: 'In Requirements' },
+  in_requirements: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text, #253858)', label: 'In Requirements' },
   in_uat:          { bg: '#DCFFF1', text: '#216E4E', label: 'In UAT' },
   in_qa:           { bg: '#DCFFF1', text: '#216E4E', label: 'In QA' },
   in_dev:          { bg: '#FFF7D6', text: '#7F5F01', label: 'In Dev' },
@@ -33,7 +33,7 @@ export function JiraStatusLozenge({ status, interactive = false, onStatusChange 
   // Cycle 1 §1.4: guard unknown status — never crash. For unknown values,
   // pass the string through unchanged (Jira does the same).
   const config = STATUS_MAP[status] ?? {
-    bg: 'var(--ds-border, #DFE1E6)',
+    bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
     text: 'var(--ds-text, #253858)',
     label: status ?? 'Unknown',
   };

@@ -411,7 +411,7 @@ export function CreateEpicDialog({
         "[&>button]:hidden"
       )}>
         {/* Accent Bar */}
-        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,#2563eb)] via-[#8b5cf6] to-[var(--ds-text-brand,#60a5fa)] flex-shrink-0" />
+        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] via-[#8b5cf6] to-[var(--ds-text-brand,#60a5fa)] flex-shrink-0" />
 
         {/* Header */}
         <DialogHeader className="px-6 py-4 border-b border-gray-200 dark:border-[#333333] flex-shrink-0 bg-white dark:bg-[#141414]">
@@ -659,7 +659,7 @@ export function CreateEpicDialog({
                                     className="px-2 py-0.5 rounded text-[10px] font-medium"
                                     style={{
                                       backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                                      color: 'var(--ds-text-brand, #2563eb)',
+                                      color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
                                       border: '1px solid rgba(37, 99, 235, 0.25)'
                                     }}
                                   >
@@ -790,7 +790,7 @@ export function CreateEpicDialog({
           <Button 
             onClick={handleSubmit} 
             disabled={!isValid || createEpicMutation.isPending}
-            className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white px-6"
+            className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white px-6"
             title={
               isProgramMissing 
                 ? 'Program context required' 

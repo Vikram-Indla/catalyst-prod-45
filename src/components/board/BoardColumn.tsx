@@ -29,7 +29,7 @@ const COLUMN_HEADER_COLORS: Record<WorkflowStatus, string> = {
   backlog: '#c8ccd0',
   design: '#0d9488',
   ready_for_dev: 'var(--ds-text-brand, #3b82f6)',
-  in_development: 'var(--ds-text-brand, #2563eb)',
+  in_development: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   qa_testing: 'var(--ds-text-warning, #f59e0b)',
   uat_testing: '#9ca3af',
   in_beta: '#0d9488',

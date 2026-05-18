@@ -74,7 +74,7 @@ export const adsTokens = {
      * hubPage — outer page background for <AtlaskitPageShell>.
      *
      * Apr 19, 2026 (V3 — White Canvas):
-     *   Light mode moved from Jira-blue #E9F2FE to #FFFFFF on Vikram's
+     *   Light mode moved from Jira-blue #E9F2FE to var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)) on Vikram's
      *   decision (dashboard read as a "grey/blue tint" next to backlog;
      *   backlog's mostly-white content had been masking the same frame).
      *   Decision: flatten project-hub surfaces to a single white canvas.
@@ -90,7 +90,7 @@ export const adsTokens = {
     hubPage:  { cp: '--cp-bg-hub-page', light: '#FFFFFF', dark: '#1F1F21', atlaskit: '' } satisfies AdsToken,
     surface:  { cp: '--cp-bg-surface',  light: '#FFFFFF', dark: '#242528', atlaskit: 'elevation.surface' } satisfies AdsToken,
     overlay:  { cp: '--cp-bg-overlay',  light: '#F8FAFC', dark: '#1F1F1F', atlaskit: 'elevation.surface.overlay' } satisfies AdsToken,
-    inset:    { cp: '--cp-bg-inset',    light: '#F1F5F9', dark: '#111111', atlaskit: 'color.background.neutral.subtle' } satisfies AdsToken,
+    inset:    { cp: '--cp-bg-inset',    light: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', dark: '#111111', atlaskit: 'color.background.neutral.subtle' } satisfies AdsToken,
     hover:    { cp: '--cp-interact-hover',    light: 'rgba(0,0,0,0.04)', dark: '#1F1F1F', atlaskit: 'color.background.neutral.hovered' } satisfies AdsToken,
     // 2026-05-01 — RCA fix for blue tint on Atlaskit Editor canvas in dark mode.
     // Previously dark = rgba(37,99,235,0.14) which painted Editor's "selected"
@@ -101,15 +101,15 @@ export const adsTokens = {
     pressed:  { cp: '--cp-interact-press',    light: 'rgba(0,0,0,0.08)', dark: '#292929', atlaskit: 'color.background.neutral.pressed' } satisfies AdsToken,
   },
   text: {
-    primary:   { cp: '--cp-text-primary',   light: '#0F172A', dark: '#EDEDED', atlaskit: 'color.text' } satisfies AdsToken,
+    primary:   { cp: '--cp-text-primary',   light: 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))', dark: '#EDEDED', atlaskit: 'color.text' } satisfies AdsToken,
     secondary: { cp: '--cp-text-secondary', light: '#475569', dark: '#A1A1A1', atlaskit: 'color.text.subtle' } satisfies AdsToken,
-    muted:     { cp: '--cp-text-muted',     light: '#94A3B8', dark: '#878787', atlaskit: 'color.text.subtlest' } satisfies AdsToken,
+    muted:     { cp: '--cp-text-muted',     light: 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))', dark: '#878787', atlaskit: 'color.text.subtlest' } satisfies AdsToken,
     disabled:  { cp: '--cp-text-disabled',  light: '#CBD5E1', dark: '#7D7D7D', atlaskit: 'color.text.disabled' } satisfies AdsToken,
     inverse:   { cp: '--cp-text-inverse',   light: '#FFFFFF', dark: '#0A0A0A', atlaskit: 'color.text.inverse' } satisfies AdsToken,
   },
   border: {
-    default: { cp: '--cp-border-default', light: '#E2E8F0', dark: '#2E2E2E', atlaskit: 'color.border' } satisfies AdsToken,
-    subtle:  { cp: '--cp-border-subtle',  light: '#F1F5F9', dark: '#292929', atlaskit: 'color.border.accent.gray' } satisfies AdsToken,
+    default: { cp: '--cp-border-default', light: 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', dark: '#2E2E2E', atlaskit: 'color.border' } satisfies AdsToken,
+    subtle:  { cp: '--cp-border-subtle',  light: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', dark: '#292929', atlaskit: 'color.border.accent.gray' } satisfies AdsToken,
     strong:  { cp: '--cp-border-strong',  light: '#CBD5E1', dark: '#454545', atlaskit: 'color.border.bold' } satisfies AdsToken,
     focus:   { cp: '--cp-border-focus',   light: '#2563EB', dark: '#2563EB', atlaskit: 'color.border.focused' } satisfies AdsToken,
   },
@@ -123,7 +123,7 @@ export const adsTokens = {
    * in a StatusLozenge is a bug.
    */
   status: {
-    grey:  { bg: { cp: '--cp-lozenge-grey-bg',  light: '#DFE1E6', dark: '#292929', atlaskit: '' } satisfies AdsToken,
+    grey:  { bg: { cp: '--cp-lozenge-grey-bg',  light: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', dark: '#292929', atlaskit: '' } satisfies AdsToken,
              fg: { cp: '--cp-lozenge-grey-fg',  light: '#253858', dark: '#EDEDED', atlaskit: '' } satisfies AdsToken },
     blue:  { bg: { cp: '--cp-lozenge-blue-bg',  light: '#DEEBFF', dark: '#1A3A6A', atlaskit: '' } satisfies AdsToken,
              fg: { cp: '--cp-lozenge-blue-fg',  light: '#0747A6', dark: '#DDEBFF', atlaskit: '' } satisfies AdsToken },

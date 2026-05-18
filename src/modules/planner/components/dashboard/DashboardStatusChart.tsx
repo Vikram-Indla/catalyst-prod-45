@@ -15,7 +15,7 @@ interface DashboardStatusChartProps {
 // Status color map using V9 tokens
 const STATUS_COLORS: Record<string, string> = {
   backlog: 'var(--ds-text-subtlest, #64748b)',
-  planned: 'var(--ds-text-brand, #2563eb)',
+  planned: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   progress: 'var(--ds-text-warning, #d97706)',
   review: '#8b5cf6',
   done: '#10b981',

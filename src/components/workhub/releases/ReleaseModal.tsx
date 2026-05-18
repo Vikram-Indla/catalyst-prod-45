@@ -14,7 +14,7 @@ interface ReleaseModalProps {
 
 const STATUS_OPTIONS: ReleaseStatus[] = ['Planned', 'Active', 'At Risk', 'Completed', 'Cancelled'];
 const COLOR_PRESETS = [
-  'var(--ds-text-brand, #2563eb)', '#0d9488', '#7c3aed', 'var(--ds-text-success, #16a34a)',
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', '#0d9488', '#7c3aed', 'var(--ds-text-success, #16a34a)',
   'var(--ds-text-warning, #d97706)', 'var(--ds-text-danger, #ef4444)', 'var(--ds-text-subtle, #475569)', '#0891b2',
 ];
 

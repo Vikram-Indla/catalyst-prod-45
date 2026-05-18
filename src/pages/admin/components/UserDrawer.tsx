@@ -593,7 +593,7 @@ const drawerCSS = `
   bottom: 0;
   width: 520px;
   max-width: 90vw;
-  background: var(--ds-text-inverse, #ffffff);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   z-index: 101;
   transform: translateX(100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -611,7 +611,7 @@ const drawerCSS = `
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid var(--ds-border, #e2e8f0);
+  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
 }
 .um-drawer-header h2 {
   font-size: 18px;
@@ -655,7 +655,7 @@ const drawerCSS = `
   align-items: center;
   gap: 8px;
   padding: 16px 24px;
-  border-top: 1px solid var(--ds-border, #e2e8f0);
+  border-top: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   background: var(--ds-surface-sunken, #f8fafc);
 }
 
@@ -668,7 +668,7 @@ const drawerCSS = `
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--ds-text-brand, #2563eb);
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   margin-bottom: 14px;
   padding-bottom: 10px;
   border-bottom: 1px solid var(--ds-surface-sunken, #f1f5f9);
@@ -697,16 +697,16 @@ const drawerCSS = `
   height: 40px;
   padding: 0 12px;
   font-size: 14px;
-  border: 1px solid var(--ds-border, #e2e8f0);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 8px;
   transition: all 0.15s;
-  background: var(--ds-text-inverse, #ffffff);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   color: var(--ds-text, #0f172a);
 }
 .um-form-group input:focus,
 .um-form-group select:focus {
   outline: none;
-  border-color: var(--ds-text-brand, #2563eb);
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
 }
 .um-form-group input:disabled {
@@ -726,23 +726,23 @@ const drawerCSS = `
   font-size: 13px;
   font-weight: 500;
   border-radius: 6px;
-  border: 1px solid var(--ds-border, #e2e8f0);
-  background: var(--ds-text-inverse, #ffffff);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   color: var(--ds-text, #0f172a);
   cursor: pointer;
   transition: all 0.15s;
 }
 .um-drawer .um-btn:hover {
-  border-color: var(--ds-text-brand, #2563eb);
-  color: var(--ds-text-brand, #2563eb);
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 }
 .um-drawer .um-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 .um-drawer .um-btn-primary {
-  background: var(--ds-text-brand, #2563eb);
-  border-color: var(--ds-text-brand, #2563eb);
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   color: white;
 }
 .um-drawer .um-btn-primary:hover {
@@ -759,7 +759,7 @@ const drawerCSS = `
 
 /* ═══ DARK MODE — ADS tokens (was inline solid hex palette) ═══
    Per platform guardrail: use --ds-* tokens with sensible fallbacks.
-   Brand blue (var(--ds-text-brand, #2563eb)) and danger red (var(--ds-text-danger, #ef4444)) stay as-is — they
+   Brand blue (var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))) and danger red (var(--ds-text-danger, #ef4444)) stay as-is — they
    are intentional brand accents in both modes. */
 .dark .um-drawer {
   background: var(--ds-surface-overlay, #1D2125) !important;

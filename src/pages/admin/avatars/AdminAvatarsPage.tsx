@@ -23,7 +23,6 @@ import { toast } from 'sonner';
 
 import Heading from '@atlaskit/heading';
 import Button from '@atlaskit/button/new';
-import Avatar from '@atlaskit/avatar';
 import Lozenge from '@atlaskit/lozenge';
 import Textfield from '@atlaskit/textfield';
 import SectionMessage from '@atlaskit/section-message';
@@ -33,6 +32,7 @@ import Tooltip from '@atlaskit/tooltip';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { resolveAvatarUrl } from '@/lib/avatars';
+import { UserAvatar } from '@/components/shared/UserAvatar';
 import {
   useResourceAvatarOverrides,
 } from '@/hooks/useResourceAvatarOverrides';
@@ -79,7 +79,7 @@ const pageContainerStyle: React.CSSProperties = {
 };
 
 const listContainerStyle: React.CSSProperties = {
-  background: 'var(--ds-surface, #FFFFFF)',
+  background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   border: '1px solid var(--ds-border, #DCDFE4)',
   borderRadius: 6,
   overflow: 'hidden',
@@ -99,28 +99,6 @@ const rowStyleLast: React.CSSProperties = {
   ...rowStyle,
   borderBottom: 'none',
 };
-
-const initialsTileStyle: React.CSSProperties = {
-  width: 40,
-  height: 40,
-  borderRadius: '50%',
-  background: '#DCDFE4',
-  color: '#172B4D',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontWeight: 600,
-  fontSize: 14,
-};
-
-// ─── Initials helper ─────────────────────────────────────────────────
-
-function initialsOf(name: string | null): string {
-  if (!name) return '??';
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
 
 // ─── Single resource row ─────────────────────────────────────────────
 
@@ -197,11 +175,11 @@ function ResourceRow({ profile, overrideUrl, overrideStoragePath, isLast }: Reso
     <div style={isLast ? rowStyleLast : rowStyle}>
       {/* Avatar column */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {liveUrl ? (
-          <Avatar size="medium" src={liveUrl} name={profile.full_name ?? profile.email ?? '?'} />
-        ) : (
-          <div style={initialsTileStyle}>{initialsOf(profile.full_name ?? profile.email ?? '?')}</div>
-        )}
+        <UserAvatar
+          name={profile.full_name ?? profile.email ?? '?'}
+          src={liveUrl}
+          size="large"
+        />
       </div>
 
       {/* Identity column */}
@@ -212,7 +190,7 @@ function ResourceRow({ profile, overrideUrl, overrideStoragePath, isLast }: Reso
           gap: 8,
           fontSize: 14,
           fontWeight: 500,
-          color: 'var(--ds-text, #172B4D)',
+          color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
@@ -303,6 +281,40 @@ export default function AdminAvatarsPage() {
         </div>
       </div>
 
+      {/* Design System reference — surfaces the canonical UserAvatar API + live
+          previews so callers know which wrapper to import and what props to use. */}
+      <div
+        style={{
+          marginBottom: 24,
+          padding: 16,
+          background: 'var(--ds-background-information, #E9F2FF)',
+          border: '1px solid var(--ds-border-information, #85B8FF)',
+          borderRadius: 6,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 12 }}>
+          <Heading size="small">Canonical UserAvatar</Heading>
+          <Lozenge appearance="success">v2.0.0</Lozenge>
+          <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+            <code>@/components/shared/UserAvatar</code>
+          </span>
+        </div>
+        <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', marginBottom: 12, maxWidth: 800 }}>
+          Composition over <code>CatalystAvatar</code> with an optional country flag overlay.
+          Use this wrapper everywhere a user identity is shown — tables, rails, sidebars,
+          comment threads, notification rows. Photo precedence:{' '}
+          <code>src</code> → <code>resolveAvatarUrl(name)</code> → deterministic-colour initials.
+        </div>
+        <div style={{ display: 'flex', gap: 24, alignItems: 'flex-end', flexWrap: 'wrap' }}>
+          {(['xsmall', 'small', 'medium', 'large', 'xlarge'] as const).map(s => (
+            <div key={s} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+              <UserAvatar name="Amadou Ndiaye" country="Saudi Arabia" size={s} />
+              <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>{s}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div style={{ marginBottom: 16 }}>
         <SectionMessage appearance="information" title="Resolution order">
           <p>
@@ -345,7 +357,7 @@ export default function AdminAvatarsPage() {
         <div style={{
           padding: 40,
           textAlign: 'center',
-          background: 'var(--ds-surface-sunken, #F4F5F7)',
+          background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
           borderRadius: 6,
           color: 'var(--ds-text-subtle, #626F86)',
         }}>

@@ -197,7 +197,7 @@ export function UserInlineCell({
           placeholder="None"
           formatOptionLabel={(opt: SelectOption & { value: string | null }) =>
             opt.value === null
-              ? <span style={{ color: 'var(--ds-text-subtle, #44546F)' }}>None</span>
+              ? <span style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>None</span>
               : showBadge
                 ? <Lozenge appearance="default">{opt.label}</Lozenge>
                 : opt.label

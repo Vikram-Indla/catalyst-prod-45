@@ -34,7 +34,7 @@ export function WikiAdminAccessTab() {
   const matrixRows = matrix ?? [];
 
   if (domainList.length === 0) {
-    return <EmptyState icon={<ShieldCheck style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, #64748B)' }} />} message="No domains configured" sub="Domains will appear after database setup." />;
+    return <EmptyState icon={<ShieldCheck style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }} />} message="No domains configured" sub="Domains will appear after database setup." />;
   }
 
   const lookup: Record<string, Record<string, { id: string; has_access: boolean }>> = {};
@@ -52,7 +52,7 @@ export function WikiAdminAccessTab() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>
+      <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
         Click cells to toggle access. Green = Access, Grey = No Access.
       </div>
 
@@ -60,9 +60,9 @@ export function WikiAdminAccessTab() {
         <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--cp-font-body)', fontSize: 12 }}>
           <thead>
             <tr style={{ background: 'var(--cp-bg-sunken, #F8FAFC)' }}>
-              <th style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, #64748B)', position: 'sticky', insetInlineStart: 0, background: 'var(--cp-bg-sunken, #F8FAFC)', zIndex: 1 }}>Role</th>
+              <th style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', position: 'sticky', insetInlineStart: 0, background: 'var(--cp-bg-sunken, #F8FAFC)', zIndex: 1 }}>Role</th>
               {domainList.map(d => (
-                <th key={d.domain_code} style={{ padding: '8px 12px', textAlign: 'center', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, #64748B)', whiteSpace: 'nowrap' }} title={d.domain_name}>
+                <th key={d.domain_code} style={{ padding: '8px 12px', textAlign: 'center', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', whiteSpace: 'nowrap' }} title={d.domain_name}>
                   {d.domain_code}
                 </th>
               ))}
@@ -87,11 +87,11 @@ export function WikiAdminAccessTab() {
                           padding: '2px 10px', borderRadius: 4, border: 'none',
                           cursor: entry ? 'pointer' : 'default',
                           fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
-                          background: hasAccess ? '#1B7F37' : 'var(--ds-border, #DFE1E6)',
-                          color: hasAccess ? '#0D7331' : '#44546F',
+                          background: hasAccess ? 'var(--cp-lozenge-green-bg, #1B7F37)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
+                          color: hasAccess ? '#0D7331' : 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))',
                           opacity: entry ? 1 : 0.5, outline: 'none',
                         }}
-                        onFocus={(e) => { if (entry) e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
+                        onFocus={(e) => { if (entry) e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
                         onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
                       >
                         {hasAccess ? 'access' : 'none'}

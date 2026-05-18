@@ -22,9 +22,9 @@ interface Props {
 
 function StatusLozenge({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
-    active:    { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)' },
-    completed: { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)' },
-    planning:  { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' },
+    active:    { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+    completed: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+    planning:  { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
   };
   const m = map[status] ?? map.planning;
   return (
@@ -197,7 +197,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
                 <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
                   <span style={{
                     fontFamily: 'var(--cp-font-mono)', fontSize: 10,
-                    color: 'var(--fg-2)', background: 'var(--ds-surface-sunken, #F1F5F9)', padding: '1px 6px', borderRadius: 4,
+                    color: 'var(--fg-2)', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '1px 6px', borderRadius: 4,
                   }}>{e.ra_tag || '—'}</span>
                   <span style={{ fontSize: 12, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {e.title}
@@ -220,7 +220,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
                 disabled={publishing}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
-                  border: 'none', background: 'var(--cp-blue)', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer',
+                  border: 'none', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
                   opacity: publishing ? 0.7 : 1,
                 }}
               >

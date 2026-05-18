@@ -53,8 +53,8 @@ function formatDate(iso: string): string {
 function StatusLozenge({ status }: { status: string }) {
   let bg: string, text: string;
   switch (status) {
-    case 'completed': bg = 'var(--sem-success)'; text = 'var(--ds-text-inverse, #FFFFFF)'; break;
-    case 'running': bg = 'var(--cp-blue)'; text = 'var(--ds-text-inverse, #FFFFFF)'; break;
+    case 'completed': bg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; break;
+    case 'running': bg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; break;
     case 'failed': bg = 'var(--sem-danger-bg)'; text = 'var(--sem-danger-fg)'; break;
     default: bg = 'var(--divider)'; text = 'var(--fg-2)';
   }
@@ -147,7 +147,7 @@ export function JiraSyncDrawer({
               className={`inline-flex items-center gap-1.5 ${isSyncing ? 'bg-[var(--cp-primary-30)]' : 'bg-[var(--cp-blue)]'}`}
               style={{
                 height: 32, padding: '0 14px', borderRadius: 4,
-                color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
+                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
                 fontSize: 12, fontWeight: 600, fontFamily: 'var(--cp-font-body)',
                 cursor: isSyncing ? 'not-allowed' : 'pointer',
               }}

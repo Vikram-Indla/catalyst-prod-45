@@ -9,13 +9,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { FolderKanban } from '@/lib/atlaskit-icons';
 
 const ATLASSIAN_DROPDOWN: React.CSSProperties = {
-  background: 'var(--ds-surface, #FFFFFF)', borderRadius: 4, border: 'none',
+  background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4, border: 'none',
   boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
   padding: '4px 0', zIndex: 9999,
 };
 
 const CheckmarkSVG = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052CC" strokeWidth="2.5" style={{ flexShrink: 0 }}>
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--cp-primary-60, #0052CC)" strokeWidth="2.5" style={{ flexShrink: 0 }}>
     <polyline points="20 6 9 17 4 12" />
   </svg>
 );
@@ -99,7 +99,7 @@ export function BRProjectsPicker({ businessRequestId }: Props) {
           display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px',
           borderRadius: 4, cursor: 'pointer', transition: 'background .12s', flexWrap: 'wrap', minHeight: 32,
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+        onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
         {linkedProjects.length === 0 ? (
@@ -141,22 +141,22 @@ export function BRProjectsPicker({ businessRequestId }: Props) {
                       minHeight: 36, padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 10,
                       cursor: 'pointer', background: isActive ? '#DEEBFF' : 'transparent',
                     }}
-                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                     onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                   >
                     <div style={{ width: 24, height: 24, borderRadius: 4, background: '#E9F2FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <FolderKanban size={14} color="#0747A6" />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
-                      {p.key && <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>{p.key}</div>}
+                      <div style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
+                      {p.key && <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>{p.key}</div>}
                     </div>
                     {isActive && <CheckmarkSVG />}
                   </div>
                 );
               })}
               {filtered.length === 0 && (
-                <div style={{ padding: '12px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No projects found</div>
+                <div style={{ padding: '12px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No projects found</div>
               )}
             </div>
           </div>

@@ -7,8 +7,8 @@
 
 .planner-calendar-content {
   /* ==================== SURFACES ==================== */
-  --pln-cal-surface-page: var(--ds-surface, #ffffff);
-  --pln-cal-surface-card: var(--ds-surface, #ffffff);
+  --pln-cal-surface-page: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --pln-cal-surface-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --pln-cal-surface-hover: var(--ds-surface-sunken, #f8fafc);
   --pln-cal-surface-selected: var(--ds-background-selected, #eff6ff);
   --pln-cal-surface-today: #dbeafe;
@@ -17,15 +17,15 @@
   
   /* ==================== TEXT ==================== */
   --pln-cal-text-primary: var(--ds-text, #0f172a);
-  --pln-cal-text-secondary: var(--ds-text-subtle, #334155);
+  --pln-cal-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   --pln-cal-text-tertiary: var(--ds-text-subtlest, #64748b);
   --pln-cal-text-muted: var(--ds-text-subtlest, #94a3b8);
   --pln-cal-text-adjacent: var(--ds-text-disabled, #cbd5e1);
   
   /* ==================== BORDERS ==================== */
-  --pln-cal-border: var(--ds-border, #e2e8f0);
+  --pln-cal-border: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --pln-cal-border-light: var(--ds-surface-sunken, #f1f5f9);
-  --pln-cal-border-focus: var(--ds-text-brand, #2563eb);
+  --pln-cal-border-focus: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   
   /* ==================== STATUS COLORS ==================== */
   --pln-cal-status-backlog: var(--ds-text-subtlest, #94a3b8);
@@ -50,7 +50,7 @@
   --pln-cal-ws-data-ai: #14b8a6;
   
   /* ==================== ACCENT ==================== */
-  --pln-cal-accent: var(--ds-text-brand, #2563eb);
+  --pln-cal-accent: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --pln-cal-accent-light: var(--ds-background-selected, #eff6ff);
   
   /* ==================== CAPACITY ==================== */
@@ -800,7 +800,7 @@
   /* Surfaces */
   --pln-cal-surface-page: var(--ds-text, #0f172a);
   --pln-cal-surface-card: #1e293b;
-  --pln-cal-surface-hover: var(--ds-text-subtle, #334155);
+  --pln-cal-surface-hover: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   --pln-cal-surface-selected: #1e3a5f;
   --pln-cal-surface-today: #1e3a5f;
   --pln-cal-surface-weekend: #1a2432;
@@ -814,7 +814,7 @@
   --pln-cal-text-adjacent: var(--ds-text-subtle, #475569);
   
   /* Borders */
-  --pln-cal-border: var(--ds-text-subtle, #334155);
+  --pln-cal-border: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   --pln-cal-border-light: #1e293b;
   --pln-cal-border-focus: var(--ds-text-brand, #60a5fa);
   

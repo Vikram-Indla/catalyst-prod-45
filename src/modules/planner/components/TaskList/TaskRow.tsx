@@ -132,7 +132,7 @@ export function TaskRow({
           <span
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-semibold"
             style={{
-              borderColor: task.status_color ? `${task.status_color}40` : 'var(--ds-border, #e2e8f0)',
+              borderColor: task.status_color ? `${task.status_color}40` : 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
               color: task.status_color || 'var(--ds-text-subtlest, #64748b)',
               backgroundColor: 'transparent',
             }}

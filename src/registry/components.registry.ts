@@ -210,6 +210,19 @@ const CANONICAL: ComponentRegistryEntry[] = [
     tags: ['icon', 'type'],
   },
   {
+    id: 'user-avatar',
+    name: 'UserAvatar',
+    category: 'molecule',
+    origin: 'shared',
+    status: 'canonical',
+    version: '2.0.0',
+    file_path: 'src/components/shared/UserAvatar.tsx',
+    jsdoc_excerpt:
+      'Canonical user face. Composes CatalystAvatar (photo / deterministic-colour initials / silhouette fallback) and adds an optional country flag overlay. ADS-canonical size scale (xsmall → xxlarge). Use everywhere a user identity is shown — tables, rails, sidebars, comment threads, notification rows.',
+    dark_light_supported: true,
+    tags: ['avatar', 'user', 'face', 'flag'],
+  },
+  {
     id: 'watchers-chip',
     name: 'WatchersChip',
     category: 'molecule',

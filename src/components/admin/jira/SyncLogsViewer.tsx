@@ -54,7 +54,7 @@ export function SyncLogsViewer({ open, onOpenChange, connectionId }: SyncLogsVie
       case "warning":
         return <span style={{ display:'inline-flex', color:'var(--ds-icon-warning, #D97008)' }}><WarningIcon label="" size="small" /></span>;
       default:
-        return <span style={{ display:'inline-flex', color:'var(--ds-icon-subtle, #6B778C)' }}><Spinner size="small" /></span>;
+        return <span style={{ display:'inline-flex', color:'var(--ds-icon-subtle, var(--cp-text-secondary, #6B778C))' }}><Spinner size="small" /></span>;
     }
   };
 

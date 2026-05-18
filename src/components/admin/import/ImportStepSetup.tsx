@@ -148,7 +148,7 @@ export function ImportStepSetup({
         {/* File Upload */}
         <div className="space-y-4">
           <div>
-            <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+            <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
               Source File <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
             </label>
           </div>
@@ -218,7 +218,7 @@ export function ImportStepSetup({
             onCheckedChange={(checked) => onUseExistingConfigChange(checked === true)}
           />
           <div className="space-y-1">
-            <label htmlFor="use-existing" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)', cursor: 'pointer' }}>
+            <label htmlFor="use-existing" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', cursor: 'pointer' }}>
               Use an existing configuration file
             </label>
             <p className="text-xs text-muted-foreground">

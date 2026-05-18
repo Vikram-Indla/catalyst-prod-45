@@ -7,16 +7,16 @@
 /* ── LIGHT MODE (DEFAULT) ── */
 :root, [data-theme="light"] {
   /* Surfaces */
-  --cp-bg:              var(--ds-surface, #FFFFFF);
+  --cp-bg:              var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   /* V3 Canonical White Canvas (Apr 27, 2026 audit, L36).
      Was #F7F8F9 (Atlassian sunken slate) which painted the h-screen
      wrapper with a tint visible at the page edges. Catalyst owner
      decision: every light-mode page surface is white. The Jira-blue
      wash and Atlassian-slate wash both retire here. */
-  --cp-bg-canvas:       var(--ds-surface, #FFFFFF);
+  --cp-bg-canvas:       var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --cp-bg-sidebar-hdr:  var(--ds-surface-sunken, #F8FAFC);
-  --cp-bg-sunken:       var(--ds-surface-sunken, #F1F5F9);
-  --cp-float:           var(--ds-surface, #FFFFFF);
+  --cp-bg-sunken:       var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
+  --cp-float:           var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   /* Bridge gap closure (2026-04-28): src/theme/ads/tokens.ts declared
      overlay/inset/disabled values in TS but no CSS rule emitted them
      as custom properties. Wrappers reading var(--cp-bg-overlay) etc.
@@ -24,7 +24,7 @@
      counterpart. Light values mirror tokens.ts adsTokens.bg.* and
      text.disabled. */
   --cp-bg-overlay:      var(--ds-surface-sunken, #F8FAFC);
-  --cp-bg-inset:        var(--ds-surface-sunken, #F1F5F9);
+  --cp-bg-inset:        var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
   --cp-text-disabled:   var(--ds-text-disabled, #CBD5E1);
 
   /* Text */
@@ -46,41 +46,41 @@
 
   /* Brand */
   --cp-blue:            var(--ds-text-brand, #3B82F6);
-  --cp-blue-text:       var(--ds-text-brand, #2563EB);
-  --cp-blue-link:       var(--ds-text-brand, #2563EB);
+  --cp-blue-text:       var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
+  --cp-blue-link:       var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --cp-blue-wash:       rgba(59,130,246,0.08);
 
   /* Status */
-  --cp-ok:              var(--ds-text-success, #16A34A);
+  --cp-ok:              var(--ds-text-success, var(--cp-success, #16A34A));
   --cp-ok-bg:           rgba(22,163,74,0.08);
-  --cp-warn:            var(--ds-text-warning, #D97706);
+  --cp-warn:            var(--ds-text-warning, var(--cp-warning, #D97706));
   --cp-warn-bg:         rgba(217,119,6,0.08);
-  --cp-err:             var(--ds-text-danger, #DC2626);
+  --cp-err:             var(--ds-text-danger, var(--cp-danger, #DC2626));
   --cp-err-bg:          rgba(220,38,38,0.08);
-  --cp-err-text:        var(--ds-text-danger, #DC2626);
+  --cp-err-text:        var(--ds-text-danger, var(--cp-danger, #DC2626));
 
   /* AI */
   --cp-ai-bg:           rgba(59,130,246,0.06);
   --cp-ai-bd:           rgba(59,130,246,0.12);
-  --cp-ai-t:            var(--ds-text-brand, #2563EB);
+  --cp-ai-t:            var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
 
   /* StatusLozenge */
-  --cp-lz-gy-bg:        var(--ds-border, #DFE1E6);
+  --cp-lz-gy-bg:        var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   --cp-lz-gy-t:         #42526E;
   --cp-lz-bl-bg:        #0C66E4;
-  --cp-lz-bl-t:         var(--ds-surface, #FFFFFF);
-  --cp-lz-gn-bg:        #1B7F37;
-  --cp-lz-gn-t:         var(--ds-surface, #FFFFFF);
+  --cp-lz-bl-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --cp-lz-gn-bg:        var(--cp-lozenge-green-bg, #1B7F37);
+  --cp-lz-gn-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --cp-lz-rd-bg:        #FFEBE6;
   --cp-lz-rd-t:         #BF2600;
 
   /* StatusBadge — Jira-grade pill tokens */
-  --status-todo-bg:         var(--ds-border, #DFE1E6);
+  --status-todo-bg:         var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   --status-todo-text:       #42526E;
   --status-inprogress-bg:   #0C66E4;
-  --status-inprogress-text: var(--ds-surface, #FFFFFF);
-  --status-done-bg:         #1B7F37;
-  --status-done-text:       var(--ds-surface, #FFFFFF);
+  --status-inprogress-text: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --status-done-bg:         var(--cp-lozenge-green-bg, #1B7F37);
+  --status-done-text:       var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 
   /* Progress */
   --cp-prg-bg:          rgba(0,0,0,0.06);
@@ -89,12 +89,12 @@
   --cp-scroll:          rgba(0,0,0,0.12);
 
   /* Chart Palette */
-  --cp-chart-1: var(--ds-text-brand, #2563EB);
-  --cp-chart-2: #0D9488;
-  --cp-chart-3: var(--ds-text-warning, #D97706);
-  --cp-chart-4: var(--ds-text-danger, #DC2626);
-  --cp-chart-5: var(--ds-text-success, #16A34A);
-  --cp-chart-6: #7C3AED;
+  --cp-chart-1: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
+  --cp-chart-2: var(--cp-teal-60, #0D9488);
+  --cp-chart-3: var(--ds-text-warning, var(--cp-warning, #D97706));
+  --cp-chart-4: var(--ds-text-danger, var(--cp-danger, #DC2626));
+  --cp-chart-5: var(--ds-text-success, var(--cp-success, #16A34A));
+  --cp-chart-6: var(--cp-purple-60, #7C3AED);
   --cp-chart-7: #DB2777;
   --cp-chart-8: #4B5563;
 }
@@ -129,20 +129,20 @@
   --cp-text-disabled:   #7D7D7D;
 
   /* Text — ADS solid hex scale */
-  --cp-t1:              var(--ds-text, #EDEDED);
+  --cp-t1:              var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --cp-t2:              var(--ds-text-subtlest, #A1A1A1);
-  --cp-t3:              var(--ds-text-subtlest, #878787);
+  --cp-t3:              var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
   --cp-t4:              #555555;
 
   /* Borders — ADS solid hex */
-  --cp-bd:              var(--ds-border, #2E2E2E);
-  --cp-bd-zone:         var(--ds-border, #2E2E2E);
+  --cp-bd:              var(--ds-border, var(--cp-ink-1, #2E2E2E));
+  --cp-bd-zone:         var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --cp-bd-hover:        var(--ds-border-bold, #454545);
-  --cp-bd-table:        var(--ds-border, #2E2E2E);
+  --cp-bd-table:        var(--ds-border, var(--cp-ink-1, #2E2E2E));
 
   /* Interactive — ADS solid hex */
   --cp-hover:           var(--ds-surface-overlay, #1F1F1F);
-  --cp-press:           var(--ds-border, #292929);
+  --cp-press:           var(--ds-border, var(--cp-ink-1, #292929));
   --cp-focus-ring:      rgba(59,130,246, 0.45);
 
   /* Brand */
@@ -167,27 +167,27 @@
 
   /* StatusLozenge — Bold pill (matches StatusBadge canonical) */
   --cp-lz-gy-bg:        #42526E;
-  --cp-lz-gy-t:         var(--ds-surface, #FFFFFF);
+  --cp-lz-gy-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --cp-lz-bl-bg:        #0C66E4;
-  --cp-lz-bl-t:         var(--ds-surface, #FFFFFF);
-  --cp-lz-gn-bg:        #1B7F37;
-  --cp-lz-gn-t:         var(--ds-surface, #FFFFFF);
+  --cp-lz-bl-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --cp-lz-gn-bg:        var(--cp-lozenge-green-bg, #1B7F37);
+  --cp-lz-gn-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --cp-lz-rd-bg:        #BF2600;
-  --cp-lz-rd-t:         var(--ds-surface, #FFFFFF);
+  --cp-lz-rd-t:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 
   /* StatusBadge — Jira-grade pill tokens (dark) */
   --status-todo-bg:         #3B3D42;
   --status-todo-text:       #D4D4D4;
   --status-inprogress-bg:   #0C66E4;
-  --status-inprogress-text: var(--ds-surface, #FFFFFF);
-  --status-done-bg:         #1B7F37;
-  --status-done-text:       var(--ds-surface, #FFFFFF);
+  --status-inprogress-text: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --status-done-bg:         var(--cp-lozenge-green-bg, #1B7F37);
+  --status-done-text:       var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 
   /* Progress */
-  --cp-prg-bg:          var(--ds-border, #292929);
+  --cp-prg-bg:          var(--ds-border, var(--cp-ink-1, #292929));
 
   /* Scrollbar */
-  --cp-scroll:          var(--ds-border, #2E2E2E);
+  --cp-scroll:          var(--ds-border, var(--cp-ink-1, #2E2E2E));
 
   /* Chart Palette */
   --cp-chart-1: var(--ds-text-brand, #60A5FA);

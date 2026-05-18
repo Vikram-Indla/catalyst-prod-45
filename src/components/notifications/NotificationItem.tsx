@@ -56,24 +56,24 @@ function WorkItemIcon({ type }: { type: string }) {
       || t === 'frontend' || t === 'backend' || t === 'integration'
       || t === 'brd task' || t === 'change request' || t === 'figma'
       || t === 'entity figma' || t === 'issue')
-    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-text-brand, #2563EB)"/><path d="M4 8.5l2.5 2.5 5.5-5.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"/><path d="M4 8.5l2.5 2.5 5.5-5.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
   // Epic — purple lightning
   if (t === 'epic')
-    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#7C3AED"/><path d="M9.5 3L5.5 9h4L6.5 13l6-7H9l.5-3z" fill="white"/></svg>;
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--cp-purple-60, #7C3AED)"/><path d="M9.5 3L5.5 9h4L6.5 13l6-7H9l.5-3z" fill="white"/></svg>;
   // Business request / gap — green bookmark (story-like)
   if (t === 'business request' || t === 'business gap')
     return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#36B37E"/><path d="M4 3h8v10l-4-2.5L4 13V3z" fill="white"/></svg>;
   // Test case
   if (t === 'test_case' || t === 'tm_test_case')
-    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#0D9488"/><path d="M4 5h8M4 8h5M4 11h3" stroke="white" strokeWidth="1.5" strokeLinecap="round"/></svg>;
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--cp-teal-60, #0D9488)"/><path d="M4 5h8M4 8h5M4 11h3" stroke="white" strokeWidth="1.5" strokeLinecap="round"/></svg>;
   // Test plan
   if (t === 'test_plan')
-    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#0D9488"/><path d="M4 4h8v8H4z" fill="none" stroke="white" strokeWidth="1.2"/><path d="M6 7l1.5 1.5 3-3" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round"/></svg>;
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--cp-teal-60, #0D9488)"/><path d="M4 4h8v8H4z" fill="none" stroke="white" strokeWidth="1.2"/><path d="M6 7l1.5 1.5 3-3" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round"/></svg>;
   // Incident / production incident — red warning
   if (t === 'incident' || t === 'production incident')
-    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-text-danger, #DC2626)"/><path d="M8 4v5M8 10.5v1.5" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>;
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-text-danger, var(--cp-danger, #DC2626))"/><path d="M8 4v5M8 10.5v1.5" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>;
   // Default — blue task (safe fallback for unknown Jira types)
-  return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-text-brand, #2563EB)"/><path d="M4 8.5l2.5 2.5 5.5-5.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
+  return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"/><path d="M4 8.5l2.5 2.5 5.5-5.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
 }
 
 /* ═══ M-03/M-04: getActionText — consistent grammar ═══ */
@@ -136,13 +136,13 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
   const isDeleted = notification.entity_deleted;
 
   const T = {
-    text1: 'var(--cp-text-primary, #0F172A)',
-    text2: 'var(--cp-text-tertiary, #64748B)',
-    text3: 'var(--cp-text-muted, #94A3B8)',
+    text1: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
+    text2: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
+    text3: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
     hover: 'var(--cp-interact-hover, rgba(15,23,42,0.04))',
     press: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
     borderStrong: isDark ? 'var(--ds-border-bold, #454545)' : 'rgba(15,23,42,0.2)',
-    checkStroke: 'var(--cp-text-tertiary, #64748B)',
+    checkStroke: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
   };
 
   /* ═══ C-03: Actor avatar logic ═══ */
@@ -158,11 +158,11 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
       return (
         <div style={{
           width: 36, height: 36, borderRadius: '50%',
-          background: 'var(--cp-bg-sunken, #E2E8F0)',
+          background: 'var(--cp-bg-sunken, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0,
         }}>
-          <UserCheck size={16} color={'var(--cp-text-muted, #94A3B8)'} />
+          <UserCheck size={16} color={'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'} />
         </div>
       );
     }
@@ -178,13 +178,13 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
     // Initials fallback
     const name = actorName || '?';
     const initials = name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
-    const colours = ['var(--ds-text-brand, #2563EB)', '#0D9488', '#7C3AED', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-warning, #D97706)'];
+    const colours = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, var(--cp-warning, #D97706))'];
     const bg = colours[(notification.actor_user_id || '').charCodeAt(0) % colours.length];
     return (
       <div style={{
         width: 36, height: 36, borderRadius: '50%', background: bg,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 13, fontWeight: 650, color: 'var(--ds-text-inverse, #FFFFFF)',
+        fontSize: 13, fontWeight: 650, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         fontFamily: 'var(--cp-font-body)', flexShrink: 0,
       }}>
         {initials}
@@ -246,12 +246,12 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
             </span>
             {/* M-05: timestamp + unread indicator cluster (right-aligned) */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-              <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #94A3B8)', fontWeight: 400, whiteSpace: 'nowrap', fontFamily: 'var(--cp-font-body)' }}>
+              <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontWeight: 400, whiteSpace: 'nowrap', fontFamily: 'var(--cp-font-body)' }}>
                 {formatTimestamp(notification.created_at)}
               </span>
               {/* C-01: unread dot OR mark-read button — inline, no overlap */}
               {isUnread && !isHovered && (
-                <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--ds-text-brand, #2563EB)', flexShrink: 0 }} />
+                <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', flexShrink: 0 }} />
               )}
               {isUnread && isHovered && (
                 <button
@@ -314,7 +314,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
               display: 'flex', alignItems: 'center', gap: 6, marginTop: 8,
               background: 'rgba(217,119,6,.08)', borderRadius: 4, padding: '6px 10px',
             }}>
-              <Clock size={14} color="var(--ds-text-warning, #D97706)" />
+              <Clock size={14} color="var(--ds-text-warning, var(--cp-warning, #D97706))" />
               <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-warning-text, #92400E)' }}>
                 Due in {daysUntilDue} day{daysUntilDue !== 1 ? 's' : ''} — {notification.metadata.due_date}
               </span>

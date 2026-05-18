@@ -138,7 +138,7 @@ export default function Resource360PageNew() {
           onClick={() => setAIOpen(true)}
           style={{
             background: 'var(--cp-blue)',
-            color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: 20,
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: 20,
             padding: '0 16px', height: 32, fontSize: 12, fontWeight: 600,
             letterSpacing: '0.3px', cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: 6,

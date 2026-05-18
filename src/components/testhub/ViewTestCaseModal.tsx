@@ -115,26 +115,26 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
 
 // --- STATUS BUTTON COLORS ---
 const STATUS_BTN: Record<string, string> = {
-  draft:      '#44546F',
-  ready:      '#1B7F37',
+  draft:      'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))',
+  ready:      'var(--cp-lozenge-green-bg, #1B7F37)',
   approved:   '#0C66E4',
-  deprecated: '#44546F',
+  deprecated: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))',
 };
 
 // --- STATUS PILL COLORS ---
 const STATUS_PILL: Record<string, { bg: string; color: string }> = {
-  draft:      { bg: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
+  draft:      { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
   ready:      { bg: '#E3FCEF', color: '#006644' },
   approved:   { bg: '#DEEBFF', color: '#0747A6' },
-  deprecated: { bg: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
+  deprecated: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
 };
 
 // --- RESULT LOZENGE (3-colour guardrail) ---
 const RESULT_LOZENGE: Record<string, { bg: string; color: string }> = {
   passed:  { bg: '#E3FCEF', color: '#006644' },
   failed:  { bg: '#FFEBE6', color: '#BF2600' },
-  blocked: { bg: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
-  skipped: { bg: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
+  blocked: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
+  skipped: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
 };
 
 // ═══════════════════════════════════════
@@ -263,7 +263,7 @@ function AddLinkModal({
                     display: 'flex', alignItems: 'center', gap: 6,
                     border: active ? 'none' : '1px solid var(--divider)',
                     background: active ? 'var(--cp-blue)' : 'transparent',
-                    color: active ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--fg-2)',
+                    color: active ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--fg-2)',
                   }}>
                   <opt.icon style={{ width: 14, height: 14 }} />
                   {opt.label}
@@ -362,7 +362,7 @@ function LinkAccordionSection({
         <span style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           height: 20, minWidth: 20, padding: '0 6px', borderRadius: 3,
-          fontSize: 11, fontWeight: 700, background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)',
+          fontSize: 11, fontWeight: 700, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)',
         }}>{links.length}</span>
         <button
           onClick={(e) => { e.stopPropagation(); onAdd(); }}
@@ -1006,7 +1006,7 @@ export function ViewTestCaseModal({
               <span style={{ fontSize: 12, fontFamily: 'var(--cp-font-mono)', color: '#5E6C84', fontWeight: 500 }}>
                 {testCase.case_key}
               </span>
-              <span style={{ fontSize: 13, fontFamily: 'var(--cp-font-body)', color: 'var(--ds-text, #172B4D)', fontWeight: 500, maxWidth: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 13, fontFamily: 'var(--cp-font-body)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 500, maxWidth: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {testCase.title}
               </span>
             </div>
@@ -1100,9 +1100,9 @@ export function ViewTestCaseModal({
                       return (
                         <button key={fmt} onClick={() => handleFormatChange(fmt)} style={{
                           height: 28, padding: '0 12px', borderRadius: 4, fontSize: 12, fontWeight: 500,
-                          cursor: 'pointer', border: active ? 'none' : '1px solid #E2E8F0',
-                          background: active ? 'var(--ds-text-brand, #2563EB)' : 'transparent',
-                          color: active ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--ds-text-subtle, #475569)',
+                          cursor: 'pointer', border: active ? 'none' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+                          background: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
+                          color: active ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtle, #475569)',
                           fontFamily: 'var(--cp-font-body)',
                         }}>
                           {labels[fmt]}
@@ -1116,25 +1116,25 @@ export function ViewTestCaseModal({
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                       {/* Legacy single feature/scenario (backward compat) */}
                       {(localGherkinFeature || localGherkinScenario) && (
-                        <div style={{ padding: 12, border: '1.5px solid #E2E8F0', borderRadius: 8, background: 'var(--ds-surface-sunken, #FAFBFC)' }}>
+                        <div style={{ padding: 12, border: '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 8, background: 'var(--ds-surface-sunken, #FAFBFC)' }}>
                           <div style={{ marginBottom: 10 }}>
-                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Feature</label>
+                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Feature</label>
                             <textarea
                               value={localGherkinFeature}
                               onChange={e => setLocalGherkinFeature(e.target.value)}
                               onBlur={handleGherkinSave}
                               placeholder="Feature: ..."
-                              style={{ width: '100%', minHeight: 60, padding: 10, fontSize: 13, fontFamily: 'var(--cp-font-mono)', border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                              style={{ width: '100%', minHeight: 60, padding: 10, fontSize: 13, fontFamily: 'var(--cp-font-mono)', border: '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
                             />
                           </div>
                           <div>
-                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Scenario</label>
+                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Scenario</label>
                             <textarea
                               value={localGherkinScenario}
                               onChange={e => setLocalGherkinScenario(e.target.value)}
                               onBlur={handleGherkinSave}
                               placeholder="Scenario: ..."
-                              style={{ width: '100%', minHeight: 80, padding: 10, fontSize: 13, fontFamily: 'var(--cp-font-mono)', border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                              style={{ width: '100%', minHeight: 80, padding: 10, fontSize: 13, fontFamily: 'var(--cp-font-mono)', border: '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
                             />
                           </div>
                         </div>
@@ -1142,35 +1142,35 @@ export function ViewTestCaseModal({
 
                       {/* Multi-scenario blocks */}
                       {gherkinScenarios.map((sc, idx) => (
-                        <div key={sc.id} className="group" style={{ padding: 12, border: '1.5px solid #E2E8F0', borderRadius: 8, background: 'var(--ds-surface-sunken, #FAFBFC)', position: 'relative' }}>
+                        <div key={sc.id} className="group" style={{ padding: 12, border: '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 8, background: 'var(--ds-surface-sunken, #FAFBFC)', position: 'relative' }}>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                             <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #475569)', fontFamily: 'var(--cp-font-body)' }}>Scenario {idx + 1}</span>
                             <button
                               onClick={() => handleDeleteGherkinScenario(sc.id)}
                               className="opacity-0 group-hover:opacity-100"
-                              style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--ds-text-danger, #DC2626)', borderRadius: 4, transition: 'opacity 150ms' }}
+                              style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', borderRadius: 4, transition: 'opacity 150ms' }}
                             >
                               <Trash2 style={{ width: 14, height: 14 }} />
                             </button>
                           </div>
                           <div style={{ marginBottom: 10 }}>
-                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Feature</label>
+                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Feature</label>
                             <textarea
                               value={sc.feature}
                               onChange={e => { const v = e.target.value; setGherkinScenarios(prev => prev.map(s => s.id === sc.id ? { ...s, feature: v } : s)); }}
                               onBlur={() => handleGherkinScenarioBlur(sc.id, sc.feature, sc.scenario)}
                               placeholder="Feature: ..."
-                              style={{ width: '100%', minHeight: 60, padding: 10, fontSize: 13, fontFamily: 'var(--cp-font-mono)', border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                              style={{ width: '100%', minHeight: 60, padding: 10, fontSize: 13, fontFamily: 'var(--cp-font-mono)', border: '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
                             />
                           </div>
                           <div>
-                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Scenario</label>
+                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Scenario</label>
                             <textarea
                               value={sc.scenario}
                               onChange={e => { const v = e.target.value; setGherkinScenarios(prev => prev.map(s => s.id === sc.id ? { ...s, scenario: v } : s)); }}
                               onBlur={() => handleGherkinScenarioBlur(sc.id, sc.feature, sc.scenario)}
                               placeholder="Scenario: ..."
-                              style={{ width: '100%', minHeight: 80, padding: 10, fontSize: 13, fontFamily: 'var(--cp-font-mono)', border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                              style={{ width: '100%', minHeight: 80, padding: 10, fontSize: 13, fontFamily: 'var(--cp-font-mono)', border: '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
                             />
                           </div>
                         </div>
@@ -1180,33 +1180,33 @@ export function ViewTestCaseModal({
                       {addingGherkin ? (
                         <div style={{ padding: 12, border: '1.5px dashed #2563EB', borderRadius: 8, background: 'var(--ds-surface-sunken, #F8FAFC)' }}>
                           <div style={{ marginBottom: 10 }}>
-                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Feature</label>
+                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Feature</label>
                             <textarea
                               value={newGherkinFeature}
                               onChange={e => setNewGherkinFeature(e.target.value)}
                               placeholder="Feature: ..."
-                              style={{ width: '100%', minHeight: 60, padding: 10, fontSize: 13, fontFamily: 'var(--cp-font-mono)', border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                              style={{ width: '100%', minHeight: 60, padding: 10, fontSize: 13, fontFamily: 'var(--cp-font-mono)', border: '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
                             />
                           </div>
                           <div style={{ marginBottom: 10 }}>
-                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Scenario</label>
+                            <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>Scenario</label>
                             <textarea
                               value={newGherkinScenario}
                               onChange={e => setNewGherkinScenario(e.target.value)}
                               placeholder="Scenario: ..."
-                              style={{ width: '100%', minHeight: 80, padding: 10, fontSize: 13, fontFamily: 'var(--cp-font-mono)', border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                              style={{ width: '100%', minHeight: 80, padding: 10, fontSize: 13, fontFamily: 'var(--cp-font-mono)', border: '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
                             />
                           </div>
                           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                            <button onClick={() => { setAddingGherkin(false); setNewGherkinFeature(''); setNewGherkinScenario(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid #E2E8F0', borderRadius: 6, background: 'transparent', color: 'var(--ds-text-subtle, #475569)', cursor: 'pointer' }}>Cancel</button>
-                            <button onClick={handleAddGherkinScenario} disabled={!newGherkinScenario.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newGherkinScenario.trim() ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #94A3B8)', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: newGherkinScenario.trim() ? 'pointer' : 'not-allowed' }}>Add Scenario</button>
+                            <button onClick={() => { setAddingGherkin(false); setNewGherkinFeature(''); setNewGherkinScenario(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6, background: 'transparent', color: 'var(--ds-text-subtle, #475569)', cursor: 'pointer' }}>Cancel</button>
+                            <button onClick={handleAddGherkinScenario} disabled={!newGherkinScenario.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newGherkinScenario.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: newGherkinScenario.trim() ? 'pointer' : 'not-allowed' }}>Add Scenario</button>
                           </div>
                         </div>
                       ) : (
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
                           <button
                             onClick={() => setAddingGherkin(true)}
-                            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: 'var(--ds-text-inverse, #FFFFFF)', color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--cp-font-body)' }}>
+                            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'var(--cp-font-body)' }}>
                             <Plus style={{ width: 14, height: 14 }} />
                             Add Scenario
                           </button>
@@ -1226,7 +1226,7 @@ export function ViewTestCaseModal({
                             <button
                               onClick={() => handleDeleteFreeTextBlock(block.id)}
                               className="opacity-0 group-hover:opacity-100"
-                              style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--ds-text-danger, #DC2626)', borderRadius: 4, transition: 'opacity 150ms' }}
+                              style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', borderRadius: 4, transition: 'opacity 150ms' }}
                             >
                               <Trash2 style={{ width: 14, height: 14 }} />
                             </button>
@@ -1236,7 +1236,7 @@ export function ViewTestCaseModal({
                             onChange={e => { const v = e.target.value; setFreeTextBlocks(prev => prev.map(b => b.id === block.id ? { ...b, text: v } : b)); }}
                             onBlur={() => handleFreeTextBlockBlur(block.id, block.text)}
                             placeholder="Describe the test in free text..."
-                            style={{ width: '100%', minHeight: 120, padding: 12, fontSize: 14, fontFamily: 'var(--cp-font-body)', border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                            style={{ width: '100%', minHeight: 120, padding: 12, fontSize: 14, fontFamily: 'var(--cp-font-body)', border: '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
                           />
                         </div>
                       ))}
@@ -1248,18 +1248,18 @@ export function ViewTestCaseModal({
                             value={newFreeText}
                             onChange={e => setNewFreeText(e.target.value)}
                             placeholder="Describe the test in free text..."
-                            style={{ width: '100%', minHeight: 120, padding: 12, fontSize: 14, fontFamily: 'var(--cp-font-body)', border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none', marginBottom: 10 }}
+                            style={{ width: '100%', minHeight: 120, padding: 12, fontSize: 14, fontFamily: 'var(--cp-font-body)', border: '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none', marginBottom: 10 }}
                           />
                           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                            <button onClick={() => { setAddingFreeText(false); setNewFreeText(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid #E2E8F0', borderRadius: 6, background: 'transparent', color: 'var(--ds-text-subtle, #475569)', cursor: 'pointer' }}>Cancel</button>
-                            <button onClick={handleAddFreeTextBlock} disabled={!newFreeText.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newFreeText.trim() ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #94A3B8)', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: newFreeText.trim() ? 'pointer' : 'not-allowed' }}>Add Test Step</button>
+                            <button onClick={() => { setAddingFreeText(false); setNewFreeText(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6, background: 'transparent', color: 'var(--ds-text-subtle, #475569)', cursor: 'pointer' }}>Cancel</button>
+                            <button onClick={handleAddFreeTextBlock} disabled={!newFreeText.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newFreeText.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: newFreeText.trim() ? 'pointer' : 'not-allowed' }}>Add Test Step</button>
                           </div>
                         </div>
                       ) : (
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
                           <button
                             onClick={() => setAddingFreeText(true)}
-                            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: 'var(--ds-text-inverse, #FFFFFF)', color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--cp-font-body)' }}>
+                            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'var(--cp-font-body)' }}>
                             <Plus style={{ width: 14, height: 14 }} />
                             Add Test Step
                           </button>
@@ -1280,7 +1280,7 @@ export function ViewTestCaseModal({
                         }}>
                           <div style={{
                             width: 24, height: 24, borderRadius: '50%',
-                            background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)',
+                            background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 2,
                           }}>
@@ -1301,7 +1301,7 @@ export function ViewTestCaseModal({
                               </div>
                               <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                                 <button onClick={() => setEditingStepId(null)} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', borderRadius: 6, background: 'transparent', color: 'var(--fg-3)', cursor: 'pointer' }}>Cancel</button>
-                                <button onClick={() => handleUpdateStep(step.id)} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer' }}>Save</button>
+                                <button onClick={() => handleUpdateStep(step.id)} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer' }}>Save</button>
                               </div>
                             </div>
                           ) : (
@@ -1351,7 +1351,7 @@ export function ViewTestCaseModal({
                           </div>
                           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                             <button onClick={() => { setAddingStep(false); setNewStepAction(''); setNewStepExpected(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', borderRadius: 6, background: 'transparent', color: 'var(--fg-3)', cursor: 'pointer' }}>Cancel</button>
-                            <button onClick={handleAddStep} disabled={!newStepAction.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newStepAction.trim() ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #94A3B8)', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: newStepAction.trim() ? 'pointer' : 'not-allowed' }}>Add Step</button>
+                            <button onClick={handleAddStep} disabled={!newStepAction.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newStepAction.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: newStepAction.trim() ? 'pointer' : 'not-allowed' }}>Add Step</button>
                           </div>
                         </div>
                       ) : (
@@ -1361,15 +1361,15 @@ export function ViewTestCaseModal({
                           <div style={{ position: 'relative' }} data-add-step-menu>
                             <button
                               onClick={() => setIsAddStepMenuOpen(p => !p)}
-                              style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: 'var(--ds-text-inverse, #FFFFFF)', color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--cp-font-body)' }}>
+                              style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'var(--cp-font-body)' }}>
                               <Plus style={{ width: 14, height: 14 }} />
                               Add Step
                             </button>
                             {isAddStepMenuOpen && (
-                              <div style={{ position: 'absolute', right: 0, top: 36, background: 'var(--ds-text-inverse, #FFFFFF)', border: '1px solid #E2E8F0', borderRadius: 6, boxShadow: '0 4px 16px rgba(9,30,66,0.15)', zIndex: 100, minWidth: 180, overflow: 'hidden' }}>
+                              <div style={{ position: 'absolute', right: 0, top: 36, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6, boxShadow: '0 4px 16px rgba(9,30,66,0.15)', zIndex: 100, minWidth: 180, overflow: 'hidden' }}>
                                 <button
                                   onClick={() => { setIsAddStepMenuOpen(false); setAddingStep(true); }}
-                                  style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 13, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--cp-font-body)' }}
+                                  style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 13, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'var(--cp-font-body)' }}
                                   onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
                                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                                 >
@@ -1377,7 +1377,7 @@ export function ViewTestCaseModal({
                                 </button>
                                 <button
                                   onClick={() => { setIsAddStepMenuOpen(false); setIsSharedStepsModalOpen(true); }}
-                                  style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 13, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--cp-font-body)' }}
+                                  style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 13, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'var(--cp-font-body)' }}
                                   onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
                                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                                 >
@@ -1720,12 +1720,12 @@ function MiniAvatar({ name, size = 22 }: { name: string; size?: number }) {
   const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  const colors = ['var(--ds-text-brand, #2563EB)', '#0D9488', '#7C3AED', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-success, #16A34A)'];
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))'];
   return (
     <div style={{
       width: size, height: size, borderRadius: '50%',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontWeight: 700, color: 'var(--ds-text-inverse, #FFFFFF)', flexShrink: 0,
+      fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', flexShrink: 0,
       fontSize: size * 0.38,
       backgroundColor: colors[Math.abs(hash) % colors.length],
     }}>
@@ -1769,7 +1769,7 @@ function PickerOption({ selected, onClick, children }: { selected: boolean; onCl
       onMouseLeave={e => { if (!selected) e.currentTarget.style.background = 'transparent'; }}
     >
       {children}
-      {selected && <Check style={{ width: 14, height: 14, color: 'var(--ds-text-brand, #2563EB)', flexShrink: 0 }} />}
+      {selected && <Check style={{ width: 14, height: 14, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', flexShrink: 0 }} />}
     </div>
   );
 }
@@ -1812,7 +1812,7 @@ function PortalPickerWrapper({
             left: pos.left,
             width: pos.width,
             zIndex: 99999,
-            backgroundColor: 'var(--cp-float, #FFFFFF)',
+            backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: '1px solid var(--divider)',
             borderRadius: 8,
             boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
@@ -1854,7 +1854,7 @@ function PortalPeoplePicker({ members, selectedId, onSelect }: {
             fontFamily: 'var(--cp-font-body)',
             border: '1px solid var(--divider)', borderRadius: 6,
             outline: 'none', boxSizing: 'border-box',
-            background: 'var(--cp-float, #FFFFFF)', color: 'var(--fg-1)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--fg-1)',
           }}
           onClick={e => e.stopPropagation()}
         />

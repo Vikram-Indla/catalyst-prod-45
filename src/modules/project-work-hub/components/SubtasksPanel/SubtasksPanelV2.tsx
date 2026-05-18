@@ -104,7 +104,7 @@ function TypeSelector({ value, onChange, disabled }: { value: string; onChange: 
       >
         <span style={{ display: 'flex', width: 16, height: 16 }}>{current.icon}</span>
         <span>{current.label}</span>
-        <ChevronDown size={12} color="var(--ds-text-subtlest, #6B778C)" />
+        <ChevronDown size={12} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
       </button>
       {open && (
         <div className="sp-type-selector-dropdown" role="listbox">
@@ -118,7 +118,7 @@ function TypeSelector({ value, onChange, disabled }: { value: string; onChange: 
             >
               <span style={{ display: 'flex', width: 16, height: 16 }}>{opt.icon}</span>
               <span>{opt.label}</span>
-              {opt.key === value && <Check size={12} color="#0052CC" style={{ marginLeft: 'auto' }} />}
+              {opt.key === value && <Check size={12} color="var(--cp-primary-60, #0052CC)" style={{ marginLeft: 'auto' }} />}
             </div>
           ))}
         </div>

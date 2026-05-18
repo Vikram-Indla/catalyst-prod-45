@@ -40,7 +40,7 @@ function PlainSmartLink({ url, data }: { url?: string; data?: any }) {
       target="_blank"
       rel="noopener noreferrer"
       style={{
-        color: '#0052CC', textDecoration: 'none',
+        color: 'var(--cp-primary-60, #0052CC)', textDecoration: 'none',
         display: 'inline-flex', alignItems: 'center', gap: 4,
       }}
       onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
@@ -56,8 +56,8 @@ const SMART_LINK_OVERRIDES = {
   inlineCard: (props: any) => <PlainSmartLink {...props} />,
   blockCard: (props: any) => (
     <div style={{
-      padding: '12px 16px', border: '1px solid #DFE1E6', borderRadius: 4,
-      background: 'var(--ds-surface, #FFFFFF)', margin: '8px 0', fontSize: 14,
+      padding: '12px 16px', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 4,
+      background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', margin: '8px 0', fontSize: 14,
     }}>
       <PlainSmartLink {...props} />
     </div>

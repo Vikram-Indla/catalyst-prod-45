@@ -104,7 +104,7 @@ export function ReleaseSelector({
             variant="outline"
             size="sm"
             onClick={handleAdd}
-            className="text-[var(--ds-text-brand,#2563eb)] border-[var(--ds-text-brand,#2563eb)] hover:bg-blue-50"
+            className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-blue-50"
           >
             <AddIcon label="" size="small" primaryColor="currentColor" />
             Add

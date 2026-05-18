@@ -64,7 +64,7 @@ const labelStyle: React.CSSProperties = {
   fontWeight: 650,
   textTransform: 'uppercase',
   letterSpacing: '0.04em',
-  color: 'var(--cp-text-tertiary, #64748B)',
+  color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
   marginBottom: 6,
 };
 
@@ -72,6 +72,6 @@ const valueStyle: React.CSSProperties = {
   fontFamily: 'var(--cp-font-mono)',
   fontSize: 28,
   fontWeight: 700,
-  color: 'var(--cp-text-primary, #0F172A)',
+  color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
   lineHeight: 1.1,
 };

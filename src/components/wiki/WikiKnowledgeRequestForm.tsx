@@ -75,7 +75,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
     outline: 'none', fontFamily: 'var(--cp-font-body)',
     transition: 'border-color 150ms',
     background: 'transparent',
-    color: isDark ? 'var(--ds-text, #EDEDED)' : undefined,
+    color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined,
   };
 
   const labelStyle: React.CSSProperties = {
@@ -88,15 +88,15 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: isDark ? 'rgba(0,0,0,0.6)' : 'rgba(15,23,42,0.3)', zIndex: 60 }} />
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-        width: 440, maxWidth: '92vw', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)', borderRadius: 12,
+        width: 440, maxWidth: '92vw', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-float)', borderRadius: 12,
         boxShadow: isDark ? '0 16px 48px rgba(0,0,0,0.4)' : '0 16px 48px rgba(0,0,0,0.12)', zIndex: 61,
         animation: 'fadeScaleIn 180ms ease-out',
       }}>
         {/* Header */}
         <div style={{ padding: '20px 24px 16px', borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center' }}>
-          <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 700, margin: 0, flex: 1, color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }}>New Knowledge Request</h2>
+          <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 700, margin: 0, flex: 1, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }}>New Knowledge Request</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-            <X size={16} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)' }} />
+            <X size={16} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)' }} />
           </button>
         </div>
 
@@ -130,7 +130,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
               <label style={labelStyle}>Domain *</label>
               <select
                 value={domainCode} onChange={e => setDomainCode(e.target.value)}
-                style={{ ...inputStyle, cursor: 'pointer', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)' }}
+                style={{ ...inputStyle, cursor: 'pointer', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-float)' }}
               >
                 <option value="">Select domain...</option>
                 {DOMAINS.map(d => (
@@ -143,7 +143,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
               <label style={labelStyle}>Priority</label>
               <select
                 value={priority} onChange={e => setPriority(e.target.value)}
-                style={{ ...inputStyle, cursor: 'pointer', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)' }}
+                style={{ ...inputStyle, cursor: 'pointer', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-float)' }}
               >
                 {PRIORITIES.map(p => (
                   <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>
@@ -157,11 +157,11 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
         <div style={{ padding: '16px 24px 20px', borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button onClick={onClose} style={{
             fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 6, cursor: 'pointer',
-            border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.10)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)',
+            border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.10)', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-float)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)',
           }}>Cancel</button>
           <button onClick={handleSubmit} disabled={!canSubmit || submitting} style={{
             fontSize: 12, fontWeight: 650, padding: '8px 20px', borderRadius: 6, cursor: canSubmit ? 'pointer' : 'not-allowed',
-            border: 'none', background: canSubmit ? 'var(--cp-blue)' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-4)'), color: 'var(--ds-surface, #FFFFFF)',
+            border: 'none', background: canSubmit ? 'var(--cp-blue)' : (isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-4)'), color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             display: 'flex', alignItems: 'center', gap: 6, opacity: submitting ? 0.7 : 1,
           }}>
             <Send size={12} /> {submitting ? 'Submitting...' : 'Submit Request'}

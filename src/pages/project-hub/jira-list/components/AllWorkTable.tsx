@@ -36,14 +36,14 @@ function hashColor(name: string): string {
 /* ── Tokens ── */
 const T = {
   headerBg: 'var(--cp-bg-sunken, #F7F8F9)',
-  headerText: 'var(--cp-text-secondary, #44546F)',
+  headerText: 'var(--cp-text-secondary, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
   borderColor: 'var(--cp-border-default, #DDDEE1)',
   rowHover: 'var(--cp-interact-hover, rgba(0,0,0,0.04))',
-  keyColor: 'var(--cp-text-link, #2563EB)',
+  keyColor: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))',
   textPrimary: 'var(--cp-text-primary, #292A2E)',
   textSecondary: 'var(--cp-text-secondary, #505258)',
   textMuted: 'var(--cp-text-tertiary, #6B6E76)',
-  white: 'var(--cp-bg-elevated, #FFFFFF)',
+  white: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
 };
 
 interface AllWorkTableProps {
@@ -131,7 +131,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
         {Array.from({ length: 8 }).map((_, i) => (
           <div key={i} style={{
             height: 36, borderRadius: 4, marginBottom: 4,
-            background: 'linear-gradient(90deg, var(--ds-surface-sunken, #F1F5F9) 25%, var(--ds-border, #E2E8F0) 50%, var(--ds-surface-sunken, #F1F5F9) 75%)',
+            background: 'linear-gradient(90deg, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 25%, var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))) 50%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 75%)',
             backgroundSize: '200% 100%',
             animation: 'shimmer 1.5s infinite',
           }} />
@@ -205,10 +205,10 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
             onClick={() => toggleSort('updated')}
             style={{
               height: 28, padding: '0 8px',
-              border: `1px solid ${sortBy === 'updated' ? 'var(--ds-text-brand, #2563EB)' : T.borderColor}`,
+              border: `1px solid ${sortBy === 'updated' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.borderColor}`,
               borderRadius: 3,
               fontSize: 11, fontWeight: 600,
-              color: sortBy === 'updated' ? 'var(--ds-text-brand, #2563EB)' : T.textSecondary,
+              color: sortBy === 'updated' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.textSecondary,
               background: sortBy === 'updated' ? 'rgba(37,99,235,0.06)' : T.white,
               cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
@@ -219,10 +219,10 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
             onClick={() => toggleSort('created')}
             style={{
               height: 28, padding: '0 8px',
-              border: `1px solid ${sortBy === 'created' ? 'var(--ds-text-brand, #2563EB)' : T.borderColor}`,
+              border: `1px solid ${sortBy === 'created' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.borderColor}`,
               borderRadius: 3,
               fontSize: 11, fontWeight: 600,
-              color: sortBy === 'created' ? 'var(--ds-text-brand, #2563EB)' : T.textSecondary,
+              color: sortBy === 'created' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.textSecondary,
               background: sortBy === 'created' ? 'rgba(37,99,235,0.06)' : T.white,
               cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
@@ -397,7 +397,7 @@ const thStyle: React.CSSProperties = {
   fontWeight: 700,
   textTransform: 'uppercase',
   letterSpacing: '0.04em',
-  color: '#44546F',
+  color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))',
   fontFamily: 'var(--cp-font-body)',
   whiteSpace: 'nowrap',
   textAlign: 'left',
@@ -427,11 +427,11 @@ function PaginationBtn({ children, disabled, active, onClick }: {
       onClick={onClick}
       style={{
         height: 28, minWidth: 28, padding: '0 8px',
-        border: `1px solid ${active ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-border-default, #DDDEE1)'}`,
+        border: `1px solid ${active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-border-default, #DDDEE1)'}`,
         borderRadius: 3,
         fontSize: 12, fontWeight: active ? 600 : 400,
-        color: disabled ? 'var(--cp-text-muted, #C1C7CD)' : active ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-text-secondary, #44546F)',
-        background: active ? 'rgba(37,99,235,0.06)' : 'var(--cp-bg-elevated, #FFFFFF)',
+        color: disabled ? 'var(--cp-text-muted, #C1C7CD)' : active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-text-secondary, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
+        background: active ? 'rgba(37,99,235,0.06)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         cursor: disabled ? 'default' : 'pointer',
         fontFamily: 'var(--cp-font-body)',
         opacity: disabled ? 0.5 : 1,

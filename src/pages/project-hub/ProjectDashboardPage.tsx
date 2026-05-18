@@ -344,7 +344,7 @@ function ProjectDashboardPageInner() {
           <div className="space-y-4 animate-pulse">
             <div
               className="h-12 rounded-lg"
-              style={{ background: token('color.background.neutral.subtle', '#F1F5F9') }}
+              style={{ background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))') }}
             />
             <div
               style={{
@@ -359,7 +359,7 @@ function ProjectDashboardPageInner() {
                   className="h-40 rounded-lg"
                   style={{
                     gridColumn: 'span 4',
-                    background: token('color.background.neutral.subtle', '#F1F5F9'),
+                    background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'),
                   }}
                 />
               ))}

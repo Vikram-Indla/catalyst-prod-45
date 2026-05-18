@@ -180,7 +180,7 @@ export function AssignModal({
                 Current Owner
               </p>
               {selectedOwnerData ? (
-                <div className="flex items-center justify-between p-3 rounded-lg border bg-[rgba(37,99,235,0.12)] border-[var(--ds-text-brand,#2563eb)]">
+                <div className="flex items-center justify-between p-3 rounded-lg border bg-[rgba(37,99,235,0.12)] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]">
                   <div className="flex items-center gap-3">
                     <Avatar src={resolveAvatarUrl(selectedOwnerData.full_name) ?? selectedOwnerData.avatar_url ?? undefined} name={selectedOwnerData.full_name} size="small" />
                     <div>
@@ -242,7 +242,7 @@ export function AssignModal({
                           className={cn(
                             "w-full flex items-center justify-between p-2.5 rounded-lg transition-colors text-left",
                             isSelected 
-                              ? "bg-[rgba(37,99,235,0.12)] border-2 border-[var(--ds-text-brand,#2563eb)]" 
+                              ? "bg-[rgba(37,99,235,0.12)] border-2 border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" 
                               : "hover:bg-muted/50 border-2 border-transparent"
                           )}
                         >
@@ -256,7 +256,7 @@ export function AssignModal({
                             </div>
                           </div>
                           {isSelected && (
-                            <Check className="h-5 w-5 text-[var(--ds-text-brand,#2563eb)]" />
+                            <Check className="h-5 w-5 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />
                           )}
                         </button>
                       );
@@ -344,7 +344,7 @@ export function AssignModal({
                       >
                         <div className="h-5 w-5 rounded border-2 border-muted-foreground/30 flex items-center justify-center">
                           {selectedContributorIds.includes(member.id) && (
-                            <Check className="h-3 w-3 text-[var(--ds-text-brand,#2563eb)]" />
+                            <Check className="h-3 w-3 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />
                           )}
                         </div>
                         <Avatar src={resolveAvatarUrl(member.full_name) ?? member.avatar_url ?? undefined} name={member.full_name} size="xsmall" />
@@ -378,7 +378,7 @@ export function AssignModal({
             <Button 
               onClick={() => saveMutation.mutate()}
               disabled={!hasChanges || saveMutation.isPending}
-              className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
+              className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
             >
               {saveMutation.isPending ? (
                 <>

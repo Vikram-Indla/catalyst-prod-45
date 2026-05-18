@@ -110,7 +110,7 @@ export function MobileNavigationMenu() {
                     fontSize: '14px',
                     fontWeight: isActive ? 600 : 500,
                     color: isActive
-                      ? ('var(--cp-text-link, #2563EB)')
+                      ? ('var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))')
                       : ('var(--cp-text-primary, #1E293B)'),
                     fontFamily: 'var(--cp-font-body)',
                     textAlign: 'left',

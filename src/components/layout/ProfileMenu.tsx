@@ -110,7 +110,7 @@ export function ProfileMenu() {
             outline: 'none',
             transition: 'box-shadow 120ms ease',
             boxShadow: open
-              ? `0 0 0 2px ${token('color.border.focused', '#0052CC')}`
+              ? `0 0 0 2px ${token('color.border.focused', 'var(--cp-primary-60, #0052CC)')}`
               : '0 0 0 0 transparent',
           }}
         >
@@ -154,7 +154,7 @@ export function ProfileMenu() {
             alignItems: 'center',
             gap: 12,
             padding: '12px 14px',
-            borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             background: token('elevation.surface.sunken', '#F4F5F7'),
           }}
         >
@@ -189,7 +189,7 @@ export function ProfileMenu() {
               style={{
                 fontSize: 14,
                 fontWeight: 600,
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -265,7 +265,7 @@ export function ProfileMenu() {
                 <Sun className="mr-2 h-4 w-4" />
                 Light
                 {theme === 'light' && (
-                  <span className="ml-auto" style={{ color: token('color.text.brand', '#0052CC') }}>✓</span>
+                  <span className="ml-auto" style={{ color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -278,7 +278,7 @@ export function ProfileMenu() {
                 <Moon className="mr-2 h-4 w-4" />
                 Dark
                 {theme === 'dark' && (
-                  <span className="ml-auto" style={{ color: token('color.text.brand', '#0052CC') }}>✓</span>
+                  <span className="ml-auto" style={{ color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -291,7 +291,7 @@ export function ProfileMenu() {
                 <Monitor className="mr-2 h-4 w-4" />
                 Match system
                 {theme === 'system' && (
-                  <span className="ml-auto" style={{ color: token('color.text.brand', '#0052CC') }}>✓</span>
+                  <span className="ml-auto" style={{ color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
                 )}
               </DropdownMenuItem>
             </DropdownMenuSubContent>

@@ -25,12 +25,12 @@ interface ScopeItem {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  not_run:     { label: 'NOT RUN',     color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, #DFE1E6)' },
+  not_run:     { label: 'NOT RUN',     color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
   in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
   passed:      { label: 'PASSED',      color: '#006644', bg: '#E3FCEF' },
-  failed:      { label: 'FAILED',      color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, #DFE1E6)' },
-  blocked:     { label: 'BLOCKED',     color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, #DFE1E6)' },
-  skipped:     { label: 'SKIPPED',     color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, #DFE1E6)' },
+  failed:      { label: 'FAILED',      color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
+  blocked:     { label: 'BLOCKED',     color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
+  skipped:     { label: 'SKIPPED',     color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
 };
 
 type StatusFilter = 'all' | 'not_run' | 'in_progress' | 'passed' | 'failed' | 'blocked';
@@ -118,7 +118,7 @@ export default function MyTestScopePage() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
-        <RefreshCw size={28} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-brand, #2563EB)' }} />
+        <RefreshCw size={28} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
         <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       </div>
     );
@@ -129,12 +129,12 @@ export default function MyTestScopePage() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <UserCheck size={22} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>
+          <UserCheck size={22} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>
             My Test Scope
           </h1>
           <span style={{
-            fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #64748B)', backgroundColor: 'var(--ds-surface-sunken, #F1F5F9)',
+            fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
             padding: '2px 10px', borderRadius: 12,
           }}>
             {filteredItems.length} items
@@ -144,8 +144,8 @@ export default function MyTestScopePage() {
           onClick={fetchMyScope}
           style={{
             display: 'flex', alignItems: 'center', gap: 6, height: 50,
-            padding: '0 14px', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
-            backgroundColor: 'var(--ds-surface, #FFF)', color: 'var(--ds-text-subtle, #334155)', fontSize: 13, cursor: 'pointer',
+            padding: '0 14px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 8,
+            backgroundColor: 'var(--ds-surface, #FFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontSize: 13, cursor: 'pointer',
           }}
         >
           <RefreshCw size={14} /> Refresh
@@ -161,7 +161,7 @@ export default function MyTestScopePage() {
             style={{
               height: 32, padding: '0 14px', border: 'none', borderRadius: 6,
               fontSize: 13, fontWeight: 500, cursor: 'pointer',
-              backgroundColor: statusFilter === tab.key ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-surface-sunken, #F1F5F9)',
+              backgroundColor: statusFilter === tab.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
               color: statusFilter === tab.key ? 'var(--ds-surface, #FFF)' : 'var(--ds-text-subtle, #475569)',
               transition: 'all 0.15s',
             }}
@@ -175,23 +175,23 @@ export default function MyTestScopePage() {
       {items.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: 60, backgroundColor: 'var(--ds-surface, #FFF)',
-          borderRadius: 12, border: '1px solid var(--bd-default, #E2E8F0)',
+          borderRadius: 12, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
         }}>
-          <UserCheck size={48} style={{ marginBottom: 16, opacity: 0.3, color: 'var(--ds-text-subtlest, #94A3B8)' }} />
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--ds-text-subtle, #334155)', margin: '0 0 8px' }}>
+          <UserCheck size={48} style={{ marginBottom: 16, opacity: 0.3, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
+          <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', margin: '0 0 8px' }}>
             No active assignments
           </h3>
-          <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, #94A3B8)', margin: 0 }}>
+          <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', margin: 0 }}>
             Contact your Test Manager to get test cases assigned.
           </p>
         </div>
       ) : filteredItems.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: 40, backgroundColor: 'var(--ds-surface, #FFF)',
-          borderRadius: 12, border: '1px solid var(--bd-default, #E2E8F0)',
+          borderRadius: 12, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
         }}>
-          <Filter size={32} style={{ marginBottom: 12, opacity: 0.3, color: 'var(--ds-text-subtlest, #94A3B8)' }} />
-          <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, #94A3B8)', margin: 0 }}>
+          <Filter size={32} style={{ marginBottom: 12, opacity: 0.3, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
+          <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', margin: 0 }}>
             No items match the current filter.
           </p>
         </div>
@@ -201,23 +201,23 @@ export default function MyTestScopePage() {
             const first = cycleItems[0];
             return (
               <div key={cycleId} style={{
-                backgroundColor: 'var(--ds-surface, #FFF)', borderRadius: 12, border: '1px solid var(--bd-default, #E2E8F0)',
+                backgroundColor: 'var(--ds-surface, #FFF)', borderRadius: 12, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
                 overflow: 'hidden',
               }}>
                 {/* Cycle Header */}
                 <div style={{
                   padding: '12px 16px', backgroundColor: 'var(--bg-1, #F8FAFC)',
-                  borderBottom: '1px solid var(--bd-default, #E2E8F0)',
+                  borderBottom: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <span style={{
-                      fontSize: 12, fontWeight: 700, color: 'var(--ds-text-brand, #2563EB)',
+                      fontSize: 12, fontWeight: 700, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                       fontFamily: 'var(--cp-font-mono)',
                     }}>
                       {first.cycle_key}
                     </span>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
                       {first.cycle_name}
                     </span>
                     <span style={{
@@ -229,7 +229,7 @@ export default function MyTestScopePage() {
                       {first.cycle_status === 'active' ? 'IN PROGRESS' : first.cycle_status.toUpperCase()}
                     </span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--ds-text-subtlest, #64748B)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
                     <Clock size={13} />
                     Ends {formatDate(first.planned_end)}
                     {isOverdue(first.planned_end) && (
@@ -248,7 +248,7 @@ export default function MyTestScopePage() {
                         style={{
                           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                           padding: '10px 16px', height: 44,
-                          borderBottom: idx < cycleItems.length - 1 ? '0.75px solid var(--bd-default, #E2E8F0)' : 'none',
+                          borderBottom: idx < cycleItems.length - 1 ? '0.75px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' : 'none',
                           transition: 'background-color 0.1s',
                         }}
                         onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.02)'}
@@ -256,12 +256,12 @@ export default function MyTestScopePage() {
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
                           <span style={{
-                            fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)',
+                            fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                             fontFamily: 'var(--cp-font-mono)', minWidth: 70,
                           }}>
                             {item.case_key}
                           </span>
-                          <span style={{ fontSize: 13, color: 'var(--fg-1, #0F172A)', fontWeight: 500 }}>
+                          <span style={{ fontSize: 13, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontWeight: 500 }}>
                             {item.title}
                           </span>
                         </div>
@@ -275,7 +275,7 @@ export default function MyTestScopePage() {
                           </span>
                           {item.due_date && (
                             <span style={{
-                              fontSize: 12, color: isOverdue(item.due_date) ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, #64748B)',
+                              fontSize: 12, color: isOverdue(item.due_date) ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                               fontWeight: isOverdue(item.due_date) ? 600 : 400,
                             }}>
                               {formatDate(item.due_date)}
@@ -286,7 +286,7 @@ export default function MyTestScopePage() {
                             style={{
                               display: 'flex', alignItems: 'center', gap: 4,
                               height: 28, padding: '0 10px', border: 'none', borderRadius: 6,
-                              backgroundColor: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFF)',
+                              backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #FFF)',
                               fontSize: 12, fontWeight: 500, cursor: 'pointer',
                             }}
                           >

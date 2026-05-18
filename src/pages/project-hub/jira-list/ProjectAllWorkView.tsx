@@ -215,7 +215,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
     // Matches Jira's 3-region scroll model (measured 2026-04-18): left
     // panel 256×717 scrolls cards; center body scrolls article; right
     // details scrolls sidebar. Independent, not page-level.
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden', background: 'var(--cp-bg-elevated, #FFFFFF)' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
       {/* jira-compare catalog item 1 (2026-05-02): the standalone "Project
           work" h2 is replaced by the canonical ProjectHeaderChip — Jira
           renders a 32px horizontal-nav-header strip with project avatar +
@@ -264,8 +264,8 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
           <div style={{
             width: isNarrow ? '100%' : 260,
             flexShrink: 0,
-            background: 'var(--ds-surface, #FFFFFF)',
-            borderRight: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            borderRight: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
             borderRadius: 0,
             overflow: 'hidden', display: 'flex', flexDirection: 'column',
             padding: '0',
@@ -291,11 +291,11 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             activeItem ? (
               <div style={{
                 flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0,
-                background: 'var(--cp-bg-elevated, #FFFFFF)',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 borderRadius: '0 10px 10px 0', overflow: 'hidden',
               }}>
                 <Suspense fallback={
-                  <div style={{ padding: 24, color: 'var(--cp-text-tertiary, #6B778C)', fontSize: 14 }}>
+                  <div style={{ padding: 24, color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))', fontSize: 14 }}>
                     Loading…
                   </div>
                 }>
@@ -333,7 +333,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             ) : (
               <div style={{
                 flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'var(--cp-text-tertiary, #6B778C)', fontSize: 14,
+                color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))', fontSize: 14,
                 fontFamily: 'var(--cp-font-body)',
               }}>
                 Select an item to view details

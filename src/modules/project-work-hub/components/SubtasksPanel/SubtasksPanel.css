@@ -22,7 +22,7 @@
   margin-top: 24px;
   padding: 0;
   font-family: var(--cp-font-body);
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 
 /* ══════════════════════════════════════════════
@@ -86,14 +86,14 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   border-radius: 3px;
   padding: 0;
   transition: background 0.12s, color 0.12s;
 }
 .sp-icon-btn:hover {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.08));
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 .sp-icon-btn--add:hover {
   background: var(--ds-background-selected-subtle, #E9F2FF);
@@ -112,7 +112,7 @@
 .sp-progress-track {
   flex: 1;
   height: 6px;
-  background: var(--ds-background-neutral, #DFE1E6);
+  background: var(--ds-background-neutral, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 3px;
   overflow: hidden;
 }
@@ -127,7 +127,7 @@
 }
 .sp-progress-label {
   font-size: 12px;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   white-space: nowrap;
   line-height: 1;
 }
@@ -141,7 +141,7 @@
    the inline create row — so the "+ Create" row is visually inside the same
    bordered container as the data rows (Jira parity). */
 .sp-table-body {
-  border: 1px solid var(--ds-border, #DFE1E6);
+  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 8px;
   overflow: hidden;
 }
@@ -154,8 +154,8 @@
 .sp-table-body .sp-create-wrap {
   margin-top: 0;
   padding: 4px 8px 4px;
-  border-top: 1px solid var(--ds-border, #DFE1E6);
-  background: var(--ds-surface, #FFFFFF);
+  border-top: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }
 
 /* Jira-parity: table header cells in subtasks panel — compact padding + muted label color.
@@ -246,7 +246,7 @@
   border: 1px solid transparent;
   background: transparent;
   border-radius: 3px;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   cursor: pointer;
   flex-shrink: 0;
   opacity: 0;
@@ -260,11 +260,11 @@
 }
 .sp-panel .sp-desc-trigger:hover {
   background: #EBECF0;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 .sp-panel .sp-desc-trigger:focus-visible {
   outline: none;
-  border-color: #0052CC;
+  border-color: var(--cp-primary-60, #0052CC);
   box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25);
   opacity: 1;
 }
@@ -275,8 +275,8 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #0052CC;
-  box-shadow: 0 0 0 1.5px var(--ds-text-inverse, #FFFFFF);
+  background: var(--cp-primary-60, #0052CC);
+  box-shadow: 0 0 0 1.5px var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }
 
 .sp-inline-summary-input {
@@ -288,8 +288,8 @@
   border-radius: 3px;
   outline: none;
   font-size: 14px;
-  color: var(--ds-text, #172B4D);
-  background: var(--ds-surface, #FFFFFF);
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   font-family: inherit;
 }
 
@@ -321,7 +321,7 @@
 }
 .sp-assignee-name {
   font-size: 14px;
-  color: var(--ds-text-subtle, #44546F);
+  color: var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -336,7 +336,7 @@
   justify-content: center;
   font-size: 10px;
   font-weight: 700;
-  color: var(--ds-text-inverse, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   flex-shrink: 0;
 }
 
@@ -361,7 +361,7 @@
 .sp-status-chevron-ak {
   display: inline-flex;
   align-items: center;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
 }
 
 /* Row actions trigger (appears on row hover + when popup is open) */
@@ -373,7 +373,7 @@
   height: 24px;
   border: none;
   background: transparent;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   border-radius: 3px;
   cursor: pointer;
   padding: 0;
@@ -391,7 +391,7 @@
 .sp-row-actions-btn:hover,
 .sp-row-actions-btn[aria-expanded="true"] {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.08));
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   opacity: 1;
 }
 
@@ -424,7 +424,7 @@
 }
 .sp-fixv-more {
   font-size: 11px;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   padding: 0 4px;
   white-space: nowrap;
 }
@@ -458,25 +458,25 @@
   height: 16px;
   border-radius: 3px;
   border: 1.5px solid var(--ds-border, rgba(9,30,66,0.3));
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   display: inline-flex;
   align-items: center;
   justify-content: center;
   transition: background 0.12s, border-color 0.12s;
 }
-.sp-checkbox:hover .sp-checkbox-box { border-color: var(--ds-link, #0052CC); }
+.sp-checkbox:hover .sp-checkbox-box { border-color: var(--ds-link, var(--cp-primary-60, #0052CC)); }
 .sp-checkbox input:checked + .sp-checkbox-box,
 .sp-row--selected .sp-checkbox-box {
-  background: var(--ds-background-brand-bold, #0052CC);
-  border-color: var(--ds-background-brand-bold, #0052CC);
+  background: var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC));
+  border-color: var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC));
 }
 .sp-checkbox-dash {
   width: 8px;
   height: 2px;
-  background: var(--ds-link, #0052CC);
+  background: var(--ds-link, var(--cp-primary-60, #0052CC));
   border-radius: 1px;
 }
-.sp-row--selected .sp-checkbox-dash { background: var(--ds-text-inverse, #FFFFFF); }
+.sp-row--selected .sp-checkbox-dash { background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); }
 
 /* ══════════════════════════════════════════════
    Popover (@atlaskit/popup content)
@@ -485,8 +485,8 @@
   border: 1px solid var(--ds-border, rgba(9,30,66,0.24));
   border-radius: 6px;
   box-shadow: var(--ds-shadow-overlay, 0 6px 16px rgba(9,30,66,0.15));
-  background: var(--ds-surface-overlay, #FFFFFF);
-  color: var(--ds-text, #172B4D);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   font-family: var(--cp-font-body);
 }
 
@@ -503,7 +503,7 @@
   border: none;
   outline: none;
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   background: transparent;
   font-family: inherit;
 }
@@ -522,7 +522,7 @@
 .sp-pop-group-label {
   font-size: 11px;
   font-weight: 700;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   text-transform: uppercase;
   letter-spacing: 0.04em;
   padding: 8px 12px 4px;
@@ -541,7 +541,7 @@
   font-family: inherit;
   text-align: left;
   transition: background 0.1s;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 .sp-pop-row:hover:not(:disabled) {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
@@ -555,7 +555,7 @@
 }
 .sp-pop-hint {
   font-size: 11px;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   padding: 4px 10px 6px;
   line-height: 1.35;
 }
@@ -568,7 +568,7 @@
   top: calc(100% + 4px);
   right: 0;
   width: 220px;
-  background: var(--ds-surface-overlay, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--ds-border, rgba(9,30,66,0.24));
   border-radius: 6px;
   box-shadow: var(--ds-shadow-overlay, 0 6px 16px rgba(9,30,66,0.15));
@@ -579,7 +579,7 @@
 .sp-colpicker-title {
   font-size: 11px;
   font-weight: 700;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 8px 12px;
@@ -593,7 +593,7 @@
   cursor: pointer;
   transition: background 0.12s;
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 .sp-colpicker-item:hover {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04));
@@ -610,8 +610,8 @@
   transition: background 0.12s, border-color 0.12s;
 }
 .sp-colpicker-check--active {
-  background: var(--ds-background-brand-bold, #2563EB);
-  border-color: var(--ds-background-brand-bold, #2563EB);
+  background: var(--ds-background-brand-bold, var(--cp-workstream-catalyst-primary, #2563EB));
+  border-color: var(--ds-background-brand-bold, var(--cp-workstream-catalyst-primary, #2563EB));
 }
 
 /* ══════════════════════════════════════════════
@@ -623,24 +623,24 @@
   gap: 4px;
   height: 32px;
   padding: 0 8px;
-  border: 1px solid var(--ds-border, #DFE1E6);
+  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 3px;
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   cursor: pointer;
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   font-family: inherit;
 }
 .sp-type-selector-btn:hover {
-  background: var(--ds-background-neutral-subtle-hovered, #F4F5F7);
+  background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7));
 }
 .sp-type-selector-dropdown {
   position: absolute;
   top: calc(100% + 2px);
   left: 0;
   min-width: 180px;
-  background: var(--ds-surface-overlay, #FFFFFF);
-  border: 1px solid var(--ds-border, #DFE1E6);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 4px;
   box-shadow: var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.25));
   z-index: 60;
@@ -654,10 +654,10 @@
   padding: 0 12px;
   cursor: pointer;
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 .sp-type-selector-item:hover {
-  background: var(--ds-background-neutral-subtle-hovered, #F4F5F7);
+  background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7));
 }
 .sp-type-selector-item.is-active {
   background: var(--ds-background-selected, #DEEBFF);
@@ -679,7 +679,7 @@
      a visible double-border. */
   border: 1px solid transparent;
   border-radius: 3px;
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }
 .sp-create-wrap:focus-within .sp-create-row {
   border-color: var(--ds-border-focused, #4C9AFF);
@@ -691,7 +691,7 @@
   align-items: center;
   gap: 4px;
   padding: 0 4px 0 8px;
-  border-left: 1px solid var(--ds-border, #DFE1E6);
+  border-left: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
 }
 .sp-create-submit {
   display: inline-flex;
@@ -699,22 +699,22 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  border: 1px solid var(--ds-border, #DFE1E6);
+  border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 3px;
-  background: var(--ds-background-neutral, #F4F5F7);
-  color: var(--ds-text-subtlest, #6B778C);
+  background: var(--ds-background-neutral, var(--cp-bg-sunken, #F4F5F7));
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   cursor: pointer;
 }
 .sp-create-cancel {
   background: none;
   border: none;
   font-size: 13px;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   cursor: pointer;
   font-family: inherit;
 }
 .sp-create-cancel:hover {
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   text-decoration: underline;
 }
 
@@ -723,7 +723,7 @@
   top: calc(100% - 18px);
   left: 0;
   right: 0;
-  background: var(--ds-surface-overlay, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--ds-border, rgba(9,30,66,0.24));
   border-radius: 4px;
   box-shadow: var(--ds-shadow-overlay, 0 6px 16px rgba(9,30,66,0.15));
@@ -739,7 +739,7 @@
   padding: 6px 10px 4px;
   font-size: 10px;
   font-weight: 700;
-  color: var(--ds-text-subtlest, #6B778C);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -754,7 +754,7 @@
   cursor: pointer;
   font-family: inherit;
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   text-align: left;
   border-radius: 3px;
   transition: background 0.1s;
@@ -776,7 +776,7 @@
   padding: 32px 16px;
   text-align: center;
 }
-/* jira-compare 2026-05-04 (D4): corrected stale #172B4D fallback → #292A2E. */
+/* jira-compare 2026-05-04 (D4): corrected stale var(--cp-text-primary, var(--cp-text-inverse, #172B4D)) fallback → #292A2E. */
 .sp-empty-heading {
   font-size: 14px;
   font-weight: 600;
@@ -784,12 +784,12 @@
 }
 .sp-empty-sub {
   font-size: 13px;
-  /* jira-compare 2026-05-04: subtlest token — #6B778C (legacy) → #626F86 (ADS current). */
+  /* jira-compare 2026-05-04: subtlest token — var(--cp-text-secondary, #6B778C) (legacy) → #626F86 (ADS current). */
   color: var(--ds-text-subtlest, #626F86);
 }
 /* jira-compare 2026-05-04 (D2): ADS Button defaults — 32px height, 14px/500,
    neutral background (not outlined). Matched to @atlaskit/button default style.
-   font-size 13→14px, font-weight 400→500, stale #172B4D token → #292A2E. */
+   font-size 13→14px, font-weight 400→500, stale var(--cp-text-primary, var(--cp-text-inverse, #172B4D)) token → #292A2E. */
 .sp-empty-cta {
   display: inline-flex;
   align-items: center;
@@ -823,7 +823,7 @@
 }
 .sp-skeleton-pulse {
   border-radius: 4px;
-  background: var(--ds-background-neutral, #F1F5F9);
+  background: var(--ds-background-neutral, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
   animation: sp-pulse 1.5s ease-in-out infinite;
 }
 @keyframes sp-pulse {
@@ -860,8 +860,8 @@
 .sp-board-count {
   font-size: 11px;
   font-weight: 700;
-  color: var(--ds-text-subtlest, #6B778C);
-  background: var(--ds-surface, #FFFFFF);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   padding: 1px 8px;
   border-radius: 9px;
 }
@@ -878,7 +878,7 @@
   text-align: center;
 }
 .sp-board-card {
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--ds-border, rgba(9,30,66,0.1));
   border-radius: 4px;
   padding: 8px 10px;
@@ -891,7 +891,7 @@
 }
 .sp-board-card-summary {
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   line-height: 1.35;
   margin-bottom: 8px;
   display: -webkit-box;
@@ -929,7 +929,7 @@
   padding: 8px 12px;
   background: #0C2340;
   border-radius: 6px;
-  color: var(--ds-text-inverse, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   box-shadow: 0 4px 12px rgba(9,30,66,0.25);
 }
 .sp-bulkbar-count {
@@ -948,7 +948,7 @@
   border: 1px solid rgba(255,255,255,0.3);
   border-radius: 3px;
   background: transparent;
-  color: var(--ds-text-inverse, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   cursor: pointer;
   font-size: 13px;
   font-family: inherit;
@@ -986,7 +986,7 @@
 }
 .sp-bulkbar-cancel:hover {
   background: rgba(255,255,255,0.12);
-  color: var(--ds-text-inverse, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }
 
 /* ══════════════════════════════════════════════
@@ -1012,7 +1012,7 @@
   border-left: 0.556px solid var(--ds-surface-pressed, #DDDEE1);
 }
 .adf-editor-content table td {
-  background: var(--ds-text-inverse, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   color: var(--ds-text, #292A2E);
   font-size: 14px;
   font-weight: 400;

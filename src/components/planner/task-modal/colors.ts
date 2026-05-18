@@ -6,22 +6,22 @@
 export const COLORS = {
   // Text
   textPrimary: 'var(--ds-text, #0f172a)',
-  textSecondary: 'var(--ds-text-subtle, #334155)',
+  textSecondary: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
   textMuted: 'var(--ds-text-subtlest, #64748b)',
   textLight: 'var(--ds-text-subtlest, #94a3b8)',
   
   // Surfaces
   surfacePage: 'var(--ds-surface-sunken, #f8fafc)',
-  surfaceCard: 'var(--ds-surface, #ffffff)',
+  surfaceCard: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   surfaceHover: 'var(--ds-surface-sunken, #f1f5f9)',
   
   // Borders
-  borderLight: 'var(--ds-border, #e2e8f0)',
+  borderLight: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
   borderDefault: 'var(--ds-text-disabled, #cbd5e1)',
   borderFocus: 'var(--ds-text-brand, #3b82f6)',
   
   // Accent
-  accent: 'var(--ds-text-brand, #2563eb)',
+  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   accentHover: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
   accentLight: '#dbeafe',
   
@@ -35,7 +35,7 @@ export const COLORS = {
   filePdfBg: 'var(--ds-background-danger, #fef2f2)',
   filePdfIcon: 'var(--ds-text-danger, #dc2626)',
   fileDocBg: 'var(--ds-background-selected, #eff6ff)',
-  fileDocIcon: 'var(--ds-text-brand, #2563eb)',
+  fileDocIcon: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   fileImgBg: '#f0fdf4',
   fileImgIcon: 'var(--ds-text-success, #16a34a)'
 } as const;

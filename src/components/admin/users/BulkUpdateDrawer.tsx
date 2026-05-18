@@ -178,7 +178,7 @@ export function BulkUpdateDrawer({ isOpen, onClose, users }: BulkUpdateDrawerPro
         <div className="mt-6 space-y-4">
           {/* JSON Input */}
           <div className="space-y-2">
-            <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Mapping Data (JSON)</label>
+            <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Mapping Data (JSON)</label>
             <TextArea
               value={jsonInput}
               onChange={(e) => setJsonInput((e.target as HTMLTextAreaElement).value)}
@@ -201,7 +201,7 @@ export function BulkUpdateDrawer({ isOpen, onClose, users }: BulkUpdateDrawerPro
                 isChecked={dryRunMode}
                 onChange={() => setDryRunMode(m => !m)}
               />
-              <label htmlFor="dry-run" style={{ fontSize: '14px', color: 'var(--ds-text, #172B4D)' }}>Dry Run Mode (Preview Only)</label>
+              <label htmlFor="dry-run" style={{ fontSize: '14px', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Dry Run Mode (Preview Only)</label>
             </div>
             <Button appearance="default" onClick={handleDryRun} iconBefore={VideoPlayIcon}>
               Run Analysis
@@ -478,7 +478,7 @@ function MismatchResultRow({
 
 function EmptyState({ message, icon: Icon = WarningIcon }: { message: string; icon?: React.ComponentType<{ label: string; size?: string; primaryColor?: string }> }) {
   return (
-    <div className="flex flex-col items-center justify-center py-8" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+    <div className="flex flex-col items-center justify-center py-8" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
       <span style={{ marginBottom: '8px' }}><Icon label="" size="large" primaryColor="var(--ds-icon-subtle, #626F86)" /></span>
       <p className="text-sm">{message}</p>
     </div>

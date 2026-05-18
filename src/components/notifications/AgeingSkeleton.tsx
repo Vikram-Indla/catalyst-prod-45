@@ -20,8 +20,8 @@ function ShimmerBar({ width, height, borderRadius = 4, isDark }: {
     <div style={{
       width, height, borderRadius,
       background: isDark
-        ? 'linear-gradient(90deg, var(--ds-surface-raised, #1A1A1A) 25%, var(--ds-border, #292929) 50%, var(--ds-surface-raised, #1A1A1A) 75%)'
-        : 'linear-gradient(90deg, var(--ds-surface-sunken, #F1F5F9) 25%, var(--ds-border, #E2E8F0) 50%, var(--ds-surface-sunken, #F1F5F9) 75%)',
+        ? 'linear-gradient(90deg, var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) 25%, var(--ds-border, var(--cp-ink-1, #292929)) 50%, var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A)) 75%)'
+        : 'linear-gradient(90deg, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 25%, var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))) 50%, var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) 75%)',
       backgroundSize: '600px 100%',
       animation: 'ageing-shimmer 1.6s infinite linear',
     }} />
@@ -38,16 +38,16 @@ function GroupSkeleton({ label, rowCount, isDark }: {
         <td colSpan={5} style={{
           padding: '8px 14px',
           background: 'var(--cp-bg-page, #F8FAFC)',
-          borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #E2E8F0',
-          borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #E2E8F0',
+          borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+          borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{
               width: 14, height: 14, borderRadius: 3,
-              background: 'var(--cp-bg-sunken, #E2E8F0)',
+              background: 'var(--cp-bg-sunken, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
             }} />
             <span style={{
-              fontSize: 11, fontWeight: 700, color: 'var(--cp-text-tertiary, #64748B)',
+              fontSize: 11, fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
               textTransform: 'uppercase', letterSpacing: '0.04em',
               fontFamily: 'var(--cp-font-body)', opacity: 0.6,
             }}>
@@ -60,19 +60,19 @@ function GroupSkeleton({ label, rowCount, isDark }: {
       {/* Rows */}
       {Array.from({ length: rowCount }).map((_, i) => (
         <tr key={i}>
-          <td style={{ padding: '8px 14px', borderBottom: isDark ? '0.75px solid #1F1F1F' : '0.75px solid #F1F5F9' }}>
+          <td style={{ padding: '8px 14px', borderBottom: isDark ? '0.75px solid #1F1F1F' : '0.75px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
             <ShimmerBar width={16} height={16} borderRadius={3} isDark={isDark} />
           </td>
-          <td style={{ padding: '8px 6px', borderBottom: isDark ? '0.75px solid #1F1F1F' : '0.75px solid #F1F5F9' }}>
+          <td style={{ padding: '8px 6px', borderBottom: isDark ? '0.75px solid #1F1F1F' : '0.75px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
             <ShimmerBar width={64} height={11} isDark={isDark} />
           </td>
-          <td style={{ padding: '8px 6px', borderBottom: isDark ? '0.75px solid #1F1F1F' : '0.75px solid #F1F5F9' }}>
+          <td style={{ padding: '8px 6px', borderBottom: isDark ? '0.75px solid #1F1F1F' : '0.75px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
             <ShimmerBar width="70%" height={11} isDark={isDark} />
           </td>
-          <td style={{ padding: '8px 6px', borderBottom: isDark ? '0.75px solid #1F1F1F' : '0.75px solid #F1F5F9' }}>
+          <td style={{ padding: '8px 6px', borderBottom: isDark ? '0.75px solid #1F1F1F' : '0.75px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
             <ShimmerBar width={52} height={16} borderRadius={3} isDark={isDark} />
           </td>
-          <td style={{ padding: '8px 6px', borderBottom: isDark ? '0.75px solid #1F1F1F' : '0.75px solid #F1F5F9' }}>
+          <td style={{ padding: '8px 6px', borderBottom: isDark ? '0.75px solid #1F1F1F' : '0.75px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
             <ShimmerBar width={48} height={14} borderRadius={8} isDark={isDark} />
           </td>
         </tr>
@@ -92,7 +92,7 @@ export default function AgeingSkeleton() {
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         padding: '10px 14px',
-        borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #F1F5F9',
+        borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
       }}>
         <ShimmerBar width={140} height={10} isDark={isDark} />
         <div style={{ display: 'flex', gap: 5 }}>
@@ -105,7 +105,7 @@ export default function AgeingSkeleton() {
       {/* Stat bar skeleton */}
       <div style={{
         display: 'flex', gap: 16, padding: '8px 14px',
-        borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #F1F5F9',
+        borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
         background: 'var(--cp-bg-page, #F8FAFC)',
       }}>
         {[48, 52, 56, 60, 44].map((w, i) => (

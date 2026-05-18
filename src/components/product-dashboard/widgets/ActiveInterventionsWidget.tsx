@@ -39,7 +39,7 @@ function InterventionCard({
       data-testid={`intervention-item-${id}`}
       style={{
         padding: '10px 12px',
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         borderLeft: `3px solid ${PHASE_PAUSED}`,
         borderRadius: 6,
         background: token('elevation.surface', '#FFFFFF'),
@@ -66,7 +66,7 @@ function InterventionCard({
             fontWeight: 600,
             color: overdue
               ? token('color.text.danger', '#AE2A19')
-              : token('color.text.subtle', '#44546F'),
+              : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             fontVariantNumeric: 'tabular-nums',
             whiteSpace: 'nowrap',
           }}
@@ -79,7 +79,7 @@ function InterventionCard({
         style={{
           fontSize: 14,
           fontWeight: 500,
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
           marginTop: 2,
         }}
       >
@@ -93,7 +93,7 @@ function InterventionCard({
           alignItems: 'center',
           marginTop: 8,
           fontSize: 11,
-          color: token('color.text.subtle', '#44546F'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
         }}
       >
         <span>Paused at: {stage}</span>
@@ -125,7 +125,7 @@ function ApprovalCard({
       data-testid={`intervention-item-${id}`}
       style={{
         padding: '10px 12px',
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         borderLeft: `3px solid ${PHASE_APPROVAL}`,
         borderRadius: 6,
         background: token('elevation.surface', '#FFFFFF'),
@@ -152,7 +152,7 @@ function ApprovalCard({
             fontWeight: 600,
             color: overdue
               ? token('color.text.danger', '#AE2A19')
-              : token('color.text.subtle', '#44546F'),
+              : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             fontVariantNumeric: 'tabular-nums',
             whiteSpace: 'nowrap',
           }}
@@ -161,7 +161,7 @@ function ApprovalCard({
         </span>
       </div>
 
-      <div style={{ fontSize: 14, fontWeight: 500, color: token('color.text', '#172B4D'), marginTop: 2 }}>
+      <div style={{ fontSize: 14, fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), marginTop: 2 }}>
         {title}
       </div>
 
@@ -171,7 +171,7 @@ function ApprovalCard({
           justifyContent: 'space-between',
           marginTop: 8,
           fontSize: 11,
-          color: token('color.text.subtle', '#44546F'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
         }}
       >
         <span>{assigneeName ? `Approver: ${assigneeName}` : ''}</span>
@@ -191,14 +191,14 @@ function ColHeader({ label, summary }: { label: string; summary: string }) {
         justifyContent: 'space-between',
         alignItems: 'baseline',
         paddingBottom: 8,
-        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         marginBottom: 4,
       }}
     >
-      <span style={{ fontSize: 16, fontWeight: 600, color: token('color.text', '#172B4D') }}>
+      <span style={{ fontSize: 16, fontWeight: 600, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
         {label}
       </span>
-      <span style={{ fontSize: 11, color: token('color.text.subtle', '#44546F') }}>
+      <span style={{ fontSize: 11, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
         {summary}
       </span>
     </div>

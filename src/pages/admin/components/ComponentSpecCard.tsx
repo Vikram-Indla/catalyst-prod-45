@@ -35,20 +35,19 @@ function StatusBadge({ status }: { status: ComponentRegistryEntry['status'] }) {
 }
 
 function CategoryBadge({ category }: { category: ComponentRegistryEntry['category'] }) {
+  const label = category.charAt(0).toUpperCase() + category.slice(1);
   return (
     <span
       style={{
         fontSize: 11,
         fontWeight: 600,
-        textTransform: 'uppercase',
-        letterSpacing: '0.04em',
         padding: '2px 8px',
         borderRadius: 3,
         background: token('color.background.neutral', '#091E420F'),
-        color: token('color.text.subtle', '#44546F'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
       }}
     >
-      {category}
+      {label}
     </span>
   );
 }
@@ -99,7 +98,7 @@ function FeatureFlagsTable({ flags }: { flags: NonNullable<ComponentRegistryEntr
                     padding: token('space.100', '8px'),
                     fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
                     fontSize: 12,
-                    color: token('color.text', '#172B4D'),
+                    color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                     verticalAlign: 'top',
                   }}
                 >
@@ -108,7 +107,7 @@ function FeatureFlagsTable({ flags }: { flags: NonNullable<ComponentRegistryEntr
                 <td
                   style={{
                     padding: token('space.100', '8px'),
-                    color: token('color.text.subtle', '#44546F'),
+                    color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                     verticalAlign: 'top',
                   }}
                 >
@@ -117,7 +116,7 @@ function FeatureFlagsTable({ flags }: { flags: NonNullable<ComponentRegistryEntr
                 <td
                   style={{
                     padding: token('space.100', '8px'),
-                    color: token('color.text', '#172B4D'),
+                    color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                     verticalAlign: 'top',
                   }}
                 >
@@ -141,7 +140,7 @@ function ConsumerList({ name }: { name: string }) {
     return (
       <div
         style={{
-          color: token('color.text.subtle', '#44546F'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
           fontSize: 13,
           fontStyle: 'italic',
         }}
@@ -167,7 +166,7 @@ function ConsumerList({ name }: { name: string }) {
         <Heading size="xsmall">Consumers</Heading>
         <Badge>{consumers.length}</Badge>
         {variants.length > 1 && (
-          <span style={{ fontSize: 11, color: token('color.text.subtle', '#44546F') }}>
+          <span style={{ fontSize: 11, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
             across {variants.length} import source{variants.length === 1 ? '' : 's'}
           </span>
         )}
@@ -224,7 +223,7 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
           <Heading size="large">{entry.name}</Heading>
           <StatusBadge status={entry.status} />
           <CategoryBadge category={entry.category} />
-          <span style={{ fontSize: 12, color: token('color.text.subtle', '#44546F') }}>
+          <span style={{ fontSize: 12, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
             v{entry.version}
           </span>
         </div>
@@ -240,7 +239,7 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
             style={{
               marginTop: token('space.075', '6px'),
               fontSize: 12,
-              color: token('color.text.subtle', '#44546F'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             }}
           >
             Atlaskit package: <code>{entry.atlaskit_package}</code>
@@ -270,7 +269,7 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
               marginTop: token('space.200', '16px'),
               fontSize: 14,
               lineHeight: '20px',
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
             }}
           >
             {entry.jsdoc_excerpt}
@@ -311,7 +310,7 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
                 padding: '2px 8px',
                 borderRadius: 12,
                 background: token('color.background.neutral', '#091E420F'),
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
               }}
             >
               {tag}

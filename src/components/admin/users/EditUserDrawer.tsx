@@ -636,7 +636,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
               </h3>
               
               <div className="space-y-2">
-                <label htmlFor="full_name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Full Name</label>
+                <label htmlFor="full_name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Full Name</label>
                 <Textfield
                   id="full_name"
                   value={formData.full_name}
@@ -653,7 +653,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="email" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Email</label>
+                <label htmlFor="email" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Email</label>
                 <Textfield
                   id="email"
                   type="email"
@@ -671,7 +671,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="department" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Department</label>
+                <label htmlFor="department" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Department</label>
                 <AdsSelect
                   inputId="department"
                   value={formData.department ? { label: formData.department, value: formData.department } : null}
@@ -692,7 +692,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
 
             {/* Job Role Section - syncs to user list via searchable combobox */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                 <BriefcaseIcon label="" size="small" />
                 Job Role
               </h3>
@@ -770,13 +770,13 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
 
             {/* Vendor/Contract Section */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                 <OfficeBuildingIcon label="" size="small" />
                 Vendor &amp; Contract
               </h3>
 
               <div className="space-y-2">
-                <label htmlFor="vendor" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Vendor</label>
+                <label htmlFor="vendor" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Vendor</label>
                 <AdsSelect
                   inputId="vendor"
                   value={formData.vendor ? { label: formData.vendor, value: formData.vendor } : null}
@@ -787,7 +787,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="resource_type" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Resource Type</label>
+                <label htmlFor="resource_type" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Resource Type</label>
                 <AdsSelect
                   inputId="resource_type"
                   value={formData.resource_type ? { label: formData.resource_type, value: formData.resource_type } : null}
@@ -805,7 +805,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label htmlFor="contract_start_date" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Contract Start Date</label>
+                  <label htmlFor="contract_start_date" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Contract Start Date</label>
                   <Textfield
                     id="contract_start_date"
                     type="date"
@@ -814,7 +814,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
                   />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="contract_end_date" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Contract End Date</label>
+                  <label htmlFor="contract_end_date" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Contract End Date</label>
                   <Textfield
                     id="contract_end_date"
                     type="date"
@@ -825,14 +825,14 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="ctc" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>CTC (Cost to Company)</label>
+                <label htmlFor="ctc" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>CTC (Cost to Company)</label>
                 <Textfield
                   id="ctc"
                   type="number"
                   placeholder="Enter CTC amount"
                   value={formData.ctc}
                   onChange={(e) => setFormData(prev => ({ ...prev, ctc: (e.target as HTMLInputElement).value }))}
-                  elemBeforeInput={<span style={{ padding: '0 8px', color: 'var(--ds-text-subtle, #44546F)', fontSize: '14px' }}>ریال</span>}
+                  elemBeforeInput={<span style={{ padding: '0 8px', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', fontSize: '14px' }}>ریال</span>}
                 />
               </div>
             </div>
@@ -841,13 +841,13 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
 
             {/* Assignment Section */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                 <BriefcaseIcon label="" size="small" />
                 Assignment
               </h3>
 
               <div className="space-y-2">
-                <label htmlFor="assignment" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Assignment</label>
+                <label htmlFor="assignment" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Assignment</label>
                 <AdsSelect
                   inputId="assignment"
                   value={selectedAssignmentId ? assignments.find(a => a.id === selectedAssignmentId) ? { label: assignments.find(a => a.id === selectedAssignmentId)!.name, value: selectedAssignmentId } : null : null}
@@ -862,13 +862,13 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
 
             {/* Location Section */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                 <LocationIcon label="" size="small" />
                 Location
               </h3>
 
               <div className="space-y-2">
-                <label htmlFor="location" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Work Location</label>
+                <label htmlFor="location" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Work Location</label>
                 <AdsSelect
                   inputId="location"
                   value={formData.location ? { label: formData.location, value: formData.location } : null}
@@ -879,7 +879,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="country" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Country</label>
+                <label htmlFor="country" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Country</label>
                 <AdsSelect
                   inputId="country"
                   value={formData.country ? { label: formData.country, value: formData.country } : null}

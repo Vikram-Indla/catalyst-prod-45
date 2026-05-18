@@ -19,18 +19,18 @@ const TEMP_MOCK_FEED: FeedItem[] = [
     time: '2 hours ago',
   },
   {
-    initials: 'AI', color: 'var(--ds-text-brand, #2563EB)',
-    text: <><strong>AI Insight</strong> flagged Supply Chain Q3 logistics hub as <strong style={{ color: 'var(--ds-text-danger, #DC2626)' }}>Off Track</strong> — contractor delays</>,
+    initials: 'AI', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+    text: <><strong>AI Insight</strong> flagged Supply Chain Q3 logistics hub as <strong style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>Off Track</strong> — contractor delays</>,
     time: '3 hours ago',
   },
   {
     initials: 'SR', color: '#1E40AF',
-    text: <><strong>Sara Al-Rashid</strong> completed STEM scholarship pipeline quarterly review — <strong style={{ color: 'var(--ds-text-success, #16A34A)' }}>on track</strong></>,
+    text: <><strong>Sara Al-Rashid</strong> completed STEM scholarship pipeline quarterly review — <strong style={{ color: 'var(--ds-text-success, var(--cp-success, #16A34A))' }}>on track</strong></>,
     time: '5 hours ago',
   },
   {
     initials: 'MK', color: '#1E40AF',
-    text: <><strong>Mohammed Khan</strong> requested budget reallocation for Supply Chain — <strong style={{ color: 'var(--ds-text-warning, #D97706)' }}>pending</strong></>,
+    text: <><strong>Mohammed Khan</strong> requested budget reallocation for Supply Chain — <strong style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }}>pending</strong></>,
     time: 'Yesterday',
   },
   {
@@ -54,19 +54,19 @@ export function ActivityFeed() {
           className="flex gap-3"
           style={{
             padding: '10px 4px',
-            borderBottom: i < TEMP_MOCK_FEED.length - 1 ? '1px solid var(--exec-border, var(--bd-default, #E2E8F0))' : 'none',
+            borderBottom: i < TEMP_MOCK_FEED.length - 1 ? '1px solid var(--exec-border, var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))))' : 'none',
             transition: 'background 120ms',
             borderRadius: 6,
             margin: '0 -4px',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--exec-bg-hover, #F1F5F9)'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--exec-bg-hover, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
           <div
             className="flex items-center justify-center flex-shrink-0"
             style={{
               width: 28, height: 28, borderRadius: '50%', background: item.color,
-              color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 10, fontWeight: 600,
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 10, fontWeight: 600,
             }}
           >
             {item.initials}

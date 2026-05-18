@@ -11,7 +11,7 @@
  * `@atlaskit/heading size="small"` atomic output — Jira is using Atlaskit
  * Heading small.
  *
- * Corrects 2026-05-08 K.11 lesson (14px/600/#172B4D), which had measured
+ * Corrects 2026-05-08 K.11 lesson (14px/600/var(--cp-text-primary, var(--cp-text-inverse, #172B4D))), which had measured
  * parent layout wrappers (14px/400) and inner field labels (11–12px/600)
  * instead of the section header text node.
  *

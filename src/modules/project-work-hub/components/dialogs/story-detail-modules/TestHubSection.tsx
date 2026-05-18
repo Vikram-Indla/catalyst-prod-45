@@ -14,12 +14,12 @@ import { SectionBlock, SkeletonRows, EmptyState } from './shared-components';
 import { statusToLozenge, type LozengeAppearance } from '../../../utils/statusToLozenge';
 
 const LOZENGE_STYLES: Record<LozengeAppearance, { bg: string; color: string }> = {
-  default:    { bg: 'var(--ds-background-neutral, #DFE1E6)', color: 'var(--ds-text, #253858)' },
+  default:    { bg: 'var(--ds-background-neutral, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
   inprogress: { bg: 'var(--ds-background-information, #DEEBFF)', color: 'var(--ds-link-pressed, #0747A6)' },
   success:    { bg: 'var(--ds-background-success, #E3FCEF)', color: 'var(--ds-text-success, #006644)' },
-  removed:    { bg: 'var(--ds-background-neutral, #DFE1E6)', color: 'var(--ds-text, #253858)' },
-  moved:      { bg: 'var(--ds-background-neutral, #DFE1E6)', color: 'var(--ds-text, #253858)' },
-  new:        { bg: 'var(--ds-background-neutral, #DFE1E6)', color: 'var(--ds-text, #253858)' },
+  removed:    { bg: 'var(--ds-background-neutral, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
+  moved:      { bg: 'var(--ds-background-neutral, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
+  new:        { bg: 'var(--ds-background-neutral, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text, #253858)' },
 };
 
 function CatalystLozenge({ appearance, children }: { appearance: LozengeAppearance; children: React.ReactNode }) {
@@ -86,13 +86,13 @@ export function TestHubSection({ storyId }: { storyId: string }) {
         {([{ key: 'cases' as const, label: 'Test Cases', count: testCases.length }, { key: 'executions' as const, label: 'Test Executions', count: executions.length }]).map(tab => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
             flex: 1, height: 33, fontSize: 12, fontWeight: 500, border: 'none', background: 'transparent', cursor: 'pointer',
-            color: activeTab === tab.key ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #6B778C)',
-            borderBottom: `2px solid ${activeTab === tab.key ? 'var(--ds-text-brand, #2563EB)' : 'transparent'}`,
+            color: activeTab === tab.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
+            borderBottom: `2px solid ${activeTab === tab.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, transition: 'color .12s, border-color .12s',
             fontFamily: 'var(--cp-font-body)',
           }}>
             {tab.label}
-            <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 8, background: activeTab === tab.key ? 'var(--ds-background-information, #DEEBFF)' : 'var(--ds-border, #DFE1E6)', color: activeTab === tab.key ? 'var(--ds-link-pressed, #0747A6)' : 'var(--ds-text-subtle, #42526E)' }}>{tab.count}</span>
+            <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 8, background: activeTab === tab.key ? 'var(--ds-background-information, #DEEBFF)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: activeTab === tab.key ? 'var(--ds-link-pressed, #0747A6)' : 'var(--ds-text-subtle, #42526E)' }}>{tab.count}</span>
           </button>
         ))}
       </div>

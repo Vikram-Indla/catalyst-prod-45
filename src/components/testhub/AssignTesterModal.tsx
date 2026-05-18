@@ -161,20 +161,20 @@ export function AssignTesterModal({
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
           {/* Search Bar */}
           <div style={{ position: 'relative', marginBottom: 12 }}>
-            <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+            <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
             <input
               type="text"
               placeholder="Search by name or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
-                width: '100%', height: 50, border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 6,
+                width: '100%', height: 50, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 6,
                 padding: '0 32px 0 36px', fontFamily: 'var(--cp-font-body)', fontSize: 14,
-                color: 'var(--ds-text-subtle, #334155)', backgroundColor: 'transparent', outline: 'none',
+                color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', backgroundColor: 'transparent', outline: 'none',
                 boxSizing: 'border-box',
               }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--bd-default, #E2E8F0)'; }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'; }}
             />
             {searchQuery && (
               <button
@@ -185,7 +185,7 @@ export function AssignTesterModal({
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
               >
-                <X size={14} style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+                <X size={14} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
               </button>
             )}
           </div>
@@ -309,7 +309,7 @@ export function AssignTesterModal({
               height: 40, padding: '0 20px',
               background: 'linear-gradient(135deg, #4F46E5 0%, #4338CA 100%)',
               border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600,
-              color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer', opacity: isSubmitting ? 0.7 : 1,
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer', opacity: isSubmitting ? 0.7 : 1,
               display: 'flex', alignItems: 'center', gap: 8,
             }}
           >

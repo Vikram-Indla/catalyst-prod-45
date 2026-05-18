@@ -89,7 +89,7 @@ const formatDate = (dateString: string): string => {
 
 // Generate avatar color from name
 const getAvatarColor = (name: string): string => {
-  const colors = ['#8B5CF6', 'var(--ds-text-brand, #3B82F6)', '#10B981', 'var(--ds-text-warning, #F59E0B)', 'var(--ds-text-danger, #EF4444)', '#EC4899', '#6366F1'];
+  const colors = ['#8B5CF6', 'var(--ds-text-brand, #3B82F6)', '#10B981', 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', 'var(--ds-text-danger, #EF4444)', '#EC4899', '#6366F1'];
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -505,7 +505,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
           width: '420px',
           maxWidth: '100vw',
           height: '100vh',
-          backgroundColor: 'var(--ds-surface, #ffffff)',
+          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           boxShadow: '-8px 0 30px rgba(0, 0, 0, 0.12)',
           zIndex: 999,
           display: 'flex',
@@ -593,7 +593,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
               top: 0,
               zIndex: 20,
               padding: '16px 20px',
-              backgroundColor: 'var(--ds-surface, #ffffff)',
+              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               borderTop: '1px solid #e2e8f0',
               borderBottom: '1px solid #e2e8f0',
             }}
@@ -611,7 +611,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                 }}
                 style={{ ...statCardStyle, cursor: 'pointer', transition: 'all 0.15s ease' }}
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f1f5f9)'; e.currentTarget.style.borderColor = 'var(--ds-text-disabled, #cbd5e1)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f8fafc)'; e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f8fafc)'; e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))'; }}
               >
                 <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--ds-text, #0f172a)', lineHeight: 1 }}>{taskCount}</div>
                 <div style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '4px' }}>Total Tasks</div>
@@ -623,7 +623,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                 }}
                 style={{ ...statCardStyle, cursor: 'pointer', transition: 'all 0.15s ease' }}
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-background-danger, #fef2f2)'; e.currentTarget.style.borderColor = '#fecaca'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f8fafc)'; e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f8fafc)'; e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))'; }}
               >
                 <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--ds-text-danger, #dc2626)', lineHeight: 1 }}>{workstream.overdueCount || 0}</div>
                 <div style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #64748b)', marginTop: '4px' }}>Overdue</div>
@@ -640,8 +640,8 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                 <span style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, #64748b)' }}>Task Completion</span>
                 <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>{progress}% complete</span>
               </div>
-              <div style={{ height: '8px', backgroundColor: 'var(--ds-border, #e2e8f0)', borderRadius: '4px', overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${progress}%`, backgroundColor: 'var(--ds-text-brand, #2563eb)', borderRadius: '4px', transition: 'width 0.3s ease' }} />
+              <div style={{ height: '8px', backgroundColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${progress}%`, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', borderRadius: '4px', transition: 'width 0.3s ease' }} />
               </div>
             </div>
           </div>
@@ -668,7 +668,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                       padding: '12px',
                       fontSize: '14px',
                       lineHeight: 1.6,
-                      color: 'var(--ds-text-subtle, #334155)',
+                      color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                       border: '1px solid #cbd5e1',
                       borderRadius: '8px',
                       resize: 'vertical',
@@ -687,7 +687,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                   </div>
                 </div>
               ) : (
-                <p style={{ fontSize: '14px', lineHeight: 1.7, color: 'var(--ds-text-subtle, #334155)', margin: 0 }}>
+                <p style={{ fontSize: '14px', lineHeight: 1.7, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', margin: 0 }}>
                   {workstream.description || <span style={{ color: 'var(--ds-text-subtlest, #94a3b8)', fontStyle: 'italic' }}>No description added.</span>}
                 </p>
               )}
@@ -763,7 +763,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                             >
                               <div style={avatarStyle(user.avatarColor, 28)}>{user.initials}</div>
                               <span style={{ fontSize: '14px', color: 'var(--ds-text, #0f172a)' }}>{user.name}</span>
-                              {lead?.id === user.resourceId && <Check size={16} style={{ marginLeft: 'auto', color: 'var(--ds-text-brand, #2563eb)' }} />}
+                              {lead?.id === user.resourceId && <Check size={16} style={{ marginLeft: 'auto', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }} />}
                             </button>
                           ))}
                           {filteredUsersForLead.length === 0 && !isLoadingUsers && (
@@ -890,7 +890,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
             display: 'flex',
             gap: '8px',
             padding: '12px 20px',
-            backgroundColor: 'var(--ds-surface, #ffffff)',
+            backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             borderTop: '1px solid #e2e8f0'
           }}
         >
@@ -960,7 +960,7 @@ const sectionLabelStyle: React.CSSProperties = {
 const editLinkStyle: React.CSSProperties = {
   fontSize: '13px',
   fontWeight: 500,
-  color: 'var(--ds-text-brand, #2563eb)',
+  color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   backgroundColor: 'transparent',
   border: 'none',
   cursor: 'pointer',
@@ -974,8 +974,8 @@ const primaryButtonStyle: React.CSSProperties = {
   justifyContent: 'center',
   gap: '6px',
   padding: '8px 16px',
-  backgroundColor: 'var(--ds-text-brand, #2563eb)',
-  color: 'var(--ds-surface, #ffffff)',
+  backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   border: 'none',
   borderRadius: '6px',
   fontSize: '13px',
@@ -1004,7 +1004,7 @@ const avatarStyle = (color: string, size = 32): React.CSSProperties => ({
   justifyContent: 'center',
   fontSize: size > 32 ? '14px' : '12px',
   fontWeight: 600,
-  color: 'var(--ds-surface, #ffffff)',
+  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   flexShrink: 0
 });
 
@@ -1032,7 +1032,7 @@ const dropdownStyle: React.CSSProperties = {
   left: 0,
   right: 0,
   marginTop: '4px',
-  backgroundColor: 'var(--ds-surface, #ffffff)',
+  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   border: '1px solid #e2e8f0',
   borderRadius: '12px',
   boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
@@ -1069,8 +1069,8 @@ const navTabStyle = (isActive: boolean): React.CSSProperties => ({
   justifyContent: 'center',
   gap: '6px',
   padding: '10px 16px',
-  backgroundColor: isActive ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-surface, #ffffff)',
-  color: isActive ? 'var(--ds-surface, #ffffff)' : 'var(--ds-text-subtle, #475569)',
+  backgroundColor: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+  color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtle, #475569)',
   border: isActive ? 'none' : '1px solid #e2e8f0',
   borderRadius: '8px',
   fontSize: '13px',

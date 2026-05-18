@@ -36,7 +36,7 @@ export interface HubColor {
 export const HUB_COLORS: Record<HubKey, HubColor> = {
   home:     { tone: '#42526E' },
   strategy: { tone: '#8270DB' },
-  product:  { tone: '#0052CC' },
+  product:  { tone: 'var(--cp-primary-60, #0052CC)' },
   project:  { tone: '#00A3BF' },
   release:  { tone: '#FF8B00' },
   test:     { tone: '#36B37E' },

@@ -55,7 +55,7 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
   // D-19: No auto-scroll -- Chronology renders Today first at the top.
   // The tab-switch handler already scrolls to top on view change.
 
-  const accentColor = (cat: string) => cat === 'in_progress' ? 'var(--ds-text-brand, #2563EB)' : cat === 'in_qa' ? '#0D9488' : cat === 'blocked' ? 'var(--ds-text-danger, #EF4444)' : cat === 'done' ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-warning, #D97706)';
+  const accentColor = (cat: string) => cat === 'in_progress' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : cat === 'in_qa' ? 'var(--cp-teal-60, #0D9488)' : cat === 'blocked' ? 'var(--ds-text-danger, #EF4444)' : cat === 'done' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
 
   // Render a single chronology card
   const renderChronoCard = (item: R360WorkItem) => {
@@ -90,7 +90,7 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             {item.role_on_item === 'Contributor' && (
-              <span style={{ fontSize: 12.5, color: 'var(--ds-text-subtle, #44546F)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ fontSize: 12.5, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                 <span style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>{'\u2192'}</span> <MiniAvatar name={item.assignee_name} size={18} /> {item.assignee_name}
               </span>
             )}
@@ -139,9 +139,9 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
           <span className="r3-date-label">{group.label}</span>
           <span className="r3-date-count">{total} items</span>
           <div className="r3-minibar">
-            {statusDist.done > 0 && <div style={{ width: `${statusDist.done / total * 100}%`, background: 'var(--ds-text-success, #16A34A)' }} />}
-            {statusDist.in_progress > 0 && <div style={{ width: `${statusDist.in_progress / total * 100}%`, background: 'var(--ds-text-brand, #2563EB)' }} />}
-            {statusDist.to_do > 0 && <div style={{ width: `${statusDist.to_do / total * 100}%`, background: 'var(--ds-text-warning, #D97706)' }} />}
+            {statusDist.done > 0 && <div style={{ width: `${statusDist.done / total * 100}%`, background: 'var(--ds-text-success, var(--cp-success, #16A34A))' }} />}
+            {statusDist.in_progress > 0 && <div style={{ width: `${statusDist.in_progress / total * 100}%`, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />}
+            {statusDist.to_do > 0 && <div style={{ width: `${statusDist.to_do / total * 100}%`, background: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} />}
             {statusDist.blocked > 0 && <div style={{ width: `${statusDist.blocked / total * 100}%`, background: 'var(--ds-text-danger, #EF4444)' }} />}
           </div>
           <ChevronDown size={16} className={`r3-date-chevron ${isCollapsed ? 'r3-date-chevron--collapsed' : ''}`} />
@@ -188,9 +188,9 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
             });
             return (
               <div className="r3-minibar">
-                {sd.done > 0 && <div style={{ width: `${sd.done / total * 100}%`, background: 'var(--ds-text-success, #16A34A)' }} />}
-                {sd.in_progress > 0 && <div style={{ width: `${sd.in_progress / total * 100}%`, background: 'var(--ds-text-brand, #2563EB)' }} />}
-                {sd.to_do > 0 && <div style={{ width: `${sd.to_do / total * 100}%`, background: 'var(--ds-text-warning, #D97706)' }} />}
+                {sd.done > 0 && <div style={{ width: `${sd.done / total * 100}%`, background: 'var(--ds-text-success, var(--cp-success, #16A34A))' }} />}
+                {sd.in_progress > 0 && <div style={{ width: `${sd.in_progress / total * 100}%`, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />}
+                {sd.to_do > 0 && <div style={{ width: `${sd.to_do / total * 100}%`, background: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} />}
                 {sd.blocked > 0 && <div style={{ width: `${sd.blocked / total * 100}%`, background: 'var(--ds-text-danger, #EF4444)' }} />}
               </div>
             );
@@ -217,7 +217,7 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
       {carryoverItems.length > 0 && (
         <div data-testid="r360-chrono-carryover" ref={carryoverRef} className="r3-date-group">
           <div className="r3-date-header" onClick={() => setCollapsed(prev => { const n = new Set(prev); n.has('__carryover__') ? n.delete('__carryover__') : n.add('__carryover__'); return n; })}>
-            <span style={{ width: '10px', height: '10px', borderRadius: '50%', border: '2px solid var(--ds-text-warning, #D97706)', background: 'transparent', flexShrink: 0 }} />
+            <span style={{ width: '10px', height: '10px', borderRadius: '50%', border: '2px solid var(--ds-text-warning, var(--cp-warning, #D97706))', background: 'transparent', flexShrink: 0 }} />
             <span className="r3-date-label" style={{ fontWeight: 650, fontSize: '13px' }}>Carried Over</span>
             <span className="r3-date-count">{carryoverItems.length} items</span>
             <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: 'var(--ds-surface-sunken, #F8FAFC)', color: 'var(--ds-text-subtlest, #626F86)' }}>No activity this week</span>

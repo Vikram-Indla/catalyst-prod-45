@@ -54,7 +54,7 @@ export const WORK_ITEM_STATUS_CONFIG: Record<WorkItemStatus, {
   blocked: {
     label: 'BLOCKED',
     bgColor: '#FEE2E2',
-    textColor: '#DC2626'
+    textColor: 'var(--cp-danger, #DC2626)'
   },
   done: {
     label: 'DONE',
@@ -81,7 +81,7 @@ export const PRIORITY_CONFIG: Record<PriorityLevel, {
   P1: {
     label: 'Critical',
     shortLabel: 'P1',
-    borderColor: '#DC2626',
+    borderColor: 'var(--cp-danger, #DC2626)',
     showBorder: true
   },
   P2: {
@@ -113,10 +113,10 @@ export const SEVERITY_CONFIG: Record<SeverityLevel, {
   shortLabel: string;
   color: string;
 }> = {
-  SEV1: { label: 'Blocker', shortLabel: 'SEV1', color: '#DC2626' },
-  SEV2: { label: 'Critical', shortLabel: 'SEV2', color: '#DC2626' },
+  SEV1: { label: 'Blocker', shortLabel: 'SEV1', color: 'var(--cp-danger, #DC2626)' },
+  SEV2: { label: 'Critical', shortLabel: 'SEV2', color: 'var(--cp-danger, #DC2626)' },
   SEV3: { label: 'Major', shortLabel: 'SEV3', color: '#F97316' },
-  SEV4: { label: 'Minor', shortLabel: 'SEV4', color: '#F59E0B' },
+  SEV4: { label: 'Minor', shortLabel: 'SEV4', color: 'var(--cp-amber, #F59E0B)' },
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -128,7 +128,7 @@ export const TYPE_ICON_CONFIG: Record<WorkItemType, {
   label: string;
 }> = {
   story: { bgColor: '#0d9488', label: 'Story' },    // Teal
-  task: { bgColor: '#2563eb', label: 'Task' },      // Blue
+  task: { bgColor: 'var(--cp-workstream-catalyst-primary, #2563eb)', label: 'Task' },      // Blue
   defect: { bgColor: '#ef4444', label: 'Defect' },  // Red
   subtask: { bgColor: '#6b7280', label: 'Subtask' }, // Gray
 };

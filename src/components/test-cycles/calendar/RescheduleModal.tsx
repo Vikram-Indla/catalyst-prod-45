@@ -56,7 +56,7 @@ export function RescheduleModal({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-[var(--ds-text-brand,#2563eb)]" />
+            <Calendar className="h-5 w-5 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />
             Reschedule Tests
           </DialogTitle>
         </DialogHeader>
@@ -67,7 +67,7 @@ export function RescheduleModal({
             <div
               className={cn(
                 'p-4 rounded-lg border-2 cursor-pointer',
-                mode === 'shift' ? 'border-[var(--ds-text-brand,#2563eb)] bg-[var(--ds-background-selected,#eff6ff)]' : 'border-[var(--ds-border,#e2e8f0)]'
+                mode === 'shift' ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] bg-[var(--ds-background-selected,#eff6ff)]' : 'border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]'
               )}
               onClick={() => setMode('shift')}
             >
@@ -88,7 +88,7 @@ export function RescheduleModal({
                         variant="outline"
                         size="icon"
                         onClick={() => handleShift(-1)}
-                        className="h-10 w-10 border-[var(--ds-border,#e2e8f0)]"
+                        className="h-10 w-10 border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]"
                       >
                         <Minus className="h-4 w-4" />
                       </Button>
@@ -103,7 +103,7 @@ export function RescheduleModal({
                         variant="outline"
                         size="icon"
                         onClick={() => handleShift(1)}
-                        className="h-10 w-10 border-[var(--ds-border,#e2e8f0)]"
+                        className="h-10 w-10 border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]"
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
@@ -117,7 +117,7 @@ export function RescheduleModal({
             <div
               className={cn(
                 'p-4 rounded-lg border-2 cursor-pointer',
-                mode === 'range' ? 'border-[var(--ds-text-brand,#2563eb)] bg-[var(--ds-background-selected,#eff6ff)]' : 'border-[var(--ds-border,#e2e8f0)]'
+                mode === 'range' ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] bg-[var(--ds-background-selected,#eff6ff)]' : 'border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]'
               )}
               onClick={() => setMode('range')}
             >
@@ -176,7 +176,7 @@ export function RescheduleModal({
           {mode === 'shift' && shiftDays !== 0 && (
             <div className="p-3 bg-[var(--ds-surface-sunken,#f1f5f9)] rounded-lg">
               <div className="text-xs font-medium text-[var(--ds-text-subtlest,#64748b)] mb-1">Preview</div>
-              <div className="text-sm text-[var(--ds-text-subtle,#334155)]">
+              <div className="text-sm text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]">
                 {totalTests} tests will be moved{' '}
                 <strong>{Math.abs(shiftDays)} days {shiftDays > 0 ? 'forward' : 'backward'}</strong>
               </div>
@@ -191,7 +191,7 @@ export function RescheduleModal({
           <Button
             onClick={handleSubmit}
             disabled={mode === 'shift' && shiftDays === 0}
-            className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
+            className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
           >
             Apply Changes
           </Button>

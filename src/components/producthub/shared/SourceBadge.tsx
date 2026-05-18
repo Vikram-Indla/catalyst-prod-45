@@ -7,7 +7,7 @@
  *
  * Visual rules (per CLAUDE.md §6):
  *   - Catalyst → neutral grey #3F3F46 (structural, NOT semantic)
- *   - Jira-MDT → blue var(--ds-text-brand, #2563EB)
+ *   - Jira-MDT → blue var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))
  *   - These are non-semantic structural identifiers and must NEVER be confused
  *     with the StatusLozenge 3-color guardrail.
  *
@@ -35,7 +35,7 @@ interface SourceBadgeProps {
 
 const PALETTE: Record<'catalyst' | 'jira', { bg: string; bgSubtle: string; text: string; border: string }> = {
   catalyst: { bg: '#3F3F46', bgSubtle: '#F4F4F5', text: '#3F3F46', border: '#D4D4D8' },
-  jira:     { bg: 'var(--ds-text-brand, #2563EB)', bgSubtle: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', border: '#BFDBFE' },
+  jira:     { bg: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bgSubtle: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', border: '#BFDBFE' },
 };
 
 export const SourceBadge: React.FC<SourceBadgeProps> = ({
@@ -74,7 +74,7 @@ export const SourceBadge: React.FC<SourceBadgeProps> = ({
         lineHeight: 1,
         whiteSpace: 'nowrap',
         background: isOutline ? p.bgSubtle : p.bg,
-        color: isOutline ? p.text : 'var(--ds-text-inverse, #FFFFFF)',
+        color: isOutline ? p.text : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         border: isOutline ? `1px solid ${p.border}` : `1px solid ${p.bg}`,
         ...style,
       }}

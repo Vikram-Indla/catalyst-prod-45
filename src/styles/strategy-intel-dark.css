@@ -5,16 +5,16 @@
 
 /* Panel container */
 .dark .strategy-intel-panel {
-  background: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
-  color: var(--ds-text, #EDEDED) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 
 /* Text overrides */
 .dark .strategy-intel-panel .text-slate-900,
 .dark .strategy-intel-panel .text-slate-800,
 .dark .strategy-intel-panel .text-\[15px\].font-\[700\] {
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 .dark .strategy-intel-panel .text-slate-700,
 .dark .strategy-intel-panel .text-slate-600 {
@@ -27,50 +27,50 @@
 
 /* Backgrounds */
 .dark .strategy-intel-panel .bg-white {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
 }
 .dark .strategy-intel-panel .bg-slate-100,
 .dark .strategy-intel-panel .bg-slate-50 {
-  background: var(--ds-border, #292929) !important;
+  background: var(--ds-border, var(--cp-ink-1, #292929)) !important;
 }
 
 /* Borders */
 .dark .strategy-intel-panel .border-slate-200,
 .dark .strategy-intel-panel .border-slate-100 {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark .strategy-intel-panel .border-l {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Hover states */
 .dark .strategy-intel-panel .hover\:bg-slate-100:hover,
 .dark .strategy-intel-panel .hover\:bg-slate-50:hover {
-  background: var(--ds-border, #292929) !important;
+  background: var(--ds-border, var(--cp-ink-1, #292929)) !important;
 }
 
 /* Tab bar */
 .dark .strategy-intel-panel .border-b {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark .strategy-intel-panel .border-t {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Footer */
 .dark .strategy-intel-panel .shrink-0.border-t {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
 }
 
 /* Metric cards in Executive Brief tab */
 .dark .strategy-intel-panel .border.border-slate-200.rounded-lg {
   background: var(--ds-surface-overlay, #1F1F1F) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Close button */
 .dark .strategy-intel-panel button.p-1\.5:hover {
-  background: var(--ds-border, #292929) !important;
+  background: var(--ds-border, var(--cp-ink-1, #292929)) !important;
 }
 
 /* Shadow kill */
@@ -80,13 +80,13 @@
 
 /* Markdown content */
 .dark .strategy-intel-panel h2.border-b {
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Status banner left border cards */
 .dark .strategy-intel-panel .p-4.bg-white.border.border-slate-200 {
   background: var(--ds-surface-overlay, #1F1F1F) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Chain breadcrumb badges — keep colored backgrounds */
@@ -101,5 +101,5 @@
 
 /* Health bars */
 .dark .strategy-intel-panel .bg-slate-100.rounded-full {
-  background: var(--ds-border, #2E2E2E) !important;
+  background: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }

@@ -144,7 +144,7 @@ export function WiringAudit() {
     <div
       style={{
         margin: "24px 0",
-        border: "1.5px solid var(--bd-default, #E2E8F0)",
+        border: "1.5px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))",
         borderRadius: 8,
         backgroundColor: "var(--ds-surface-sunken, #FAFBFC)",
         padding: 20,
@@ -152,7 +152,7 @@ export function WiringAudit() {
       }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-        <h3 style={{ fontSize: 14, fontWeight: 650, color: "var(--ds-text, #0F172A)", margin: 0 }}>
+        <h3 style={{ fontSize: 14, fontWeight: 650, color: "var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))", margin: 0 }}>
           P8 Wiring Audit — {checks.length} checks
         </h3>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -160,7 +160,7 @@ export function WiringAudit() {
             <span style={{ fontSize: 12, color: "var(--ds-text-subtle, #475569)" }}>
               <span style={{ color: "#006644", fontWeight: 600 }}>{passCount} pass</span>
               {failCount > 0 && (
-                <span style={{ color: "var(--ds-text-danger, #DC2626)", fontWeight: 600, marginLeft: 8 }}>{failCount} fail</span>
+                <span style={{ color: "var(--ds-text-danger, var(--cp-danger, #DC2626))", fontWeight: 600, marginLeft: 8 }}>{failCount} fail</span>
               )}
             </span>
           )}
@@ -173,8 +173,8 @@ export function WiringAudit() {
               fontSize: 12,
               fontWeight: 600,
               fontFamily: 'var(--cp-font-body)',
-              backgroundColor: "var(--ds-text-brand, #2563EB)",
-              color: "var(--ds-text-inverse, #FFFFFF)",
+              backgroundColor: "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))",
+              color: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
               border: "none",
               borderRadius: 6,
               cursor: running ? "not-allowed" : "pointer",
@@ -194,8 +194,8 @@ export function WiringAudit() {
             alignItems: "center",
             gap: 8,
             padding: "6px 0",
-            borderTop: i === 0 ? "1px solid var(--bd-default, #E2E8F0)" : "none",
-            borderBottom: "1px solid var(--bd-default, #E2E8F0)",
+            borderTop: i === 0 ? "1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))" : "none",
+            borderBottom: "1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))",
             fontSize: 12,
             fontFamily: 'var(--cp-font-body)',
           }}
@@ -210,15 +210,15 @@ export function WiringAudit() {
               justifyContent: "center",
               fontSize: 11,
               fontWeight: 700,
-              color: "var(--ds-text-inverse, #FFFFFF)",
-              backgroundColor: r.status === "pass" ? "#006644" : "var(--ds-text-danger, #DC2626)",
+              color: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
+              backgroundColor: r.status === "pass" ? "#006644" : "var(--ds-text-danger, var(--cp-danger, #DC2626))",
               flexShrink: 0,
             }}
           >
             {r.status === "pass" ? "✓" : "✗"}
           </span>
-          <span style={{ fontWeight: 600, color: "var(--ds-text, #0F172A)", minWidth: 180 }}>{r.name}</span>
-          <span style={{ color: "var(--ds-text-subtlest, #64748B)" }}>{r.detail}</span>
+          <span style={{ fontWeight: 600, color: "var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))", minWidth: 180 }}>{r.name}</span>
+          <span style={{ color: "var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" }}>{r.detail}</span>
         </div>
       ))}
     </div>

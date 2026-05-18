@@ -13,7 +13,7 @@ import { useAuth } from '@/hooks/useAuth';
  * 2026-04-24 — AgeingTab Atlaskit retune
  * ──────────────────────────────────────
  * This file was originally painted with Tailwind-style literal hexes
- * (var(--ds-text-danger, #EF4444), var(--ds-text-warning, #F59E0B), #0052CC, #1E293B, #FEF3C7, #92400E …) and 13px Inter
+ * (var(--ds-text-danger, #EF4444), var(--ds-text-warning, var(--cp-amber, #F59E0B)), var(--cp-primary-60, #0052CC), #1E293B, #FEF3C7, #92400E …) and 13px Inter
  * body. None of those values are in the Atlassian Design System. After the
  * /design-critique pass we routed every surface through @atlaskit/tokens
  * with hex fallbacks:
@@ -38,11 +38,11 @@ import { useAuth } from '@/hooks/useAuth';
    documented default of that token on a light theme. */
 const ADS = {
   // backgrounds / surfaces
-  surface:       'var(--ds-surface, #FFFFFF)',
+  surface:       'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   surfaceSunken: 'var(--ds-surface-sunken, #F7F8F9)',
   neutralSubtle: 'var(--ds-background-neutral-subtle, #F1F2F4)',
   neutralHover:  'var(--ds-background-neutral-subtle-hovered, #DCDFE4)',
-  neutralBold:   'var(--ds-background-neutral-bold, #44546F)',
+  neutralBold:   'var(--ds-background-neutral-bold, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
   // state backgrounds
   dangerBg:      'var(--ds-background-danger, #FFECEB)',
   warningBg:     'var(--ds-background-warning, #FFF7D6)',
@@ -50,17 +50,17 @@ const ADS = {
   successBg:     'var(--ds-background-success, #DCFFF1)',
   selectedBg:    'var(--ds-background-selected, #E9F2FF)',
   // text
-  text:          'var(--ds-text, #172B4D)',
-  textSubtle:    'var(--ds-text-subtle, #44546F)',
+  text:          'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+  textSubtle:    'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
   textMuted:     'var(--ds-text-subtlest, #626F86)',
   textDanger:    'var(--ds-text-danger, #AE2E24)',
   textWarning:   'var(--ds-text-warning, #7F5F01)',
   textInfo:      'var(--ds-text-information, #0055CC)',
   textSuccess:   'var(--ds-text-success, #216E4E)',
   textSelected:  'var(--ds-text-selected, #0C66E4)',
-  textInverse:   'var(--ds-text-inverse, #FFFFFF)',
+  textInverse:   'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   // borders
-  border:        'var(--ds-border, #DFE1E6)',
+  border:        'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
   borderBold:    'var(--ds-border-bold, #8590A2)',
   borderDanger:  'var(--ds-border-danger, #C9372C)',
   borderWarning: 'var(--ds-border-warning, #F5CD47)',
@@ -175,7 +175,7 @@ function StatusLozenge({ status }: { status: StatusType }) {
   // their fg ink) and also the Atlaskit lozenge tokens for inprogress /
   // default, so no new palette is introduced.
   const bg = isActive ? 'var(--ds-background-information, #CCE0FF)' : 'var(--ds-background-neutral, #DCDFE4)';
-  const fg = isActive ? 'var(--ds-text-information, #0055CC)' : 'var(--ds-text, #172B4D)';
+  const fg = isActive ? 'var(--ds-text-information, #0055CC)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))';
   return (
     <span style={{
       display: 'inline-block', height: 20, lineHeight: '20px',
@@ -301,7 +301,7 @@ function GroupHeader({ label, count, isOpen, onToggle, accentColor }: {
    /design-critique callouts ⑧⑨:
      - Row height 36 → 40 for body-scale rhythm.
      - Days pill goes INLINE with the number on a single baseline.
-     - Non-Atlaskit hexes (var(--ds-text-danger, #EF4444), var(--ds-text-warning, #F59E0B), var(--ds-text-success, #22C55E), #991B1B…) are replaced
+     - Non-Atlaskit hexes (var(--ds-text-danger, #EF4444), var(--ds-text-warning, var(--cp-amber, #F59E0B)), var(--ds-text-success, #22C55E), #991B1B…) are replaced
        with the danger / warning / success ADS tokens.
 */
 function AgeingRow({ item }: { item: AgeingItem }) {
@@ -439,7 +439,7 @@ function GovernanceRagPill({ onCleanupClick }: { onCleanupClick: () => void }) {
 /* ── AI Cleanup Button ──
    /design-critique callout ④: bespoke `#1E293B` navy is off-palette. The
    Atlaskit-correct equivalent for a neutral dark CTA is
-   `color.background.neutral.bold` (#44546F). The sparkle uses the same
+   `color.background.neutral.bold` (var(--cp-text-secondary, var(--cp-text-secondary, #44546F))). The sparkle uses the same
    brand blue as the AI Recap tab (see ForYouTabs callout ⓪) so every AI
    affordance in Catalyst reads as the same entity.
 */
@@ -886,7 +886,7 @@ function GroupSection({ groupKey, items, totalCount, isOpen, onToggle }: {
    /design-critique callout ⑤: consumers pass a semantic `intent` instead of
    a raw hex. This ensures every numeric colour in the summary strip resolves
    to an Atlaskit `color.text.{intent}` token — no off-palette slate, no
-   #0052CC legacy brand blue, no bespoke amber.
+   var(--cp-primary-60, #0052CC) legacy brand blue, no bespoke amber.
 */
 type StatIntent = 'neutral' | 'danger' | 'warning' | 'info' | 'success';
 function StatChip({ label, value, intent }: { label: string; value: string | number; intent: StatIntent }) {

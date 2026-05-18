@@ -27,8 +27,8 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
             onClick={() => onSelect(theme)}
             className="rounded-xl border cursor-pointer overflow-hidden"
             style={{
-              background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)',
-              borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)',
+              background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-app)',
+              borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)',
               transition: 'transform 200ms ease, box-shadow 200ms ease',
               animation: `fadeUp 300ms ease ${i * 60}ms both`,
             }}
@@ -77,7 +77,7 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
                   { label: 'KRs', value: theme.kr_count },
                   { label: 'Budget', value: formatBudget(theme.planned_budget) },
                 ].map(m => (
-                  <div key={m.label} className="rounded-md text-center" style={{ background: isDark ? 'var(--ds-border, #292929)' : 'var(--bg-1)', padding: '6px 0' }}>
+                  <div key={m.label} className="rounded-md text-center" style={{ background: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bg-1)', padding: '6px 0' }}>
                     <p style={{ fontSize: 14, fontWeight: 700, color: isDark ? DK.t1 : 'var(--fg-1)' }}>{m.value}</p>
                     <p style={{ fontSize: 10, color: isDark ? DK.t3 : 'var(--fg-3)' }}>{m.label}</p>
                   </div>
@@ -95,7 +95,7 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
                 {theme.owner_name && (
                   <div className="shrink-0 rounded-full flex items-center justify-center" style={{
                     width: 24, height: 24, background: getAvatarColor(theme.owner_name),
-                    fontSize: 9, fontWeight: 700, color: 'var(--ds-text-inverse, #FFFFFF)',
+                    fontSize: 9, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   }} title={theme.owner_name}>
                     {getInitials(theme.owner_name)}
                   </div>
@@ -107,7 +107,7 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
       })}
 
       {themes.length === 0 && (
-        <div className="col-span-full flex items-center justify-center rounded-xl border" style={{ height: 200, borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)', color: isDark ? DK.t3 : 'var(--fg-4)', fontSize: 13 }}>
+        <div className="col-span-full flex items-center justify-center rounded-xl border" style={{ height: 200, borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--divider)', color: isDark ? DK.t3 : 'var(--fg-4)', fontSize: 13 }}>
           No themes match the current filters.
         </div>
       )}

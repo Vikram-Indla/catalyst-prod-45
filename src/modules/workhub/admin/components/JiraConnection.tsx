@@ -17,9 +17,9 @@ import { useJiraConnection, useUpdateJiraConnection, useTestConnection } from '.
 import '../../shared/tokens/workhub-tokens.css';
 
 const WORKSTREAM_COLORS: Record<string, string> = {
-  software: 'var(--ds-text-brand, #2563EB)',
+  software: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   business: 'var(--ds-text-brand, #3B82F6)',
-  service_desk: 'var(--ds-text-warning, #F59E0B)',
+  service_desk: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))',
 };
 
 export function JiraConnection() {
@@ -153,7 +153,7 @@ export function JiraConnection() {
                 {/* Jira logo placeholder */}
                 <div style={{
                   width: 48, height: 48, borderRadius: 'var(--wh-rad)',
-                  background: 'linear-gradient(135deg, #0052CC, #2684FF)',
+                  background: 'linear-gradient(135deg, var(--cp-primary-60, #0052CC), #2684FF)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   color: 'var(--ds-surface, #fff)', fontWeight: 800, fontSize: 14, fontFamily: 'var(--wh-fh)',
                 }}>

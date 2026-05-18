@@ -332,7 +332,7 @@ export function SyncConfigPanel() {
               onChange={handleProjectChange}
               placeholder="Select projects..."
               emptyMessage="No accessible projects found. Test your connection first."
-              accentColor="var(--ds-text-brand, #2563EB)"
+              accentColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"
             />
             <p style={{ fontSize: 11, color: 'var(--wh-tx4)', marginTop: 6, fontFamily: 'var(--wh-fn)' }}>
               {selectedProjects.length === 0
@@ -445,7 +445,7 @@ export function SyncConfigPanel() {
                             onChange={(vals) => updateProjectConfig(pk, { status_categories: vals })}
                             placeholder="All categories (no filter)"
                             emptyMessage="No categories available."
-                            accentColor="#7C3AED"
+                            accentColor="var(--cp-purple-60, #7C3AED)"
                           />
                           <p style={{ fontSize: 10, color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
                             {config.status_categories.length === 0
@@ -481,7 +481,7 @@ export function SyncConfigPanel() {
                             onChange={(vals) => updateProjectConfig(pk, { fix_versions: vals })}
                             placeholder="All releases (no filter)"
                             emptyMessage={`No versions found for ${pk}. Sync first to discover releases.`}
-                            accentColor="#059669"
+                            accentColor="var(--quality-high, #059669)"
                           />
                           <p style={{ fontSize: 10, color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
                             {config.fix_versions.length === 0

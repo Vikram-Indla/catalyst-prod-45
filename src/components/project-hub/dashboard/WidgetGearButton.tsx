@@ -4,7 +4,7 @@
  * Replaces the shadcn Popover + bespoke <button> + hex palette with
  * @atlaskit/popup via the Catalyst ADS wrapper, anchored on Atlaskit's
  * IconButton (32×32 standard hit-target). Indicator dot routed through
- * the brand-bold token instead of legacy hex `#0052CC`.
+ * the brand-bold token instead of legacy hex `var(--cp-primary-60, #0052CC)`.
  *
  * Atlaskit's IconButton from `@atlaskit/button/new` is used directly here
  * because the Popup trigger callback needs to forward `ref` + aria-*

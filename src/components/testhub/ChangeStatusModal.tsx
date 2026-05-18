@@ -107,7 +107,7 @@ export function ChangeStatusModal({
                   gap: 12,
                   padding: '12px 16px',
                   borderRadius: 8,
-                  border: isSelected ? `2px solid ${status.color}` : '1.5px solid var(--bd-default, #E2E8F0)',
+                  border: isSelected ? `2px solid ${status.color}` : '1.5px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
                   backgroundColor: isSelected ? status.bg : 'var(--cp-float)',
                   cursor: isCurrent ? 'not-allowed' : 'pointer',
                   opacity: isCurrent ? 0.5 : 1,
@@ -145,8 +145,8 @@ export function ChangeStatusModal({
             disabled={!selectedStatus || isUpdating}
             style={{
               height: 40, padding: '0 20px',
-              background: !selectedStatus || isUpdating ? 'var(--fg-4)' : 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
-              border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)',
+              background: !selectedStatus || isUpdating ? 'var(--fg-4)' : 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
+              border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               cursor: !selectedStatus || isUpdating ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', gap: 6,
             }}

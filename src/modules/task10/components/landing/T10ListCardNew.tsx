@@ -161,7 +161,7 @@ export function T10ListCardNew({ list, onRename, onDelete }: T10ListCardNewProps
               fontFamily: 'var(--cp-font-body)',
               fontSize: '14px',
               fontWeight: 500,
-              color: 'var(--ds-surface, #ffffff)',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               backgroundColor: 'var(--ds-text-brand, #3b82f6)',
               border: 'none',
               borderRadius: '8px',
@@ -170,7 +170,7 @@ export function T10ListCardNew({ list, onRename, onDelete }: T10ListCardNewProps
               transition: 'all 0.15s ease',
             }}
           >
-            <Plus size={16} style={{ color: 'var(--ds-surface, #ffffff)' }} />
+            <Plus size={16} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
             {createWeek.isPending ? 'Starting...' : 'Start this week'}
           </button>
         </div>

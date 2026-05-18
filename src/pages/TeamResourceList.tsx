@@ -57,9 +57,9 @@ export default function TeamResourceList({ projectIds }: TeamResourceListProps) 
         <div
           key={r.resourceId}
           onClick={() => navigate(`/my-team/${r.resourceId}`)}
-          style={{ cursor: 'pointer', padding: '8px 0', borderBottom: '1px solid var(--ds-border, #E2E8F0)' }}
+          style={{ cursor: 'pointer', padding: '8px 0', borderBottom: '1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }}
         >
-          <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>{r.displayName}</span>
+          <span style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{r.displayName}</span>
         </div>
       ))}
     </div>

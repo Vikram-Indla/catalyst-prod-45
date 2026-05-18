@@ -297,7 +297,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         maxHeight: '60vh',
         background: token('elevation.surface.overlay', '#FFFFFF'),
         borderRadius: 8,
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
         display: 'flex',
         flexDirection: 'column',

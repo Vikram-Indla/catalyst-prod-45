@@ -194,7 +194,7 @@ export function ProductRoadmapPage() {
             onClick={() => window.location.reload()}
             className="inline-flex items-center gap-1.5 h-9 px-4 text-sm font-medium rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
             style={{ border: `1px solid ${surface.border}`, color: ink[2], transition: 'background-color 0.15s ease' }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--ds-border, #292929)' : surface.page)}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : surface.page)}
             onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
           >
             <RefreshCw className="w-4 h-4" /> Retry
@@ -217,7 +217,7 @@ export function ProductRoadmapPage() {
               <button
                 className="inline-flex items-center gap-1.5 h-9 px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
                 style={{ border: `1px solid ${surface.border}`, borderRadius: 6, color: ink[2], transition: 'background-color 0.15s ease', fontFamily: 'var(--cp-font-body)' }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--ds-border, #292929)' : surface.page)}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : surface.page)}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
                 <Download className="w-4 h-4" /> Export
@@ -226,7 +226,7 @@ export function ProductRoadmapPage() {
                 onClick={toggleFullscreen}
                 className="inline-flex items-center gap-1.5 h-9 px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
                 style={{ border: `1px solid ${surface.border}`, borderRadius: 6, color: ink[2], transition: 'background-color 0.15s ease', fontFamily: 'var(--cp-font-body)' }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--ds-border, #292929)' : surface.page)}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : surface.page)}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
                 <Maximize2 className="w-4 h-4" /> Fullscreen
@@ -243,7 +243,7 @@ export function ProductRoadmapPage() {
             onClick={toggleFullscreen}
             className="inline-flex items-center gap-1.5 h-7 px-2.5 text-xs font-medium rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
             style={{ border: `1px solid ${surface.border}`, color: ink[2], transition: 'background-color 0.15s ease' }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--ds-border, #292929)' : surface.borderLight)}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : surface.borderLight)}
             onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
           >
             <Minimize2 className="w-3.5 h-3.5" /> Exit
@@ -263,7 +263,7 @@ export function ProductRoadmapPage() {
           <button
             onClick={() => setIsAddModalOpen(true)}
             className="inline-flex items-center gap-1.5 h-10 px-5 text-sm font-medium rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-            style={{ background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', transition: 'opacity 0.15s ease' }}
+            style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', transition: 'opacity 0.15s ease' }}
             onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
             onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
           >

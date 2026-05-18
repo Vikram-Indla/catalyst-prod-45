@@ -33,7 +33,7 @@ export function DashboardWorkflowPath() {
         padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`,
         background: token('color.background.neutral.subtle', '#FAFBFC'),
         borderRadius: 4,
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
       }}
     >
       <span
@@ -112,7 +112,7 @@ export function DashboardWorkflowPath() {
                   style={{
                     flex: 1,
                     height: 1,
-                    background: token('color.border', '#DFE1E6'),
+                    background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'),
                     margin: `0 ${token('space.075', '6px')}`,
                     minWidth: 8,
                   }}

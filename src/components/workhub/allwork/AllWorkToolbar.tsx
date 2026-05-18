@@ -42,9 +42,9 @@ function FilterDropdown({ label, options, selected, onToggle, isLoading }: {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1.5 px-3 h-8 text-[13px] rounded border transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
+        className="inline-flex items-center gap-1.5 px-3 h-8 text-[13px] rounded border transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
         style={{
-          borderColor: selected.length > 0 ? 'var(--cp-blue)' : 'var(--bd-default, #2E2E2E)',
+          borderColor: selected.length > 0 ? 'var(--cp-blue)' : 'var(--bd-default, var(--cp-ink-1, #2E2E2E))',
           color: selected.length > 0 ? 'var(--cp-blue)' : 'var(--fg-2)',
           backgroundColor: selected.length > 0 ? 'rgba(37,99,235,0.08)' : 'var(--bg-app)',
           fontWeight: selected.length > 0 ? 500 : 400,
@@ -65,7 +65,7 @@ function FilterDropdown({ label, options, selected, onToggle, isLoading }: {
       {open && (
         <div
           className="absolute top-full left-0 mt-1 w-56 rounded-lg border shadow-lg z-50 py-1 max-h-64 bg-[var(--bg-app)] overflow-y-auto animate-scale-in"
-          style={{ borderColor: 'var(--bd-default, #2E2E2E)' }}
+          style={{ borderColor: 'var(--bd-default, var(--cp-ink-1, #2E2E2E))' }}
           role="listbox"
         >
           {isLoading ? (
@@ -88,7 +88,7 @@ function FilterDropdown({ label, options, selected, onToggle, isLoading }: {
                 <span
                   className="w-4 h-4 rounded border flex items-center justify-center shrink-0"
                   style={{
-                    borderColor: selected.includes(opt) ? 'var(--cp-blue)' : 'var(--bd-default, #2E2E2E)',
+                    borderColor: selected.includes(opt) ? 'var(--cp-blue)' : 'var(--bd-default, var(--cp-ink-1, #2E2E2E))',
                     backgroundColor: selected.includes(opt) ? 'var(--cp-blue)' : 'var(--bg-app)',
                   }}
                 >
@@ -140,7 +140,7 @@ export function AllWorkToolbar({
   const hasFilters = !!(filters.types?.length || filters.statuses?.length || filters.priorities?.length);
 
   return (
-    <div className="px-8 py-3 flex items-center gap-3 flex-wrap" style={{ borderBottom: '1px solid var(--bd-subtle, #292929)' }}>
+    <div className="px-8 py-3 flex items-center gap-3 flex-wrap" style={{ borderBottom: '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))' }}>
       <FilterDropdown
         label="Type"
         options={issueTypes ?? []}
@@ -165,7 +165,7 @@ export function AllWorkToolbar({
       {hasFilters && (
         <button
           onClick={() => onFilterChange({})}
-          className="inline-flex items-center gap-1 px-2 h-8 text-[12px] rounded hover:bg-[rgba(220,38,38,0.06)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
+          className="inline-flex items-center gap-1 px-2 h-8 text-[12px] rounded hover:bg-[rgba(220,38,38,0.06)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
           style={{ color: 'var(--sem-danger)' }}
           aria-label="Clear all filters"
         >
@@ -176,8 +176,8 @@ export function AllWorkToolbar({
 
       {/* Search (TC-G2 — debounced + clear button) */}
       <div
-        className="flex items-center gap-2 h-8 px-2.5 rounded border bg-[var(--bg-app)] focus-within:border-[var(--ds-text-brand,#2563EB)] transition-colors duration-[80ms]"
-        style={{ minWidth: 180, borderColor: 'var(--bd-default, #2E2E2E)' }}
+        className="flex items-center gap-2 h-8 px-2.5 rounded border bg-[var(--bg-app)] focus-within:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] transition-colors duration-[80ms]"
+        style={{ minWidth: 180, borderColor: 'var(--bd-default, var(--cp-ink-1, #2E2E2E))' }}
       >
         <Search className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--fg-3)' }} />
         <input
@@ -195,7 +195,7 @@ export function AllWorkToolbar({
             onClick={() => setSearchValue('')}
             aria-label="Clear search"
             title="Clear search"
-            className="shrink-0 rounded p-0.5 transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
+            className="shrink-0 rounded p-0.5 transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
             style={{ background: 'none', border: 'none', cursor: 'pointer' }}
           >
             <X className="w-3 h-3" style={{ color: 'var(--fg-3)' }} />
@@ -239,7 +239,7 @@ export function AllWorkToolbar({
       </span>
 
       {/* View toggle */}
-      <div className="inline-flex rounded border overflow-hidden" style={{ borderColor: 'var(--bd-default, #2E2E2E)' }} role="radiogroup" aria-label="View mode">
+      <div className="inline-flex rounded border overflow-hidden" style={{ borderColor: 'var(--bd-default, var(--cp-ink-1, #2E2E2E))' }} role="radiogroup" aria-label="View mode">
         {([
           { key: 'grid' as const, icon: LayoutGrid, label: 'Grid' },
           { key: 'split' as const, icon: Columns2, label: 'Split' },
@@ -247,12 +247,12 @@ export function AllWorkToolbar({
           <button
             key={key}
             onClick={() => onViewModeChange(key)}
-            className="flex items-center gap-1.5 px-3 h-8 text-[12px] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
+            className="flex items-center gap-1.5 px-3 h-8 text-[12px] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
             style={{
               backgroundColor: viewMode === key ? 'rgba(37,99,235,0.08)' : 'var(--bg-app)',
               color: viewMode === key ? 'var(--cp-blue)' : 'var(--fg-3)',
               fontWeight: viewMode === key ? 500 : 400,
-              borderLeft: key === 'split' ? '1px solid var(--bd-default, #2E2E2E)' : 'none',
+              borderLeft: key === 'split' ? '1px solid var(--bd-default, var(--cp-ink-1, #2E2E2E))' : 'none',
               boxShadow: viewMode === key ? 'inset 0 1px 2px rgba(0,0,0,0.06)' : 'none',
               fontFamily: 'var(--cp-font-body)',
             }}

@@ -11,7 +11,7 @@ export function ageBarPercent(days: number): number {
 }
 
 export function ageBarColor(days: number): string {
-  return days <= 7 ? '#16A34A' : days <= 14 ? '#D97706' : '#EF4444';
+  return days <= 7 ? 'var(--cp-success, #16A34A)' : days <= 14 ? 'var(--cp-warning, #D97706)' : '#EF4444';
 }
 
 export function formatRelativeDate(dateStr: string): string {

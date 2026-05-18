@@ -102,7 +102,7 @@ export function TestCasesTable({
     fontWeight: 600,
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
-    color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)',
+    color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--fg-3)',
     verticalAlign: 'middle',
   };
 
@@ -116,7 +116,7 @@ export function TestCasesTable({
 
   return (
     <div className="th-table-wrapper" style={{
-      backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)',
+      backgroundColor: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-float)',
       border: isDark ? '1px solid #2E2E2E' : '1px solid var(--divider)',
       borderRadius: 8,
       overflow: 'hidden',
@@ -215,7 +215,7 @@ export function TestCasesTable({
                 onMouseLeave={() => setHoveredRowId(null)}
                 style={{
                   height: 50,
-                  backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.06)' : isHovered ? (isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)') : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)'),
+                  backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.06)' : isHovered ? (isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-float)'),
                   cursor: 'pointer',
                   transition: 'background-color 0.1s',
                 }}
@@ -279,7 +279,7 @@ export function TestCasesTable({
                                     tc.type === 'api' ? 'rgba(139,92,246,0.1)' : 'var(--cp-bd-zone)',
                     color: tc.type === 'security' ? 'var(--sem-danger)' :
                            tc.type === 'performance' ? '#B45309' :
-                           tc.type === 'api' ? 'var(--ds-text-brand, #2563EB)' : 'var(--fg-2)',
+                           tc.type === 'api' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--fg-2)',
                   }}>
                     {tc.type.toUpperCase()}
                   </span>
@@ -335,7 +335,7 @@ export function TestCasesTable({
                             height: 24,
                             borderRadius: '50%',
                             backgroundColor: getAvatarColor(tc.ownerInitials),
-                            color: 'var(--ds-text-inverse, #FFFFFF)',
+                            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                             fontSize: 9,
                             fontWeight: 600,
                             flexShrink: 0,

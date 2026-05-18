@@ -12,7 +12,7 @@ export function WidgetSettingsPanel({ onClose, children }: WidgetSettingsPanelPr
     <div
       data-testid="widget-settings-panel"
       style={{
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         borderRadius: 6,
         background: token('color.background.neutral.subtle', '#FAFBFC'),
         padding: token('space.200', '16px'),
@@ -34,7 +34,7 @@ export function WidgetSettingsPanel({ onClose, children }: WidgetSettingsPanelPr
             margin: 0,
             fontSize: 13,
             fontWeight: 600,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
           }}
         >
           Widget Settings

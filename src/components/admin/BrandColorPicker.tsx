@@ -8,7 +8,7 @@ import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
 
 // Catalyst Brand Color Palette
 export const BRAND_COLORS = [
-  { name: 'Blue', value: 'blue', hex: 'var(--ds-text-brand, #2563eb)', bgClass: 'bg-blue-600' },
+  { name: 'Blue', value: 'blue', hex: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', bgClass: 'bg-blue-600' },
   { name: 'Blue Dark', value: 'blue-dark', hex: 'var(--ds-background-brand-bold-hovered, #1d4ed8)', bgClass: 'bg-blue-700' },
   { name: 'Blue Light', value: 'blue-light', hex: 'var(--ds-text-brand, #3b82f6)', bgClass: 'bg-blue-500' },
   { name: 'Teal', value: 'teal', hex: '#0d9488', bgClass: 'bg-teal-600' },

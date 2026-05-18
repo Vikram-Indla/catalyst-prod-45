@@ -12,7 +12,7 @@
  *       Line 2: thick stacked bar (stories blue / bugs red) +
  *               compact meta "31 stories · 2 bugs".
  *   - Bar palette routed through Atlaskit BOLDER tokens (was bespoke
- *     rgba(37,99,235,0.20) + var(--ds-text-brand, #2563EB) hex). Stories blue-bolder, bugs
+ *     rgba(37,99,235,0.20) + var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) hex). Stories blue-bolder, bugs
  *     red-bolder. Track neutral-subtle.
  *   - Tabular-num counts so column right edges line up across rows.
  *   - Sort by total desc — highest-load assignee at top.
@@ -121,7 +121,7 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
               style={{
                 height: 56,
                 borderRadius: token('border.radius', '4px'),
-                background: token('color.background.neutral.subtle', '#F1F5F9'),
+                background: token('color.background.neutral.subtle', 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'),
               }}
               className="animate-pulse"
             />
@@ -206,7 +206,7 @@ function KpiHeadline({
         display: 'flex',
         background: token('elevation.surface.sunken', '#F7F8F9'),
         borderRadius: token('border.radius', '4px'),
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         overflow: 'hidden',
       }}
     >
@@ -220,7 +220,7 @@ function KpiHeadline({
               style={{
                 fontSize: 14,
                 fontWeight: 500,
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -255,7 +255,7 @@ function KpiCell({
         flexDirection: 'column',
         gap: 2,
         padding: '10px 12px',
-        borderRight: last ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRight: last ? 'none' : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
       }}
     >
       <span
@@ -447,7 +447,7 @@ function WorkloadRow({
               alignItems: 'center',
               gap: 12,
               fontSize: 12,
-              color: token('color.text.subtle', '#44546F'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
               fontVariantNumeric: 'tabular-nums',
               flexShrink: 0,
               minWidth: 220,

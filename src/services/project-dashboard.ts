@@ -500,7 +500,7 @@ async function fetchProfileNames(ids: string[]): Promise<Record<string, string>>
 
 // ─── Utility: deterministic avatar color ───
 function colorFromName(name: string): string {
-  const colors = ['#2563EB', '#0D9488', '#D97706', '#7C3AED', '#EF4444', '#16A34A', '#0891B2', '#BE185D'];
+  const colors = ['#2563EB', 'var(--cp-teal-60, #0D9488)', 'var(--cp-warning, #D97706)', 'var(--cp-purple-60, #7C3AED)', '#EF4444', 'var(--cp-success, #16A34A)', '#0891B2', '#BE185D'];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
   return colors[Math.abs(hash) % colors.length];

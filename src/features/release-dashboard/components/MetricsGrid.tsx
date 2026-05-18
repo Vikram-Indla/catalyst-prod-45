@@ -40,7 +40,7 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
       sub: `${metrics.workItems.complete} complete`,
       renderIcon: (color: string) => <PackageIcon size={20} color={color} />,
       iconBg: 'var(--ds-background-selected, #eff6ff)',
-      iconColor: 'var(--ds-text-brand, #2563eb)',
+      iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
     },
     {
       label: 'Test Cases',

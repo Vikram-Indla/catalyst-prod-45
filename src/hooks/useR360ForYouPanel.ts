@@ -93,7 +93,7 @@ export interface R360ForYouPanelData {
 // ─── Project colour palette ───────────────────────────────────────────────────
 
 const PROJECT_COLORS = [
-  '#0052CC', '#00B8D9', '#6554C0', '#FF5630',
+  'var(--cp-primary-60, #0052CC)', '#00B8D9', '#6554C0', '#FF5630',
   '#36B37E', '#FF991F', '#00B8D9', '#403294',
 ];
 

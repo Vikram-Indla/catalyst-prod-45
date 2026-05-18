@@ -41,7 +41,7 @@ function TrendBadge({ text, dir }: { text: string; dir: TrendDir }) {
       ? token('color.text.success', '#216E4E')
       : dir === 'worse'
       ? token('color.text.danger', '#AE2A19')
-      : token('color.text.subtle', '#44546F');
+      : token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))');
   return (
     <span
       style={{
@@ -89,7 +89,7 @@ function KpiCell({
       style={{
         flex: 1,
         padding: '18px 22px',
-        borderRight: borderRight ? `1px solid ${token('color.border', '#DFE1E6')}` : 'none',
+        borderRight: borderRight ? `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}` : 'none',
         display: 'flex',
         flexDirection: 'column',
         gap: 6,
@@ -100,7 +100,7 @@ function KpiCell({
         style={{
           fontSize: 12,
           fontWeight: 600,
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
           display: 'block',
         }}
       >
@@ -110,7 +110,7 @@ function KpiCell({
         style={{
           fontSize: 11,
           fontWeight: 500,
-          color: token('color.text.subtle', '#44546F'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
           minHeight: 32,
           lineHeight: '16px',
           display: 'block',
@@ -131,7 +131,7 @@ function KpiCell({
           style={{
             fontSize: 28,
             fontWeight: 700,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
             lineHeight: 1,
           }}
         >
@@ -142,7 +142,7 @@ function KpiCell({
             style={{
               fontSize: 14,
               fontWeight: 500,
-              color: token('color.text.subtle', '#44546F'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             }}
           >
             {unit}
@@ -169,10 +169,10 @@ function SettingsPanel() {
       data-testid="widget-settings-panel"
       style={{
         padding: '12px 18px',
-        borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         background: token('color.background.neutral.subtle', '#FAFBFC'),
         fontSize: 13,
-        color: token('color.text.subtle', '#44546F'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
       }}
     >
       Configure which process steps define the Business, IT, and Landing legs.

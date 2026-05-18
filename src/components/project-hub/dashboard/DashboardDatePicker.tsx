@@ -54,13 +54,13 @@ export default function DashboardDatePicker() {
       gap: 6,
       height: 32,
       padding: '0 10px',
-      border: open ? '2px solid #4C9AFF' : '1px solid #DFE1E6',
+      border: open ? '2px solid #4C9AFF' : '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
       boxShadow: open ? '0 0 0 2px rgba(76,154,255,.3)' : 'none',
       borderRadius: 4,
       background: 'var(--ds-surface-sunken, #FAFBFC)',
       fontSize: 13,
       fontWeight: 500,
-      color: open ? '#0052CC' : 'var(--ds-text, #172B4D)',
+      color: open ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
       cursor: 'pointer',
     }) as React.CSSProperties,
     [open],
@@ -91,8 +91,8 @@ export default function DashboardDatePicker() {
         className="p-0"
         style={{
           width: 280,
-          background: 'var(--ds-text-inverse, #FFFFFF)',
-          border: '1px solid #DFE1E6',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
           borderRadius: 4,
           boxShadow: '0 8px 24px rgba(9,30,66,.18)',
           padding: 0,
@@ -243,15 +243,15 @@ function Row({
         border: 0,
         cursor: 'pointer',
         fontSize: 13,
-        color: active ? '#0052CC' : 'var(--ds-text, #172B4D)',
+        color: active ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
         fontWeight: active ? 600 : 400,
         textAlign: 'left',
       }}
-      onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+      onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
       onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
     >
       <span style={{ width: 14, display: 'inline-flex' }}>
-        {active && <Check size={14} color="#0052CC" />}
+        {active && <Check size={14} color="var(--cp-primary-60, #0052CC)" />}
       </span>
       <span style={{ flex: 1 }}>{label}</span>
       {sub && <span style={{ fontSize: 11, color: '#7A869A' }}>{sub}</span>}
@@ -300,7 +300,7 @@ function CustomRangePanel({
 
   return (
     <div style={{ padding: 12, borderTop: '1px solid #F1F2F4' }}>
-      <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: 12, color: 'var(--ds-text, #172B4D)' }}>
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: 12, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
         <DateInput label="From" value={from} onChange={setFrom} />
         <span style={{ color: '#7A869A' }}>→</span>
         <DateInput label="To" value={to} onChange={setTo} />
@@ -333,9 +333,9 @@ function CustomRangePanel({
             style={{
               height: 28,
               padding: '0 10px',
-              border: '1px solid #DFE1E6',
+              border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
               borderRadius: 3,
-              background: 'var(--ds-text-inverse, #FFFFFF)',
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               fontSize: 12,
               cursor: 'pointer',
               color: '#42526E',
@@ -351,8 +351,8 @@ function CustomRangePanel({
               padding: '0 12px',
               border: 0,
               borderRadius: 3,
-              background: '#0052CC',
-              color: 'var(--ds-text-inverse, #FFFFFF)',
+              background: 'var(--cp-primary-60, #0052CC)',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               fontSize: 12,
               fontWeight: 600,
               cursor: 'pointer',
@@ -390,11 +390,11 @@ function DateInput({
         style={{
           height: 28,
           padding: '0 6px',
-          border: '1px solid #DFE1E6',
+          border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
           borderRadius: 3,
           fontSize: 12,
           background: 'var(--ds-surface-sunken, #FAFBFC)',
-          color: 'var(--ds-text, #172B4D)',
+          color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
         }}
       />
     </label>
@@ -427,7 +427,7 @@ function MonthHeader({
       >
         ‹
       </button>
-      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>{format(month, 'MMMM yyyy')}</span>
+      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{format(month, 'MMMM yyyy')}</span>
       <button
         type="button"
         onClick={onNext}
@@ -506,20 +506,20 @@ function MonthGrid({
           const isToday = isSameDay(d, today);
 
           let bg = 'transparent';
-          let color = isOtherMonth ? 'var(--ds-border-disabled, #C1C7D0)' : 'var(--ds-text, #172B4D)';
+          let color = isOtherMonth ? 'var(--ds-border-disabled, #C1C7D0)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))';
           let radius = '3px';
           if (isStart || isEnd) {
-            bg = '#0052CC';
-            color = 'var(--ds-text-inverse, #FFFFFF)';
+            bg = 'var(--cp-primary-60, #0052CC)';
+            color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
             if (isStart && !isEnd) radius = '3px 0 0 3px';
             if (isEnd && !isStart) radius = '0 3px 3px 0';
           } else if (inRange) {
             bg = '#DEEBFF';
-            color = '#0052CC';
+            color = 'var(--cp-primary-60, #0052CC)';
             radius = '0';
           }
           if (isToday && !isStart && !isEnd) {
-            color = '#0052CC';
+            color = 'var(--cp-primary-60, #0052CC)';
           }
 
           return (

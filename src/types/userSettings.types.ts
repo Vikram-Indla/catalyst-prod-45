@@ -143,7 +143,7 @@ export const DEFAULT_EMAIL_PREFERENCES: EmailPreferences = {
 
 export const DEFAULT_THEME_PREFERENCES: ThemePreferences = {
   themeMode: 'light',
-  accentColor: '#2563eb',
+  accentColor: 'var(--cp-workstream-catalyst-primary, #2563eb)',
   fontSize: 'medium',
   density: 'comfortable',
   sidebarDefault: 'expanded',
@@ -181,7 +181,7 @@ export const DEFAULT_APP_PREFERENCES: AppPreferences = {
 };
 
 export const ACCENT_COLOR_PRESETS = [
-  { name: 'Catalyst Blue', value: '#2563eb' },
+  { name: 'Catalyst Blue', value: 'var(--cp-workstream-catalyst-primary, #2563eb)' },
   { name: 'Teal', value: '#0d9488' },
   { name: 'Green', value: '#10b981' },
   { name: 'Purple', value: '#8b5cf6' },

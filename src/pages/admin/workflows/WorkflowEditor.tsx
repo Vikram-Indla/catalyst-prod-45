@@ -38,7 +38,7 @@ interface Props {
 }
 
 const CATEGORY_CONFIG: Record<string, { label: string; dot: string; bg: string; text: string }> = {
-  todo:        { label: 'To Do',       dot: 'var(--ds-border, #DFE1E6)', bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)' },
+  todo:        { label: 'To Do',       dot: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text, #253858)' },
   in_progress: { label: 'In Progress', dot: '#DEEBFF', bg: '#DEEBFF', text: '#0747A6' },
   done:        { label: 'Done',        dot: '#E3FCEF', bg: '#E3FCEF', text: '#006644' },
 };
@@ -71,7 +71,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
         name: newStatusName.trim(),
         slug: slugify(newStatusName),
         category: newStatusCategory,
-        color: CATEGORY_CONFIG[newStatusCategory]?.bg || 'var(--ds-border, #DFE1E6)',
+        color: CATEGORY_CONFIG[newStatusCategory]?.bg || 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
         position: statuses.length,
         is_initial: statuses.length === 0,
         is_final: false,
@@ -108,7 +108,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
   async function handleUpdateCategory(statusId: string, category: string) {
     try {
       const { error } = await typedQuery('catalyst_workflow_statuses')
-        .update({ category, color: CATEGORY_CONFIG[category]?.bg || 'var(--ds-border, #DFE1E6)' })
+        .update({ category, color: CATEGORY_CONFIG[category]?.bg || 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' })
         .eq('id', statusId);
       if (error) throw error;
       invalidateAll();
@@ -247,17 +247,17 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-0 divide-x divide-[var(--ds-border,#E2E8F0)] bg-white">
+    <div className="flex flex-col lg:flex-row gap-0 divide-x divide-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] bg-white">
       {/* ─── LEFT: Status List ─── */}
       <div className="w-full lg:w-[380px] shrink-0">
-        <div className="px-4 py-3 border-b border-[var(--ds-border,#E2E8F0)] flex items-center justify-between">
-          <h3 className="text-xs font-semibold text-[var(--ds-text-subtlest,#64748B)] uppercase tracking-wider">
+        <div className="px-4 py-3 border-b border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] flex items-center justify-between">
+          <h3 className="text-xs font-semibold text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] uppercase tracking-wider">
             Statuses ({statuses.length})
           </h3>
         </div>
 
         {/* Status rows */}
-        <div className="divide-y divide-[var(--ds-border,#E2E8F0)]">
+        <div className="divide-y divide-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
           {statuses.map(s => (
             <div
               key={s.id}
@@ -288,7 +288,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 </div>
               ) : (
                 <span
-                  className="text-[13px] text-[var(--ds-text,#0F172A)] flex-1 cursor-pointer hover:underline"
+                  className="text-[13px] text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] flex-1 cursor-pointer hover:underline"
                   onClick={() => { setEditingId(s.id); setEditName(s.name); }}
                 >
                   {s.name}
@@ -298,12 +298,12 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
               {/* Flags */}
               <div className="flex items-center gap-1 shrink-0">
                 {s.is_initial && (
-                  <span className="px-1.5 py-0.5 text-[10px] bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtle,#475569)] rounded border border-[var(--ds-border,#E2E8F0)]">
+                  <span className="px-1.5 py-0.5 text-[10px] bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtle,#475569)] rounded border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
                     START
                   </span>
                 )}
                 {s.is_final && (
-                  <span className="px-1.5 py-0.5 text-[10px] bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtle,#475569)] rounded border border-[var(--ds-border,#E2E8F0)]">
+                  <span className="px-1.5 py-0.5 text-[10px] bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtle,#475569)] rounded border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
                     END
                   </span>
                 )}
@@ -358,7 +358,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                   'px-2 h-7 text-[10px] font-medium uppercase tracking-wider rounded border transition-colors shrink-0',
                   ((s as WorkflowStatus & { is_active?: boolean }).is_active ?? true)
                     ? 'bg-[#ECFDF5] text-[#065F46] border-[#A7F3D0]'
-                    : 'bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtlest,#94A3B8)] border-[var(--ds-border,#E2E8F0)]',
+                    : 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]',
                 )}
                 title="Toggle whether this status renders as a kanban column"
               >
@@ -370,8 +370,8 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 <button
                   onClick={() => handleToggleFlag(s.id, 'is_initial', s.is_initial)}
                   className={cn(
-                    'p-1 rounded hover:bg-[var(--ds-surface-sunken,#F1F5F9)] transition-colors',
-                    s.is_initial ? 'text-[var(--ds-text,#0F172A)]' : 'text-[var(--ds-text-disabled,#CBD5E1)]'
+                    'p-1 rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors',
+                    s.is_initial ? 'text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]' : 'text-[var(--ds-text-disabled,#CBD5E1)]'
                   )}
                   title="Set as initial status"
                 >
@@ -380,8 +380,8 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 <button
                   onClick={() => handleToggleFlag(s.id, 'is_final', s.is_final)}
                   className={cn(
-                    'p-1 rounded hover:bg-[var(--ds-surface-sunken,#F1F5F9)] transition-colors',
-                    s.is_final ? 'text-[var(--ds-text,#0F172A)]' : 'text-[var(--ds-text-disabled,#CBD5E1)]'
+                    'p-1 rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] transition-colors',
+                    s.is_final ? 'text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]' : 'text-[var(--ds-text-disabled,#CBD5E1)]'
                   )}
                   title="Set as final status"
                 >
@@ -400,7 +400,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
         </div>
 
         {/* Add status form */}
-        <div className="px-4 py-3 border-t border-[var(--ds-border,#E2E8F0)] flex items-center gap-2">
+        <div className="px-4 py-3 border-t border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] flex items-center gap-2">
           <div style={{ flex: 1 }}>
             <Textfield
               value={newStatusName}
@@ -432,17 +432,17 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
 
       {/* ─── RIGHT: Transition Matrix ─── */}
       <div className="flex-1 overflow-auto">
-        <div className="px-4 py-3 border-b border-[var(--ds-border,#E2E8F0)]">
-          <h3 className="text-xs font-semibold text-[var(--ds-text-subtlest,#64748B)] uppercase tracking-wider">
+        <div className="px-4 py-3 border-b border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
+          <h3 className="text-xs font-semibold text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] uppercase tracking-wider">
             Transition Matrix
           </h3>
-          <p className="text-[11px] text-[var(--ds-text-subtlest,#94A3B8)] mt-0.5">
+          <p className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] mt-0.5">
             Check a cell to allow transition from row → column
           </p>
         </div>
 
         {statuses.length === 0 ? (
-          <div className="flex items-center justify-center py-16 text-[var(--ds-text-subtlest,#94A3B8)] text-sm">
+          <div className="flex items-center justify-center py-16 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] text-sm">
             Add statuses to configure transitions
           </div>
         ) : (
@@ -450,13 +450,13 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
             <table className="w-full border-collapse text-xs">
               <thead>
                 <tr>
-                  <th className="sticky left-0 z-10 bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-r border-[var(--ds-border,#E2E8F0)] px-3 py-2 text-left text-[10px] text-[var(--ds-text-subtlest,#64748B)] uppercase tracking-wider min-w-[140px]">
+                  <th className="sticky left-0 z-10 bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-r border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] px-3 py-2 text-left text-[10px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] uppercase tracking-wider min-w-[140px]">
                     From ↓ \ To →
                   </th>
                   {statuses.map(s => (
                     <th
                       key={s.id}
-                      className="border-b border-r border-[var(--ds-border,#E2E8F0)] px-2 py-2 text-center text-[10px] text-[var(--ds-text-subtle,#475569)] font-medium min-w-[80px] bg-[var(--ds-surface-sunken,#F8FAFC)]"
+                      className="border-b border-r border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] px-2 py-2 text-center text-[10px] text-[var(--ds-text-subtle,#475569)] font-medium min-w-[80px] bg-[var(--ds-surface-sunken,#F8FAFC)]"
                     >
                       <div className="flex flex-col items-center gap-1">
                         <div
@@ -472,16 +472,16 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
               <tbody>
                 {/* Global row */}
                 <tr className="bg-[#FFFBEB]">
-                  <td className="sticky left-0 z-10 bg-[#FFFBEB] border-b border-r border-[var(--ds-border,#E2E8F0)] px-3 py-2 text-[var(--ds-text,#0F172A)] font-medium">
+                  <td className="sticky left-0 z-10 bg-[#FFFBEB] border-b border-r border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] px-3 py-2 text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] font-medium">
                     <span className="flex items-center gap-1.5">
-                      <span style={{ display: 'inline-flex', color: '#F59E0B' }}><CheckCircleIcon label="" size="small" /></span>
+                      <span style={{ display: 'inline-flex', color: 'var(--cp-amber, #F59E0B)' }}><CheckCircleIcon label="" size="small" /></span>
                       Any (Global)
                     </span>
                   </td>
                   {statuses.map(to => (
                     <td
                       key={to.id}
-                      className="border-b border-r border-[var(--ds-border,#E2E8F0)] px-2 py-2 text-center"
+                      className="border-b border-r border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] px-2 py-2 text-center"
                     >
                       <TransitionCell
                         active={hasTransition(null, to.id, true)}
@@ -494,7 +494,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 {/* Per-status rows */}
                 {statuses.map(from => (
                   <tr key={from.id} className="hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors">
-                    <td className="sticky left-0 z-10 bg-white hover:bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-r border-[var(--ds-border,#E2E8F0)] px-3 py-2 text-[var(--ds-text,#0F172A)] font-medium">
+                    <td className="sticky left-0 z-10 bg-white hover:bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-r border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] px-3 py-2 text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] font-medium">
                       <span className="flex items-center gap-1.5">
                         <div
                           className="w-2 h-2 rounded-full"
@@ -507,8 +507,8 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                       <td
                         key={to.id}
                         className={cn(
-                          'border-b border-r border-[var(--ds-border,#E2E8F0)] px-2 py-2 text-center',
-                          from.id === to.id ? 'bg-[var(--ds-surface-sunken,#F1F5F9)]' : ''
+                          'border-b border-r border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] px-2 py-2 text-center',
+                          from.id === to.id ? 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]' : ''
                         )}
                       >
                         {from.id === to.id ? (
@@ -531,17 +531,17 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
 
       {/* Delete confirmation */}
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
-        <AlertDialogContent className="bg-white border-[var(--ds-border,#E2E8F0)]">
+        <AlertDialogContent className="bg-white border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-[var(--ds-text,#0F172A)]">Delete Status</AlertDialogTitle>
-            <AlertDialogDescription className="text-[var(--ds-text-subtlest,#64748B)]">
+            <AlertDialogTitle className="text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]">Delete Status</AlertDialogTitle>
+            <AlertDialogDescription className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">
               Are you sure you want to delete "{deleteTarget?.name}"? This will also remove all
               transitions referencing this status. Any issues currently in this status will need
               to be reassigned.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white border-[var(--ds-border,#E2E8F0)] text-[var(--ds-text,#0F172A)] hover:bg-[var(--ds-surface-sunken,#F8FAFC)]">
+            <AlertDialogCancel className="bg-white border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] hover:bg-[var(--ds-surface-sunken,#F8FAFC)]">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
@@ -564,8 +564,8 @@ function TransitionCell({ active, onClick }: { active: boolean; onClick: () => v
       className={cn(
         'w-6 h-6 rounded border flex items-center justify-center mx-auto transition-all',
         active
-          ? 'bg-[var(--ds-text-brand,#2563EB)] border-[var(--ds-text-brand,#2563EB)] text-white'
-          : 'bg-white border-[var(--ds-border,#E2E8F0)] text-transparent hover:border-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-selected,#EFF6FF)]'
+          ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white'
+          : 'bg-white border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] text-transparent hover:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] hover:bg-[var(--ds-background-selected,#EFF6FF)]'
       )}
     >
       <CheckMarkIcon label="" size="small" />

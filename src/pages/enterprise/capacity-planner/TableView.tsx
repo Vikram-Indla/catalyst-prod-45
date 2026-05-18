@@ -159,7 +159,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
                 <span className="font-semibold text-[14px] text-[var(--ds-text,#0f172a)] dark:text-foreground truncate">{value}</span>
                 {/* Online indicator */}
                 {isOnline && (
-                  <span className="w-2 h-2 rounded-full bg-[#059669] flex-shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-[var(--quality-high, #059669)] flex-shrink-0" />
                 )}
               </div>
               {/* Location label */}
@@ -193,7 +193,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
           return <span className="text-[13px] text-[var(--ds-text-subtle,#475569)]">-</span>;
         }
         return (
-          <span className="text-[13px] font-medium text-[var(--ds-text-subtle,#334155)]">{vendor}</span>
+          <span className="text-[13px] font-medium text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]">{vendor}</span>
         );
       },
     },
@@ -235,13 +235,13 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
               const now = new Date();
               const startDate = new Date(alloc.start_date);
               const isCommitted = startDate <= now;
-              const accentColor = isCommitted ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-text-warning, #f59e0b)'; // Blue for committed, Amber for forecast
-              const pctColor = isCommitted ? 'var(--ds-text-brand, #2563eb)' : '#92400e';
+              const accentColor = isCommitted ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-text-warning, #f59e0b)'; // Blue for committed, Amber for forecast
+              const pctColor = isCommitted ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : '#92400e';
 
               return (
                 <span
                   key={idx}
-                  className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded bg-white text-[13px] font-medium text-[var(--ds-text-subtle,#334155)]"
+                  className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded bg-white text-[13px] font-medium text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]"
                   style={{
                     border: '1px solid #e2e8f0',
                     borderLeftWidth: '3px',
@@ -269,7 +269,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
       width: '130px',
       sortable: true,
       render: (value: string) => (
-        <span className="text-[13px] font-medium text-[var(--ds-text-subtle,#334155)] dark:text-slate-300">{value || '-'}</span>
+        <span className="text-[13px] font-medium text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))] dark:text-slate-300">{value || '-'}</span>
       ),
     },
     {
@@ -295,7 +295,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
           'OPERATIONS': { bg: 'rgba(13,148,136,0.15)', text: '#115e59' },
           'PRODUCT': { bg: 'rgba(109,40,217,0.12)', text: '#6d28d9' },
           'DELIVERY': { bg: 'rgba(14,116,144,0.12)', text: '#0e7490' },
-          'SUPPORT': { bg: 'rgba(16,185,129,0.12)', text: '#059669' },
+          'SUPPORT': { bg: 'rgba(16,185,129,0.12)', text: 'var(--quality-high, #059669)' },
         };
 
         const style = deptStyles[deptUpper] || { bg: 'rgba(100,116,139,0.12)', text: 'var(--ds-text-subtle, #475569)' };
@@ -320,7 +320,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
         const endDate = row.contract_end_date;
 
         if (!endDate) {
-          return <span className="text-[13px] text-[var(--ds-text-subtle,#334155)]">Permanent</span>;
+          return <span className="text-[13px] text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]">Permanent</span>;
         }
 
         const endDateObj = new Date(endDate);
@@ -341,12 +341,12 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
             : `Expired ${Math.abs(daysRemaining)} days ago`;
 
         // Calculate status based on days remaining - Catalyst V1 style guide
-        // Critical: < 30 days (#b91c1c), Warning: 30-90 days (#92400e), Safe: > 90 days (var(--ds-text-subtle, #334155))
+        // Critical: < 30 days (#b91c1c), Warning: 30-90 days (#92400e), Safe: > 90 days (var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))))
         const status = daysRemaining <= 0 ? 'expired' : daysRemaining < 30 ? 'critical' : daysRemaining < 90 ? 'warning' : 'safe';
         const textColors: Record<string, string> = {
           critical: '#b91c1c',
           warning: '#92400e',
-          safe: 'var(--ds-text-subtle, #334155)',
+          safe: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
           expired: 'var(--ds-text-subtlest, #64748b)',
         };
 

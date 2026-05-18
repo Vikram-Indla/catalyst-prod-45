@@ -52,10 +52,10 @@ type StatusFilter = 'all' | 'pending' | 'syncing' | 'success' | 'failed' | 'skip
 
 /* ── Sync status config ─────────────────────────────────── */
 const SYNC_STATUS_CFG: Record<string, { renderIcon: () => React.ReactNode; color: string; bg: string; label: string }> = {
-  pending:  { renderIcon: () => <ClockIcon label="" size="small" />,        color: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.1)',  label: 'PENDING' },
-  syncing:  { renderIcon: () => <Spinner size="small" />,                   color: 'var(--ds-text-brand, #2563EB)', bg: 'rgba(37,99,235,0.1)',  label: 'SYNCING' },
-  success:  { renderIcon: () => <CheckCircleIcon label="" size="small" />,  color: '#059669', bg: 'rgba(5,150,105,0.1)',  label: 'SUCCESS' },
-  failed:   { renderIcon: () => <CrossCircleIcon label="" size="small" />,  color: 'var(--ds-text-danger, #DC2626)', bg: 'rgba(220,38,38,0.1)',  label: 'FAILED' },
+  pending:  { renderIcon: () => <ClockIcon label="" size="small" />,        color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'rgba(217,119,6,0.1)',  label: 'PENDING' },
+  syncing:  { renderIcon: () => <Spinner size="small" />,                   color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'rgba(37,99,235,0.1)',  label: 'SYNCING' },
+  success:  { renderIcon: () => <CheckCircleIcon label="" size="small" />,  color: 'var(--quality-high, #059669)', bg: 'rgba(5,150,105,0.1)',  label: 'SUCCESS' },
+  failed:   { renderIcon: () => <CrossCircleIcon label="" size="small" />,  color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'rgba(220,38,38,0.1)',  label: 'FAILED' },
   skipped:  { renderIcon: () => <ArrowRightIcon label="" size="small" />,   color: '#6B7280', bg: 'rgba(107,114,128,0.1)', label: 'SKIPPED' },
 };
 
@@ -68,7 +68,7 @@ function DirectionBadge({ dir }: { dir: 'inbound' | 'outbound' }) {
       padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 700,
       textTransform: 'uppercase', letterSpacing: '0.03em',
       background: isIn ? 'rgba(37,99,235,0.08)' : 'rgba(217,119,6,0.08)',
-      color: isIn ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, #D97706)',
+      color: isIn ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-warning, var(--cp-warning, #D97706))',
     }}>
       {isIn ? <ArrowDownLeftIcon label="" size="small" /> : <ArrowUpRightIcon label="" size="small" />}
       {isIn ? 'IN' : 'OUT'}
@@ -100,8 +100,8 @@ function ChangeTypeBadge({ type }: { type: string }) {
       display: 'inline-block', padding: '2px 6px', borderRadius: 3,
       fontSize: 10, fontWeight: 600, letterSpacing: '0.04em',
       textTransform: 'uppercase',
-      background: 'var(--cp-hover, #F1F5F9)', color: 'var(--cp-t2, #475569)',
-      border: '1px solid var(--cp-bd, #E2E8F0)',
+      background: 'var(--cp-hover, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--cp-t2, #475569)',
+      border: '1px solid var(--cp-bd, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
     }}>
       {label}
     </span>
@@ -122,7 +122,7 @@ function ChangedFieldsDetail({ fields }: { fields: Record<string, { from?: strin
         onClick={() => setOpen(prev => !prev)}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
-          fontSize: 11, color: 'var(--cp-blue, #2563EB)', cursor: 'pointer',
+          fontSize: 11, color: 'var(--cp-blue, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer',
           background: 'none', border: 'none', padding: 0, fontWeight: 500,
         }}
       >
@@ -133,9 +133,9 @@ function ChangedFieldsDetail({ fields }: { fields: Record<string, { from?: strin
         <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 3 }}>
           {entries.map(([field, val]) => (
             <div key={field} style={{ fontSize: 11, color: 'var(--cp-t2, #475569)', display: 'flex', gap: 4, alignItems: 'baseline' }}>
-              <span style={{ fontWeight: 600, color: 'var(--cp-t1, #0F172A)', minWidth: 60 }}>{field}:</span>
-              <span style={{ textDecoration: 'line-through', color: 'var(--cp-t3, #94A3B8)' }}>{val.from || '—'}</span>
-              <span style={{ color: 'var(--cp-t3, #94A3B8)' }}>→</span>
+              <span style={{ fontWeight: 600, color: 'var(--cp-t1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', minWidth: 60 }}>{field}:</span>
+              <span style={{ textDecoration: 'line-through', color: 'var(--cp-t3, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{val.from || '—'}</span>
+              <span style={{ color: 'var(--cp-t3, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>→</span>
               <span style={{ fontWeight: 500 }}>{val.to || '—'}</span>
             </div>
           ))}
@@ -161,17 +161,17 @@ function SummaryStats({ items }: { items: SyncActivity[] }) {
   }, [items]);
 
   const pills: { label: string; value: number; color: string; bg: string }[] = [
-    { label: 'Total', value: stats.total, color: 'var(--cp-t1, #0F172A)', bg: 'var(--cp-hover, #F1F5F9)' },
-    { label: 'Inbound', value: stats.inbound, color: 'var(--ds-text-brand, #2563EB)', bg: 'rgba(37,99,235,0.08)' },
-    { label: 'Outbound', value: stats.outbound, color: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.08)' },
-    { label: 'Success', value: stats.success, color: '#059669', bg: 'rgba(5,150,105,0.08)' },
-    { label: 'Failed', value: stats.failed, color: 'var(--ds-text-danger, #DC2626)', bg: 'rgba(220,38,38,0.08)' },
-    { label: 'Pending', value: stats.pending, color: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.08)' },
+    { label: 'Total', value: stats.total, color: 'var(--cp-t1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', bg: 'var(--cp-hover, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' },
+    { label: 'Inbound', value: stats.inbound, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'rgba(37,99,235,0.08)' },
+    { label: 'Outbound', value: stats.outbound, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'rgba(217,119,6,0.08)' },
+    { label: 'Success', value: stats.success, color: 'var(--quality-high, #059669)', bg: 'rgba(5,150,105,0.08)' },
+    { label: 'Failed', value: stats.failed, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'rgba(220,38,38,0.08)' },
+    { label: 'Pending', value: stats.pending, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'rgba(217,119,6,0.08)' },
     { label: 'Skipped', value: stats.skipped, color: '#6B7280', bg: 'rgba(107,114,128,0.08)' },
   ];
 
   if (stats.conflicts > 0) {
-    pills.push({ label: 'Conflicts', value: stats.conflicts, color: 'var(--ds-text-danger, #DC2626)', bg: 'rgba(220,38,38,0.08)' });
+    pills.push({ label: 'Conflicts', value: stats.conflicts, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'rgba(220,38,38,0.08)' });
   }
 
   return (
@@ -185,7 +185,7 @@ function SummaryStats({ items }: { items: SyncActivity[] }) {
           }}>
             {p.value}
           </span>
-          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-t3, #94A3B8)' }}>{p.label}</span>
+          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-t3, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{p.label}</span>
         </div>
       ))}
     </div>
@@ -199,9 +199,9 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
       onClick={onClick}
       style={{
         padding: '4px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-        border: `1px solid ${active ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-bd, #E2E8F0)'}`,
+        border: `1px solid ${active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-bd, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
         background: active ? 'rgba(37,99,235,0.08)' : 'transparent',
-        color: active ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-t2, #475569)',
+        color: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-t2, #475569)',
         cursor: 'pointer', transition: 'all 150ms',
       }}
     >
@@ -266,16 +266,16 @@ export default function JiraActivitySyncPage() {
   ];
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--cp-bg, #FFFFFF)' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
       {/* ── Header ─────────────────────────────────── */}
       <div style={{
         height: 52, minHeight: 52, display: 'flex', alignItems: 'center',
-        padding: '0 24px', borderBottom: '1px solid var(--cp-bd, #E2E8F0)',
+        padding: '0 24px', borderBottom: '1px solid var(--cp-bd, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
         gap: 16,
       }}>
         <h1 style={{
           fontSize: 20, fontWeight: 700, fontFamily: 'var(--cp-font-heading)',
-          color: 'var(--cp-t1, #0F172A)', margin: 0, whiteSpace: 'nowrap',
+          color: 'var(--cp-t1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0, whiteSpace: 'nowrap',
         }}>
           Jira Activity Sync
         </h1>
@@ -285,8 +285,8 @@ export default function JiraActivitySyncPage() {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             padding: '6px 14px', borderRadius: 6, fontSize: 13, fontWeight: 600,
-            border: '1px solid var(--cp-bd, #E2E8F0)',
-            background: 'var(--cp-bg, #FFFFFF)', color: 'var(--cp-t1, #0F172A)',
+            border: '1px solid var(--cp-bd, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-t1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
             cursor: 'pointer',
           }}
         >
@@ -298,11 +298,11 @@ export default function JiraActivitySyncPage() {
       {/* ── Toolbar ────────────────────────────────── */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12, padding: '12px 24px',
-        borderBottom: '1px solid var(--cp-bd, #E2E8F0)', flexWrap: 'wrap',
+        borderBottom: '1px solid var(--cp-bd, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', flexWrap: 'wrap',
       }}>
         {/* Search */}
         <div style={{ position: 'relative', width: 260 }}>
-          <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', display: 'inline-flex', color: 'var(--cp-t3, #94A3B8)' }}><SearchIcon label="" size="small" /></span>
+          <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', display: 'inline-flex', color: 'var(--cp-t3, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}><SearchIcon label="" size="small" /></span>
           <Textfield
             placeholder="Search key, title, project…"
             value={search}
@@ -317,7 +317,7 @@ export default function JiraActivitySyncPage() {
           <FilterPill label="↑ Outbound" active={dirFilter === 'outbound'} onClick={() => setDirFilter('outbound')} />
         </div>
 
-        <div style={{ width: 1, height: 20, background: 'var(--cp-bd, #E2E8F0)' }} />
+        <div style={{ width: 1, height: 20, background: 'var(--cp-bd, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }} />
 
         {/* Status filters */}
         <div style={{ display: 'flex', gap: 4 }}>
@@ -328,7 +328,7 @@ export default function JiraActivitySyncPage() {
       </div>
 
       {/* ── Summary bar ─────────────────────────────── */}
-      <div style={{ padding: '10px 24px', borderBottom: '1px solid var(--cp-bd, #E2E8F0)' }}>
+      <div style={{ padding: '10px 24px', borderBottom: '1px solid var(--cp-bd, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }}>
         <SummaryStats items={rawItems} />
       </div>
 
@@ -337,24 +337,24 @@ export default function JiraActivitySyncPage() {
         {isLoading ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200, gap: 8 }}>
             <Spinner size="medium" />
-            <span style={{ fontSize: 13, color: 'var(--cp-t3, #94A3B8)' }}>Loading sync activity…</span>
+            <span style={{ fontSize: 13, color: 'var(--cp-t3, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Loading sync activity…</span>
           </div>
         ) : filtered.length === 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 300, gap: 12 }}>
             <span style={{ display: 'inline-flex', color: 'var(--cp-t4, #CBD5E1)' }}><RefreshIcon label="" size="large" /></span>
             <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--cp-t2, #475569)' }}>No sync activity yet</span>
-            <span style={{ fontSize: 13, color: 'var(--cp-t3, #94A3B8)', maxWidth: 360, textAlign: 'center' }}>
+            <span style={{ fontSize: 13, color: 'var(--cp-t3, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', maxWidth: 360, textAlign: 'center' }}>
               Sync events between Catalyst and Jira will appear here. Activity is retained for 30 days.
             </span>
           </div>
         ) : (
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid var(--cp-bd, #E2E8F0)' }}>
+                <tr style={{ borderBottom: '1px solid var(--cp-bd, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }}>
                   {columns.map(col => (
                     <th key={col.key} style={{
                       padding: '10px 12px', textAlign: 'left', fontSize: 11, fontWeight: 600,
-                      color: 'var(--cp-t3, #94A3B8)', textTransform: 'uppercase', letterSpacing: '0.05em',
+                      color: 'var(--cp-t3, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textTransform: 'uppercase', letterSpacing: '0.05em',
                       background: 'var(--cp-hover, #F8FAFC)',
                       width: typeof col.width === 'number' ? col.width : undefined,
                       whiteSpace: 'nowrap',
@@ -369,7 +369,7 @@ export default function JiraActivitySyncPage() {
                   <tr
                     key={item.id}
                     style={{
-                      borderBottom: '0.75px solid var(--cp-bd, #E2E8F0)',
+                      borderBottom: '0.75px solid var(--cp-bd, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
                       height: 40, transition: 'background 150ms',
                     }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-hover, rgba(0,0,0,0.02))')}
@@ -393,7 +393,7 @@ export default function JiraActivitySyncPage() {
                     <td style={{ padding: '6px 12px' }}>
                       <span style={{
                         fontSize: 12, fontWeight: 600, fontFamily: 'var(--cp-font-mono)',
-                        color: 'var(--cp-blue, #2563EB)',
+                        color: 'var(--cp-blue, var(--cp-workstream-catalyst-primary, #2563EB))',
                       }}>
                         {item.work_item_key}
                       </span>
@@ -403,13 +403,13 @@ export default function JiraActivitySyncPage() {
                     <td style={{ padding: '6px 12px', maxWidth: 300 }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                         <span style={{
-                          fontSize: 13, fontWeight: 500, color: 'var(--cp-t1, #0F172A)',
+                          fontSize: 13, fontWeight: 500, color: 'var(--cp-t1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                         }}>
                           {item.work_item_title || '—'}
                         </span>
                         {item.change_summary && (
-                          <span style={{ fontSize: 11, color: 'var(--cp-t3, #94A3B8)' }}>
+                          <span style={{ fontSize: 11, color: 'var(--cp-t3, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
                             {item.change_summary}
                           </span>
                         )}
@@ -468,7 +468,7 @@ export default function JiraActivitySyncPage() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <SyncStatusPill status={item.sync_status} />
                         {item.attempt_count > 1 && (
-                          <span style={{ fontSize: 10, color: 'var(--cp-t3, #94A3B8)', fontWeight: 600 }}>
+                          <span style={{ fontSize: 10, color: 'var(--cp-t3, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontWeight: 600 }}>
                             ×{item.attempt_count}
                           </span>
                         )}
@@ -479,7 +479,7 @@ export default function JiraActivitySyncPage() {
                     <td style={{ padding: '6px 12px' }}>
                       {item.error_message ? (
                         <Tooltip position="top" content={item.error_message}>
-                          <span style={{ fontSize: 11, color: 'var(--ds-text-danger, #DC2626)', fontWeight: 500, cursor: 'help' }}>
+                          <span style={{ fontSize: 11, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontWeight: 500, cursor: 'help' }}>
                             Error: {item.error_message.substring(0, 30)}…
                           </span>
                         </Tooltip>
@@ -496,13 +496,13 @@ export default function JiraActivitySyncPage() {
 
       {/* ── Footer ──────────────────────────────────── */}
       <div style={{
-        padding: '8px 24px', borderTop: '1px solid var(--cp-bd, #E2E8F0)',
+        padding: '8px 24px', borderTop: '1px solid var(--cp-bd, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        fontSize: 12, color: 'var(--cp-t3, #94A3B8)',
+        fontSize: 12, color: 'var(--cp-t3, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
       }}>
         <span>
-          Showing <strong style={{ color: 'var(--cp-t1, #0F172A)', fontWeight: 600 }}>{filtered.length}</strong> of{' '}
-          <strong style={{ color: 'var(--cp-t1, #0F172A)', fontWeight: 600 }}>{rawItems.length}</strong> events (last 30 days)
+          Showing <strong style={{ color: 'var(--cp-t1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontWeight: 600 }}>{filtered.length}</strong> of{' '}
+          <strong style={{ color: 'var(--cp-t1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontWeight: 600 }}>{rawItems.length}</strong> events (last 30 days)
         </span>
         <span>Auto-purge: records older than 30 days are deleted automatically</span>
       </div>

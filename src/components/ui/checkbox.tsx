@@ -16,7 +16,7 @@ const Checkbox = React.forwardRef<
       "border-2 border-[hsl(var(--border-default))] dark:border-[var(--ds-border-bold,#454545)]",
       // Unchecked state - transparent background
       "data-[state=unchecked]:bg-transparent",
-      // Checked state - BLUE primary (Catalyst V5 spec: var(--ds-text-brand, #2563eb) / var(--ds-text-brand, #3b82f6))
+      // Checked state - BLUE primary (Catalyst V5 spec: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) / var(--ds-text-brand, #3b82f6))
       "data-[state=checked]:bg-[hsl(217,91%,53%)] data-[state=checked]:text-white data-[state=checked]:border-[hsl(217,91%,53%)]",
       "data-[state=indeterminate]:bg-[hsl(217,91%,53%)] data-[state=indeterminate]:text-white data-[state=indeterminate]:border-[hsl(217,91%,53%)]",
       // Focus ring uses BLUE per Catalyst V5 spec

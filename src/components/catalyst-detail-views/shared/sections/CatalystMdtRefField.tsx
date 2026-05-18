@@ -82,7 +82,7 @@ export function CatalystMdtRefField({ issue, onUpdate }: Props) {
           fontSize: 14, color: 'var(--ds-text, #292A2E)', fontFamily: 'inherit',
           border: '1px solid var(--ds-border-focused, #4C9AFF)', borderRadius: 3,
           padding: '4px 6px', width: '100%', outline: 'none',
-          background: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         }}
       />
     );
@@ -98,7 +98,7 @@ export function CatalystMdtRefField({ issue, onUpdate }: Props) {
         width: '100%', borderRadius: 3, transition: 'background 0.15s',
         color: current ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-disabled, #6B6E76)',
       }}
-      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       aria-label={current ? `MDT Ref: ${current}. Click to edit.` : 'Add MDT Ref'}
     >

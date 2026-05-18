@@ -74,26 +74,26 @@ const ICON_MAP: Record<string, React.ElementType> = {
 const resolveIcon = (name: string): React.ElementType => ICON_MAP[name] || ArchiveBoxIcon;
 
 const ICON_COLOR_MAP: Record<string, { bg: string; text: string }> = {
-  blue:    { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
-  teal:    { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  blue:    { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  teal:    { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   red:     { bg: '#FFEBE6', text: '#BF2600' },
-  neutral: { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' },
+  neutral: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: '#42526E' },
 };
 
 // V12 StatusLozenge: LIVE=Green, DRAFT=Grey, BETA=Blue
 const STATUS_LOZENGE: Record<string, { bg: string; text: string }> = {
-  live:  { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)' },
-  draft: { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' },
-  beta:  { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  live:  { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  draft: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: '#42526E' },
+  beta:  { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
 };
 
 // D03: Category badges with distinct colors per MARAM V3.1.1
 const CATEGORY_BADGE: Record<ModuleCategory, { bg: string; text: string; border: string }> = {
-  Strategy:   { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)', border: '#BFDBFE' },
+  Strategy:   { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: '#BFDBFE' },
   Product:    { bg: '#F4F4F5', text: '#3F3F46', border: '#D4D4D8' },
-  Delivery:   { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)', border: '#BFDBFE' },
-  Quality:    { bg: '#F0FDFA', text: '#0D9488', border: '#99F6E4' },
-  Operations: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #DC2626)', border: '#FECACA' },
+  Delivery:   { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: '#BFDBFE' },
+  Quality:    { bg: '#F0FDFA', text: 'var(--cp-teal-60, #0D9488)', border: '#99F6E4' },
+  Operations: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', border: '#FECACA' },
 };
 
 const ENVIRONMENT = 'production' as const;
@@ -144,7 +144,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
         ...(isSelected ? { backgroundColor: 'rgba(37,99,235,0.08)' } : {}),
       }}
       onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--cp-interact-hover, rgba(15,23,42,0.04))'; }}
-      onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--cp-bg-elevated, #FFFFFF)'; }}
+      onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
     >
       {/* Checkbox */}
       <div className="flex items-center justify-center">
@@ -152,7 +152,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
           type="checkbox"
           checked={isSelected}
           onChange={(e) => onSelect(flag.id, e.target.checked)}
-          className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,#2563EB)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
+          className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2"
           aria-label={`Select ${flag.module_name}`}
         />
       </div>
@@ -168,7 +168,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
         <div className="min-w-0">
           <div
             className="truncate"
-            style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}
+            style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}
             title={flag.module_name}
           >
             {flag.module_name}
@@ -240,12 +240,12 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
 
       {/* Updated */}
       <div className="px-3 min-w-0">
-        <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--cp-text-secondary, #334155)', fontVariantNumeric: 'tabular-nums' }}>
+        <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontVariantNumeric: 'tabular-nums' }}>
           {new Date(flag.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
         </div>
         <div
           className="truncate"
-          style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-muted, #94A3B8)', maxWidth: 120 }}
+          style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', maxWidth: 120 }}
           title={updatedByName}
         >
           {updatedByName}
@@ -255,18 +255,18 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
       {/* D10: Hover-reveal row actions */}
       <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-[120ms]">
         <button
-          className="w-7 h-7 flex items-center justify-center rounded hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
+          className="w-7 h-7 flex items-center justify-center rounded hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2"
           aria-label="Configure module"
           style={{ borderRadius: 4 }}
         >
-          <span style={{ display: 'inline-flex', color: 'var(--cp-text-tertiary, #64748B)' }}><SettingsIcon label="" size="small" /></span>
+          <span style={{ display: 'inline-flex', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}><SettingsIcon label="" size="small" /></span>
         </button>
         <button
-          className="w-7 h-7 flex items-center justify-center rounded hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
+          className="w-7 h-7 flex items-center justify-center rounded hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2"
           aria-label="More options"
           style={{ borderRadius: 4 }}
         >
-          <span style={{ display: 'inline-flex', color: 'var(--cp-text-tertiary, #64748B)' }}><ShowMoreHorizontalIcon label="" size="small" /></span>
+          <span style={{ display: 'inline-flex', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}><ShowMoreHorizontalIcon label="" size="small" /></span>
         </button>
       </div>
     </div>
@@ -299,9 +299,9 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
       aria-expanded={!isCollapsed}
     >
       {isCollapsed ? (
-        <span style={{ display: 'inline-flex', color: 'var(--cp-text-muted, #94A3B8)' }}><ChevronRightIcon label="" size="small" /></span>
+        <span style={{ display: 'inline-flex', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}><ChevronRightIcon label="" size="small" /></span>
       ) : (
-        <span style={{ display: 'inline-flex', color: 'var(--cp-text-muted, #94A3B8)' }}><ChevronDownIcon label="" size="small" /></span>
+        <span style={{ display: 'inline-flex', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}><ChevronDownIcon label="" size="small" /></span>
       )}
       <span style={{
         fontFamily: 'var(--cp-font-body)',
@@ -309,7 +309,7 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
         fontWeight: 600,
         letterSpacing: '0.06em',
         textTransform: 'uppercase',
-        color: 'var(--cp-text-tertiary, #64748B)',
+        color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
       }}>
         {category}
       </span>
@@ -318,7 +318,7 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
           fontFamily: 'var(--cp-font-body)',
           fontSize: 11,
           fontWeight: 500,
-          color: 'var(--cp-text-tertiary, #64748B)',
+          color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
           background: 'var(--cp-border, #E5E5E5)',
           borderRadius: 9999,
           padding: '1px 6px',
@@ -457,15 +457,15 @@ export default function FeatureFlagsPage() {
   if (isLoading) {
     return (
       <div className={`flex-1 min-w-0 ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`} style={{ padding: '24px 32px' }}>
-        <div className="h-7 w-48 bg-[var(--ds-surface-sunken,#F1F5F9)] rounded mb-1 animate-pulse" />
-        <div className="h-4 w-80 bg-[var(--ds-surface-sunken,#F1F5F9)] rounded mb-6 animate-pulse" />
-        <div className="h-14 bg-[var(--ds-surface-sunken,#F1F5F9)] rounded-md mb-4 animate-pulse" style={{ border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }} />
+        <div className="h-7 w-48 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] rounded mb-1 animate-pulse" />
+        <div className="h-4 w-80 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] rounded mb-6 animate-pulse" />
+        <div className="h-14 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] rounded-md mb-4 animate-pulse" style={{ border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }} />
         <div className="flex gap-2 mb-3">
-          <div className="h-9 w-64 bg-[var(--ds-surface-sunken,#F1F5F9)] rounded animate-pulse" />
-          <div className="h-9 w-16 bg-[var(--ds-surface-sunken,#F1F5F9)] rounded animate-pulse" />
+          <div className="h-9 w-64 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] rounded animate-pulse" />
+          <div className="h-9 w-16 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] rounded animate-pulse" />
         </div>
         <div className={`overflow-hidden ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`} style={{ border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }}>
-          <div style={{ height: 40, background: 'var(--cp-bg-sunken, #F1F5F9)', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }} />
+          <div style={{ height: 40, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }} />
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className={`animate-pulse ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`} style={{ height: 52, borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }} />
           ))}
@@ -478,8 +478,8 @@ export default function FeatureFlagsPage() {
   if (error) {
     return (
       <div className={`flex-1 flex flex-col items-center justify-center py-20 gap-3 ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`}>
-        <span style={{ display: 'flex', color: 'var(--ds-text-danger, #DC2626)' }}><CrossCircleIcon label="" size="large" /></span>
-        <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)' }}>
+        <span style={{ display: 'flex', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}><CrossCircleIcon label="" size="large" /></span>
+        <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
           Failed to load feature flags
         </p>
         <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, #71717A)' }}>
@@ -506,8 +506,8 @@ export default function FeatureFlagsPage() {
       <div className="flex items-start justify-between mb-5">
         <div>
           <div className="flex items-center gap-2">
-            <span style={{ display: 'inline-flex', color: 'var(--ds-text-brand, #2563EB)' }}><FlagIcon label="" size="medium" /></span>
-            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', letterSpacing: '-0.025em', margin: 0 }}>
+            <span style={{ display: 'inline-flex', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}><FlagIcon label="" size="medium" /></span>
+            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', letterSpacing: '-0.025em', margin: 0 }}>
               Feature Flags
             </h1>
           </div>
@@ -533,17 +533,17 @@ export default function FeatureFlagsPage() {
             padding: '10px 16px',
             border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`,
             borderRadius: 6,
-            background: 'var(--cp-bg-sunken, #F1F5F9)',
+            background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
             gap: 0,
           }}
         >
           {/* Left: count */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontVariantNumeric: 'tabular-nums' }}>
               {stats.enabled}
             </span>
-            <span style={{ fontSize: 14, color: 'var(--cp-text-muted, #94A3B8)' }}>/</span>
-            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: 'var(--cp-text-muted, #94A3B8)', fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>/</span>
+            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontVariantNumeric: 'tabular-nums' }}>
               {stats.total}
             </span>
             <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, #71717A)', marginLeft: 2 }}>modules enabled</span>
@@ -554,12 +554,12 @@ export default function FeatureFlagsPage() {
 
           {/* Center: progress */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--cp-border, #DFE1E6)' }}>
+            <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }}>
               <div
                 className="h-full rounded-full"
                 style={{
                   width: stats.total > 0 ? `${(stats.enabled / stats.total) * 100}%` : '0%',
-                  background: 'var(--ds-text-success, #16A34A)',
+                  background: 'var(--ds-text-success, var(--cp-success, #16A34A))',
                   transition: 'width 300ms ease-out',
                 }}
               />
@@ -577,12 +577,12 @@ export default function FeatureFlagsPage() {
             <button
               onClick={() => { if (!allEnabled) bulkMutation.mutate({ enabled: true, environment }); }}
               disabled={allEnabled || bulkMutation.isPending}
-              className="inline-flex items-center gap-1.5 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 height: 50,
                 padding: '0 14px',
                 borderRadius: 6,
-                background: 'var(--ds-text-success, #16A34A)',
+                background: 'var(--ds-text-success, var(--cp-success, #16A34A))',
                 fontFamily: 'var(--cp-font-body)',
                 fontSize: 13,
                 fontWeight: 600,
@@ -590,7 +590,7 @@ export default function FeatureFlagsPage() {
                 transition: 'background 120ms ease',
               }}
               onMouseEnter={(e) => { if (!allEnabled) (e.currentTarget.style.background = '#15803D'); }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--ds-text-success, #16A34A)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--ds-text-success, var(--cp-success, #16A34A))'; }}
             >
               {bulkMutation.isPending ? <Spinner size="small" /> : <CheckMarkIcon label="" size="small" />}
               Enable All
@@ -598,14 +598,14 @@ export default function FeatureFlagsPage() {
             <button
               onClick={() => { if (!noneEnabled) setBulkDisableOpen(true); }}
               disabled={noneEnabled || bulkMutation.isPending}
-              className="inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 height: 50,
                 padding: '0 14px',
                 borderRadius: 6,
                 background: 'transparent',
-                border: '0.75px solid #DC2626',
-                color: 'var(--ds-text-danger, #DC2626)',
+                border: '0.75px solid var(--cp-danger, #DC2626)',
+                color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
                 fontFamily: 'var(--cp-font-body)',
                 fontSize: 13,
                 fontWeight: 500,
@@ -630,7 +630,7 @@ export default function FeatureFlagsPage() {
             value={searchInput}
             onChange={(e) => setSearchInput((e.target as HTMLInputElement).value)}
             aria-label="Search feature flags"
-            elemBeforeInput={<span style={{ display: 'inline-flex', color: 'var(--cp-text-muted, #94A3B8)', marginLeft: 8 }}><SearchIcon label="" size="small" /></span>}
+            elemBeforeInput={<span style={{ display: 'inline-flex', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginLeft: 8 }}><SearchIcon label="" size="small" /></span>}
           />
         </div>
 
@@ -640,7 +640,7 @@ export default function FeatureFlagsPage() {
             <button
               key={mode}
               onClick={() => setFilterMode(mode)}
-              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
+              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2"
               style={{
                 padding: '8px 12px',
                 height: 50,
@@ -648,7 +648,7 @@ export default function FeatureFlagsPage() {
                 fontSize: 12,
                 fontWeight: filterMode === mode ? 650 : 500,
                 background: filterMode === mode ? 'rgba(37,99,235,0.08)' : 'transparent',
-                color: filterMode === mode ? 'var(--ds-text-brand, #2563EB)' : '#71717A',
+                color: filterMode === mode ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : '#71717A',
                 cursor: 'pointer',
                 transition: 'all 120ms ease',
               }}
@@ -662,7 +662,7 @@ export default function FeatureFlagsPage() {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value as ModuleCategory | 'all')}
-          className="focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
+          className="focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2"
           style={{
             height: 50,
             padding: '8px 12px',
@@ -670,8 +670,8 @@ export default function FeatureFlagsPage() {
             fontSize: 12,
             border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.14))'}`,
             borderRadius: 4,
-            background: 'var(--cp-bg-elevated, #FFFFFF)',
-            color: 'var(--cp-text-primary, #0F172A)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
           }}
         >
           <option value="all">All Categories</option>
@@ -711,14 +711,14 @@ export default function FeatureFlagsPage() {
           transition: 'opacity 200ms ease',
         }}
       >
-        {/* Header — thead on var(--ds-surface-sunken, #F1F5F9) */}
+        {/* Header — thead on var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))) */}
         <div
           role="row"
           className="grid items-center gap-0"
           style={{
             gridTemplateColumns: GRID_COLS,
             height: 40,
-            background: 'var(--cp-bg-sunken, #F1F5F9)',
+            background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
             borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`,
             fontFamily: 'var(--cp-font-body)',
             fontSize: 11,
@@ -734,7 +734,7 @@ export default function FeatureFlagsPage() {
               checked={allSelected}
               ref={(el) => { if (el) el.indeterminate = someSelected; }}
               onChange={(e) => handleSelectAll(e.target.checked)}
-              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,#2563EB)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
+              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2"
               aria-label="Select all modules"
             />
           </div>
@@ -745,7 +745,7 @@ export default function FeatureFlagsPage() {
           <div
             style={{ padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
             onClick={() => handleSort('updated_at')}
-            className="select-none hover:text-[var(--ds-text,#0F172A)] transition-colors duration-[120ms]"
+            className="select-none hover:text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] transition-colors duration-[120ms]"
             role="columnheader"
             tabIndex={0}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSort('updated_at'); } }}
@@ -766,7 +766,7 @@ export default function FeatureFlagsPage() {
             {flags?.length === 0 ? (
               <>
                 <span style={{ display: 'inline-flex', color: 'rgba(15,23,42,0.15)' }}><SettingsIcon label="" size="large" /></span>
-                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)' }}>
+                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
                   No modules configured
                 </p>
                 <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, #71717A)' }}>
@@ -776,7 +776,7 @@ export default function FeatureFlagsPage() {
             ) : (
               <>
                 <span style={{ display: 'inline-flex', color: 'rgba(15,23,42,0.15)' }}><FlagIcon label="" size="large" /></span>
-                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)' }}>
+                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
                   No modules match your filters
                 </p>
                 {hasActiveFilters && (
@@ -838,7 +838,7 @@ export default function FeatureFlagsPage() {
       <AlertDialog open={bulkDisableOpen} onOpenChange={(open) => { setBulkDisableOpen(open); if (!open) setConfirmText(''); }}>
         <AlertDialogContent className="sm:max-w-md" style={{ borderRadius: 8 }}>
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2" style={{ color: 'var(--ds-text-danger, #DC2626)' }}>
+            <AlertDialogTitle className="flex items-center gap-2" style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>
               <span style={{ display: 'inline-flex' }}><CrossCircleIcon label="" size="small" /></span>
               Disable All Modules?
             </AlertDialogTitle>

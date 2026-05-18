@@ -72,7 +72,7 @@ export function ProductScopedPageHeader({ product, activeView, stats }: Props) {
       label: 'Total Items',
       value: stats.total,
       icon: BarChart3,
-      color: 'var(--ds-text-brand, #2563EB)',
+      color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
       bg: 'var(--ds-background-selected, #EFF6FF)',
       accent: '',
     },
@@ -80,7 +80,7 @@ export function ProductScopedPageHeader({ product, activeView, stats }: Props) {
       label: 'Completed',
       value: stats.completed,
       icon: CheckCircle2,
-      color: 'var(--ds-text-success, #16A34A)',
+      color: 'var(--ds-text-success, var(--cp-success, #16A34A))',
       bg: 'var(--ds-background-success, #DCFCE7)',
       accent: '',
     },
@@ -88,7 +88,7 @@ export function ProductScopedPageHeader({ product, activeView, stats }: Props) {
       label: 'In Progress',
       value: stats.inProgress,
       icon: Clock,
-      color: 'var(--ds-text-brand, #2563EB)',
+      color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
       bg: 'var(--ds-background-selected, #EFF6FF)',
       accent: '',
     },
@@ -96,17 +96,17 @@ export function ProductScopedPageHeader({ product, activeView, stats }: Props) {
       label: 'Overdue',
       value: stats.overdue,
       icon: AlertTriangle,
-      color: overdueDanger ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, #94A3B8)',
-      bg: overdueDanger ? 'var(--ds-background-danger, #FEF2F2)' : 'var(--ds-surface-sunken, #F1F5F9)',
+      color: overdueDanger ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
+      bg: overdueDanger ? 'var(--ds-background-danger, #FEF2F2)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
       accent: '',
     },
     {
       label: 'AI Features',
       value: stats.aiFeatures ?? '0%',
       icon: Sparkles,
-      color: '#7C3AED',
+      color: 'var(--cp-purple-60, #7C3AED)',
       bg: '#F5F3FF',
-      accent: '#7C3AED',
+      accent: 'var(--cp-purple-60, #7C3AED)',
     },
   ];
 
@@ -163,7 +163,7 @@ export function ProductScopedPageHeader({ product, activeView, stats }: Props) {
       {/* View switcher — RouterLinks so middle-click + Cmd-click open new tabs. */}
       <div
         className="flex items-center gap-0.5 p-1 rounded-lg"
-        style={{ background: 'var(--cp-bg-sunken, #F1F5F9)', width: 'fit-content', marginBottom: 12 }}
+        style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', width: 'fit-content', marginBottom: 12 }}
         role="tablist"
         aria-label="Product views"
       >
@@ -184,7 +184,7 @@ export function ProductScopedPageHeader({ product, activeView, stats }: Props) {
                 borderRadius: 6,
                 textDecoration: 'none',
                 background: isActive ? 'var(--cp-bg-elevated)' : 'transparent',
-                color: isActive ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-text-secondary)',
+                color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-text-secondary)',
                 boxShadow: isActive ? '0 1px 3px rgba(0,0,0,.08)' : 'none',
                 transition: 'all 150ms ease',
               }}

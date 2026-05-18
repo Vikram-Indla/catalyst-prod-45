@@ -339,7 +339,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
     );
   }
 
-  const deptColor = R360_DEPT_COLORS[overview.department] || 'var(--ds-text-subtlest, #64748B)';
+  const deptColor = R360_DEPT_COLORS[overview.department] || 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
 
   return (
     <>
@@ -423,7 +423,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                           style={{
                             fontSize: 11, padding: '1px 4px', borderRadius: 3,
                             border: `1px solid ${token('color.border.focused', '#388BFF')}`,
-                            color: token('color.text', '#172B4D'),
+                            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                             background: token('elevation.surface', '#FFFFFF'),
                             outline: 'none', maxWidth: 180,
                           }}
@@ -506,10 +506,10 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                       (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle', '#F7F8F9');
                     }}
                   >
-                    <div style={{ fontSize: 22, fontWeight: 700, lineHeight: '26px', fontVariantNumeric: 'tabular-nums', color: token('color.text', '#172B4D') }}>
+                    <div style={{ fontSize: 22, fontWeight: 700, lineHeight: '26px', fontVariantNumeric: 'tabular-nums', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
                       {bannerOpenCount}
                     </div>
-                    <div style={{ fontSize: 10, fontWeight: 600, lineHeight: '13px', letterSpacing: '0.04em', color: token('color.text.subtle', '#44546F') }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, lineHeight: '13px', letterSpacing: '0.04em', color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
                       active
                     </div>
                   </div>
@@ -533,7 +533,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
 
               {/* §3 — Stale warning banner */}
               {allStale && allOpenItems.length > 0 && (
-                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: token('color.background.warning', '#FFF7D6'), borderLeft: `3px solid ${token('color.border.warning', '#D97706')}`, borderRadius: '0 4px 4px 0', fontSize: '13px', color: token('color.text.warning', '#974F0C') }}>
+                <div style={{ margin: '8px 0 0', padding: '8px 12px', background: token('color.background.warning', '#FFF7D6'), borderLeft: `3px solid ${token('color.border.warning', 'var(--cp-warning, #D97706)')}`, borderRadius: '0 4px 4px 0', fontSize: '13px', color: token('color.text.warning', '#974F0C') }}>
                   ⚠️ All assigned items are stale. Oldest: {oldestAge} days.
                 </div>
               )}
@@ -558,7 +558,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                   </button>
                 )}
                 {/* Quarter label — computed from current date */}
-                <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: token('color.background.neutral', '#F1F2F4'), border: 'none', borderRadius: '6px', color: token('color.text', '#172B4D'), fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
+                <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: token('color.background.neutral', '#F1F2F4'), border: 'none', borderRadius: '6px', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
                   <Calendar size={13} /> {`Q${Math.ceil((new Date().getMonth() + 1) / 3)}-${new Date().getFullYear()}`}
                 </button>
                 {/* Intelligence — brand blue standard */}
@@ -598,7 +598,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
               {workItems.length > 0 && lastActivityDate && (
                 <div style={{ margin: '16px auto', maxWidth: 560, padding: '16px 24px', borderRadius: '8px', border: `1px solid ${token('color.border', '#091E4224')}`, background: token('elevation.surface', '#FFFFFF'), textAlign: 'center' }}>
                   <div style={{ fontSize: '13px', color: token('color.text.subtle', '#626F86'), marginBottom: '10px' }}>
-                    <strong style={{ color: token('color.text', '#172B4D') }}>{allOpenItems.length} open item{allOpenItems.length !== 1 ? 's' : ''}</strong> across all time
+                    <strong style={{ color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>{allOpenItems.length} open item{allOpenItems.length !== 1 ? 's' : ''}</strong> across all time
                     {allStaleItems.length > 0 && <span> · {allStaleItems.length} stale</span>}
                   </div>
                   <div style={{ fontSize: '12.5px', color: token('color.text.subtlest', '#8590A2'), marginBottom: '12px' }}>
@@ -609,7 +609,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '6px',
                       padding: '7px 18px', borderRadius: '6px', fontSize: '12.5px', fontWeight: 600,
-                      border: 'none', background: token('color.background.brand.subtlest', '#E9F2FF'), color: token('color.text.brand', '#0052CC'),
+                      border: 'none', background: token('color.background.brand.subtlest', '#E9F2FF'), color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)'),
                       cursor: 'pointer', transition: 'all 80ms ease',
                     }}
                     onMouseOver={e => { (e.target as HTMLButtonElement).style.background = token('color.background.brand.subtlest.hovered', '#CCE0FF'); }}

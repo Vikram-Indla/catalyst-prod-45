@@ -49,7 +49,7 @@ export function CalendarAIInsights({ insights, conflicts, onInsightClick }: Cale
     switch (type) {
       case 'critical': return <ErrorIcon label="" size="small" primaryColor="var(--ds-text-danger,#ef4444)" />;
       case 'warning': return <WarningIcon label="" size="small" primaryColor="var(--ds-text-warning,#d97706)" />;
-      case 'info': return <ClockIcon label="" size="small" primaryColor="var(--ds-text-brand,#2563eb)" />;
+      case 'info': return <ClockIcon label="" size="small" primaryColor="var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))" />;
     }
   };
 
@@ -125,7 +125,7 @@ export function CalendarAIInsights({ insights, conflicts, onInsightClick }: Cale
               variant="ghost"
               size="sm"
               onClick={() => onInsightClick?.(item.releaseIds)}
-              className="text-[var(--ds-text-brand,#2563eb)] hover:text-[var(--ds-text-brand,#2563eb)]/80 text-xs"
+              className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/80 text-xs"
             >
               {item.action}
               <ArrowRightIcon label="" size="small" primaryColor="currentColor" />

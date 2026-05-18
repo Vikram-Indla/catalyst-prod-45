@@ -93,9 +93,9 @@ export function RoleDetails({
   return (
     <div className="space-y-6">
       {/* Role Summary Card */}
-      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+      <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
         <div className="flex flex-row items-center justify-between" style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
-          <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>Role: {role.name}</h2>
+          <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Role: {role.name}</h2>
           {canManageRoles && (
             <IconButton
               appearance="subtle"
@@ -105,7 +105,7 @@ export function RoleDetails({
           )}
         </div>
         <div style={{ padding: '16px' }}>
-          <p className="text-sm mb-3" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+          <p className="text-sm mb-3" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
             {role.description || 'No description provided'}
           </p>
 
@@ -127,9 +127,9 @@ export function RoleDetails({
       <RoleModuleAccessGrid roleId={role.id} roleName={role.name} />
 
       {/* Users with this Role */}
-      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+      <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
         <div className="flex flex-row items-center justify-between" style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
-          <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>Users with this role</h2>
+          <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Users with this role</h2>
           {canManageRoles && (
             <Button
               appearance="primary"

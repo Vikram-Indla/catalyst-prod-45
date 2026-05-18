@@ -61,7 +61,7 @@ export const GroupHeader = memo(function GroupHeader({
         style={{
           fontSize: '14px',
           fontWeight: 600,
-          color: '#172B4D',
+          color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
           flex: 1,
         }}
       >

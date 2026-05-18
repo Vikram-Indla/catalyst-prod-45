@@ -42,7 +42,7 @@ export default function WorkflowAdminPage() {
   return (
     <AdminGuard>
     <div
-      className="space-y-0 bg-white min-h-screen text-[var(--ds-text,#0F172A)]"
+      className="space-y-0 bg-white min-h-screen text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]"
       style={{
         // Shrink main content when CATY panel is open to prevent overlap
         marginRight: catyOpen ? 380 : 0,
@@ -50,16 +50,16 @@ export default function WorkflowAdminPage() {
       }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ds-border,#E2E8F0)]">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[var(--ds-surface-sunken,#F1F5F9)] flex items-center justify-center border border-[var(--ds-border,#E2E8F0)]">
+          <div className="w-9 h-9 rounded-lg bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))] flex items-center justify-center border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
             <BoardsIcon label="" size="small" />
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-[var(--ds-text,#0F172A)] font-['Sora']">
+            <h1 className="text-lg font-semibold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] font-['Sora']">
               Workflows
             </h1>
-            <p className="text-xs text-[var(--ds-text-subtlest,#64748B)]">
+            <p className="text-xs text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">
               Manage statuses, transitions, and categories per issue type
             </p>
           </div>
@@ -76,7 +76,7 @@ export default function WorkflowAdminPage() {
           </Button>
 
           {/* View toggle */}
-          <div className="flex items-center gap-1 bg-[var(--ds-surface-sunken,#F8FAFC)] border border-[var(--ds-border,#E2E8F0)] rounded-md p-0.5">
+          <div className="flex items-center gap-1 bg-[var(--ds-surface-sunken,#F8FAFC)] border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded-md p-0.5">
             <Button
               appearance="subtle"
               isSelected={viewMode === 'editor'}
@@ -99,7 +99,7 @@ export default function WorkflowAdminPage() {
 
       {/* Issue type tabs */}
       <Tabs value={activeType} onValueChange={setActiveType} className="w-full">
-        <div className="border-b border-[var(--ds-border,#E2E8F0)] px-6">
+        <div className="border-b border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] px-6">
           <TabsList className="bg-transparent h-10 gap-0 p-0">
             {ISSUE_TYPES.map(t => (
               <TabsTrigger
@@ -107,8 +107,8 @@ export default function WorkflowAdminPage() {
                 value={t.key}
                 className={cn(
                   'relative px-4 py-2 text-xs font-medium rounded-none border-b-2 transition-colors data-[state=active]:shadow-none',
-                  'data-[state=active]:border-[var(--ds-text-brand,#2563EB)] data-[state=active]:text-[var(--ds-text,#0F172A)]',
-                  'data-[state=inactive]:border-transparent data-[state=inactive]:text-[var(--ds-text-subtlest,#64748B)] data-[state=inactive]:hover:text-[var(--ds-text,#0F172A)]',
+                  'data-[state=active]:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] data-[state=active]:text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]',
+                  'data-[state=inactive]:border-transparent data-[state=inactive]:text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] data-[state=inactive]:hover:text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]',
                   'bg-transparent'
                 )}
               >
@@ -156,7 +156,7 @@ function WorkflowTabContent({ issueType, viewMode }: { issueType: string; viewMo
 
   if (!workflow.scheme) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-[var(--ds-text-subtlest,#64748B)]">
+      <div className="flex flex-col items-center justify-center py-20 text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">
         <BoardsIcon label="" size="large" />
         <p className="text-sm">No workflow configured for {issueType}</p>
       </div>

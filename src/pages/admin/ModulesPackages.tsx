@@ -128,22 +128,22 @@ export default function ModulesPackages() {
 
   return (
     <AdminGuard>
-      <div className="h-full flex flex-col" style={{ background: 'var(--ds-surface, #FFFFFF)' }}>
+      <div className="h-full flex flex-col" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
         <div
           className="h-[72px] flex items-center justify-between px-6"
           style={{
             borderBottom: '1px solid var(--ds-border-layout, #EBECF0)',
-            background: 'var(--ds-surface, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           }}
         >
           <div className="min-w-0">
             <h1
               className="text-2xl font-semibold truncate"
-              style={{ color: 'var(--ds-text, #172B4D)' }}
+              style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}
             >
               Modules &amp; Packages
             </h1>
-            <p className="text-sm truncate" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+            <p className="text-sm truncate" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
               Configure which Catalyst modules are available for this organization
             </p>
           </div>
@@ -160,32 +160,32 @@ export default function ModulesPackages() {
 
         {/* Summary Cards */}
         <div className="grid gap-4 md:grid-cols-3">
-          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Enabled Modules</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Enabled Modules</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{enabledCount}</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{enabledCount}</div>
           </div>
-          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Available Modules</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Available Modules</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{totalCount}</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{totalCount}</div>
           </div>
-          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Active Package</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Active Package</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{activePackageName}</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{activePackageName}</div>
           </div>
         </div>
 
         {/* Package Selector */}
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
-          <h2 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <h2 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
             Assigned Package
           </h2>
-          <p style={{ margin: '0 0 12px', fontSize: '14px', color: 'var(--ds-text-subtle, #44546F)' }}>
+          <p style={{ margin: '0 0 12px', fontSize: '14px', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
             Select a package to apply default module settings, or choose Custom to configure individually
           </p>
           <div className="max-w-md">
@@ -196,7 +196,7 @@ export default function ModulesPackages() {
               placeholder="Select a package"
             />
             {selectedPackage !== 'CUSTOM' && (
-              <p className="text-xs mt-2" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+              <p className="text-xs mt-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                 Selecting a package pre-populates module settings. You can override individual modules below.
               </p>
             )}
@@ -204,11 +204,11 @@ export default function ModulesPackages() {
         </div>
 
         {/* Modules List */}
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
-          <h2 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <h2 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
             Module Configuration
           </h2>
-          <p style={{ margin: '0 0 16px', fontSize: '14px', color: 'var(--ds-text-subtle, #44546F)' }}>
+          <p style={{ margin: '0 0 16px', fontSize: '14px', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
             Toggle modules on or off for your organization
           </p>
           <div className="space-y-4">
@@ -231,18 +231,18 @@ export default function ModulesPackages() {
                     </div>
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                        <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                           {module.name}
                         </label>
                         <Lozenge appearance={isEnabled ? 'success' : 'default'}>
                           {isEnabled ? 'Enabled' : 'Disabled'}
                         </Lozenge>
                       </div>
-                      <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                      <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                         {module.description}
                       </p>
                       {includedInPackages.length > 0 && (
-                        <p className="text-xs" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                        <p className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                           Included in: {includedInPackages.join(', ')}
                         </p>
                       )}

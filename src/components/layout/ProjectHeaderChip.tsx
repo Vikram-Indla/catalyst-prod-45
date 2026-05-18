@@ -161,7 +161,7 @@ export function ProjectHeaderChip({ projectKey }: Props) {
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: '20px 24px 12px',
-    borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+    borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
   };
   const modalTitleStyle: React.CSSProperties = {
     margin: 0,
@@ -175,7 +175,7 @@ export function ProjectHeaderChip({ projectKey }: Props) {
     justifyContent: 'flex-end',
     gap: 8,
     padding: '12px 24px 20px',
-    borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+    borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
   };
 
   return (
@@ -271,7 +271,7 @@ export function ProjectHeaderChip({ projectKey }: Props) {
               left: menuAnchor.left,
               zIndex: 9001,
               background: token('elevation.surface.overlay', '#FFFFFF'),
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               borderRadius: 4,
               boxShadow: '0 4px 16px rgba(9, 30, 66, 0.16)',
               minWidth: 220,
@@ -293,7 +293,7 @@ export function ProjectHeaderChip({ projectKey }: Props) {
               },
             ].map((item) => {
               if ((item as any).divider) {
-                return <div key={item.id} style={{ height: 1, background: token('color.border', '#DFE1E6'), margin: '6px 0' }} />;
+                return <div key={item.id} style={{ height: 1, background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'), margin: '6px 0' }} />;
               }
               return (
                 <button
@@ -394,7 +394,7 @@ export function ProjectHeaderChip({ projectKey }: Props) {
             <div style={{ padding: '16px 24px' }}>
               <div style={{
                 background: token('color.background.neutral.subtle', '#F8F9FA'),
-                border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                 borderRadius: 6, padding: '20px 24px', textAlign: 'center',
               }}>
                 <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 6 }}>No rules yet</div>

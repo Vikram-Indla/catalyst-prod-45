@@ -137,7 +137,7 @@ export default function ResourceCountriesPage() {
           </p>
         </div>
         <Button 
-          className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8]"
+          className="gap-2 bg-[var(--cp-workstream-catalyst-primary, #2563eb)] hover:bg-[#1d4ed8]"
           onClick={() => setCreateModalOpen(true)}
         >
           <Plus className="h-4 w-4" />
@@ -275,7 +275,7 @@ export default function ResourceCountriesPage() {
             <Button 
               onClick={handleCreate}
               disabled={createCountry.isPending}
-              className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+              className="bg-[var(--cp-workstream-catalyst-primary, #2563eb)] hover:bg-[#1d4ed8]"
             >
               {createCountry.isPending ? 'Creating...' : 'Create'}
             </Button>
@@ -331,7 +331,7 @@ export default function ResourceCountriesPage() {
             <Button 
               onClick={handleUpdate}
               disabled={updateCountry.isPending}
-              className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+              className="bg-[var(--cp-workstream-catalyst-primary, #2563eb)] hover:bg-[#1d4ed8]"
             >
               {updateCountry.isPending ? 'Saving...' : 'Save'}
             </Button>

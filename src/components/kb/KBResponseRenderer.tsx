@@ -21,30 +21,30 @@ const F = {
 
 /* ── V12 Status Lozenge Detection ── */
 const STATUS_PATTERNS: Record<string, { bg: string; color: string }> = {
-  'done': { bg: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)' },
-  'to do': { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' },
-  'todo': { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' },
-  'available': { bg: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)' },
-  'open': { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' },
-  'ready': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  'fixed': { bg: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)' },
-  'in progress': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  're-open': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  'reopen': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  're-opened': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  'blocked': { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' },
-  'under review': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  'in review': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  'analysis': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  'deferred': { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' },
-  'closed': { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' },
-  'resolved': { bg: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)' },
-  'at capacity': { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' },
-  'critical': { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' },
-  'high': { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' },
-  'medium': { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' },
-  'low': { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' },
-  'backlog': { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' },
+  'done': { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'to do': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'todo': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'available': { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'open': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'ready': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'fixed': { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'in progress': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  're-open': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'reopen': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  're-opened': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'blocked': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'under review': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'in review': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'analysis': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'deferred': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'closed': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'resolved': { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'at capacity': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'critical': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'high': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'medium': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'low': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
+  'backlog': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E' },
 };
 
 function isStatusText(text: string): { bg: string; color: string } | null {
@@ -67,11 +67,11 @@ function isAgeing(text: string): { value: string; color: string } | null {
   if (!match) return null;
   const num = parseFloat(match[1]);
   const unit = match[2].toLowerCase();
-  let color = 'var(--ds-text-success, #16A34A)';
+  let color = 'var(--ds-text-success, var(--cp-success, #16A34A))';
   if (unit.startsWith('d')) {
-    color = num > 3 ? 'var(--ds-text-danger, #DC2626)' : 'var(--ds-text-warning, #D97706)';
+    color = num > 3 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
   } else if ((unit === 'h' || unit === 'hr' || unit === 'hrs') && num > 12) {
-    color = 'var(--ds-text-warning, #D97706)';
+    color = 'var(--ds-text-warning, var(--cp-warning, #D97706))';
   }
   return { value: clean, color };
 }
@@ -177,7 +177,7 @@ function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendH
     }}>
       {/* Scope label */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--fg-3)' }}>
-        <Clock size={14} strokeWidth={2} color="var(--ds-text-subtlest, #64748B)" />
+        <Clock size={14} strokeWidth={2} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
         <span>Showing {totalShown} of {totalAvailable} · {scopeLabel}</span>
       </div>
 
@@ -193,13 +193,13 @@ function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendH
             width: '100%', textAlign: 'left',
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)';
+            e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
             e.currentTarget.style.background = 'var(--ds-background-selected, #EFF6FF)';
             e.currentTarget.style.boxShadow = '0 1px 4px rgba(37,99,235,0.08)';
           }}
           onMouseLeave={e => {
             e.currentTarget.style.borderColor = 'rgba(15,23,42,0.08)';
-            e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)';
+            e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
             e.currentTarget.style.boxShadow = 'none';
           }}
         >
@@ -207,7 +207,7 @@ function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendH
             width: 32, height: 32, minWidth: 32, background: 'var(--cp-blue-wash)',
             borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <ArrowUpRight size={16} strokeWidth={2} color="var(--ds-text-brand, #2563EB)" />
+            <ArrowUpRight size={16} strokeWidth={2} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' }}>{extendLabel}</span>
@@ -271,7 +271,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
                     style={{
                       height: 50,
                       borderBottom: ri < tableRows.length - 1 ? '0.75px solid rgba(15,23,42,0.06)' : 'none',
-                      background: ri === 0 ? 'var(--ds-surface-sunken, #F1F5F9)' : 'transparent',
+                      background: ri === 0 ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' : 'transparent',
                       transition: 'background 80ms',
                       cursor: rowIssueKey && onItemClick ? 'pointer' : undefined,
                     }}
@@ -400,9 +400,9 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
   );
   const confConfig = {
     high: { color: '#0D7331', label: 'High confidence' },
-    medium: { color: 'var(--ds-text-warning, #D97706)', label: 'Medium confidence' },
-    low: { color: 'var(--ds-text-danger, #DC2626)', label: 'Low confidence — verify with sources' },
-    insufficient: { color: 'var(--ds-text-danger, #DC2626)', label: 'Insufficient data' },
+    medium: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'Medium confidence' },
+    low: { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Low confidence — verify with sources' },
+    insufficient: { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Insufficient data' },
   }[confidence] || { color: '#71717A', label: '' };
 
   // Parse "Showing X of Y" from the response text for scope bar

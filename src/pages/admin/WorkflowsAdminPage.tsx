@@ -33,10 +33,10 @@ export default function WorkflowsAdminPage() {
   return (
     <div style={{ padding: 32, fontFamily: 'var(--cp-font-body)' }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 600, margin: 0, color: 'var(--ds-text, #172B4D)' }}>
+        <h1 style={{ fontSize: 24, fontWeight: 600, margin: 0, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
           Workflows
         </h1>
-        <p style={{ color: '#44546F', margin: '4px 0 0 0', fontSize: 14 }}>
+        <p style={{ color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))', margin: '4px 0 0 0', fontSize: 14 }}>
           Each issue type is bound to exactly one workflow. The status dropdown on any issue shows
           the transitions allowed from its current state, plus a &ldquo;View workflow&rdquo; link
           that opens the full diagram.
@@ -77,7 +77,7 @@ function WorkflowCard({
   return (
     <section
       style={{
-        border: '1px solid #DFE1E6',
+        border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
         borderRadius: 8,
         padding: 20,
         background: 'var(--ds-surface, #fff)',
@@ -85,7 +85,7 @@ function WorkflowCard({
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
         <div>
-          <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0, color: 'var(--ds-text, #172B4D)' }}>
+          <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
             {workflow.name} workflow
           </h2>
           <div style={{ marginTop: 6, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -122,7 +122,7 @@ function WorkflowCard({
         ))}
       </div>
 
-      <div style={{ fontSize: 13, color: '#44546F' }}>
+      <div style={{ fontSize: 13, color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))' }}>
         <strong>{workflow.states.length}</strong> states, <strong>{workflow.transitions.length}</strong> explicit transitions
         {workflow.states.every(s => s.anyToThis) && (
           <span style={{ marginLeft: 8, padding: '2px 8px', background: '#F4E6FF', color: '#5E4DB2', borderRadius: 3, fontSize: 11, fontWeight: 700 }}>

@@ -470,8 +470,8 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
           cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
           transition: 'border-color 150ms',
         }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = dk ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)'; }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = dk ? 'var(--ds-border, #2E2E2E)' : 'var(--bd-default, #E2E8F0)'; }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = dk ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'; }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = dk ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'; }}
       >
         <Download size={14} strokeWidth={2} />
         Export
@@ -483,7 +483,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
         <div style={{
           position: 'absolute', top: '100%', right: 0, marginTop: 6,
           width: 330, borderRadius: 14,
-          background: dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-surface, #fff)', border: `1px solid ${dk ? 'var(--ds-border, #2E2E2E)' : 'var(--ds-border, #e5e7eb)'}`,
+          background: dk ? 'var(--ds-surface-raised, var(--cp-ink-1, #1A1A1A))' : 'var(--ds-surface, #fff)', border: `1px solid ${dk ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, #e5e7eb)'}`,
           boxShadow: dk ? '0 12px 40px rgba(0,0,0,0.50), 0 2px 8px rgba(0,0,0,0.30)' : '0 12px 40px rgba(27,42,74,0.16), 0 2px 8px rgba(27,42,74,0.08)',
           zIndex: 50, overflow: 'hidden',
           animation: 'ewi-fadein 0.2s ease-out',
@@ -501,7 +501,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
 
           {/* Month selection */}
           <div style={{ padding: '14px 16px 8px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: dk ? 'var(--ds-text-subtlest, #878787)' : '#6B6B6B', letterSpacing: '0.06em', marginBottom: 10 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: dk ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : '#6B6B6B', letterSpacing: '0.06em', marginBottom: 10 }}>
               SELECT PERIOD
             </div>
 
@@ -533,9 +533,9 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexShrink: 0, transition: 'all 150ms',
                   }}>
-                    {checked && <Check size={12} strokeWidth={3} color="var(--ds-text-success, #16A34A)" />}
+                    {checked && <Check size={12} strokeWidth={3} color="var(--ds-text-success, var(--cp-success, #16A34A))" />}
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: dk ? 'var(--ds-text, #EDEDED)' : '#1e293b', flex: 1 }}>{opt.label}</span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: dk ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : '#1e293b', flex: 1 }}>{opt.label}</span>
                   {opt.isCurrent && (
                     <span style={{
                       fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #fff)',
@@ -585,7 +585,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
               )}
             </button>
             {totalSelected > 0 && (
-              <div style={{ textAlign: 'center', fontSize: 11, color: dk ? 'var(--ds-text-subtlest, #878787)' : '#6B6B6B', marginTop: 6 }}>
+              <div style={{ textAlign: 'center', fontSize: 11, color: dk ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : '#6B6B6B', marginTop: 6 }}>
                 {totalSelected} {totalSelected === 1 ? 'month' : 'months'} selected
               </div>
             )}

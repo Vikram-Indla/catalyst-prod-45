@@ -258,7 +258,7 @@ export function generateDesignSystemMarkdown(): string {
 |-------|------|-------|-----|
 | 5 | Expert | Teal Dark | #0f766e |
 | 4 | Advanced | Teal | #0d9488 |
-| 3 | Intermediate | Blue | #2563eb |
+| 3 | Intermediate | Blue | var(--cp-workstream-catalyst-primary, #2563eb) |
 | 2 | Beginner | Light Blue | #3b82f6 |
 | 1 | None | Cool Grey | #c8ccd0 |
 

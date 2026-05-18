@@ -63,9 +63,9 @@ const ShieldIcon = () => (
 function OrDivider() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '4px 0' }}>
-      <div style={{ flex: 1, height: 1, background: 'var(--ds-border, #DFE1E6)' }} />
+      <div style={{ flex: 1, height: 1, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }} />
       <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #8993A4)', fontWeight: 500, userSelect: 'none' }}>or</span>
-      <div style={{ flex: 1, height: 1, background: 'var(--ds-border, #DFE1E6)' }} />
+      <div style={{ flex: 1, height: 1, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }} />
     </div>
   );
 }

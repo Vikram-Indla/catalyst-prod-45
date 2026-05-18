@@ -56,9 +56,9 @@ export function DayDetailPanel({
   const statusOrder: CalendarEventStatus[] = ['blocked', 'failed', 'in_progress', 'not_started', 'passed'];
 
   return (
-    <div className="fixed inset-y-0 right-0 w-96 bg-white shadow-xl z-50 flex flex-col border-l border-[var(--ds-border,#e2e8f0)]">
+    <div className="fixed inset-y-0 right-0 w-96 bg-white shadow-xl z-50 flex flex-col border-l border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
       {/* Header */}
-      <div className="p-4 border-b border-[var(--ds-border,#e2e8f0)]">
+      <div className="p-4 border-b border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-lg font-semibold text-[var(--ds-text,#0f172a)]">
@@ -100,7 +100,7 @@ export function DayDetailPanel({
               <div key={status}>
                 <div className="flex items-center gap-2 mb-3">
                   <div className={cn('w-2 h-2 rounded-full', colors.bg, colors.border, 'border-2')} />
-                  <h3 className="text-sm font-semibold text-[var(--ds-text-subtle,#334155)]">
+                  <h3 className="text-sm font-semibold text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]">
                     {STATUS_LABELS[status]}
                   </h3>
                   <span className="text-xs text-[var(--ds-text-subtlest,#64748b)]">({statusEvents.length})</span>
@@ -150,7 +150,7 @@ export function DayDetailPanel({
                           variant="ghost"
                           size="sm"
                           onClick={() => onReschedule(event)}
-                          className="h-7 px-2 text-xs text-[var(--ds-text-subtlest,#64748b)] hover:text-[var(--ds-text-brand,#2563eb)]"
+                          className="h-7 px-2 text-xs text-[var(--ds-text-subtlest,#64748b)] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]"
                         >
                           <Calendar className="h-3 w-3 mr-1" />
                           Reschedule
@@ -159,7 +159,7 @@ export function DayDetailPanel({
                           variant="ghost"
                           size="sm"
                           onClick={() => onViewDetails(event)}
-                          className="h-7 px-2 text-xs text-[var(--ds-text-subtlest,#64748b)] hover:text-[var(--ds-text-brand,#2563eb)]"
+                          className="h-7 px-2 text-xs text-[var(--ds-text-subtlest,#64748b)] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]"
                         >
                           <ExternalLink className="h-3 w-3 mr-1" />
                           View
@@ -182,8 +182,8 @@ export function DayDetailPanel({
       </ScrollArea>
 
       {/* Footer */}
-      <div className="p-4 border-t border-[var(--ds-border,#e2e8f0)]">
-        <Button className="w-full bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white">
+      <div className="p-4 border-t border-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]">
+        <Button className="w-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white">
           Add Test to This Day
         </Button>
       </div>

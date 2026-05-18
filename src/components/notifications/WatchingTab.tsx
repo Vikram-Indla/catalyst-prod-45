@@ -131,7 +131,7 @@ function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
         fontFamily: 'var(--cp-font-body)',
         fontSize: 12,
         fontWeight: 600,
-        color: isDark ? 'var(--ds-text-subtlest, #878787)' : token('color.text.subtlest', '#8590A2'),
+        color: isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : token('color.text.subtlest', '#8590A2'),
       }}>
         {label}
       </span>
@@ -144,15 +144,15 @@ function EmptyState({ isDark }: { isDark: boolean }) {
     <Box xcss={emptyXcss}>
       {/* Eye icon */}
       <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-        <circle cx="24" cy="24" r="20" fill={isDark ? 'var(--ds-border, #292929)' : token('color.background.neutral', '#F4F5F7')} />
-        <ellipse cx="24" cy="24" rx="9" ry="6" stroke={isDark ? 'var(--ds-text-subtlest, #878787)' : token('color.text.subtlest', '#8590A2')} strokeWidth="2" fill="none"/>
-        <circle cx="24" cy="24" r="3" fill={isDark ? 'var(--ds-text-subtlest, #878787)' : token('color.text.subtlest', '#8590A2')} />
+        <circle cx="24" cy="24" r="20" fill={isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : token('color.background.neutral', '#F4F5F7')} />
+        <ellipse cx="24" cy="24" rx="9" ry="6" stroke={isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : token('color.text.subtlest', '#8590A2')} strokeWidth="2" fill="none"/>
+        <circle cx="24" cy="24" r="3" fill={isDark ? 'var(--ds-text-subtlest, var(--cp-text-secondary, #878787))' : token('color.text.subtlest', '#8590A2')} />
       </svg>
       <span style={{
         fontFamily: 'var(--cp-font-body)',
         fontSize: 14,
         fontWeight: 600,
-        color: isDark ? 'var(--ds-text, #EDEDED)' : token('color.text', '#292A2E'),
+        color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : token('color.text', '#292A2E'),
       }}>
         Nothing watched yet
       </span>
@@ -169,7 +169,7 @@ function EmptyState({ isDark }: { isDark: boolean }) {
 }
 
 function LoadingState({ isDark }: { isDark: boolean }) {
-  const shimmerBg = 'var(--cp-bg-page, #F4F5F7)';
+  const shimmerBg = 'var(--cp-bg-page, var(--cp-bg-sunken, #F4F5F7))';
   const shimmerHighlight = 'var(--cp-border, #E9EBEE)';
   return (
     <Box xcss={panelXcss}>
@@ -233,7 +233,7 @@ export default function WatchingTab({ unreadOnly, isDark }: WatchingTabProps) {
   if (visible.length === 0) return <EmptyState isDark={isDark} />;
 
   const groups = groupByDate(visible);
-  const dividerColor = isDark ? 'var(--ds-border, #2E2E2E)' : token('color.border', '#DFE1E6');
+  const dividerColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))');
 
   return (
     <Box xcss={panelXcss}>

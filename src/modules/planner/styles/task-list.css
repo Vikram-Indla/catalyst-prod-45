@@ -7,7 +7,7 @@
 .planner-task-list-content {
   /* === Surfaces (N4, N5) === */
   --tl-surface-page: var(--ds-surface-sunken, #f8fafc);       /* gray-50 */
-  --tl-surface-card: var(--ds-surface, #ffffff);
+  --tl-surface-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --tl-surface-header: var(--ds-surface-sunken, #f8fafc);
   --tl-surface-hover: var(--ds-surface-sunken, #f1f5f9);      /* I1: row hover */
   --tl-surface-selected: var(--ds-background-selected, #eff6ff);   /* I3: selected row */
@@ -15,18 +15,18 @@
   
   /* === Text Colors (E, K) === */
   --tl-text-primary: var(--ds-text, #0f172a);       /* E1.3: page title */
-  --tl-text-secondary: var(--ds-text-subtle, #334155);     /* gray-700 */
+  --tl-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));     /* gray-700 */
   --tl-text-tertiary: var(--ds-text-subtlest, #64748b);      /* E1.5, E2.4: subtitle, headers */
   --tl-text-muted: var(--ds-text-subtlest, #94a3b8);         /* gray-400 */
   
   /* === Borders (H, N6) === */
-  --tl-border: var(--ds-border, #e2e8f0);             /* H2, N6: default */
+  --tl-border: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));             /* H2, N6: default */
   --tl-border-light: var(--ds-surface-sunken, #f1f5f9);
   --tl-border-strong: var(--ds-text-disabled, #cbd5e1);      /* N6 */
-  --tl-border-focus: var(--ds-text-brand, #2563eb);       /* I6 */
+  --tl-border-focus: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));       /* I6 */
   
   /* === Interactive (I, N1) === */
-  --tl-primary: var(--ds-text-brand, #2563eb);            /* N1: primary button */
+  --tl-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));            /* N1: primary button */
   --tl-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);      /* I2 */
   
   /* === Priority Dot Colors (A2) === */
@@ -343,7 +343,7 @@
 }
 
 .planner-task-list-content .tl-task-id:hover {
-  color: var(--ds-text-subtle, #334155) !important;          /* B4: gray-700 */
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;          /* B4: gray-700 */
   text-decoration: underline;  /* B5 */
 }
 
@@ -405,7 +405,7 @@
   border-radius: 0.375rem !important;    /* H3: 6px */
   font-size: 0.75rem !important;
   font-weight: 500 !important;
-  border: 1px solid var(--ds-border, #e2e8f0) !important;  /* A3.2, A3.4, A3.5 */
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;  /* A3.2, A3.4, A3.5 */
   background: transparent !important;
   cursor: pointer;
   transition: all 0.1s;
@@ -534,14 +534,14 @@
   font-size: 0.625rem;     /* K3: 10px */
   font-weight: 600;
   color: white;            /* K2 */
-  background: var(--ds-text-brand, #2563eb);     /* K1: hash-based would vary */
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));     /* K1: hash-based would vary */
   flex-shrink: 0;
 }
 
-/* K4: Assignee name var(--ds-text-subtle, #334155) */
+/* K4: Assignee name var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) */
 .planner-task-list-content .tl-assignee-name {
   font-size: 0.8125rem;
-  color: var(--ds-text-subtle, #334155);
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -575,11 +575,11 @@
   background: var(--tl-surface-hover);
 }
 
-/* J1: Normal due date var(--ds-text-subtle, #334155) */
+/* J1: Normal due date var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) */
 .planner-task-list-content .tl-date-value {
   font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--ds-text-subtle, #334155);
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
 }
 
 /* J2, J3: Overdue var(--ds-text-danger, #dc2626), font-weight 500 */
@@ -628,12 +628,12 @@
   flex: 1;
   min-width: 60px;
   height: 6px;
-  background: var(--ds-border, #e2e8f0);     /* L1 */
+  background: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));     /* L1 */
   border-radius: 4px;      /* H6 */
   overflow: hidden;
 }
 
-/* L2: Progress fill var(--ds-text-brand, #2563eb) */
+/* L2: Progress fill var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) */
 .planner-task-list-content .tl-progress-fill {
   height: 100%;
   border-radius: 4px;
@@ -824,8 +824,8 @@
 }
 
 .planner-task-list-content .tl-row input[type="checkbox"]:checked {
-  background-color: var(--ds-text-brand, #2563eb);  /* I6: blue-600 */
-  border-color: var(--ds-text-brand, #2563eb);
+  background-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));  /* I6: blue-600 */
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 }
 
 /* ============================================================================
@@ -884,7 +884,7 @@
 /* Force status badge outline style - no filled backgrounds */
 .planner-task-list-content .tl-status-badge {
   background-color: transparent !important;
-  border: 1px solid var(--ds-border, #e2e8f0) !important;
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
 }
 
 /* Only "in-progress" gets subtle amber tint */
@@ -907,5 +907,5 @@
 }
 
 .planner-task-list-content td .tl-task-id:hover {
-  color: var(--ds-text-subtle, #334155) !important;
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
 }

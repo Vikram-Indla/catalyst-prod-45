@@ -292,7 +292,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 }}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
-                  border: 'none', background: 'var(--cp-blue)', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer',
+                  border: 'none', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
                 }}
               >
                 View Epics →
@@ -317,7 +317,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
             </div>
 
             <div style={{
-              background: 'var(--ds-background-danger, #FEF2F2)', border: '1.5px solid #DC2626', borderRadius: 6,
+              background: 'var(--ds-background-danger, #FEF2F2)', border: '1.5px solid var(--cp-danger, #DC2626)', borderRadius: 6,
               padding: '14px 16px', marginBottom: 16, maxHeight: 120, overflowY: 'auto' as const,
             }}>
               <code style={{
@@ -351,7 +351,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={handleRetry}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
-                  border: 'none', background: 'var(--cp-blue)', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer',
+                  border: 'none', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
                 }}
               >
                 Retry
@@ -477,7 +477,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
           width: 18px !important;
           height: 18px !important;
           border-radius: 50% !important;
-          border: 2px solid var(--ds-text-brand, #2563EB) !important;
+          border: 2px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) !important;
           border-top-color: transparent !important;
           animation: ra-epic-spin 0.8s linear infinite !important;
           flex-shrink: 0 !important;
@@ -486,7 +486,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
           width: 28px !important;
           height: 28px !important;
           border-radius: 50% !important;
-          border: 2.5px solid var(--ds-text-brand, #2563EB) !important;
+          border: 2.5px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) !important;
           border-top-color: transparent !important;
           animation: ra-epic-spin 0.8s linear infinite !important;
           flex-shrink: 0 !important;

@@ -18,17 +18,17 @@ interface WorkstreamCardProps {
 
 const COLORS = {
   textPrimary: 'var(--ds-text, #0f172a)',
-  textSecondary: 'var(--ds-text-subtle, #334155)',
+  textSecondary: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
   textMuted: 'var(--ds-text-subtlest, #64748b)',
   textLight: 'var(--ds-text-subtlest, #94a3b8)',
   
-  surfaceCard: 'var(--ds-surface, #ffffff)',
+  surfaceCard: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   surfaceHover: 'var(--ds-surface-sunken, #f8fafc)',
   
-  borderLight: 'var(--ds-border, #e2e8f0)',
+  borderLight: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
   borderDefault: 'var(--ds-text-disabled, #cbd5e1)',
   
-  accent: 'var(--ds-text-brand, #2563eb)',
+  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   danger: 'var(--ds-text-danger, #dc2626)',
   warning: 'var(--ds-text-warning, #f59e0b)',
   success: 'var(--ds-text-success, #16a34a)'
@@ -38,7 +38,7 @@ const HEALTH_CONFIG: Record<string, { color: string; bgColor: string; borderColo
   'healthy': { color: COLORS.success, bgColor: '#f0fdf4', borderColor: '#bbf7d0', label: 'On Track' },
   'at-risk': { color: COLORS.warning, bgColor: '#fffbeb', borderColor: '#fde68a', label: 'At Risk' },
   'critical': { color: COLORS.danger, bgColor: 'var(--ds-background-danger, #fef2f2)', borderColor: '#fecaca', label: 'Critical' },
-  'locked': { color: COLORS.textMuted, bgColor: 'var(--ds-surface-sunken, #f1f5f9)', borderColor: 'var(--ds-border, #e2e8f0)', label: 'Locked' }
+  'locked': { color: COLORS.textMuted, bgColor: 'var(--ds-surface-sunken, #f1f5f9)', borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))', label: 'Locked' }
 };
 
 export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
@@ -338,7 +338,7 @@ const MenuOption: React.FC<{
         border: 'none',
         borderRadius: '6px',
         fontSize: '14px',
-        color: disabled ? 'var(--ds-text-subtlest, #94a3b8)' : (danger ? 'var(--ds-text-danger, #dc2626)' : 'var(--ds-text-subtle, #334155)'),
+        color: disabled ? 'var(--ds-text-subtlest, #94a3b8)' : (danger ? 'var(--ds-text-danger, #dc2626)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'),
         cursor: disabled ? 'not-allowed' : 'pointer',
         fontFamily: 'inherit',
         textAlign: 'left',

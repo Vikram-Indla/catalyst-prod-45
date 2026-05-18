@@ -278,7 +278,7 @@ export const CYCLE_STATUS_CONFIG: Record<CycleStatus, { label: string; color: st
     // neutral muted
     label: 'draft',
     color: '#626F86',
-    bgColor: 'var(--ds-surface-sunken, #F4F5F7)'
+    bgColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'
   },
   planned: {
     // information
@@ -308,7 +308,7 @@ export const CYCLE_STATUS_CONFIG: Record<CycleStatus, { label: string; color: st
     // neutral
     label: 'archived',
     color: '#42526E',
-    bgColor: 'var(--ds-border, #DFE1E6)'
+    bgColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'
   },
 };
 
@@ -331,7 +331,7 @@ export const ACTIVE_CYCLE_STATUSES: CycleStatus[] = [
 ];
 
 export const CYCLE_ROLE_CONFIG: Record<CycleRole, { label: string; color: string }> = {
-  lead: { label: 'Lead', color: '#0052CC' },       // information
+  lead: { label: 'Lead', color: 'var(--cp-primary-60, #0052CC)' },       // information
   tester: { label: 'Tester', color: '#006644' },   // success
   reviewer: { label: 'Reviewer', color: '#974F0C' }, // warning
 };

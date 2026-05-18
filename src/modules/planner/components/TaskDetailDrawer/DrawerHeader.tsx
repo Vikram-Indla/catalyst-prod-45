@@ -47,7 +47,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
 const PRIORITY_CONFIG: Record<string, { label: string; color: string }> = {
   critical: { label: 'Critical', color: 'var(--ds-text-danger, #dc2626)' },
   high: { label: 'High', color: '#ca8a04' },
-  medium: { label: 'Medium', color: 'var(--ds-text-brand, #2563eb)' },
+  medium: { label: 'Medium', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
   low: { label: 'Low', color: 'var(--ds-text-subtlest, #94a3b8)' },
 };
 

@@ -223,7 +223,7 @@ export function RequestSubtasksSection({ requestId }: Props) {
             border: '1px solid var(--cp-bd, #E5E7EB)',
             borderRadius: 4,
             fontSize: 13,
-            background: 'var(--cp-bg, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             color: 'var(--cp-text-primary, #292A2E)',
             outline: 'none',
           }}
@@ -237,7 +237,7 @@ export function RequestSubtasksSection({ requestId }: Props) {
             height: 28, padding: '0 12px',
             border: 'none', borderRadius: 4,
             background: !draftTitle.trim() ? 'var(--cp-bg-inset, #F7F8F9)' : '#0C66E4',
-            color: !draftTitle.trim() ? 'var(--cp-text-secondary, #6B6E76)' : 'var(--ds-text-inverse, #FFFFFF)',
+            color: !draftTitle.trim() ? 'var(--cp-text-secondary, #6B6E76)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             fontSize: 12, fontWeight: 600,
             cursor: !draftTitle.trim() ? 'not-allowed' : 'pointer',
             transition: 'background 120ms',

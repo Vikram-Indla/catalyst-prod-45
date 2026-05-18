@@ -47,9 +47,9 @@ const STATUS_MAP: Record<string, 'on_track' | 'off_track' | 'at_risk'> = {
 
 const TYPE_COLORS: Record<string, string> = {
   Permanent: '#2563EB',
-  Fixed: '#0D9488',
-  Variable: '#7C3AED',
-  Freelance: '#F59E0B',
+  Fixed: 'var(--cp-teal-60, #0D9488)',
+  Variable: 'var(--cp-purple-60, #7C3AED)',
+  Freelance: 'var(--cp-amber, #F59E0B)',
 };
 
 function fmtSAR(n: number): string {
@@ -221,17 +221,17 @@ function useContracts() {
       }).length - expiringSoon.length;
 
       const buckets: ContractBucket[] = [
-        { count: active, label: 'Active', color: '#16A34A', textColor: '#11853D' },
-        { count: exp30, label: '< 30 Days', color: '#DC2626', textColor: '#D92525' },
-        { count: exp90, label: '< 90 Days', color: '#F59E0B', textColor: '#B45309' },
+        { count: active, label: 'Active', color: 'var(--cp-success, #16A34A)', textColor: '#11853D' },
+        { count: exp30, label: '< 30 Days', color: 'var(--cp-danger, #DC2626)', textColor: '#D92525' },
+        { count: exp90, label: '< 90 Days', color: 'var(--cp-amber, #F59E0B)', textColor: '#B45309' },
         { count: expired, label: 'Expired', color: '#71717A', textColor: '#3F3F46' },
       ];
 
       const barSegments = total > 0
         ? [
-            { pct: Math.round((active / total) * 100), color: '#16A34A' },
-            { pct: Math.round((exp90 / total) * 100), color: '#F59E0B' },
-            { pct: Math.round((exp30 / total) * 100), color: '#DC2626' },
+            { pct: Math.round((active / total) * 100), color: 'var(--cp-success, #16A34A)' },
+            { pct: Math.round((exp90 / total) * 100), color: 'var(--cp-amber, #F59E0B)' },
+            { pct: Math.round((exp30 / total) * 100), color: 'var(--cp-danger, #DC2626)' },
             { pct: Math.round((expired / total) * 100), color: '#71717A' },
           ]
         : [];
@@ -273,9 +273,9 @@ function useBudget() {
         const lic = Number(s.licenses_budget) || 0;
         const segments: BudgetSegment[] = [
           { label: 'Insourced', pct: total > 0 ? Math.round((ins / total) * 100) : 0, color: '#2563EB' },
-          { label: 'Co-sourced', pct: total > 0 ? Math.round((cos / total) * 100) : 0, color: '#0D9488' },
-          { label: 'Outsourced', pct: total > 0 ? Math.round((out / total) * 100) : 0, color: '#7C3AED' },
-          { label: 'Licenses', pct: total > 0 ? Math.round((lic / total) * 100) : 0, color: '#F59E0B' },
+          { label: 'Co-sourced', pct: total > 0 ? Math.round((cos / total) * 100) : 0, color: 'var(--cp-teal-60, #0D9488)' },
+          { label: 'Outsourced', pct: total > 0 ? Math.round((out / total) * 100) : 0, color: 'var(--cp-purple-60, #7C3AED)' },
+          { label: 'Licenses', pct: total > 0 ? Math.round((lic / total) * 100) : 0, color: 'var(--cp-amber, #F59E0B)' },
         ].filter(s => s.pct > 0);
 
         return {
@@ -304,7 +304,7 @@ function useBudget() {
         const t = r.resource_type || 'Other';
         typeCtc.set(t, (typeCtc.get(t) || 0) + (Number(r.ctc) || 0));
       });
-      const segColors: Record<string, string> = { Permanent: '#2563EB', Fixed: '#0D9488', Variable: '#7C3AED', Freelance: '#F59E0B' };
+      const segColors: Record<string, string> = { Permanent: '#2563EB', Fixed: 'var(--cp-teal-60, #0D9488)', Variable: 'var(--cp-purple-60, #7C3AED)', Freelance: 'var(--cp-amber, #F59E0B)' };
       const segments: BudgetSegment[] = Array.from(typeCtc.entries())
         .sort((a, b) => b[1] - a[1])
         .map(([label, val]) => ({
@@ -404,26 +404,26 @@ function useExecution() {
         {
           label: 'Goals On Track',
           value: `${onTrackGoals}/${totalGoals}`,
-          valueColor: onTrackGoals < totalGoals / 2 ? '#DC2626' : '#16A34A',
+          valueColor: onTrackGoals < totalGoals / 2 ? 'var(--cp-danger, #DC2626)' : 'var(--cp-success, #16A34A)',
           target: `${totalGoals} total`,
           footerNote: `${totalKRs} Key Results tracked`,
         },
         {
           label: 'Avg Goal Progress',
           value: `${avgGoalProgress}%`,
-          valueColor: avgGoalProgress < 50 ? '#DC2626' : avgGoalProgress < 70 ? '#F59E0B' : '#16A34A',
+          valueColor: avgGoalProgress < 50 ? 'var(--cp-danger, #DC2626)' : avgGoalProgress < 70 ? 'var(--cp-amber, #F59E0B)' : 'var(--cp-success, #16A34A)',
           target: '100%',
         },
         {
           label: 'Avg KR Progress',
           value: `${avgKRProgress}%`,
-          valueColor: avgKRProgress < 50 ? '#DC2626' : avgKRProgress < 70 ? '#F59E0B' : '#16A34A',
+          valueColor: avgKRProgress < 50 ? 'var(--cp-danger, #DC2626)' : avgKRProgress < 70 ? 'var(--cp-amber, #F59E0B)' : 'var(--cp-success, #16A34A)',
           target: '100%',
         },
         {
           label: 'KRs At Risk (< 40%)',
           value: `${krsBelow40}`,
-          valueColor: krsBelow40 > 0 ? '#DC2626' : '#16A34A',
+          valueColor: krsBelow40 > 0 ? 'var(--cp-danger, #DC2626)' : 'var(--cp-success, #16A34A)',
           target: `${krsAbove80} above 80%`,
         },
       ];
@@ -460,7 +460,7 @@ function useAlignment() {
       return themes.map(t => {
         const progs = goalsByTheme.get(t.id) || [];
         const avgProg = progs.length > 0 ? Math.round(progs.reduce((a, b) => a + b, 0) / progs.length) : 0;
-        const color = avgProg >= 70 ? '#16A34A' : avgProg >= 40 ? '#F59E0B' : '#DC2626';
+        const color = avgProg >= 70 ? 'var(--cp-success, #16A34A)' : avgProg >= 40 ? 'var(--cp-amber, #F59E0B)' : 'var(--cp-danger, #DC2626)';
         const textColor = avgProg >= 70 ? '#11853D' : avgProg >= 40 ? '#B45309' : '#D92525';
         return { name: t.title, pct: avgProg, color, textColor };
       });

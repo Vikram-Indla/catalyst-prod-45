@@ -20,7 +20,7 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
       onClick={onClick}
       className={cn(
         "relative p-3 bg-card border border-border rounded-[10px] cursor-pointer transition-all duration-200",
-        "hover:border-[var(--ds-text-brand,#2563eb)] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]",
+        "hover:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]",
         "group"
       )}
     >

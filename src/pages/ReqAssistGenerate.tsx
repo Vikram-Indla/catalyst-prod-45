@@ -258,7 +258,7 @@ export default function ReqAssistGenerate() {
       <div style={{ padding: '24px 28px' }}>
         {/* HEADER */}
         <div style={{ marginBottom: 24 }}>
-          <button onClick={() => navigate('/product/req-assist')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text-brand, #2563EB)', fontWeight: 500, marginBottom: 16, padding: 0, fontFamily: 'var(--cp-font-body)' }}>
+          <button onClick={() => navigate('/product/req-assist')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontWeight: 500, marginBottom: 16, padding: 0, fontFamily: 'var(--cp-font-body)' }}>
             <ArrowLeft size={14} /> Back to Library
           </button>
           <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, #111827)', margin: '0 0 6px' }}>Generate BRD from Text</h2>
@@ -268,9 +268,9 @@ export default function ReqAssistGenerate() {
         </div>
 
         {/* INPUT CARD */}
-        <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 6, padding: 24, marginBottom: 20 }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 6, padding: 24, marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-            <FileText size={15} color="#7C3AED" />
+            <FileText size={15} color="var(--cp-purple-60, #7C3AED)" />
             <span style={{ fontSize: 13, fontWeight: 650, color: 'var(--cp-text-primary, #111827)', fontFamily: 'var(--cp-font-body)' }}>Requirements Input</span>
             <span style={{ fontSize: 13, color: 'var(--cp-text-tertiary, #6B7280)', fontFamily: 'var(--cp-font-body)' }}>· Paste text from meetings, briefs, email threads, or scope documents</span>
           </div>
@@ -279,18 +279,18 @@ export default function ReqAssistGenerate() {
             value={text}
             onChange={(e) => { setText(e.target.value); setQualifyResult(null); setGenResult(null); setGenError(null); setSavedDocId(null); setHasEpics(false); setDuplicateDoc(null); setWikiState('idle'); setShowSavedBanner(false); }}
             placeholder="Paste your requirements here..."
-            style={{ width: '100%', minHeight: 200, padding: 14, fontSize: 14, lineHeight: 1.65, border: `0.75px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 4, outline: 'none', resize: 'vertical', fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary, #111827)', transition: 'border-color 150ms, box-shadow 150ms' }}
-            onFocus={(e) => { e.currentTarget.style.borderColor = '#7C3AED'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(124,58,237,0.10)'; }}
-            onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, #E2E8F0)'; e.currentTarget.style.boxShadow = 'none'; }}
+            style={{ width: '100%', minHeight: 200, padding: 14, fontSize: 14, lineHeight: 1.65, border: `0.75px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 4, outline: 'none', resize: 'vertical', fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary, #111827)', transition: 'border-color 150ms, box-shadow 150ms' }}
+            onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--cp-purple-60, #7C3AED)'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(124,58,237,0.10)'; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'; e.currentTarget.style.boxShadow = 'none'; }}
           />
           <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #6B7280)', margin: '6px 0 0', fontFamily: 'var(--cp-font-body)' }}>The AI will first qualify whether this text contains enough structured requirements.</p>
 
           {/* Qualify fail */}
           {qualifyResult && !qualifyResult.qualified && (
             <div style={{ marginTop: 12, padding: '14px 16px', background: 'var(--ds-background-danger, #FEF2F2)', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6, display: 'flex', gap: 10 }}>
-              <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={12} color="var(--ds-text-danger, #DC2626)" /></div>
+              <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={12} color="var(--ds-text-danger, var(--cp-danger, #DC2626))" /></div>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-danger, #DC2626)', fontFamily: 'var(--cp-font-body)' }}>✗ Not Qualified</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontFamily: 'var(--cp-font-body)' }}>✗ Not Qualified</div>
                 {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: 'var(--ds-text-danger, #991B1B)', margin: '4px 0 0', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>• {r}</p>)}
               </div>
             </div>
@@ -299,11 +299,11 @@ export default function ReqAssistGenerate() {
           {/* Qualify pass */}
           {qualifyResult && qualifyResult.qualified && (
             <div style={{ marginTop: 12, padding: '14px 16px', background: '#F0FDF4', border: '0.75px solid #DCFCE7', borderRadius: 6, display: 'flex', gap: 10 }}>
-              <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--ds-background-success, #DCFCE7)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={12} color="var(--ds-text-success, #16A34A)" /></div>
+              <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--ds-background-success, #DCFCE7)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={12} color="var(--ds-text-success, var(--cp-success, #16A34A))" /></div>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-success, #16A34A)', fontFamily: 'var(--cp-font-body)' }}>✓ Qualified — Score {qualifyResult.score}/100</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-success, var(--cp-success, #16A34A))', fontFamily: 'var(--cp-font-body)' }}>✓ Qualified — Score {qualifyResult.score}/100</div>
                 {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: '#166534', margin: '4px 0 0', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>• {r}</p>)}
-                <p style={{ fontSize: 11, color: 'var(--cp-text-tertiary, #64748B)', margin: '6px 0 0', fontFamily: 'var(--cp-font-body)' }}>
+                <p style={{ fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '6px 0 0', fontFamily: 'var(--cp-font-body)' }}>
                   Domain: {qualifyResult.domain_detected} · ~{qualifyResult.requirement_count_estimate} requirements · {qualifyResult.language.toUpperCase()}
                 </p>
               </div>
@@ -313,7 +313,7 @@ export default function ReqAssistGenerate() {
           {/* Error */}
           {genError && (
             <div style={{ marginTop: 12, padding: '14px 16px', background: 'var(--ds-background-danger, #FEF2F2)', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-danger, #DC2626)', fontFamily: 'var(--cp-font-body)' }}>Generation Error</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontFamily: 'var(--cp-font-body)' }}>Generation Error</div>
               <p style={{ fontSize: 12, color: 'var(--ds-text-danger, #991B1B)', margin: '4px 0 0', fontFamily: 'var(--cp-font-body)' }}>{sanitiseError(genError)}</p>
             </div>
           )}
@@ -335,8 +335,8 @@ export default function ReqAssistGenerate() {
 
         {/* Generating spinner */}
         {generating && !genResult && (
-          <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 6, padding: '40px 24px', textAlign: 'center' }}>
-            <Loader2 size={24} color="#7C3AED" style={{ animation: 'ra-spin 1s linear infinite', margin: '0 auto 12px', display: 'block' }} />
+          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 6, padding: '40px 24px', textAlign: 'center' }}>
+            <Loader2 size={24} color="var(--cp-purple-60, #7C3AED)" style={{ animation: 'ra-spin 1s linear infinite', margin: '0 auto 12px', display: 'block' }} />
             <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-secondary, #374151)', margin: '0 0 4px', fontFamily: 'var(--cp-font-body)' }}>Generating BRD sections from your input…</p>
             <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #6B7280)', margin: 0, fontFamily: 'var(--cp-font-body)' }}>This typically takes 15–30 seconds</p>
           </div>
@@ -344,12 +344,12 @@ export default function ReqAssistGenerate() {
 
         {/* GENERATED BRD */}
         {genResult && genResult.sections.length > 0 && (
-          <div style={{ border: `0.75px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 6, overflow: 'hidden', background: 'var(--cp-bg-elevated, #FFFFFF)' }}>
+          <div style={{ border: `0.75px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 6, overflow: 'hidden', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
             {/* Header */}
-            <div style={{ padding: '12px 16px', borderBottom: `0.75px solid ${'var(--cp-border, #E2E8F0)'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)', fontFamily: 'var(--cp-font-heading)' }}>Generated BRD</span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', padding: '0 6px', height: 20, borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, background: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)' }}>QUALIFIED</span>
-              <span style={{ fontSize: 11, color: 'var(--cp-text-tertiary, #64748B)', marginLeft: 'auto', fontFamily: 'var(--cp-font-mono)' }}>
+            <div style={{ padding: '12px 16px', borderBottom: `0.75px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontFamily: 'var(--cp-font-heading)' }}>Generated BRD</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', padding: '0 6px', height: 20, borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>QUALIFIED</span>
+              <span style={{ fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginLeft: 'auto', fontFamily: 'var(--cp-font-mono)' }}>
                 {genResult.section_count} sections · {genResult.language.toUpperCase()} · {genResult.total_requirements} requirements
               </span>
             </div>
@@ -362,8 +362,8 @@ export default function ReqAssistGenerate() {
                   paddingBottom: i < genResult.sections.length - 1 ? 20 : 0,
                   borderBottom: i < genResult.sections.length - 1 ? '0.75px solid rgba(0,0,0,0.06)' : 'none',
                 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-text-muted, #94A3B8)', textTransform: 'uppercase' as const, letterSpacing: '0.06em', fontFamily: 'var(--cp-font-body)' }}>SECTION {section.sectionNumber}</span>
-                  <h4 style={{ fontSize: 15, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)', margin: '4px 0 8px', fontFamily: 'var(--cp-font-heading)' }}>{section.title}</h4>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textTransform: 'uppercase' as const, letterSpacing: '0.06em', fontFamily: 'var(--cp-font-body)' }}>SECTION {section.sectionNumber}</span>
+                  <h4 style={{ fontSize: 15, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: '4px 0 8px', fontFamily: 'var(--cp-font-heading)' }}>{section.title}</h4>
                   <div className="ra-brd-markdown">
                     <ReactMarkdown components={{
                       p: ({ children }) => <p style={{ fontSize: 14, color: 'var(--cp-text-secondary, #374151)', lineHeight: 1.6, marginBottom: 12, fontFamily: 'var(--cp-font-body)' }}>{children}</p>,
@@ -382,8 +382,8 @@ export default function ReqAssistGenerate() {
             {/* STATE BANNERS */}
             {brdState === 'generated' && (
               <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: 'var(--ds-background-danger, #FEF2F2)', border: '0.75px solid #FECACA', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <AlertTriangle size={15} color="var(--ds-text-danger, #DC2626)" style={{ flexShrink: 0 }} />
-                <span style={{ fontSize: 13, color: 'var(--ds-text-danger, #DC2626)', fontFamily: 'var(--cp-font-body)' }}>
+                <AlertTriangle size={15} color="var(--ds-text-danger, var(--cp-danger, #DC2626))" style={{ flexShrink: 0 }} />
+                <span style={{ fontSize: 13, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontFamily: 'var(--cp-font-body)' }}>
                   This BRD has not been saved yet. Save to Library to enable Epics generation and WikiHub sync.
                 </span>
               </div>
@@ -396,7 +396,7 @@ export default function ReqAssistGenerate() {
             )}
 
             {/* ACTION BAR */}
-            <div style={{ padding: '12px 16px', background: 'var(--cp-bg-elevated, #FFFFFF)', borderTop: `0.75px solid ${'var(--cp-border, #E2E8F0)'}`, display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ padding: '12px 16px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderTop: `0.75px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, display: 'flex', gap: 8, alignItems: 'center' }}>
               {brdState === 'generated' && (
                 <>
                   <BtnPrimary onClick={() => doSave()} disabled={saving}>
@@ -431,7 +431,7 @@ export default function ReqAssistGenerate() {
                     </BtnOutline>
                   )}
                   {wikiState === 'success' && (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '8px 16px', borderRadius: 6, background: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)', fontSize: 14, fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '8px 16px', borderRadius: 6, background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
                       <Check size={14} /> In WikiHub
                     </span>
                   )}
@@ -473,9 +473,9 @@ export default function ReqAssistGenerate() {
       {/* DUPLICATE MODAL */}
       {dupModalOpen && duplicateDoc && (
         <ModalOverlay>
-          <div style={{ width: 480, background: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
+          <div style={{ width: 480, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <AlertTriangle size={20} color="var(--ds-text-subtlest, #64748B)" />
+              <AlertTriangle size={20} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
               <span style={{ fontSize: 16, fontWeight: 650, color: 'var(--cp-text-primary, #111827)', fontFamily: 'var(--cp-font-heading)' }}>Document Already Exists</span>
             </div>
             <p style={{ fontSize: 14, color: 'var(--cp-text-secondary, #374151)', lineHeight: 1.6, margin: '0 0 20px' }}>
@@ -514,7 +514,7 @@ export default function ReqAssistGenerate() {
               </BtnPrimary>
               <button onClick={() => setOverwriteConfirmOpen(true)} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
-                border: '0.75px solid #DC2626', borderRadius: 6, background: 'transparent', color: 'var(--ds-text-danger, #DC2626)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
+                border: '0.75px solid var(--cp-danger, #DC2626)', borderRadius: 6, background: 'transparent', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>Overwrite</button>
               <BtnGhost onClick={() => { setDupModalOpen(false); setDuplicateDoc(null); }}>Cancel</BtnGhost>
             </div>
@@ -525,7 +525,7 @@ export default function ReqAssistGenerate() {
       {/* OVERWRITE CONFIRM */}
       {overwriteConfirmOpen && (
         <ModalOverlay>
-          <div style={{ width: 440, background: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
+          <div style={{ width: 440, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
             <p style={{ fontSize: 14, color: 'var(--cp-text-secondary, #374151)', lineHeight: 1.6, margin: '0 0 16px' }}>
               Are you sure? This will replace the existing BRD and clear any generated Epics for that document.
             </p>
@@ -542,7 +542,7 @@ export default function ReqAssistGenerate() {
                 } catch (err: any) { setGenError(err.message); } finally { setGenerating(false); setOverwriteConfirmOpen(false); }
               }} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
-                border: 'none', borderRadius: 6, background: 'var(--ds-text-danger, #DC2626)', color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
+                border: 'none', borderRadius: 6, background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>Yes, Overwrite</button>
               <BtnGhost onClick={() => setOverwriteConfirmOpen(false)}>Go Back</BtnGhost>
             </div>
@@ -553,7 +553,7 @@ export default function ReqAssistGenerate() {
       {/* REGEN EPICS CONFIRM */}
       {regenConfirmOpen && (
         <ModalOverlay>
-          <div style={{ width: 440, background: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
+          <div style={{ width: 440, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
             <p style={{ fontSize: 14, color: 'var(--cp-text-secondary, #374151)', lineHeight: 1.6, margin: '0 0 16px' }}>
               Regenerating will replace all {epicCount} existing epics for this document. This cannot be undone.
             </p>
@@ -585,7 +585,7 @@ function BtnPrimary({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
       border: 'none', borderRadius: 4, cursor: props.disabled ? 'not-allowed' : 'pointer',
-      background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)', color: 'var(--ds-surface, #FFFFFF)',
+      background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       fontFamily: 'var(--cp-font-body)',
       opacity: props.disabled ? 0.6 : 1, transition: 'filter 120ms',
       ...props.style,
@@ -598,7 +598,7 @@ function BtnAI({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElem
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
       border: 'none', borderRadius: 4, cursor: props.disabled ? 'not-allowed' : 'pointer',
-      background: '#7C3AED', color: 'var(--ds-surface, #FFFFFF)',
+      background: 'var(--cp-purple-60, #7C3AED)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       fontFamily: 'var(--cp-font-body)',
       opacity: props.disabled ? 0.6 : 1, transition: 'background 120ms',
       ...props.style,
@@ -612,7 +612,7 @@ function BtnOutline({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
       border: `0.75px solid ${'var(--cp-border-strong, #CBD5E1)'}`, borderRadius: 6, cursor: props.disabled ? 'not-allowed' : 'pointer',
-      background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #374151)', fontFamily: 'var(--cp-font-body)',
+      background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-secondary, #374151)', fontFamily: 'var(--cp-font-body)',
       transition: 'background 120ms',
       ...props.style,
     }}>{children}</button>
@@ -625,7 +625,7 @@ function BtnGhost({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonE
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
       border: 'none', borderRadius: 6, cursor: 'pointer',
-      background: 'transparent', color: 'var(--cp-text-tertiary, #64748B)', fontFamily: 'var(--cp-font-body)',
+      background: 'transparent', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)',
       ...props.style,
     }}>{children}</button>
   );
@@ -635,8 +635,8 @@ function BtnDanger({ children, ...props }: React.ButtonHTMLAttributes<HTMLButton
   return (
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
-      border: '0.75px solid #DC2626', borderRadius: 6, cursor: 'pointer',
-      background: 'transparent', color: 'var(--ds-text-danger, #DC2626)', fontFamily: 'var(--cp-font-body)',
+      border: '0.75px solid var(--cp-danger, #DC2626)', borderRadius: 6, cursor: 'pointer',
+      background: 'transparent', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontFamily: 'var(--cp-font-body)',
       ...props.style,
     }}>{children}</button>
   );
@@ -667,13 +667,13 @@ function CatalystTopNav() {
     { label: 'WikiHub', path: '/wikihub' },
   ];
   return (
-    <nav style={{ height: 48, display: 'flex', alignItems: 'center', gap: 0, background: 'var(--cp-bg-elevated, #FFFFFF)', borderBottom: `0.75px solid ${'var(--cp-border, #E2E8F0)'}`, padding: '0 24px', fontFamily: 'var(--cp-font-body)' }}>
+    <nav style={{ height: 48, display: 'flex', alignItems: 'center', gap: 0, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderBottom: `0.75px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, padding: '0 24px', fontFamily: 'var(--cp-font-body)' }}>
       {HUBS.map(h => {
         const isActive = h.label === 'ProductHub';
         return (
           <button key={h.label} onClick={() => navigate(h.path)} style={{
             height: 48, padding: '0 14px', fontSize: 13, fontWeight: isActive ? 600 : 400,
-            color: isActive ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #64748B)', background: 'transparent', border: 'none', cursor: 'pointer',
+            color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: 'transparent', border: 'none', cursor: 'pointer',
             borderBottom: isActive ? '3px solid #2563EB' : '3px solid transparent', transition: 'color 120ms', fontFamily: 'var(--cp-font-body)',
           }}>{h.label}</button>
         );

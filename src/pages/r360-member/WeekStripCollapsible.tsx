@@ -54,25 +54,25 @@ export function WeekStripCollapsible({
           <button className={periodType === 'monthly' ? 'active' : ''} onClick={() => onPeriodTypeChange('monthly')}>Monthly</button>
         </div>
 
-        <div style={{ width: '1px', height: '20px', background: 'var(--ds-border, #DFE1E6)' }} />
-        <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>{'\u{1F4C5}'} {period.label}</span>
-        <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ds-text-subtle, #44546F)' }}>{period.range}</span>
+        <div style={{ width: '1px', height: '20px', background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }} />
+        <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{'\u{1F4C5}'} {period.label}</span>
+        <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>{period.range}</span>
 
         {/* Mode Badge */}
         <span className={`r3-mode-badge ${isLive ? 'live' : 'snapshot'}`}>
           {isLive ? 'Live' : 'Snapshot'}
         </span>
 
-        <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--ds-border, #DFE1E6)'}`, borderRadius: '4px', background: isDark ? 'var(--ds-surface, #FFFFFF)' : 'var(--ds-surface, #FFF)', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background 120ms ease' }} onClick={() => onNavigatePeriod(-1)}
+        <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-surface, #FFF)', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background 120ms ease' }} onClick={() => onNavigatePeriod(-1)}
           onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--ds-surface, #FFFFFF)' : 'var(--ds-surface, #FFF)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-surface, #FFF)'; }}
         >{'\u2039'}</button>
-        <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--ds-border, #DFE1E6)'}`, borderRadius: '4px', background: isDark ? 'var(--ds-surface, #FFFFFF)' : 'var(--ds-surface, #FFF)', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background 120ms ease' }} onClick={() => onNavigatePeriod(1)}
+        <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-surface, #FFF)', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background 120ms ease' }} onClick={() => onNavigatePeriod(1)}
           onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--ds-surface, #FFFFFF)' : 'var(--ds-surface, #FFF)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-surface, #FFF)'; }}
         >{'\u203A'}</button>
 
-        <div style={{ width: '1px', height: '20px', background: 'var(--ds-border, #DFE1E6)', margin: '0 4px' }} />
+        <div style={{ width: '1px', height: '20px', background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', margin: '0 4px' }} />
         {/* Status filter tabs */}
         {([
           { key: null, label: `All (${counts.all})` },
@@ -85,7 +85,7 @@ export function WeekStripCollapsible({
               padding: '5px 14px', fontSize: '12.5px', fontWeight: isActive ? 600 : 500,
               borderRadius: '6px', cursor: 'pointer', transition: 'all 120ms ease',
               background: isActive ? 'rgba(37,99,235,0.10)' : 'transparent',
-              color: isActive ? 'var(--ds-text-brand, #2563EB)' : ('var(--ds-text-subtlest, #626F86)'),
+              color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--ds-text-subtlest, #626F86)'),
               border: 'none',
             }}
             onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}

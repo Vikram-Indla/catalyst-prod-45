@@ -118,8 +118,8 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
   };
   const inputStyle: React.CSSProperties = {
     width: '100%', border: `1.5px solid ${'var(--cp-border-strong, #CBD5E1)'}`, borderRadius: '8px',
-    padding: '10px 12px', fontSize: '14px', color: 'var(--cp-text-primary, #0F172A)', outline: 'none',
-    fontFamily: 'var(--cp-font-body)', background: 'var(--cp-bg-elevated, #FFFFFF)',
+    padding: '10px 12px', fontSize: '14px', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', outline: 'none',
+    fontFamily: 'var(--cp-font-body)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   };
   const errorStyle: React.CSSProperties = {
     fontSize: '12px', color: 'var(--ds-text-danger, #EF4444)', marginTop: '4px',
@@ -135,20 +135,20 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div style={{
-        width: '640px', maxHeight: '90vh', background: 'var(--cp-bg-elevated, #FFFFFF)',
+        width: '640px', maxHeight: '90vh', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         borderRadius: '16px', display: 'flex', flexDirection: 'column',
         boxShadow: isDark ? 'none' : '0 25px 50px -12px rgba(0,0,0,0.25)',
         padding: '28px',
       }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: 0, fontFamily: 'var(--cp-font-body)' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0, fontFamily: 'var(--cp-font-body)' }}>
             Create Innovation Drive
           </h3>
           <button
             onClick={onClose}
             style={{
-              background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cp-text-tertiary, #64748B)',
+              background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
               padding: '4px', borderRadius: '6px', display: 'flex',
             }}
           >
@@ -167,7 +167,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               onBlur={() => handleBlur('title')}
-              onFocus={(e) => { e.target.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+              onFocus={(e) => { e.target.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
               maxLength={100}
             />
             {touched.title && errors.title && <div style={errorStyle}>{errors.title}</div>}
@@ -186,7 +186,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               onBlur={() => handleBlur('description')}
-              onFocus={(e) => { e.target.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+              onFocus={(e) => { e.target.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
               maxLength={500}
             />
             {touched.description && errors.description && <div style={errorStyle}>{errors.description}</div>}
@@ -206,14 +206,14 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     style={{
                       width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       borderRadius: '8px', cursor: 'pointer',
-                      border: isSelected ? '1.5px solid #2563EB' : `1.5px solid ${'var(--cp-border-strong, #E2E8F0)'}`,
-                      background: isSelected ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, #FFFFFF)'),
+                      border: isSelected ? '1.5px solid #2563EB' : `1.5px solid ${'var(--cp-border-strong, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
+                      background: isSelected ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
                       transition: 'all 150ms ease',
                     }}
                     onMouseEnter={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = 'var(--cp-border-strong, #CBD5E1)'; e.currentTarget.style.background = 'var(--cp-bg-page, #F8FAFC)'; } }}
-                    onMouseLeave={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = 'var(--cp-border-strong, #E2E8F0)'; e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)'; } }}
+                    onMouseLeave={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = 'var(--cp-border-strong, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'; e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; } }}
                   >
-                    <Icon size={20} strokeWidth={1.75} color={isSelected ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-secondary, #334155)')} />
+                    <Icon size={20} strokeWidth={1.75} color={isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))')} />
                   </button>
                 );
               })}
@@ -237,14 +237,14 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                       padding: '6px 16px', borderRadius: '20px', cursor: 'pointer',
                       fontSize: '13px', fontWeight: isSelected ? 600 : 500,
                       border: isSelected
-                        ? (isActive ? '1.5px solid #16A34A' : `1.5px solid ${'var(--cp-border-strong, #CBD5E1)'}`)
-                        : `1.5px solid ${'var(--cp-border-strong, #E2E8F0)'}`,
+                        ? (isActive ? '1.5px solid var(--cp-success, #16A34A)' : `1.5px solid ${'var(--cp-border-strong, #CBD5E1)'}`)
+                        : `1.5px solid ${'var(--cp-border-strong, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
                       background: isSelected
                         ? (isActive ? ('var(--cp-success-light, #F0FDF4)') : ('var(--cp-bg-page, #F8FAFC)'))
-                        : ('var(--cp-bg-elevated, #FFFFFF)'),
+                        : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
                       color: isSelected
-                        ? (isActive ? ('var(--cp-success, #15803D)') : ('var(--cp-text-tertiary, #64748B)'))
-                        : ('var(--cp-text-muted, #94A3B8)'),
+                        ? (isActive ? ('var(--cp-success, #15803D)') : ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'))
+                        : ('var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'),
                       transition: 'all 150ms ease',
                       fontFamily: 'var(--cp-font-body)',
                     }}
@@ -252,7 +252,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     <span style={{
                       width: '6px', height: '6px', borderRadius: '50%',
                       background: isSelected
-                        ? (isActive ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-subtlest, #94A3B8)')
+                        ? (isActive ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))')
                         : 'var(--ds-text-disabled, #CBD5E1)',
                     }} />
                     {isActive ? 'Active' : 'Draft'}
@@ -276,8 +276,8 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     ...(touched.deadline && errors.deadline ? { borderColor: 'var(--ds-text-danger, #EF4444)' } : {}),
                   }}
                 >
-                  <CalendarIcon size={16} style={{ color: 'var(--cp-text-tertiary, #64748B)', flexShrink: 0 }} />
-                  <span style={{ fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)' }}>{format(deadline, 'MMM d, yyyy')}</span>
+                  <CalendarIcon size={16} style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', flexShrink: 0 }} />
+                  <span style={{ fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{format(deadline, 'MMM d, yyyy')}</span>
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start" style={{ zIndex: 400 }}>
@@ -306,9 +306,9 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                 onClick={() => setTargetCount(Math.max(1, targetCount - 1))}
                 style={{
                   width: '36px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  border: 'none', background: 'var(--cp-bg-elevated, #FFFFFF)',
+                  border: 'none', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   cursor: targetCount <= 1 ? 'not-allowed' : 'pointer',
-                  color: targetCount <= 1 ? ('var(--cp-text-muted, #CBD5E1)') : ('var(--cp-text-secondary, #334155)'),
+                  color: targetCount <= 1 ? ('var(--cp-text-muted, #CBD5E1)') : ('var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'),
                   fontSize: '18px', fontWeight: 500,
                 }}
                 disabled={targetCount <= 1}
@@ -329,8 +329,8 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                   width: '48px', height: '50px',
                   borderLeft: `1.5px solid ${'var(--cp-border-strong, #CBD5E1)'}`, borderRight: `1.5px solid ${'var(--cp-border-strong, #CBD5E1)'}`,
                   borderTop: 'none', borderBottom: 'none',
-                  textAlign: 'center', fontSize: '16px', fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', outline: 'none',
-                  fontFamily: 'var(--cp-font-body)', background: 'var(--cp-bg-elevated, #FFFFFF)',
+                  textAlign: 'center', fontSize: '16px', fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', outline: 'none',
+                  fontFamily: 'var(--cp-font-body)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 }}
               />
               <button
@@ -338,9 +338,9 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                 onClick={() => setTargetCount(Math.min(50, targetCount + 1))}
                 style={{
                   width: '36px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  border: 'none', background: 'var(--cp-bg-elevated, #FFFFFF)',
+                  border: 'none', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   cursor: targetCount >= 50 ? 'not-allowed' : 'pointer',
-                  color: targetCount >= 50 ? ('var(--cp-text-muted, #CBD5E1)') : ('var(--cp-text-secondary, #334155)'),
+                  color: targetCount >= 50 ? ('var(--cp-text-muted, #CBD5E1)') : ('var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'),
                   fontSize: '18px', fontWeight: 500,
                 }}
                 disabled={targetCount >= 50}
@@ -354,7 +354,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
 
         {/* Footer */}
         <div style={{
-          paddingTop: '20px', borderTop: `1px solid ${'var(--cp-border, #E2E8F0)'}`, marginTop: '24px',
+          paddingTop: '20px', borderTop: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, marginTop: '24px',
           display: 'flex', justifyContent: 'flex-end', gap: '10px',
         }}>
           <button
@@ -365,7 +365,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               color: 'var(--cp-text-secondary, #475569)', background: 'transparent', border: 'none',
               borderRadius: '8px', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--cp-text-primary, #0F172A)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))'; }}
             onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--cp-text-secondary, #475569)'; }}
           >
             Cancel
@@ -376,8 +376,8 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             disabled={!isValid || createMutation.isPending}
             style={{
               padding: '10px 24px', fontSize: '14px', fontWeight: 600,
-              color: 'var(--ds-text-inverse, #FFFFFF)',
-              background: (!isValid || createMutation.isPending) ? '#93C5FD' : 'var(--ds-text-brand, #2563EB)',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              background: (!isValid || createMutation.isPending) ? '#93C5FD' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
               border: 'none', borderRadius: '8px',
               cursor: (!isValid || createMutation.isPending) ? 'not-allowed' : 'pointer',
               display: 'inline-flex', alignItems: 'center', gap: '6px',
@@ -385,7 +385,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               transition: 'background 150ms ease', fontFamily: 'var(--cp-font-body)',
             }}
             onMouseEnter={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #1D4ED8)'; }}
-            onMouseLeave={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = 'var(--ds-text-brand, #2563EB)'; }}
+            onMouseLeave={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
           >
             {createMutation.isPending && <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />}
             Create Drive

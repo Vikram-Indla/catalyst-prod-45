@@ -71,7 +71,7 @@ export const WorkItemConfig = {
   theme: { color: '#0d9488', bgColor: 'bg-[#0d9488]/10', label: 'Theme', level: 'enterprise' },
   objective: { color: '#6b7280', bgColor: 'bg-[#6b7280]/10', label: 'Objective', level: 'enterprise' },
   key_result: { color: '#3b82f6', bgColor: 'bg-[#3b82f6]/10', label: 'Key Result', level: 'enterprise' },
-  epic: { color: '#2563eb', bgColor: 'bg-[#2563eb]/10', label: 'Epic', level: 'program' },
+  epic: { color: '#2563eb', bgColor: 'bg-[var(--cp-workstream-catalyst-primary, #2563eb)]/10', label: 'Epic', level: 'program' },
   feature: { color: '#0d9488', bgColor: 'bg-[#0d9488]/10', label: 'Feature', level: 'project' },
   story: { color: '#10b981', bgColor: 'bg-[#10b981]/10', label: 'Story', level: 'project' },
   defect: { color: '#dc2626', bgColor: 'bg-[#dc2626]/10', label: 'Defect', level: 'project' },
@@ -81,7 +81,7 @@ export const WorkItemConfig = {
 
 export const StatusConfig = {
   current: { color: '#0d9488', bgColor: 'bg-[#0d9488]/10', label: 'CURRENT' },
-  future: { color: '#2563eb', bgColor: 'bg-[#2563eb]/10', label: 'FUTURE' },
+  future: { color: '#2563eb', bgColor: 'bg-[var(--cp-workstream-catalyst-primary, #2563eb)]/10', label: 'FUTURE' },
   completed: { color: '#6b7280', bgColor: 'bg-[#6b7280]/10', label: 'COMPLETED' },
   cancelled: { color: '#dc2626', bgColor: 'bg-[#dc2626]/10', label: 'CANCELLED' },
 } as const;
@@ -554,20 +554,20 @@ export function getStatusCategory(status: string, statusCategory?: string): Stat
 /** Status category color tokens — Catalyst V5 compliant */
 export const STATUS_COLORS: Record<StatusCategory, { bg: string; text: string; border: string; dot: string }> = {
   all:      { bg: '#F3F4F6', text: '#374151', border: '#D1D5DB', dot: '#6B7280' },
-  todo:     { bg: '#F1F5F9', text: '#64748B', border: '#CBD5E1', dot: '#64748B' },
-  progress: { bg: '#DBEAFE', text: '#2563EB', border: '#93C5FD', dot: '#2563EB' },
-  done:     { bg: '#D1FAE5', text: '#059669', border: '#6EE7B7', dot: '#059669' },
+  todo:     { bg: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))', border: '#CBD5E1', dot: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))' },
+  progress: { bg: '#DBEAFE', text: 'var(--cp-workstream-catalyst-primary, #2563EB)', border: '#93C5FD', dot: 'var(--cp-workstream-catalyst-primary, #2563EB)' },
+  done:     { bg: '#D1FAE5', text: 'var(--quality-high, #059669)', border: '#6EE7B7', dot: 'var(--quality-high, #059669)' },
 };
 
 /** Hub color mapping (V3) */
 export const WH_HUB_COLORS: Record<string, string> = {
-  StrategyHub:  '#7C3AED',
-  ProductHub:   '#0D9488',
-  ProjectHub:   '#2563EB',
-  ReleaseHub:   '#D97706',
-  TestHub:      '#DC2626',
+  StrategyHub:  'var(--cp-purple-60, #7C3AED)',
+  ProductHub:   'var(--cp-teal-60, #0D9488)',
+  ProjectHub:   'var(--cp-workstream-catalyst-primary, #2563EB)',
+  ReleaseHub:   'var(--cp-warning, #D97706)',
+  TestHub:      'var(--cp-danger, #DC2626)',
   IncidentHub:  '#EF4444',
-  TaskHub:      '#64748B',
+  TaskHub:      'var(--cp-ink-3, var(--cp-text-secondary, #64748B))',
 };
 
 /** Hub short names for badges (V3) */

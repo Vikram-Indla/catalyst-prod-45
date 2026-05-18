@@ -43,7 +43,7 @@ const highlightVariables = (text: string) => {
   const parts = text.split(/(\{\{[^}]+\}\})/g);
   return parts.map((part, i) => {
     if (part.match(/^\{\{[^}]+\}\}$/)) {
-      return <span key={i} style={{ backgroundColor: 'rgba(37,99,235,0.15)', color: 'var(--ds-text-brand, #2563EB)', padding: '2px 6px', borderRadius: 4, fontFamily: 'monospace', fontSize: '0.9em' }}>{part}</span>;
+      return <span key={i} style={{ backgroundColor: 'rgba(37,99,235,0.15)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', padding: '2px 6px', borderRadius: 4, fontFamily: 'monospace', fontSize: '0.9em' }}>{part}</span>;
     }
     return part;
   });
@@ -126,12 +126,12 @@ export function ExecutionRunMode({
             {testCase.priority?.name || 'Medium'}
           </span>
           {fastTrackMode && (
-            <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-text-warning, #D97706)', backgroundColor: '#FEF3C7', padding: '3px 8px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 3 }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', backgroundColor: '#FEF3C7', padding: '3px 8px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 3 }}>
               <Zap size={10} /> FAST TRACK
             </span>
           )}
           {previousRunData && (
-            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '3px 8px', borderRadius: 5 }}>
+            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '3px 8px', borderRadius: 5 }}>
               RE-RUN (prev: Run #{previousRunData.execution_number})
             </span>
           )}
@@ -146,7 +146,7 @@ export function ExecutionRunMode({
             display: 'flex', alignItems: 'center', gap: 6,
             fontSize: 12, color: 'var(--cp-warning-text, #92400E)',
           }}>
-            <AlertTriangle size={14} style={{ color: 'var(--ds-text-warning, #D97706)', flexShrink: 0 }} />
+            <AlertTriangle size={14} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', flexShrink: 0 }} />
             <span>
               This test case has been updated since it was added to this cycle
               (locked v{lockedVersion} → current v{currentVersion}).
@@ -179,7 +179,7 @@ export function ExecutionRunMode({
           {testCase.preconditions && (
             <div style={{ marginBottom: 20, padding: 14, backgroundColor: 'var(--cp-warning-light, #FFFBEB)', border: `1px solid ${'var(--cp-warning-light, #FDE68A)'}`, borderRadius: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                <AlertTriangle size={14} style={{ color: 'var(--ds-text-warning, #D97706)' }} />
+                <AlertTriangle size={14} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} />
                 <span style={{ fontSize: 12, fontWeight: 600, color: '#92400E' }}>Preconditions</span>
               </div>
               <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.4 }}>{highlightVariables(testCase.preconditions)}</p>
@@ -201,7 +201,7 @@ export function ExecutionRunMode({
                         <div style={{ flex: 1 }}>
                           <p style={{ fontSize: 13, color: 'hsl(var(--foreground))', margin: 0 }}>{highlightVariables(step.action)}</p>
                           {step.expected_result && (
-                            <p style={{ fontSize: 12, color: '#059669', margin: '6px 0 0', paddingLeft: 10, borderLeft: '2px solid #A7F3D0' }}>{highlightVariables(step.expected_result)}</p>
+                            <p style={{ fontSize: 12, color: 'var(--quality-high, #059669)', margin: '6px 0 0', paddingLeft: 10, borderLeft: '2px solid #A7F3D0' }}>{highlightVariables(step.expected_result)}</p>
                           )}
                         </div>
                       </div>
@@ -244,7 +244,7 @@ export function ExecutionRunMode({
 
                  {currentStep.expected_result && (
                    <div style={{ marginTop: 16, padding: 14, backgroundColor: 'var(--cp-success-light, #ECFDF5)', borderRadius: 8, borderLeft: '3px solid #10B981' }}>
-                     <span style={{ fontSize: 10, fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.06em' }}>EXPECTED</span>
+                     <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--quality-high, #059669)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>EXPECTED</span>
                      <p style={{ fontSize: 14, color: 'var(--cp-success-text, #065F46)', margin: '4px 0 0', lineHeight: 1.5 }}>
                        {highlightVariables(currentStep.expected_result)}
                      </p>
@@ -292,10 +292,10 @@ export function ExecutionRunMode({
 
         {/* Status buttons */}
         {[
-          { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: onPass, color: '#059669', bg: 'var(--cp-success-light, #ECFDF5)', activeBg: 'linear-gradient(135deg, #10B981, #059669)' },
-          { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: onFail, color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--cp-danger-light, #FEF2F2)', activeBg: 'linear-gradient(135deg, var(--ds-text-danger, #EF4444), var(--ds-text-danger, #DC2626))' },
-          { key: 'blocked', label: 'Block', shortcut: 'B', icon: AlertTriangle, onClick: onBlocked, color: 'var(--ds-text-warning, #D97706)', bg: 'var(--cp-warning-light, #FFFBEB)', activeBg: 'linear-gradient(135deg, var(--ds-text-warning, #F59E0B), var(--ds-text-warning, #D97706))' },
-          { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: onSkip, color: 'var(--cp-text-tertiary, #64748B)', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, var(--ds-text-subtlest, #64748B), var(--ds-text-subtle, #475569))' },
+          { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: onPass, color: 'var(--quality-high, #059669)', bg: 'var(--cp-success-light, #ECFDF5)', activeBg: 'linear-gradient(135deg, #10B981, var(--quality-high, #059669))' },
+          { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: onFail, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--cp-danger-light, #FEF2F2)', activeBg: 'linear-gradient(135deg, var(--ds-text-danger, #EF4444), var(--ds-text-danger, var(--cp-danger, #DC2626)))' },
+          { key: 'blocked', label: 'Block', shortcut: 'B', icon: AlertTriangle, onClick: onBlocked, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'var(--cp-warning-light, #FFFBEB)', activeBg: 'linear-gradient(135deg, var(--ds-text-warning, var(--cp-amber, #F59E0B)), var(--ds-text-warning, var(--cp-warning, #D97706)))' },
+          { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: onSkip, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B))), var(--ds-text-subtle, #475569))' },
         ].map(btn => {
           const Icon = btn.icon;
           const isActive = currentStatus === btn.key;
@@ -303,7 +303,7 @@ export function ExecutionRunMode({
             <button key={btn.key} onClick={btn.onClick} disabled={isSubmitting} title={`${btn.label} (${btn.shortcut})`} style={{
               height: 38, padding: '0 16px', border: isActive ? 'none' : `1px solid ${btn.color}30`,
               borderRadius: 6, background: isActive ? btn.activeBg : btn.bg,
-              color: isActive ? 'var(--ds-text-inverse, #FFFFFF)' : btn.color, fontSize: 13, fontWeight: 600,
+              color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : btn.color, fontSize: 13, fontWeight: 600,
               cursor: isSubmitting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6,
               opacity: isSubmitting ? 0.7 : 1, boxShadow: isActive ? `0 2px 8px ${btn.color}40` : 'none',
             }}>
@@ -338,11 +338,11 @@ export function ExecutionRunMode({
           {steps.length > 0 && !fastTrackMode && (() => {
             const isDisabled = !anyStepMarked || isSubmitting;
             const statusColors: Record<string, { bg: string; text: string }> = {
-              passed:  { bg: 'var(--ds-text-success, #16A34A)', text: 'var(--ds-text-inverse, #FFFFFF)' },
-              failed:  { bg: 'var(--ds-text-danger, #DC2626)', text: 'var(--ds-text-inverse, #FFFFFF)' },
-              blocked: { bg: 'var(--ds-text-warning, #D97706)', text: 'var(--ds-text-inverse, #FFFFFF)' },
-              skipped: { bg: 'var(--ds-text-subtle, #475569)', text: 'var(--ds-text-inverse, #FFFFFF)' },
-              not_run: { bg: 'var(--cp-border, #E2E8F0)', text: 'var(--cp-text-tertiary, #64748B)' },
+              passed:  { bg: 'var(--ds-text-success, var(--cp-success, #16A34A))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+              failed:  { bg: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+              blocked: { bg: 'var(--ds-text-warning, var(--cp-warning, #D97706))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+              skipped: { bg: 'var(--ds-text-subtle, #475569)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+              not_run: { bg: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', text: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' },
             };
             const colors = statusColors[derivedStatus] || statusColors.not_run;
             const label = derivedStatus !== 'not_run'
@@ -354,9 +354,9 @@ export function ExecutionRunMode({
                 disabled={isDisabled}
                 title={!anyStepMarked ? 'Mark all steps before completing' : `Complete with status: ${derivedStatus}`}
                 style={{
-                  height: 34, padding: '0 14px', border: isDisabled ? `1px solid ${'var(--cp-border, #E2E8F0)'}` : 'none',
+                  height: 34, padding: '0 14px', border: isDisabled ? `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` : 'none',
                   borderRadius: 6, backgroundColor: isDisabled ? ('var(--cp-bg-page, #F8FAFC)') : colors.bg,
-                  color: isDisabled ? ('var(--cp-text-muted, #94A3B8)') : colors.text, fontSize: 12, fontWeight: 700,
+                  color: isDisabled ? ('var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))') : colors.text, fontSize: 12, fontWeight: 700,
                   cursor: isDisabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 5,
                   opacity: isDisabled ? 0.7 : 1, transition: 'all 150ms ease',
                   boxShadow: isDisabled ? 'none' : `0 2px 8px ${colors.bg}40`,

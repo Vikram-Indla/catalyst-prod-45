@@ -81,13 +81,13 @@ export function RoadmapSidePanel({
   }
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtlest, #94A3B8)', textTransform: 'uppercase',
+    fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textTransform: 'uppercase',
     letterSpacing: '0.05em', fontFamily: 'var(--cp-font-body)',
   };
 
   const fieldRowStyle: React.CSSProperties = {
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-    height: 32, fontSize: 13, color: 'var(--ds-text, #0F172A)', fontFamily: 'var(--cp-font-body)',
+    height: 32, fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontFamily: 'var(--cp-font-body)',
   };
 
   return (
@@ -119,7 +119,7 @@ export function RoadmapSidePanel({
             background: 'var(--bg-app)', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <X size={14} color="var(--ds-text-subtlest, #64748B)" />
+            <X size={14} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
           </button>
           <div style={{ flex: 1, minWidth: 0 }}>
             <span style={{ fontSize: 12, fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-4)' }}>
@@ -183,7 +183,7 @@ export function RoadmapSidePanel({
           {idea.isCommitted && (
             isConverted(idea.status) ? (
               <div style={{
-                padding: '10px 16px', borderRadius: 6, background: '#1B7F37',
+                padding: '10px 16px', borderRadius: 6, background: 'var(--cp-lozenge-green-bg, #1B7F37)',
                 color: 'var(--bg-app)', fontSize: 13, fontWeight: 650, textAlign: 'center',
                 border: '1px solid #B7EBD1',
               }}>
@@ -231,8 +231,8 @@ export function RoadmapSidePanel({
                       color: milestones[m.key] ? 'var(--fg-2)' : 'var(--fg-4)', outline: 'none',
                       transition: 'border-color 150ms',
                     }}
-                    onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)')}
-                    onBlur={e => (e.currentTarget.style.borderColor = 'var(--bd-default, #E2E8F0)')}
+                    onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))')}
+                    onBlur={e => (e.currentTarget.style.borderColor = 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))')}
                   />
                   {milestones[m.key] && (
                     <button

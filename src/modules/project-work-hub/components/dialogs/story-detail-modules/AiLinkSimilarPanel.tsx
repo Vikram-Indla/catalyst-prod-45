@@ -146,19 +146,21 @@ function LinkAsSplitButton({
         onClick={onLink}
         disabled={isPending}
         style={{
-          height,
-          padding: `0 12px`,
-          border: "none",
-          background: "transparent",
-          cursor: isPending ? "not-allowed" : "pointer",
-          fontSize,
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+          height: 32,
+          padding: "0 10px 0 12px",
+          border:
+            "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
+          borderRadius: 3,
+          background: "var(--ds-surface, #fff)",
+          cursor: "pointer",
+          fontSize: 13,
           fontFamily: "inherit",
-          fontWeight: 500,
-          color: "var(--ds-text, #172B4D)",
+          color:
+            "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
           whiteSpace: "nowrap",
-          opacity: isPending ? 0.6 : 1,
-          borderTopLeftRadius: 3,
-          borderBottomLeftRadius: 3,
         }}
       >
         Link as {value}
@@ -201,8 +203,9 @@ function LinkAsSplitButton({
             bottom: "calc(100% + 4px)",
             right: 0,
             minWidth: 200,
-            background: "var(--ds-surface-overlay, var(--ds-surface, #fff))",
-            border: "1px solid var(--ds-border, #DFE1E6)",
+            background: "var(--ds-surface, #fff)",
+            border:
+              "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
             borderRadius: 4,
             boxShadow: "0 4px 8px rgba(9,30,66,.25)",
             zIndex: 70,
@@ -224,16 +227,17 @@ function LinkAsSplitButton({
                 padding: "0 12px",
                 cursor: "pointer",
                 fontSize: 14,
-                color: "var(--ds-text, #172B4D)",
+                color:
+                  "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
                 background:
                   opt === value
-                    ? "var(--ds-background-selected, #DEEBFF)"
+                    ? "var(--ds-background-information, #DEEBFF)"
                     : "transparent",
               }}
               onMouseEnter={(e) => {
                 if (opt !== value)
                   e.currentTarget.style.background =
-                    "var(--ds-surface-sunken, #F4F5F7)";
+                    "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
               }}
               onMouseLeave={(e) => {
                 if (opt !== value)
@@ -268,7 +272,9 @@ function Checkbox({
         height: 18,
         borderRadius: 3,
         border: checked ? "none" : "2px solid var(--ds-border, #C1C7D0)",
-        background: checked ? "#0052CC" : "var(--ds-surface, #fff)",
+        background: checked
+          ? "var(--cp-primary-60, #0052CC)"
+          : "var(--ds-surface, #fff)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -496,19 +502,28 @@ export function AiLinkSimilarPanel({
           alignItems: "center",
           justifyContent: "space-between",
           padding: "10px 12px",
-          border: "1px solid var(--ds-border, #DFE1E6)",
+          border:
+            "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
           borderRadius: 8,
           background: "var(--ds-surface-sunken, #FAFBFC)",
           marginBottom: 8,
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <SparkleIcon size={16} />
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+              stroke="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))"
+              strokeWidth="1.5"
+              fill="none"
+            />
+          </svg>
           <span
             style={{
               fontSize: 14,
               fontWeight: 500,
-              color: "var(--ds-text, #172B4D)",
+              color:
+                "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
             }}
           >
             Link similar work items
@@ -520,12 +535,14 @@ export function AiLinkSimilarPanel({
             style={{
               height: 28,
               padding: "0 12px",
-              border: "1px solid var(--ds-border, #DFE1E6)",
+              border:
+                "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
               borderRadius: 3,
               background: "var(--ds-surface, #fff)",
               cursor: "pointer",
               fontSize: 13,
-              color: "var(--ds-text, #172B4D)",
+              color:
+                "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
               fontFamily: "inherit",
               fontWeight: 500,
               whiteSpace: "nowrap",
@@ -537,7 +554,8 @@ export function AiLinkSimilarPanel({
           <span
             style={{
               fontSize: 12,
-              color: "var(--ds-text-subtlest, #6B778C)",
+              color:
+                "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
               fontStyle: "italic",
             }}
           >
@@ -552,10 +570,11 @@ export function AiLinkSimilarPanel({
   return (
     <div
       style={{
-        border: "1px solid var(--ds-border, #DFE1E6)",
+        border:
+          "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
         borderRadius: 8,
         marginBottom: 8,
-        overflow: "visible",
+        overflow: "hidden",
       }}
     >
       {/* Header — click to collapse */}
@@ -568,7 +587,8 @@ export function AiLinkSimilarPanel({
           padding: "10px 12px",
           cursor: "pointer",
           background: "var(--ds-surface-sunken, #FAFBFC)",
-          borderBottom: "1px solid var(--ds-border, #DFE1E6)",
+          borderBottom:
+            "1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -585,7 +605,7 @@ export function AiLinkSimilarPanel({
         </div>
         <ChevronDown
           size={16}
-          color="var(--ds-text-subtlest, #6B778C)"
+          color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))"
           style={{ transform: "rotate(180deg)" }}
         />
       </div>
@@ -613,13 +633,15 @@ export function AiLinkSimilarPanel({
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 4,
-                border: "1px solid var(--ds-border, #DFE1E6)",
+                border:
+                  "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
                 borderRadius: 3,
                 background: "var(--ds-surface, #fff)",
                 padding: "4px 10px",
                 fontSize: 12,
                 cursor: "pointer",
-                color: "var(--ds-text, #172B4D)",
+                color:
+                  "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
               }}
             >
               <RefreshCw size={12} /> Retry
@@ -633,7 +655,8 @@ export function AiLinkSimilarPanel({
             style={{
               padding: "12px 0",
               fontSize: 13,
-              color: "var(--ds-text-subtlest, #6B778C)",
+              color:
+                "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
               fontStyle: "italic",
             }}
           >
@@ -651,7 +674,8 @@ export function AiLinkSimilarPanel({
                 alignItems: "center",
                 gap: 8,
                 padding: "10px 0 6px",
-                borderBottom: "1px solid var(--ds-border, #DFE1E6)",
+                borderBottom:
+                  "1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))",
               }}
             >
               <Checkbox checked={allSelected} onChange={toggleAll} />
@@ -659,7 +683,8 @@ export function AiLinkSimilarPanel({
                 style={{
                   fontSize: 14,
                   fontWeight: 500,
-                  color: "var(--ds-text, #172B4D)",
+                  color:
+                    "var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))",
                 }}
               >
                 {allSelected ? "Deselect all" : "Select all"}
@@ -680,7 +705,8 @@ export function AiLinkSimilarPanel({
                   alignItems: "center",
                   gap: 8,
                   padding: "8px 0",
-                  borderBottom: "1px solid var(--ds-border, #DFE1E6)",
+                  borderBottom:
+                    "1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))",
                   cursor: "pointer",
                 }}
                 onMouseEnter={(e) =>
@@ -725,7 +751,7 @@ export function AiLinkSimilarPanel({
               </div>
             ))}
 
-            {/* Footer: disclaimer + feedback (left) | bulk split button (right) */}
+            {/* Footer: disclaimer + feedback | link-type dropdown */}
             <div
               style={{
                 display: "flex",
@@ -737,11 +763,15 @@ export function AiLinkSimilarPanel({
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <Info size={14} color="var(--ds-text-subtlest, #6B778C)" />
+                  <Info
+                    size={14}
+                    color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))"
+                  />
                   <span
                     style={{
                       fontSize: 12,
-                      color: "var(--ds-text-subtlest, #6B778C)",
+                      color:
+                        "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
                     }}
                   >
                     Uses AI. Verify results.
@@ -759,8 +789,8 @@ export function AiLinkSimilarPanel({
                     padding: 2,
                     color:
                       feedback === "up"
-                        ? "#0052CC"
-                        : "var(--ds-text-subtlest, #6B778C)",
+                        ? "var(--cp-primary-60, #0052CC)"
+                        : "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
                   }}
                   title="Helpful"
                 >
@@ -779,7 +809,7 @@ export function AiLinkSimilarPanel({
                     color:
                       feedback === "down"
                         ? "#FF5630"
-                        : "var(--ds-text-subtlest, #6B778C)",
+                        : "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
                   }}
                   title="Not helpful"
                 >
@@ -813,7 +843,8 @@ export function AiLinkSimilarPanel({
                     padding: "0 16px",
                     border: "none",
                     borderRadius: 3,
-                    background: "var(--ds-background-brand-bold, #0052CC)",
+                    background:
+                      "var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))",
                     color: "var(--ds-surface, #fff)",
                     fontSize: 14,
                     fontWeight: 500,

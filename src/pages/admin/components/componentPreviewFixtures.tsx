@@ -27,6 +27,7 @@ import Lozenge from '@atlaskit/lozenge';
 
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { CatalystStatusPill } from '@/components/catalyst-detail-views/shared/sections/CatalystStatusPill';
+import { UserAvatar } from '@/components/shared/UserAvatar';
 
 export type PreviewFixture = () => ReactNode;
 
@@ -52,6 +53,58 @@ export const previewFixtures: Record<string, PreviewFixture> = {
           </div>
         ),
       )}
+    </div>
+  ),
+
+  'user-avatar': () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+          Size scale
+        </div>
+        <div style={{ display: 'flex', gap: 16, alignItems: 'flex-end', flexWrap: 'wrap' }}>
+          {(['xsmall', 'small', 'medium', 'large', 'xlarge', 'xxlarge'] as const).map(size => (
+            <div key={size} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+              <UserAvatar name="Amadou Ndiaye" size={size} />
+              <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>{size}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+          Fallback chain (name → deterministic colour + initials)
+        </div>
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+          {['Amadou Ndiaye', 'Vikram Indla', 'Sara Patel', 'Yazeed Daraz', 'Maria Rodriguez', 'Hiroshi Tanaka'].map(name => (
+            <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+              <UserAvatar name={name} size="large" />
+              <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>{name}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+          Country flag overlay
+        </div>
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+          {[
+            { name: 'Amadou Ndiaye', country: 'Saudi Arabia' },
+            { name: 'Vikram Indla', country: 'India' },
+            { name: 'Sara Patel', country: 'UAE' },
+            { name: 'Yazeed Daraz', country: 'Jordan' },
+            { name: 'Maria Rodriguez', country: 'USA' },
+          ].map(({ name, country }) => (
+            <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+              <UserAvatar name={name} country={country} size="large" />
+              <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>{country}</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   ),
 };

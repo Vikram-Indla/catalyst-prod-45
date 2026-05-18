@@ -57,7 +57,7 @@ export function ProjectHubShell() {
         .order('name');
       if (error) { console.warn('ph_projects shell query error:', error.message); return []; }
       return (data || []).map(p => ({
-        key: p.key, name: p.name, color: p.color || 'var(--ds-text-brand, #2563EB)', icon: p.icon || 'rocket',
+        key: p.key, name: p.name, color: p.color || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', icon: p.icon || 'rocket',
       })) as ProjectEntry[];
     },
   });
@@ -72,7 +72,7 @@ export function ProjectHubShell() {
         .eq('key', params.key.toUpperCase())
         .maybeSingle();
       if (error) { console.warn('ph_project query error:', error.message); return null; }
-      return data ? { key: data.key, name: data.name, color: data.color || 'var(--ds-text-brand, #2563EB)' } : null;
+      return data ? { key: data.key, name: data.name, color: data.color || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' } : null;
     },
     enabled: !!params.key,
   });

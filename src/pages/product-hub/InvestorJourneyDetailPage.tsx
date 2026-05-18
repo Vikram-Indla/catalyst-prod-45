@@ -79,7 +79,7 @@ export default function InvestorJourneyDetailPage() {
             {debugInfo}
           </span>
         )}
-        <button onClick={handleClose} style={{ marginTop: 8, padding: '8px 16px', background: 'var(--ds-text-brand, #2563EB)', color: '#fff', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
+        <button onClick={handleClose} style={{ marginTop: 8, padding: '8px 16px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: '#fff', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
           Back to backlog
         </button>
       </div>
@@ -88,7 +88,7 @@ export default function InvestorJourneyDetailPage() {
 
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ flexShrink: 0, padding: '8px 24px', background: 'var(--ds-surface, #FFFFFF)' }}>
+      <div style={{ flexShrink: 0, padding: '8px 24px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
         <button
           onClick={handleClose}
           style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', padding: 0, fontSize: 14, color: 'var(--ds-text-subtle, #505258)', cursor: 'pointer', fontFamily: 'inherit' }}

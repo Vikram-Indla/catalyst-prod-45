@@ -36,7 +36,7 @@ export const surface = {
   // App backgrounds (FIX A: Surface hierarchy)
   app: 'hsl(var(--background))',
   sunken: 'hsl(var(--surface-sunken))',         // #F9FAFB - sunken containers
-  raised: 'hsl(var(--surface-raised))',         // #FFFFFF - raised cards
+  raised: 'hsl(var(--surface-raised))',         // var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)) - raised cards
   backdrop: 'hsl(var(--surface-backdrop))',     // #F3F4F6 - dense container backdrop
   overlay: 'hsl(var(--popover))',
   
@@ -95,7 +95,7 @@ export const text = {
 export const border = {
   // Structural borders
   default: 'hsl(var(--border))',
-  // Atlaskit color.border (N40 #DFE1E6) @ 50% alpha — replaces hsl(218 14% 91% / 0.5)
+  // Atlaskit color.border (N40 var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) @ 50% alpha — replaces hsl(218 14% 91% / 0.5)
   subtle: 'rgba(223, 225, 230, 0.5)',
   strong: 'hsl(var(--neutral-400))',
   
@@ -379,18 +379,18 @@ export const catalyst = {
   pageBg: '#FFFFFF',
   cardSurface: '#FFFFFF',
   bgOverlay: '#F8FAFC',
-  bgInset: '#F1F5F9',
-  textPrimary: '#0F172A',
+  bgInset: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
+  textPrimary: 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))',
   textSecondary: '#475569',
-  textMuted: '#94A3B8',
+  textMuted: 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))',
   textDisabled: '#CBD5E1',
-  borderDefault: '#E2E8F0',
+  borderDefault: 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
   borderStrong: '#CBD5E1',
   borderFocus: '#2563EB',
   primaryBlue: '#2563EB',
   primaryBlueHover: '#1D4ED8',
-  aiPurple: '#7C3AED',
-  aiTeal: '#0D9488',
+  aiPurple: 'var(--cp-purple-60, #7C3AED)',
+  aiTeal: 'var(--cp-teal-60, #0D9488)',
 } as const;
 
 // ============================================
@@ -400,7 +400,7 @@ export const catalyst = {
 // Green = Done / Approved / Completed
 // ============================================
 export const statusLozenge = {
-  grey:  { lightBg: '#DFE1E6', lightText: '#253858', darkBg: '#2E2E2E', darkText: '#A1A1A1' },
+  grey:  { lightBg: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', lightText: '#253858', darkBg: '#2E2E2E', darkText: '#A1A1A1' },
   blue:  { lightBg: '#DEEBFF', lightText: '#0747A6', darkBg: 'rgba(59,130,246,0.10)', darkText: '#7DB8FC' },
   green: { lightBg: '#E3FCEF', lightText: '#006644', darkBg: 'rgba(74,222,128,0.10)', darkText: '#4ADE80' },
 } as const;

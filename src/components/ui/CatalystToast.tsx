@@ -16,7 +16,7 @@ interface CatalystToastOptions {
 const toastConfig = {
   success: {
     icon: CheckCircle,
-    iconColor: '#059669',
+    iconColor: 'var(--quality-high, #059669)',
     bgColor: '#ECFDF5',
     borderColor: '#A7F3D0',
     titleColor: '#065F46',
@@ -24,7 +24,7 @@ const toastConfig = {
   },
   error: {
     icon: XCircle,
-    iconColor: 'var(--ds-text-danger, #DC2626)',
+    iconColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
     bgColor: 'var(--ds-background-danger, #FEF2F2)',
     borderColor: '#FECACA',
     titleColor: 'var(--ds-text-danger, #991B1B)',
@@ -32,7 +32,7 @@ const toastConfig = {
   },
   warning: {
     icon: AlertTriangle,
-    iconColor: 'var(--ds-text-warning, #D97706)',
+    iconColor: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
     bgColor: '#FFFBEB',
     borderColor: '#FDE68A',
     titleColor: '#92400E',
@@ -40,7 +40,7 @@ const toastConfig = {
   },
   info: {
     icon: Info,
-    iconColor: 'var(--ds-text-brand, #2563EB)',
+    iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
     bgColor: 'var(--ds-background-selected, #EFF6FF)',
     borderColor: '#BFDBFE',
     titleColor: '#1E40AF',

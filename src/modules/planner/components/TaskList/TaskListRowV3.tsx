@@ -46,17 +46,17 @@ const STATUS_CONFIG: Record<string, {
     label: 'Backlog',
     dotColor: 'var(--ds-text-subtlest, #94a3b8)',
     bgColor: 'transparent',
-    borderColor: 'var(--ds-border, #e2e8f0)',
+    borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
     darkBgColor: 'transparent',
-    darkBorderColor: 'var(--ds-border, #2E2E2E)',
+    darkBorderColor: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
   },
   'planned': {
     label: 'Planned',
     dotColor: 'var(--ds-text-brand, #3b82f6)',
     bgColor: 'transparent',
-    borderColor: 'var(--ds-border, #e2e8f0)',
+    borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
     darkBgColor: 'transparent',
-    darkBorderColor: 'var(--ds-border, #2E2E2E)',
+    darkBorderColor: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
   },
   'in-progress': {
     label: 'In Progress',
@@ -78,9 +78,9 @@ const STATUS_CONFIG: Record<string, {
     label: 'Review',
     dotColor: '#8b5cf6',
     bgColor: 'transparent',
-    borderColor: 'var(--ds-border, #e2e8f0)',
+    borderColor: 'var(--ds-border, var(--cp-bg-sunken, #e2e8f0))',
     darkBgColor: 'transparent',
-    darkBorderColor: 'var(--ds-border, #2E2E2E)',
+    darkBorderColor: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
   },
   'done': {
     label: 'Done',
@@ -250,7 +250,7 @@ export const TaskListRowV3 = memo(function TaskListRowV3({
               padding: 0,
             }}
             onMouseOver={(e) => {
-              e.currentTarget.style.color = 'var(--ds-text-subtle, #334155)';
+              e.currentTarget.style.color = 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))';
               e.currentTarget.style.textDecoration = 'underline';
             }}
             onMouseOut={(e) => {
@@ -354,7 +354,7 @@ export const TaskListRowV3 = memo(function TaskListRowV3({
               <button className="tl-date-cell">
                 {task.due_date ? (
                   <>
-                    {/* Normal: var(--ds-text-subtle, #334155), Overdue: var(--ds-text-danger, #dc2626) (J1, J2) */}
+                    {/* Normal: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))), Overdue: var(--ds-text-danger, #dc2626) (J1, J2) */}
                     <span className={cn(
                       'tl-date-value',
                       daysIndicator?.isOverdue && 'tl-date-overdue'

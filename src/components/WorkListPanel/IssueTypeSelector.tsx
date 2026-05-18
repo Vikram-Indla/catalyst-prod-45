@@ -65,7 +65,7 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
         style={{
           padding: '8px 12px',
           backgroundColor: '#FFFFFF',
-          border: '1px solid #DFE1E6',
+          border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
           borderRadius: '3px',
           fontSize: '14px',
           fontWeight: 500,
@@ -81,7 +81,7 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
           e.currentTarget.style.borderColor = '#B6C2CF';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = '#DFE1E6';
+          e.currentTarget.style.borderColor = 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))';
         }}
       >
         {value ? (
@@ -106,7 +106,7 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
               left: triggerRect.left,
               width: triggerRect.width,
               backgroundColor: '#FFFFFF',
-              border: '1px solid #DFE1E6',
+              border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
               borderRadius: '3px',
               boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
               zIndex: 10000,
@@ -129,7 +129,7 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
                   alignItems: 'center',
                   gap: '8px',
                   fontSize: '14px',
-                  color: '#172B4D',
+                  color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
                   transition: 'background-color 150ms',
                 }}
                 onMouseEnter={(e) => {

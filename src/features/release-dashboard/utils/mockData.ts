@@ -133,7 +133,7 @@ export const mockTeamContribution: TeamMember[] = [
     name: 'Vikram Sharma',
     initials: 'VS',
     role: 'Release Manager',
-    avatarColor: 'var(--ds-text-brand, #2563eb)',
+    avatarColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
     stats: { executed: 48, passRate: 96 },
   },
   {

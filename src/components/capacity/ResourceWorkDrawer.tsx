@@ -23,9 +23,9 @@ interface ResourceWorkDrawerProps {
 const STATUS_COLORS: Record<string, string> = {
   'Done': '#0d9488',
   'done': '#0d9488',
-  'IN PROGRESS': 'var(--ds-text-brand, #2563eb)',
-  'In Progress': 'var(--ds-text-brand, #2563eb)',
-  'in progress': 'var(--ds-text-brand, #2563eb)',
+  'IN PROGRESS': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+  'In Progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
+  'in progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   'To Do': 'var(--ds-text-subtlest, #64748b)',
   'ToDo': 'var(--ds-text-subtlest, #64748b)',
   'todo': 'var(--ds-text-subtlest, #64748b)',

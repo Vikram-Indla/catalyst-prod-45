@@ -99,7 +99,7 @@ export function StatusPopover({ status, onChange, children, showActive = true }:
               maxHeight: 360,
               overflowY: 'auto',
               background: token('elevation.surface.overlay', '#FFFFFF'),
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               borderRadius: 6,
               boxShadow: '0 8px 24px rgba(9, 30, 66, 0.16)',
               padding: '4px 0',
@@ -142,7 +142,7 @@ export function StatusPopover({ status, onChange, children, showActive = true }:
                       <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
                         <Lozenge appearance={appearance}>{s}</Lozenge>
                       </span>
-                      {active && <Check size={14} color="#0052CC" />}
+                      {active && <Check size={14} color="var(--cp-primary-60, #0052CC)" />}
                     </button>
                   );
                 })}

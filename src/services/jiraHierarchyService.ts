@@ -9,43 +9,43 @@ function issueTypeToLevel(type: string): { level: number; name: string; color: s
     case 'Epic':
       return { level: 1, name: 'Epic', color: '#2563EB', colorText: '#1D4ED8' };
     case 'Story':
-      return { level: 3, name: 'Story', color: '#16A34A', colorText: '#15803D' };
+      return { level: 3, name: 'Story', color: 'var(--cp-success, #16A34A)', colorText: '#15803D' };
     case 'Sub-task':
-      return { level: 4, name: 'Sub-task', color: '#64748B', colorText: '#475569' };
+      return { level: 4, name: 'Sub-task', color: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))', colorText: '#475569' };
     case 'QA Bug':
-      return { level: 3, name: 'QA Bug', color: '#DC2626', colorText: '#B91C1C' };
+      return { level: 3, name: 'QA Bug', color: 'var(--cp-danger, #DC2626)', colorText: '#B91C1C' };
     case 'Frontend':
       return { level: 3, name: 'Frontend', color: '#0891B2', colorText: '#0E7490' };
     case 'Backend':
-      return { level: 3, name: 'Backend', color: '#7C3AED', colorText: '#6D28D9' };
+      return { level: 3, name: 'Backend', color: 'var(--cp-purple-60, #7C3AED)', colorText: '#6D28D9' };
     case 'Task':
-      return { level: 3, name: 'Task', color: '#D97706', colorText: '#B45309' };
+      return { level: 3, name: 'Task', color: 'var(--cp-warning, #D97706)', colorText: '#B45309' };
     case 'Production Incident':
-      return { level: 3, name: 'Incident', color: '#DC2626', colorText: '#B91C1C' };
+      return { level: 3, name: 'Incident', color: 'var(--cp-danger, #DC2626)', colorText: '#B91C1C' };
     case 'Change Request':
       return { level: 3, name: 'Change Req', color: '#EA580C', colorText: '#C2410C' };
     case 'Business Gap':
-      return { level: 1, name: 'Business Gap', color: '#0D9488', colorText: '#0F766E' };
+      return { level: 1, name: 'Business Gap', color: 'var(--cp-teal-60, #0D9488)', colorText: '#0F766E' };
     default:
-      return { level: 3, name: type, color: '#64748B', colorText: '#475569' };
+      return { level: 3, name: type, color: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))', colorText: '#475569' };
   }
 }
 
 function statusCategoryToColors(category: string): { color: string; colorText: string; isTerminal: boolean } {
   switch (category) {
     case 'Done':
-      return { color: '#16A34A', colorText: '#15803D', isTerminal: true };
+      return { color: 'var(--cp-success, #16A34A)', colorText: '#15803D', isTerminal: true };
     case 'In Progress':
       return { color: '#2563EB', colorText: '#1D4ED8', isTerminal: false };
     case 'To Do':
     default:
-      return { color: '#64748B', colorText: '#475569', isTerminal: false };
+      return { color: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))', colorText: '#475569', isTerminal: false };
   }
 }
 
 function priorityToObj(priority: string | null): WorkItem['priority'] | undefined {
   if (!priority) return undefined;
-  return { name: priority, color: '#64748B', colorText: '#475569' };
+  return { name: priority, color: 'var(--cp-ink-3, var(--cp-text-secondary, #64748B))', colorText: '#475569' };
 }
 
 function transformJiraIssue(row: any): WorkItem {

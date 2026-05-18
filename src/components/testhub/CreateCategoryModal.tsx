@@ -16,7 +16,7 @@ interface CreateCategoryModalProps {
 
 const PRESET_COLORS = [
   'var(--ds-text-brand, #3B82F6)', '#8B5CF6', '#10B981', '#F97316', '#EC4899',
-  '#06B6D4', '#EAB308', 'var(--ds-text-subtlest, #64748B)', 'var(--ds-text-danger, #EF4444)', '#14B8A6',
+  '#06B6D4', '#EAB308', 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', 'var(--ds-text-danger, #EF4444)', '#14B8A6',
 ];
 
 const AVAILABLE_ICONS = [
@@ -150,7 +150,7 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {PRESET_COLORS.map(c => (
                 <button key={c} onClick={() => setColor(c)} style={{
-                  width: 36, height: 50, borderRadius: 8, backgroundColor: c, border: color === c ? '3px solid #0F172A' : '3px solid transparent',
+                  width: 36, height: 50, borderRadius: 8, backgroundColor: c, border: color === c ? '3px solid var(--cp-ink-1, var(--cp-ink-1, #0F172A))' : '3px solid transparent',
                   cursor: 'pointer', transition: 'transform 0.1s', padding: 0,
                 }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'} onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'} />
               ))}
@@ -184,7 +184,7 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
           <button onClick={onClose} style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>Cancel</button>
           <button onClick={handleSubmit} disabled={isSubmitting} style={{
             height: 40, padding: '0 24px', background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
-            border: 'none', borderRadius: 8, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', fontFamily: 'var(--cp-font-body)', opacity: isSubmitting ? 0.7 : 1,
+            border: 'none', borderRadius: 8, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', fontFamily: 'var(--cp-font-body)', opacity: isSubmitting ? 0.7 : 1,
           }}>{isSubmitting ? 'Creating...' : 'Create Category'}</button>
         </div>
       </div>

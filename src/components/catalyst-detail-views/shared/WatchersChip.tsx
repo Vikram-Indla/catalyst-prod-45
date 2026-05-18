@@ -130,8 +130,8 @@ export function WatchersChip({ issueKey }: Props) {
           style={{
             position: 'absolute', top: 'calc(100% + 4px)', right: 0,
             minWidth: 260, maxWidth: 320, zIndex: 200,
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
             borderRadius: 6,
             boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.15))',
             padding: '12px 0',
@@ -139,7 +139,7 @@ export function WatchersChip({ issueKey }: Props) {
         >
           <div style={{
             padding: '0 16px 8px', fontSize: 11, fontWeight: 600,
-            color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase',
+            color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase',
             letterSpacing: '0.04em',
           }}>
             Watchers
@@ -154,7 +154,7 @@ export function WatchersChip({ issueKey }: Props) {
                 <div key={w.user_id} style={{
                   display: 'flex', alignItems: 'center', gap: 10,
                   padding: '6px 16px', fontSize: 13,
-                  color: 'var(--ds-text, #172B4D)',
+                  color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                 }}>
                   <CatalystAvatar size="small" name={w.full_name ?? w.email ?? 'Unknown'} src={resolveAvatarUrl(w.full_name ?? w.email) ?? w.avatar_url} />
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

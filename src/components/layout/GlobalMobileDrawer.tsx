@@ -97,8 +97,8 @@ export function GlobalMobileDrawer({
           left: 0,
           height: '100dvh',
           width: 'var(--cp-drawer-width, min(320px, 86vw))',
-          background: 'var(--ds-surface-overlay, var(--cp-bg, #FFFFFF))',
-          borderRight: '1px solid var(--ds-border, var(--cp-bd, #DFE1E6))',
+          background: 'var(--ds-surface-overlay, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))))',
+          borderRight: '1px solid var(--ds-border, var(--cp-bd, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))))',
           boxShadow: 'var(--ds-shadow-overlay, 0 8px 24px rgba(9, 30, 66, 0.25))',
           display: 'flex',
           flexDirection: 'column',
@@ -116,14 +116,14 @@ export function GlobalMobileDrawer({
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '0 12px',
-            borderBottom: '1px solid var(--ds-border, var(--cp-bd, #DFE1E6))',
+            borderBottom: '1px solid var(--ds-border, var(--cp-bd, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))))',
           }}
         >
           <span
             style={{
               fontSize: 14,
               fontWeight: 600,
-              color: 'var(--ds-text, var(--cp-t1, #172B4D))',
+              color: 'var(--ds-text, var(--cp-t1, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))))',
             }}
           >
             Navigation

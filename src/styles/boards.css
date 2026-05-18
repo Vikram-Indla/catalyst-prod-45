@@ -47,17 +47,17 @@
   
   --boards-bg-page: var(--ds-surface-sunken, #f8fafc);
   --boards-bg-column: transparent;
-  --boards-bg-card: var(--ds-surface, #ffffff);
-  --boards-bg-card-hover: var(--ds-surface, #ffffff);
+  --boards-bg-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --boards-bg-card-hover: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --boards-bg-empty: var(--ds-surface-sunken, #f8fafc);
   
   /* ========================================
      COLORS — BORDERS
      ======================================== */
   
-  --boards-border-card: var(--ds-border, #e2e8f0);
+  --boards-border-card: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --boards-border-card-hover: var(--ds-text-disabled, #cbd5e1);
-  --boards-border-empty: var(--ds-border, #e2e8f0);
+  --boards-border-empty: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   
   /* Priority Left Borders */
   --boards-priority-critical: var(--ds-text-danger, #dc2626);
@@ -127,53 +127,53 @@
 
 /* Dark mode overrides — DARK MODE ADS neutral */
 .dark {
-  --boards-card-title-color: var(--ds-text, #EDEDED);
-  --boards-card-title-color-done: var(--ds-text-subtlest, #878787);
+  --boards-card-title-color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
+  --boards-card-title-color-done: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
   --boards-card-id-color: var(--ds-text-subtlest, #A1A1A1);
-  --boards-column-title-color: var(--ds-text, #EDEDED);
+  --boards-column-title-color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --boards-column-count-color: var(--ds-text-subtlest, #A1A1A1);
 
   --boards-bg-page: var(--cp-bg-page, #1F1F21);
-  --boards-bg-card: var(--cp-bg-surface, #242528);
-  --boards-bg-card-hover: var(--cp-bg-surface, #242528);
-  --boards-bg-empty: var(--cp-bg-surface, #242528);
+  --boards-bg-card: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  --boards-bg-card-hover: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  --boards-bg-empty: var(--cp-bg-surface, var(--cp-ink-1, #242528));
 
-  --boards-border-card: var(--ds-border, #2E2E2E);
+  --boards-border-card: var(--ds-border, var(--cp-ink-1, #2E2E2E));
   --boards-border-card-hover: var(--ds-border-bold, #454545);
-  --boards-border-empty: var(--ds-border, #2E2E2E);
+  --boards-border-empty: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 
   --boards-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2);
   --boards-shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.3);
   --boards-shadow-card-dragging: 0 8px 24px rgba(0, 0, 0, 0.4);
 
-  --boards-date-color-upcoming: var(--ds-text-subtlest, #878787);
+  --boards-date-color-upcoming: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 
 /* DARK MODE — Direct property overrides to guarantee dark card backgrounds */
 .dark .boards-card,
 .dark .boards-card , [data-theme="dark"] .boards-card {
-  background-color: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 
 .dark .boards-card:hover,
 .dark .boards-card:hover , [data-theme="dark"] .boards-card:hover {
-  background-color: var(--cp-bg-surface, #242528) !important;
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-border-bold, #454545) !important;
 }
 
 .dark .boards-column__empty,
 .dark .boards-column__empty , [data-theme="dark"] .boards-column__empty {
-  background-color: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-border, #2E2E2E) !important;
-  color: var(--ds-text-subtlest, #878787) !important;
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)) !important;
 }
 
 .dark .boards-column__header,
 .dark .boards-column__header , [data-theme="dark"] .boards-column__header {
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 
 .dark .boards-container,
@@ -188,12 +188,12 @@
 
 .dark .boards-card__title,
 .dark .boards-card__title , [data-theme="dark"] .boards-card__title {
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 
 .dark .boards-card__date,
 .dark .boards-card__date , [data-theme="dark"] .boards-card__date {
-  color: var(--ds-text-subtlest, #878787) !important;
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787)) !important;
 }
 
 
@@ -268,7 +268,7 @@
 }
 
 .dark .boards-column__count {
-  background-color: var(--cp-bg-surface, #242528);
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   color: var(--ds-text-subtlest, #A1A1A1);
 }
 
@@ -292,7 +292,7 @@
 }
 
 .dark .boards-column__add-btn:hover {
-  background-color: var(--cp-bg-surface, #242528);
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   color: var(--ds-text-subtlest, #A1A1A1);
 }
 
@@ -342,18 +342,18 @@
 .boards-add-task:hover {
   background-color: var(--ds-surface-sunken, #f8fafc);
   border-color: var(--ds-text-subtlest, #94a3b8);
-  color: var(--ds-text-subtle, #334155);
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
 }
 
 .dark .boards-add-task {
-  border-color: var(--ds-border, #2E2E2E);
-  color: var(--ds-text-subtlest, #878787);
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 
 .dark .boards-add-task:hover {
-  background-color: var(--cp-bg-surface, #242528);
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   border-color: var(--ds-border-bold, #454545);
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 
 .boards-add-task svg {
@@ -584,7 +584,7 @@
   justify-content: center;
   font-size: 10px;
   font-weight: 600;
-  color: var(--ds-surface, #ffffff);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   flex-shrink: 0;
 }
 
@@ -605,9 +605,9 @@
 }
 
 .dark .boards-card__avatar--empty {
-  background-color: var(--cp-bg-surface, #242528);
-  border-color: var(--ds-border, #2E2E2E);
-  color: var(--ds-text-subtlest, #878787);
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 
 
@@ -645,7 +645,7 @@
 }
 
 .dark .boards-card__avatar-overflow {
-  background-color: var(--cp-bg-surface, #242528);
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   color: var(--ds-text-subtlest, #A1A1A1);
 }
 
@@ -738,8 +738,8 @@
 }
 
 .dark .boards-card--placeholder {
-  background-color: var(--cp-bg-surface, #242528);
-  border-color: var(--ds-border, #2E2E2E);
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 
 
@@ -759,7 +759,7 @@
 .boards-loading__spinner {
   width: 24px;
   height: 24px;
-  border: 2px solid var(--ds-border, #e2e8f0);
+  border: 2px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-top-color: var(--ds-text-brand, #3b82f6);
   border-radius: 50%;
   animation: boards-spin 0.8s linear infinite;
@@ -810,12 +810,12 @@
 }
 
 .dark .boards-column__drag-handle {
-  color: var(--ds-text-subtlest, #878787);
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 
 .dark .boards-column__drag-handle:hover {
   color: var(--ds-text-brand, #60a5fa);
-  background-color: var(--cp-bg-surface, #242528);
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528));
 }
 
 /* Delete button for custom columns */
@@ -893,19 +893,19 @@
 .boards-add-column:hover {
   background-color: var(--ds-surface-sunken, #f8fafc);
   border-color: var(--ds-text-subtlest, #94a3b8);
-  color: var(--ds-text-subtle, #334155);
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   transform: scale(1.02);
 }
 
 .dark .boards-add-column {
-  border-color: var(--ds-border, #2E2E2E);
-  color: var(--ds-text-subtlest, #878787);
+  border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
+  color: var(--ds-text-subtlest, var(--cp-text-secondary, #878787));
 }
 
 .dark .boards-add-column:hover {
-  background-color: var(--cp-bg-surface, #242528);
+  background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   border-color: var(--ds-border-bold, #454545);
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 
 .boards-add-column svg {

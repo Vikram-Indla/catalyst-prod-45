@@ -14,7 +14,7 @@ interface OkrThemeDotProps {
 
 // Catalyst brand color palette - Blue + Teal
 const BRAND_THEME_COLORS = [
-  'var(--ds-text-brand, #2563eb)',   // Blue (primary)
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',   // Blue (primary)
   '#0d9488',   // Teal
   '#6b7280',   // Gray
   'var(--ds-text-warning, #f59e0b)',   // Amber

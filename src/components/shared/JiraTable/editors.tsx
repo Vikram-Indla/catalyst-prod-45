@@ -121,7 +121,7 @@ function EditorPopover({ trigger, children, width = 240, align = 'start' }: Edit
             zIndex: 1000,
             minWidth: width,
             background: token('elevation.surface.overlay', '#FFFFFF'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
             borderRadius: 4,
             boxShadow: token('elevation.shadow.overlay', '0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18)'),
             padding: 4,
@@ -625,7 +625,7 @@ export function makeSummaryInlineEditCell<T>({
                   }}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
-                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, #DFE1E6)';
+                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -663,7 +663,7 @@ export function makeSummaryInlineEditCell<T>({
                   }}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
-                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, #DFE1E6)';
+                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -809,13 +809,13 @@ export function makeAssigneeEditCell<T>({
 // Jira-parity priority display: icon + text label.
 // Measured from digital-transformation.atlassian.net BAU list 2026-05-04:
 //   Priority cell shows icon (16px) + label text at 14px, inline-flex, gap 4px.
-//   Colors: Highest=#E5484D Highest/Critical, High=#E2730D, Medium=#D97706,
+//   Colors: Highest=#E5484D Highest/Critical, High=#E2730D, Medium=var(--cp-warning, #D97706),
 //   Low=#0065FF, Lowest=#7A869A. No colored bars — text label is the primary affordance.
 const PRIORITY_CONFIG: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
   critical:  { icon: <AkPriorityCriticalIcon label="" size="small" />, color: '#E5484D', label: 'Critical'  },
   highest:   { icon: <AkPriorityHighestIcon  label="" size="small" />, color: '#E5484D', label: 'Highest'   },
   high:      { icon: <AkPriorityHighIcon     label="" size="small" />, color: '#E2730D', label: 'High'      },
-  medium:    { icon: <AkPriorityMediumIcon   label="" size="small" />, color: '#D97706', label: 'Medium'    },
+  medium:    { icon: <AkPriorityMediumIcon   label="" size="small" />, color: 'var(--cp-warning, #D97706)', label: 'Medium'    },
   low:       { icon: <AkPriorityLowIcon      label="" size="small" />, color: '#0065FF', label: 'Low'       },
   lowest:    { icon: <AkPriorityLowestIcon   label="" size="small" />, color: '#7A869A', label: 'Lowest'    },
 };
@@ -834,7 +834,7 @@ function PriorityBars({ priority }: { priority: string | null }) {
       style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: cfg.color, fontSize: 14, whiteSpace: 'nowrap' }}
     >
       {cfg.icon}
-      <span style={{ color: token('color.text', '#172B4D') }}>{cfg.label}</span>
+      <span style={{ color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>{cfg.label}</span>
     </span>
   );
 }
@@ -915,7 +915,7 @@ export interface ParentChoice {
 // Measured directly from Jira's production list view on
 // digital-transformation.atlassian.net on 2026-04-18:
 //   background: rgb(34, 125, 155)  // #227D9B — Jira's "epic parent" teal
-//   color:      var(--ds-surface, #FFFFFF)
+//   color:      var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))
 //   padding:    2px 4px
 //   border-radius: 3px
 //   font-size:  14px (we use 13 to match our compact row density)
@@ -937,7 +937,7 @@ function ParentChip({ choice }: { choice: { key: string | null; label: string; i
         gap: 6,
         maxWidth: 260,
         padding: '2px 8px',
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         borderRadius: 3,
         fontSize: 14,
         lineHeight: '20px',
@@ -1143,7 +1143,7 @@ export function makeRowActionsCell<T>({
             ))}
             {danger.length > 0 && (
               <>
-                <div style={{ height: 1, background: token('color.border', '#DFE1E6'), margin: '4px 0' }} />
+                <div style={{ height: 1, background: token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))'), margin: '4px 0' }} />
                 {danger.map((a) => (
                   <button
                     key={a.id}
@@ -1207,7 +1207,7 @@ export function makeDateEditCell<T>({
       : null;
 
     const display = formatted
-      ? <span style={{ fontSize: 14, color: token('color.text', '#172B4D') }}>{formatted}</span>
+      ? <span style={{ fontSize: 14, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>{formatted}</span>
       : <span style={{ display: 'inline-block', minWidth: 1, height: 18 }} />;
 
     if (!editable) return display;
@@ -1305,7 +1305,7 @@ export function makeLabelsEditCell<T>({
                   padding: '1px 6px',
                   borderRadius: 3,
                   background: token('color.background.neutral', '#F4F5F7'),
-                  color: token('color.text', '#172B4D'),
+                  color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                   fontSize: 12,
                   whiteSpace: 'nowrap',
                 }}
@@ -1392,7 +1392,7 @@ function LabelsPopoverContent<T>({ row, labels, onChange, close }: {
               padding: '2px 6px',
               borderRadius: 3,
               background: token('color.background.neutral', '#F4F5F7'),
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
               fontSize: 12,
             }}
           >
@@ -1423,7 +1423,7 @@ function LabelsPopoverContent<T>({ row, labels, onChange, close }: {
         <button
           type="button"
           onClick={close}
-          style={{ fontSize: 12, padding: '4px 8px', border: `1px solid ${token('color.border', '#DFE1E6')}`, borderRadius: 3, background: 'transparent', cursor: 'pointer', color: token('color.text', '#172B4D') }}
+          style={{ fontSize: 12, padding: '4px 8px', border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, borderRadius: 3, background: 'transparent', cursor: 'pointer', color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}
         >
           Done
         </button>

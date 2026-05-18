@@ -123,7 +123,7 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
               display: 'flex',
               flexDirection: 'column',
               background: token('elevation.surface.overlay', '#FFFFFF'),
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               borderRadius: 6,
               boxShadow: '0 8px 24px rgba(9, 30, 66, 0.16)',
               zIndex: 9999,
@@ -131,15 +131,15 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
             onClick={(e) => e.stopPropagation()}
           >
             {/* Search bar */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderBottom: `1px solid ${token('color.border', '#DFE1E6')}` }}>
-              <Search size={14} color="var(--ds-text-subtlest, #6B778C)" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}` }}>
+              <Search size={14} color="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
               <input
                 ref={searchRef}
                 type="text"
                 placeholder="Assign to..."
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                style={{ flex: 1, border: 'none', outline: 'none', fontSize: 13, background: 'transparent', color: 'var(--ds-text, #172B4D)' }}
+                style={{ flex: 1, border: 'none', outline: 'none', fontSize: 13, background: 'transparent', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}
               />
             </div>
 
@@ -159,15 +159,15 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
                 onMouseLeave={(e) => { if (currentAccountId) e.currentTarget.style.background = 'transparent'; }}
                 onClick={() => { onChange({ accountId: null, displayName: null }); setIsOpen(false); }}
               >
-                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text-subtlest, #6B778C)' }}>
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>
                   <UserX size={12} />
                 </span>
-                <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>Unassigned</span>
-                {showActive && !currentAccountId && <Check size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}
+                <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Unassigned</span>
+                {showActive && !currentAccountId && <Check size={14} color="var(--cp-primary-60, #0052CC)" style={{ marginLeft: 'auto' }} />}
               </button>
 
-              {isLoading && <div style={{ padding: 12, fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>Loading…</div>}
-              {!isLoading && filtered.length === 0 && <div style={{ padding: 12, fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>No matches</div>}
+              {isLoading && <div style={{ padding: 12, fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>Loading…</div>}
+              {!isLoading && filtered.length === 0 && <div style={{ padding: 12, fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>No matches</div>}
 
               {filtered.map((p) => {
                 const active = showActive && p.jira_account_id === currentAccountId;
@@ -187,10 +187,10 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
                     onClick={() => { onChange({ accountId: p.jira_account_id, displayName: p.display_name }); setIsOpen(false); }}
                   >
                     <Avatar size="small" name={p.display_name} src={p.avatar_url ?? undefined} borderColor="transparent" />
-                    <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {p.display_name}
                     </span>
-                    {active && <Check size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}
+                    {active && <Check size={14} color="var(--cp-primary-60, #0052CC)" style={{ marginLeft: 'auto' }} />}
                   </button>
                 );
               })}

@@ -80,7 +80,7 @@ export default function BoardView() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--ds-text-brand,#2563eb)]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />
       </div>
     );
   }
@@ -100,7 +100,7 @@ export default function BoardView() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white">
+              <Button className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white">
                 <Plus className="w-4 h-4 mr-2" />
                 Create Feature
               </Button>

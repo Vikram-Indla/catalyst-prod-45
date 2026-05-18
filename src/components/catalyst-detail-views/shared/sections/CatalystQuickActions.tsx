@@ -75,7 +75,7 @@ export function CatalystQuickActions({
   /* jira-compare 2026-05-16: Jira's Add button is a transparent/borderless
      icon button. DOM probe: bg rgba(0,0,0,0), border none, borderRadius 3px,
      padding 6px 0px, height 32px, color rgb(80,82,88). The previous bordered
-     chip style (bg #FAFBFC, border 1px #DFE1E6, radius 4px) was not Jira-parity. */
+     chip style (bg #FAFBFC, border 1px var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)), radius 4px) was not Jira-parity. */
   const btnStyle: React.CSSProperties = {
     width: 32, height: 32, border: 'none', background: 'transparent',
     borderRadius: 3, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -111,7 +111,7 @@ export function CatalystQuickActions({
             role="menu"
             aria-label="Add options"
             style={{
-            position: 'absolute', left: 0, top: 34, background: 'var(--ds-surface, #FFFFFF)', borderRadius: 4,
+            position: 'absolute', left: 0, top: 34, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4,
             boxShadow: 'rgba(30,31,33,0.15) 0px 8px 12px, rgba(30,31,33,0.31) 0px 0px 1px',
             width: 266, zIndex: 400, padding: 0,
             animation: 'cv-slide-down 0.15s ease-out',
@@ -161,7 +161,7 @@ export function CatalystQuickActions({
             ))}
 
             {filtered.length === 0 && (
-              <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No items match</div>
+              <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No items match</div>
             )}
           </div>
         )}

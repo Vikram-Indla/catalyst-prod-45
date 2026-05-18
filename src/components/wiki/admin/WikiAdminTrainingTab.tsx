@@ -45,20 +45,20 @@ export function WikiAdminTrainingTab() {
           border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
           flex: 1, maxWidth: 300,
         }}>
-          <Search style={{ width: 14, height: 14, color: 'var(--cp-text-tertiary, #64748B)' }} />
+          <Search style={{ width: 14, height: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }} />
           <input
             placeholder="Search questions..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-            style={{ border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--cp-font-body)', fontSize: 12, width: '100%', color: 'var(--cp-text-primary, #0F172A)' }}
+            style={{ border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--cp-font-body)', fontSize: 12, width: '100%', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}
           />
         </div>
         <button onClick={() => setShowAdd(!showAdd)} style={{
           display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', borderRadius: 4,
-          background: 'var(--cp-primary-60, #2563EB)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
+          background: 'var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
           fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 600, outline: 'none',
         }}
-          onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
+          onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
           onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
         >
           <Plus style={{ width: 14, height: 14 }} /> Add Question
@@ -69,7 +69,7 @@ export function WikiAdminTrainingTab() {
 
       {rows.length === 0 && !showAdd ? (
         <EmptyState
-          icon={<GraduationCap style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, #64748B)' }} />}
+          icon={<GraduationCap style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }} />}
           message="No training questions"
           sub="Add training questions to improve KB accuracy."
         />
@@ -80,7 +80,7 @@ export function WikiAdminTrainingTab() {
               <thead>
                 <tr style={{ background: 'var(--cp-bg-sunken, #F8FAFC)' }}>
                   {['Question', 'Module', 'Has Answer', 'Actions'].map(h => (
-                    <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, #64748B)' }}>{h}</th>
+                    <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -96,10 +96,10 @@ export function WikiAdminTrainingTab() {
                     <td style={{ padding: '8px 12px' }}>
                       <button onClick={() => deleteQ.mutate(r.id)} title="Delete" aria-label="Delete question" style={{
                         padding: 4, borderRadius: 4, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
-                        background: 'transparent', cursor: 'pointer', color: 'var(--cp-text-tertiary, #64748B)',
+                        background: 'transparent', cursor: 'pointer', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                         display: 'flex', alignItems: 'center', outline: 'none',
                       }}
-                        onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
+                        onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
                         onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
                       >
                         <Trash2 style={{ width: 12, height: 12 }} />
@@ -113,9 +113,9 @@ export function WikiAdminTrainingTab() {
 
           {totalPages > 1 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end', fontFamily: 'var(--cp-font-body)', fontSize: 12 }}>
-              <span style={{ color: 'var(--cp-text-tertiary, #64748B)', marginInlineEnd: 8 }}>{total} questions</span>
+              <span style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginInlineEnd: 8 }}>{total} questions</span>
               <PagBtn disabled={page === 0} onClick={() => setPage(p => p - 1)}><ChevronLeft style={{ width: 14, height: 14 }} /></PagBtn>
-              <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>Page {page + 1} of {totalPages}</span>
+              <span style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Page {page + 1} of {totalPages}</span>
               <PagBtn disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)}><ChevronRight style={{ width: 14, height: 14 }} /></PagBtn>
             </div>
           )}
@@ -154,25 +154,25 @@ function AddQuestionForm({ onClose }: { onClose: () => void }) {
       display: 'flex', flexDirection: 'column', gap: 8,
     }}>
       <input placeholder="Question *" value={question} onChange={(e) => setQuestion(e.target.value)}
-        style={{ padding: '6px 10px', borderRadius: 4, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', fontFamily: 'var(--cp-font-body)', fontSize: 12, background: 'var(--cp-bg-page, #fff)', color: 'var(--cp-text-primary, #0F172A)', outline: 'none' }}
-        onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
+        style={{ padding: '6px 10px', borderRadius: 4, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', fontFamily: 'var(--cp-font-body)', fontSize: 12, background: 'var(--cp-bg-page, #fff)', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', outline: 'none' }}
+        onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
         onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
       />
       <textarea placeholder="Answer (optional)" value={answer} onChange={(e) => setAnswer(e.target.value)} rows={2}
-        style={{ padding: '6px 10px', borderRadius: 4, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', fontFamily: 'var(--cp-font-body)', fontSize: 12, background: 'var(--cp-bg-page, #fff)', color: 'var(--cp-text-primary, #0F172A)', resize: 'vertical', outline: 'none' }}
-        onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
+        style={{ padding: '6px 10px', borderRadius: 4, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', fontFamily: 'var(--cp-font-body)', fontSize: 12, background: 'var(--cp-bg-page, #fff)', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', resize: 'vertical', outline: 'none' }}
+        onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
         onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
       />
       <div style={{ display: 'flex', gap: 8 }}>
         <button onClick={() => addQ.mutate()} disabled={!question.trim()} style={{
-          padding: '6px 14px', borderRadius: 4, background: 'var(--cp-primary-60, #2563EB)', color: 'var(--ds-surface, #fff)',
+          padding: '6px 14px', borderRadius: 4, background: 'var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)',
           border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 600,
           opacity: !question.trim() ? 0.5 : 1, outline: 'none',
         }}>Save</button>
         <button onClick={onClose} style={{
           padding: '6px 14px', borderRadius: 4, background: 'transparent',
           border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', cursor: 'pointer',
-          fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-secondary, #334155)', outline: 'none',
+          fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', outline: 'none',
         }}>Cancel</button>
       </div>
     </div>
@@ -186,9 +186,9 @@ function PagBtn({ disabled, onClick, children }: { disabled: boolean; onClick: (
       border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
       background: 'transparent', cursor: disabled ? 'default' : 'pointer',
       opacity: disabled ? 0.4 : 1, display: 'flex', alignItems: 'center',
-      color: 'var(--cp-text-primary, #0F172A)', outline: 'none',
+      color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', outline: 'none',
     }}
-      onFocus={(e) => { if (!disabled) e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
+      onFocus={(e) => { if (!disabled) e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
       onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
     >{children}</button>
   );

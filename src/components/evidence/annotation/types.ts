@@ -50,7 +50,7 @@ export const COLORS = [
   { value: 'var(--ds-text-danger, #ef4444)', label: 'Red' },
   { value: 'var(--ds-text-warning, #d97706)', label: 'Orange' },
   { value: '#0d9488', label: 'Teal' },
-  { value: 'var(--ds-text-brand, #2563eb)', label: 'Blue' },
+  { value: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', label: 'Blue' },
 ] as const;
 
 export const STROKE_WIDTHS = [2, 3, 4, 6] as const;

@@ -61,7 +61,7 @@ export function SyncHealthDashboard({ connectionId }: SyncHealthDashboardProps) 
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <span style={{ display:'inline-flex', color:'var(--ds-icon-brand, #0052CC)' }}><RefreshIcon label="" size="small" /></span>
+              <span style={{ display:'inline-flex', color:'var(--ds-icon-brand, var(--cp-primary-60, #0052CC))' }}><RefreshIcon label="" size="small" /></span>
               Total Syncs
             </CardTitle>
           </CardHeader>

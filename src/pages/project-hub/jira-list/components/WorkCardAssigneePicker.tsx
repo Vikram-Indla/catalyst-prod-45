@@ -157,7 +157,7 @@ export function WorkCardAssigneePicker({
           onClick={(e) => e.stopPropagation()}
           style={{
             position: 'fixed', top, left, width, zIndex: 10000,
-            background: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 4,
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4,
             boxShadow: '0 4px 24px rgba(30,31,33,0.16), 0 0 1px rgba(30,31,33,0.31)',
             overflow: 'hidden',
             fontFamily: 'var(--cp-font-body)',
@@ -171,7 +171,7 @@ export function WorkCardAssigneePicker({
                 width: '100%', height: 36, padding: '0 10px',
                 border: '1px solid var(--cp-border-default, rgba(9,30,66,0.14))', borderRadius: 4,
                 fontSize: 14, fontFamily: 'inherit', outline: 'none',
-                background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-primary, #172B4D)',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
               }}
               onFocus={e => (e.target.style.border = '2px solid #2563EB')}
               onBlur={e => (e.target.style.border = '1px solid var(--cp-border-default, rgba(9,30,66,0.14))')}
@@ -181,7 +181,7 @@ export function WorkCardAssigneePicker({
             {/* Unassigned */}
             <div onClick={() => updateMutation.mutate(null)} style={{
               height: 40, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 10,
-              cursor: 'pointer', borderBottom: '1px solid var(--cp-border-subtle, #F4F5F7)',
+              cursor: 'pointer', borderBottom: '1px solid var(--cp-border-subtle, var(--cp-bg-sunken, #F4F5F7))',
               background: !currentAssigneeId ? 'var(--cp-interact-selected, #DEEBFF)' : 'transparent',
             }}>
               <div style={{
@@ -190,7 +190,7 @@ export function WorkCardAssigneePicker({
                 alignItems: 'center', justifyContent: 'center',
                 fontSize: 16, color: 'var(--ds-border-disabled, #C1C7D0)',
               }}>?</div>
-              <span style={{ fontSize: 14, color: 'var(--cp-text-tertiary, #6B778C)', flex: 1 }}>Unassigned</span>
+              <span style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))', flex: 1 }}>Unassigned</span>
             </div>
             {filtered.map(m => (
               <div key={m.user_id} onClick={() => updateMutation.mutate(m.user_id)}
@@ -199,7 +199,7 @@ export function WorkCardAssigneePicker({
                   cursor: 'pointer',
                   background: m.user_id === currentAssigneeId ? 'var(--cp-interact-selected, #DEEBFF)' : 'transparent',
                 }}
-                onMouseEnter={e => { if (m.user_id !== currentAssigneeId) (e.currentTarget as HTMLElement).style.background = 'var(--cp-interact-hover, #F4F5F7)'; }}
+                onMouseEnter={e => { if (m.user_id !== currentAssigneeId) (e.currentTarget as HTMLElement).style.background = 'var(--cp-interact-hover, var(--cp-bg-sunken, #F4F5F7))'; }}
                 onMouseLeave={e => { if (m.user_id !== currentAssigneeId) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
                 {m.avatar_url ? (
@@ -214,13 +214,13 @@ export function WorkCardAssigneePicker({
                   }}>{m.full_name.split(' ').map(s => s[0]).slice(0, 2).join('').toUpperCase()}</div>
                 )}
                 <div style={{
-                  flex: 1, minWidth: 0, fontSize: 14, color: 'var(--cp-text-primary, #172B4D)',
+                  flex: 1, minWidth: 0, fontSize: 14, color: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>{m.full_name}</div>
               </div>
             ))}
             {filtered.length === 0 && (
-              <div style={{ padding: 16, fontSize: 13, color: 'var(--cp-text-tertiary, #6B778C)', textAlign: 'center' }}>
+              <div style={{ padding: 16, fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>
                 No members found
               </div>
             )}

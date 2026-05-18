@@ -13,25 +13,25 @@ interface CheckResult {
 }
 
 const statusColors: Record<string, { bg: string; fg: string; label: string }> = {
-  pass: { bg: "#1B7F37", fg: "var(--ds-surface, #FFFFFF)", label: "PASS" },
+  pass: { bg: "var(--cp-lozenge-green-bg, #1B7F37)", fg: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))", label: "PASS" },
   fail: { bg: "#FFEBE6", fg: "#BF2600", label: "FAIL" },
   warn: { bg: "#FFFAE6", fg: "#974F0C", label: "WARN" },
-  info: { bg: "#0C66E4", fg: "var(--ds-surface, #FFFFFF)", label: "INFO" },
-  pending: { bg: "var(--ds-surface-sunken, #F4F5F7)", fg: "var(--ds-text-subtlest, #6B778C)", label: "PENDING" },
-  running: { bg: "#0C66E4", fg: "var(--ds-surface, #FFFFFF)", label: "RUNNING" },
+  info: { bg: "#0C66E4", fg: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))", label: "INFO" },
+  pending: { bg: "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))", fg: "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))", label: "PENDING" },
+  running: { bg: "#0C66E4", fg: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))", label: "RUNNING" },
 };
 
 const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
 function DataTable({ data }: { data: any[] }) {
-  if (!data || data.length === 0) return <span style={{ color: "var(--ds-text-subtlest, #6B778C)", fontSize: 12 }}>No rows</span>;
+  if (!data || data.length === 0) return <span style={{ color: "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))", fontSize: 12 }}>No rows</span>;
   const keys = Object.keys(data[0]);
   return (
     <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, marginTop: 8 }}>
       <thead>
         <tr>
           {keys.map((k) => (
-            <th key={k} style={{ textAlign: "left", padding: "4px 8px", borderBottom: "1px solid var(--bd-default, #E2E8F0)", color: "var(--ds-text-subtlest, #64748B)", fontWeight: 600 }}>{k}</th>
+            <th key={k} style={{ textAlign: "left", padding: "4px 8px", borderBottom: "1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))", color: "var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))", fontWeight: 600 }}>{k}</th>
           ))}
         </tr>
       </thead>
@@ -39,7 +39,7 @@ function DataTable({ data }: { data: any[] }) {
         {data.map((row: any, i: number) => (
           <tr key={i} style={{ background: i % 2 === 0 ? "var(--ds-surface-sunken, #FAFBFC)" : "var(--ds-surface, #FFF)" }}>
             {keys.map((k) => (
-              <td key={k} style={{ padding: "4px 8px", borderBottom: "1px solid #F1F5F9" }}>{String(row[k] ?? "—")}</td>
+              <td key={k} style={{ padding: "4px 8px", borderBottom: "1px solid var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))" }}>{String(row[k] ?? "—")}</td>
             ))}
           </tr>
         ))}
@@ -59,18 +59,18 @@ function StatusBadge({ status }: { status: CheckStatus }) {
 
 function CheckCard({ result }: { result: CheckResult }) {
   return (
-    <div style={{ border: "0.75px solid var(--bd-default, #E2E8F0)", borderRadius: 6, background: "var(--ds-surface, #FFFFFF)", padding: 16, marginBottom: 12 }}>
+    <div style={{ border: "0.75px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))", borderRadius: 6, background: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))", padding: 16, marginBottom: 12 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
         <span style={{ fontWeight: 600, fontSize: 13 }}>{result.id} · {result.title}</span>
         <StatusBadge status={result.status} />
       </div>
-      {result.message && <p style={{ fontSize: 12, color: "var(--ds-text-subtlest, #64748B)", marginBottom: 4 }}>{result.message}</p>}
+      {result.message && <p style={{ fontSize: 12, color: "var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))", marginBottom: 4 }}>{result.message}</p>}
       {result.data && Array.isArray(result.data) && result.data.length > 0 && <DataTable data={result.data} />}
       {result.data && !Array.isArray(result.data) && typeof result.data === "object" && (
         <div style={{ fontSize: 12, marginTop: 4 }}>
           {Object.entries(result.data).map(([k, v]) => (
             <div key={k} style={{ display: "flex", gap: 8, padding: "2px 0" }}>
-              <span style={{ color: "var(--ds-text-subtlest, #64748B)", fontWeight: 500, minWidth: 140 }}>{k}:</span>
+              <span style={{ color: "var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))", fontWeight: 500, minWidth: 140 }}>{k}:</span>
               <span>{String(v ?? "—")}</span>
             </div>
           ))}
@@ -262,18 +262,18 @@ export default function RAGAuditPage() {
   const passCount = (layer: number) => results.filter((r) => r.layer === layer && r.status === "pass").length;
   const totalForLayer = (layer: number) => checks.filter((c) => c.layer === layer).length;
   const totalPass = results.filter((r) => r.status === "pass").length;
-  const summaryBg = totalPass >= 22 ? "#1B7F37" : totalPass >= 15 ? "#FFFAE6" : "#FFEBE6";
+  const summaryBg = totalPass >= 22 ? "var(--cp-lozenge-green-bg, #1B7F37)" : totalPass >= 15 ? "#FFFAE6" : "#FFEBE6";
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px", fontFamily: 'var(--cp-font-heading)' }}>
       <h1 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>RAG Pipeline Audit — Layers 1–3</h1>
-      <p style={{ fontSize: 13, color: "var(--ds-text-subtlest, #64748B)", marginBottom: 24 }}>Req Assist™ · Run by Vikram · {today}</p>
+      <p style={{ fontSize: 13, color: "var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))", marginBottom: 24 }}>Req Assist™ · Run by Vikram · {today}</p>
 
       <button
         onClick={runAllChecks}
         disabled={running}
         style={{
-          height: 50, padding: "0 20px", background: running ? "#93C5FD" : "var(--ds-text-brand, #2563EB)", color: "var(--ds-surface, #FFF)",
+          height: 50, padding: "0 20px", background: running ? "#93C5FD" : "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))", color: "var(--ds-surface, #FFF)",
           border: "none", borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: running ? "not-allowed" : "pointer", marginBottom: 24,
         }}
       >

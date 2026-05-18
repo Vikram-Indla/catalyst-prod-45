@@ -54,7 +54,7 @@ export function ImportStepSettings({
         {/* Target Project - only for certain modules */}
         {moduleConfig.requiresProject && projects.length > 0 && (
           <div className="space-y-2">
-            <label htmlFor="target-project-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+            <label htmlFor="target-project-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
               Import to Project <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
             </label>
             <div style={{ maxWidth: '320px' }}>
@@ -71,7 +71,7 @@ export function ImportStepSettings({
 
         {/* File Encoding */}
         <div className="space-y-2">
-          <label htmlFor="encoding-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>File encoding</label>
+          <label htmlFor="encoding-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>File encoding</label>
           <div style={{ maxWidth: '320px' }}>
             <AdsSelect
               inputId="encoding-select"
@@ -84,7 +84,7 @@ export function ImportStepSettings({
 
         {/* Delimiter */}
         <div className="space-y-2">
-          <label htmlFor="delimiter" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+          <label htmlFor="delimiter" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
             Delimiter <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
           </label>
           <div style={{ maxWidth: '320px' }}>
@@ -102,7 +102,7 @@ export function ImportStepSettings({
 
         {/* Date Format */}
         <div className="space-y-2">
-          <label htmlFor="date-format-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+          <label htmlFor="date-format-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
             Date format <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
           </label>
           <div style={{ maxWidth: '320px' }}>

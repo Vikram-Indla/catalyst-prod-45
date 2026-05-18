@@ -98,7 +98,7 @@ export function SchemeSelector({ selectedSchemeId, onSchemeChange }: SchemeSelec
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => handleDelete(selectedScheme)}
-                  className="text-[var(--ds-text-danger,#DC2626)] focus:text-[var(--ds-text-danger,#DC2626)]"
+                  className="text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] focus:text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]"
                 >
                   <TrashIcon label="" size="small" />
                   Delete Scheme

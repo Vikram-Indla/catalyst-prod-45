@@ -37,14 +37,14 @@ interface TestCycleCardProps {
 }
 
 const statusConfig: Record<string, { label: string; color: string; bg: string; border: string }> = {
-  draft:       { label: 'DRAFT',       color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, #DFE1E6)', border: 'var(--ds-border, #DFE1E6)' },
-  planned:     { label: 'PLANNED',     color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, #DFE1E6)', border: 'var(--ds-border, #DFE1E6)' },
+  draft:       { label: 'DRAFT',       color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', border: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
+  planned:     { label: 'PLANNED',     color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', border: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
   active:      { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF', border: '#B3D4FF' },
   in_progress: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF', border: '#B3D4FF' },
   completed:   { label: 'COMPLETED',   color: '#006644', bg: '#E3FCEF', border: '#ABF5D1' },
   done:        { label: 'DONE',        color: '#006644', bg: '#E3FCEF', border: '#ABF5D1' },
-  archived:    { label: 'ARCHIVED',    color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, #DFE1E6)', border: 'var(--ds-border, #DFE1E6)' },
-  paused:      { label: 'PAUSED',      color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, #DFE1E6)', border: 'var(--ds-border, #DFE1E6)' },
+  archived:    { label: 'ARCHIVED',    color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', border: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
+  paused:      { label: 'PAUSED',      color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', border: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
 };
 
 const STATUS_DISPLAY_LABELS: Record<string, string> = {
@@ -217,8 +217,8 @@ export function TestCycleCard({
           <div style={{
             height: '100%', width: `${progressPercent}%`,
             background: progressPercent === 100
-              ? 'linear-gradient(90deg, #10B981 0%, #059669 100%)'
-              : 'linear-gradient(90deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
+              ? 'linear-gradient(90deg, #10B981 0%, var(--quality-high, #059669) 100%)'
+              : 'linear-gradient(90deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
             borderRadius: 4, transition: 'width 0.5s ease',
           }} />
         </div>
@@ -265,7 +265,7 @@ export function TestCycleCard({
         {cycle.status === 'active' && (
           <button onClick={() => navigate(`/testhub/cycles/${cycle.id}`)} style={{
             height: 34, padding: '0 14px', background: 'linear-gradient(135deg, #10B981 0%, var(--sem-success) 100%)',
-            border: 'none', borderRadius: 6, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+            border: 'none', borderRadius: 6, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 13, fontWeight: 600, cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: 6,
           }}>
             <Play size={14} /> Execute
@@ -274,7 +274,7 @@ export function TestCycleCard({
         {cycle.status === 'draft' && (
           <button onClick={() => navigate(`/testhub/cycles/${cycle.id}`)} style={{
             height: 34, padding: '0 14px', background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
-            border: 'none', borderRadius: 6, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+            border: 'none', borderRadius: 6, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 13, fontWeight: 600, cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: 6,
           }}>
             <Play size={14} /> Plan

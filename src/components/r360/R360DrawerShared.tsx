@@ -9,17 +9,17 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { fetchItemDetail, calcDaysSitting } from '@/lib/r360/fetchItemDetail';
 
 // ── Colour tokens ──
-export const INK1 = 'var(--ds-text, #0F172A)';
-export const INK2 = 'var(--ds-text-subtle, #334155)';
-export const INK4 = 'var(--ds-text-subtlest, #64748B)';
-export const MUTED = 'var(--ds-text-subtlest, #94A3B8)';
-export const SUCCESS = 'var(--ds-text-success, #16A34A)';
-export const WARNING = 'var(--ds-text-warning, #D97706)';
-export const DANGER = 'var(--ds-text-danger, #DC2626)';
-export const BRAND = 'var(--ds-text-brand, #2563EB)';
+export const INK1 = 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))';
+export const INK2 = 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))';
+export const INK4 = 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
+export const MUTED = 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
+export const SUCCESS = 'var(--ds-text-success, var(--cp-success, #16A34A))';
+export const WARNING = 'var(--ds-text-warning, var(--cp-warning, #D97706))';
+export const DANGER = 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
+export const BRAND = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
 export const BORDER = 'rgba(15,23,42,0.12)';
 export const BORDER_LIGHT = 'rgba(15,23,42,0.06)';
-export const SLATE = 'var(--ds-text-subtlest, #64748B)';
+export const SLATE = 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
 
 export const TYPE_COLORS: Record<string, { color: string; opacity: number }> = {
   Bug:      { color: '#FF5630', opacity: 0.75 },
@@ -56,12 +56,12 @@ export function SectionTitle({ children }: { children: React.ReactNode }) {
 
 export function R360StatusLozenge({ status }: { status: string }) {
   const s = (status ?? '').toLowerCase().replace(/[\s_-]/g, '');
-  let bg = 'var(--ds-border, #DFE1E6)';
+  let bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
   let color = '#42526E';
   if (['done', 'closed', 'completed', 'approved', 'resolved'].includes(s)) {
-    bg = '#1B7F37'; color = 'var(--ds-surface, #FFFFFF)';
+    bg = 'var(--cp-lozenge-green-bg, #1B7F37)'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
   } else if (['inprogress', 'inreview', 'active', 'started'].includes(s)) {
-    bg = '#0C66E4'; color = 'var(--ds-surface, #FFFFFF)';
+    bg = '#0C66E4'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
   }
   return (
     <span style={{
@@ -112,7 +112,7 @@ export function FilteredListPanel({
           <span style={{ fontSize: 13, fontWeight: 600, color: INK1 }}>{label}</span>
           <span style={{
             display: 'inline-flex', alignItems: 'center',
-            backgroundColor: 'var(--ds-border, #DFE1E6)', color: '#42526E',
+            backgroundColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', color: '#42526E',
             fontSize: '11px', fontWeight: 700, padding: '0 6px', height: '20px', borderRadius: '4px',
           }}>{items.length} item{items.length !== 1 ? 's' : ''}</span>
         </div>

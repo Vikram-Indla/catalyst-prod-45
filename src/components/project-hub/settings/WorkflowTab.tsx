@@ -53,7 +53,7 @@ export function WorkflowTab({ projectId: _ }: WorkflowTabProps) {
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <BoardsIcon label="" size="small" />
-          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #0F172A)' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
             Workflow Scheme
           </span>
         </div>
@@ -71,7 +71,7 @@ export function WorkflowTab({ projectId: _ }: WorkflowTabProps) {
             style={{
               display: 'flex', alignItems: 'center', gap: 2,
               background: 'var(--ds-surface-sunken, #F8FAFC)',
-              border: '1px solid var(--ds-border, #E2E8F0)',
+              border: '1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
               borderRadius: 6, padding: 2,
             }}
           >
@@ -99,13 +99,13 @@ export function WorkflowTab({ projectId: _ }: WorkflowTabProps) {
       <div
         style={{
           background: '#fff',
-          border: '1px solid var(--ds-border, #E2E8F0)',
+          border: '1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
           borderRadius: 8,
           overflow: 'hidden',
         }}
       >
         <Tabs value={activeType} onValueChange={setActiveType} className="w-full">
-          <div style={{ borderBottom: '1px solid var(--ds-border, #E2E8F0)', paddingLeft: 16 }}>
+          <div style={{ borderBottom: '1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', paddingLeft: 16 }}>
             <TabsList className="bg-transparent h-10 gap-0 p-0">
               {ISSUE_TYPES.map(t => (
                 <TabsTrigger
@@ -113,8 +113,8 @@ export function WorkflowTab({ projectId: _ }: WorkflowTabProps) {
                   value={t.key}
                   className={cn(
                     'relative px-4 py-2 text-xs font-medium rounded-none border-b-2 transition-colors data-[state=active]:shadow-none',
-                    'data-[state=active]:border-[var(--ds-text-brand,#2563EB)] data-[state=active]:text-[var(--ds-text,#0F172A)]',
-                    'data-[state=inactive]:border-transparent data-[state=inactive]:text-[var(--ds-text-subtlest,#64748B)] data-[state=inactive]:hover:text-[var(--ds-text,#0F172A)]',
+                    'data-[state=active]:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] data-[state=active]:text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]',
+                    'data-[state=inactive]:border-transparent data-[state=inactive]:text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] data-[state=inactive]:hover:text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]',
                     'bg-transparent'
                   )}
                 >
@@ -166,7 +166,7 @@ function WorkflowTypeContent({ issueType, viewMode }: { issueType: string; viewM
         style={{
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           justifyContent: 'center', padding: '40px 0',
-          color: 'var(--ds-text-subtlest, #64748B)', fontSize: 13,
+          color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: 13,
         }}
       >
         <BoardsIcon label="" size="large" />

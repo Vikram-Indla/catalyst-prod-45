@@ -79,7 +79,7 @@ export function PriorityPopover({ priority, onChange, children, showActive = tru
               left: anchor.left,
               width: 180,
               background: token('elevation.surface.overlay', '#FFFFFF'),
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               borderRadius: 6,
               boxShadow: '0 8px 24px rgba(9, 30, 66, 0.16)',
               padding: 4,
@@ -105,7 +105,7 @@ export function PriorityPopover({ priority, onChange, children, showActive = tru
                   onClick={() => { onChange(value); setIsOpen(false); }}
                 >
                   <PriorityIndicator priority={value} showLabel fontSize={13} />
-                  {active && <Check size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}
+                  {active && <Check size={14} color="var(--cp-primary-60, #0052CC)" style={{ marginLeft: 'auto' }} />}
                 </button>
               );
             })}

@@ -72,19 +72,19 @@ function BoardMenuItem({
       className="flex items-center gap-3 w-full"
       style={{
         padding: '10px 16px', background: 'transparent', border: 'none',
-        cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)', fontWeight: 450,
+        cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 450,
         textAlign: 'left', fontFamily: 'var(--cp-font-body)',
         transition: 'background 80ms ease',
       }}
-      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
     >
       {icon}
       <span style={{ flex: 1 }}>{label}</span>
       {badge !== undefined && badge > 0 && (
         <span style={{
-          fontSize: 11, fontWeight: 700, color: 'var(--ds-surface, #FFFFFF)',
-          background: '#0052CC', borderRadius: 10, padding: '1px 8px',
+          fontSize: 11, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          background: 'var(--cp-primary-60, #0052CC)', borderRadius: 10, padding: '1px 8px',
           lineHeight: '18px',
         }}>{badge}</span>
       )}
@@ -305,7 +305,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
               height: 32, padding: '0 10px',
               border: 'none', borderRadius: 3,
               fontSize: 14, fontWeight: 500,
-              color: active ? 'var(--ds-link, #0052CC)' : tk.textPrimary,
+              color: active ? 'var(--ds-link, var(--cp-primary-60, #0052CC))' : tk.textPrimary,
               background: active ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent',
               cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               transition: 'background 100ms',
@@ -404,7 +404,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
               <>
                 <div style={{ height: 1, background: tk.borderSubtle, margin: '6px 12px' }} />
                 <BoardMenuItem
-                  icon={<ArchiveBoxIcon label="" size="small" primaryColor={showArchived ? '#0052CC' : tk.textSecondary} />}
+                  icon={<ArchiveBoxIcon label="" size="small" primaryColor={showArchived ? 'var(--cp-primary-60, #0052CC)' : tk.textSecondary} />}
                   label={showArchived ? 'Hide archived issues' : 'Show archived issues'}
                   onClick={() => { onShowBoardMenuChange(false); onShowArchivedChange?.(v => !v); }}
                 />

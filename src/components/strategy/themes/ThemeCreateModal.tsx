@@ -53,7 +53,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
         title: initialData.title || '',
         vision_statement: initialData.vision_statement || '',
         description: initialData.description || '',
-        color: initialData.color || 'var(--ds-text-brand, #2563EB)',
+        color: initialData.color || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
         status: initialData.status || 'active',
         priority: initialData.priority || 'medium',
         start_date: initialData.start_date || '',
@@ -167,7 +167,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
               <div className="flex gap-2">
                 {THEME_COLORS.map(c => (
                   <button key={c} onClick={() => setForm(f => ({ ...f, color: c }))} className="rounded-full w-7 h-7 cursor-pointer transition-[border] duration-150" style={{
-                    background: c, border: form.color === c ? '3px solid var(--cp-text-primary, #0F172A)' : '2px solid transparent',
+                    background: c, border: form.color === c ? '3px solid var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' : '2px solid transparent',
                   }} />
                 ))}
               </div>
@@ -310,7 +310,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
             fontSize: 12, fontWeight: 600, height: 34, padding: '0 16px',
             border: 'none', borderRadius: 6,
             background: form.title.trim() ? 'var(--cp-blue)' : 'var(--fg-4)',
-            color: 'var(--ds-text-inverse, #FFFFFF)', cursor: form.title.trim() ? 'pointer' : 'default',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: form.title.trim() ? 'pointer' : 'default',
           }}>{initialData ? 'Update Theme' : 'Create Theme'}</button>
         </div>
       </div>

@@ -393,7 +393,7 @@ export function WorkstreamsPage() {
               borderRadius: '8px',
               fontSize: '14px',
               fontWeight: 500,
-              color: 'var(--ds-surface, #ffffff)',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               cursor: 'pointer',
               fontFamily: 'inherit',
               boxShadow: '0 1px 3px rgba(37, 99, 235, 0.2)',
@@ -510,7 +510,7 @@ export function WorkstreamsPage() {
                   borderRadius: '8px',
                   fontSize: '13px',
                   fontWeight: 500,
-                  color: healthFilter ? 'var(--ds-text-brand, #2563eb)' : COLORS.textSecondary,
+                  color: healthFilter ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : COLORS.textSecondary,
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                 }}
@@ -521,7 +521,7 @@ export function WorkstreamsPage() {
                     width: '6px',
                     height: '6px',
                     borderRadius: '50%',
-                    backgroundColor: 'var(--ds-text-brand, #2563eb)',
+                    backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
                   }} />
                 )}
                 <ChevronDown size={16} style={{ color: COLORS.textMuted }} />
@@ -534,7 +534,7 @@ export function WorkstreamsPage() {
                     top: 'calc(100% + 4px)',
                     right: 0,
                     width: '180px',
-                    backgroundColor: 'var(--ds-surface, #ffffff)',
+                    backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     border: `1px solid ${COLORS.borderDefault}`,
                     borderRadius: '12px',
                     boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
@@ -605,7 +605,7 @@ export function WorkstreamsPage() {
                   borderRadius: '8px',
                   fontSize: '13px',
                   fontWeight: 500,
-                  color: leadFilter ? 'var(--ds-text-brand, #2563eb)' : COLORS.textSecondary,
+                  color: leadFilter ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : COLORS.textSecondary,
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                 }}
@@ -616,7 +616,7 @@ export function WorkstreamsPage() {
                     width: '6px',
                     height: '6px',
                     borderRadius: '50%',
-                    backgroundColor: 'var(--ds-text-brand, #2563eb)',
+                    backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
                   }} />
                 )}
                 <ChevronDown size={16} style={{ color: COLORS.textMuted }} />
@@ -629,7 +629,7 @@ export function WorkstreamsPage() {
                     top: 'calc(100% + 4px)',
                     right: 0,
                     width: '180px',
-                    backgroundColor: 'var(--ds-surface, #ffffff)',
+                    backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     border: `1px solid ${COLORS.borderDefault}`,
                     borderRadius: '12px',
                     boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
@@ -866,7 +866,7 @@ export function WorkstreamsPage() {
                     borderRadius: '6px',
                     fontSize: '13px',
                     fontWeight: page === currentPage ? 600 : 500,
-                    color: page === currentPage ? 'var(--ds-surface, #ffffff)' : COLORS.textSecondary,
+                    color: page === currentPage ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : COLORS.textSecondary,
                     cursor: 'pointer',
                     fontFamily: 'inherit',
                   }}

@@ -55,7 +55,7 @@ export const HEALTH_FROM_PROGRESS = {
 export const STATUS_COLORS: Record<string, string> = {
   'on-track': '#0d9488', // teal
   'completed': '#0d9488', // teal
-  'in-progress': 'var(--ds-text-brand, #2563eb)', // brand-primary blue
+  'in-progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // brand-primary blue
   'pending': '#c8ccd0', // secondary-grey
   'at-risk': 'var(--ds-text-warning, #f59e0b)', // amber warning
   'off-track': 'var(--ds-text-danger, #ef4444)', // red danger
@@ -75,7 +75,7 @@ export const STATUS_LABELS: Record<string, string> = {
 
 // Theme default colors (used when no color specified)
 export const DEFAULT_THEME_COLORS = [
-  'var(--ds-text-brand, #2563eb)', // brand-primary blue
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // brand-primary blue
   '#0d9488', // teal
   'var(--ds-text-brand, #60a5fa)', // blue light
   '#6b7280', // gray

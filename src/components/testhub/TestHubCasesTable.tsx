@@ -129,11 +129,11 @@ export function TestHubCasesTable({ cases, projectId, onRefresh }: TestHubCasesT
                           width: 18,
                           height: 18,
                           borderRadius: 4,
-                          background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB), var(--ds-text-brand, #3B82F6))',
+                          background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)), var(--ds-text-brand, #3B82F6))',
                           flexShrink: 0,
                         }}
                       >
-                        <Sparkles style={{ width: 11, height: 11, color: 'var(--ds-text-inverse, #FFFFFF)' }} />
+                        <Sparkles style={{ width: 11, height: 11, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
                       </span>
                     )}
                   </span>

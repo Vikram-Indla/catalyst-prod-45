@@ -5,7 +5,7 @@
 
 /* ── Root wrapper ──────────────────────────────────────── */
 .jde-root {
-  border: 2px solid #DFE1E6;
+  border: 2px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6));
   border-radius: 3px;
   background: #fff;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
@@ -28,8 +28,8 @@
   align-items: center;
   gap: 1px;
   padding: 4px 6px;
-  border-bottom: 1px solid #DFE1E6;
-  background: #F4F5F7;
+  border-bottom: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6));
+  background: var(--cp-bg-sunken, #F4F5F7);
   flex-wrap: wrap;
   border-radius: 2px 2px 0 0;
 }
@@ -52,12 +52,12 @@
 
 .jde-tb-btn:hover:not(.jde-tb-btn--disabled) {
   background: rgba(9, 30, 66, 0.08);
-  color: #172B4D;
+  color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
 }
 
 .jde-tb-btn--active {
   background: rgba(76, 154, 255, 0.15) !important;
-  color: #0052CC !important;
+  color: var(--cp-primary-60, #0052CC) !important;
 }
 
 .jde-tb-btn--disabled {
@@ -68,7 +68,7 @@
 .jde-tb-divider {
   width: 1px;
   height: 20px;
-  background: #DFE1E6;
+  background: var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6));
   margin: 0 3px;
   flex-shrink: 0;
 }
@@ -93,7 +93,7 @@
 
 .jde-tb-style-btn:hover {
   background: rgba(9, 30, 66, 0.08);
-  color: #172B4D;
+  color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
 }
 
 .jde-tb-style-label {
@@ -129,7 +129,7 @@
   left: 0;
   z-index: 1000;
   background: #fff;
-  border: 1px solid #DFE1E6;
+  border: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6));
   border-radius: 4px;
   box-shadow: 0 4px 12px rgba(9,30,66,.15), 0 0 1px rgba(9,30,66,.25);
   padding: 4px;
@@ -163,7 +163,7 @@
   border: none;
   border-radius: 3px;
   background: transparent;
-  color: #172B4D;
+  color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
   font-size: 13px;
   text-align: left;
   cursor: pointer;
@@ -171,13 +171,13 @@
 }
 
 .jde-dropdown-item:hover {
-  background: #F4F5F7;
-  color: #172B4D;
+  background: var(--cp-bg-sunken, #F4F5F7);
+  color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
 }
 
 .jde-dropdown-item--active {
   background: #DEEBFF;
-  color: #0052CC;
+  color: var(--cp-primary-60, #0052CC);
 }
 
 .jde-dropdown-item--row {
@@ -195,7 +195,7 @@
 
 .jde-dropdown-divider {
   height: 1px;
-  background: #DFE1E6;
+  background: var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6));
   margin: 4px 0;
 }
 
@@ -220,7 +220,7 @@
   left: 0;
   z-index: 1000;
   background: #fff;
-  border: 1px solid #DFE1E6;
+  border: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6));
   border-radius: 4px;
   box-shadow: 0 4px 12px rgba(9,30,66,.15);
   padding: 12px;
@@ -231,10 +231,10 @@
   width: 100%;
   height: 32px;
   padding: 0 8px;
-  border: 2px solid #DFE1E6;
+  border: 2px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6));
   border-radius: 3px;
   font-size: 13px;
-  color: #172B4D;
+  color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
   outline: none;
   box-sizing: border-box;
 }
@@ -246,7 +246,7 @@
 .jde-btn-primary {
   height: 28px;
   padding: 0 10px;
-  background: #0052CC;
+  background: var(--cp-primary-60, #0052CC);
   color: #fff;
   border: none;
   border-radius: 3px;
@@ -271,7 +271,7 @@
   transition: background 80ms;
 }
 
-.jde-btn-ghost:hover { background: #F4F5F7; }
+.jde-btn-ghost:hover { background: var(--cp-bg-sunken, #F4F5F7); }
 
 /* ── Emoji picker ──────────────────────────────────────── */
 .jde-emoji-picker {
@@ -280,7 +280,7 @@
   left: 0;
   z-index: 1000;
   background: #fff;
-  border: 1px solid #DFE1E6;
+  border: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6));
   border-radius: 4px;
   box-shadow: 0 4px 12px rgba(9,30,66,.15);
   padding: 8px;
@@ -303,7 +303,7 @@
   transition: background 80ms;
 }
 
-.jde-emoji-btn:hover { background: #F4F5F7; }
+.jde-emoji-btn:hover { background: var(--cp-bg-sunken, #F4F5F7); }
 
 /* ── Editor content area ───────────────────────────────── */
 .jde-content {
@@ -314,7 +314,7 @@
   outline: none;
   font-size: 14px;
   line-height: 1.714;
-  color: #172B4D;
+  color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
   min-height: inherit;
 }
 
@@ -328,11 +328,11 @@
 }
 
 /* Headings — Atlassian sizing */
-.jde-content .ProseMirror h1 { font-size: 24px; font-weight: 600; line-height: 1.333; margin: 16px 0 8px; color: #172B4D; }
-.jde-content .ProseMirror h2 { font-size: 20px; font-weight: 600; line-height: 1.4; margin: 14px 0 6px; color: #172B4D; }
-.jde-content .ProseMirror h3 { font-size: 16px; font-weight: 600; line-height: 1.5; margin: 12px 0 4px; color: #172B4D; }
-.jde-content .ProseMirror h4 { font-size: 14px; font-weight: 600; line-height: 1.571; margin: 10px 0 4px; color: #172B4D; }
-.jde-content .ProseMirror h5 { font-size: 12px; font-weight: 600; line-height: 1.667; margin: 10px 0 4px; color: #172B4D; }
+.jde-content .ProseMirror h1 { font-size: 24px; font-weight: 600; line-height: 1.333; margin: 16px 0 8px; color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D)); }
+.jde-content .ProseMirror h2 { font-size: 20px; font-weight: 600; line-height: 1.4; margin: 14px 0 6px; color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D)); }
+.jde-content .ProseMirror h3 { font-size: 16px; font-weight: 600; line-height: 1.5; margin: 12px 0 4px; color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D)); }
+.jde-content .ProseMirror h4 { font-size: 14px; font-weight: 600; line-height: 1.571; margin: 10px 0 4px; color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D)); }
+.jde-content .ProseMirror h5 { font-size: 12px; font-weight: 600; line-height: 1.667; margin: 10px 0 4px; color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D)); }
 .jde-content .ProseMirror h6 { font-size: 11px; font-weight: 700; line-height: 1.455; margin: 10px 0 4px; color: #5E6C84; text-transform: uppercase; }
 
 /* Paragraph */
@@ -353,7 +353,7 @@
 
 /* Blockquote */
 .jde-content .ProseMirror blockquote {
-  border-left: 3px solid #DFE1E6;
+  border-left: 3px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6));
   padding-left: 12px;
   margin: 8px 0;
   color: #5E6C84;
@@ -361,17 +361,17 @@
 
 /* Inline code */
 .jde-content .ProseMirror code {
-  background: #F4F5F7;
+  background: var(--cp-bg-sunken, #F4F5F7);
   border-radius: 2px;
   padding: 1px 5px;
   font-family: 'SFMono-Medium', 'SF Mono', 'Segoe UI Mono', Menlo, monospace;
   font-size: 0.875em;
-  color: #172B4D;
+  color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
 }
 
 /* Code block */
 .jde-content .ProseMirror pre {
-  background: #F4F5F7;
+  background: var(--cp-bg-sunken, #F4F5F7);
   border-radius: 3px;
   padding: 10px 14px;
   margin: 8px 0;
@@ -382,19 +382,19 @@
   background: transparent;
   padding: 0;
   font-size: 13px;
-  color: #172B4D;
+  color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
 }
 
 /* HR */
 .jde-content .ProseMirror hr {
   border: none;
-  border-top: 2px solid #DFE1E6;
+  border-top: 2px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6));
   margin: 16px 0;
 }
 
 /* Link */
 .jde-content .ProseMirror a.jde-link {
-  color: #0052CC;
+  color: var(--cp-primary-60, #0052CC);
   text-decoration: underline;
 }
 
@@ -424,13 +424,13 @@
 
 .jde-content .ProseMirror td,
 .jde-content .ProseMirror th {
-  border: 1px solid #DFE1E6;
+  border: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6));
   padding: 8px 10px;
   vertical-align: top;
 }
 
 .jde-content .ProseMirror th {
-  background: #F4F5F7;
+  background: var(--cp-bg-sunken, #F4F5F7);
   font-weight: 600;
   text-align: left;
 }
@@ -464,7 +464,7 @@
   margin-top: 1px;
 }
 
-.jde-content .ProseMirror .jde-panel--info    { background: #DEEBFF; border-left: 4px solid #0052CC; }
+.jde-content .ProseMirror .jde-panel--info    { background: #DEEBFF; border-left: 4px solid var(--cp-primary-60, #0052CC); }
 .jde-content .ProseMirror .jde-panel--info::before { content: 'ℹ️'; }
 .jde-content .ProseMirror .jde-panel--note    { background: #EAE6FF; border-left: 4px solid #6554C0; }
 .jde-content .ProseMirror .jde-panel--note::before { content: '📝'; }
@@ -477,7 +477,7 @@
 
 /* ── Expand node ───────────────────────────────────────── */
 .jde-content .ProseMirror .jde-expand {
-  border: 1px solid #DFE1E6;
+  border: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6));
   border-radius: 3px;
   margin: 8px 0;
 }
@@ -486,9 +486,9 @@
   padding: 8px 12px;
   font-weight: 600;
   font-size: 14px;
-  color: #172B4D;
+  color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
   cursor: pointer;
-  background: #F4F5F7;
+  background: var(--cp-bg-sunken, #F4F5F7);
   border-radius: 2px 2px 0 0;
 }
 

@@ -117,7 +117,7 @@ export function JiraBulkActionBar({
       <div
         className="flex items-center gap-0 rounded-lg overflow-hidden"
         style={{
-          backgroundColor: '#44546F',
+          backgroundColor: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))',
           boxShadow: '0 8px 32px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.12)',
           fontFamily: 'var(--cp-font-body)',
           height: 44,
@@ -132,7 +132,7 @@ export function JiraBulkActionBar({
           style={{ width: 44, height: 44 }}
           aria-label="Clear selection"
         >
-          <X size={18} color="var(--ds-surface, #FFFFFF)" strokeWidth={2} />
+          <X size={18} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" strokeWidth={2} />
         </button>
 
         {/* Divider */}
@@ -144,7 +144,7 @@ export function JiraBulkActionBar({
           style={{
             fontSize: 14,
             fontWeight: 500,
-            color: 'var(--ds-surface, #FFFFFF)',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             padding: '0 16px',
             letterSpacing: '-0.01em',
           }}
@@ -159,7 +159,7 @@ export function JiraBulkActionBar({
         <button
           onClick={handleEdit}
           className="flex items-center gap-2 hover:bg-white/10 transition-colors duration-100 whitespace-nowrap"
-          style={{ height: 44, padding: '0 14px', color: 'var(--ds-surface, #FFFFFF)', fontSize: 14, fontWeight: 500 }}
+          style={{ height: 44, padding: '0 14px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 500 }}
           aria-label="Edit selected items"
         >
           <Pencil size={15} strokeWidth={2} />
@@ -170,7 +170,7 @@ export function JiraBulkActionBar({
         <button
           onClick={handleCopy}
           className="flex items-center gap-2 hover:bg-white/10 transition-colors duration-100 whitespace-nowrap"
-          style={{ height: 44, padding: '0 14px', color: 'var(--ds-surface, #FFFFFF)', fontSize: 14, fontWeight: 500 }}
+          style={{ height: 44, padding: '0 14px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 500 }}
           aria-label="Copy to clipboard"
         >
           <Clipboard size={15} strokeWidth={2} />
@@ -187,8 +187,8 @@ export function JiraBulkActionBar({
               style={{
                 height: 32,
                 padding: '0 12px',
-                backgroundColor: 'var(--ds-text-danger, #DC2626)',
-                color: 'var(--ds-surface, #FFFFFF)',
+                backgroundColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
+                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 fontSize: 13,
                 fontWeight: 600,
                 opacity: isDeleting ? 0.6 : 1,
@@ -209,7 +209,7 @@ export function JiraBulkActionBar({
           <button
             onClick={handleDelete}
             className="flex items-center gap-2 hover:bg-white/10 transition-colors duration-100 whitespace-nowrap"
-            style={{ height: 44, padding: '0 14px', color: 'var(--ds-surface, #FFFFFF)', fontSize: 14, fontWeight: 500 }}
+            style={{ height: 44, padding: '0 14px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 500 }}
             aria-label="Delete selected items"
           >
             <Trash2 size={15} strokeWidth={2} />

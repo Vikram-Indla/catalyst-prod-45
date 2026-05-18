@@ -234,7 +234,7 @@ export function IssueListPanel({
                       <IssueKeyLink
                         issueKey={item.issue_key}
                         className="jlpCardKey"
-                        style={{ color: '#0052CC', textDecoration: 'none' }}
+                        style={{ color: 'var(--cp-primary-60, #0052CC)', textDecoration: 'none' }}
                       />
                     </div>
                     <CatalystOwnerAvatar

@@ -46,7 +46,7 @@ export function AllWorkEmptyState({ type, message, query, onAction, onClear, onR
   return (
     <div
       className={`flex flex-col items-center justify-center rounded-lg border ${isSmall ? 'py-8' : 'py-16'}`}
-      style={{ borderColor: 'var(--bd-default, #2E2E2E)', backgroundColor: 'var(--bg-app)' }}
+      style={{ borderColor: 'var(--bd-default, var(--cp-ink-1, #2E2E2E))', backgroundColor: 'var(--bg-app)' }}
     >
       <Icon
         className={isSmall ? 'w-8 h-8 mb-2' : 'w-10 h-10 mb-3'}
@@ -69,7 +69,7 @@ export function AllWorkEmptyState({ type, message, query, onAction, onClear, onR
         isError || type === 'no-items' ? (
           <button
             onClick={actionHandler}
-            className="px-4 py-2 text-[13px] font-medium rounded-md text-white transition-colors duration-[80ms] hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
+            className="px-4 py-2 text-[13px] font-medium rounded-md text-white transition-colors duration-[80ms] hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
             style={{ backgroundColor: isError ? 'var(--sem-danger)' : 'var(--cp-blue)' }}
           >
             {actionLabel}
@@ -77,7 +77,7 @@ export function AllWorkEmptyState({ type, message, query, onAction, onClear, onR
         ) : (
           <button
             onClick={actionHandler}
-            className="text-[13px] font-medium transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
+            className="text-[13px] font-medium transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
             style={{ color: 'var(--cp-blue)' }}
           >
             {actionLabel}

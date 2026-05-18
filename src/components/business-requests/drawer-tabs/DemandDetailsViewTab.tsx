@@ -426,7 +426,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
                       href={data.scope_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#0052CC] hover:underline truncate"
+                      className="text-[var(--cp-primary-60, #0052CC)] hover:underline truncate"
                     >
                       {data.scope_url}
                     </a>
@@ -445,7 +445,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
                         <span
                           key={v}
                           className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
-                          style={{ background: 'var(--ds-surface-sunken, #F4F5F7)', color: '#344563', border: '1px solid #DFE1E6' }}
+                          style={{ background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', color: '#344563', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))' }}
                         >
                           {opt?.label ?? v}
                         </span>
@@ -486,7 +486,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
                 <div className="flex items-center gap-2">
                   <div
                     className="w-4 h-4 rounded flex items-center justify-center"
-                    style={{ background: '#0052CC' }}
+                    style={{ background: 'var(--cp-primary-60, #0052CC)' }}
                   >
                     <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
                       <path d="M1 4l3 3 5-6" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>

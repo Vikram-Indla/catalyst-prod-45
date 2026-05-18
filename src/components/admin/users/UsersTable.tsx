@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, memo } from 'react';
-import { UserAvatar } from './UserAvatar';
+import { UserAvatar } from '@/components/shared/UserAvatar';
 import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import AdsSelect from '@atlaskit/select';
@@ -453,10 +453,10 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
 
   if (isLoading) {
     return (
-      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+      <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
         <div style={{ padding: '16px 24px' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: 0 }}>User List</h2>
-          <p style={{ fontSize: '13px', color: 'var(--ds-text-subtle, #44546F)', marginTop: '4px' }}>View and manage all users in the system</p>
+          <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', margin: 0 }}>User List</h2>
+          <p style={{ fontSize: '13px', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', marginTop: '4px' }}>View and manage all users in the system</p>
         </div>
         <div style={{ padding: '0 24px 24px' }}>
           <div className="flex items-center justify-center py-12">
@@ -468,11 +468,11 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
   }
 
   return (
-    <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3" style={{ padding: '16px 24px' }}>
         <div>
-          <h2 className="text-lg sm:text-xl" style={{ fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: 0 }}>User List</h2>
-          <p className="text-xs sm:text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)', marginTop: '4px' }}>View and manage all users in the system</p>
+          <h2 className="text-lg sm:text-xl" style={{ fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', margin: 0 }}>User List</h2>
+          <p className="text-xs sm:text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', marginTop: '4px' }}>View and manage all users in the system</p>
         </div>
         <Button
           appearance="default"
@@ -601,11 +601,11 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   <UserAvatar
                     name={user.full_name}
-                    avatarUrl={user.avatar_url}
+                    src={user.avatar_url}
                     country={user.country}
                     flagUrl={user.country_flag_svg_url || undefined}
                     onClick={() => setEditUser(user)}
-                    size="md"
+                    size="medium"
                   />
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium truncate">{user.full_name || 'Unknown'}</div>
@@ -894,11 +894,11 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                       <div className="flex items-center gap-3">
                         <UserAvatar
                           name={user.full_name}
-                          avatarUrl={user.avatar_url}
+                          src={user.avatar_url}
                           country={user.country}
                           flagUrl={user.country_flag_svg_url || getCountryInfo(user.country)?.svg}
                           onClick={() => setEditUser(user)}
-                          size="sm"
+                          size="small"
                         />
                         <div className="min-w-0">
                           <div className="text-sm font-medium truncate">{user.full_name || 'Unknown'}</div>

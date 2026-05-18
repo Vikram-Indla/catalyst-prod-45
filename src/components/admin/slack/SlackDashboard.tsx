@@ -103,7 +103,7 @@ function StatCard({
   };
 
   return (
-    <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '24px' }}>
+    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '24px' }}>
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm font-medium text-slate-500">{title}</p>
@@ -195,7 +195,7 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
     <div className="space-y-6">
       {/* Connection Status Banner */}
       <div style={{
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         border: '1px solid var(--ds-border, #DCDFE4)',
         borderLeft: config.is_active ? '4px solid #22c55e' : '4px solid #f59e0b',
         borderRadius: '3px',
@@ -307,7 +307,7 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
         <TabsContent value="overview" className="space-y-4 mt-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Configuration Card */}
-            <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+            <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
               <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
                 <h3 className="text-base flex items-center gap-2" style={{ fontWeight: 500, margin: 0 }}>
                   <SettingsIcon label="" size="small" />
@@ -366,7 +366,7 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
             </div>
 
             {/* Recent Activity Card */}
-            <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+            <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
               <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }} className="flex flex-row items-center justify-between">
                 <div>
                   <h3 className="text-base flex items-center gap-2" style={{ fontWeight: 500, margin: 0 }}>
@@ -427,7 +427,7 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
 
         {/* Connected Users Tab */}
         <TabsContent value="users" className="mt-4">
-          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
             <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }} className="flex flex-row items-center justify-between">
               <div>
                 <h3 className="text-base" style={{ fontWeight: 500, margin: 0 }}>Connected Users</h3>
@@ -537,7 +537,7 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
 
         {/* Audit Log Tab */}
         <TabsContent value="audit" className="mt-4">
-          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
             <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }} className="flex flex-row items-center justify-between">
               <div>
                 <h3 className="text-base" style={{ fontWeight: 500, margin: 0 }}>Audit Log</h3>

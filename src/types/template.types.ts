@@ -163,7 +163,7 @@ export const TEMPLATE_TYPES: Record<TemplateType, TemplateTypeInfo> = {
     type: 'regression',
     label: 'Regression',
     icon: 'RefreshCw',
-    color: '#2563eb',
+    color: 'var(--cp-workstream-catalyst-primary, #2563eb)',
     bgColor: '#dbeafe',
     description: 'Full regression testing for release validation',
     defaultMilestones: [

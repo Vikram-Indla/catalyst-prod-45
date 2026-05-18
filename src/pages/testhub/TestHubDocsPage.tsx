@@ -393,7 +393,7 @@ const SECTIONS = [
     summary: 'Layer 0 (Platform) → Layer 1 (Folders/Tags/Envs) → Layer 2 (Cases) → Layer 3 (Sets/Plans) → Layer 4 (Cycles/Runs) → Layer 5 (Defects) → Layer 6 (Releases) → Layer 7 (Reports)' },
   { id: 'steps', title: '3. Step-by-Step Testing Flow', icon: CheckCircle2, color: '#10B981',
     summary: '10 phases, 40+ individual test steps covering every module from folder creation to AI insights.' },
-  { id: 'database', title: '4. Database Schema', icon: Database, color: 'var(--ds-text-warning, #F59E0B)',
+  { id: 'database', title: '4. Database Schema', icon: Database, color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))',
     summary: '60+ tables in the tm_ schema with full foreign key relationships and entity hierarchy.' },
   { id: 'rules', title: '5. Business Rules & Constraints', icon: AlertTriangle, color: 'var(--ds-text-danger, #EF4444)',
     summary: 'Hard rules (DB-enforced) and soft rules (UI-enforced) governing the entire workflow.' },
@@ -420,17 +420,17 @@ export default function TestHubDocsPage() {
       {/* Header */}
       <div style={{
         padding: '24px 32px',
-        backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-        borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+        backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+        borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
       }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0, fontFamily: 'var(--cp-font-body)' }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0, fontFamily: 'var(--cp-font-body)' }}>
             📘 TestHub Functional Flow Guide
           </h1>
-          <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, #64748B)', margin: '4px 0 0', fontFamily: 'var(--cp-font-body)' }}>
+          <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '4px 0 0', fontFamily: 'var(--cp-font-body)' }}>
             Complete dependency map, step-by-step testing flow, database schema, and business rules
           </p>
         </div>
@@ -441,8 +441,8 @@ export default function TestHubDocsPage() {
             alignItems: 'center',
             gap: 8,
             padding: '10px 20px',
-            backgroundColor: 'var(--ds-text, #0F172A)',
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            backgroundColor: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: 'none',
             borderRadius: 8,
             fontSize: 14,
@@ -460,13 +460,13 @@ export default function TestHubDocsPage() {
       <div style={{ flex: 1, overflow: 'auto', padding: '24px 32px' }}>
         {/* Dependency Flow Visual */}
         <div style={{
-          backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
+          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           borderRadius: 12,
-          border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+          border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
           padding: 24,
           marginBottom: 24,
         }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 16px', fontFamily: 'var(--cp-font-body)' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: '0 0 16px', fontFamily: 'var(--cp-font-body)' }}>
             Dependency Flow (Follow This Order)
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
@@ -478,7 +478,7 @@ export default function TestHubDocsPage() {
               { label: 'Execution & Runs', color: '#FFE4E6', textColor: '#9F1239' },
               { label: 'Defects', color: '#FCE7F3', textColor: '#9D174D' },
               { label: 'Releases / Gates', color: '#CCFBF1', textColor: '#134E4A' },
-              { label: 'Reports / AI', color: 'var(--ds-surface-sunken, #F1F5F9)', textColor: 'var(--ds-text-subtle, #475569)' },
+              { label: 'Reports / AI', color: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', textColor: 'var(--ds-text-subtle, #475569)' },
             ].map((item, i, arr) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{
@@ -493,7 +493,7 @@ export default function TestHubDocsPage() {
                 }}>
                   {item.label}
                 </div>
-                {i < arr.length - 1 && <ArrowRight size={16} style={{ color: 'var(--ds-text-subtlest, #94A3B8)', flexShrink: 0 }} />}
+                {i < arr.length - 1 && <ArrowRight size={16} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', flexShrink: 0 }} />}
               </div>
             ))}
           </div>
@@ -508,9 +508,9 @@ export default function TestHubDocsPage() {
               <div
                 key={section.id}
                 style={{
-                  backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
+                  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   borderRadius: 12,
-                  border: `1px solid ${isOpen ? section.color + '40' : 'var(--cp-border, #E2E8F0)'}`,
+                  border: `1px solid ${isOpen ? section.color + '40' : 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
                   overflow: 'hidden',
                   transition: 'border-color 0.2s',
                 }}
@@ -542,20 +542,20 @@ export default function TestHubDocsPage() {
                     <Icon size={18} style={{ color: section.color }} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', fontFamily: 'var(--cp-font-body)' }}>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontFamily: 'var(--cp-font-body)' }}>
                       {section.title}
                     </div>
-                    <div style={{ fontSize: 13, color: 'var(--cp-text-tertiary, #64748B)', fontFamily: 'var(--cp-font-body)', marginTop: 2 }}>
+                    <div style={{ fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)', marginTop: 2 }}>
                       {section.summary}
                     </div>
                   </div>
-                  {isOpen ? <ChevronDown size={18} style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} /> : <ChevronRight size={18} style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />}
+                  {isOpen ? <ChevronDown size={18} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} /> : <ChevronRight size={18} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />}
                 </button>
                 {isOpen && (
                   <div style={{
                     padding: '0 20px 20px',
                     fontSize: 14,
-                    color: 'var(--cp-text-secondary, #334155)',
+                    color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                     fontFamily: 'var(--cp-font-body)',
                     lineHeight: 1.7,
                   }}>
@@ -568,7 +568,7 @@ export default function TestHubDocsPage() {
                       fontSize: 12,
                       lineHeight: 1.6,
                       overflowX: 'auto',
-                      border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                      border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                       color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : undefined,
                     }}>
                       {getMarkdownSection(section.id)}
@@ -584,17 +584,17 @@ export default function TestHubDocsPage() {
         <div style={{
           marginTop: 24,
           padding: 20,
-          backgroundColor: 'var(--ds-text, #0F172A)',
+          backgroundColor: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
           borderRadius: 12,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
         }}>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: 'var(--cp-font-body)' }}>
+            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontFamily: 'var(--cp-font-body)' }}>
               Download the full guide as Markdown
             </div>
-            <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #94A3B8)', fontFamily: 'var(--cp-font-body)', marginTop: 4 }}>
+            <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontFamily: 'var(--cp-font-body)', marginTop: 4 }}>
               Open in any Markdown editor (VS Code, Obsidian, Notion) for the best reading experience
             </div>
           </div>
@@ -605,8 +605,8 @@ export default function TestHubDocsPage() {
               alignItems: 'center',
               gap: 8,
               padding: '10px 20px',
-              backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
-              color: 'var(--cp-text-primary, #0F172A)',
+              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
               border: 'none',
               borderRadius: 8,
               fontSize: 14,

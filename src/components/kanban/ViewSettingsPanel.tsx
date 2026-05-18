@@ -37,7 +37,7 @@ function Toggle({ checked, onChange, tk }: { checked: boolean; onChange: (v: boo
     >
       <span style={{
         width: 16, height: 16, borderRadius: '50%',
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         position: 'absolute',
         left: checked ? 18 : 2,
         transition: 'left 150ms',
@@ -180,7 +180,7 @@ export function ViewSettingsPanel({ settings, onUpdate, onExpandAll, onCollapseA
                     padding: '0 8px',
                     fontSize: 12,
                     fontWeight: selected ? 600 : 500,
-                    color: selected ? 'var(--ds-surface, #FFFFFF)' : tk.textSecondary,
+                    color: selected ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : tk.textSecondary,
                     background: selected ? tk.selectedAccent : tk.chipBg,
                     border: `1px solid ${selected ? tk.selectedAccent : tk.border}`,
                     borderRadius: 4,
@@ -237,7 +237,7 @@ export function ViewSettingsPanel({ settings, onUpdate, onExpandAll, onCollapseA
               style={{
                 flex: 1, height: 28, padding: '0 8px',
                 fontSize: 12, fontWeight: active ? 600 : 500,
-                color: active ? 'var(--ds-surface, #FFFFFF)' : tk.textSecondary,
+                color: active ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : tk.textSecondary,
                 background: active ? tk.selectedAccent : tk.chipBg,
                 border: `1px solid ${active ? tk.selectedAccent : tk.border}`,
                 borderRadius: 4, cursor: 'pointer',

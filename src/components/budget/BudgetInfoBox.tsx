@@ -11,7 +11,7 @@ export function BudgetInfoBox() {
       <Info className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
       <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-slate-600">
         <span>
-          <strong className="text-[var(--ds-text-brand,#2563eb)]">Insourced</strong> = CTC × months (Jan 2026 to contract/assignment end)
+          <strong className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]">Insourced</strong> = CTC × months (Jan 2026 to contract/assignment end)
         </span>
         <span className="text-slate-300">•</span>
         <span>

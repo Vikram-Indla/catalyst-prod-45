@@ -24,8 +24,8 @@ td[data-ra-processed] {
   text-align: center !important;
   vertical-align: middle !important;
   font-size: 12px !important;
-  color: var(--ds-text-subtle, #334155) !important;
-  background: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   overflow: visible !important;
 }
 
@@ -95,7 +95,7 @@ td {
 
 /* White cell backgrounds by default */
 .ra-enterprise-clean td {
-  background-color: var(--ds-surface, #ffffff) !important;
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
 }
 
 /* Dark mode support */
@@ -104,7 +104,7 @@ td {
 }
 
 .dark td[data-ra-processed] {
-  color: var(--ds-border, #e2e8f0) !important;
+  color: var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) !important;
   background: hsl(var(--card)) !important;
 }
 

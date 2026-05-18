@@ -199,7 +199,7 @@ export default function PublishTab() {
             marginTop: token('space.075', '6px'),
             marginBottom: 0,
             fontSize: 13,
-            color: token('color.text.subtle', '#44546F'),
+            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             maxWidth: 760,
           }}
         >
@@ -237,7 +237,7 @@ export default function PublishTab() {
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                 display: 'block',
                 marginBottom: token('space.075', '6px'),
               }}
@@ -260,7 +260,7 @@ export default function PublishTab() {
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                 display: 'block',
                 marginBottom: token('space.075', '6px'),
               }}
@@ -309,7 +309,7 @@ export default function PublishTab() {
               style={{
                 marginTop: token('space.050', '4px'),
                 fontSize: 11,
-                color: token('color.text.subtle', '#44546F'),
+                color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
               }}
             >
               {routeDraft === ''
@@ -340,7 +340,7 @@ export default function PublishTab() {
               ) : (
                 <Lozenge>Registry default</Lozenge>
               )}
-              <span style={{ fontSize: 12, color: token('color.text.subtle', '#44546F') }}>
+              <span style={{ fontSize: 12, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
                 {liveConfig?.applied_at
                   ? `Applied ${new Date(liveConfig.applied_at).toLocaleString()}`
                   : 'No runtime override at this scope'}
@@ -354,7 +354,7 @@ export default function PublishTab() {
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
-                  color: token('color.text.subtle', '#44546F'),
+                  color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                   display: 'block',
                   marginBottom: token('space.075', '6px'),
                 }}
@@ -367,7 +367,7 @@ export default function PublishTab() {
                 placeholder={entry.version}
                 isDisabled={submitting || isLoading}
               />
-              <div style={{ marginTop: token('space.050', '4px'), fontSize: 11, color: token('color.text.subtle', '#44546F') }}>
+              <div style={{ marginTop: token('space.050', '4px'), fontSize: 11, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
                 Semver string. Registry default: v{entry.version}.
               </div>
             </div>
@@ -409,7 +409,7 @@ export default function PublishTab() {
                           style={{
                             fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
                             fontSize: 12,
-                            color: token('color.text', '#172B4D'),
+                            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                           }}
                         >
                           {flag.name}
@@ -432,7 +432,7 @@ export default function PublishTab() {
                             isDisabled={submitting}
                           />
                         )}
-                        <span style={{ fontSize: 12, color: token('color.text.subtle', '#44546F') }}>
+                        <span style={{ fontSize: 12, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))') }}>
                           {flag.description} (default: <code>{String(flag.default)}</code>)
                         </span>
                       </div>
@@ -447,7 +447,7 @@ export default function PublishTab() {
                   padding: token('space.150', '12px'),
                   borderRadius: 4,
                   background: token('color.background.neutral.subtle', '#F7F8F9'),
-                  color: token('color.text.subtle', '#44546F'),
+                  color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                   fontSize: 13,
                 }}
               >
@@ -462,7 +462,7 @@ export default function PublishTab() {
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
-                  color: token('color.text.subtle', '#44546F'),
+                  color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                   display: 'block',
                   marginBottom: token('space.075', '6px'),
                 }}

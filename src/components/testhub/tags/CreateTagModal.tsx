@@ -23,9 +23,9 @@ interface CreateTagModalProps {
 }
 
 const PRESET_COLORS = [
-  'var(--ds-text-danger, #EF4444)', '#F97316', 'var(--ds-text-warning, #F59E0B)', '#EAB308', '#84CC16', 'var(--ds-text-success, #22C55E)', '#10B981',
+  'var(--ds-text-danger, #EF4444)', '#F97316', 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', '#EAB308', '#84CC16', 'var(--ds-text-success, #22C55E)', '#10B981',
   '#14B8A6', '#06B6D4', '#0EA5E9', 'var(--ds-text-brand, #3B82F6)', '#6366F1', '#8B5CF6', '#A855F7',
-  '#D946EF', '#EC4899', '#F43F5E', '#78716C', 'var(--ds-text-subtlest, #64748B)', 'var(--ds-text, #0F172A)',
+  '#D946EF', '#EC4899', '#F43F5E', '#78716C', 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
 ];
 
 const CATEGORY_SUGGESTIONS = [
@@ -99,7 +99,7 @@ export function CreateTagModal({ isOpen, onClose, onSaved, editingTag }: CreateT
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg, #EC4899 0%, #DB2777 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Tags size={22} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
+              <Tags size={22} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>{editingTag ? 'Edit Tag' : 'Create Tag'}</h2>
           </div>
@@ -135,7 +135,7 @@ export function CreateTagModal({ isOpen, onClose, onSaved, editingTag }: CreateT
             </label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
               {PRESET_COLORS.map((c) => (
-                <button key={c} onClick={() => setColor(c)} style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: c, border: color === c ? '3px solid #0F172A' : '2px solid transparent', cursor: 'pointer', transition: 'transform 0.1s' }}
+                <button key={c} onClick={() => setColor(c)} style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: c, border: color === c ? '3px solid var(--cp-ink-1, var(--cp-ink-1, #0F172A))' : '2px solid transparent', cursor: 'pointer', transition: 'transform 0.1s' }}
                   onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'} />
               ))}
             </div>
@@ -176,7 +176,7 @@ export function CreateTagModal({ isOpen, onClose, onSaved, editingTag }: CreateT
         <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={onClose} disabled={isSubmitting} style={{ height: 44, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 12, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
           <button onClick={handleSubmit} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 24px', background: 'linear-gradient(135deg, #EC4899 0%, #DB2777 100%)', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1 }}>
+            style={{ height: 44, padding: '0 24px', background: 'linear-gradient(135deg, #EC4899 0%, #DB2777 100%)', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1 }}>
             {isSubmitting ? 'Saving...' : (editingTag ? 'Update Tag' : 'Create Tag')}
           </button>
         </div>

@@ -110,13 +110,13 @@ export function TopNav() {
             fontSize: 12,
             fontWeight: 600,
             fontFamily: 'var(--cp-font-body)',
-            background: kbOpen ? 'rgba(37,99,235,0.2)' : 'var(--ds-border, #2E2E2E)',
+            background: kbOpen ? 'rgba(37,99,235,0.2)' : 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
             color: kbOpen ? 'var(--ds-text-brand, #60A5FA)' : 'rgba(255,255,255,0.65)',
             transition: 'all 150ms',
             flexShrink: 0,
           }}
           onMouseEnter={e => { if (!kbOpen) e.currentTarget.style.background = 'var(--ds-border-bold, #454545)'; }}
-          onMouseLeave={e => { if (!kbOpen) e.currentTarget.style.background = 'var(--ds-border, #2E2E2E)'; }}
+          onMouseLeave={e => { if (!kbOpen) e.currentTarget.style.background = 'var(--ds-border, var(--cp-ink-1, #2E2E2E))'; }}
         >
           <BookOpen size={14} />
           KB

@@ -37,10 +37,10 @@ const statusCategoryTextColor: Record<
   'todo' | 'inprogress' | 'done' | 'default',
   string
 > = {
-  todo: '#172B4D', // Dark grey
+  todo: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))', // Dark grey
   inprogress: '#FFFFFF', // White
-  done: '#172B4D', // Dark
-  default: '#172B4D',
+  done: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))', // Dark
+  default: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
 };
 
 export const WorkCard = memo(function WorkCard({
@@ -66,7 +66,7 @@ export const WorkCard = memo(function WorkCard({
         cursor: 'pointer',
         background: isSelected
           ? 'var(--ds-background-selected, #DEEBFF)'
-          : 'var(--ds-surface, #FFFFFF)',
+          : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         borderBottom: '1px solid var(--ds-border, #EBECF0)',
         textAlign: 'left',
         transition: 'background 150ms',
@@ -74,12 +74,12 @@ export const WorkCard = memo(function WorkCard({
       onMouseEnter={e => {
         e.currentTarget.style.background = isSelected
           ? 'var(--ds-background-selected, #DEEBFF)'
-          : 'var(--ds-surface-hovered, #F4F5F7)';
+          : 'var(--ds-surface-hovered, var(--cp-bg-sunken, #F4F5F7))';
       }}
       onMouseLeave={e => {
         e.currentTarget.style.background = isSelected
           ? 'var(--ds-background-selected, #DEEBFF)'
-          : 'var(--ds-surface, #FFFFFF)';
+          : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
       }}
     >
       {/* First line: Type icon + Key + Status */}
@@ -132,7 +132,7 @@ export const WorkCard = memo(function WorkCard({
         style={{
           fontSize: '13px',
           fontWeight: 400,
-          color: 'var(--ds-text, #172B4D)',
+          color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
           lineHeight: '16px',
           overflow: 'hidden',
           textOverflow: 'ellipsis',

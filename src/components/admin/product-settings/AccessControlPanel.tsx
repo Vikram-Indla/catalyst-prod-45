@@ -136,7 +136,7 @@ export function AccessControlPanel() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-4 gap-4">
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-muted rounded-lg">
               <ShieldIcon label="" size="small" />
@@ -147,7 +147,7 @@ export function AccessControlPanel() {
             </div>
           </div>
         </div>
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-muted rounded-lg">
               <PeopleGroupIcon label="" size="small" />
@@ -158,7 +158,7 @@ export function AccessControlPanel() {
             </div>
           </div>
         </div>
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-muted rounded-lg">
               <EditIcon label="" size="small" />
@@ -169,7 +169,7 @@ export function AccessControlPanel() {
             </div>
           </div>
         </div>
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-muted rounded-lg">
               <EyeOpenIcon label="" size="small" />

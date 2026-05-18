@@ -27,21 +27,21 @@ if (typeof document !== 'undefined' && !document.getElementById('cv-priority-sel
     .cv-priority-select__control--is-focused .cv-priority-select__dropdown-indicator,
     .cv-priority-select__control--menu-is-open .cv-priority-select__dropdown-indicator { display: flex !important; }
     .cv-priority-select__control { border-color: transparent !important; background: transparent !important; box-shadow: none !important; }
-    .cv-priority-select__control:hover { background: var(--ds-background-neutral-subtle-hovered, #F4F5F7) !important; }
+    .cv-priority-select__control:hover { background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7)) !important; }
   `;
   document.head.appendChild(s);
 }
 
 /** Atlassian-spec dropdown container styles */
 const ATLASSIAN_DROPDOWN: React.CSSProperties = {
-  background: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 4, border: 'none',
+  background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4, border: 'none',
   boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
   padding: '4px 0', zIndex: 9999,
 };
 
 /** Atlassian checkmark icon — uses ADS tokens */
 const CheckmarkIcon = () => (
-  <CheckIcon size="small" primaryColor="var(--ds-icon-selected, #0052CC)" />
+  <CheckIcon size="small" primaryColor="var(--ds-icon-selected, var(--cp-primary-60, #0052CC))" />
 );
 
 /** Jira-native priority SVG icons — exact parity */
@@ -91,7 +91,7 @@ export function AvatarCircle({ userId, name, avatarUrl, size = 28 }: { userId: s
   const fontSize = Math.max(10, Math.round(size * 0.35));
   return (
     <div style={{ width: size, height: size, borderRadius: '50%', background: getAvatarColor(userId), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-      <span style={{ fontSize, fontWeight: 700, color: 'var(--ds-text-inverse, #FFFFFF)' }}>{initials}</span>
+      <span style={{ fontSize, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>{initials}</span>
     </div>
   );
 }
@@ -234,7 +234,7 @@ export function EditableAssignee({ issueId, issueKey, projectId, currentAssignee
             )}
             <span style={{
               fontSize: 14,
-              color: opt.value === UNASSIGNED_VALUE ? 'var(--ds-text-subtlest, #6B6E76)' : 'var(--ds-text, #172B4D)',
+              color: opt.value === UNASSIGNED_VALUE ? 'var(--ds-text-subtlest, #6B6E76)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
               fontWeight: 400,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -364,7 +364,7 @@ export function EditableReporter({ issueId, projectId, currentReporterId, curren
             )}
             <span style={{
               fontSize: 14,
-              color: opt.value === REPORTER_NONE_VALUE ? 'var(--ds-text-subtlest, #6B6E76)' : 'var(--ds-text, #172B4D)',
+              color: opt.value === REPORTER_NONE_VALUE ? 'var(--ds-text-subtlest, #6B6E76)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
               fontWeight: 400,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -425,7 +425,7 @@ export function EditablePriority({ issueId, issueKey, currentPriority, onUpdate 
             <span style={{ display: 'flex', flexShrink: 0 }}>
               <CanonicalPriorityIcon level={opt.value} size={16} label="" />
             </span>
-            <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', fontWeight: 400 }}>
+            <span style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 400 }}>
               {opt.label}
             </span>
           </span>
@@ -520,12 +520,12 @@ export function EditableLabels({ issueId, issueKey, currentLabels, onUpdate }: {
           multiValue: (base, state) => ({
             ...base,
             border: `1px solid ${getLabelColor((state.data as LabelOption).value)}`,
-            background: 'var(--ds-text-inverse, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             borderRadius: 3,
           }),
           multiValueLabel: (base) => ({
             ...base,
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
             fontSize: 12,
             fontWeight: 500,
           }),
@@ -565,10 +565,10 @@ export function EditableStoryPoints({ issueId, currentPoints, onUpdate }: {
         display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer',
         padding: '4px 6px', borderRadius: 4, transition: 'background .12s',
       }}
-        onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+        onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
-        <span style={{ fontSize: 14, color: currentPoints != null ? 'var(--ds-text, #172B4D)' : '#97A0AF', fontWeight: 400 }}>
+        <span style={{ fontSize: 14, color: currentPoints != null ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' : '#97A0AF', fontWeight: 400 }}>
           {currentPoints != null ? currentPoints : 'None'}
         </span>
       </div>
@@ -578,11 +578,11 @@ export function EditableStoryPoints({ issueId, currentPoints, onUpdate }: {
           <div onClick={() => updateMutation.mutate(null)}
             style={{
               height: 36, padding: '0 12px', display: 'flex', alignItems: 'center',
-              cursor: 'pointer', fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtlest, #6B778C)',
+              cursor: 'pointer', fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
               background: currentPoints == null ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
-              borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)',
+              borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
             }}
-            onMouseEnter={e => { if (currentPoints != null) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+            onMouseEnter={e => { if (currentPoints != null) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
             onMouseLeave={e => { if (currentPoints != null) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
           >
             <span style={{ flex: 1 }}>None</span>
@@ -592,10 +592,10 @@ export function EditableStoryPoints({ issueId, currentPoints, onUpdate }: {
             <div key={p} onClick={() => updateMutation.mutate(p)}
               style={{
                 height: 36, padding: '0 12px', display: 'flex', alignItems: 'center',
-                cursor: 'pointer', fontSize: 14, fontWeight: 400, color: 'var(--ds-text, #172B4D)',
+                cursor: 'pointer', fontSize: 14, fontWeight: 400, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                 background: p === currentPoints ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
               }}
-              onMouseEnter={e => { if (p !== currentPoints) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+              onMouseEnter={e => { if (p !== currentPoints) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
               onMouseLeave={e => { if (p !== currentPoints) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
             >
               <span style={{ flex: 1 }}>{p}</span>
@@ -802,32 +802,32 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
         borderRadius: 3, cursor: 'pointer', background: 'transparent',
         transition: 'background 0.15s',
       }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; setHovered(true); }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; setHovered(true); }}
         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; setHovered(false); }}
       >
         {parentKey && currentParent ? (
           <>
             <EpicIconInline />
-            <span style={{ flex: 1, fontSize: 14, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ flex: 1, fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {currentParent.issue_key} {currentParent.summary}
             </span>
             {/* Clear button — hover only */}
             <button onClick={e => { e.stopPropagation(); handleSelect(null); }} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 20, height: 20, borderRadius: '50%', border: 'none',
-              background: 'var(--ds-border, #DFE1E6)', cursor: 'pointer', color: 'var(--ds-text-subtle, #42526E)', flexShrink: 0,
+              background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', cursor: 'pointer', color: 'var(--ds-text-subtle, #42526E)', flexShrink: 0,
               opacity: hovered ? 1 : 0, transition: 'opacity 0.15s',
             }}
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-bold, #C1C7D0)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-border, #DFE1E6)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))')}
             >
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth="2" style={{ flexShrink: 0, opacity: hovered ? 1 : 0, transition: 'opacity 0.15s' }}><path d="M6 9l6 6 6-6"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" strokeWidth="2" style={{ flexShrink: 0, opacity: hovered ? 1 : 0, transition: 'opacity 0.15s' }}><path d="M6 9l6 6 6-6"/></svg>
           </>
         ) : (
           <>
-            <span style={{ flex: 1, fontSize: 14, color: 'var(--ds-text-subtlest, #6B778C)' }}>None</span>
+            <span style={{ flex: 1, fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))' }}>None</span>
           </>
         )}
       </div>
@@ -848,15 +848,15 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
                 style={{
                   width: '100%', height: 40, padding: '0 12px',
                   border: '2px solid var(--ds-border-focused, #4C9AFF)', borderRadius: 3,
-                  fontSize: 14, fontFamily: 'inherit', outline: 'none', color: 'var(--ds-text, #172B4D)',
+                  fontSize: 14, fontFamily: 'inherit', outline: 'none', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                 }} />
             </div>
 
             {/* Show done checkbox */}
-            <div style={{ padding: '6px 12px', borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>
+            <div style={{ padding: '6px 12px', borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                 <input type="checkbox" checked={showDone} onChange={e => setShowDone(e.target.checked)}
-                  style={{ width: 16, height: 16, accentColor: 'var(--ds-background-brand-bold, #0052CC)', cursor: 'pointer' }} />
+                  style={{ width: 16, height: 16, accentColor: 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))', cursor: 'pointer' }} />
                 Show done work items
               </label>
             </div>
@@ -869,30 +869,30 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
                   <div key={result.id} onClick={() => handleSelect(result.issue_key)}
                     style={{
                       padding: '10px 12px', cursor: 'pointer',
-                      borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)',
+                      borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
                       background: isActive ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
                       transition: 'background 0.1s',
                     }}
-                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                     onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = isActive ? 'var(--ds-background-information, #DEEBFF)' : 'transparent'; }}
                   >
                     {/* Line 1: icon + key */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
                       <EpicIconInline />
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 12 }}>{result.issue_key}</span>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 12 }}>{result.issue_key}</span>
                     </div>
                     {/* Line 2: summary */}
-                    <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', paddingLeft: 22, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', paddingLeft: 22, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {result.summary}
                     </div>
                   </div>
                 );
               })}
               {searchResults.length === 0 && search && (
-                <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No epics found for "{search}"</div>
+                <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No epics found for "{search}"</div>
               )}
               {searchResults.length === 0 && !search && (
-                <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No epics available</div>
+                <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No epics available</div>
               )}
             </div>
           </div>

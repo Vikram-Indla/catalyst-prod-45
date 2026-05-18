@@ -74,7 +74,7 @@ function TypePill({ label }: { label: string }) {
         lineHeight: '16px',
         fontWeight: 500,
         background: token('color.background.neutral.subtle', '#F4F5F7'),
-        color: token('color.text.subtle', '#44546F'),
+        color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
       }}
     >
       {label}
@@ -179,10 +179,10 @@ export function RecentReleasesWidget() {
                     style={{
                       textAlign: 'left',
                       padding: '10px 12px',
-                      borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
                       fontSize: 11,
                       fontWeight: 600,
-                      color: token('color.text.subtle', '#44546F'),
+                      color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
                       textTransform: 'uppercase',
                       letterSpacing: '0.04em',
                       whiteSpace: 'nowrap',
@@ -210,7 +210,7 @@ export function RecentReleasesWidget() {
                     );
                   }}
                 >
-                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`, verticalAlign: 'middle' }}>
+                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, verticalAlign: 'middle' }}>
                     <span
                       style={{
                         fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
@@ -222,23 +222,23 @@ export function RecentReleasesWidget() {
                       {brKey(item.id)}
                     </span>
                   </td>
-                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`, verticalAlign: 'middle' }}>
-                    <div style={{ fontSize: 14, fontWeight: 500, color: token('color.text', '#172B4D') }}>
+                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, verticalAlign: 'middle' }}>
+                    <div style={{ fontSize: 14, fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
                       {item.title}
                     </div>
                     {item.assignee && (
-                      <div style={{ fontSize: 11, color: token('color.text.subtle', '#44546F'), marginTop: 2 }}>
+                      <div style={{ fontSize: 11, color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'), marginTop: 2 }}>
                         {item.process_step} · Assignee: {item.assignee}
                       </div>
                     )}
                   </td>
-                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`, verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                     {daysAgo(item.entered_step_at)}
                   </td>
-                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`, verticalAlign: 'middle' }}>
+                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, verticalAlign: 'middle' }}>
                     <TypePill label="Feature" />
                   </td>
-                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`, verticalAlign: 'middle' }}>
+                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`, verticalAlign: 'middle' }}>
                     <OutcomeLozenge outcome="clean" />
                   </td>
                 </tr>

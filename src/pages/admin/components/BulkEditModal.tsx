@@ -195,7 +195,7 @@ const bulkModalCSS = `
 
 /* Modal Container */
 .ct-modal {
-  background: var(--ds-text-inverse, #ffffff);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border-radius: 12px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   width: 480px;
@@ -217,7 +217,7 @@ const bulkModalCSS = `
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid var(--ds-border, #e2e8f0);
+  border-bottom: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
 }
 
 .ct-modal-header h2 {
@@ -243,7 +243,7 @@ const bulkModalCSS = `
 
 .ct-modal-close:hover {
   background: var(--ds-surface-sunken, #f1f5f9);
-  color: var(--ds-text-subtle, #334155);
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
 }
 
 /* Modal Body */
@@ -269,8 +269,8 @@ const bulkModalCSS = `
 
 /* Field Card - V8: WHITE background, NOT gray */
 .ct-field-card {
-  background: var(--ds-text-inverse, #ffffff);
-  border: 1px solid var(--ds-border, #e2e8f0);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 12px;
   padding: 16px 20px;
   transition: all 0.15s ease;
@@ -282,7 +282,7 @@ const bulkModalCSS = `
 
 /* Active state: Blue border + subtle blue bg */
 .ct-field-card.active {
-  border-color: var(--ds-text-brand, #2563eb);
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   background: rgba(37, 99, 235, 0.04);
 }
 
@@ -296,7 +296,7 @@ const bulkModalCSS = `
 .ct-field-card-header input[type="checkbox"] {
   width: 20px;
   height: 20px;
-  accent-color: var(--ds-text-brand, #2563eb);
+  accent-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -321,8 +321,8 @@ const bulkModalCSS = `
   font-size: 14px;
   font-weight: 500;
   color: #1e293b;
-  background: var(--ds-text-inverse, #ffffff);
-  border: 1px solid var(--ds-border, #e2e8f0);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -333,12 +333,12 @@ const bulkModalCSS = `
 }
 
 .ct-field-select-trigger:hover:not(:disabled) {
-  border-color: var(--ds-text-brand, #2563eb);
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 }
 
 .ct-field-select-trigger:focus {
   outline: none;
-  border-color: var(--ds-text-brand, #2563eb);
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
 }
 
@@ -369,8 +369,8 @@ const bulkModalCSS = `
   top: calc(100% + 6px);
   left: 0;
   right: 0;
-  background: var(--ds-text-inverse, #ffffff);
-  border: 1px solid var(--ds-border, #e2e8f0);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   padding: 8px;
@@ -393,7 +393,7 @@ const bulkModalCSS = `
   padding: 12px 14px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--ds-text-subtle, #334155);
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -406,7 +406,7 @@ const bulkModalCSS = `
 /* Selected item: Blue tint background */
 .ct-field-select-item.selected {
   background: rgba(37, 99, 235, 0.08);
-  color: var(--ds-text-brand, #2563eb);
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   font-weight: 600;
 }
 
@@ -416,7 +416,7 @@ const bulkModalCSS = `
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ds-text-brand, #2563eb);
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 }
 
 /* Modal Footer */
@@ -426,7 +426,7 @@ const bulkModalCSS = `
   justify-content: flex-end;
   gap: 12px;
   padding: 16px 24px;
-  border-top: 1px solid var(--ds-border, #e2e8f0);
+  border-top: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   background: var(--ds-surface-sunken, #f8fafc);
   border-radius: 0 0 12px 12px;
 }
@@ -442,22 +442,22 @@ const bulkModalCSS = `
   font-size: 14px;
   font-weight: 500;
   border-radius: 8px;
-  border: 1px solid var(--ds-border, #e2e8f0);
-  background: var(--ds-text-inverse, #ffffff);
+  border: 1px solid var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   color: var(--ds-text, #0f172a);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .ct-btn:hover {
-  border-color: var(--ds-text-brand, #2563eb);
-  color: var(--ds-text-brand, #2563eb);
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 }
 
 .ct-btn-primary {
-  background: var(--ds-text-brand, #2563eb);
-  border-color: var(--ds-text-brand, #2563eb);
-  color: var(--ds-text-inverse, #ffffff);
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }
 
 .ct-btn-primary:hover {

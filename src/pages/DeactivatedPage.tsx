@@ -11,10 +11,10 @@ export default function DeactivatedPage() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'var(--ds-surface, #F4F5F7)',
+      background: 'var(--ds-surface, var(--cp-bg-sunken, #F4F5F7))',
     }}>
       <div style={{
-        background: 'var(--ds-surface-raised, #FFFFFF)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         borderRadius: 8,
         padding: '40px 48px',
         maxWidth: 480,
@@ -27,14 +27,14 @@ export default function DeactivatedPage() {
           margin: '0 0 12px',
           fontSize: 24,
           fontWeight: 600,
-          color: 'var(--ds-text, #172B4D)',
+          color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
         }}>
           Account deactivated
         </h1>
         <p style={{
           margin: '0 0 8px',
           fontSize: 14,
-          color: 'var(--ds-text-subtle, #6B778C)',
+          color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))',
           lineHeight: 1.6,
         }}>
           Your Catalyst account has been deactivated due to inactivity.
@@ -42,7 +42,7 @@ export default function DeactivatedPage() {
         <p style={{
           margin: '0 0 32px',
           fontSize: 14,
-          color: 'var(--ds-text-subtle, #6B778C)',
+          color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))',
           lineHeight: 1.6,
         }}>
           Please contact your Catalyst admin to reactivate your access.
@@ -53,8 +53,8 @@ export default function DeactivatedPage() {
             padding: '8px 20px',
             fontSize: 14,
             fontWeight: 500,
-            color: 'var(--ds-text-inverse, #FFFFFF)',
-            background: 'var(--ds-background-brand-bold, #0052CC)',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            background: 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))',
             border: 'none',
             borderRadius: 4,
             cursor: 'pointer',

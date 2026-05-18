@@ -3,11 +3,11 @@
 export const HUB_COLORS: Record<string, string> = {
   StrategyHub: '#0EA5E9',
   ProductHub: '#8B5CF6',
-  ProjectHub: 'var(--ds-text-brand, #2563EB)',
-  ReleaseHub: '#0D9488',
-  TestHub: 'var(--ds-text-warning, #D97706)',
-  IncidentHub: 'var(--ds-text-danger, #DC2626)',
-  TaskHub: '#059669',
+  ProjectHub: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+  ReleaseHub: 'var(--cp-teal-60, #0D9488)',
+  TestHub: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
+  IncidentHub: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
+  TaskHub: 'var(--quality-high, #059669)',
 };
 
 export const HUB_SHORT: Record<string, string> = {
@@ -21,16 +21,16 @@ export const HUB_SHORT: Record<string, string> = {
 };
 
 export const STATUS_CATEGORY_COLORS = {
-  todo: { bg: '#FEE2E2', text: 'var(--ds-text-danger, #DC2626)', border: 'var(--ds-border-danger, #FCA5A5)', dot: 'var(--ds-text-danger, #DC2626)' },
-  progress: { bg: '#DBEAFE', text: 'var(--ds-text-brand, #2563EB)', border: '#93C5FD', dot: 'var(--ds-text-brand, #2563EB)' },
-  done: { bg: '#D1FAE5', text: '#059669', border: '#6EE7B7', dot: '#059669' },
+  todo: { bg: '#FEE2E2', text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', border: 'var(--ds-border-danger, #FCA5A5)', dot: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
+  progress: { bg: '#DBEAFE', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: '#93C5FD', dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+  done: { bg: '#D1FAE5', text: 'var(--quality-high, #059669)', border: '#6EE7B7', dot: 'var(--quality-high, #059669)' },
 };
 
 export const PRIORITY_COLORS: Record<string, string> = {
-  Critical: 'var(--ds-text-danger, #DC2626)',
+  Critical: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
   High: '#EA580C',
-  Medium: 'var(--ds-text-warning, #D97706)',
-  Low: 'var(--ds-text-subtlest, #64748B)',
+  Medium: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
+  Low: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
 };
 
 export const PRIORITY_ICONS: Record<string, string> = {
@@ -47,7 +47,7 @@ export const WIT_STYLES: Record<string, { bg: string; color: string }> = {
   Story: { bg: '#DBEAFE', color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' },
   Subtask: { bg: '#E0E7FF', color: '#3730A3' },
   Bug: { bg: '#FEE2E2', color: '#B91C1C' },
-  Task: { bg: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtle, #334155)' },
+  Task: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' },
   'Test Case': { bg: '#FEF3C7', color: '#92400E' },
   'Test Plan': { bg: '#FEF3C7', color: '#92400E' },
   Incident: { bg: '#FEE2E2', color: 'var(--ds-text-danger, #991B1B)' },
@@ -64,55 +64,55 @@ export const WIT_STYLES: Record<string, { bg: string; color: string }> = {
 // ═══════════════════════════════════════════════════════════
 
 export const R360_TOKENS = {
-  primary: 'var(--ds-text-brand, #2563EB)',
+  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   primaryHover: 'var(--ds-background-brand-bold-hovered, #1D4ED8)',
   primaryLight: 'var(--ds-background-selected, #EFF6FF)',
   primaryDark: '#1E3A5F',
-  success: 'var(--ds-text-success, #16A34A)',
+  success: 'var(--ds-text-success, var(--cp-success, #16A34A))',
   successLight: '#F0FDF4',
   successText: '#14532D',
-  warning: 'var(--ds-text-warning, #D97706)',
+  warning: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
   warningLight: '#FFFBEB',
   warningText: '#78350F',
   danger: 'var(--ds-text-danger, #EF4444)',
   dangerLight: 'var(--ds-background-danger, #FEF2F2)',
   dangerText: '#7F1D1D',
-  teal: '#0D9488',
+  teal: 'var(--cp-teal-60, #0D9488)',
   tealLight: '#F0FDFA',
   tealText: '#134E4A',
-  purple: '#7C3AED',
+  purple: 'var(--cp-purple-60, #7C3AED)',
   purpleLight: '#F5F3FF',
   purpleText: '#4C1D95',
   ink1: '#020617',
-  ink2: 'var(--fg-1, #0F172A)',
-  ink3: 'var(--ds-text-subtle, #334155)',
-  ink4: 'var(--ds-text-subtlest, #64748B)',
+  ink2: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
+  ink3: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
+  ink4: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
   surface: 'var(--bg-1, #F8FAFC)',
-  card: 'var(--ds-surface, #FFFFFF)',
-  border: 'var(--bd-default, #E2E8F0)',
-  borderLt: 'var(--ds-surface-sunken, #F1F5F9)',
+  card: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+  border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
+  borderLt: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
 } as const;
 
 // Status mental model — CG-05 enforced
 export const R360_STATUS_STYLES: Record<string, {
   color: string; bg: string; dot: string; label: string;
 }> = {
-  'ToDo':        { color: '#78350F', bg: '#FFFBEB', dot: 'var(--ds-text-warning, #D97706)', label: 'ToDo' },
-  'In Progress': { color: '#1E3A5F', bg: 'var(--ds-background-selected, #EFF6FF)', dot: 'var(--ds-text-brand, #2563EB)', label: 'In Progress' },
-  'In Review':   { color: '#134E4A', bg: '#F0FDFA', dot: '#0D9488', label: 'In Review' },
-  'Done':        { color: '#14532D', bg: '#F0FDF4', dot: 'var(--ds-text-success, #16A34A)', label: 'Done' },
+  'ToDo':        { color: '#78350F', bg: '#FFFBEB', dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'ToDo' },
+  'In Progress': { color: '#1E3A5F', bg: 'var(--ds-background-selected, #EFF6FF)', dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', label: 'In Progress' },
+  'In Review':   { color: '#134E4A', bg: '#F0FDFA', dot: 'var(--cp-teal-60, #0D9488)', label: 'In Review' },
+  'Done':        { color: '#14532D', bg: '#F0FDF4', dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', label: 'Done' },
   'Blocked':     { color: '#7F1D1D', bg: 'var(--ds-background-danger, #FEF2F2)', dot: 'var(--ds-text-danger, #EF4444)', label: 'Blocked' },
-  'Re-Open':     { color: '#78350F', bg: '#FFFBEB', dot: 'var(--ds-text-warning, #D97706)', label: 'Re-Open' },
+  'Re-Open':     { color: '#78350F', bg: '#FFFBEB', dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'Re-Open' },
 };
 
 // Project colors
 export const R360_PROJECT_COLORS: Record<string, string> = {
-  BAU: 'var(--ds-text-brand, #2563EB)',
-  SEN: 'var(--ds-text-warning, #D97706)',
-  FAC: 'var(--ds-text-success, #16A34A)',
-  OPS: '#0D9488',
-  SUP: 'var(--ds-text-subtlest, #64748B)',
-  LND: '#7C3AED',
+  BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+  SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
+  FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))',
+  OPS: 'var(--cp-teal-60, #0D9488)',
+  SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
+  LND: 'var(--cp-purple-60, #7C3AED)',
 };
 
 // Jira issue type icon colors
@@ -132,6 +132,6 @@ export const R360_AGE_THRESHOLDS = {
 
 // BANNED: Golden Hour palette — NEVER use these as primary
 export const BANNED_COLORS = [
-  'var(--ds-text-warning, #F59E0B)', '#FBBF24', '#FCD34D', '#FDE68A',
-  'var(--ds-text-warning, #D97706)', // ONLY allowed as status warning, never as primary accent
+  'var(--ds-text-warning, var(--cp-amber, #F59E0B))', '#FBBF24', '#FCD34D', '#FDE68A',
+  'var(--ds-text-warning, var(--cp-warning, #D97706))', // ONLY allowed as status warning, never as primary accent
 ] as const;

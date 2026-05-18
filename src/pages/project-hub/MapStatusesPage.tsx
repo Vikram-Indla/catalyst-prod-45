@@ -40,7 +40,7 @@ function StatusPill({
         ? '#0747A6' : 'var(--ds-text, #253858)')
     : 'var(--ds-text, #253858)';
 
-  const catBg = catColor === '#006644' ? '#E3FCEF' : catColor === '#0747A6' ? '#DEEBFF' : 'var(--ds-border, #DFE1E6)';
+  const catBg = catColor === '#006644' ? '#E3FCEF' : catColor === '#0747A6' ? '#DEEBFF' : 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
 
   return (
     <div
@@ -612,8 +612,8 @@ export default function MapStatusesPage() {
             disabled={!hasChanges || saving}
             style={{
               height: 32, padding: '0 14px', borderRadius: 6,
-              border: 'none', background: hasChanges ? 'var(--ds-text-brand, #2563EB)' : tk.chipBg,
-              color: hasChanges ? 'var(--ds-surface, #FFFFFF)' : tk.textDisabled,
+              border: 'none', background: hasChanges ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : tk.chipBg,
+              color: hasChanges ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : tk.textDisabled,
               fontSize: 13, fontWeight: 600, cursor: hasChanges ? 'pointer' : 'default',
               fontFamily: 'var(--cp-font-body)',
             }}

@@ -49,18 +49,18 @@ interface ExecutionSidebarProps {
 }
 
 const SEVERITY_COLORS: Record<string, string> = {
-  critical: 'var(--ds-text-danger, #DC2626)',
+  critical: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
   major: '#EA580C',
-  minor: 'var(--ds-text-warning, #D97706)',
-  trivial: 'var(--ds-text-success, #16A34A)',
+  minor: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
+  trivial: 'var(--ds-text-success, var(--cp-success, #16A34A))',
 };
 
 const STEP_COLORS: Record<string, { text: string; bg: string; border: string }> = {
-  passed:  { text: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', border: '#BBF7D0' },
-  failed:  { text: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)', border: '#FECACA' },
-  blocked: { text: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', border: '#FED7AA' },
-  skipped: { text: 'var(--ds-text-subtle, #475569)', bg: 'var(--bg-1, #F8FAFC)', border: 'var(--bd-default, #E2E8F0)' },
-  not_run: { text: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', border: 'var(--bd-default, #E2E8F0)' },
+  passed:  { text: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', border: '#BBF7D0' },
+  failed:  { text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', border: '#FECACA' },
+  blocked: { text: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', border: '#FED7AA' },
+  skipped: { text: 'var(--ds-text-subtle, #475569)', bg: 'var(--bg-1, #F8FAFC)', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' },
+  not_run: { text: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' },
 };
 
 export function ExecutionSidebar({
@@ -160,7 +160,7 @@ export function ExecutionSidebar({
                 style={{
                   width: '100%', padding: '10px 14px', marginBottom: 16,
                   background: 'linear-gradient(135deg, var(--sem-danger) 0%, #B91C1C 100%)',
-                  border: 'none', borderRadius: 8, color: 'var(--ds-text-inverse, #FFFFFF)',
+                  border: 'none', borderRadius: 8, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   fontSize: 13, fontWeight: 600, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 }}
@@ -225,8 +225,8 @@ export function ExecutionSidebar({
                 const colors = STEP_COLORS[step.status] || STEP_COLORS.not_run;
                 return (
                   <div key={i} style={{
-                    padding: '8px 10px', backgroundColor: 'var(--bg-app, #FFFFFF)',
-                    border: '0.75px solid var(--bd-default, #E2E8F0)', borderRadius: 6,
+                    padding: '8px 10px', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                    border: '0.75px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 6,
                     borderLeft: `3px solid ${colors.border}`,
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
@@ -242,7 +242,7 @@ export function ExecutionSidebar({
                     </div>
                     <p style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', margin: 0, lineHeight: 1.4 }}>{step.title}</p>
                     {step.notes && (
-                      <p style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #64748B)', margin: '4px 0 0', fontStyle: 'italic' }}>{step.notes}</p>
+                      <p style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '4px 0 0', fontStyle: 'italic' }}>{step.notes}</p>
                     )}
                   </div>
                 );

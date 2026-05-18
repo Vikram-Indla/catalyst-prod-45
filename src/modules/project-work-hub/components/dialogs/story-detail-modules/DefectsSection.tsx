@@ -182,7 +182,7 @@ export function DefectsSection({
                     onClick={() => setCreating(true)}
                     style={{
                       background: 'none', border: 'none', padding: 0,
-                      fontSize: 14, color: 'var(--ds-text-brand, #0052CC)',
+                      fontSize: 14, color: 'var(--ds-text-brand, var(--cp-primary-60, #0052CC))',
                       cursor: 'pointer', fontFamily: 'inherit',
                     }}
                     onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
@@ -228,20 +228,20 @@ export function DefectsSection({
                   style={{
                     flex: 1, height: 36, padding: '0 12px',
                     border: 'none', outline: 'none', fontSize: 14,
-                    color: 'var(--ds-text, #172B4D)', fontFamily: 'inherit', background: 'transparent',
+                    color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'inherit', background: 'transparent',
                   }}
                 />
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0 8px', borderLeft: '1px solid var(--ds-border, #DFE1E6)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0 8px', borderLeft: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }}>
                   <button
                     onClick={() => { if (draftSummary.trim()) createMutation.mutate(draftSummary); }}
                     disabled={!draftSummary.trim() || createMutation.isPending}
                     title="Create (Enter)"
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      width: 28, height: 28, border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
-                      background: 'var(--ds-surface-sunken, #F4F5F7)',
+                      width: 28, height: 28, border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3,
+                      background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
                       cursor: draftSummary.trim() ? 'pointer' : 'not-allowed',
-                      color: 'var(--ds-text-subtlest, #6B778C)',
+                      color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
                       opacity: draftSummary.trim() ? 1 : 0.5,
                     }}
                   >
@@ -254,7 +254,7 @@ export function DefectsSection({
               <div style={{ textAlign: 'right', padding: '6px 0 2px' }}>
                 <button
                   onClick={() => { setCreating(false); setDraftSummary(''); }}
-                  style={{ background: 'none', border: 'none', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', cursor: 'pointer', fontFamily: 'inherit' }}
+                  style={{ background: 'none', border: 'none', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', cursor: 'pointer', fontFamily: 'inherit' }}
                 >
                   Cancel
                 </button>

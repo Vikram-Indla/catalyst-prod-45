@@ -56,7 +56,7 @@ function WorkloadRow({
         alignItems: 'center',
         gap: 10,
         padding: '8px 0',
-        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
@@ -84,7 +84,7 @@ function WorkloadRow({
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
           }}
         >
           {name}
@@ -115,7 +115,7 @@ function WorkloadRow({
           fontWeight: 700,
           textAlign: 'right',
           fontVariantNumeric: 'tabular-nums',
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
         }}
       >
         {count}
@@ -141,10 +141,10 @@ function WorkloadCol({
         style={{
           margin: '0 0 12px',
           paddingBottom: 8,
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
           fontSize: 11,
           fontWeight: 600,
-          color: token('color.text.subtle', '#44546F'),
+          color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
           textTransform: 'uppercase',
           letterSpacing: '0.04em',
         }}

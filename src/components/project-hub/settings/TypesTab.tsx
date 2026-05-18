@@ -26,10 +26,10 @@ interface WorkType {
 }
 
 const LEVEL_STYLES: Record<string, { bg: string; text: string }> = {
-  top:   { bg: '#F5F3FF', text: '#7C3AED' },
+  top:   { bg: '#F5F3FF', text: 'var(--cp-purple-60, #7C3AED)' },
   mid:   { bg: '#EFF6FF', text: '#2563EB' },
-  work:  { bg: '#F1F5F9', text: '#334155' },
-  child: { bg: '#F1F5F9', text: '#94A3B8' },
+  work:  { bg: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' },
+  child: { bg: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))' },
 };
 
 const COL_WIDTHS = {
@@ -165,21 +165,21 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
 
                     {/* Workflow */}
                     <div style={{ display: 'flex', alignItems: 'center', padding: '12px 8px 12px 0', minWidth: 0 }}>
-                      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #64748B)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.workflow_name ?? '—'}
                       </span>
                     </div>
 
                     {/* Field config */}
                     <div style={{ display: 'flex', alignItems: 'center', padding: '12px 8px 12px 0', minWidth: 0 }}>
-                      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #64748B)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.field_config}
                       </span>
                     </div>
 
                     {/* Screen */}
                     <div style={{ display: 'flex', alignItems: 'center', padding: '12px 8px 12px 0', minWidth: 0 }}>
-                      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #64748B)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.screen_name ?? '—'}
                       </span>
                     </div>
@@ -193,7 +193,7 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
                           onClick={() => setSelectedTypeId(isSelected ? null : t.id)}
                           style={{
                             width: 28, height: 28, border: 'none', borderRadius: 4,
-                            background: isSelected ? 'var(--ds-background-selected-bold,#2563EB)' : 'transparent',
+                            background: isSelected ? 'var(--ds-background-selected-bold,var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
                             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                             color: isSelected ? '#fff' : 'var(--fg-3)',
                             fontSize: 16, fontWeight: 700, lineHeight: 1,

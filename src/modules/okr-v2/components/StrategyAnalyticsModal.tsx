@@ -39,7 +39,7 @@ export interface ThemeChip {
 // ─────────────────────────────────────────────────────────────────────────────────
 
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-  <h3 className="mb-4 text-[11px] font-semibold text-[var(--ds-text-brand,#2563eb)] uppercase tracking-wider">
+  <h3 className="mb-4 text-[11px] font-semibold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] uppercase tracking-wider">
     {children}
   </h3>
 );
@@ -88,7 +88,7 @@ const KPICard = ({ title, children, wide = false }: { title: string; children: R
     "border border-[#E1E4E8] dark:border-[#30363D]",
     wide && "col-span-2"
   )}>
-    <div className="text-[11px] font-semibold text-[var(--ds-text-brand,#2563eb)] uppercase tracking-wider mb-3">
+    <div className="text-[11px] font-semibold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] uppercase tracking-wider mb-3">
       {title}
     </div>
     {children}
@@ -339,7 +339,7 @@ const StrategyPerformanceOverview = ({ metrics }: { metrics: PerformanceMetrics 
                 )}>
                   <span className={cn(
                     "text-3xl font-bold leading-none",
-                    item.count > 0 ? "text-[var(--ds-text-brand,#2563eb)]" : "text-[#24292F] dark:text-[#E6EDF3]"
+                    item.count > 0 ? "text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" : "text-[#24292F] dark:text-[#E6EDF3]"
                   )}>
                     {item.count}
                   </span>
@@ -746,7 +746,7 @@ export function StrategyAnalyticsModal({
                     <BarChart3 className="h-3.5 w-3.5" />
                     <span>{filterLabel}</span>
                     {selectedThemeIds.length > 0 && (
-                      <span className="px-1.5 py-0.5 bg-[var(--ds-text-brand,#2563eb)] rounded-full text-[10px] font-semibold text-white">
+                      <span className="px-1.5 py-0.5 bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] rounded-full text-[10px] font-semibold text-white">
                         {selectedThemeIds.length}/{themes.length}
                       </span>
                     )}
@@ -759,7 +759,7 @@ export function StrategyAnalyticsModal({
                     className="flex items-center justify-between"
                   >
                     <span className="font-medium">All Themes</span>
-                    {selectedThemeIds.length === 0 && <Check className="h-4 w-4 text-[var(--ds-text-brand,#2563eb)]" />}
+                    {selectedThemeIds.length === 0 && <Check className="h-4 w-4 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   {themes.map(theme => (
@@ -775,7 +775,7 @@ export function StrategyAnalyticsModal({
                         />
                         <span className="truncate">{theme.name}</span>
                       </div>
-                      {selectedThemeIds.includes(theme.id) && <Check className="h-4 w-4 text-[var(--ds-text-brand,#2563eb)]" />}
+                      {selectedThemeIds.includes(theme.id) && <Check className="h-4 w-4 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
@@ -834,7 +834,7 @@ export function StrategyAnalyticsModal({
                   "bg-white dark:bg-[#161B22]",
                   "border border-[#E1E4E8] dark:border-[#30363D]",
                   "text-[#24292F] dark:text-[#E6EDF3]",
-                  "hover:border-[var(--ds-text-brand,#2563eb)]",
+                  "hover:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]",
                   "disabled:opacity-50"
                 )}
                 onClick={handleExportPDF}
@@ -845,7 +845,7 @@ export function StrategyAnalyticsModal({
               </button>
               <button 
                 onClick={onClose} 
-                className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
               >
                 Close
               </button>

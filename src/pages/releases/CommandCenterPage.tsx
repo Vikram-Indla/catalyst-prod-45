@@ -198,7 +198,7 @@ function ProgressRing({ percentage, status, size = 48 }: { percentage: number; s
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="var(--ds-border, #e2e8f0)"
+          stroke="var(--ds-border, var(--cp-bg-sunken, #e2e8f0))"
           strokeWidth={strokeWidth}
         />
         {/* Progress circle */}
@@ -307,7 +307,7 @@ function ActivityItem({ activity, onSubjectClick }: { activity: ActivityItemType
     passed: { bg: 'bg-[#f0fdfa]', text: 'text-[#0d9488]', icon: CheckCircle2 },
     failed: { bg: 'bg-[var(--ds-background-danger,#fef2f2)]', text: 'text-[var(--ds-text-danger,#ef4444)]', icon: AlertTriangle },
     defect: { bg: 'bg-[#fef3c7]', text: 'text-[var(--ds-text-warning,#d97706)]', icon: Bug },
-    comment: { bg: 'bg-[var(--ds-background-selected,#eff6ff)]', text: 'text-[var(--ds-text-brand,#2563eb)]', icon: MessageSquare },
+    comment: { bg: 'bg-[var(--ds-background-selected,#eff6ff)]', text: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]', icon: MessageSquare },
   };
   const config = typeConfig[activity.type];
   const Icon = config.icon;
@@ -740,7 +740,7 @@ export default function CommandCenterPage() {
                 <div className="h-[200px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={testProgress || []} barCategoryGap="20%">
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border, #e2e8f0)" vertical={false} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border, var(--cp-bg-sunken, #e2e8f0))" vertical={false} />
                       <XAxis 
                         dataKey="sprint" 
                         axisLine={false} 
@@ -760,7 +760,7 @@ export default function CommandCenterPage() {
                       <Bar dataKey="passed" stackId="a" fill={CATALYST_V5.teal} radius={[0, 0, 0, 0]} />
                       <Bar dataKey="failed" stackId="a" fill={CATALYST_V5.danger} radius={[0, 0, 0, 0]} />
                       <Bar dataKey="blocked" stackId="a" fill={CATALYST_V5.warning} radius={[0, 0, 0, 0]} />
-                      <Bar dataKey="notRun" stackId="a" fill="var(--ds-border, #e2e8f0)" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="notRun" stackId="a" fill="var(--ds-border, var(--cp-bg-sunken, #e2e8f0))" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -778,7 +778,7 @@ export default function CommandCenterPage() {
                     Blocked
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-sm bg-[var(--ds-border,#e2e8f0)]" />
+                    <span className="w-2.5 h-2.5 rounded-sm bg-[var(--ds-border,var(--cp-bg-sunken, #e2e8f0))]" />
                     Not Run
                   </span>
                 </div>
@@ -806,7 +806,7 @@ export default function CommandCenterPage() {
                 <div className="h-[180px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={defectTrends || []}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border, #e2e8f0)" vertical={false} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border, var(--cp-bg-sunken, #e2e8f0))" vertical={false} />
                       <XAxis 
                         dataKey="date" 
                         axisLine={false} 

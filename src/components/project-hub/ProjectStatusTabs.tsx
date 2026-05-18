@@ -34,7 +34,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
           <button
             key={tab.key}
             onClick={() => onTabChange(tab.key)}
-            className={`flex items-center gap-1.5 rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] ${
+            className={`flex items-center gap-1.5 rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] ${
               isActive
                 ? isDark ? 'bg-[#0D1526] border-[#1E3A5F]' : 'bg-[#DEEBFF] border-[#B3D4FF]'
                 : 'bg-transparent border-transparent'
@@ -45,7 +45,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
               lineHeight: '32px',
               fontSize: 13,
               fontWeight: isActive ? 600 : 500,
-              color: isActive ? ('var(--cp-text-link, #0052CC)') : ('var(--cp-text-tertiary, #6B778C)'),
+              color: isActive ? ('var(--cp-text-link, var(--cp-primary-60, #0052CC))') : ('var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))'),
               borderWidth: 1,
               borderStyle: 'solid',
               cursor: 'pointer',
@@ -57,7 +57,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
                 size={13}
                 strokeWidth={2}
                 fill={isActive ? '#FFAB00' : 'none'}
-                color={isActive ? '#FFAB00' : ('var(--cp-text-tertiary, #6B778C)')}
+                color={isActive ? '#FFAB00' : ('var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))')}
               />
             )}
             {tab.label}
@@ -69,8 +69,8 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
                 padding: '0 5px',
                 fontSize: 11,
                 fontWeight: 600,
-                backgroundColor: isActive ? '#0052CC' : ('var(--cp-border, #EBECF0)'),
-                color: isActive ? 'var(--ds-text-inverse, #FFFFFF)' : ('var(--cp-text-tertiary, #6B778C)'),
+                backgroundColor: isActive ? 'var(--cp-primary-60, #0052CC)' : ('var(--cp-border, #EBECF0)'),
+                color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : ('var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))'),
                 fontFamily: 'var(--cp-font-body)',
               }}
             >

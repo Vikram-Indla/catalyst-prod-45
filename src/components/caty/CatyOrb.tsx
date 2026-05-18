@@ -32,7 +32,7 @@ export function CatyOrb({
       <div 
         className="w-full h-full rounded-full relative flex items-center justify-center"
         style={{
-          background: 'linear-gradient(135deg, var(--ds-surface-sunken, #f8fafc) 0%, var(--ds-border, #e2e8f0) 100%)',
+          background: 'linear-gradient(135deg, var(--ds-surface-sunken, #f8fafc) 0%, var(--ds-border, var(--cp-bg-sunken, #e2e8f0)) 100%)',
           boxShadow: `
             0 4px 20px rgba(37, 99, 235, 0.25),
             inset 0 -4px 12px rgba(0,0,0,0.08),

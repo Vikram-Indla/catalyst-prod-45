@@ -89,7 +89,7 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
         style={{
           position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
           width: 640, maxWidth: '90vw', maxHeight: '80vh',
-          background: 'var(--bg-app, #FFFFFF)', borderRadius: 12, border: `1px solid ${SURFACE.border}`,
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, border: `1px solid ${SURFACE.border}`,
           boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', zIndex: 301,
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
           fontFamily: FONT.body,
@@ -157,7 +157,7 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
                 <div className="w-1 rounded" style={{ height: 32, background: 'var(--ds-icon-accent-yellow, #B38600)' }} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span style={{ fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>{item.key}</span>
+                    <span style={{ fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{item.key}</span>
                     <SourceBadge source={item.source} size="xs" />
                     <span className="truncate" style={{ fontSize: 13, fontWeight: 500, color: INK[1] }}>{item.title}</span>
                   </div>
@@ -176,7 +176,7 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
                 {isOnRoadmap ? (
                   <span
                     className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md"
-                    style={{ color: 'var(--ds-text-success, #16A34A)', border: '1px solid #BBF7D0', background: '#F0FDF4' }}
+                    style={{ color: 'var(--ds-text-success, var(--cp-success, #16A34A))', border: '1px solid #BBF7D0', background: '#F0FDF4' }}
                   >
                     <CheckCircle2 size={12} /> On Roadmap
                   </span>
@@ -185,7 +185,7 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
                     onClick={() => handleAdd(item.id, item.title)}
                     disabled={addMutation.isPending}
                     className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
-                    style={{ color: 'var(--ds-text-brand, #2563EB)', border: '1px solid #BFDBFE', background: 'var(--ds-background-selected, #EFF6FF)', transition: 'background-color 0.15s ease' }}
+                    style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: '1px solid #BFDBFE', background: 'var(--ds-background-selected, #EFF6FF)', transition: 'background-color 0.15s ease' }}
                     onMouseEnter={e => { if (!addMutation.isPending) e.currentTarget.style.backgroundColor = '#DBEAFE'; }}
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'var(--ds-background-selected, #EFF6FF)')}
                   >

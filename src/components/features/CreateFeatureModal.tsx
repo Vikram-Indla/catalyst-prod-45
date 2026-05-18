@@ -67,8 +67,8 @@ function SectionHeader({
 }) {
   return (
     <div className="flex items-center gap-2 mb-3">
-      <Icon className="w-4 h-4 text-[var(--ds-text-brand,#2563eb)]" />
-      <span className="text-sm font-semibold text-[var(--ds-text-brand,#2563eb)]">{title}</span>
+      <Icon className="w-4 h-4 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />
+      <span className="text-sm font-semibold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]">{title}</span>
     </div>
   );
 }
@@ -331,7 +331,7 @@ export function CreateFeatureModal({
         "[&>button]:hidden"
       )}>
         {/* Accent Bar - Catalyst brand gradient */}
-        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,#2563eb)] via-[#0d9488] to-[var(--ds-text-brand,#60a5fa)] flex-shrink-0" />
+        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] via-[#0d9488] to-[var(--ds-text-brand,#60a5fa)] flex-shrink-0" />
 
         {/* Header with Progress Ring */}
         <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 bg-white dark:bg-[#171717]">
@@ -384,7 +384,7 @@ export function CreateFeatureModal({
                   maxLength={200}
                   className={cn(
                     "h-10 bg-background border-border",
-                    "focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-[3px] focus:ring-[var(--ds-text-brand,#2563eb)]/15",
+                    "focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-[3px] focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/15",
                     "placeholder:text-muted-foreground/60"
                   )}
                 />
@@ -405,7 +405,7 @@ export function CreateFeatureModal({
                   onChange={(value) => handleFieldChange('description', value)}
                   placeholder="Describe the feature, its purpose, and key outcomes..."
                   minHeight="120px"
-                  className="border-border focus-within:border-[var(--ds-text-brand,#2563eb)] focus-within:ring-[3px] focus-within:ring-[var(--ds-text-brand,#2563eb)]/15"
+                  className="border-border focus-within:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus-within:ring-[3px] focus-within:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/15"
                 />
               </div>
             </div>
@@ -426,7 +426,7 @@ export function CreateFeatureModal({
                 >
                   <SelectTrigger className={cn(
                     "h-10 bg-background border-border",
-                    "focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-[3px] focus:ring-[var(--ds-text-brand,#2563eb)]/15"
+                    "focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-[3px] focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/15"
                   )}>
                     <SelectValue placeholder={epicsLoading ? "Loading..." : "Select an epic"} />
                   </SelectTrigger>
@@ -437,7 +437,7 @@ export function CreateFeatureModal({
                         value={epic.id}
                         className="cursor-pointer hover:bg-muted focus:bg-muted"
                       >
-                        <span className="text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)] font-mono text-xs mr-2">
+                        <span className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:text-[var(--ds-text-brand,#60a5fa)] font-mono text-xs mr-2">
                           {epic.epic_key}
                         </span>
                         <span className="truncate">{epic.name}</span>
@@ -487,7 +487,7 @@ export function CreateFeatureModal({
               >
                 <SelectTrigger className={cn(
                   "h-10 bg-background border-border",
-                  "focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-[3px] focus:ring-[var(--ds-text-brand,#2563eb)]/15"
+                  "focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-[3px] focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/15"
                 )}>
                   <SelectValue placeholder={usersLoading ? "Loading..." : "Select assignee"}>
                     {selectedAssignee && (
@@ -548,7 +548,7 @@ export function CreateFeatureModal({
               disabled={!isValid || createMutation.isPending}
               className={cn(
                 "px-4 py-2 text-sm font-medium",
-                "text-white bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]",
+                "text-white bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]",
                 "rounded-md shadow-sm",
                 "flex items-center gap-1.5",
                 "disabled:opacity-50 disabled:cursor-not-allowed"

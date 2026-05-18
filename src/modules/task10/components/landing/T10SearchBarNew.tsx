@@ -54,7 +54,7 @@ export function T10SearchBarNew({ onSearch }: T10SearchBarNewProps) {
           gap: '12px',
           height: '48px',
           padding: '0 16px',
-          backgroundColor: 'var(--ds-surface, #ffffff)',
+          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           border: isFocused ? '2px solid #2563eb' : '1px solid #e2e8f0',
           borderRadius: '12px',
           boxShadow: isFocused ? '0 4px 12px rgba(37, 99, 235, 0.1)' : 'none',

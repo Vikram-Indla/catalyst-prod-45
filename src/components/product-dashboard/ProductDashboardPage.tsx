@@ -31,13 +31,13 @@ function AkBtn({
         borderRadius: 4,
         border: primary
           ? `1px solid ${token('color.link', '#0C66E4')}`
-          : `1px solid ${token('color.border', '#DFE1E6')}`,
+          : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
         background: primary
-          ? hover ? '#0052CC' : token('color.link', '#0C66E4')
+          ? hover ? 'var(--cp-primary-60, #0052CC)' : token('color.link', '#0C66E4')
           : hover ? token('color.background.neutral.hovered', '#F1F2F4') : token('elevation.surface', '#FFFFFF'),
         fontSize: 14,
         fontWeight: 500,
-        color: primary ? '#FFFFFF' : token('color.text', '#172B4D'),
+        color: primary ? '#FFFFFF' : token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
         cursor: 'pointer',
         fontFamily: 'inherit',
         display: 'inline-flex',
@@ -68,7 +68,7 @@ export function ProductDashboardPage() {
       <header
         style={{
           background: token('elevation.surface', '#FFFFFF'),
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
           padding: '14px 32px',
           display: 'flex',
           alignItems: 'center',
@@ -87,7 +87,7 @@ export function ProductDashboardPage() {
               alignItems: 'center',
               gap: 6,
               fontSize: 11,
-              color: token('color.text.subtle', '#44546F'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             }}
           >
             <span>Project Hub</span>
@@ -101,7 +101,7 @@ export function ProductDashboardPage() {
               margin: '4px 0 0',
               fontSize: 20,
               fontWeight: 600,
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
               lineHeight: '24px',
             }}
           >
@@ -110,7 +110,7 @@ export function ProductDashboardPage() {
           <div
             style={{
               fontSize: 11,
-              color: token('color.text.subtle', '#44546F'),
+              color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
               marginTop: 2,
             }}
           >
@@ -152,7 +152,7 @@ export function ProductDashboardPage() {
         data-testid="workflow-path-region"
         style={{
           padding: '8px 32px',
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
           flexShrink: 0,
           background: token('elevation.surface', '#FFFFFF'),
         }}

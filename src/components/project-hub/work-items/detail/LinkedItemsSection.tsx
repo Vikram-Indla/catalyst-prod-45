@@ -7,8 +7,8 @@ import { Plus, Search, X, Link as LinkIcon, Check } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 
 const TYPE_COLORS: Record<string, string> = {
-  Epic: '#7C3AED', Feature: 'var(--ds-text-brand, #2563EB)', Story: '#0D9488',
-  Bug: 'var(--ds-text-danger, #DC2626)', Task: 'var(--ds-text-warning, #D97706)', Subtask: 'var(--ds-text-subtlest, #94A3B8)',
+  Epic: 'var(--cp-purple-60, #7C3AED)', Feature: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', Story: 'var(--cp-teal-60, #0D9488)',
+  Bug: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', Task: 'var(--ds-text-warning, var(--cp-warning, #D97706))', Subtask: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
 };
 
 const LINK_TYPES = [
@@ -123,7 +123,7 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
         item_key: d.item_key,
         title: d.title || d.summary,
         type_name: d.ph_work_types?.name ?? 'Task',
-        type_color: d.ph_work_types?.color ?? 'var(--ds-text-subtlest, #94A3B8)',
+        type_color: d.ph_work_types?.color ?? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
         status_name: d.ph_workflow_statuses?.name ?? 'Backlog',
         status_category: d.ph_workflow_statuses?.category ?? 'todo',
       }));
@@ -165,11 +165,11 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: '1px solid var(--cp-bd-zone)' }}>
           <div className="flex items-center gap-2">
-            <LinkIcon size={16} className="text-[var(--ds-text-subtlest,#94A3B8)]" />
+            <LinkIcon size={16} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
             <span className="text-[14px] font-semibold" style={{ color: 'var(--fg-1)' }}>Link Work Item</span>
           </div>
-          <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,#F1F5F9)]">
-            <X size={14} className="text-[var(--ds-text-subtlest,#94A3B8)]" />
+          <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))]">
+            <X size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
           </button>
         </div>
 
@@ -179,7 +179,7 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
           <select
             value={linkType}
             onChange={e => setLinkType(e.target.value)}
-            className="w-full text-[13px] px-3 py-2 rounded mb-4 focus:outline-none focus:ring-1 focus:ring-[var(--ds-text-brand,#2563EB)] bg-[var(--cp-float)]"
+            className="w-full text-[13px] px-3 py-2 rounded mb-4 focus:outline-none focus:ring-1 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] bg-[var(--cp-float)]"
             style={{ border: '1px solid var(--divider)' }}
           >
             {LINK_TYPES.map(t => (
@@ -190,7 +190,7 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
           {/* Search */}
           <label className="text-[12px] font-medium block mb-1.5" style={{ color: 'var(--fg-2)' }}>Search work item</label>
           <div className="flex items-center gap-1.5 px-3 py-2 rounded mb-2" style={{ border: '1px solid var(--divider)' }}>
-            <Search size={13} className="text-[var(--ds-text-subtlest,#94A3B8)]" />
+            <Search size={13} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
             <input
               autoFocus
               value={search}
@@ -212,7 +212,7 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
                 <span className="text-[10px] shrink-0" style={{ fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-3)' }}>{item.item_key}</span>
                 <span className="text-[13px] font-medium truncate" style={{ color: 'var(--fg-1)' }}>{item.title}</span>
                 <StatusLozenge name={item.status_name} category={item.status_category} />
-                {selectedId === item.id && <Check size={13} className="ml-auto text-[var(--ds-text-brand,#2563EB)]" />}
+                {selectedId === item.id && <Check size={13} className="ml-auto text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />}
               </button>
             ))}
             {search.length >= 2 && searchResults.length === 0 && (

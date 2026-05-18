@@ -7,11 +7,11 @@ import { X, ChevronDown, Search, Check } from '@/lib/atlaskit-icons';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
 const HUB_DOT_COLORS: Record<string, string> = {
-  Project: 'var(--ds-text-brand, #2563EB)',
-  Product: '#7C3AED',
+  Project: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+  Product: 'var(--cp-purple-60, #7C3AED)',
   Task: '#EA580C',
-  Incident: 'var(--ds-text-danger, #DC2626)',
-  Release: 'var(--ds-text-success, #16A34A)',
+  Incident: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
+  Release: 'var(--ds-text-success, var(--cp-success, #16A34A))',
   Test: '#0891B2',
   Strategy: '#0891B2',
   Plan: '#6366F1',

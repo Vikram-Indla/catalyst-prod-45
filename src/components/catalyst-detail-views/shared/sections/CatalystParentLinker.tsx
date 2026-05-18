@@ -48,7 +48,7 @@ function SidebarAddTrigger({
         fontFamily: 'inherit',
         transition: 'background 0.1s',
       }}
-      onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
       onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
     >
       {label === 'Add parent' ? 'None' : label}
@@ -280,7 +280,7 @@ function BusinessRequestParentPicker({
         >
           <IssueIcon type="Business Request" size={16} />
           <span
-            style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: 'var(--ds-link, #0052CC)', flexShrink: 0 }}
+            style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: 'var(--ds-link, var(--cp-primary-60, #0052CC))', flexShrink: 0 }}
           >{currentParent.request_key}</span>
           <span style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
           >{currentParent.title}</span>
@@ -296,26 +296,26 @@ function BusinessRequestParentPicker({
           data-cv-parent-picker="true"
           style={{
             position: 'fixed', top: pickerPos.top, left: pickerPos.left, width: pickerPos.width,
-            background: 'var(--ds-surface, #FFFFFF)', border: '1px solid #DFE1E6', borderRadius: 6,
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 6,
             boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 1000, maxHeight: 400, display: 'flex', flexDirection: 'column',
           }}
         >
           {/* Search */}
-          <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)' }}>
+          <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid var(--ds-border-focused, #4C9AFF)', borderRadius: 4, padding: '4px 8px' }}>
               <SearchIcon size="small" primaryColor="var(--ds-icon-subtle, #5E6C84)" />
               <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search business requests…"
                 style={{ border: 'none', outline: 'none', fontSize: 13, color: 'var(--ds-text, #292A2E)', width: '100%', fontFamily: 'inherit' }} />
-              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', padding: 0 }}><CrossIcon size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" /></button>}
+              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', display: 'flex', padding: 0 }}><CrossIcon size="small" primaryColor="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" /></button>}
             </div>
           </div>
           <div style={{ overflowY: 'auto', maxHeight: 300 }}>
             {renderBrGroup('ACTIVE', active, issue?.parent_key, (key) => updateParent.mutate(key))}
             {renderBrGroup('DONE', done, issue?.parent_key, (key) => updateParent.mutate(key))}
-            {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No matching business requests</div>}
+            {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No matching business requests</div>}
           </div>
           {currentParent && (
-            <div style={{ borderTop: '1px solid var(--ds-surface-sunken, #F4F5F7)', padding: '4px 0' }}>
+            <div style={{ borderTop: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', padding: '4px 0' }}>
               <button
                 type="button"
                 onClick={() => { updateParent.mutate(null); setShowPicker(false); }}
@@ -348,7 +348,7 @@ function renderBrGroup(
   const DONE_STEPS = ['done', 'completed', 'closed', 'cancelled', 'rejected'];
   return (
     <>
-      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
+      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
       {items.map(item => {
         const isSelected = currentParentKey === item.request_key;
         const statusCat = DONE_STEPS.includes(item.process_step?.toLowerCase()) ? 'done' : 
@@ -359,14 +359,14 @@ function renderBrGroup(
               display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
               cursor: 'pointer', background: isSelected ? 'var(--ds-background-information, #DEEBFF)' : 'transparent', transition: 'background 80ms',
             }}
-            onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+            onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
             onMouseLeave={e => { e.currentTarget.style.background = isSelected ? 'var(--ds-background-information, #DEEBFF)' : 'transparent'; }}
           >
             <IssueIcon type="Business Request" size={14} />
             <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-subtle, #5E6C84)', flexShrink: 0 }}>{item.request_key || '—'}</span>
             <span style={{ fontSize: 13, color: 'var(--ds-text, #292A2E)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</span>
             <StatusLozenge status={item.process_step} category={statusCat} />
-            {isSelected && <CheckIcon size="small" primaryColor="var(--ds-background-brand-bold, #0052CC)" />}
+            {isSelected && <CheckIcon size="small" primaryColor="var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))" />}
           </div>
         );
       })}
@@ -519,26 +519,26 @@ function SingleParentPicker({
           data-cv-parent-picker="true"
           style={{
             position: 'fixed', top: pickerPos.top, left: pickerPos.left, width: pickerPos.width,
-            background: 'var(--ds-surface, #FFFFFF)', border: '1px solid #DFE1E6', borderRadius: 6,
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 6,
             boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 1000, maxHeight: 400, display: 'flex', flexDirection: 'column',
           }}
         >
           {/* Search */}
-          <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)' }}>
+          <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid var(--ds-border-focused, #4C9AFF)', borderRadius: 4, padding: '4px 8px' }}>
               <SearchIcon size="small" primaryColor="var(--ds-icon-subtle, #5E6C84)" />
               <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
                 style={{ border: 'none', outline: 'none', fontSize: 13, color: 'var(--ds-text, #292A2E)', width: '100%', fontFamily: 'inherit' }} />
-              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', padding: 0 }}><CrossIcon size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" /></button>}
+              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', display: 'flex', padding: 0 }}><CrossIcon size="small" primaryColor="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" /></button>}
             </div>
           </div>
           <div style={{ overflowY: 'auto', maxHeight: 300 }}>
             {renderGroup('ACTIVE', active, issue?.parent_key, (key) => updateParent.mutate(key))}
             {renderGroup('DONE', done, issue?.parent_key, (key) => updateParent.mutate(key))}
-            {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No matching items</div>}
+            {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No matching items</div>}
           </div>
           {(currentParent || hasRawParent) && (
-            <div style={{ borderTop: '1px solid var(--ds-surface-sunken, #F4F5F7)', padding: '4px 0' }}>
+            <div style={{ borderTop: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', padding: '4px 0' }}>
               <button
                 type="button"
                 onClick={() => { updateParent.mutate(null); setShowPicker(false); }}
@@ -685,15 +685,15 @@ function MultiLinkPicker({
               <div key={link.id} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <IssueIcon type={link.issue_type} size={16} />
                 <span
-                  style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: 'var(--ds-link, #0052CC)', cursor: 'pointer', flexShrink: 0 }}
+                  style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: 'var(--ds-link, var(--cp-primary-60, #0052CC))', cursor: 'pointer', flexShrink: 0 }}
                   onClick={() => setShowPicker(!showPicker)}
                 >{link.issue_key}</span>
                 <span style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
                   onClick={() => setShowPicker(!showPicker)}
                 >{link.summary}</span>
                 <StatusLozenge status={link.status} category={link.status_category} />
-                <button onClick={() => removeLink.mutate(link.linkId)} title="Remove link" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex' }}>
-                  <CrossIcon size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" />
+                <button onClick={() => removeLink.mutate(link.linkId)} title="Remove link" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', display: 'flex' }}>
+                  <CrossIcon size="small" primaryColor="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" />
                 </button>
               </div>
             ))}
@@ -709,22 +709,22 @@ function MultiLinkPicker({
             data-cv-parent-picker="true"
             style={{
               position: 'fixed', top: pickerPos.top, left: pickerPos.left, width: pickerPos.width,
-              background: 'var(--ds-surface, #FFFFFF)', border: '1px solid #DFE1E6', borderRadius: 6,
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 6,
               boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 1000, maxHeight: 400, display: 'flex', flexDirection: 'column',
             }}
           >
-            <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)' }}>
+            <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid var(--ds-border-focused, #4C9AFF)', borderRadius: 4, padding: '4px 8px' }}>
                 <SearchIcon size="small" primaryColor="var(--ds-icon-subtle, #5E6C84)" />
                 <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
                   style={{ border: 'none', outline: 'none', fontSize: 13, color: 'var(--ds-text, #292A2E)', width: '100%', fontFamily: 'inherit' }} />
-                {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', padding: 0 }}><CrossIcon size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" /></button>}
+                {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', display: 'flex', padding: 0 }}><CrossIcon size="small" primaryColor="var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))" /></button>}
               </div>
             </div>
             <div style={{ overflowY: 'auto', maxHeight: 340 }}>
               {renderGroupMulti('ACTIVE', active, linkedIds, toggleLink)}
               {renderGroupMulti('DONE', done, linkedIds, toggleLink)}
-              {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No matching items</div>}
+              {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No matching items</div>}
             </div>
           </div>,
           document.body,
@@ -746,7 +746,7 @@ function renderGroup(
   if (items.length === 0) return null;
   return (
     <>
-      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
+      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
       {items.map(item => {
         const isSelected = currentParentKey === item.issue_key;
         return (
@@ -755,14 +755,14 @@ function renderGroup(
               display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
               cursor: 'pointer', background: isSelected ? 'var(--ds-background-information, #DEEBFF)' : 'transparent', transition: 'background 80ms',
             }}
-            onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+            onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
             onMouseLeave={e => { e.currentTarget.style.background = isSelected ? 'var(--ds-background-information, #DEEBFF)' : 'transparent'; }}
           >
             <IssueIcon type={item.issue_type} size={14} />
             <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-subtle, #5E6C84)', flexShrink: 0 }}>{item.issue_key}</span>
             <span style={{ fontSize: 13, color: 'var(--ds-text, #292A2E)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.summary}</span>
             <StatusLozenge status={item.status} category={item.status_category} />
-            {isSelected && <CheckIcon size="small" primaryColor="var(--ds-background-brand-bold, #0052CC)" />}
+            {isSelected && <CheckIcon size="small" primaryColor="var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))" />}
           </div>
         );
       })}
@@ -778,7 +778,7 @@ function renderGroupMulti(
   if (items.length === 0) return null;
   return (
     <>
-      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
+      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
       {items.map(item => {
         const isLinked = linkedIds.has(item.id);
         return (
@@ -787,14 +787,14 @@ function renderGroupMulti(
               display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
               cursor: 'pointer', background: isLinked ? 'var(--ds-background-information, #DEEBFF)' : 'transparent', transition: 'background 80ms',
             }}
-            onMouseEnter={e => { if (!isLinked) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+            onMouseEnter={e => { if (!isLinked) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
             onMouseLeave={e => { e.currentTarget.style.background = isLinked ? 'var(--ds-background-information, #DEEBFF)' : 'transparent'; }}
           >
             {/* Checkbox */}
             <div style={{
               width: 16, height: 16, borderRadius: 3, flexShrink: 0,
-              border: `1.5px solid ${isLinked ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-border-disabled, #C1C7D0)'}`,
-              background: isLinked ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-surface, #FFF)',
+              border: `1.5px solid ${isLinked ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-border-disabled, #C1C7D0)'}`,
+              background: isLinked ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-surface, #FFF)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'background 0.12s, border-color 0.12s',
             }}>

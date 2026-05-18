@@ -14,8 +14,8 @@ interface Column {
 const COLUMNS: Column[] = [
   { id: 'uncommitted', label: 'UNCOMMITTED', accent: 'var(--ds-text-disabled, #CBD5E1)', dashed: true },
   { id: 'Q1', label: 'Q1 2026', accent: '#6D28D9', dashed: false },
-  { id: 'Q2', label: 'Q2 2026', accent: 'var(--ds-text-brand, #2563EB)', dashed: false },
-  { id: 'Q3', label: 'Q3 2026', accent: '#0D9488', dashed: false },
+  { id: 'Q2', label: 'Q2 2026', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', dashed: false },
+  { id: 'Q3', label: 'Q3 2026', accent: 'var(--cp-teal-60, #0D9488)', dashed: false },
   { id: 'Q4', label: 'Q4 2026', accent: '#92400E', dashed: false },
 ];
 
@@ -101,7 +101,7 @@ export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted, 
               <span style={{
                 fontSize: 11, fontWeight: 600, color: dk.t3,
                 fontFamily: 'var(--cp-font-body)',
-                background: 'var(--cp-bg-sunken, #F1F5F9)',
+                background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
                 padding: '1px 7px', borderRadius: 100,
               }}>
                 {colIdeas.length}

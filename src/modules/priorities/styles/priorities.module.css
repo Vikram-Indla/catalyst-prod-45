@@ -7,7 +7,7 @@
    Usage:  className={styles['pri-root']}
    
    Catalyst V5 Compliant:
-   ✅ Primary: var(--ds-text-brand, #2563eb)
+   ✅ Primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))
    ✅ Teal: #0d9488
    ✅ Warning: var(--ds-text-warning, #d97706) / var(--ds-text-warning, #f59e0b)
    ✅ Danger: var(--ds-text-danger, #ef4444)
@@ -18,7 +18,7 @@
 
 .pri-root {
   /* Brand — Catalyst V5 */
-  --pri-primary: var(--ds-text-brand, #2563eb);
+  --pri-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --pri-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --pri-primary-light: var(--ds-background-selected, #eff6ff);
   --pri-primary-100: #dbeafe;
@@ -68,9 +68,9 @@
   --pri-label-q1: var(--ds-text-success, #22c55e);
 
   /* Surfaces */
-  --pri-bg: var(--ds-surface, #ffffff);
+  --pri-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --pri-bg-page: var(--ds-surface-sunken, #f8fafc);
-  --pri-bg-elevated: var(--ds-surface, #ffffff);
+  --pri-bg-elevated: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --pri-border: var(--ds-border, #e5e7eb);
   --pri-border-light: #f3f4f6;
 
@@ -1534,5 +1534,5 @@
 }
 
 /* DARK MODE OVERRIDES — added 2026-04-30 sweep */
-:global(.dark) .priorityRow { background: var(--cp-bg-elevated, #22272B); color: var(--cp-text-primary, #EDEDED); }
-:global(.dark) .priorityRow:hover { background: var(--cp-interact-hover, #2E2E2E); }
+:global(.dark) .priorityRow { background: var(--cp-bg-elevated, #22272B); color: var(--cp-text-primary, var(--cp-bg-neutral, #EDEDED)); }
+:global(.dark) .priorityRow:hover { background: var(--cp-interact-hover, var(--cp-ink-1, #2E2E2E)); }

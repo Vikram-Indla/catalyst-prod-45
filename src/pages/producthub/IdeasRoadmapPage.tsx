@@ -12,7 +12,7 @@ import { DK, LK } from '@/utils/dark-mode-styles';
 const TEAMS = ['All Teams', 'Senaie BAU', 'Integration Team', 'Mobile App Team'];
 
 const ROADMAP_COLS = [
-  { key: null, label: 'NO QUARTER', borderColor: 'transparent', textColor: 'var(--ds-text-subtlest, #94A3B8)' },
+  { key: null, label: 'NO QUARTER', borderColor: 'transparent', textColor: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' },
   { key: 'Q1', label: 'Q1 2026', borderColor: 'var(--ds-text-danger, #991B1B)', textColor: 'var(--ds-text-danger, #991B1B)' },
   { key: 'Q2', label: 'Q2 2026', borderColor: '#1E40AF', textColor: '#1E40AF' },
   { key: 'Q3', label: 'Q3 2026', borderColor: '#115E59', textColor: '#115E59' },
@@ -53,7 +53,7 @@ export default function IdeasRoadmapPage() {
               <strong style={{ fontFamily: 'var(--cp-font-mono)', color: dk.greenText }}>{convertedCount}</strong> converted
             </span>
             <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: dk.t2, cursor: 'pointer' }}>
-              <input type="checkbox" checked={committedOnly} onChange={e => setCommittedOnly(e.target.checked)} style={{ accentColor: 'var(--ds-text-brand, #2563EB)' }} />
+              <input type="checkbox" checked={committedOnly} onChange={e => setCommittedOnly(e.target.checked)} style={{ accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
               Committed only
             </label>
           </div>
@@ -64,8 +64,8 @@ export default function IdeasRoadmapPage() {
       <div style={{ background: dk.pageBg, borderBottom: `1px solid ${dk.border}`, padding: '10px 28px', display: 'flex', alignItems: 'center', gap: '10px' }}>
         {TEAMS.map(t => (
           <button key={t} onClick={() => setTeamFilter(t)} style={{
-            background: teamFilter === t ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-bg-elevated, #FFFFFF)'), color: teamFilter === t ? 'var(--ds-text-inverse, #FFFFFF)' : dk.t2,
-            border: `1px solid ${teamFilter === t ? 'var(--ds-text-brand, #2563EB)' : dk.border}`,
+            background: teamFilter === t ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'), color: teamFilter === t ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : dk.t2,
+            border: `1px solid ${teamFilter === t ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : dk.border}`,
             borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 500, cursor: 'pointer',
           }}>{t}</button>
         ))}
@@ -88,7 +88,7 @@ export default function IdeasRoadmapPage() {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', height: 50 }}>
                   <span style={{ fontSize: '11px', fontWeight: 700, color: isDark ? dk.t3 : col.textColor, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{col.label}</span>
-                  <span style={{ fontSize: '10px', fontFamily: 'var(--cp-font-mono)', fontWeight: 700, background: 'var(--cp-bg-sunken, #F1F5F9)', borderRadius: '100px', padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center', color: dk.t3 }}>{colIdeas.length}</span>
+                  <span style={{ fontSize: '10px', fontFamily: 'var(--cp-font-mono)', fontWeight: 700, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: '100px', padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center', color: dk.t3 }}>{colIdeas.length}</span>
                 </div>
                 {colIdeas.length === 0 && (
                   <div style={{ padding: '20px', textAlign: 'center', color: dk.t3, fontSize: '12px', border: `1px dashed ${dk.border}`, borderRadius: '8px' }}>No ideas</div>
@@ -111,9 +111,9 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
   const isConverted = idea.status === 'Converted to Request';
   return (
     <div onClick={onClick} style={{
-      background: 'var(--cp-bg-elevated, #FFFFFF)',
+      background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       border: `1px solid ${isDark ? 'var(--ds-border-bold, #454545)' : dk.border}`,
-      borderLeft: isConverted ? '3px solid #16A34A' : `1px solid ${dk.border}`,
+      borderLeft: isConverted ? '3px solid var(--cp-success, #16A34A)' : `1px solid ${dk.border}`,
       borderRadius: '6px',
       padding: '12px', marginBottom: '8px', cursor: 'pointer',
       transition: 'box-shadow 150ms ease, transform 150ms ease',
@@ -136,16 +136,16 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
         <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '11px', fontWeight: 600, color: dk.blueKey }}>{idea.idea_key}</span>
-        <span style={{ fontSize: '9px', fontWeight: 800, background: 'var(--cp-bg-sunken, #F1F5F9)', color: dk.t2, padding: '1px 5px', borderRadius: '4px', border: `1px solid ${dk.border}`, fontFamily: 'var(--cp-font-mono)' }}>{idea.priority || 'P2'}</span>
+        <span style={{ fontSize: '9px', fontWeight: 800, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: dk.t2, padding: '1px 5px', borderRadius: '4px', border: `1px solid ${dk.border}`, fontFamily: 'var(--cp-font-mono)' }}>{idea.priority || 'P2'}</span>
       </div>
       <div style={{ fontSize: '13px', fontWeight: 500, color: dk.t1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: '6px', lineHeight: 1.35 }}>{idea.title}</div>
       <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-        {idea.assigned_team && <span style={{ background: 'var(--cp-bg-sunken, #F1F5F9)', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.assigned_team}</span>}
-        {idea.theme && <span style={{ background: 'var(--cp-bg-sunken, #F1F5F9)', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, maxWidth: '160px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.theme}</span>}
+        {idea.assigned_team && <span style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.assigned_team}</span>}
+        {idea.theme && <span style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, maxWidth: '160px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.theme}</span>}
       </div>
       <div style={{ borderTop: `1px solid ${dk.divider}`, paddingTop: '8px' }}>
         <span style={{ fontSize: '11px', fontWeight: 700, color: idea.impact_total > 0 ? dk.t2 : dk.t3, fontFamily: 'var(--cp-font-mono)' }}>IMPACT {idea.impact_total.toFixed(2)}</span>
-        {idea.is_committed && <span style={{ marginLeft: '8px', fontSize: '10px', fontWeight: 700, color: 'var(--ds-text-inverse, #FFFFFF)', background: 'var(--cp-success, #1B7F37)', padding: '1px 6px', borderRadius: '4px' }}>COMMITTED</span>}
+        {idea.is_committed && <span style={{ marginLeft: '8px', fontSize: '10px', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: 'var(--cp-success, var(--cp-lozenge-green-bg, #1B7F37))', padding: '1px 6px', borderRadius: '4px' }}>COMMITTED</span>}
       </div>
       {isConverted && idea.linked_initiative_key && (
         <div style={{ marginTop: '6px', fontSize: '11px', fontWeight: 600, color: dk.greenText, fontFamily: 'var(--cp-font-mono)' }}>

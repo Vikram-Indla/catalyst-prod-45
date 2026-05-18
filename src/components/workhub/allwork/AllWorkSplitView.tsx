@@ -184,10 +184,10 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
   ];
 
   return (
-    <div className="flex h-full gap-0 rounded border overflow-hidden" style={{ borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--bd-default, #2E2E2E)', borderRadius: 4 }}>
+    <div className="flex h-full gap-0 rounded border overflow-hidden" style={{ borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bd-default, var(--cp-ink-1, #2E2E2E))', borderRadius: 4 }}>
       {/* Left card list — 320px */}
-      <div className="flex flex-col" style={{ width: 320, borderRight: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)' }}>
-        <div className="flex items-center justify-between px-3 py-2" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>
+      <div className="flex flex-col" style={{ width: 320, borderRight: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))', backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)' }}>
+        <div className="flex items-center justify-between px-3 py-2" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))' }}>
           {/* Sort dropdown + direction toggle (TC-L1, TC-L2) */}
           <div className="relative flex items-center gap-0.5" ref={sortRef}>
             <button
@@ -195,7 +195,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               aria-haspopup="listbox"
               aria-expanded={sortOpen}
               aria-label={`Sort by ${currentSortLabel}. Click to change field.`}
-              className="flex items-center gap-1 text-[12px] px-1.5 py-0.5 rounded transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
+              className="flex items-center gap-1 text-[12px] px-1.5 py-0.5 rounded transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
               style={{
                 color: 'var(--cp-text-secondary, #6b6e76)',
                 fontFamily: 'var(--cp-font-body)',
@@ -211,7 +211,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               onClick={() => onSort(sortField)}
               aria-label={sortDir === 'asc' ? 'Ascending. Click to reverse.' : 'Descending. Click to reverse.'}
               title={sortDir === 'asc' ? 'Ascending' : 'Descending'}
-              className="p-1 rounded transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
+              className="p-1 rounded transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
               style={{
                 color: 'var(--cp-text-secondary, #6b6e76)',
                 background: 'none',
@@ -228,8 +228,8 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               <div
                 className="absolute top-full left-0 mt-1 w-48 rounded-lg border shadow-lg z-50 py-1 animate-scale-in"
                 style={{
-                  borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--bd-default, #2E2E2E)',
-                  backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)',
+                  borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bd-default, var(--cp-ink-1, #2E2E2E))',
+                  backgroundColor: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-app)',
                 }}
                 role="listbox"
                 aria-label="Sort field"
@@ -240,9 +240,9 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                     <button
                       key={opt.field}
                       onClick={() => { onSort(opt.field); setSortOpen(false); }}
-                      className="w-full flex items-center justify-between px-3 py-1.5 text-[12px] text-left transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
+                      className="w-full flex items-center justify-between px-3 py-1.5 text-[12px] text-left transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
                       style={{
-                        color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--fg-1)',
+                        color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--fg-1)',
                         fontFamily: 'var(--cp-font-body)',
                         background: 'none',
                         border: 'none',
@@ -252,7 +252,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                       aria-selected={isSelected}
                     >
                       <span>{opt.label}</span>
-                      {isSelected && <Check className="w-3 h-3" style={{ color: 'var(--ds-text-brand, #2563EB)' }} />}
+                      {isSelected && <Check className="w-3 h-3" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />}
                     </button>
                   );
                 })}
@@ -275,7 +275,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                 onClick={() => handleListSelect(item.issue_key)}
                 className="px-3 py-2.5 cursor-pointer transition-colors duration-[80ms]"
                 style={{
-                  borderBottom: isDark ? '1px solid #292929' : '1px solid var(--bd-subtle, #292929)',
+                  borderBottom: isDark ? '1px solid #292929' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))',
                   backgroundColor: isActive ? 'rgba(37,99,235,0.08)' : isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
                   borderLeft: isActive ? '3px solid #2563EB' : '3px solid transparent',
                 }}
@@ -307,7 +307,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
           })}
         </div>
 
-        <div className="px-3 py-2 text-[11px]" style={{ color: 'var(--fg-3)', borderTop: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', fontFamily: 'var(--cp-font-mono)' }}>
+        <div className="px-3 py-2 text-[11px]" style={{ color: 'var(--fg-3)', borderTop: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))', fontFamily: 'var(--cp-font-mono)' }}>
           {items.length} of {items.length}
         </div>
       </div>
@@ -323,7 +323,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               fontSize: 12,
               lineHeight: '16px',
               fontFamily: 'var(--cp-font-body)',
-              borderBottom: isDark ? '1px solid #292929' : '1px solid var(--bd-subtle, #292929)',
+              borderBottom: isDark ? '1px solid #292929' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))',
               backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
               minHeight: 32,
               flexShrink: 0,
@@ -341,13 +341,13 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                     <Fragment key={item.issue_key}>
                       <button
                         onClick={() => handleBreadcrumbNav(stackIndex)}
-                        className="transition-colors duration-[80ms] hover:underline focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)] rounded-sm"
+                        className="transition-colors duration-[80ms] hover:underline focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] rounded-sm"
                         style={{
                           background: 'none',
                           border: 'none',
                           padding: 0,
                           cursor: 'pointer',
-                          color: 'var(--ds-text-brand, #2563EB)',
+                          color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                           fontFamily: 'var(--cp-font-mono)',
                           fontSize: 11,
                           fontWeight: 650,
@@ -365,7 +365,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                     fontFamily: 'var(--cp-font-mono)',
                     fontSize: 11,
                     fontWeight: 650,
-                    color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--fg-1)',
+                    color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--fg-1)',
                   }}
                 >
                   {currentItem.issue_key}
@@ -378,7 +378,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                   fontFamily: 'var(--cp-font-mono)',
                   fontSize: 11,
                   fontWeight: 650,
-                  color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--fg-1)',
+                  color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--fg-1)',
                 }}
               >
                 {currentItem.issue_key}
@@ -387,13 +387,13 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
           </nav>
 
           {/* Detail header */}
-          <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>
+          <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))' }}>
             <div className="flex items-center gap-2">
               {/* Back button */}
               {canGoBack && (
                 <button
                   onClick={handleBack}
-                  className="flex items-center gap-1 px-2 py-1 rounded-md transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
+                  className="flex items-center gap-1 px-2 py-1 rounded-md transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
                   style={{ color: 'var(--fg-2)', fontSize: 13, fontWeight: 500, fontFamily: 'var(--cp-font-body)', border: 'none', background: 'none', cursor: 'pointer' }}
                   aria-label="Go back"
                 >
@@ -415,11 +415,11 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
             <div className="flex items-center gap-1">
               {!canGoBack && (
                 <>
-                  <button onClick={goPrev} disabled={selectedIdx <= 0} className="p-1 rounded hover:bg-[var(--hover,#1F1F1F)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]" aria-label="Previous item">
+                  <button onClick={goPrev} disabled={selectedIdx <= 0} className="p-1 rounded hover:bg-[var(--hover,#1F1F1F)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" aria-label="Previous item">
                     <ChevronLeft className="w-4 h-4" style={{ color: 'var(--cp-text-tertiary, #6b6e76)' }} />
                   </button>
                   <span className="text-[11px]" style={{ color: 'var(--fg-3)', fontFamily: 'var(--cp-font-mono)' }}>{selectedIdx + 1}/{items.length}</span>
-                  <button onClick={goNext} disabled={selectedIdx >= items.length - 1} className="p-1 rounded hover:bg-[var(--hover,#1F1F1F)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]" aria-label="Next item">
+                  <button onClick={goNext} disabled={selectedIdx >= items.length - 1} className="p-1 rounded hover:bg-[var(--hover,#1F1F1F)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" aria-label="Next item">
                     <ChevronRight className="w-4 h-4" style={{ color: 'var(--cp-text-tertiary, #6b6e76)' }} />
                   </button>
                 </>
@@ -430,7 +430,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
           {/* Tabs */}
           <div
             className="flex items-center gap-0 px-5"
-            style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}
+            style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))' }}
             role="tablist"
           >
             {TABS.map(tab => {
@@ -439,14 +439,14 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className="flex items-center gap-1.5 px-3 py-2.5 transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
+                  className="flex items-center gap-1.5 px-3 py-2.5 transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
                   style={{
                     fontSize: 12, fontWeight: isActive ? 600 : 400,
-                    color: isActive ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-text-tertiary, #6b6e76)',
+                    color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-text-tertiary, #6b6e76)',
                     borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
                     marginBottom: -1, fontFamily: 'var(--cp-font-body)',
                     background: 'none', border: 'none', borderBottomStyle: 'solid',
-                    borderBottomWidth: 2, borderBottomColor: isActive ? 'var(--ds-text-brand, #2563EB)' : 'transparent',
+                    borderBottomWidth: 2, borderBottomColor: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
                     cursor: 'pointer',
                   }}
                   role="tab"
@@ -459,8 +459,8 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                       style={{
                         fontSize: 10, fontWeight: 700, minWidth: 18, textAlign: 'center',
                         padding: '1px 5px', borderRadius: 12,
-                        backgroundColor: isActive ? 'rgba(37,99,235,0.10)' : isDark ? 'var(--ds-border, #292929)' : 'var(--bd-subtle, #292929)',
-                        color: isActive ? 'var(--ds-text-brand, #2563EB)' : 'var(--fg-3)',
+                        backgroundColor: isActive ? 'rgba(37,99,235,0.10)' : isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--bd-subtle, var(--cp-ink-1, #292929))',
+                        color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--fg-3)',
                         fontFamily: 'var(--cp-font-mono)',
                       }}
                     >
@@ -489,9 +489,9 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                       aria-haspopup="menu"
                       aria-expanded={addOpen}
                       aria-label="Add child issue, attachment, or link"
-                      className="inline-flex items-center gap-1 text-[12px] px-2 h-7 rounded border transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
+                      className="inline-flex items-center gap-1 text-[12px] px-2 h-7 rounded border transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
                       style={{
-                        borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--bd-default, #2E2E2E)',
+                        borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bd-default, var(--cp-ink-1, #2E2E2E))',
                         color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)',
                         backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
                         fontFamily: 'var(--cp-font-body)',
@@ -507,8 +507,8 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                       <div
                         className="absolute top-full left-0 mt-1 w-52 rounded-lg border shadow-lg z-50 py-1 animate-scale-in"
                         style={{
-                          borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--bd-default, #2E2E2E)',
-                          backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)',
+                          borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bd-default, var(--cp-ink-1, #2E2E2E))',
+                          backgroundColor: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-app)',
                         }}
                         role="menu"
                         aria-label="Add to this work item"
@@ -521,9 +521,9 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                           <button
                             key={action.key}
                             onClick={() => { setActiveTab(action.tab); setAddOpen(false); }}
-                            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] text-left transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
+                            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] text-left transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
                             style={{
-                              color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--fg-1)',
+                              color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--fg-1)',
                               fontFamily: 'var(--cp-font-body)',
                               background: 'none',
                               border: 'none',
@@ -575,19 +575,19 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
 
                   {/* Activity section */}
                   <div>
-                    <div className="flex items-center gap-4 mb-3" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', paddingBottom: 8 }}>
+                    <div className="flex items-center gap-4 mb-3" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))', paddingBottom: 8 }}>
                       {(['all', 'comments', 'history', 'worklog'] as const).map(tab => (
                         <button
                           key={tab}
                           onClick={() => setActivityTab(tab)}
-                          className="text-[12px] pb-1 capitalize transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
+                          className="text-[12px] pb-1 capitalize transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
                           style={{
-                            color: activityTab === tab ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-text-tertiary, #6b6e76)',
+                            color: activityTab === tab ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-text-tertiary, #6b6e76)',
                             fontWeight: activityTab === tab ? 600 : 400,
                             borderBottom: activityTab === tab ? '2px solid #2563EB' : '2px solid transparent',
                             fontFamily: 'var(--cp-font-body)',
                             background: 'none', border: 'none', borderBottomStyle: 'solid',
-                            borderBottomWidth: 2, borderBottomColor: activityTab === tab ? 'var(--ds-text-brand, #2563EB)' : 'transparent',
+                            borderBottomWidth: 2, borderBottomColor: activityTab === tab ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
                             cursor: 'pointer',
                           }}
                           role="tab"
@@ -616,7 +616,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                       <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0" style={{ backgroundColor: '#4C6EF5' }}>
                         U
                       </div>
-                      <div className="flex-1 rounded-lg border px-3 py-2 focus-within:border-[var(--ds-text-brand,#2563EB)] transition-colors duration-[80ms]" style={{ borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--bd-default, #2E2E2E)' }}>
+                      <div className="flex-1 rounded-lg border px-3 py-2 focus-within:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] transition-colors duration-[80ms]" style={{ borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bd-default, var(--cp-ink-1, #2E2E2E))' }}>
                         <input
                           ref={commentInputRef}
                           id="aw-comment-input"
@@ -627,17 +627,17 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                           aria-label="Add a comment"
                         />
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle,#292929)] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'var(--ds-border, #292929)' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-tertiary, #6b6e76)' }}>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle,var(--cp-ink-1, #292929))] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-tertiary, #6b6e76)' }}>
                             Status update...
                           </span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle,#292929)] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'var(--ds-border, #292929)' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-tertiary, #6b6e76)' }}>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle,var(--cp-ink-1, #292929))] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-tertiary, #6b6e76)' }}>
                             Thanks!
                           </span>
                         </div>
                       </div>
                     </div>
                     <p className="text-[10px] mt-2 ml-9" style={{ color: 'var(--fg-3)' }}>
-                      <b>Tip:</b> press <kbd className="px-1 py-0.5 rounded text-[10px]" style={{ backgroundColor: isDark ? 'var(--ds-border, #292929)' : 'var(--hover, #1F1F1F)', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>M</kbd> to comment
+                      <b>Tip:</b> press <kbd className="px-1 py-0.5 rounded text-[10px]" style={{ backgroundColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--hover, #1F1F1F)', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))' }}>M</kbd> to comment
                     </p>
                   </div>
                 </>
@@ -673,7 +673,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
             </div>
 
             {/* Right detail sidebar — 260px */}
-            <div className="overflow-y-auto py-4 px-4" style={{ width: 260, borderLeft: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}>
+            <div className="overflow-y-auto py-4 px-4" style={{ width: 260, borderLeft: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
               <div className="mb-4">
                 <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: 'var(--cp-text-tertiary, #6b6e76)', letterSpacing: '0.05em' }}>Status</span>
                 <StatusLozenge status={currentItem.status} />
@@ -721,7 +721,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                 {currentItem.labels?.length ? (
                   <div className="flex flex-wrap gap-1">
                     {currentItem.labels.map(l => (
-                      <span key={l} className="text-[11px] px-2 py-0.5 rounded" style={{ backgroundColor: isDark ? 'var(--ds-border, #292929)' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-secondary, #44546f)' }}>{l}</span>
+                      <span key={l} className="text-[11px] px-2 py-0.5 rounded" style={{ backgroundColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-secondary, #44546f)' }}>{l}</span>
                     ))}
                   </div>
                 ) : (
@@ -729,7 +729,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                 )}
               </div>
 
-              <div className="mt-6 pt-4" style={{ borderTop: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>
+              <div className="mt-6 pt-4" style={{ borderTop: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, var(--cp-ink-1, #292929))' }}>
                 <div className="mb-2">
                   <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: 'var(--cp-text-tertiary, #6b6e76)', letterSpacing: '0.05em' }}>Created</span>
                   <span className="text-[12px]" style={{ color: 'var(--cp-text-secondary, #44546f)', fontFamily: 'var(--cp-font-mono)' }} title={currentItem.jira_created_at || ''}>

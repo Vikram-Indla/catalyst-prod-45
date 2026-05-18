@@ -46,7 +46,7 @@ export function getUtilizationColor(percentage: number, mode: 'standard' | 'ther
   
   // LIGHT MODE
   if (mode === 'thermal') {
-    if (percentage === 0) return { bg: 'rgba(16, 185, 129, 0.15)', text: '#059669', pulse: false };
+    if (percentage === 0) return { bg: 'rgba(16, 185, 129, 0.15)', text: 'var(--quality-high, #059669)', pulse: false };
     if (percentage <= 40) return { bg: '#d1fae5', text: '#047857', pulse: false };
     if (percentage <= 70) return { bg: '#e0f2fe', text: '#0369a1', pulse: false };
     if (percentage <= 85) return { bg: '#bfdbfe', text: '#1d4ed8', pulse: false };
@@ -55,7 +55,7 @@ export function getUtilizationColor(percentage: number, mode: 'standard' | 'ther
   }
   
   // Standard mode - light colors
-  if (percentage === 0) return { bg: 'rgba(16, 185, 129, 0.15)', text: '#059669', pulse: false };
+  if (percentage === 0) return { bg: 'rgba(16, 185, 129, 0.15)', text: 'var(--quality-high, #059669)', pulse: false };
   if (percentage <= 40) return { bg: '#d1fae5', text: '#047857', pulse: false };
   if (percentage <= 70) return { bg: '#e0f2fe', text: '#0369a1', pulse: false };
   if (percentage <= 85) return { bg: '#bfdbfe', text: '#1d4ed8', pulse: false };

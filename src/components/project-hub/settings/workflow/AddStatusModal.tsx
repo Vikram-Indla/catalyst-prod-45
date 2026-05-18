@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { X } from '@/lib/atlaskit-icons';
 
 const CATEGORIES = ['To Do', 'In Progress', 'Done', 'Terminal'];
-const COLORS = ['var(--ds-text-brand, #2563EB)', '#0D9488', '#7C3AED', 'var(--ds-text-danger, #DC2626)', '#EA580C', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-success, #16A34A)', '#0284C7'];
+const COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#EA580C', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-success, var(--cp-success, #16A34A))', '#0284C7'];
 
 interface AddStatusModalProps {
   open: boolean;
@@ -14,10 +14,10 @@ interface AddStatusModalProps {
 export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusModalProps) {
   const [name, setName] = useState('');
   const [category, setCategory] = useState('To Do');
-  const [color, setColor] = useState('var(--ds-text-brand, #2563EB)');
+  const [color, setColor] = useState('var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))');
 
   useEffect(() => {
-    if (open) { setName(''); setCategory('To Do'); setColor('var(--ds-text-brand, #2563EB)'); }
+    if (open) { setName(''); setCategory('To Do'); setColor('var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'); }
   }, [open]);
 
   useEffect(() => {
@@ -34,11 +34,11 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]" style={{ width: 440, borderRadius: 12, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
+      <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--cp-ink-1, #1A1A1A))]" style={{ width: 440, borderRadius: 12, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-[var(--fg-1)] dark:text-[var(--ds-text,#EDEDED)]" style={{ fontSize: 16, fontWeight: 700, fontFamily: 'var(--cp-font-heading)' }}>Add Status</h3>
+          <h3 className="text-[var(--fg-1)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 16, fontWeight: 700, fontFamily: 'var(--cp-font-heading)' }}>Add Status</h3>
           <button onClick={onClose} className="flex items-center justify-center rounded-md hover:bg-[var(--cp-bd-zone)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors" style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}>
-            <X size={16} className="text-[var(--ds-text-subtlest,#64748B)] dark:text-[var(--ds-text-subtlest,#878787)]" />
+            <X size={16} className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,var(--cp-text-secondary, #878787))]" />
           </button>
         </div>
 
@@ -46,7 +46,7 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
           <div>
             <label className="text-[var(--fg-2)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>Status Name <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
             <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. In Review"
-              className="w-full bg-white dark:bg-transparent border border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text,#0F172A)] dark:text-[var(--ds-text,#EDEDED)] placeholder:text-[var(--ds-text-subtlest,#94A3B8)] dark:placeholder:text-[#7D7D7D]"
+              className="w-full bg-white dark:bg-transparent border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:placeholder:text-[#7D7D7D]"
               style={{ height: 40, padding: '8px 12px', fontSize: 13, borderRadius: 6, outline: 'none', fontFamily: 'var(--cp-font-body)' }}
             />
           </div>
@@ -54,7 +54,7 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
           <div>
             <label className="text-[var(--fg-2)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>Category <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
             <select value={category} onChange={e => setCategory(e.target.value)}
-              className="w-full bg-white dark:bg-transparent border border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text,#0F172A)] dark:text-[var(--ds-text,#EDEDED)]"
+              className="w-full bg-white dark:bg-transparent border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]"
               style={{ height: 40, padding: '8px 12px', fontSize: 13, borderRadius: 6, outline: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}
             >
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -81,14 +81,14 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
 
         <div className="flex justify-end gap-2 mt-6">
           <button onClick={onClose}
-            className="bg-white dark:bg-transparent border border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text-subtle,#334155)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]"
+            className="bg-white dark:bg-transparent border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]"
             style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500, borderRadius: 6, cursor: 'pointer' }}
           >Cancel</button>
           <button
             onClick={() => name.trim() && onSubmit({ name: name.trim(), category, color })}
             disabled={!name.trim() || loading}
             className="hover:opacity-90 transition-opacity disabled:opacity-40 bg-[var(--cp-blue)]"
-            style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: 6, cursor: name.trim() && !loading ? 'pointer' : 'default' }}
+            style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: 6, cursor: name.trim() && !loading ? 'pointer' : 'default' }}
           >
             {loading ? 'Adding...' : 'Add Status'}
           </button>

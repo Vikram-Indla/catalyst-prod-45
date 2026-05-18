@@ -196,11 +196,11 @@ export function getStaffingStatusConfig(status: 'full' | 'partial' | 'under' | '
     },
     under: {
       label: 'Understaffed',
-      color: 'var(--ds-text-brand, #2563eb)',
+      color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
       bgClass: 'bg-[var(--ds-background-selected,#eff6ff)] dark:bg-blue-950/30',
-      textClass: 'text-[var(--ds-text-brand,#2563eb)] dark:text-blue-400',
-      borderClass: 'border-[var(--ds-text-brand,#2563eb)] dark:border-blue-600',
-      dotClass: 'bg-[var(--ds-text-brand,#2563eb)]'
+      textClass: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:text-blue-400',
+      borderClass: 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:border-blue-600',
+      dotClass: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]'
     },
     over: {
       label: 'Over-Allocated',
@@ -228,13 +228,13 @@ export function formatFTE(value: number): string {
  * Get project color with deterministic fallback
  */
 const PROJECT_COLORS = [
-  'var(--ds-text-brand, #2563eb)', // Blue
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // Blue
   '#0d9488', // Teal
   '#10b981', // Green
   '#6366f1', // Indigo
   '#8b5cf6', // Violet
   '#0891b2', // Cyan
-  '#059669', // Emerald
+  'var(--quality-high, #059669)', // Emerald
   'var(--ds-text-brand, #3b82f6)', // Light Blue
 ];
 

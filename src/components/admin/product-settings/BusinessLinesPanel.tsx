@@ -234,7 +234,7 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
           
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label htmlFor="bl-name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Name</label>
+              <label htmlFor="bl-name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Name</label>
               <Textfield
                 id="bl-name"
                 value={formData.name}
@@ -244,7 +244,7 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="bl-key" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Key</label>
+              <label htmlFor="bl-key" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Key</label>
               <Textfield
                 id="bl-key"
                 value={formData.key}
@@ -258,7 +258,7 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="bl-description" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Description</label>
+              <label htmlFor="bl-description" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Description</label>
               <TextArea
                 id="bl-description"
                 value={formData.description}
@@ -274,7 +274,7 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
                   isChecked={formData.is_default}
                   onChange={() => setFormData(prev => ({ ...prev, is_default: !prev.is_default }))}
                 />
-                <label style={{ fontSize: '14px', color: 'var(--ds-text, #172B4D)' }}>Set as default</label>
+                <label style={{ fontSize: '14px', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Set as default</label>
               </div>
 
               <div className="flex items-center gap-2">
@@ -282,7 +282,7 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
                   isChecked={formData.is_active}
                   onChange={() => setFormData(prev => ({ ...prev, is_active: !prev.is_active }))}
                 />
-                <label style={{ fontSize: '14px', color: 'var(--ds-text, #172B4D)' }}>Active</label>
+                <label style={{ fontSize: '14px', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Active</label>
               </div>
             </div>
           </div>

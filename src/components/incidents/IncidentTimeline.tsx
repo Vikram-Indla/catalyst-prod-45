@@ -109,13 +109,13 @@ export function IncidentTimeline({ timeline, comments, onAddComment }: IncidentT
             className={cn(
               "px-3 py-2 text-sm font-medium transition-colors relative",
               activeTab === tab.key
-                ? "text-[#0052CC]"
+                ? "text-[var(--cp-primary-60, #0052CC)]"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
             {tab.label}
             {activeTab === tab.key && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0052CC]" />
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--cp-primary-60, #0052CC)]" />
             )}
           </button>
         ))}
@@ -130,7 +130,7 @@ export function IncidentTimeline({ timeline, comments, onAddComment }: IncidentT
             "border border-border rounded-t-md bg-white",
             isEditorFocused ? "border-[#4C9AFF] ring-2 ring-[#4C9AFF]/20" : ""
           )}>
-            <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-border bg-[var(--ds-surface-sunken,#F4F5F7)]">
+            <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-border bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]">
               {/* Text format dropdown */}
               <button className="flex items-center gap-1 px-2 py-1 text-sm text-foreground hover:bg-muted rounded">
                 Normal text
@@ -268,7 +268,7 @@ export function IncidentTimeline({ timeline, comments, onAddComment }: IncidentT
               size="sm"
               onClick={handlePostComment}
               disabled={!newComment.trim()}
-              className="h-8 bg-[#0052CC] hover:bg-[#0747A6] text-white"
+              className="h-8 bg-[var(--cp-primary-60, #0052CC)] hover:bg-[#0747A6] text-white"
             >
               Save
             </Button>

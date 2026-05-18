@@ -156,7 +156,7 @@ export function CreateFolderModal({
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-              <Folder style={{ width: 18, height: 18, color: 'var(--ds-text-inverse, #FFFFFF)' }} />
+              <Folder style={{ width: 18, height: 18, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
             </div>
             <div>
               <h2 className="th-modal-title">Create Folder</h2>
@@ -218,7 +218,7 @@ export function CreateFolderModal({
                   style={{
                     width: 42,
                     height: 42,
-                    border: icon === opt.key ? '2px solid #2563EB' : '1.5px solid var(--bd-default, #E2E8F0)',
+                    border: icon === opt.key ? '2px solid #2563EB' : '1.5px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
                     borderRadius: 12,
                     background: icon === opt.key ? 'rgba(37,99,235,0.1)' : 'var(--cp-float)',
                     color: icon === opt.key ? 'var(--cp-blue)' : 'var(--fg-3)',

@@ -15,8 +15,8 @@ const DK = {
   t1: 'var(--cp-t1)',
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
-  border: 'var(--ds-border, #2E2E2E)',
-  borderSubtle: 'var(--ds-border, #2E2E2E)',
+  border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
+  borderSubtle: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
 };
 
 const QUARTERS = ['Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026'];
@@ -36,9 +36,9 @@ function getCellStyle(avgPct: number, isDark = false) {
     return { bg: 'rgba(239,68,68,0.20)', text: 'var(--ds-border-danger, #FCA5A5)', border: '3px solid rgba(239,68,68,0.4)' };
   }
   if (avgPct >= 80) return { bg: 'rgba(22, 163, 74, 0.20)', text: '#15803D', border: 'none' };
-  if (avgPct >= 60) return { bg: 'rgba(22, 163, 74, 0.12)', text: 'var(--ds-text-success, #16A34A)', border: 'none' };
+  if (avgPct >= 60) return { bg: 'rgba(22, 163, 74, 0.12)', text: 'var(--ds-text-success, var(--cp-success, #16A34A))', border: 'none' };
   if (avgPct >= 40) return { bg: 'rgba(217, 119, 6, 0.12)', text: '#B45309', border: '3px solid rgba(217,119,6,0.3)' };
-  if (avgPct >= 20) return { bg: 'rgba(239, 68, 68, 0.12)', text: 'var(--ds-text-danger, #DC2626)', border: '3px solid rgba(239,68,68,0.3)' };
+  if (avgPct >= 20) return { bg: 'rgba(239, 68, 68, 0.12)', text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', border: '3px solid rgba(239,68,68,0.3)' };
   return { bg: 'rgba(239, 68, 68, 0.20)', text: 'var(--ds-text-danger, #991B1B)', border: '3px solid rgba(239,68,68,0.4)' };
 }
 
@@ -48,8 +48,8 @@ function getThemeDotColor(goals: Goal[]): string {
   const hasOffTrack = goals.some(g => g.status === 'off_track');
   const hasAtRisk = goals.some(g => g.status === 'at_risk');
   if (hasOffTrack || avgProgress < 40) return 'var(--ds-text-danger, #EF4444)';
-  if (hasAtRisk || avgProgress < 60) return 'var(--ds-text-warning, #D97706)';
-  return 'var(--ds-text-success, #16A34A)';
+  if (hasAtRisk || avgProgress < 60) return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
+  return 'var(--ds-text-success, var(--cp-success, #16A34A))';
 }
 
 export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }: GoalsHeatmapViewProps) {
@@ -164,7 +164,7 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
 
       <style>{`
         .heatmap-row:hover { background: ${'var(--cp-bg-page, #FAFBFE)'}; }
-        .heatmap-cell:hover { outline: 2px solid var(--ds-text-brand, #2563EB); outline-offset: -2px; border-radius: 4px; }
+        .heatmap-cell:hover { outline: 2px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); outline-offset: -2px; border-radius: 4px; }
         @media (max-width: 767px) { .heatmap-scroll { overflow-x: auto; } .heatmap-scroll > div { min-width: 700px; } }
       `}</style>
     </div>

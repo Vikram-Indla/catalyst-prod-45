@@ -18,10 +18,10 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
     <button
       onClick={onClick}
       title={collapsed ? label : undefined}
-      className={`flex items-center w-full transition-colors duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 ${
+      className={`flex items-center w-full transition-colors duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 ${
         isActive
           ? isDark ? 'bg-[#0D1526]' : 'bg-[#E9F2FF]'
-          : isDark ? 'hover:bg-[var(--ds-surface-overlay,#1F1F1F)]' : 'hover:bg-[var(--ds-surface-sunken,#F4F5F7)]'
+          : isDark ? 'hover:bg-[var(--ds-surface-overlay,#1F1F1F)]' : 'hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]'
       }`}
       style={{
         height: 36,
@@ -33,10 +33,10 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
         fontSize: 13.5,
         fontWeight: isActive ? 600 : 450,
         color: isActive
-          ? '#0052CC'
+          ? 'var(--cp-primary-60, #0052CC)'
           : 'var(--cp-text-secondary, #42526E)',
         borderRadius: collapsed ? 6 : '0 6px 6px 0',
-        borderLeft: isActive && !collapsed ? '3px solid #0052CC' : '3px solid transparent',
+        borderLeft: isActive && !collapsed ? '3px solid var(--cp-primary-60, #0052CC)' : '3px solid transparent',
         borderRight: 'none',
         borderTop: 'none',
         borderBottom: 'none',
@@ -46,7 +46,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
         letterSpacing: '-0.01em',
       }}
     >
-      <Icon size={18} strokeWidth={isActive ? 2 : 1.75} style={{ flexShrink: 0, color: isActive ? '#0052CC' : 'var(--cp-text-tertiary, #6B778C)' }} />
+      <Icon size={18} strokeWidth={isActive ? 2 : 1.75} style={{ flexShrink: 0, color: isActive ? 'var(--cp-primary-60, #0052CC)' : 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))' }} />
       {!collapsed && (
         <>
           <span className="truncate">{label}</span>
@@ -56,8 +56,8 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
               style={{
                 fontSize: 9,
                 fontWeight: 700,
-                color: 'var(--ds-text-inverse, #FFFFFF)',
-                backgroundColor: '#7C3AED',
+                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                backgroundColor: 'var(--cp-purple-60, #7C3AED)',
                 borderRadius: 4,
                 padding: '2px 6px',
                 lineHeight: '14px',
@@ -73,7 +73,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
               style={{
                 fontSize: 11,
                 fontWeight: 600,
-                color: 'var(--cp-text-tertiary, #6B778C)',
+                color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))',
                 fontFamily: 'var(--cp-font-mono)',
                 borderRadius: 9999,
                 backgroundColor: 'var(--cp-border, #EBECF0)',
