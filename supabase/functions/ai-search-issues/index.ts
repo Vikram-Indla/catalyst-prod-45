@@ -46,11 +46,16 @@ serve(async (req) => {
   try {
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     if (!GEMINI_API_KEY) {
-      return jsonError(500, "config_missing", "GEMINI_API_KEY is not configured");
+      return jsonError(
+        500,
+        "config_missing",
+        "GEMINI_API_KEY is not configured",
+      );
     }
 
     const body = await req.json().catch(() => ({}));
-    const query: string = typeof body.query === "string" ? body.query.trim() : "";
+    const query: string =
+      typeof body.query === "string" ? body.query.trim() : "";
     const projectKey: string =
       typeof body.projectKey === "string" ? body.projectKey : "";
     const currentUser = (body.current_user ?? {}) as {
@@ -62,23 +67,40 @@ serve(async (req) => {
       return jsonError(400, "bad_request", "`query` is required");
     }
 
-    const currentUserId = typeof currentUser.id === "string" ? currentUser.id : "";
+    const currentUserId =
+      typeof currentUser.id === "string" ? currentUser.id : "";
     const currentUserName =
       typeof currentUser.name === "string" && currentUser.name.trim()
         ? currentUser.name.trim()
         : "the current user";
 
-    const systemPrompt =
-      `You translate natural-language work-item search queries into a structured JSON filter spec for a Jira-like UI. Output ONLY valid JSON. No markdown, no preamble, no explanation outside the JSON.
+    const systemPrompt = `You translate natural-language work-item search queries into a structured JSON filter spec for a Jira-like UI. Output ONLY valid JSON. No markdown, no preamble, no explanation outside the JSON.
 
 INPUT TOLERANCE — IMPORTANT:
 The user's query is often informal: typos, broken grammar, missing articles, mixed languages, voice-to-text artefacts, misspelled names. INFER intent — never refuse to parse. If the query is "tikets asignd hasan", treat it the same as "tickets assigned to Hasan". If it's "show me bugz mike fixd last week", treat it the same as "bugs Mike worked on this past week". Always extract the strongest signal you can; only return an empty filter when there is genuinely nothing to extract.
 
-NAMES — partial vs full:
-The frontend does fuzzy substring + typo-tolerant matching against the actual project members. So:
-- DO put what the user typed (or your best-guess corrected spelling) into assignee_names — even single first names, even partial names, even slight misspellings. Examples: "tickets for Hassan" → assignee_names: ["Hassan"]. "issues assigned to hasan raza" → assignee_names: ["Hasan Raza"]. "what's mike up to" → assignee_names: ["Mike"].
-- DO NOT split a single person across multiple array entries. ["Hassan Raza"] is ONE name. ["Hassan", "Raza"] would be interpreted as two different people.
-- DO NOT canonicalize or "fix" names to full names you don't actually know — the frontend handles that. Just echo back what the user said.
+NAMES — partial vs full (READ CAREFULLY — this is the #1 source of wrong results):
+The frontend does fuzzy substring + typo-tolerant matching against actual project members. The number of words the user typed signals the user's intent — preserve it:
+- ONE word → user wants ANYONE whose name contains that word. Return a single-element array with that one word.
+- TWO+ words → user wants a SPECIFIC person whose full name matches. Return a single-element array with the WHOLE phrase as one string.
+- NEVER split a multi-word name across array entries. The array length is the number of DIFFERENT people the user mentioned, not the number of words they typed.
+
+DO:
+- "tickets for Hassan"               → assignee_names: ["Hassan"]                  (1 word → broad match)
+- "work assigned to hasan"           → assignee_names: ["hasan"]                   (typo OK, echo as-typed)
+- "issues assigned to Hasan Raza"    → assignee_names: ["Hasan Raza"]              (2 words → specific person)
+- "show me Hasan Raza Hasrat's work" → assignee_names: ["Hasan Raza Hasrat"]       (3 words → specific person)
+- "tickets for Hassan and Sara"      → assignee_names: ["Hassan", "Sara"]          (TWO different people)
+- "what's mike up to"                → assignee_names: ["Mike"]
+
+DON'T:
+- ["Hassan", "Raza"]               ← WRONG: splits one person into two
+- ["Hassan", "Raza", "Hasrat"]     ← WRONG: splits one person into three
+- ["Hassan Ali", "Hassan Khan"]    ← WRONG unless user actually named two people
+- text_contains: "hassan"          ← WRONG: name queries use assignee_names, NOT text_contains. text_contains is for TOPIC searches ("issues about onboarding"), not people.
+
+OTHER RULES:
+- DO NOT canonicalize names to full names you don't actually know — the frontend handles that. Just echo what the user said.
 - For "me" / "my" / "mine" / "I" / "myself", use assignee_ids with the current user's id (provided below). Do not use assignee_names for self-references.
 
 Available filter fields (omit any you don't need — keep the spec minimal). AND across dimensions, OR within an array:
@@ -130,8 +152,7 @@ Concrete examples (study these carefully — the AI's job is to combine the righ
 - "everything under BAU-4466" → { "filters": { "parent_keys": ["BAU-4466"] } }
 - "stories I'm watching that have lots of discussion" → { "filters": { "assignee_ids": ["<current_user_id>"], "types": ["story"], "min_comments": 5 } }`;
 
-    const userPrompt =
-      `Project key: ${projectKey || "(unknown)"}
+    const userPrompt = `Project key: ${projectKey || "(unknown)"}
 Current user: ${currentUserName}${currentUserId ? ` (id: ${currentUserId})` : ""}
 
 User query:
@@ -147,6 +168,12 @@ Return the JSON now.`;
       },
       body: JSON.stringify({
         model: DEFAULT_MODEL,
+        reasoning_effort: "none",
+        // Force structured JSON. Without this, Gemini occasionally wraps
+        // output in prose or markdown fences even with the system prompt
+        // rules — response_format guarantees the downstream JSON.parse
+        // gets a clean object every time.
+        response_format: { type: "json_object" },
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
@@ -163,7 +190,11 @@ Return the JSON now.`;
       const t = await aiResp.text().catch(() => "");
       console.error("ai-search-issues gateway error:", status, t);
       if (status === 429) {
-        return jsonError(429, "rate_limited", "Rate limits exceeded, please try again later.");
+        return jsonError(
+          429,
+          "rate_limited",
+          "Rate limits exceeded, please try again later.",
+        );
       }
       if (status === 402) {
         return jsonError(402, "payment_required", "AI credits exhausted.");
@@ -196,7 +227,11 @@ Return the JSON now.`;
     return jsonOk({ filters, reason });
   } catch (e) {
     console.error("ai-search-issues error:", e);
-    return jsonError(500, "internal", e instanceof Error ? e.message : "Unknown error");
+    return jsonError(
+      500,
+      "internal",
+      e instanceof Error ? e.message : "Unknown error",
+    );
   }
 });
 
@@ -223,17 +258,22 @@ function jsonError(status: number, code: string, message: string): Response {
  * weird types we want the frontend to see a clean, predictable spec
  * — not arbitrary AI-generated data.
  */
-function sanitizeFilters(raw: Record<string, unknown>): Record<string, unknown> {
+function sanitizeFilters(
+  raw: Record<string, unknown>,
+): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   const strArr = (v: unknown): string[] | undefined => {
     if (!Array.isArray(v)) return undefined;
-    const arr = v.filter((x): x is string => typeof x === "string" && x.trim().length > 0)
+    const arr = v
+      .filter((x): x is string => typeof x === "string" && x.trim().length > 0)
       .map((s) => s.trim())
       .slice(0, 25);
     return arr.length > 0 ? arr : undefined;
   };
   const str = (v: unknown): string | undefined =>
-    typeof v === "string" && v.trim().length > 0 ? v.trim().slice(0, 200) : undefined;
+    typeof v === "string" && v.trim().length > 0
+      ? v.trim().slice(0, 200)
+      : undefined;
   const bool = (v: unknown): boolean | undefined =>
     typeof v === "boolean" ? v : undefined;
   const num = (v: unknown): number | undefined => {
@@ -267,14 +307,24 @@ function sanitizeFilters(raw: Record<string, unknown>): Record<string, unknown> 
   );
   if (statusCats && statusCats.length > 0) out.status_categories = statusCats;
 
-  const priorities = strArr(raw.priorities)?.map((p) => p.toLowerCase()).filter((p) =>
-    ["highest", "high", "medium", "low", "lowest"].includes(p),
-  );
+  const priorities = strArr(raw.priorities)
+    ?.map((p) => p.toLowerCase())
+    .filter((p) => ["highest", "high", "medium", "low", "lowest"].includes(p));
   if (priorities && priorities.length > 0) out.priorities = priorities;
 
-  const types = strArr(raw.types)?.map((t) => t.toLowerCase()).filter((t) =>
-    ["epic", "story", "bug", "task", "subtask", "feature", "improvement"].includes(t),
-  );
+  const types = strArr(raw.types)
+    ?.map((t) => t.toLowerCase())
+    .filter((t) =>
+      [
+        "epic",
+        "story",
+        "bug",
+        "task",
+        "subtask",
+        "feature",
+        "improvement",
+      ].includes(t),
+    );
   if (types && types.length > 0) out.types = types;
 
   const isFlagged = bool(raw.is_flagged);

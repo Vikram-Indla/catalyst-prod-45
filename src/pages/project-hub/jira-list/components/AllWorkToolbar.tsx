@@ -1274,49 +1274,43 @@ export function AllWorkToolbar({
               <span className="ask-caty-row__prefix" aria-hidden="true">
                 <SparkIcon />
               </span>
-              {askCatyHasResults ? (
-                <span
-                  className="ask-caty-row__readonly"
-                  title={catyStoredQuery ?? ''}
-                >
-                  {catyStoredQuery ?? ''}
-                </span>
-              ) : (
-                <span className="ask-caty-row__field">
-                  <input
-                    ref={askCatyInputRef}
-                    className="ask-caty-row__input"
-                    value={askCatyQuery}
-                    onChange={e => setAskCatyQuery(e.target.value)}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter') handleAskCatySubmit();
-                      if (e.key === 'Escape') { setAskCatyOpen(false); setAskCatyQuery(''); }
-                    }}
-                    placeholder=""
-                    disabled={askCatyLoading}
-                    aria-label="Ask Caty"
-                    autoComplete="off"
-                    spellCheck={false}
-                  />
-                  {askCatyQuery === '' && (
-                    <span className="ask-caty-row__placeholder" aria-hidden="true">
-                      {phText}
-                      <span className="ask-caty-cursor" />
-                    </span>
-                  )}
-                </span>
-              )}
-              {!askCatyHasResults && (
-                <span
-                  className="ask-caty-row__suffix"
-                  onMouseDown={e => e.preventDefault()} /* keep input focused */
-                >
-                  {/* Go button — disabled/muted when query is empty OR a
-                      request is in flight; active blue otherwise. */}
-                  <button
-                    type="button"
-                    onClick={handleAskCatySubmit}
-                    disabled={!askCatyQuery.trim() || askCatyLoading}
+              {/* Always editable — even after results land — so the user
+                  can iterate on the query without closing the bar.
+                  Previously this swapped to a read-only span on results,
+                  locking the user into a single search per open session. */}
+              <span className="ask-caty-row__field">
+                <input
+                  ref={askCatyInputRef}
+                  className="ask-caty-row__input"
+                  value={askCatyQuery}
+                  onChange={e => setAskCatyQuery(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') handleAskCatySubmit();
+                    if (e.key === 'Escape') { setAskCatyOpen(false); setAskCatyQuery(''); }
+                  }}
+                  placeholder=""
+                  disabled={askCatyLoading}
+                  aria-label="Ask Caty"
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+                {askCatyQuery === '' && (
+                  <span className="ask-caty-row__placeholder" aria-hidden="true">
+                    {phText}
+                    <span className="ask-caty-cursor" />
+                  </span>
+                )}
+              </span>
+              <span
+                className="ask-caty-row__suffix"
+                onMouseDown={e => e.preventDefault()} /* keep input focused */
+              >
+                {/* Go button — disabled/muted when query is empty OR a
+                    request is in flight; active blue otherwise. */}
+                <button
+                  type="button"
+                  onClick={handleAskCatySubmit}
+                  disabled={!askCatyQuery.trim() || askCatyLoading}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 6,
                       padding: '4px 10px', border: 'none', borderRadius: 4,
@@ -1338,7 +1332,6 @@ export function AllWorkToolbar({
                     <span aria-hidden="true" style={{ fontSize: 14, lineHeight: 1 }}>⏎</span>
                   </button>
                 </span>
-              )}
             </label>
 
             {/* Row 2 — "Search work" input. Only rendered once AI
