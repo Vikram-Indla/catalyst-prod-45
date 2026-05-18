@@ -94,6 +94,12 @@ function ProducthubLegacyRedirect() {
   return <Navigate to={newPath + location.search + location.hash} replace />;
 }
 
+function IssueRedirectToBrowse() {
+  const location = useLocation();
+  const newPath = location.pathname.replace(/^\/issue\//, '/browse/');
+  return <Navigate to={newPath + location.search + location.hash} replace />;
+}
+
 
 function App() {
   useCommandK();
@@ -177,6 +183,7 @@ function App() {
                 <Route element={<ProtectedRoute><S><CatalystShell /></S></ProtectedRoute>}>
                   <Route index element={<S><ForYouPage /></S>} />
                   <Route path="for-you" element={<S><ForYouPage /></S>} />
+                  <Route path="for-you/:tab" element={<S><ForYouPage /></S>} />
                   <Route path="home" element={<Navigate to="/" replace />} />
 
                   {/* Admin routes — always available for incremental publishing control */}
@@ -192,8 +199,11 @@ function App() {
                   <Route path="/cleanup" element={<S><CleanupPage /></S>} />
                   <Route path="/audit-trail" element={<S><AuditTrailPage /></S>} />
 
-                  {/* Full-screen issue view — inside shell, sidebar auto-collapsed */}
-                  <Route path="/issue/:issueKey" element={<S><IssueFullPage /></S>} />
+                  {/* Universal issue resolver — Jira-parity /browse/:key canonical */}
+                  <Route path="/browse/:issueKey" element={<S><IssueFullPage /></S>} />
+
+                  {/* Legacy /issue/:key — 301 to /browse/:key */}
+                  <Route path="/issue/:issueKey" element={<IssueRedirectToBrowse />} />
 
                   {/* All other routes — only when ENABLE_FULL_APP=true */}
                   {FullAppRoutes && (

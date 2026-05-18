@@ -82,7 +82,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
        own family explicitly — leaks through any future inner content. */
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0,
-      fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+      fontFamily: 'var(--cp-font-body)',
       fontSize: 14,
     }}>
       {/* Top bar: Search work | Filter — hidden when AllWorkToolbar
@@ -108,7 +108,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
             placeholder="Search work"
             style={{
               border: 'none', outline: 'none', boxShadow: 'none', width: '100%', fontSize: 14,
-              fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
+              fontFamily: 'var(--cp-font-body)',
               background: 'transparent', color: 'var(--cp-text-primary, #172B4D)',
             }}
           />
@@ -138,7 +138,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
           display: 'inline-flex', alignItems: 'center', gap: 4,
           background: 'transparent', border: 'none', cursor: 'pointer',
           fontWeight: 600, color: 'var(--cp-text-primary, #172B4D)', fontSize: 14,
-          fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
+          fontFamily: 'var(--cp-font-body)',
         }}>
           Created
           <svg width="10" height="6" viewBox="0 0 10 6" style={{ transform: sortDir === 'asc' ? 'rotate(180deg)' : 'none' }}>
@@ -201,7 +201,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
                   // Selected state tints the title blue (#1868DB).
                   fontWeight: 400, color: selected ? 'var(--cp-text-link, #1868DB)' : 'var(--cp-text-primary, #292A2E)',
                   marginBottom: 8, lineHeight: '20px', fontSize: 14,
-                  fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
+                  fontFamily: 'var(--cp-font-body)',
                   overflow: 'hidden', textOverflow: 'ellipsis',
                   display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
                 }}
@@ -214,7 +214,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
                   // Jira uses the same family as body, just smaller).
                   fontSize: 12, color: 'var(--cp-text-secondary, #505258)', display: 'inline-flex',
                   alignItems: 'center', gap: 6,
-                  fontFamily: "'Atlassian Sans', -apple-system, sans-serif", fontWeight: 400,
+                  fontFamily: 'var(--cp-font-body)', fontWeight: 400,
                 }}>
                   <WorkItemTypeIcon type={(item as any).rawType || item.type} size={14} />
                   {item.jiraKey}
@@ -254,7 +254,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
         <div style={{
           padding: '10px 8px 16px',
           fontSize: 12, textAlign: 'center',
-          fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
+          fontFamily: 'var(--cp-font-body)',
           display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
         }}>
           {(() => {
@@ -280,7 +280,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
                 background: 'transparent', border: '1px solid var(--cp-border-default, #DFE1E6)',
                 borderRadius: 6, padding: '4px 12px', cursor: 'pointer',
                 fontSize: 12, color: 'var(--cp-text-info, #1868DB)', fontWeight: 500,
-                fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
+                fontFamily: 'var(--cp-font-body)',
               }}
             >
               Load more

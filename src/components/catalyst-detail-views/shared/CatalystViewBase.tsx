@@ -343,7 +343,7 @@ export function CatalystViewBase({
   const handleShare = useCallback(() => {
     if (onShare) { onShare(); return; }
     const ticketUrl = (itemKey && projectKey)
-      ? `${window.location.origin}/project-hub/${projectKey}/issue/${itemKey}`
+      ? `${window.location.origin}/browse/${itemKey}`
       : null;
     navigator.clipboard.writeText(ticketUrl ?? window.location.href);
     toast.success('Link copied to clipboard');

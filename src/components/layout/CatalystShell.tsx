@@ -306,8 +306,8 @@ function CatalystShellContent() {
   // to the same code path that allwork uses.
   const isProjectHubBacklogRoute = /\/project-hub\/[^/]+\/backlog/.test(location.pathname);
 
-  // Check if on full-screen issue view (/issue/:issueKey)
-  const isIssueFullPageRoute = location.pathname.startsWith('/issue/');
+  // Check if on full-screen issue view (/browse/:issueKey)
+  const isIssueFullPageRoute = location.pathname.startsWith('/browse/');
 
   // Parse issue key from /issue/:issueKey for tab-title binding
   const fullPageIssueKey = isIssueFullPageRoute
@@ -383,7 +383,7 @@ function CatalystShellContent() {
   //   /project-hub/:key/backlog   → BacklogPage.atlaskit.tsx:1083
   const isSelfFramedRoute =
     /^\/project-hub\/[^/]+\/backlog/.test(location.pathname) ||
-    location.pathname.startsWith('/issue/');  // full-screen issue view
+    location.pathname.startsWith('/browse/');  // full-screen issue view
 
   // Hub routes that explicitly opt out of the Jira blue canvas — pure white
   // page surface (Confluence Spaces parity, not Jira hub parity). Owner

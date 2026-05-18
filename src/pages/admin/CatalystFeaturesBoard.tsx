@@ -378,7 +378,7 @@ function FeatureCardView({ card }: { card: FeatureCard }) {
         <span style={{
           fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtlest,#626F86)',
           background: 'var(--ds-background-neutral,#F7F8F9)',
-          borderRadius: 3, padding: '1px 5px', fontFamily: 'monospace', flexShrink: 0,
+          borderRadius: 3, padding: '1px 5px', fontFamily: 'var(--cp-font-mono)', flexShrink: 0,
         }}>
           #{String(card.sequence_number).padStart(3, '0')}
         </span>
@@ -443,7 +443,7 @@ function FeatureCardView({ card }: { card: FeatureCard }) {
           <LinkExternalIcon label="" size="small" />
           PR #{card.pr_number ?? '?'}
           {card.branch_name && (
-            <span style={{ color: 'var(--ds-text-subtlest,#626F86)', fontFamily: 'monospace' }}>
+            <span style={{ color: 'var(--ds-text-subtlest,#626F86)', fontFamily: 'var(--cp-font-mono)' }}>
               · {card.branch_name}
             </span>
           )}

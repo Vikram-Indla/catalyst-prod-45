@@ -160,7 +160,7 @@ export function WorkCardAssigneePicker({
             background: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 4,
             boxShadow: '0 4px 24px rgba(30,31,33,0.16), 0 0 1px rgba(30,31,33,0.31)',
             overflow: 'hidden',
-            fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
+            fontFamily: 'var(--cp-font-body)',
           }}
         >
           <div style={{ padding: '8px 8px 4px' }}>

@@ -12,7 +12,7 @@ export const SubtasksPanel = memo(function SubtasksPanel({ issueKey, subtasks = 
       {!subtasks.length && !creating && <div>No subtasks</div>}
       {subtasks.map((s: any) => (
         <div key={s.key}>
-          <a href={`/issue/${s.key}`}>{s.key}</a>: {s.summary}
+          <a href={`/browse/${s.key}`}>{s.key}</a>: {s.summary}
         </div>
       ))}
       {creating && <div data-testid="inline-create-row">Create subtask input</div>}

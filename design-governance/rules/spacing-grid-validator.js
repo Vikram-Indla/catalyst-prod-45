@@ -3,8 +3,8 @@
  * Ensures all spacing uses the canonical 4px/8px/16px/24px/32px grid
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 class SpacingGridValidator {
   constructor() {

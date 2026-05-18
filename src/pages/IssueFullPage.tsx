@@ -9,6 +9,7 @@ import { lazy, Suspense, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useIssueDocumentTitle } from '@/hooks/useIssueDocumentTitle';
+import { useDynamicFavicon } from '@/hooks/useDynamicFavicon';
 import { Loader2 } from '@/lib/atlaskit-icons';
 
 const CatalystDetailRouter = lazy(
@@ -40,6 +41,8 @@ export default function IssueFullPage() {
     isError: errorOccurred,
     isNotFound: notFound,
   });
+
+  useDynamicFavicon(issue?.issue_type);
 
   useEffect(() => {
     if (!issueKey) {

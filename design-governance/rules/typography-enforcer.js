@@ -3,8 +3,8 @@
  * Ensures heading/body text matches ADS specifications
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 class TypographyEnforcer {
   constructor() {

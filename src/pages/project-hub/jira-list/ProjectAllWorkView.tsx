@@ -334,7 +334,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
               <div style={{
                 flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: 'var(--cp-text-tertiary, #6B778C)', fontSize: 14,
-                fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+                fontFamily: 'var(--cp-font-body)',
               }}>
                 Select an item to view details
               </div>

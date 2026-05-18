@@ -148,7 +148,7 @@ function BRTextareaEditor({ initialValue, placeholder, minHeight = 120, onSave, 
           color: 'var(--ds-text, #172B4D)',
           fontSize: 14,
           lineHeight: 1.5,
-          fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+          fontFamily: 'var(--cp-font-body)',
           resize: 'vertical',
           outline: 'none',
         }}
@@ -593,7 +593,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
 
               {/* 2. DESCRIPTION — Rich text with view/edit toggle */}
               <div style={{ marginBottom: 24 }}>
-                <h2 style={{ fontSize: 14, fontWeight: 500, color: 'rgb(80, 82, 88)', lineHeight: '18.67px', margin: '0 0 4px', fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}>Description</h2>
+                <h2 style={{ fontSize: 14, fontWeight: 500, color: 'rgb(80, 82, 88)', lineHeight: '18.67px', margin: '0 0 4px', fontFamily: 'var(--cp-font-body)' }}>Description</h2>
                 {descEditMode ? (
                   <BRTextareaEditor
                     initialValue={formData.description || ''}
@@ -620,12 +620,12 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                         dangerouslySetInnerHTML={{ __html: formData.description }}
                         style={{
                           fontSize: 14, fontWeight: 400, lineHeight: '24px', color: 'rgb(41, 42, 46)',
-                          fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+                          fontFamily: 'var(--cp-font-body)',
                         }}
                         className="jira-desc-view"
                       />
                     ) : (
-                      <span style={{ fontSize: 14, color: 'rgb(140, 143, 151)', fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif', padding: '4px 0' }}>
+                      <span style={{ fontSize: 14, color: 'rgb(140, 143, 151)', fontFamily: 'var(--cp-font-body)', padding: '4px 0' }}>
                         Add a description…
                       </span>
                     )}
@@ -635,7 +635,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
 
               {/* 3. ACCEPTANCE CRITERIA */}
               <div style={{ marginBottom: 24 }}>
-                <h2 style={{ fontSize: 14, fontWeight: 500, color: 'rgb(80, 82, 88)', lineHeight: '18.67px', margin: '0 0 4px', fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}>Acceptance Criteria</h2>
+                <h2 style={{ fontSize: 14, fontWeight: 500, color: 'rgb(80, 82, 88)', lineHeight: '18.67px', margin: '0 0 4px', fontFamily: 'var(--cp-font-body)' }}>Acceptance Criteria</h2>
                 {acEditMode ? (
                   <BRTextareaEditor
                     initialValue={formData.acceptance_criteria || ''}
@@ -662,7 +662,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                         dangerouslySetInnerHTML={{ __html: formData.acceptance_criteria }}
                         style={{
                           fontSize: 14, fontWeight: 400, lineHeight: '24px', color: 'rgb(41, 42, 46)',
-                          fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+                          fontFamily: 'var(--cp-font-body)',
                         }}
                         className="jira-desc-view"
                       />
@@ -721,7 +721,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                         fontSize: 13.33, fontWeight: isActive ? 700 : 400,
                         color: isActive ? '#1868DB' : '#505258',
                         cursor: 'pointer', transition: 'all 0.15s',
-                        fontFamily: '"Atlassian Sans", ui-sans-serif, sans-serif',
+                        fontFamily: 'var(--cp-font-body)',
                       }}
                         onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
                         onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}

@@ -114,7 +114,7 @@ export function TicketBreadcrumbs({
             key: 'parent',
             text: parentKey!,
             iconBefore: <IssueIcon type={parentType || 'Epic'} size={14} />,
-            href: `/project-hub/${projectKey}/issue/${parentKey}`,
+            href: `/browse/${parentKey}`,
             ariaLabel: `Parent ${parentKey}`,
           },
     );
@@ -134,7 +134,7 @@ export function TicketBreadcrumbs({
   }
 
   // Crumb 2 — current issue (terminal). Jira-parity: clicking the key
-  // navigates to the full-page issue view (/issue/:issueKey).
+  // navigates to the full-page issue view (/browse/:issueKey).
   items.push({
     key: 'current',
     text: (
@@ -143,7 +143,7 @@ export function TicketBreadcrumbs({
         <span>{itemKey ?? '—'}</span>
       </span>
     ),
-    href: itemKey ? `/issue/${itemKey}` : undefined,
+    href: itemKey ? `/browse/${itemKey}` : undefined,
     ariaLabel: itemKey ?? 'Current issue',
     isCurrent: true,
   });

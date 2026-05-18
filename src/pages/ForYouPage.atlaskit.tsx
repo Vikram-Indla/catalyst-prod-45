@@ -37,6 +37,7 @@
  * - View all projects → /projects route
  */
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import { useAuth } from '@/lib/auth';
 import { useForYouData, type TabType, type WorkItem } from '@/hooks/useForYouData';
@@ -134,10 +135,17 @@ export default function ForYouPageAtlaskit() {
       initialStoredTabRef.current = 'recommended';
     }
   }
+  const { tab: urlTab } = useParams<{ tab?: string }>();
+  const navigate = useNavigate();
+
+  const VALID_TABS: Set<string> = useMemo(() => new Set(['ai-theme', 'recommended', 'assigned', 'starred', 'r360', 'ageing']), []);
+
   // useLayoutEffect runs before paint — applies the stored tab to the hook
-  // state before the user sees any UI.
+  // state before the user sees any UI. URL param takes precedence over localStorage.
   useLayoutEffect(() => {
-    if (initialStoredTabRef.current && initialStoredTabRef.current !== activeTab) {
+    if (urlTab && VALID_TABS.has(urlTab)) {
+      setActiveTab(urlTab as TabType);
+    } else if (initialStoredTabRef.current && initialStoredTabRef.current !== activeTab) {
       setActiveTab(initialStoredTabRef.current);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -146,8 +154,9 @@ export default function ForYouPageAtlaskit() {
   const handleTabChange = useCallback((tab: TabType) => {
     setActiveTab(tab);
     try { localStorage.setItem(FOR_YOU_TAB_KEY, tab); } catch { /* no-op */ }
+    navigate(`/for-you/${tab}`, { replace: true });
     setVisibleCount(PAGE_SIZE); // reset pagination when switching tabs
-  }, [setActiveTab]);
+  }, [setActiveTab, navigate]);
 
   // ─── Row click → canonical detail modal (Jira parity) ───────────────────
   // Single path for every type, including BRDs (business_request /
