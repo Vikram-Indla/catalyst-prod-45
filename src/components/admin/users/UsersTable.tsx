@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, memo } from 'react';
-import { UserAvatar } from './UserAvatar';
+import { UserAvatar } from '@/components/shared/UserAvatar';
 import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import AdsSelect from '@atlaskit/select';
@@ -601,11 +601,11 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   <UserAvatar
                     name={user.full_name}
-                    avatarUrl={user.avatar_url}
+                    src={user.avatar_url}
                     country={user.country}
                     flagUrl={user.country_flag_svg_url || undefined}
                     onClick={() => setEditUser(user)}
-                    size="md"
+                    size="medium"
                   />
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium truncate">{user.full_name || 'Unknown'}</div>
@@ -894,11 +894,11 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                       <div className="flex items-center gap-3">
                         <UserAvatar
                           name={user.full_name}
-                          avatarUrl={user.avatar_url}
+                          src={user.avatar_url}
                           country={user.country}
                           flagUrl={user.country_flag_svg_url || getCountryInfo(user.country)?.svg}
                           onClick={() => setEditUser(user)}
-                          size="sm"
+                          size="small"
                         />
                         <div className="min-w-0">
                           <div className="text-sm font-medium truncate">{user.full_name || 'Unknown'}</div>
