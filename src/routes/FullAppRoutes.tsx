@@ -258,8 +258,6 @@ const Tasks = lazy(() => import("../pages/Tasks"));
 const Impediments = lazy(() => import("../pages/Impediments"));
 const ReleaseVehicles = lazy(() => import("../pages/ReleaseVehicles"));
 const SuccessCriteria = lazy(() => import("../pages/SuccessCriteria"));
-const PortfolioKanban = lazy(() => import("../pages/PortfolioKanban"));
-const PortfolioRoadmap = lazy(() => import("../pages/PortfolioRoadmap"));
 const Roadmaps = lazy(() => import("../pages/Roadmaps"));
 const DependenciesPage = lazy(() => import("../pages/work/Dependencies"));
 const ProgramRoom = lazy(() => import("../pages/ProgramRoom"));
@@ -748,8 +746,6 @@ export default function FullAppRoutes() {
         <Route path="/items/impediments" element={<S><Impediments /></S>} />
         <Route path="/items/release-vehicles" element={<S><ReleaseVehicles /></S>} />
         <Route path="/items/success-criteria" element={<S><SuccessCriteria /></S>} />
-        <Route path="/portfolio-kanban" element={<S><PortfolioKanban /></S>} />
-        <Route path="/portfolio-roadmap" element={<S><PortfolioRoadmap /></S>} />
         <Route path="/roadmaps" element={<S><Roadmaps /></S>} />
         <Route path="/dependencies" element={<S><DependenciesPage /></S>} />
         <Route path="/reports/dependencies/maps" element={<S><DependencyMapsPage /></S>} />
