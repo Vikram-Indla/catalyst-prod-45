@@ -88,7 +88,7 @@ if (typeof document !== 'undefined' && !document.getElementById(CV_TITLE_STYLE_I
        Subtle bg on hover matches Jira's treatment. */
     .cv-title-edit-hide-label [data-read-view-fit-container-width]:hover h1 {
       text-decoration: underline;
-      text-decoration-color: var(--ds-border, #DFE1E6);
+      text-decoration-color: var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6));
       text-decoration-thickness: 1px;
     }
   `;

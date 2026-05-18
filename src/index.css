@@ -166,7 +166,7 @@
   --cp-danger-light: #FEE2E2;
   --cp-danger-text: #991B1B;
   --cp-amber: var(--cp-amber, #F59E0B);
-  --sl-todo-bg: #DFE1E6;
+  --sl-todo-bg: var(--cp-lozenge-grey-bg, #DFE1E6);
   --sl-todo-text: #253858;
   --sl-inprog-bg: #DEEBFF;
   --sl-inprog-text: #0747A6;
@@ -219,7 +219,7 @@
   --cp-warning-60: var(--cp-warning, #D97706);
   --cp-danger-60: var(--cp-danger, #DC2626);
   --cp-teal-60: var(--cp-teal-60, #0D9488);
-  --cp-lozenge-grey-bg: #DFE1E6;
+  --cp-lozenge-grey-bg: var(--cp-lozenge-grey-bg, #DFE1E6);
   --cp-lozenge-grey-text: #42526E;
   --cp-lozenge-blue-bg: #0C66E4;
   --cp-lozenge-blue-text: #FFFFFF;
@@ -263,7 +263,7 @@
   --cp-err-bg: rgba(220,38,38,0.08);
   --cp-err-text: var(--cp-danger, #DC2626);
   --cp-prg-bg: rgba(37,99,235,0.08);
-  --cp-lz-gy-bg: #DFE1E6;
+  --cp-lz-gy-bg: var(--cp-lozenge-grey-bg, #DFE1E6);
   --cp-lz-gy-t: #42526E;
   --cp-lz-bl-bg: #0C66E4;
   --cp-lz-bl-t: #FFFFFF;
@@ -299,7 +299,7 @@
   /* ═══ Issue View 3-Column Layout Tokens ═══ */
   --iv-bg-app: #F7F8F9;
   --iv-bg-panel: #FFFFFF;
-  --iv-border: #DFE1E6;
+  --iv-border: var(--cp-lozenge-grey-bg, #DFE1E6);
   --iv-hover: #F4F5F7;
   --iv-selected: #E9F2FF;
   --iv-accent: #0C66E4;
@@ -5365,14 +5365,14 @@ input[type="range"]::-moz-range-thumb {
   margin: 12px 0;
   font-size: 14px;
   table-layout: fixed;
-  border: 1px solid #DFE1E6;
+  border: 1px solid var(--cp-lozenge-grey-bg, #DFE1E6);
 }
 
 .adf-content table th,
 .adf-content table td,
 .adf-description-content table th,
 .adf-description-content table td {
-  border: 1px solid #DFE1E6;
+  border: 1px solid var(--cp-lozenge-grey-bg, #DFE1E6);
   padding: 8px 10px;
   text-align: left;
   vertical-align: top;
@@ -5427,7 +5427,7 @@ input[type="range"]::-moz-range-thumb {
 .adf-description-content .adf-status--red { background: #FFEBE6; color: #DE350B; }
 .adf-description-content .adf-status--blue { background: #DEEBFF; color: #0747A6; }
 .adf-description-content .adf-status--neutral,
-.adf-description-content .adf-status--grey { background: #DFE1E6; color: #253858; }
+.adf-description-content .adf-status--grey { background: var(--cp-lozenge-grey-bg, #DFE1E6); color: #253858; }
 .adf-description-content .adf-status--purple { background: #EAE6FF; color: #403294; }
 
 .adf-description-content .adf-date {
@@ -5477,7 +5477,7 @@ input[type="range"]::-moz-range-thumb {
 
 /* ── ADF expand/collapse ── */
 .adf-description-content .adf-expand {
-  border: 1px solid #DFE1E6;
+  border: 1px solid var(--cp-lozenge-grey-bg, #DFE1E6);
   border-radius: 3px;
   margin: 8px 0;
 }
@@ -5516,7 +5516,7 @@ input[type="range"]::-moz-range-thumb {
 .adf-description-content .adf-block-card {
   display: block;
   padding: 8px 12px;
-  border: 1px solid #DFE1E6;
+  border: 1px solid var(--cp-lozenge-grey-bg, #DFE1E6);
   border-radius: 3px;
   color: #0747A6;
   text-decoration: none;
@@ -5552,7 +5552,7 @@ input[type="range"]::-moz-range-thumb {
 
 /* ── ADF blockquote ── */
 .adf-description-content blockquote {
-  border-left: 3px solid #DFE1E6;
+  border-left: 3px solid var(--cp-lozenge-grey-bg, #DFE1E6);
   margin: 8px 0;
   padding: 4px 16px;
   color: #6B778C;
@@ -5561,7 +5561,7 @@ input[type="range"]::-moz-range-thumb {
 /* ── ADF horizontal rule ── */
 .adf-description-content hr {
   border: none;
-  border-top: 1px solid #DFE1E6;
+  border-top: 1px solid var(--cp-lozenge-grey-bg, #DFE1E6);
   margin: 16px 0;
 }
 

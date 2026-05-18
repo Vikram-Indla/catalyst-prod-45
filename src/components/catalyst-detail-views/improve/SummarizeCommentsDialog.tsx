@@ -182,7 +182,7 @@ export function SummarizeCommentsDialog({
               padding: 16,
               borderRadius: 6,
               background: token('color.background.neutral', '#F4F5F7'),
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
               fontSize: 14,
               lineHeight: '21px',
               color: token('color.text', '#292A2E'),

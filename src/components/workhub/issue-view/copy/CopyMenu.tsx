@@ -101,7 +101,7 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
           'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-body font-medium transition-colors border',
           isDark
             ? 'border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
-            : 'border-[var(--ds-border,#DFE1E6)] text-[var(--ds-text-accent-gray,#505258)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)]',
+            : 'border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))] text-[var(--ds-text-accent-gray,#505258)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)]',
         )}
       >
         {copied ? <Check className="w-3.5 h-3.5 text-[var(--ds-icon-accent-green,#22A06B)]" /> : <Copy className="w-3.5 h-3.5" />}
@@ -115,7 +115,7 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
           aria-label="Copy options"
           className={cn(
             'absolute right-0 top-full mt-1 min-w-[220px] rounded-lg border shadow-md z-50 py-1',
-            isDark ? 'bg-[var(--ds-surface-raised,#1A1A1A)] border-[var(--ds-border,#2E2E2E)]' : 'bg-white border-[var(--ds-border,#DFE1E6)]',
+            isDark ? 'bg-[var(--ds-surface-raised,#1A1A1A)] border-[var(--ds-border,#2E2E2E)]' : 'bg-white border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))]',
           )}
         >
           {menuItems.map(({ kind, label }) => (
@@ -142,11 +142,11 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
         <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40">
           <div className={cn(
             'w-[min(640px,calc(100vw-32px))] rounded-xl border shadow-xl',
-            isDark ? 'bg-[var(--ds-surface-raised,#1A1A1A)] border-[var(--ds-border,#2E2E2E)]' : 'bg-white border-[var(--ds-border,#DFE1E6)]',
+            isDark ? 'bg-[var(--ds-surface-raised,#1A1A1A)] border-[var(--ds-border,#2E2E2E)]' : 'bg-white border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))]',
           )}>
             <div className={cn(
               'flex items-center justify-between px-4 py-3 border-b',
-              isDark ? 'border-[var(--ds-border,#2E2E2E)]' : 'border-[var(--ds-border,#DFE1E6)]',
+              isDark ? 'border-[var(--ds-border,#2E2E2E)]' : 'border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))]',
             )}>
               <span className={cn('font-body text-sm font-medium', isDark ? 'text-[var(--ds-text,#EDEDED)]' : 'text-[var(--ds-text,#292A2E)]')}>
                 Copy manually
@@ -165,7 +165,7 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
                 value={fallbackText}
                 className={cn(
                   'w-full min-h-[200px] rounded-md border p-3 font-mono text-xs resize-y',
-                  isDark ? 'bg-[#111111] border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text,#EDEDED)]' : 'bg-[#F7F8F9] border-[var(--ds-border,#DFE1E6)] text-[var(--ds-text,#292A2E)]',
+                  isDark ? 'bg-[#111111] border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text,#EDEDED)]' : 'bg-[#F7F8F9] border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))] text-[var(--ds-text,#292A2E)]',
                 )}
               />
             </div>

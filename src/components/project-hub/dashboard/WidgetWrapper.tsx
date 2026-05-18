@@ -251,7 +251,7 @@ export default function WidgetWrapper({
             : token('elevation.surface', '#FFFFFF'),
           borderBottom: collapsed
             ? 'none'
-            : `1px solid ${token('color.border', '#DFE1E6')}`,
+            : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
           minHeight: 60,
           cursor: isEditing ? 'inherit' : 'pointer',
           transition: 'background 120ms ease',
@@ -435,7 +435,7 @@ export default function WidgetWrapper({
         <div
           style={{
             background: token('elevation.surface', '#FFFFFF'),
-            borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderTop: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
             padding: `10px ${token('space.300', '24px')}`,
           }}
         >

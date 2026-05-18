@@ -62,7 +62,7 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     dropHighlight: '#DFE3E8',  /* Jira drop tint */
     dropIndicator: 'var(--ds-text-brand, #2563EB)',  /* 2px accent line on insertion */
     selectedAccent: 'var(--ds-text-brand, #2563EB)',
-    chipBg: 'var(--ds-border, #DFE1E6)',
+    chipBg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
     chipText: '#42526E',
     inputBg: 'var(--ds-surface-sunken, #FAFBFC)',
     inputBorder: '#DDDEE1',

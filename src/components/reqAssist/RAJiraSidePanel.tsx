@@ -269,9 +269,9 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
   ];
 
   const getStageLozenge = () => {
-    if (!stage) return { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E', label: 'PENDING' };
+    if (!stage) return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E', label: 'PENDING' };
     if (stage === 'complete') return { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-text-inverse, #FFFFFF)', label: 'COMPLETE' };
-    if (stage === 'failed') return { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E', label: 'FAILED' };
+    if (stage === 'failed') return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E', label: 'FAILED' };
     return { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)', label: stage.toUpperCase() };
   };
   const lozenge = getStageLozenge();
@@ -827,7 +827,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                         ? { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-text-inverse, #FFFFFF)' }
                         : s.status === 'fail'
                           ? { bg: '#FFEBE6', color: '#BF2600' }
-                          : { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' };
+                          : { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' };
                       return (
                         <div key={s.id || i} style={{
                           display: 'flex', alignItems: 'center', gap: 8, height: 50,

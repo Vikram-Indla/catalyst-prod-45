@@ -227,7 +227,7 @@ export function CatalystTable({
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   minWidth: 20, height: 18, padding: '0 6px', borderRadius: 9,
-                  background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)',
+                  background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)',
                   fontSize: 10, fontWeight: 700, marginLeft: 4,
                 }}>
                   {group.items.length}
@@ -540,7 +540,7 @@ export function CatalystTable({
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                         minWidth: 20, height: 18, padding: '0 6px', borderRadius: 9,
-                        background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)',
+                        background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)',
                         fontSize: 10, fontWeight: 700,
                       }}>
                         {group.items.length}

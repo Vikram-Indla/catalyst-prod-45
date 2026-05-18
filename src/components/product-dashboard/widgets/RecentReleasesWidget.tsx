@@ -179,7 +179,7 @@ export function RecentReleasesWidget() {
                     style={{
                       textAlign: 'left',
                       padding: '10px 12px',
-                      borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
                       fontSize: 11,
                       fontWeight: 600,
                       color: token('color.text.subtle', '#44546F'),
@@ -210,7 +210,7 @@ export function RecentReleasesWidget() {
                     );
                   }}
                 >
-                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`, verticalAlign: 'middle' }}>
+                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`, verticalAlign: 'middle' }}>
                     <span
                       style={{
                         fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
@@ -222,7 +222,7 @@ export function RecentReleasesWidget() {
                       {brKey(item.id)}
                     </span>
                   </td>
-                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`, verticalAlign: 'middle' }}>
+                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`, verticalAlign: 'middle' }}>
                     <div style={{ fontSize: 14, fontWeight: 500, color: token('color.text', '#172B4D') }}>
                       {item.title}
                     </div>
@@ -232,13 +232,13 @@ export function RecentReleasesWidget() {
                       </div>
                     )}
                   </td>
-                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`, verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`, verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                     {daysAgo(item.entered_step_at)}
                   </td>
-                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`, verticalAlign: 'middle' }}>
+                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`, verticalAlign: 'middle' }}>
                     <TypePill label="Feature" />
                   </td>
-                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`, verticalAlign: 'middle' }}>
+                  <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`, verticalAlign: 'middle' }}>
                     <OutcomeLozenge outcome="clean" />
                   </td>
                 </tr>

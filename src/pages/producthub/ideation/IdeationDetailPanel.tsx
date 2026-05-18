@@ -58,8 +58,8 @@ function useUpdateIdea() {
 
 // ─── Status Lozenge — 3-color guardrail, NO DOTS ─────────────────
 const STATUS_LOZENGE: Record<string, { bg: string; text: string }> = {
-  'Draft':        { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' },
-  'New':          { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' },
+  'Draft':        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: '#42526E' },
+  'New':          { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: '#42526E' },
   'Submitted':    { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
   'Under Review': { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
   'In Progress':  { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
@@ -69,7 +69,7 @@ const STATUS_LOZENGE: Record<string, { bg: string; text: string }> = {
 };
 
 function StatusLozenge({ status }: { status: string }) {
-  const s = STATUS_LOZENGE[status] ?? { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' };
+  const s = STATUS_LOZENGE[status] ?? { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: '#42526E' };
   return (
     <span style={{
       display: 'inline-block', padding: '2px 8px', borderRadius: '4px',
@@ -508,7 +508,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                   ? { backgroundColor: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-text-inverse, #FFFFFF)' }
                   : impactScore >= 2.0
                     ? { backgroundColor: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)' }
-                    : { backgroundColor: 'var(--ds-border, #DFE1E6)', color: '#42526E' }),
+                    : { backgroundColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' }),
               }}>
                 {impactScore >= 3.5 ? 'HIGH' : impactScore >= 2.0 ? 'MEDIUM' : 'LOW'}
               </span>

@@ -815,11 +815,11 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
             <button onClick={e => { e.stopPropagation(); handleSelect(null); }} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 20, height: 20, borderRadius: '50%', border: 'none',
-              background: 'var(--ds-border, #DFE1E6)', cursor: 'pointer', color: 'var(--ds-text-subtle, #42526E)', flexShrink: 0,
+              background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', cursor: 'pointer', color: 'var(--ds-text-subtle, #42526E)', flexShrink: 0,
               opacity: hovered ? 1 : 0, transition: 'opacity 0.15s',
             }}
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-bold, #C1C7D0)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-border, #DFE1E6)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))')}
             >
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>

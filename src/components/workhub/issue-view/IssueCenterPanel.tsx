@@ -177,7 +177,7 @@ export function IssueCenterPanel({ issueKey, item, parentItem, loading = false }
           {/* Comment composer */}
           <div className="awCommentRow" style={{ marginBottom: 16 }}>
             <div style={{
-              width: 28, height: 28, borderRadius: '50%', background: 'var(--ds-border, #DFE1E6)',
+              width: 28, height: 28, borderRadius: '50%', background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 11, fontWeight: 700, color: 'var(--ds-text-accent-gray, #505258)', flexShrink: 0,
             }}>

@@ -123,7 +123,7 @@ export const adsTokens = {
    * in a StatusLozenge is a bug.
    */
   status: {
-    grey:  { bg: { cp: '--cp-lozenge-grey-bg',  light: '#DFE1E6', dark: '#292929', atlaskit: '' } satisfies AdsToken,
+    grey:  { bg: { cp: '--cp-lozenge-grey-bg',  light: 'var(--cp-lozenge-grey-bg, #DFE1E6)', dark: '#292929', atlaskit: '' } satisfies AdsToken,
              fg: { cp: '--cp-lozenge-grey-fg',  light: '#253858', dark: '#EDEDED', atlaskit: '' } satisfies AdsToken },
     blue:  { bg: { cp: '--cp-lozenge-blue-bg',  light: '#DEEBFF', dark: '#1A3A6A', atlaskit: '' } satisfies AdsToken,
              fg: { cp: '--cp-lozenge-blue-fg',  light: '#0747A6', dark: '#DDEBFF', atlaskit: '' } satisfies AdsToken },

@@ -184,8 +184,8 @@ function DocStatusLoz({ status }: { status: string }) {
     parsing: { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
     chunking: { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
     embedding: { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-    failed: { bg: 'var(--ds-border, #DFE1E6)', color: '#44546F' },
-    deleted: { bg: 'var(--ds-border, #DFE1E6)', color: '#44546F' },
+    failed: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#44546F' },
+    deleted: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#44546F' },
   };
   const s = map[status] ?? map.failed;
   return <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 4, background: s.bg, color: s.color, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{status ?? '—'}</span>;

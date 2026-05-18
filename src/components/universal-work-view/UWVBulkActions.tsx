@@ -63,7 +63,7 @@ export function UWVBulkActions({ selectedIds, allItems, project, onClear }: Prop
         gap: 12,
         padding: '0 16px',
         background: token('color.background.selected', '#E9F2FF'),
-        borderBottom: '1px solid #DFE1E6',
+        borderBottom: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
       }}
     >
       <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-blue)' }}>

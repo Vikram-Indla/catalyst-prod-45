@@ -292,7 +292,7 @@ function MemberPill({
         padding: '5px 14px', borderRadius: 20,
         border: active
           ? `2px solid ${token('color.border.brand', 'var(--cp-primary-60, #0052CC)')}`
-          : `1px solid ${token('color.border', '#DFE1E6')}`,
+          : `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
         background: active
           ? token('color.background.selected', '#DEEBFF')
           : hover ? token('color.background.neutral.hovered', '#EBECF0') : token('elevation.surface', '#FFFFFF'),
@@ -413,7 +413,7 @@ export default function R360Panel() {
           style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '12px 0 16px', flexWrap: 'wrap',
-            borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
             marginBottom: 8,
           }}
         >

@@ -98,7 +98,7 @@ export function GlobalMobileDrawer({
           height: '100dvh',
           width: 'var(--cp-drawer-width, min(320px, 86vw))',
           background: 'var(--ds-surface-overlay, var(--cp-bg, #FFFFFF))',
-          borderRight: '1px solid var(--ds-border, var(--cp-bd, #DFE1E6))',
+          borderRight: '1px solid var(--ds-border, var(--cp-bd, var(--cp-lozenge-grey-bg, #DFE1E6)))',
           boxShadow: 'var(--ds-shadow-overlay, 0 8px 24px rgba(9, 30, 66, 0.25))',
           display: 'flex',
           flexDirection: 'column',
@@ -116,7 +116,7 @@ export function GlobalMobileDrawer({
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '0 12px',
-            borderBottom: '1px solid var(--ds-border, var(--cp-bd, #DFE1E6))',
+            borderBottom: '1px solid var(--ds-border, var(--cp-bd, var(--cp-lozenge-grey-bg, #DFE1E6)))',
           }}
         >
           <span

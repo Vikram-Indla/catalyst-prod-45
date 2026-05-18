@@ -64,7 +64,7 @@ function SyncStatusBadge({ enabled }: { enabled: boolean }) {
       style={
         enabled
           ? { background: '#E3FCEF', color: '#006644' }   // StatusLozenge green
-          : { background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' }   // StatusLozenge grey
+          : { background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' }   // StatusLozenge grey
       }
     >
       <span
@@ -115,7 +115,7 @@ export function JiraSyncControlPanel() {
       <div
         className="rounded-lg border p-5 mb-6"
         style={{
-          borderColor: isFrozen ? 'var(--ds-border, #DFE1E6)' : '#DEEBFF',
+          borderColor: isFrozen ? 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' : '#DEEBFF',
           background: isFrozen ? 'var(--ds-surface-sunken, #F8FAFC)' : '#DEEBFF22',
         }}
       >
@@ -123,7 +123,7 @@ export function JiraSyncControlPanel() {
           <div className="flex items-start gap-3">
             <div
               className="mt-0.5 h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ background: isFrozen ? 'var(--ds-border, #DFE1E6)' : '#DEEBFF' }}
+              style={{ background: isFrozen ? 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' : '#DEEBFF' }}
             >
               {isFrozen ? (
                 <LockLockedIcon label="" size="small" />
@@ -225,7 +225,7 @@ export function JiraSyncControlPanel() {
                 {row.dormant ? (
                   <span
                     className="rounded-full px-2 py-0.5 font-bold uppercase tracking-widest"
-                    style={{ fontSize: 10, background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' }}
+                    style={{ fontSize: 10, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' }}
                   >
                     DORMANT
                   </span>
@@ -271,7 +271,7 @@ export function JiraSyncControlPanel() {
               </DialogHeader>
               <div className="space-y-4 py-1">
                 <div className="rounded-md border px-4 py-3 space-y-1"
-                  style={{ borderColor: 'var(--ds-border, #DFE1E6)', background: 'var(--ds-surface-sunken, #F8FAFC)' }}>
+                  style={{ borderColor: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', background: 'var(--ds-surface-sunken, #F8FAFC)' }}>
                   <div className="flex items-center gap-2">
                     <WarningIcon label="" size="small" />
                     <span className="text-xs font-semibold" style={{ color: 'var(--cp-text-primary)' }}>

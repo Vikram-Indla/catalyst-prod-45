@@ -115,7 +115,7 @@ export interface SavedView {
 export type LozengeColor = 'grey' | 'blue' | 'green';
 
 export const STATUS_DISPLAY: Record<RequestStatus, { label: string; lozenge: LozengeColor; dot: string; bg: string; border: string; text: string }> = {
-  new:                     { label: 'New',                    lozenge: 'grey',  dot: '#DFE1E6', bg: '#DFE1E6', border: '#DFE1E6', text: '#42526E' },
+  new:                     { label: 'New',                    lozenge: 'grey',  dot: 'var(--cp-lozenge-grey-bg, #DFE1E6)', bg: 'var(--cp-lozenge-grey-bg, #DFE1E6)', border: 'var(--cp-lozenge-grey-bg, #DFE1E6)', text: '#42526E' },
   portfolio_review:        { label: 'Portfolio Review',       lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: '#FFFFFF' },
   technical_validation:    { label: 'Technical Validation',   lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: '#FFFFFF' },
   estimate:                { label: 'Estimate',               lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: '#FFFFFF' },
@@ -123,11 +123,11 @@ export const STATUS_DISPLAY: Record<RequestStatus, { label: string; lozenge: Loz
   analysis:                { label: 'Analysis',               lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: '#FFFFFF' },
   ready_for_development:   { label: 'Ready for Development',  lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: '#FFFFFF' },
   under_implementation:    { label: 'Under Implementation',   lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: '#FFFFFF' },
-  on_hold:                 { label: 'On Hold',                lozenge: 'grey',  dot: '#DFE1E6', bg: '#DFE1E6', border: '#DFE1E6', text: '#42526E' },
+  on_hold:                 { label: 'On Hold',                lozenge: 'grey',  dot: 'var(--cp-lozenge-grey-bg, #DFE1E6)', bg: 'var(--cp-lozenge-grey-bg, #DFE1E6)', border: 'var(--cp-lozenge-grey-bg, #DFE1E6)', text: '#42526E' },
   implementation_review:   { label: 'Implementation Review',  lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: '#FFFFFF' },
   in_support:              { label: 'In Support',             lozenge: 'blue',  dot: '#0C66E4', bg: '#0C66E4', border: '#0C66E4', text: '#FFFFFF' },
   done:                    { label: 'Done',                   lozenge: 'green', dot: 'var(--cp-lozenge-green-bg, #1B7F37)', bg: 'var(--cp-lozenge-green-bg, #1B7F37)', border: 'var(--cp-lozenge-green-bg, #1B7F37)', text: '#FFFFFF' },
-  cancelled:               { label: 'Cancelled',              lozenge: 'grey',  dot: '#DFE1E6', bg: '#DFE1E6', border: '#DFE1E6', text: '#42526E' },
+  cancelled:               { label: 'Cancelled',              lozenge: 'grey',  dot: 'var(--cp-lozenge-grey-bg, #DFE1E6)', bg: 'var(--cp-lozenge-grey-bg, #DFE1E6)', border: 'var(--cp-lozenge-grey-bg, #DFE1E6)', text: '#42526E' },
 };
 
 export const PRIORITY_THRESHOLDS: { min: number; max: number; level: PriorityLevel; bg: string; border: string; text: string }[] = [

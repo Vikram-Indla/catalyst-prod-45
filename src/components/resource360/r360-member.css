@@ -78,7 +78,7 @@
   color: var(--ds-text-inverse, #FFFFFF) !important;
 }
 #r360-root .r3-mode-badge.snapshot {
-  background: var(--ds-border, #DFE1E6) !important;
+  background: var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6)) !important;
   color: var(--ds-text, #253858) !important;
 }
 

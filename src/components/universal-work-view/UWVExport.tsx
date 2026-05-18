@@ -141,7 +141,7 @@ export function UWVExport({ items, columns, title }: Props) {
             width: 240,
             padding: 8,
             background: 'var(--bg-app)',
-            border: '1px solid #DFE1E6',
+            border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
             borderRadius: 6,
             boxShadow: '0 8px 24px rgba(9,30,66,0.16)',
             display: 'flex',

@@ -40,12 +40,12 @@ interface TestCycle {
 }
 
 const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
-  draft: { label: 'DRAFT', color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, #DFE1E6)' },
-  planned: { label: 'PLANNED', color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, #DFE1E6)' },
+  draft: { label: 'DRAFT', color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
+  planned: { label: 'PLANNED', color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
   active: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
   completed: { label: 'COMPLETED', color: '#006644', bg: '#E3FCEF' },
-  archived: { label: 'ARCHIVED', color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, #DFE1E6)' },
-  paused: { label: 'PAUSED', color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, #DFE1E6)' },
+  archived: { label: 'ARCHIVED', color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
+  paused: { label: 'PAUSED', color: 'var(--ds-text, #253858)', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' },
 };
 
 export default function TestCyclesPage() {

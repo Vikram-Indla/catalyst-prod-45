@@ -894,7 +894,7 @@ export function CreateStoryModal({
                   cs-adf-desc-wrapper class — modal footer owns submission. */}
               <Field name="description" label="Description">
                 {() => (
-                  <div className="cs-adf-desc-wrapper" style={{ border: `1px solid ${token('color.border', '#DFE1E6')}`, borderRadius: 3 }}>
+                  <div className="cs-adf-desc-wrapper" style={{ border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`, borderRadius: 3 }}>
                     <Suspense fallback={<div style={{ padding: '8px 12px', color: token('color.text.subtlest', '#97A0AF'), fontSize: 14 }}>Loading editor…</div>}>
                       <EpicDescriptionEditor
                         key={editorKey}

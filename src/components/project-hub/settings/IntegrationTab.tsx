@@ -7,11 +7,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 function StatusLozenge({ status }: { status: string }) {
   const map: Record<string, { bg: string; text: string }> = {
     success: { bg: '#E3FCEF', text: '#006644' },
-    error: { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)' },
-    skipped: { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)' },
+    error: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: 'var(--ds-text, #253858)' },
+    skipped: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: 'var(--ds-text, #253858)' },
     processing: { bg: '#DEEBFF', text: '#0747A6' },
     Connected: { bg: '#E3FCEF', text: '#006644' },
-    'Not Connected': { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)' },
+    'Not Connected': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: 'var(--ds-text, #253858)' },
   };
   const colors = map[status] || map.skipped;
   return (

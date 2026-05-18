@@ -18,7 +18,7 @@ export function DescriptionViewMode({
 }: DescriptionViewModeProps) {
   if (!value) {
     return (
-      <div style={{ padding: '12px 16px', backgroundColor: '#F7F8F9', borderRadius: '4px', border: '1px solid #DFE1E6' }}>
+      <div style={{ padding: '12px 16px', backgroundColor: '#F7F8F9', borderRadius: '4px', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontSize: '13px', color: '#626F86' }}>No description provided.</span>
           {onEdit && (
@@ -37,7 +37,7 @@ export function DescriptionViewMode({
   }
 
   return (
-    <div style={{ padding: '12px 16px', backgroundColor: '#FFFFFF', borderRadius: '4px', border: '1px solid #DFE1E6' }}>
+    <div style={{ padding: '12px 16px', backgroundColor: '#FFFFFF', borderRadius: '4px', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
         <div style={{ flex: 1, fontSize: '13px', lineHeight: 1.5, color: '#161A1D' }}>
           {renderMarkdown(value, mentions)}

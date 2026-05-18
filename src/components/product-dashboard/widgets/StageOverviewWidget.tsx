@@ -236,7 +236,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                 onClick={() => { onStageClick(step.value); setOpenStage({ value: step.value, label: step.label }); }}
                 style={{
                   padding: '10px 8px',
-                  border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
                   borderTop: `3px solid ${color}`,
                   borderRadius: 6,
                   textAlign: 'center',

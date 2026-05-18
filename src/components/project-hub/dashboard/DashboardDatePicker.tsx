@@ -54,7 +54,7 @@ export default function DashboardDatePicker() {
       gap: 6,
       height: 32,
       padding: '0 10px',
-      border: open ? '2px solid #4C9AFF' : '1px solid #DFE1E6',
+      border: open ? '2px solid #4C9AFF' : '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
       boxShadow: open ? '0 0 0 2px rgba(76,154,255,.3)' : 'none',
       borderRadius: 4,
       background: 'var(--ds-surface-sunken, #FAFBFC)',
@@ -92,7 +92,7 @@ export default function DashboardDatePicker() {
         style={{
           width: 280,
           background: 'var(--ds-text-inverse, #FFFFFF)',
-          border: '1px solid #DFE1E6',
+          border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
           borderRadius: 4,
           boxShadow: '0 8px 24px rgba(9,30,66,.18)',
           padding: 0,
@@ -333,7 +333,7 @@ function CustomRangePanel({
             style={{
               height: 28,
               padding: '0 10px',
-              border: '1px solid #DFE1E6',
+              border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
               borderRadius: 3,
               background: 'var(--ds-text-inverse, #FFFFFF)',
               fontSize: 12,
@@ -390,7 +390,7 @@ function DateInput({
         style={{
           height: 28,
           padding: '0 6px',
-          border: '1px solid #DFE1E6',
+          border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
           borderRadius: 3,
           fontSize: 12,
           background: 'var(--ds-surface-sunken, #FAFBFC)',

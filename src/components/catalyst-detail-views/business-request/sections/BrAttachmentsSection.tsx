@@ -242,7 +242,7 @@ export function BrAttachmentsSection({ request }: Props) {
           border: `2px dashed ${
             dragging
               ? token('color.border.brand', '#1868DB')
-              : token('color.border', '#DFE1E6')
+              : token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')
           }`,
           background: dragging
             ? token('color.background.selected', '#E9F2FF')
@@ -338,7 +338,7 @@ export function BrAttachmentsSection({ request }: Props) {
           <div
             style={{
               padding: '20px 12px',
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
               borderRadius: 6,
               textAlign: 'center',
               fontSize: 13,
@@ -365,7 +365,7 @@ export function BrAttachmentsSection({ request }: Props) {
                   alignItems: 'center',
                   gap: 12,
                   padding: '8px 12px',
-                  border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
                   borderRadius: 6,
                   background: token('elevation.surface', '#FFFFFF'),
                   fontFamily: 'var(--cp-font-body)',

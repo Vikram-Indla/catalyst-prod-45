@@ -408,7 +408,7 @@ export default function RequestListingPage() {
 
     // Status category — with 3-colour StatusLozenge pills
     const LOZENGE_COLORS: Record<string, { bg: string; color: string }> = {
-      grey:  { bg: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
+      grey:  { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' },
       blue:  { bg: '#DEEBFF', color: '#0747A6' },
       green: { bg: '#E3FCEF', color: '#006644' },
     };

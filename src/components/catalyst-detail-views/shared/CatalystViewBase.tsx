@@ -297,7 +297,7 @@ export function CatalystViewBase({
     width: '100%', height: '100%', background: 'var(--ds-surface, #FFFFFF)',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
     animation: 'cv-panel-in 200ms ease-out',
-    borderLeft: '1px solid var(--ds-border, #DFE1E6)',
+    borderLeft: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
   } : {
     width: 1100, maxWidth: '95vw', minHeight: 600, maxHeight: 'calc(100vh - 80px)',
     background: 'var(--ds-surface, #FFFFFF)', borderRadius: 8,
@@ -429,7 +429,7 @@ export function CatalystViewBase({
 
             {/* Inline Prev/Next chevrons — Jira parity. Up = previous,
                 Down = next (Atlassian convention). Canonical component
-                IssueNavChevrons owns the 28×28 / 1px var(--ds-border, #DFE1E6) / 4px-radius
+                IssueNavChevrons owns the 28×28 / 1px var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6)) / 4px-radius
                 styling (verified against Jira Cloud, 2026-04-19). */}
             {navigationItems && navigationItems.length > 1 && (() => {
               const prevKey = canNavPrev ? (navigationItems[currentNavIndex - 1].issue_key ?? '') : '';
@@ -599,7 +599,7 @@ export function CatalystViewBase({
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
             onMouseLeave={e => { if (!isDraggingRef.current) e.currentTarget.style.background = 'transparent'; }}
           >
-            <div style={{ width: 1.5, height: 32, borderRadius: 1, background: 'var(--ds-border, #DFE1E6)', transition: 'background 0.15s' }} />
+            <div style={{ width: 1.5, height: 32, borderRadius: 1, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', transition: 'background 0.15s' }} />
           </div>
 
           {/* RIGHT PANEL — Sidebar

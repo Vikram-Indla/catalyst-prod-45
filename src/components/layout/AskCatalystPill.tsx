@@ -179,7 +179,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
             right: 0,
             marginTop: 6,
             background: 'var(--ds-surface-overlay, var(--cp-float, #FFFFFF))',
-            border: '1px solid var(--ds-border, var(--cp-bd, #DFE1E6))',
+            border: '1px solid var(--ds-border, var(--cp-bd, var(--cp-lozenge-grey-bg, #DFE1E6)))',
             borderRadius: 12,
             // ADS canonical overlay shadow — works in both modes via the token resolver
             boxShadow: 'var(--ds-shadow-overlay, 0 8px 30px rgba(0,0,0,0.12))',

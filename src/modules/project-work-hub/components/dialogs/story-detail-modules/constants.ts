@@ -27,7 +27,7 @@ export const STATUS_CATEGORIES: Record<string, string[]> = {
  * `in_uat` it renders the canonical blue, not cyan.
  */
 export const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
-  todo:        { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)' },
+  todo:        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: 'var(--ds-text, #253858)' },
   in_progress: { bg: 'var(--ds-background-information, #DEEBFF)', text: 'var(--ds-link-pressed, #0747A6)' },
   done:        { bg: 'var(--ds-background-success, #E3FCEF)', text: 'var(--ds-text-success, #006644)' },
   blocked:     { bg: 'var(--ds-background-danger, #FFEBE6)', text: 'var(--ds-text-danger, #BF2600)' },
@@ -39,13 +39,13 @@ export const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
 };
 
 export const LOZENGE_STYLES: Record<'grey' | 'blue' | 'green', React.CSSProperties> = {
-  grey:  { background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
+  grey:  { background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' },
   blue:  { background: 'var(--ds-background-information, #DEEBFF)', color: 'var(--ds-link-pressed, #0747A6)' },
   green: { background: 'var(--ds-background-success, #E3FCEF)', color: 'var(--ds-text-success, #006644)' },
 };
 
 export const LOZENGE: Record<StatusCategory, React.CSSProperties> = {
-  todo:        { background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
+  todo:        { background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' },
   in_progress: { background: 'var(--ds-background-information, #DEEBFF)', color: 'var(--ds-link-pressed, #0747A6)' },
   done:        { background: 'var(--ds-background-success, #E3FCEF)', color: 'var(--ds-text-success, #006644)' },
 };
@@ -72,7 +72,7 @@ export const TEST_RESULT_STYLES: Record<TestResult, React.CSSProperties> = {
   passed:  { background: 'var(--ds-background-success, #E3FCEF)', color: 'var(--ds-text-success, #006644)' },
   failed:  { background: 'var(--ds-background-danger, #FFEDEB)', color: 'var(--ds-text-danger, #BF2600)' },
   blocked: { background: 'var(--ds-background-warning, #FFF0B3)', color: 'var(--ds-text-warning, #974F0C)' },
-  skipped: { background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
+  skipped: { background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' },
   not_run: { background: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, #6B778C)' },
 };
 

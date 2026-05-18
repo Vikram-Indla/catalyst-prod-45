@@ -112,7 +112,7 @@
   gap: 0;
   padding: 0;
   border: none;
-  border-bottom: 2px solid var(--ds-border, #DFE1E6);
+  border-bottom: 2px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6));
   border-radius: 0;
   background: transparent;
   width: fit-content;
@@ -325,7 +325,7 @@
   height: 32px;
   flex-shrink: 0;
   background: var(--ds-background-input, #FAFBFC);
-  border: 2px solid var(--ds-border-input, #DFE1E6);
+  border: 2px solid var(--ds-border-input, var(--cp-lozenge-grey-bg, #DFE1E6));
   border-radius: 3px;
   transition: border-color 100ms, background-color 100ms;
 }

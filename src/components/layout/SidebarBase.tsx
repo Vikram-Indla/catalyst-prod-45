@@ -193,8 +193,8 @@ export function SidebarBase({
   // page bg --ds-background-neutral). Was incorrectly using page bg token.
   const sidebarBg = 'var(--cp-bg-elevated, #FFFFFF)';
   // ADS canonical: --ds-border is translucent (#a6c5e229 dark / #0b120e24 light)
-  const sidebarBorder = 'var(--cp-border, #DFE1E6)';
-  const dividerColor = 'var(--cp-border, #DFE1E6)';
+  const sidebarBorder = 'var(--cp-border, var(--cp-lozenge-grey-bg, #DFE1E6))';
+  const dividerColor = 'var(--cp-border, var(--cp-lozenge-grey-bg, #DFE1E6))';
   const sectionLabel = 'var(--cp-text-tertiary, #6B778C)';
   const hubLabel = 'var(--cp-text-primary, #172B4D)';
 
@@ -248,7 +248,7 @@ export function SidebarBase({
           willChange: 'width',
           contain: 'layout style',
           scrollbarWidth: 'thin' as any,
-          scrollbarColor: isDark ? '#454545 transparent' : '#DFE1E6 transparent',
+          scrollbarColor: isDark ? '#454545 transparent' : 'var(--cp-lozenge-grey-bg, #DFE1E6) transparent',
         }}
       >
         {/* Header — hub badge + label only. The collapse toggle now lives

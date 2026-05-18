@@ -57,7 +57,7 @@ function LinkAsDropdown({ value, onChange }: { value: string; onChange: (v: stri
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
           height: 32, padding: '0 10px 0 12px',
-          border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
+          border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', borderRadius: 3,
           background: 'var(--ds-surface, #fff)', cursor: 'pointer', fontSize: 13,
           fontFamily: 'inherit', color: 'var(--ds-text, #172B4D)', whiteSpace: 'nowrap',
         }}
@@ -68,7 +68,7 @@ function LinkAsDropdown({ value, onChange }: { value: string; onChange: (v: stri
       {open && (
         <div style={{
           position: 'absolute', bottom: 'calc(100% + 4px)', right: 0,
-          minWidth: 200, background: 'var(--ds-surface, #fff)', border: '1px solid var(--ds-border, #DFE1E6)',
+          minWidth: 200, background: 'var(--ds-surface, #fff)', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
           borderRadius: 4, boxShadow: '0 4px 8px rgba(9,30,66,.25)',
           zIndex: 70, maxHeight: 320, overflowY: 'auto',
         }}>
@@ -200,7 +200,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
     return (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 12px', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8,
+        padding: '10px 12px', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', borderRadius: 8,
         background: 'var(--ds-surface-sunken, #FAFBFC)', marginBottom: 8,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -215,7 +215,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
           <button
             onClick={() => setExpanded(true)}
             style={{
-              height: 28, padding: '0 12px', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
+              height: 28, padding: '0 12px', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', borderRadius: 3,
               background: 'var(--ds-surface, #fff)', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)',
               fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap',
             }}
@@ -231,7 +231,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
 
   /* ── EXPANDED STATE ── */
   return (
-    <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, marginBottom: 8, overflow: 'hidden' }}>
+    <div style={{ border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', borderRadius: 8, marginBottom: 8, overflow: 'hidden' }}>
       {/* Header — click to collapse */}
       <div
         onClick={() => setExpanded(false)}
@@ -258,7 +258,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
             <span style={{ fontSize: 13, color: 'var(--ds-text-danger, #AE2A19)' }}>Failed to load suggestions</span>
             <button onClick={() => refetch()} style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
-              border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3, background: 'var(--ds-surface, #fff)',
+              border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', borderRadius: 3, background: 'var(--ds-surface, #fff)',
               padding: '4px 10px', fontSize: 12, cursor: 'pointer', color: 'var(--ds-text, #172B4D)',
             }}>
               <RefreshCw size={12} /> Retry

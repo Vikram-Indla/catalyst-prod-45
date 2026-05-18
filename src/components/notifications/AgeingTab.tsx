@@ -60,7 +60,7 @@ const ADS = {
   textSelected:  'var(--ds-text-selected, #0C66E4)',
   textInverse:   'var(--ds-text-inverse, #FFFFFF)',
   // borders
-  border:        'var(--ds-border, #DFE1E6)',
+  border:        'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
   borderBold:    'var(--ds-border-bold, #8590A2)',
   borderDanger:  'var(--ds-border-danger, #C9372C)',
   borderWarning: 'var(--ds-border-warning, #F5CD47)',

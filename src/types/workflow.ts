@@ -10,7 +10,7 @@ export interface WorkflowStatus {
 // collapsing to banned Golden Hour palette (§7). See types/views.ts for
 // the canonical STATUS_CONFIG mapping rationale.
 export const WORKFLOW_STATUSES: WorkflowStatus[] = [
-  { id: 'backlog', name: 'Backlog', color: '#42526E', bgColor: '#DFE1E6', description: 'Awaiting prioritization' },
+  { id: 'backlog', name: 'Backlog', color: '#42526E', bgColor: 'var(--cp-lozenge-grey-bg, #DFE1E6)', description: 'Awaiting prioritization' },
   { id: 'design', name: 'Design', color: '#5243AA', bgColor: '#EAE6FF', description: 'In design phase' },
   { id: 'ready_dev', name: 'Ready for Development', color: 'var(--cp-primary-60, #0052CC)', bgColor: '#DEEBFF', description: 'Ready to be picked up' },
   { id: 'in_dev', name: 'In Development', color: '#FF991F', bgColor: '#FFF0B3', description: 'Actively being developed' },
@@ -19,7 +19,7 @@ export const WORKFLOW_STATUSES: WorkflowStatus[] = [
   { id: 'beta', name: 'In Beta', color: '#36B37E', bgColor: '#E3FCEF', description: 'Beta release' },
   { id: 'ready_prod', name: 'Ready for Production', color: '#00875A', bgColor: '#E3FCEF', description: 'Approved for production' },
   { id: 'in_prod', name: 'In Production', color: '#006644', bgColor: '#E3FCEF', description: 'Deployed to production' },
-  { id: 'on_hold', name: 'On Hold', color: '#42526E', bgColor: '#DFE1E6', description: 'Paused or blocked' },
+  { id: 'on_hold', name: 'On Hold', color: '#42526E', bgColor: 'var(--cp-lozenge-grey-bg, #DFE1E6)', description: 'Paused or blocked' },
 ];
 
 // Define valid transitions from each status

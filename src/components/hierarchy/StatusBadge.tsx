@@ -1,6 +1,6 @@
 /**
  * StatusBadge — V12 Pale Lozenge 3-colour guardrail (ABSOLUTE)
- * GREY  (var(--ds-border, #DFE1E6) bg, var(--ds-text, #253858) text) = not started / waiting
+ * GREY  (var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6)) bg, var(--ds-text, #253858) text) = not started / waiting
  * BLUE  (#DEEBFF bg, #0747A6 text) = in progress / active
  * GREEN (#E3FCEF bg, #006644 text) = done / resolved
  */
@@ -63,7 +63,7 @@ const STATUS_CATEGORY_MAP: Record<string, StatusCategory> = {
 };
 
 const STATUS_STYLES_LIGHT: Record<StatusCategory, { background: string; color: string }> = {
-  grey:  { background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
+  grey:  { background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)' },
   blue:  { background: '#DEEBFF', color: '#0747A6' },
   green: { background: '#E3FCEF', color: '#006644' },
 };

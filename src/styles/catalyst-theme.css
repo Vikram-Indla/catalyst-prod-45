@@ -29,7 +29,7 @@
   --ok60: var(--ds-text-success, var(--cp-success, #16A34A));
   --warn60: var(--ds-text-warning, var(--cp-warning, #D97706));
   --err60: var(--ds-text-danger, var(--cp-danger, #DC2626));
-  --loz-gr-bg: var(--ds-border, #DFE1E6);
+  --loz-gr-bg: var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6));
   --loz-gr-tx: var(--ds-text, #253858);
   --loz-bl-bg: #DEEBFF;
   --loz-bl-tx: #0747A6;

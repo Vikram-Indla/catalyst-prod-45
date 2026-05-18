@@ -133,7 +133,7 @@ export function FilterDropdown({
             flexDirection: 'column',
             background: 'var(--ds-surface, #FFFFFF)',
             borderRadius: 4,
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
             boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
             overflow: 'hidden',
           }}

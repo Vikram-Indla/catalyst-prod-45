@@ -174,7 +174,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
             <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 16 }}>
               <div style={{
                 width: 10, height: 10, borderRadius: '50%', marginTop: 4, flexShrink: 0,
-                background: i < step ? '#B3D4FF' : i === step ? '#0C66E4' : 'var(--ds-border, #DFE1E6)',
+                background: i < step ? '#B3D4FF' : i === step ? '#0C66E4' : 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
               }} />
               <div>
                 <div style={{
@@ -227,7 +227,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
               <div style={{ marginBottom: 20 }}>
                 <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #172B4D)', display: 'block', marginBottom: 6 }}>Parent Issue</label>
                 {selectedParentIssue ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 4, border: '1px solid #DFE1E6', background: 'var(--ds-surface-sunken, #F4F5F7)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 4, border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', background: 'var(--ds-surface-sunken, #F4F5F7)' }}>
                     <JiraIssueTypeIcon type={selectedParentIssue.issue_type} size={16} />
                     <span style={{ fontSize: 13, fontWeight: 600, color: '#0C66E4' }}>{selectedParentIssue.issue_key}</span>
                     <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', flex: 1 }}>{selectedParentIssue.summary}</span>
@@ -251,14 +251,14 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                       {searchingParents && <Loader2 size={14} className="animate-spin" style={{ color: 'var(--ds-text-subtlest, #6B778C)' }} />}
                     </div>
                     {showDropdown && (
-                      <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 2, background: 'var(--ds-surface, #fff)', border: '1px solid #DFE1E6', borderRadius: 4, boxShadow: '0 8px 16px rgba(9,30,66,.15), 0 0 1px rgba(9,30,66,.31)', zIndex: 10, maxHeight: 280, overflowY: 'auto' }}>
+                      <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 2, background: 'var(--ds-surface, #fff)', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderRadius: 4, boxShadow: '0 8px 16px rgba(9,30,66,.15), 0 0 1px rgba(9,30,66,.31)', zIndex: 10, maxHeight: 280, overflowY: 'auto' }}>
                         {/* Section label */}
                         {parentSearch.trim().length === 0 && parentCandidates.length > 0 && (
                           <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Recent issues</div>
                         )}
                         {parentCandidates.length > 0 ? parentCandidates.map((p: any) => {
                           const cat = (p.status_category ?? '').toLowerCase();
-                          const lozBg = cat.includes('done') ? '#E3FCEF' : cat.includes('progress') ? '#DEEBFF' : 'var(--ds-border, #DFE1E6)';
+                          const lozBg = cat.includes('done') ? '#E3FCEF' : cat.includes('progress') ? '#DEEBFF' : 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))';
                           const lozColor = cat.includes('done') ? '#006644' : cat.includes('progress') ? '#0747A6' : 'var(--ds-text, #253858)';
                           return (
                             <button key={p.id} onClick={() => selectParent(p)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', width: '100%', textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, borderBottom: '1px solid #F4F5F7' }}
@@ -306,7 +306,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #172B4D)', flexShrink: 0 }}>Select New Status:</div>
-                <span style={{ display: 'inline-block', height: 20, lineHeight: '20px', padding: '0 6px', borderRadius: 3, background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', whiteSpace: 'nowrap', flexShrink: 0 }}>{currentStatus}</span>
+                <span style={{ display: 'inline-block', height: 20, lineHeight: '20px', padding: '0 6px', borderRadius: 3, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', whiteSpace: 'nowrap', flexShrink: 0 }}>{currentStatus}</span>
                 <span style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 16 }}>→</span>
                 <Select value={newStatus} onValueChange={setNewStatus}>
                   <SelectTrigger className="w-[200px] bg-white" style={{ fontSize: 13 }}>
@@ -366,7 +366,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
           {/* Navigation buttons */}
           <div style={{ display: 'flex', gap: 8, marginTop: 20, borderTop: '1px solid #EBECF0', paddingTop: 16 }}>
             {step > 0 && (
-              <button onClick={() => setStep(s => s - 1)} style={{ padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface-sunken, #F4F5F7)', border: '1px solid #DFE1E6', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: 'var(--ds-text, #172B4D)' }}>
+              <button onClick={() => setStep(s => s - 1)} style={{ padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface-sunken, #F4F5F7)', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: 'var(--ds-text, #172B4D)' }}>
                 Back
               </button>
             )}

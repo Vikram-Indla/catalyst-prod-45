@@ -872,7 +872,7 @@ function PeopleTab() {
                   <td style={{ padding: '10px 12px', textAlign: 'center' }}>
                     <span style={{
                       display: 'inline-block',
-                      background: modCount > 0 ? 'var(--ds-background-neutral, #DFE1E6)' : 'var(--ds-background-neutral-subtle, #F4F5F7)',
+                      background: modCount > 0 ? 'var(--ds-background-neutral, var(--cp-lozenge-grey-bg, #DFE1E6))' : 'var(--ds-background-neutral-subtle, #F4F5F7)',
                       color: modCount > 0 ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-disabled, #A5ADBA)',
                       borderRadius: 10, padding: '1px 8px', fontSize: 12, fontWeight: 500,
                     }}>

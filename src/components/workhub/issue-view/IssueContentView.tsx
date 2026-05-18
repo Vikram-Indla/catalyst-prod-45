@@ -146,7 +146,7 @@ function StatusPill({ status, statusCategory, issueId, onStatusChange }: { statu
           position: 'absolute', top: '100%', left: 0, marginTop: 4,
           background: 'var(--ds-surface, #fff)', borderRadius: 6, width: 220,
           boxShadow: '0 8px 24px rgba(9,30,66,.25)', zIndex: 80, padding: '4px 0',
-          border: '1px solid #DFE1E6', maxHeight: 320, overflowY: 'auto',
+          border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', maxHeight: 320, overflowY: 'auto',
         }}>
           {STATUS_OPTION_GROUPS.map(group => (
             <div key={group.groupLabel}>
@@ -446,7 +446,7 @@ export function IssueContentView({
             {item && <JiraIssueTypeIcon type={item.issue_type} size={14} />}
             <IssueKeyLink issueKey={issueKey ?? ''} style={{ color: 'var(--cp-primary-60, #0052CC)', textDecoration: 'none', fontSize: 13 }} />
             {/* #12: Prev/Next navigation arrows — canonical IssueNavChevrons
-                (shared component, Jira-parity 28×28 / 1px var(--ds-border, #DFE1E6) / 4px). */}
+                (shared component, Jira-parity 28×28 / 1px var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6)) / 4px). */}
             <span style={{ marginLeft: 'auto', display: 'inline-flex' }}>
               <IssueNavChevrons
                 onPrev={onPrev}
@@ -844,7 +844,7 @@ export function IssueContentView({
               onClick={() => setShowFlagPopover(o => !o)}
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                width: 32, height: 32, border: '1px solid #DFE1E6', borderRadius: 4,
+                width: 32, height: 32, border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderRadius: 4,
                 background: checkFlagged(item) ? '#FFEBE6' : 'var(--ds-surface, #fff)', cursor: 'pointer',
                 padding: 0,
               }}
@@ -866,7 +866,7 @@ export function IssueContentView({
           <button
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              width: 32, height: 32, border: '1px solid #DFE1E6', borderRadius: 4,
+              width: 32, height: 32, border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderRadius: 4,
               background: 'var(--ds-surface, #fff)', cursor: 'pointer', padding: 0,
             }}
             title="Automation"
@@ -891,7 +891,7 @@ export function IssueContentView({
                   position: 'absolute', top: '100%', right: 0, marginTop: 4,
                   background: 'var(--ds-surface, #fff)', borderRadius: 6, width: 220,
                   boxShadow: '0 8px 24px rgba(9,30,66,.25)', zIndex: 80,
-                  border: '1px solid #DFE1E6', padding: '4px 0',
+                  border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', padding: '4px 0',
                 }}>
                   {/* Add/Remove flag in menu */}
                   <button onClick={() => { setShowFlagPopover(true); setMoreMenuOpen(false); }}
@@ -979,12 +979,12 @@ export function IssueContentView({
                   )}
                 </div>
                 {showFixVersionDropdown && (
-                  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--ds-text-inverse, #FFFFFF)', border: '1px solid #DFE1E6', borderRadius: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', zIndex: 100, maxHeight: 320, overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--ds-text-inverse, #FFFFFF)', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderRadius: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', zIndex: 100, maxHeight: 320, overflow: 'hidden' }}>
                     <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
                       <input autoFocus value={fixVersionSearch} onChange={e => setFixVersionSearch(e.target.value)} placeholder="Search versions..."
-                        style={{ width: '100%', border: '1px solid #DFE1E6', borderRadius: 4, padding: '6px 10px', fontSize: 13, color: 'var(--ds-text, #172B4D)', outline: 'none', fontFamily: 'inherit' }}
+                        style={{ width: '100%', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderRadius: 4, padding: '6px 10px', fontSize: 13, color: 'var(--ds-text, #172B4D)', outline: 'none', fontFamily: 'inherit' }}
                         onFocus={e => { e.currentTarget.style.borderColor = '#4C9AFF'; }}
-                        onBlur={e => { e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)'; }}
+                        onBlur={e => { e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))'; }}
                       />
                     </div>
                     <div style={{ maxHeight: 260, overflowY: 'auto' }}>

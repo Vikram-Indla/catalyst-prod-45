@@ -431,7 +431,7 @@ function FilterTriggerAndPopup({
       <span ref={triggerRef} style={{
         display: 'inline-flex',
         background: 'var(--ds-surface, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
         borderRadius: 3,
       }}>
         <Button
@@ -470,7 +470,7 @@ function FilterTriggerAndPopup({
             left: pos.left,
             zIndex: 510, // above Atlaskit content layer (400) but below modals (700+)
             background: 'var(--ds-surface-overlay, #FFFFFF)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
             borderRadius: 4,
             boxShadow: '0 4px 8px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31)',
           }}
@@ -648,7 +648,7 @@ function FilterChip({
       <span ref={triggerRef} style={{
         display: 'inline-flex',
         background: 'var(--ds-surface, #FFFFFF)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
         borderRadius: 3,
       }}>
         <Button
@@ -697,7 +697,7 @@ function FilterChip({
             maxHeight: 380,
             display: 'flex', flexDirection: 'column',
             background: 'var(--ds-surface-overlay, #FFFFFF)',
-            border: '1px solid var(--ds-border, #DFE1E6)',
+            border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
             borderRadius: 4,
             boxShadow: '0 4px 8px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31)',
             fontFamily: 'var(--cp-font-body)',
@@ -705,11 +705,11 @@ function FilterChip({
         >
           {headline && (
             <div style={{
-              padding: '8px 12px', borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+              padding: '8px 12px', borderBottom: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
               fontSize: 12, color: 'var(--ds-text-subtle, #505258)',
             }}>{headline}</div>
           )}
-          <div style={{ padding: 8, borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+          <div style={{ padding: 8, borderBottom: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))' }}>
             <input
               type="text"
               placeholder={`Search ${label}`}
@@ -718,7 +718,7 @@ function FilterChip({
               autoFocus
               style={{
                 width: '100%', padding: '6px 8px', fontSize: 13,
-                border: '1px solid var(--ds-border, #DFE1E6)',
+                border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
                 borderRadius: 3,
                 fontFamily: 'inherit',
                 background: 'var(--ds-surface, #FFFFFF)',
@@ -741,7 +741,7 @@ function FilterChip({
           </div>
           <div style={{
             padding: '6px 12px',
-            borderTop: '1px solid var(--ds-border, #DFE1E6)',
+            borderTop: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
             fontSize: 11, color: 'var(--ds-text-subtle, #505258)',
             display: 'flex', justifyContent: 'space-between',
           }}>
@@ -1110,7 +1110,7 @@ export function AllWorkToolbar({
         style={{
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '8px 12px',
-          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+          borderBottom: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
           background: 'transparent',
           flexShrink: 0,
           fontFamily: 'var(--cp-font-body)',
@@ -1173,7 +1173,7 @@ export function AllWorkToolbar({
       style={{
         display: 'flex', alignItems: 'center', gap: 8,
         padding: '8px 12px',
-        borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+        borderBottom: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
         background: 'transparent',
         flexShrink: 0,
         fontFamily: 'var(--cp-font-body)',
@@ -1292,7 +1292,7 @@ export function AllWorkToolbar({
                 aria-orientation="vertical"
                 style={{
                   width: 140, flexShrink: 0,
-                  borderRight: '1px solid var(--ds-border, #DFE1E6)',
+                  borderRight: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
                   overflowY: 'auto', padding: '6px 0',
                 }}
               >
@@ -1427,7 +1427,7 @@ export function AllWorkToolbar({
             style={{
               width: 32, height: 32,
               padding: 0,
-              border: '1px solid var(--ds-border, #DFE1E6)',
+              border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
               borderRadius: 4,
               background: 'transparent',
               color: 'var(--ds-text-subtle, #505258)',

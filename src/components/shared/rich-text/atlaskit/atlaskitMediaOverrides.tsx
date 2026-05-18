@@ -180,7 +180,7 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
       <div style={{
         margin: '8px 0', padding: '12px 16px', borderRadius: 'var(--ds-border-radius, 4px)',
         background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
-        border: '1px solid var(--ds-border, #DFE1E6)',
+        border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
         fontSize: 14, color: 'var(--ds-text, #292A2E)',
         display: 'inline-flex', alignItems: 'center', gap: 12, maxWidth: '100%',
         fontFamily: '"Atlassian Sans", -apple-system, sans-serif',

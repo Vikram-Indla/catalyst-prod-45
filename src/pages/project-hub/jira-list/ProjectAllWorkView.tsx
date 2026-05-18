@@ -184,7 +184,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             width: isNarrow ? '100%' : 260,
             flexShrink: 0,
             background: 'var(--ds-surface, #FFFFFF)',
-            borderRight: '1px solid var(--ds-border, #DFE1E6)',
+            borderRight: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
             borderRadius: 0,
             overflow: 'hidden', display: 'flex', flexDirection: 'column',
             padding: '0',

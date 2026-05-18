@@ -179,7 +179,7 @@ export function ImproveDescriptionDialog({
             padding: '12px 16px',
             background: token('color.background.neutral.subtle', '#F7F8F9'),
             borderRadius: 6,
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
           }}
         >
           <div style={{ flex: '1 1 320px', minWidth: 240 }}>
@@ -317,7 +317,7 @@ function DiffRow({ label, original, improved, state, onAccept, onReject }: DiffR
   return (
     <div
       style={{
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
         borderRadius: 6,
         overflow: 'hidden',
       }}
@@ -329,7 +329,7 @@ function DiffRow({ label, original, improved, state, onAccept, onReject }: DiffR
           justifyContent: 'space-between',
           padding: '8px 12px',
           background: token('color.background.neutral', '#F4F5F7'),
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
         }}
       >
         <span
@@ -374,7 +374,7 @@ function DiffRow({ label, original, improved, state, onAccept, onReject }: DiffR
             lineHeight: '18px',
             color: token('color.text.subtle', '#42526E'),
             background: token('elevation.surface', '#FFFFFF'),
-            borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderRight: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
             whiteSpace: 'pre-wrap',
             maxHeight: 280,
             overflowY: 'auto',

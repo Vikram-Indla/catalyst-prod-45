@@ -95,7 +95,7 @@ export const text = {
 export const border = {
   // Structural borders
   default: 'hsl(var(--border))',
-  // Atlaskit color.border (N40 #DFE1E6) @ 50% alpha — replaces hsl(218 14% 91% / 0.5)
+  // Atlaskit color.border (N40 var(--cp-lozenge-grey-bg, #DFE1E6)) @ 50% alpha — replaces hsl(218 14% 91% / 0.5)
   subtle: 'rgba(223, 225, 230, 0.5)',
   strong: 'hsl(var(--neutral-400))',
   
@@ -400,7 +400,7 @@ export const catalyst = {
 // Green = Done / Approved / Completed
 // ============================================
 export const statusLozenge = {
-  grey:  { lightBg: '#DFE1E6', lightText: '#253858', darkBg: '#2E2E2E', darkText: '#A1A1A1' },
+  grey:  { lightBg: 'var(--cp-lozenge-grey-bg, #DFE1E6)', lightText: '#253858', darkBg: '#2E2E2E', darkText: '#A1A1A1' },
   blue:  { lightBg: '#DEEBFF', lightText: '#0747A6', darkBg: 'rgba(59,130,246,0.10)', darkText: '#7DB8FC' },
   green: { lightBg: '#E3FCEF', lightText: '#006644', darkBg: 'rgba(74,222,128,0.10)', darkText: '#4ADE80' },
 } as const;

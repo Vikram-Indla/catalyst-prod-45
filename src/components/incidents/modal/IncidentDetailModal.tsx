@@ -109,7 +109,7 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--ds-border,#DFE1E6)] shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))] shrink-0">
           {/* Breadcrumb */}
           <div className="flex items-center gap-1.5 text-[11px] text-[#42526E]">
             {parentIncidentId && (
@@ -161,7 +161,7 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
                   <MoreHorizontal className="w-5 h-5" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-white border-[var(--ds-border,#DFE1E6)]">
+              <DropdownMenuContent align="end" className="w-48 bg-white border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))]">
                 <DropdownMenuItem onClick={() => handleMenuAction('flag')} className="text-[var(--ds-text,#172B4D)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)]">
                   <Flag className="w-4 h-4 mr-2 text-[#42526E]" />
                   Add flag
@@ -182,7 +182,7 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
                   <Trash2 className="w-4 h-4 mr-2" />
                   Delete
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-[var(--ds-border,#DFE1E6)]" />
+                <DropdownMenuSeparator className="bg-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))]" />
                 <DropdownMenuItem onClick={() => handleMenuAction('print')} className="text-[var(--ds-text,#172B4D)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)]">
                   <Printer className="w-4 h-4 mr-2 text-[#42526E]" />
                   Print

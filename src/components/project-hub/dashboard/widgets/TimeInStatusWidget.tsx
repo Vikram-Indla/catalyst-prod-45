@@ -246,7 +246,7 @@ export default function TimeInStatusWidget({
                   fontSize: 12,
                   fontWeight: active ? 600 : 500,
                   borderRadius: 'var(--ds-border-radius, 4px)',
-                  border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
+                  border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))'}`,
                   background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
                   color: active ? 'var(--ds-text-selected, #0055CC)' : 'var(--ds-text-subtle, #505258)',
                   cursor: 'pointer',
@@ -275,7 +275,7 @@ export default function TimeInStatusWidget({
                   fontSize: 11,
                   fontWeight: active ? 600 : 500,
                   borderRadius: 'var(--ds-border-radius, 4px)',
-                  border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, #DFE1E6)'}`,
+                  border: `1px solid ${active ? 'var(--ds-border-selected, #0C66E4)' : 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))'}`,
                   background: active ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
                   color: active ? 'var(--ds-text-selected, #0055CC)' : 'var(--ds-text-subtle, #505258)',
                   cursor: 'pointer',
@@ -347,8 +347,8 @@ export default function TimeInStatusWidget({
                     width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                     textAlign: 'left',
                     padding: '10px 12px',
-                    borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-                    borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
+                    borderRight: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
                     // Header style mirrors QA Defects / Production
                     // Incidents header: 12px uppercase 700 letter-spaced
                     // 0.04em color.text.subtle.
@@ -567,7 +567,7 @@ export default function TimeInStatusWidget({
                   onClick={() => setOffset(Math.max(0, offset - pageSize))}
                   style={{
                     height: 24, padding: '0 8px', fontSize: 11, cursor: 'pointer',
-                    border: '1px solid var(--ds-border, #DFE1E6)',
+                    border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
                     borderRadius: 'var(--ds-border-radius, 4px)',
                     background: 'transparent',
                     color: 'var(--ds-text-subtle, #505258)',
@@ -582,7 +582,7 @@ export default function TimeInStatusWidget({
                   onClick={() => setOffset(offset + pageSize)}
                   style={{
                     height: 24, padding: '0 8px', fontSize: 11, cursor: 'pointer',
-                    border: '1px solid var(--ds-border, #DFE1E6)',
+                    border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
                     borderRadius: 'var(--ds-border-radius, 4px)',
                     background: 'transparent',
                     color: 'var(--ds-text-subtle, #505258)',

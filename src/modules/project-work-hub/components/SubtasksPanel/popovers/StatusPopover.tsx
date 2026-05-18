@@ -99,7 +99,7 @@ export function StatusPopover({ status, onChange, children, showActive = true }:
               maxHeight: 360,
               overflowY: 'auto',
               background: token('elevation.surface.overlay', '#FFFFFF'),
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
               borderRadius: 6,
               boxShadow: '0 8px 24px rgba(9, 30, 66, 0.16)',
               padding: '4px 0',

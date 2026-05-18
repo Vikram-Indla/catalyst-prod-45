@@ -154,7 +154,7 @@ export function ProfileMenu() {
             alignItems: 'center',
             gap: 12,
             padding: '12px 14px',
-            borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
             background: token('elevation.surface.sunken', '#F4F5F7'),
           }}
         >

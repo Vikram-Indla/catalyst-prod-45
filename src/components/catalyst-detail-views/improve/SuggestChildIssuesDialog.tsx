@@ -227,7 +227,7 @@ export function SuggestChildIssuesDialog({
                     gap: 12,
                     padding: 12,
                     borderRadius: 6,
-                    border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
                     background: checked.has(i)
                       ? token('color.background.selected', '#E9F2FF')
                       : token('elevation.surface', '#FFFFFF'),
