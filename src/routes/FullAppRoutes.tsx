@@ -159,7 +159,6 @@ const KnowledgeAssistFabLazy = ENABLE_AI ? lazy(() => import("../components/kb/K
 
 const TeamRoutesShell = lazy(() => import("../routes/TeamRoutesShell").then(m => ({ default: m.TeamRoutes })));
 const TeamsRoutesShell = lazy(() => import("../routes/TeamRoutesShell").then(m => ({ default: m.TeamsRoutes })));
-const PortfolioRoutesShell = lazy(() => import("../routes/PortfolioRoutesShell").then(m => ({ default: m.PortfolioRoutes })));
 const ProgramRoutesShell = lazy(() => import("../routes/ProgramRoutesShell").then(m => ({ default: m.ProgramRoutes })));
 const ProgramsRoutesShell = lazy(() => import("../routes/ProgramRoutesShell").then(m => ({ default: m.ProgramsRoutes })));
 const EnterpriseRoutesShell = lazy(() => import("../routes/EnterpriseRoutesShell").then(m => ({ default: m.EnterpriseRoutes })));
@@ -294,7 +293,6 @@ const CapacityDepartmentsPage = lazy(() => import("../pages/admin/CapacityDepart
 const ResourceAssignmentsPage = lazy(() => import("../pages/admin/ResourceAssignments"));
 const JiraUserSyncPage = lazy(() => import("../pages/admin/JiraUserSync"));
 const BusinessOwnersAdmin = lazy(() => import("../pages/admin/BusinessOwners"));
-const Portfolios = lazy(() => import("../pages/admin/Portfolios"));
 const ModulesPackages = lazy(() => import("../pages/admin/ModulesPackages"));
 const ProductSettings = lazy(() => import("../pages/admin/ProductSettings"));
 const AdminOverview = lazy(() => import("../pages/admin/AdminOverview"));
@@ -598,7 +596,6 @@ export default function FullAppRoutes() {
         <Route path="/strategyhub/roadmaps" element={<Navigate to="/strategyhub/risks" replace />} />
         <Route path="/strategyhub/risks" element={<S><EnterpriseComingSoon /></S>} />
 
-        <Route path="/portfolio/:portfolioId/*" element={<S><PortfolioRoutesShell /></S>} />
         <Route path="/program" element={<S><PlaceholderPage /></S>} />
         <Route path="/program/:programId/*" element={<S><ProgramRoutesShell /></S>} />
         <Route path="/programs" element={<S><ProgramDirectory /></S>} />
@@ -858,7 +855,6 @@ export default function FullAppRoutes() {
           <Route path="roles-permissions" element={<S><RolesPermissions /></S>} />
           <Route path="theme-groups" element={<S><ThemeGroups /></S>} />
           <Route path="programs" element={<S><Programs /></S>} />
-          <Route path="portfolios" element={<S><Portfolios /></S>} />
           <Route path="departments" element={<S><Departments /></S>} />
           <Route path="capacity-departments" element={<S><CapacityDepartmentsPage /></S>} />
           <Route path="resource-assignments" element={<S><ResourceAssignmentsPage /></S>} />

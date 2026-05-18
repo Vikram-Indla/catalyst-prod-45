@@ -566,12 +566,14 @@ export function CatalystViewBase({
               cv-drawer-body (overflowY:auto) is now the scroll container.
               Panel/modal modes keep overflow-y:auto for independent column scroll. */}
           <div className="cv-drawer-left" data-sdm-scope style={{
-            flex: 1, padding: '20px 24px 32px 24px',
+            flex: 1, padding: fullPageMode ? '16px 24px 32px 24px' : '20px 24px 32px 24px',
             borderRight: '1px solid var(--ds-border-subtle, #EBECF0)', minWidth: 0, minHeight: 0,
-            // fullPageMode: cap field rows at ~780px (matches modal left-panel width
-            // at 1100px total minus ~320px sidebar). Without this, fields like
-            // Priority and Severity stretch to fill the full viewport width.
-            ...(fullPageMode ? { maxWidth: 780 } : { overflowY: 'auto' }),
+            // jira-compare 2026-05-19 JC-1/JC-4: removed maxWidth 780px constraint (fullPageMode)
+            // to allow left panel to flex to full available width, matching Jira's panel layout.
+            // Restored padding in fullPageMode (16px 24px 32px 24px) to provide breathing room
+            // and prevent squashed content appearance. Padding provides internal gutter while
+            // maintaining flex layout.
+            ...(fullPageMode ? {} : { overflowY: 'auto' }),
           }}>
             {isLoading ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -611,7 +613,7 @@ export function CatalystViewBase({
           <div className="cv-drawer-sidebar" style={{
             width: rightPanelWidth, minWidth: 220, maxWidth: 600,
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', overflowX: 'hidden',
-            display: 'flex', flexDirection: 'column', padding: '16px 16px 32px 16px',
+            display: 'flex', flexDirection: 'column', padding: fullPageMode ? '16px 16px 32px 16px' : '16px 16px 32px 16px',
             minHeight: 0,
             ...(fullPageMode
               ? { position: 'sticky', top: 0, maxHeight: '100%', overflowY: 'auto', alignSelf: 'flex-start' }
@@ -643,7 +645,7 @@ export function CatalystViewBase({
     // top bar (modal header overlap). The modal dialog owns its own sizing; our wrapper just
     // needs flex layout. Each column (left/right) independently scrolls via overflowY:'auto'.
     return (
-      <Modal onClose={onClose} width={1280} shouldScrollInViewport={false}>
+      <Modal onClose={onClose} width={1600} shouldScrollInViewport={false}>
         <div data-cv-scope style={{
           minHeight: 600, display: 'flex', flexDirection: 'column',
         }}>
