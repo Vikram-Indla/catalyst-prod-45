@@ -184,9 +184,9 @@ export function ReleaseDrawer({ release, onClose }: Props) {
               <SourceBadge source={release.source || 'catalyst'} />
             </div>
             <div className="flex items-center gap-1.5">
-              <button className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,#94A3B8)] hover:bg-[var(--ds-surface-sunken,#F1F5F9)]"><Download size={14} /></button>
-              <button className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,#94A3B8)] hover:bg-[var(--ds-surface-sunken,#F1F5F9)]"><RefreshCw size={14} /></button>
-              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,#94A3B8)] hover:bg-[var(--ds-surface-sunken,#F1F5F9)]"><XIcon size={14} /></button>
+              <button className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] hover:bg-[var(--ds-surface-sunken,#F1F5F9)]"><Download size={14} /></button>
+              <button className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] hover:bg-[var(--ds-surface-sunken,#F1F5F9)]"><RefreshCw size={14} /></button>
+              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] hover:bg-[var(--ds-surface-sunken,#F1F5F9)]"><XIcon size={14} /></button>
             </div>
           </div>
           <h2 className="text-[18px] font-extrabold mb-2" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>{release.name}</h2>
@@ -455,7 +455,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
         </div>
 
         {notesState === 'idle' && (
-          <div className="flex items-center gap-2 py-6 justify-center text-[var(--ds-text-subtlest,#94A3B8)] text-[13px]">
+          <div className="flex items-center gap-2 py-6 justify-center text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] text-[13px]">
             <FileText size={16} />
             <span>Click Generate to create AI release notes.</span>
           </div>
@@ -510,7 +510,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
 
 // ── Changes Tab ────────────────────────────────────────
 function ChangesTab({ changes }: { changes: any[] }) {
-  if (changes.length === 0) return <div className="text-center py-10 text-[var(--ds-text-subtlest,#94A3B8)] text-[13px]">No changes linked to this release</div>;
+  if (changes.length === 0) return <div className="text-center py-10 text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] text-[13px]">No changes linked to this release</div>;
   return (
     <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
       <thead>
@@ -569,7 +569,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
     <div>
       {testCycles.length === 0 ? (
         <div className="text-center py-10">
-          <p className="text-[var(--ds-text-subtlest,#94A3B8)] text-[13px] mb-3">No test cycles linked</p>
+          <p className="text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] text-[13px] mb-3">No test cycles linked</p>
           <button onClick={openLinkModal} className="h-9 px-4 rounded-md border border-[var(--ds-text-brand,#2563EB)] text-[var(--ds-text-brand,#2563EB)] text-[13px] font-semibold hover:bg-[var(--ds-background-selected,#EFF6FF)]">Link Test Cycle</button>
         </div>
       ) : (
@@ -588,7 +588,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
               <div key={tc.id} className="border border-[rgba(15,23,42,0.12)] rounded-lg p-4 group relative">
                 <button
                   onClick={() => handleUnlink(tc.test_cycle_id)}
-                  className="absolute top-3 right-3 w-6 h-6 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-[var(--ds-text-subtlest,#94A3B8)] hover:text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] hover:bg-[var(--ds-background-danger,#FEF2F2)] transition-opacity"
+                  className="absolute top-3 right-3 w-6 h-6 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] hover:text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] hover:bg-[var(--ds-background-danger,#FEF2F2)] transition-opacity"
                   title="Unlink test cycle"
                 >
                   <XIcon size={14} />
@@ -620,7 +620,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
           </DialogHeader>
           <div className="max-h-[320px] overflow-y-auto space-y-0">
             {availableCycles.length === 0 && (
-              <p className="text-center py-6 text-[var(--ds-text-subtlest,#94A3B8)] text-[13px]">No test cycles found for this project</p>
+              <p className="text-center py-6 text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] text-[13px]">No test cycles found for this project</p>
             )}
             {availableCycles.map((cycle: any) => {
               const alreadyLinked = linkedCycleIds.has(cycle.id);
@@ -638,7 +638,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
                     <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]">{cycle.total_cases ?? 0} cases</span>
                   </div>
                   <StatusLozenge status={cycle.status || 'not_started'} />
-                  {alreadyLinked && <span className="text-[11px] text-[var(--ds-text-subtlest,#94A3B8)] font-medium">Linked</span>}
+                  {alreadyLinked && <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] font-medium">Linked</span>}
                 </button>
               );
             })}
@@ -668,7 +668,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
   const approveSignoff = useApproveSignoff();
   const rejectSignoff = useRejectSignoff();
 
-  if (isLoading) return <div className="text-center py-6 text-[var(--ds-text-subtlest,#94A3B8)] text-[13px]">Loading...</div>;
+  if (isLoading) return <div className="text-center py-6 text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] text-[13px]">Loading...</div>;
 
   const stages = [
     { stage: 'QA', key: 'in_qa' },
@@ -690,7 +690,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 ${
               status === 'approved' ? 'bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white' :
               status === 'pending' ? 'bg-[#0C66E4] text-white' :
-              'bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtlest,#94A3B8)]'
+              'bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]'
             }`}>
               {status === 'approved' ? '✓' : status === 'pending' ? i + 1 : '🔒'}
             </div>
@@ -716,7 +716,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
           </div>
         );
       })}
-      {signoffs.length === 0 && <div className="text-center py-6 text-[var(--ds-text-subtlest,#94A3B8)] text-[13px]">No sign-offs configured</div>}
+      {signoffs.length === 0 && <div className="text-center py-6 text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] text-[13px]">No sign-offs configured</div>}
     </div>
   );
 }

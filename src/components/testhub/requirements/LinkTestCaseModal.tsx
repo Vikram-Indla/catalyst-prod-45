@@ -127,7 +127,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
         {/* Search */}
         <div style={{ padding: '16px 24px', borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
           <div style={{ position: 'relative', marginBottom: 12 }}>
-            <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--cp-text-muted, #94A3B8)' }} />
+            <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }} />
             <input type="text" placeholder="Search test cases..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
               style={{ width: '100%', height: 40, padding: '0 14px 0 44px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
           </div>
@@ -140,9 +140,9 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
         {/* List */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '8px 24px' }}>
           {isLoading ? (
-            <div style={{ textAlign: 'center', padding: 40, color: 'var(--cp-text-muted, #94A3B8)' }}>Loading test cases...</div>
+            <div style={{ textAlign: 'center', padding: 40, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>Loading test cases...</div>
           ) : filtered.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: 40, color: 'var(--cp-text-muted, #94A3B8)' }}>No test cases available</div>
+            <div style={{ textAlign: 'center', padding: 40, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>No test cases available</div>
           ) : (
             filtered.map(tc => {
               const isSelected = selectedIds.has(tc.id);

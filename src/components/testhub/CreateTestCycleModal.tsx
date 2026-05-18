@@ -289,7 +289,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                       );
                     })()}
                   </span>
-                  <ChevronDown size={16} style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+                  <ChevronDown size={16} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
                 </button>
                 {statusDropdownOpen && (
                   <div style={{

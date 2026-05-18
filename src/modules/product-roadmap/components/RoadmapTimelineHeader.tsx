@@ -32,7 +32,7 @@ export function RoadmapTimelineHeader({ periods, zoom }: RoadmapTimelineHeaderPr
               {period.label}
             </div>
             {period.sublabel && (
-              <div style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #94A3B8)' }}>{period.sublabel}</div>
+              <div style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>{period.sublabel}</div>
             )}
           </div>
         );

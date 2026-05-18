@@ -12,7 +12,7 @@ import { fetchItemDetail, calcDaysSitting } from '@/lib/r360/fetchItemDetail';
 export const INK1 = 'var(--ds-text, #0F172A)';
 export const INK2 = 'var(--ds-text-subtle, #334155)';
 export const INK4 = 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
-export const MUTED = 'var(--ds-text-subtlest, #94A3B8)';
+export const MUTED = 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))';
 export const SUCCESS = 'var(--ds-text-success, var(--cp-success, #16A34A))';
 export const WARNING = 'var(--ds-text-warning, var(--cp-warning, #D97706))';
 export const DANGER = 'var(--ds-text-danger, var(--cp-danger, #DC2626))';

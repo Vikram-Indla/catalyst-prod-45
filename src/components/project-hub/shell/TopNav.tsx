@@ -108,12 +108,12 @@ export function TopNav({ onCreateClick }: TopNavProps) {
             minWidth: 180,
           }}
         >
-          <Search size={14} className="text-[var(--ds-text-subtlest,#94A3B8)] dark:text-[#7D7D7D]" strokeWidth={2} />
+          <Search size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-[#7D7D7D]" strokeWidth={2} />
           <span className="text-[var(--fg-4)] dark:text-[#7D7D7D]" style={{ fontSize: 12, userSelect: 'none', whiteSpace: 'nowrap' }}>
             Search anything...
           </span>
           <kbd
-            className="bg-white dark:bg-transparent border border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text-subtlest,#94A3B8)] dark:text-[#7D7D7D]"
+            className="bg-white dark:bg-transparent border border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-[#7D7D7D]"
             style={{
               fontSize: 10,
               fontWeight: 500,

@@ -398,7 +398,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                       height: 20, padding: '0 6px', borderRadius: 4,
                       fontSize: '11px', fontWeight: 700,
                       background: QUARTER_BADGE[quarter]?.bg || 'var(--ds-border, var(--cp-border, #E2E8F0))',
-                      color: QUARTER_BADGE[quarter]?.text || 'var(--ds-text-subtlest, #94A3B8)',
+                      color: QUARTER_BADGE[quarter]?.text || 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
                     }}>{quarter} 2026</span>
                   ) : <span style={{ fontSize: '13px', color: dk.t3 }}>—</span>
                 )

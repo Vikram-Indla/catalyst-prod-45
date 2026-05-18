@@ -459,7 +459,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                 <Star
                   size={14}
                   fill={isStarred ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : 'none'}
-                  stroke={isStarred ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : 'var(--ds-text-subtlest, #94A3B8)'}
+                  stroke={isStarred ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))'}
                   style={{ transition: 'all 150ms' }}
                 />
               </button>
@@ -501,7 +501,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             {story.feature?.epic ? (
               <ParentEpicChip epicId={story.feature.epic.id} epicKey={story.feature.epic.epic_key} epicName={story.feature.epic.name} />
             ) : (
-              <span style={{ color: 'var(--ds-text-subtlest, #94A3B8)', fontSize: 12 }}>—</span>
+              <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontSize: 12 }}>—</span>
             )}
           </td>
         );
@@ -599,7 +599,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       disableSort: true,
       header: () => (
         <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Star size={13} stroke="var(--ds-text-subtlest, #94A3B8)" fill="none" />
+          <Star size={13} stroke="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" fill="none" />
         </span>
       ),
       cell: ({ row }) => {
@@ -617,7 +617,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             <Star
               size={14}
               fill={isStarred ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : 'none'}
-              stroke={isStarred ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : 'var(--ds-text-subtlest, #94A3B8)'}
+              stroke={isStarred ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))'}
               style={{ transition: 'all 150ms' }}
             />
           </button>
@@ -679,7 +679,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         const ep = row.original.feature?.epic;
         return ep
           ? <ParentEpicChip epicId={ep.id} epicKey={ep.epic_key} epicName={ep.name} />
-          : <span style={{ color: 'var(--ds-text-subtlest, #94A3B8)', fontSize: 12 }}>—</span>;
+          : <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontSize: 12 }}>—</span>;
       },
     },
     {
@@ -786,9 +786,9 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
 
   const v2EmptyState = (
     <div className="flex flex-col items-center justify-center" style={{ padding: '64px 0' }}>
-      <BookOpen className="h-12 w-12 mb-4" style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+      <BookOpen className="h-12 w-12 mb-4" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
       <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #0F172A)', marginBottom: 4 }}>No stories found</p>
-      <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #94A3B8)', marginBottom: 16 }}>Try adjusting your filters or search</p>
+      <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', marginBottom: 16 }}>Try adjusting your filters or search</p>
     </div>
   );
 
@@ -825,7 +825,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             }, [])
             .map((p, i) =>
               p === 'ellipsis' ? (
-                <span key={`e${i}`} style={{ padding: '0 4px', color: 'var(--ds-text-subtlest, #94A3B8)' }}>…</span>
+                <span key={`e${i}`} style={{ padding: '0 4px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>…</span>
               ) : (
                 <button
                   key={p}
@@ -898,9 +898,9 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     if (total === 0) {
       return (
         <div className="flex flex-col items-center justify-center" style={{ padding: '64px 0' }}>
-          <BookOpen className="h-12 w-12 mb-4" style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+          <BookOpen className="h-12 w-12 mb-4" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
           <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #0F172A)', marginBottom: 4 }}>No stories found</p>
-          <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #94A3B8)', marginBottom: 16 }}>Try adjusting your filters or search</p>
+          <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', marginBottom: 16 }}>Try adjusting your filters or search</p>
         </div>
       );
     }
@@ -930,7 +930,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                     return (
                       <th key={c.key} style={{ width: columnWidths.star, overflow: 'visible', textOverflow: 'clip' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <Star size={13} stroke="var(--ds-text-subtlest, #94A3B8)" fill="none" />
+                          <Star size={13} stroke="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" fill="none" />
                         </div>
                       </th>
                     );
@@ -1068,7 +1068,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                 }, [])
                 .map((p, i) =>
                   p === 'ellipsis' ? (
-                    <span key={`e${i}`} style={{ padding: '0 4px', color: 'var(--ds-text-subtlest, #94A3B8)' }}>…</span>
+                    <span key={`e${i}`} style={{ padding: '0 4px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>…</span>
                   ) : (
                     <button
                       key={p}
@@ -1117,7 +1117,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       <div className="flex items-center gap-3 px-6 py-2.5" style={{ borderColor: tk.border }}>
         {/* Search */}
         <div className="relative w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

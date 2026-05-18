@@ -112,7 +112,7 @@ const statusConfigLight: Record<string, { icon: any; color: string; bg: string; 
   passed: { icon: CheckCircle2, color: 'var(--quality-high, #059669)', bg: '#ECFDF5', label: 'Passed' },
   failed: { icon: XCircle, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', label: 'Failed' },
   blocked: { icon: AlertTriangle, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', label: 'Blocked' },
-  skipped: { icon: SkipForward, color: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F8FAFC)', label: 'Skipped' },
+  skipped: { icon: SkipForward, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--ds-surface-sunken, #F8FAFC)', label: 'Skipped' },
 };
 const statusConfigDark: Record<string, { icon: any; color: string; bg: string; label: string }> = {
   not_run: { icon: Clock, color: 'var(--ds-text-subtlest, #878787)', bg: 'var(--ds-surface-raised, #1A1A1A)', label: 'Not Run' },

@@ -336,7 +336,7 @@ export default function SharedStepsPage() {
           </div>
 
           {/* Sidebar Footer */}
-          <div style={{ padding: '12px 16px', borderTop: `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}`, fontSize: 12, color: 'var(--cp-text-muted, #94A3B8)' }}>
+          <div style={{ padding: '12px 16px', borderTop: `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}`, fontSize: 12, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>
             {categories.length} categories
           </div>
         </div>
@@ -349,7 +349,7 @@ export default function SharedStepsPage() {
             display: 'flex', alignItems: 'center', gap: 12,
           }}>
             <div style={{ position: 'relative', flex: 1, maxWidth: 400 }}>
-              <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--cp-text-muted, #94A3B8)' }} />
+              <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }} />
               <input
                 type="text" placeholder="Search shared steps..." value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -432,7 +432,7 @@ export default function SharedStepsPage() {
                           />
                           <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: cat.color, flexShrink: 0 }} />
                           <span style={{ flex: 1 }}>{cat.name}</span>
-                          <span style={{ fontSize: 12, color: 'var(--cp-text-muted, #94A3B8)' }}>{cat.step_count || 0}</span>
+                          <span style={{ fontSize: 12, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>{cat.step_count || 0}</span>
                         </label>
                       );
                     })}
@@ -553,7 +553,7 @@ export default function SharedStepsPage() {
             ) : sharedSteps.length === 0 ? (
               <div style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
-                justifyContent: 'center', height: '100%', color: 'var(--cp-text-muted, #94A3B8)',
+                justifyContent: 'center', height: '100%', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))',
               }}>
                 <Library size={48} style={{ marginBottom: 16, opacity: 0.5 }} />
                 <p style={{ fontSize: 16, fontWeight: 500, margin: '0 0 8px', fontFamily: 'var(--cp-font-body)' }}>
@@ -607,7 +607,7 @@ export default function SharedStepsPage() {
                                 {step.category.name}
                               </span>
                             ) : (
-                              <span style={{ color: 'var(--cp-text-muted, #94A3B8)', fontSize: 13 }}>—</span>
+                              <span style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', fontSize: 13 }}>—</span>
                             )}
                           </td>
                           <td style={{ padding: '12px 16px', textAlign: 'center' }}>
@@ -616,7 +616,7 @@ export default function SharedStepsPage() {
                                 {variables.length}
                               </span>
                             ) : (
-                              <span style={{ color: 'var(--cp-text-muted, #94A3B8)', fontSize: 13 }}>—</span>
+                              <span style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', fontSize: 13 }}>—</span>
                             )}
                           </td>
                           <td style={{ padding: '12px 16px', textAlign: 'center' }}>
@@ -753,7 +753,7 @@ function CategorySidebarItem({ label, icon, count, isSelected, selectedColor, on
       </span>
       <span style={{
         fontSize: 12, fontWeight: 500, padding: '2px 8px', borderRadius: 12, flexShrink: 0,
-        color: isSelected ? selectedColor : ('var(--cp-text-muted, #94A3B8)'),
+        color: isSelected ? selectedColor : ('var(--cp-text-muted, var(--cp-ink-4, #94A3B8))'),
         backgroundColor: isSelected ? `${selectedColor}20` : ('var(--cp-bg-sunken, #F1F5F9)'),
       }}>
         {count}
@@ -818,7 +818,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
             onClick={(e) => { e.stopPropagation(); setMenuOpen(!menuOpen); }}
             style={{
               width: 32, height: 32, padding: 0, border: 'none', borderRadius: 6,
-              backgroundColor: 'transparent', color: 'var(--cp-text-muted, #94A3B8)', cursor: 'pointer',
+              backgroundColor: 'transparent', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >

@@ -147,7 +147,7 @@ export default function SettingsPage() {
   const borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))';
   const textPrimary = 'var(--cp-text-primary, #0F172A)';
   const textSecondary = 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))';
-  const textMuted = 'var(--cp-text-muted, #94A3B8)';
+  const textMuted = 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))';
 
   if (isLoading) {
     return (

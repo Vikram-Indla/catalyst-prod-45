@@ -134,8 +134,8 @@ function ChangedFieldsDetail({ fields }: { fields: Record<string, { from?: strin
           {entries.map(([field, val]) => (
             <div key={field} style={{ fontSize: 11, color: 'var(--cp-t2, #475569)', display: 'flex', gap: 4, alignItems: 'baseline' }}>
               <span style={{ fontWeight: 600, color: 'var(--cp-t1, #0F172A)', minWidth: 60 }}>{field}:</span>
-              <span style={{ textDecoration: 'line-through', color: 'var(--cp-t3, #94A3B8)' }}>{val.from || '—'}</span>
-              <span style={{ color: 'var(--cp-t3, #94A3B8)' }}>→</span>
+              <span style={{ textDecoration: 'line-through', color: 'var(--cp-t3, var(--cp-ink-4, #94A3B8))' }}>{val.from || '—'}</span>
+              <span style={{ color: 'var(--cp-t3, var(--cp-ink-4, #94A3B8))' }}>→</span>
               <span style={{ fontWeight: 500 }}>{val.to || '—'}</span>
             </div>
           ))}
@@ -185,7 +185,7 @@ function SummaryStats({ items }: { items: SyncActivity[] }) {
           }}>
             {p.value}
           </span>
-          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-t3, #94A3B8)' }}>{p.label}</span>
+          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-t3, var(--cp-ink-4, #94A3B8))' }}>{p.label}</span>
         </div>
       ))}
     </div>
@@ -302,7 +302,7 @@ export default function JiraActivitySyncPage() {
       }}>
         {/* Search */}
         <div style={{ position: 'relative', width: 260 }}>
-          <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', display: 'inline-flex', color: 'var(--cp-t3, #94A3B8)' }}><SearchIcon label="" size="small" /></span>
+          <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', display: 'inline-flex', color: 'var(--cp-t3, var(--cp-ink-4, #94A3B8))' }}><SearchIcon label="" size="small" /></span>
           <Textfield
             placeholder="Search key, title, project…"
             value={search}
@@ -337,13 +337,13 @@ export default function JiraActivitySyncPage() {
         {isLoading ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200, gap: 8 }}>
             <Spinner size="medium" />
-            <span style={{ fontSize: 13, color: 'var(--cp-t3, #94A3B8)' }}>Loading sync activity…</span>
+            <span style={{ fontSize: 13, color: 'var(--cp-t3, var(--cp-ink-4, #94A3B8))' }}>Loading sync activity…</span>
           </div>
         ) : filtered.length === 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 300, gap: 12 }}>
             <span style={{ display: 'inline-flex', color: 'var(--cp-t4, #CBD5E1)' }}><RefreshIcon label="" size="large" /></span>
             <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--cp-t2, #475569)' }}>No sync activity yet</span>
-            <span style={{ fontSize: 13, color: 'var(--cp-t3, #94A3B8)', maxWidth: 360, textAlign: 'center' }}>
+            <span style={{ fontSize: 13, color: 'var(--cp-t3, var(--cp-ink-4, #94A3B8))', maxWidth: 360, textAlign: 'center' }}>
               Sync events between Catalyst and Jira will appear here. Activity is retained for 30 days.
             </span>
           </div>
@@ -354,7 +354,7 @@ export default function JiraActivitySyncPage() {
                   {columns.map(col => (
                     <th key={col.key} style={{
                       padding: '10px 12px', textAlign: 'left', fontSize: 11, fontWeight: 600,
-                      color: 'var(--cp-t3, #94A3B8)', textTransform: 'uppercase', letterSpacing: '0.05em',
+                      color: 'var(--cp-t3, var(--cp-ink-4, #94A3B8))', textTransform: 'uppercase', letterSpacing: '0.05em',
                       background: 'var(--cp-hover, #F8FAFC)',
                       width: typeof col.width === 'number' ? col.width : undefined,
                       whiteSpace: 'nowrap',
@@ -409,7 +409,7 @@ export default function JiraActivitySyncPage() {
                           {item.work_item_title || '—'}
                         </span>
                         {item.change_summary && (
-                          <span style={{ fontSize: 11, color: 'var(--cp-t3, #94A3B8)' }}>
+                          <span style={{ fontSize: 11, color: 'var(--cp-t3, var(--cp-ink-4, #94A3B8))' }}>
                             {item.change_summary}
                           </span>
                         )}
@@ -468,7 +468,7 @@ export default function JiraActivitySyncPage() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <SyncStatusPill status={item.sync_status} />
                         {item.attempt_count > 1 && (
-                          <span style={{ fontSize: 10, color: 'var(--cp-t3, #94A3B8)', fontWeight: 600 }}>
+                          <span style={{ fontSize: 10, color: 'var(--cp-t3, var(--cp-ink-4, #94A3B8))', fontWeight: 600 }}>
                             ×{item.attempt_count}
                           </span>
                         )}
@@ -498,7 +498,7 @@ export default function JiraActivitySyncPage() {
       <div style={{
         padding: '8px 24px', borderTop: '1px solid var(--cp-bd, var(--cp-border, #E2E8F0))',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        fontSize: 12, color: 'var(--cp-t3, #94A3B8)',
+        fontSize: 12, color: 'var(--cp-t3, var(--cp-ink-4, #94A3B8))',
       }}>
         <span>
           Showing <strong style={{ color: 'var(--cp-t1, #0F172A)', fontWeight: 600 }}>{filtered.length}</strong> of{' '}

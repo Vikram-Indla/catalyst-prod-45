@@ -104,7 +104,7 @@ export default function TriageQueuePage() {
                           </div>
                         </div>
                       ) : (
-                        <span className="text-[var(--ds-text-subtlest,#94A3B8)] text-[12px]">No suggestion</span>
+                        <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] text-[12px]">No suggestion</span>
                       )}
                     </td>
                     <td className="px-3 py-2">
@@ -119,7 +119,7 @@ export default function TriageQueuePage() {
                           <TriageLinkDropdown releases={releases} onLink={(releaseId) => linkChangeToRelease(c.id, releaseId)} />
                         )}
                         <button onClick={() => ignoreTriageItem(c.id)}
-                          className="h-7 px-3 rounded text-[11px] font-medium border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,#2E2E2E)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] text-[var(--ds-text-subtlest,#94A3B8)] hover:text-[var(--ds-text-subtle,#475569)]">
+                          className="h-7 px-3 rounded text-[11px] font-medium border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,#2E2E2E)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] hover:text-[var(--ds-text-subtle,#475569)]">
                           Ignore
                         </button>
                       </div>
@@ -148,7 +148,7 @@ function TriageLinkDropdown({ releases, onLink }: { releases: any[]; onLink: (re
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div className="absolute top-full right-0 mt-1 w-48 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-md shadow-lg border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,#2E2E2E)] z-50 py-1 max-h-48 overflow-y-auto">
             {releases.length === 0 ? (
-              <div className="px-3 py-2 text-[12px] text-[var(--ds-text-subtlest,#94A3B8)]">No releases available</div>
+              <div className="px-3 py-2 text-[12px] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]">No releases available</div>
             ) : releases.map((r: any) => (
               <button key={r.id} onClick={() => { onLink(r.id); setOpen(false); }}
                 className="w-full px-3 h-8 text-left text-[12px] font-medium hover:bg-[var(--ds-surface-sunken,#F8FAFC)] text-[var(--ds-text-subtle,#475569)]">{r.name}</button>

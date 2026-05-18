@@ -120,7 +120,7 @@ export function ResizableTableHeader({
             ? (sortDirection === 'asc'
               ? <ChevronUp size={12} style={{ color: 'var(--ds-text-brand, #2563EB)', flexShrink: 0 }} />
               : <ChevronDown size={12} style={{ color: 'var(--ds-text-brand, #2563EB)', flexShrink: 0 }} />)
-            : <ChevronUp size={12} className="opacity-0 group-hover/thead:opacity-30 flex-shrink-0" style={{ color: 'var(--ds-text-subtlest, #94A3B8)', transition: 'opacity 120ms' }} />
+            : <ChevronUp size={12} className="opacity-0 group-hover/thead:opacity-30 flex-shrink-0" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', transition: 'opacity 120ms' }} />
         )}
       </div>
 

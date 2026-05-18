@@ -302,7 +302,7 @@ export default function ReqAssistLibrary() {
             padding: '80px 0', background: 'var(--cp-bg-elevated, #FFFFFF)',
             border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`, borderRadius: 8,
           }}>
-            <FileText size={32} color="var(--ds-text-subtlest, #94A3B8)" style={{ marginBottom: 12 }} />
+            <FileText size={32} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" style={{ marginBottom: 12 }} />
             <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 6px', fontFamily: 'var(--cp-font-heading)' }}>No documents yet</p>
             <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '0 0 20px', fontFamily: 'var(--cp-font-body)' }}>Import from Jira or generate a BRD from text to get started.</p>
             <div style={{ display: 'flex', gap: 8 }}>
@@ -345,7 +345,7 @@ export default function ReqAssistLibrary() {
                 fontFamily: 'var(--cp-font-body)',
               }}>
                 Showing {documents?.length ?? 0} of {totalCount} documents
-                <span style={{ color: 'var(--cp-text-muted, #94A3B8)' }}>·</span>
+                <span style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>·</span>
                 Filtered by: <strong style={{ color: 'var(--cp-text-secondary, #334155)', fontWeight: 600 }}>{tab !== 'all' ? tab.charAt(0).toUpperCase() + tab.slice(1) : search}</strong>
                 <button
                   onClick={() => { setSearch(''); setTab('all'); }}
@@ -423,7 +423,7 @@ export default function ReqAssistLibrary() {
                               {/* Parent line */}
                               <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3.5 2L6.5 5L3.5 8" stroke="var(--ds-text-disabled, #CBD5E1)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 500, color: 'var(--cp-text-muted, #94A3B8)' }}>
+                                <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 500, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>
                                   {parentKeys[doc.id]}
                                 </span>
                               </div>
@@ -491,7 +491,7 @@ export default function ReqAssistLibrary() {
                               <span style={{
                                 display: 'inline-flex', alignItems: 'center', padding: '1px 6px',
                                 background: 'var(--cp-bg-sunken, #F1F5F9)', borderRadius: 4,
-                                fontSize: 11, color: 'var(--cp-text-muted, #94A3B8)', fontFamily: 'var(--cp-font-body)',
+                                fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', fontFamily: 'var(--cp-font-body)',
                               }}>Uncategorised</span>
                             );
                           })()}
@@ -563,7 +563,7 @@ export default function ReqAssistLibrary() {
                 ) : (
                   <tr>
                     <td colSpan={8} style={{ padding: '48px 0', textAlign: 'center' }}>
-                      <FileSearch size={24} color="var(--ds-text-subtlest, #94A3B8)" style={{ margin: '0 auto 8px', display: 'block' }} />
+                      <FileSearch size={24} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" style={{ margin: '0 auto 8px', display: 'block' }} />
                       <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '0 0 8px', fontFamily: 'var(--cp-font-body)' }}>
                         No documents match "{search || 'your search term'}"
                       </p>
@@ -762,9 +762,9 @@ function PdfUploadCell({ brdId: initialBrdId, jiraKey }: { brdId: string | null;
         }}
       >
         {uploading ? (
-          <Loader2 size={14} color="var(--ds-text-subtlest, #94A3B8)" style={{ animation: 'ra-pulse 1s linear infinite' }} />
+          <Loader2 size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" style={{ animation: 'ra-pulse 1s linear infinite' }} />
         ) : (
-          <FileUp size={14} color="var(--ds-text-subtlest, #94A3B8)" />
+          <FileUp size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" />
         )}
       </button>
       <input
@@ -937,7 +937,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         display: 'inline-flex', alignItems: 'center',
         height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
         borderRadius: 6, border: 'none', cursor: 'not-allowed',
-        background: 'var(--cp-border, var(--cp-border, #E2E8F0))', color: 'var(--cp-text-muted, #94A3B8)',
+        background: 'var(--cp-border, var(--cp-border, #E2E8F0))', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))',
         fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
       }}>
         Generate

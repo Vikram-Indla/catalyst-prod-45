@@ -47,7 +47,7 @@ const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-
 const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
 
 const PRI_DOT: Record<string, string> = {
-  critical: 'var(--ds-text-danger, #EF4444)', highest: 'var(--ds-text-danger, #EF4444)', high: 'var(--ds-text-warning, var(--cp-warning, #D97706))', medium: 'var(--ds-text-warning, var(--cp-warning, #D97706))', low: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', lowest: 'var(--ds-text-subtlest, #94A3B8)',
+  critical: 'var(--ds-text-danger, #EF4444)', highest: 'var(--ds-text-danger, #EF4444)', high: 'var(--ds-text-warning, var(--cp-warning, #D97706))', medium: 'var(--ds-text-warning, var(--cp-warning, #D97706))', low: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', lowest: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
 };
 
 const COLS = [

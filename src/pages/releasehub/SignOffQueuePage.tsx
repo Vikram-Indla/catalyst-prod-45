@@ -65,7 +65,7 @@ export default function SignOffQueuePage() {
       {/* Toolbar */}
       <div className="flex items-center gap-3 mb-4">
         <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-muted, #94A3B8)' }} />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }} />
           <input type="text" placeholder="Search changes or approvers..." value={search} onChange={e => setSearch(e.target.value)}
             className="h-9 w-72 pl-9 pr-3 rounded-[4px] text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,#2563EB)]/20"
             style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', fontFamily: RH.fontBody, background: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
@@ -114,7 +114,7 @@ export default function SignOffQueuePage() {
                             className="h-7 px-2.5 rounded-[4px] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] text-[11px] font-bold hover:bg-[var(--ds-background-danger,#FEF2F2)]" style={{ border: '0.75px solid #FCA5A5' }}>Reject</button>
                         </div>
                       ) : isPending ? (
-                        <span className="text-[11px] text-[var(--ds-text-subtlest,#94A3B8)]" title="Requires previous gate approval">Locked</span>
+                        <span className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]" title="Requires previous gate approval">Locked</span>
                       ) : null}
                     </td>
                   </tr>

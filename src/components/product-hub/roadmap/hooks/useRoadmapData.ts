@@ -51,7 +51,7 @@ function splitTitle(title: string): { titleAr: string; titleEn: string } {
 }
 
 function ownerColorFromName(name: string): string {
-  if (!name || name === 'Unassigned') return 'var(--ds-text-subtlest, #94A3B8)';
+  if (!name || name === 'Unassigned') return 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))';
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0;
   return OWNER_PALETTE[Math.abs(hash) % OWNER_PALETTE.length];

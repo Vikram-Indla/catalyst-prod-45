@@ -57,7 +57,7 @@ interface RoadmapListRowProps {
 export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, isDragging, ownerName }: RoadmapListRowProps) {
   const { isDark } = useTheme();
   const typeKey = (item as any).initiative_type_key || 'project';
-  const typeColor = TYPE_COLORS[typeKey] || 'var(--ds-text-subtlest, #94A3B8)';
+  const typeColor = TYPE_COLORS[typeKey] || 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))';
   const isCritical = item.priority_tier === 'P0' || item.priority_tier === 'critical';
 
   const name = ownerName || null;
@@ -135,7 +135,7 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
           className="flex-shrink-0 flex items-center justify-center rounded-full"
           style={{ width: 28, height: 28, background: 'var(--bd-default, var(--cp-border, #E2E8F0))' }}
         >
-          <User className="w-3.5 h-3.5" style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+          <User className="w-3.5 h-3.5" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
         </div>
       )}
     </div>

@@ -188,7 +188,7 @@ export function CatalystTable({
       <div className="fy-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 0', border: '0.555556px solid var(--cp-border, #E2E8F0)', borderRadius: 8, background: 'var(--ds-text-inverse, #FFFFFF)' }}>
         <span style={{ fontSize: 24, marginBottom: 12 }}>📋</span>
         <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #0F172A)', marginBottom: 4 }}>No work items found</p>
-        <p style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #94A3B8)' }}>Try adjusting your filters or search</p>
+        <p style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>Try adjusting your filters or search</p>
       </div>
     );
   }
@@ -264,7 +264,7 @@ export function CatalystTable({
                       <JiraIssueTypeIcon type={item.issueType} size={16} />
                       <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>{item.key}</span>
                       {(item.attachmentCount ?? 0) > 0 && (
-                        <Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, #94A3B8)', transform: 'rotate(-45deg)' }} />
+                        <Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', transform: 'rotate(-45deg)' }} />
                       )}
                       <div style={{ flex: 1 }} />
                       <button
@@ -361,7 +361,7 @@ export function CatalystTable({
           <td key={colKey} style={{ width: columnWidths.key }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               {(item.attachmentCount ?? 0) > 0 && (
-                <span title="Attachments"><Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, #94A3B8)', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>
+                <span title="Attachments"><Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>
               )}
               <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>{item.key}</span>
             </div>

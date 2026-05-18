@@ -198,7 +198,7 @@ export function RecipientPicker({ trigger, open, onClose, onSave }: RecipientPic
         <hr style={{ border: 'none', borderTop: '1px solid var(--ds-border-layout, #EBECF0)', margin: 0 }} />
 
         <DialogFooter className="flex items-center justify-between">
-          <span className="text-xs text-[var(--ds-text-subtlest,#94A3B8)]">
+          <span className="text-xs text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]">
             {enabledCount} of {RECIPIENT_DEFS.length} recipient types enabled
           </span>
           <div className="flex gap-2">

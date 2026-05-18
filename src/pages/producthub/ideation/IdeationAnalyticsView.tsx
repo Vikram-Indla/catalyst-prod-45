@@ -15,7 +15,7 @@ interface Props {
 
 // Funnel status order & colors
 const FUNNEL_ORDER: { key: string; label: string; color: string }[] = [
-  { key: 'draft', label: 'Draft', color: 'var(--ds-text-subtlest, #94A3B8)' },
+  { key: 'draft', label: 'Draft', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' },
   { key: 'submitted', label: 'Submitted', color: 'var(--ds-text-brand, #2563EB)' },
   { key: 'under_review', label: 'Under Review', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
   { key: 'approved', label: 'Approved', color: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
@@ -23,7 +23,7 @@ const FUNNEL_ORDER: { key: string; label: string; color: string }[] = [
   { key: 'rejected', label: 'Rejected', color: 'var(--ds-text-danger, #EF4444)' },
 ];
 
-const DEPT_COLORS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--ds-text-danger, #EF4444)', 'var(--ds-text-subtlest, #94A3B8)', '#0F766E', '#6366F1', 'var(--ds-text-danger, var(--cp-danger, #DC2626))'];
+const DEPT_COLORS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--ds-text-danger, #EF4444)', 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', '#0F766E', '#6366F1', 'var(--ds-text-danger, var(--cp-danger, #DC2626))'];
 
 function getInitials(name: string): string {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);

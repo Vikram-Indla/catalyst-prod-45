@@ -40,7 +40,7 @@ export function AIIntelligenceButton({
       aria-label={tooltip}
       style={{
         background: disabled
-          ? 'var(--ds-text-subtlest, #94A3B8)'
+          ? 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))'
           : 'var(--ds-text-brand, #2563EB)',
         color: 'var(--ds-surface, #FFFFFF)',
         border: 'none',

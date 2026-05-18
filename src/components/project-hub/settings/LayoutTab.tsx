@@ -113,7 +113,7 @@ function TypeLayoutPanel({ workTypeId, typeName }: { workTypeId: string; typeNam
                         style={{
                           fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 10,
                           background: f.is_visible ? '#DCFCE7' : '#F1F5F9',
-                          color: f.is_visible ? '#15803D' : '#94A3B8',
+                          color: f.is_visible ? '#15803D' : 'var(--cp-ink-4, #94A3B8)',
                         }}
                       >
                         {f.is_visible ? 'Shown' : 'Hidden'}

@@ -289,7 +289,7 @@ export function DeletedItemsTab() {
         {!isLoading && !isError && (!deletedItems || deletedItems.length === 0) ? (
           <div className="flex flex-col items-center justify-center py-10 gap-2">
             <TrashIcon label="" size="large" />
-            <span style={{ fontSize: 13 }} className="text-[var(--ds-text-subtlest,#94A3B8)] dark:text-gray-400">No deleted items archived</span>
+            <span style={{ fontSize: 13 }} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-gray-400">No deleted items archived</span>
           </div>
         ) : (
           <>

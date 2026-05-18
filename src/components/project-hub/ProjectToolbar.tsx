@@ -31,7 +31,7 @@ export function ProjectToolbar({
   const borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))';
   const surfaceBg = 'var(--cp-bg-elevated, #FFFFFF)';
   const textColor = 'var(--cp-text-primary, #0F172A)';
-  const mutedColor = 'var(--cp-text-muted, #94A3B8)';
+  const mutedColor = 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))';
   const subtleColor = 'var(--cp-text-tertiary, #6B778C)';
 
   return (

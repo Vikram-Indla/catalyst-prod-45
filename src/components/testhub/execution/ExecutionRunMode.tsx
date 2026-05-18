@@ -356,7 +356,7 @@ export function ExecutionRunMode({
                 style={{
                   height: 34, padding: '0 14px', border: isDisabled ? `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` : 'none',
                   borderRadius: 6, backgroundColor: isDisabled ? ('var(--cp-bg-page, #F8FAFC)') : colors.bg,
-                  color: isDisabled ? ('var(--cp-text-muted, #94A3B8)') : colors.text, fontSize: 12, fontWeight: 700,
+                  color: isDisabled ? ('var(--cp-text-muted, var(--cp-ink-4, #94A3B8))') : colors.text, fontSize: 12, fontWeight: 700,
                   cursor: isDisabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 5,
                   opacity: isDisabled ? 0.7 : 1, transition: 'all 150ms ease',
                   boxShadow: isDisabled ? 'none' : `0 2px 8px ${colors.bg}40`,

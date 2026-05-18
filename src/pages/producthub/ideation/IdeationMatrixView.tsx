@@ -22,7 +22,7 @@ const STATUS_BUBBLE_COLORS: Record<string, string> = {
   'under_review': 'var(--cp-purple-60, #7C3AED)',  // AI-enriched marker ✓
   'submitted':    'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',  // neutral slate — not primary blue
   'rejected':     'var(--ds-text-danger, var(--cp-danger, #DC2626))',
-  'draft':        'var(--ds-text-subtlest, #94A3B8)',
+  'draft':        'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
 };
 
 function getBubbleColor(status: string): string {
@@ -72,7 +72,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
           { label: 'SIZE', value: 'Votes' },
         ].map(ctrl => (
           <div key={ctrl.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, #94A3B8)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ctrl.label}:</span>
+            <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ctrl.label}:</span>
             <div style={{
               width: '160px', fontSize: '12px', fontWeight: 600, padding: '5px 10px',
               background: 'var(--cp-bg-page, #F8FAFC)', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', borderRadius: '6px',
@@ -110,8 +110,8 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
             ))}
 
             {/* Midlines */}
-            <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 0, borderLeft: '1.5px dashed #94A3B8', zIndex: 1 }} />
-            <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 0, borderTop: '1.5px dashed #94A3B8', zIndex: 1 }} />
+            <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 0, borderLeft: '1.5px dashed var(--cp-ink-4, #94A3B8)', zIndex: 1 }} />
+            <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 0, borderTop: '1.5px dashed var(--cp-ink-4, #94A3B8)', zIndex: 1 }} />
 
             {/* Dots */}
             {dots.map(dot => (
@@ -194,7 +194,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
             <span style={{ fontSize: '12px', color: 'var(--cp-text-secondary, #334155)', fontWeight: 600 }}>{l.label}</span>
           </div>
         ))}
-        <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, #94A3B8)' }}>Dot size = Vote count</span>
+        <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>Dot size = Vote count</span>
       </div>
     </div>
   );

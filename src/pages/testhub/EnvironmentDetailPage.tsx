@@ -58,7 +58,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
   active: { label: 'Active', color: 'var(--quality-high, #059669)', bg: '#ECFDF5' },
   maintenance: { label: 'Maintenance', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB' },
   inactive: { label: 'Inactive', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
-  deprecated: { label: 'Deprecated', color: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F8FAFC)' },
+  deprecated: { label: 'Deprecated', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--ds-surface-sunken, #F8FAFC)' },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
@@ -229,7 +229,7 @@ export default function EnvironmentDetailPage() {
                   <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: 4 }}><Globe size={12} /> Application URL</p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <a href={environment.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: 'var(--ds-text-brand, #2563EB)', textDecoration: 'none' }}>{environment.url}</a>
-                    <ExternalLink size={14} style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+                    <ExternalLink size={14} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
                   </div>
                 </div>
               )}
@@ -246,7 +246,7 @@ export default function EnvironmentDetailPage() {
                 </div>
               )}
               {!environment.url && !environment.api_url && !environment.database_info && (
-                <p style={{ fontSize: 13, color: 'var(--cp-text-muted, #94A3B8)', textAlign: 'center', padding: 20 }}>No connection info configured</p>
+                <p style={{ fontSize: 13, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', textAlign: 'center', padding: 20 }}>No connection info configured</p>
               )}
             </div>
           </div>
@@ -269,7 +269,7 @@ export default function EnvironmentDetailPage() {
               <Key size={18} style={{ color: '#6366F1' }} /> Variables ({variables.length})
             </h3>
             {variables.length === 0 ? (
-              <p style={{ fontSize: 13, color: 'var(--cp-text-muted, #94A3B8)', textAlign: 'center', padding: 20 }}>No environment variables configured</p>
+              <p style={{ fontSize: 13, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', textAlign: 'center', padding: 20 }}>No environment variables configured</p>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {variables.map((v) => (
@@ -304,7 +304,7 @@ export default function EnvironmentDetailPage() {
               <Activity size={18} style={{ color: '#6366F1' }} /> Test Cycles ({linkedCycles.length})
             </h3>
             {linkedCycles.length === 0 ? (
-              <p style={{ fontSize: 13, color: 'var(--cp-text-muted, #94A3B8)', textAlign: 'center', padding: 20 }}>No test cycles using this environment</p>
+              <p style={{ fontSize: 13, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', textAlign: 'center', padding: 20 }}>No test cycles using this environment</p>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {linkedCycles.map((cycle) => (
@@ -316,7 +316,7 @@ export default function EnvironmentDetailPage() {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{cycle.progress_percent}%</span>
-                      <ChevronRight size={16} style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+                      <ChevronRight size={16} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
                     </div>
                   </div>
                 ))}

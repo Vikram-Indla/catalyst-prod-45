@@ -172,7 +172,7 @@ export function KBInputArea({
             else e.currentTarget.style.background = 'transparent';
           }}
         >
-          <ArrowUp size={18} color={hasText ? 'var(--cp-text-inverse, #FFFFFF)' : 'var(--cp-text-muted, #94A3B8)'} />
+          <ArrowUp size={18} color={hasText ? 'var(--cp-text-inverse, #FFFFFF)' : 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))'} />
         </button>
       </div>
 

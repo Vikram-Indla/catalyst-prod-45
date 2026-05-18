@@ -333,18 +333,18 @@ export default function TestHubDashboardPage() {
             subtitle={`${totalExecuted} of ${totalAll} executed`} sparkData={[80, 72, 65, 58, 52, 48, 46, 47]}
             valueColor={passRateColor} isDanger={passRate < 60} />
           <KPICard label="Active cycles" value={activeCycles.length} accent="var(--ds-text-brand, #3B82F6)"
-            trend={{ direction: 'flat', value: '—', color: 'var(--ds-text-subtlest, #94A3B8)' }}
+            trend={{ direction: 'flat', value: '—', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}
             subtitle={`${completedCyclesCount} completed`} sparkData={[3, 4, 5, 5, 5, 5, 5, 5]} />
           <KPICard label="Blocked tests" value={totalBlocked} accent="var(--ds-text-danger, #EF4444)"
             trend={{ direction: 'up', value: '+2', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}
             subtitle={`${totalFailed} failed tests`} sparkData={[0, 1, 1, 2, 2, 3, 3, 3]}
             valueColor={totalBlocked > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : undefined} />
           <KPICard label="Automation coverage" value={`${automationCoverage}%`} accent="#10B981"
-            trend={{ direction: 'flat', value: '—', color: 'var(--ds-text-subtlest, #94A3B8)' }}
+            trend={{ direction: 'flat', value: '—', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}
             subtitle={`${automatedCount} of ${totalTestCases} automated`}
             sparkData={[0, 0, 0, 0, 0, 0, 0, automationCoverage]} />
           <KPICard label="My executions today" value={myExecutionsToday} accent="#8B5CF6"
-            trend={{ direction: 'flat', value: '—', color: 'var(--ds-text-subtlest, #94A3B8)' }}
+            trend={{ direction: 'flat', value: '—', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}
             subtitle={`${myPassedToday} passed today`}
             sparkData={[0, 0, 0, 0, 0, 0, 0, myExecutionsToday]} />
         </div>
@@ -385,7 +385,7 @@ export default function TestHubDashboardPage() {
           {/* ═ LEFT: Active Cycles ═ */}
           <Card title="Active Cycles" badge={String(activeCycles.length)} onViewAll={() => navigate('/testhub/cycles')}>
              {activeCycles.length === 0 ? (
-               <EmptyMini icon={<Play size={24} color="var(--ds-text-subtlest, #94A3B8)" />} text="No active cycles" />
+               <EmptyMini icon={<Play size={24} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" />} text="No active cycles" />
              ) : (
                <>
                  {activeCycles.slice(0, 20).map(cycle => {
@@ -429,7 +429,7 @@ export default function TestHubDashboardPage() {
                  })}
                  {activeCycles.length === activeCycles.length && (
                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, gap: 4, padding: '32px 16px' }}>
-                     <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-muted, #94A3B8)' }}>
+                     <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>
                        All {activeCycles.length} active cycle{activeCycles.length !== 1 ? 's' : ''} shown
                      </span>
                      <a href="/testhub/cycles" style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', textDecoration: 'none', cursor: 'pointer' }}>
@@ -465,7 +465,7 @@ export default function TestHubDashboardPage() {
              {/* Body: Failing Tests rows */}
              <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
                {failingTests.length === 0 ? (
-                 <EmptyMini icon={<AlertTriangle size={24} color="var(--ds-text-subtlest, #94A3B8)" />} text="No failing tests" />
+                 <EmptyMini icon={<AlertTriangle size={24} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" />} text="No failing tests" />
                ) : (
                  <>
                    {failingTests.slice(0, 10).map(test => {
@@ -622,7 +622,7 @@ export default function TestHubDashboardPage() {
                        );
                      })}
                      {recentActivity.length < 3 && (
-                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px', fontSize: 12, fontWeight: 400, color: 'var(--cp-text-muted, #94A3B8)' }}>
+                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px', fontSize: 12, fontWeight: 400, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>
                          No more recent activity
                        </div>
                      )}

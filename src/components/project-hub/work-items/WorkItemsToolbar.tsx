@@ -80,13 +80,13 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
         <div className="flex items-center gap-2">
           {/* Search */}
           <div className="relative">
-            <SearchIconCore label="" className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+            <SearchIconCore label="" className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
             <input
               type="text"
               placeholder="Search list"
               value={search}
               onChange={e => onSearchChange(e.target.value)}
-              className="h-[30px] w-[160px] pl-8 pr-7 text-[11px] rounded-md border focus:outline-none focus:ring-1 focus:ring-[var(--ds-text-brand,#2563EB)] placeholder:text-[var(--ds-text-subtlest,#94A3B8)]"
+              className="h-[30px] w-[160px] pl-8 pr-7 text-[11px] rounded-md border focus:outline-none focus:ring-1 focus:ring-[var(--ds-text-brand,#2563EB)] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]"
               style={{ borderColor: 'var(--divider)', fontFamily: 'var(--cp-font-body)' }}
             />
             {search && (
@@ -94,7 +94,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
                 onClick={() => onSearchChange('')}
                 className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center rounded-full hover:bg-[var(--ds-surface-sunken,#F1F5F9)]"
               >
-                <CrossIconCore label="" style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+                <CrossIconCore label="" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
               </button>
             )}
           </div>

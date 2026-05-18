@@ -358,7 +358,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                   'px-2 h-7 text-[10px] font-medium uppercase tracking-wider rounded border transition-colors shrink-0',
                   ((s as WorkflowStatus & { is_active?: boolean }).is_active ?? true)
                     ? 'bg-[#ECFDF5] text-[#065F46] border-[#A7F3D0]'
-                    : 'bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtlest,#94A3B8)] border-[var(--ds-border,var(--cp-border, #E2E8F0))]',
+                    : 'bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] border-[var(--ds-border,var(--cp-border, #E2E8F0))]',
                 )}
                 title="Toggle whether this status renders as a kanban column"
               >
@@ -436,13 +436,13 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
           <h3 className="text-xs font-semibold text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] uppercase tracking-wider">
             Transition Matrix
           </h3>
-          <p className="text-[11px] text-[var(--ds-text-subtlest,#94A3B8)] mt-0.5">
+          <p className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] mt-0.5">
             Check a cell to allow transition from row → column
           </p>
         </div>
 
         {statuses.length === 0 ? (
-          <div className="flex items-center justify-center py-16 text-[var(--ds-text-subtlest,#94A3B8)] text-sm">
+          <div className="flex items-center justify-center py-16 text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] text-sm">
             Add statuses to configure transitions
           </div>
         ) : (

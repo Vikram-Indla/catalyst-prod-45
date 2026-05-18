@@ -171,14 +171,14 @@ export default function AllReleasesPage() {
       {/* Search + View Toggle */}
       <div className="flex items-center justify-between mb-4">
         <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-muted, #94A3B8)' }} />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }} />
           <input type="text" placeholder="Search releases..." value={search} onChange={e => setSearch(e.target.value)}
             className="h-9 w-64 pl-9 pr-3 rounded text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,#2563EB)]/20 focus:border-[var(--ds-text-brand,#2563EB)]"
             style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-primary, #0F172A)' }} />
         </div>
         <div className="flex items-center gap-1 rounded-md p-0.5" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, background: 'var(--cp-bg-elevated, #FFFFFF)' }}>
-          <button onClick={() => setView('cards')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'cards' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)' } : { color: 'var(--cp-text-muted, #94A3B8)' }}><LayoutGrid size={14} /></button>
-          <button onClick={() => setView('table')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'table' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)' } : { color: 'var(--cp-text-muted, #94A3B8)' }}><List size={14} /></button>
+          <button onClick={() => setView('cards')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'cards' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)' } : { color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}><LayoutGrid size={14} /></button>
+          <button onClick={() => setView('table')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'table' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)' } : { color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}><List size={14} /></button>
         </div>
       </div>
 
@@ -204,7 +204,7 @@ export default function AllReleasesPage() {
                 <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: accentColor(r.status), borderRadius: '6px 0 0 6px' }} />
                 <div className="p-4 pl-5">
                   <h3 className="text-[15px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1, fontWeight: 650 }}>{r.name}</h3>
-                  {r.jira_key && <span className="text-[11px] block mb-2" style={{ fontFamily: RH.fontMono, color: 'var(--cp-text-muted, #94A3B8)' }}>{r.jira_key}</span>}
+                  {r.jira_key && <span className="text-[11px] block mb-2" style={{ fontFamily: RH.fontMono, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>{r.jira_key}</span>}
 
                   <div className="flex items-center gap-2 flex-wrap mb-2">
                     <StatusLozenge status={mapStatus(r.status)} />
@@ -214,7 +214,7 @@ export default function AllReleasesPage() {
                         position="top"
                         content={`Last synced: ${new Date(r.synced_at || r.updated_at).toLocaleString()}`}
                       >
-                        <span className="inline-flex items-center gap-1 text-[11px] text-[var(--ds-text-subtlest,#94A3B8)] cursor-default">
+                        <span className="inline-flex items-center gap-1 text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] cursor-default">
                           <Clock size={12} />
                           Synced {relativeTime(r.synced_at || r.updated_at)}
                         </span>
@@ -229,7 +229,7 @@ export default function AllReleasesPage() {
                   </div>
 
                   {progress.empty ? (
-                    <p className="text-[11px]" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-muted, #94A3B8)' }}>No changes yet</p>
+                    <p className="text-[11px]" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>No changes yet</p>
                   ) : (
                     <>
                       <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }}>
@@ -238,7 +238,7 @@ export default function AllReleasesPage() {
                           background: accentColor(r.status)
                         }} />
                       </div>
-                      <p className="text-[11px] mt-1" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-muted, #94A3B8)' }}>
+                      <p className="text-[11px] mt-1" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>
                         {progress.pct}% · {progress.completed} of {progress.total} {progress.total === 1 ? 'change' : 'changes'} deployed
                       </p>
                     </>
@@ -275,7 +275,7 @@ export default function AllReleasesPage() {
                             position="top"
                             content={`Synced ${relativeTime(r.synced_at || r.updated_at)}`}
                           >
-                            <span className="inline-flex items-center gap-0.5 text-[11px] text-[var(--ds-text-subtlest,#94A3B8)] cursor-default">
+                            <span className="inline-flex items-center gap-0.5 text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] cursor-default">
                               <Clock size={12} />
                             </span>
                           </Tooltip>
@@ -290,7 +290,7 @@ export default function AllReleasesPage() {
                     <td className="px-3 py-0"><span className="font-bold" style={{ fontFamily: RH.fontMono, color: 'var(--cp-text-primary, #0F172A)' }}>{progress.total}</span></td>
                     <td className="px-3 py-0">
                       {progress.empty ? (
-                        <span className="text-[11px]" style={{ color: 'var(--cp-text-muted, #94A3B8)' }}>No changes yet</span>
+                        <span className="text-[11px]" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>No changes yet</span>
                       ) : (
                         <div className="flex items-center gap-2">
                           <div className="w-16 h-1 rounded-full overflow-hidden" style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }}>

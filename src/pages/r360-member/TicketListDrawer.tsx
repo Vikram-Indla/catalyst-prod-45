@@ -44,7 +44,7 @@ export function TicketListDrawer({ mode, items, onClose, onSelectItem }: {
         {/* List */}
         <div className="r3-panel-body" style={{ padding: 0 }}>
           {items.length === 0 ? (
-            <div style={{ padding: 24, textAlign: 'center', color: 'var(--cp-text-muted, #94A3B8)', fontSize: 13 }}>
+            <div style={{ padding: 24, textAlign: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', fontSize: 13 }}>
               No {mode} items
             </div>
           ) : (

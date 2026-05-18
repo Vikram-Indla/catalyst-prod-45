@@ -64,7 +64,7 @@ export const LK: DarkTokens = {
   t1: 'var(--cp-text-primary, #0F172A)',
   t2: 'var(--cp-text-secondary, #44546F)',
   t3: 'var(--cp-text-tertiary, #6B6E76)',
-  t4: 'var(--cp-text-tertiary, #94A3B8)',
+  t4: 'var(--cp-text-tertiary, var(--cp-ink-4, #94A3B8))',
 
   border:       'var(--cp-border-default, rgba(15,23,42,0.12))',
   borderStrong: 'var(--cp-border-strong, rgba(15,23,42,0.20))',

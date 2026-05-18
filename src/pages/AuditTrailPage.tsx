@@ -272,7 +272,7 @@ export default function AuditTrailPage() {
               {cell.value}
             </div>
             <div style={{
-              fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtlest, #94A3B8)',
+              fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
               textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 2,
             }}>
               {cell.label}
@@ -294,7 +294,7 @@ export default function AuditTrailPage() {
                   <th key={h} style={{
                     padding: '10px 12px', fontSize: 11, fontWeight: 500,
                     textTransform: 'uppercase', letterSpacing: '0.05em',
-                    color: 'var(--ds-text-subtlest, #94A3B8)', textAlign: 'left', fontFamily: 'var(--cp-font-body)',
+                    color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', textAlign: 'left', fontFamily: 'var(--cp-font-body)',
                     whiteSpace: 'nowrap',
                   }}>
                     {h}
@@ -305,13 +305,13 @@ export default function AuditTrailPage() {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} style={{ padding: 40, textAlign: 'center', fontSize: 13, color: 'var(--ds-text-subtlest, #94A3B8)' }}>
+                  <td colSpan={7} style={{ padding: 40, textAlign: 'center', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>
                     Loading audit trail...
                   </td>
                 </tr>
               ) : entries.length === 0 ? (
                 <tr>
-                  <td colSpan={7} style={{ padding: 40, textAlign: 'center', fontSize: 13, color: 'var(--ds-text-subtlest, #94A3B8)' }}>
+                  <td colSpan={7} style={{ padding: 40, textAlign: 'center', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>
                     No audit events found
                   </td>
                 </tr>
@@ -372,7 +372,7 @@ export default function AuditTrailPage() {
                       }}>
                         {relativeTime(entry.closed_at)}
                       </div>
-                      <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #94A3B8)', marginTop: 2 }}>
+                      <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', marginTop: 2 }}>
                         {formatDate(entry.closed_at)}
                       </div>
                     </td>
@@ -419,7 +419,7 @@ export default function AuditTrailPage() {
                             </span>
                           </div>
                           {entry.restored_at && (
-                            <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #94A3B8)', marginTop: 2, paddingLeft: 30 }}>
+                            <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', marginTop: 2, paddingLeft: 30 }}>
                               {formatDate(entry.restored_at)}
                             </div>
                           )}

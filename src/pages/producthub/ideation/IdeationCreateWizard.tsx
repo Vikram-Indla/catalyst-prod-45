@@ -256,7 +256,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               onClick={onClose}
               style={{
                 width: '32px', height: '32px', borderRadius: '8px',
-                background: 'transparent', border: 'none', color: 'var(--cp-text-muted, #94A3B8)',
+                background: 'transparent', border: 'none', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))',
                 fontSize: '16px', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
@@ -494,7 +494,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                     <button
                       onClick={() => removeTag(tag)}
                       style={{
-                        background: 'none', border: 'none', color: 'var(--cp-text-muted, #94A3B8)',
+                        background: 'none', border: 'none', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))',
                         cursor: 'pointer', padding: 0, fontSize: '14px', lineHeight: 1,
                       }}
                     >×</button>

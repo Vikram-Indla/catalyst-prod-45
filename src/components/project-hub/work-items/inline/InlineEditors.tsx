@@ -112,7 +112,7 @@ const PRIORITIES = [
   { value: 'Critical', icon: ChevronsUp, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
   { value: 'High', icon: ArrowUp, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
   { value: 'Medium', icon: ArrowRight, color: 'var(--ds-text-brand, #2563EB)' },
-  { value: 'Low', icon: ArrowDown, color: 'var(--ds-text-subtlest, #94A3B8)' },
+  { value: 'Low', icon: ArrowDown, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' },
 ];
 
 export function InlinePriorityPicker({ current, anchorRef, onSelect, onClose }: {
@@ -159,7 +159,7 @@ export function InlineAssigneePicker({ currentId, profiles, anchorRef, onSelect,
     <FixedDropdown anchorRef={anchorRef} onClose={onClose} width={220}>
       <div className="p-2 border-b" style={{ borderColor: 'var(--cp-bd-zone)' }}>
         <div className="flex items-center gap-1.5 px-2 py-1 rounded" style={{ border: '1px solid var(--divider)' }}>
-          <Search size={12} className="text-[var(--ds-text-subtlest,#94A3B8)]" />
+          <Search size={12} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]" />
           <input
             autoFocus
             value={search}

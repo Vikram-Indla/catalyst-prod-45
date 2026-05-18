@@ -143,7 +143,7 @@ export function HierarchyMapping() {
               onMouseOver={(e) => (e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)')}
               onMouseOut={(e) => (e.currentTarget.style.boxShadow = 'none')}
             >
-              <span style={{ color: 'var(--ds-text-subtlest, #94A3B8)', fontSize: 16, cursor: 'grab', userSelect: 'none' }}>⠿</span>
+              <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontSize: 16, cursor: 'grab', userSelect: 'none' }}>⠿</span>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)', width: 100 }}>
                 {l.level}. {l.name}
               </span>

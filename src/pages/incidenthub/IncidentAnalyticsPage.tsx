@@ -39,7 +39,7 @@ export default function IncidentAnalyticsPage() {
   const maxCount = (arr: [string, number][]) => Math.max(...arr.map(a => a[1]), 1);
 
   const SEV_BAR_COLORS: Record<string, string> = {
-    SEV1: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', SEV2: 'var(--ds-text-warning, var(--cp-warning, #D97706))', SEV3: 'var(--ds-text-brand, #2563EB)', SEV4: 'var(--ds-text-subtlest, #94A3B8)',
+    SEV1: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', SEV2: 'var(--ds-text-warning, var(--cp-warning, #D97706))', SEV3: 'var(--ds-text-brand, #2563EB)', SEV4: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
   };
 
   const STATUS_BAR_COLORS: Record<string, string> = {

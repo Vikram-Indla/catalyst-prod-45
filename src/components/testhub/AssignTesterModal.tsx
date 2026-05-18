@@ -161,7 +161,7 @@ export function AssignTesterModal({
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
           {/* Search Bar */}
           <div style={{ position: 'relative', marginBottom: 12 }}>
-            <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+            <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
             <input
               type="text"
               placeholder="Search by name or email..."
@@ -185,7 +185,7 @@ export function AssignTesterModal({
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
               >
-                <X size={14} style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+                <X size={14} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
               </button>
             )}
           </div>

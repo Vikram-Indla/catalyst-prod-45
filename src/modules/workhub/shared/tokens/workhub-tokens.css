@@ -11,7 +11,7 @@
   --wh-tx: var(--ds-text, #0F172A);
   --wh-tx2: var(--ds-text-subtle, #334155);
   --wh-tx3: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
-  --wh-tx4: var(--ds-text-subtlest, #94A3B8);
+  --wh-tx4: var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8));
 
   /* Primary */
   --wh-pri: var(--ds-text-brand, #2563EB);

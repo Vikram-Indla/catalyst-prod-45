@@ -91,7 +91,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
               boxShadow: searchFocused ? '0 0 0 2px rgba(37,99,235,0.10)' : 'none',
               transition: 'border-color 150ms, box-shadow 150ms',
             }}>
-              <Search size={13} color="var(--ds-text-subtlest, #94A3B8)" />
+              <Search size={13} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" />
               <input
                 value={search} onChange={e => setSearch(e.target.value)}
                 onFocus={() => setSearchFocused(true)}
@@ -261,7 +261,7 @@ function NewBoardCard({ onClick }: { onClick: () => void }) {
         transition: 'all 150ms',
       }}
     >
-      <Plus size={28} color={hover ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #94A3B8)'} strokeWidth={1.5} />
+      <Plus size={28} color={hover ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))'} strokeWidth={1.5} />
       <span style={{
         fontSize: 12.5, fontWeight: 500, marginTop: 8,
         color: hover ? 'var(--cp-blue)' : 'var(--fg-4)',

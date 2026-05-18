@@ -103,7 +103,7 @@ export function ActivityFeed({ workItemId }: Props) {
       {/* Entries */}
       {isLoading ? (
         <div className="flex justify-center py-8">
-          <Loader2 size={20} className="animate-spin text-[var(--ds-text-subtlest,#94A3B8)]" />
+          <Loader2 size={20} className="animate-spin text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-8 text-[13px]" style={{ color: 'var(--fg-4)' }}>No activity yet</div>

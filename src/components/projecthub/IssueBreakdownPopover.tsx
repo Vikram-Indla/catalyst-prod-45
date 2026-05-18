@@ -29,7 +29,7 @@ const TYPE_BAR_COLORS: Record<string, string> = {
 };
 
 function getBarColor(type: string): string {
-  return TYPE_BAR_COLORS[type.toLowerCase()] || 'var(--ds-text-subtlest, #94A3B8)';
+  return TYPE_BAR_COLORS[type.toLowerCase()] || 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))';
 }
 
 export function IssueBreakdownPopover({ projectKey, projectName, issueCount }: Props) {

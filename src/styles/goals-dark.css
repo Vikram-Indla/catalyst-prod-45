@@ -91,9 +91,9 @@
   color: var(--ds-text-subtlest, #878787) !important;
 }
 
-/* Muted text (var(--ds-text-subtlest, #94A3B8)) → t3 */
+/* Muted text (var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))) → t3 */
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(148, 163, 184)"],
-.dark [data-goals-page] [style*="color: #94A3B8"] , [data-theme="dark"] [data-goals-page] [style*="color: #94A3B8"] {
+.dark [data-goals-page] [style*="color: var(--cp-ink-4, #94A3B8)"] , [data-theme="dark"] [data-goals-page] [style*="color: var(--cp-ink-4, #94A3B8)"] {
   color: var(--ds-text-subtlest, #878787) !important;
 }
 

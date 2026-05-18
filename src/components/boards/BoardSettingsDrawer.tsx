@@ -123,7 +123,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
             background: 'transparent', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <X size={16} color="var(--ds-text-subtlest, #94A3B8)" />
+            <X size={16} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" />
           </button>
         </div>
 
@@ -232,7 +232,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                     borderRadius: 6, background: 'var(--bg-app)',
                     borderLeftWidth: col.statusIds.length === 0 ? 3 : 0.75,
                   }}>
-                    <GripVertical size={13} color="var(--ds-text-subtlest, #94A3B8)" style={{ cursor: 'grab', flexShrink: 0 }} />
+                    <GripVertical size={13} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" style={{ cursor: 'grab', flexShrink: 0 }} />
                     <span style={{
                       fontSize: 12, fontWeight: 500, color: 'var(--fg-1)',
                       fontFamily: 'var(--cp-font-body)', flex: 1, minWidth: 0,
@@ -245,7 +245,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                       background: 'transparent', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
-                      <Trash2 size={12} color="var(--ds-text-subtlest, #94A3B8)" />
+                      <Trash2 size={12} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" />
                     </button>
                   </div>
                 ))}
@@ -259,7 +259,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                   display: 'flex', alignItems: 'center', gap: 4, height: 50, padding: '0 10px',
                   border: '0.75px dashed rgba(15,23,42,0.12)',
                   borderRadius: 6, background: 'transparent', cursor: newColName.trim() ? 'pointer' : 'not-allowed',
-                  fontSize: 11.5, color: 'var(--ds-text-subtlest, #94A3B8)', fontFamily: 'var(--cp-font-body)',
+                  fontSize: 11.5, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontFamily: 'var(--cp-font-body)',
                 }}>
                   <Plus size={13} /> Add
                 </button>

@@ -212,7 +212,7 @@ export default function IdeasRoadmapPage() {
         }}>
           <div style={{ fontSize: 40, opacity: 0.3 }}>💡</div>
           <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-secondary, #334155)' }}>No ideas in backlog yet</div>
-          <div style={{ fontSize: 13, color: 'var(--cp-text-muted, #94A3B8)' }}>Add ideas from the Ideas list to get started.</div>
+          <div style={{ fontSize: 13, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>Add ideas from the Ideas list to get started.</div>
           <a href="/producthub/ideation" style={{
             marginTop: 8, fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', textDecoration: 'none',
           }}>Go to Ideas →</a>

@@ -382,7 +382,7 @@ export const catalyst = {
   bgInset: '#F1F5F9',
   textPrimary: '#0F172A',
   textSecondary: '#475569',
-  textMuted: '#94A3B8',
+  textMuted: 'var(--cp-ink-4, #94A3B8)',
   textDisabled: '#CBD5E1',
   borderDefault: 'var(--cp-border, #E2E8F0)',
   borderStrong: '#CBD5E1',

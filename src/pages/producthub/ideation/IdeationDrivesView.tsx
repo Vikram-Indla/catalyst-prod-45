@@ -82,7 +82,7 @@ export default function IdeationDrivesView() {
             <span style={{
               background: 'var(--ds-surface-sunken, #F8FAFC)', border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: '12px',
               padding: '1px 7px', fontSize: '11px', fontWeight: 600,
-              fontFamily: MONO, color: 'var(--ds-text-subtlest, #94A3B8)',
+              fontFamily: MONO, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
             }}>{drives.length}</span>
           </div>
           <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', margin: 0 }}>
@@ -104,7 +104,7 @@ export default function IdeationDrivesView() {
       <CreateDriveModal open={createOpen} onClose={() => setCreateOpen(false)} />
 
       {isLoading && (
-        <div style={{ color: 'var(--ds-text-subtlest, #94A3B8)', fontSize: 13, padding: 20 }}>Loading drives...</div>
+        <div style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontSize: 13, padding: 20 }}>Loading drives...</div>
       )}
 
       {error && (
@@ -182,7 +182,7 @@ export default function IdeationDrivesView() {
 
             {/* Linked ideas */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, #94A3B8)', fontWeight: 600, marginRight: '4px' }}>Ideas:</span>
+              <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontWeight: 600, marginRight: '4px' }}>Ideas:</span>
               {drive.ideas.length === 0 && (
                 <span style={{ fontSize: '11px', color: 'var(--ds-text-disabled, #CBD5E1)', fontStyle: 'italic' }}>No ideas linked yet</span>
               )}

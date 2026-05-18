@@ -66,7 +66,7 @@ function mapRequestRow(r: Record<string, any>): WorkItemRow {
     type_level: 'work',
     status_name: r.status ?? 'New',
     status_category: 'todo',
-    status_color: '#94A3B8',
+    status_color: 'var(--cp-ink-4, #94A3B8)',
     assignee_name: r.assignee_name ?? null,
     assignee_avatar: null,
     source: 'catalyst',

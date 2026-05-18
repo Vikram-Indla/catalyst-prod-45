@@ -244,7 +244,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                         : ('var(--cp-bg-elevated, #FFFFFF)'),
                       color: isSelected
                         ? (isActive ? ('var(--cp-success, #15803D)') : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'))
-                        : ('var(--cp-text-muted, #94A3B8)'),
+                        : ('var(--cp-text-muted, var(--cp-ink-4, #94A3B8))'),
                       transition: 'all 150ms ease',
                       fontFamily: 'var(--cp-font-body)',
                     }}
@@ -252,7 +252,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     <span style={{
                       width: '6px', height: '6px', borderRadius: '50%',
                       background: isSelected
-                        ? (isActive ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-subtlest, #94A3B8)')
+                        ? (isActive ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))')
                         : 'var(--ds-text-disabled, #CBD5E1)',
                     }} />
                     {isActive ? 'Active' : 'Draft'}

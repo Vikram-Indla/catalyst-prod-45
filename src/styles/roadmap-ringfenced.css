@@ -137,9 +137,9 @@
   --roadmap-type-enhancement-bg:    rgba(13, 148, 136, 0.15);
   --roadmap-type-enhancement-bar:   linear-gradient(135deg, #14B8A6, var(--cp-teal-60, #0D9488));
   
-  --roadmap-type-project:           var(--ds-text-subtlest, #94A3B8);
+  --roadmap-type-project:           var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8));
   --roadmap-type-project-bg:        rgba(71, 85, 105, 0.15);
-  --roadmap-type-project-bar:       linear-gradient(135deg, var(--ds-text-subtlest, #94A3B8), var(--ds-text-subtlest, var(--cp-ink-3, #64748B)));
+  --roadmap-type-project-bar:       linear-gradient(135deg, var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8)), var(--ds-text-subtlest, var(--cp-ink-3, #64748B)));
   
   --roadmap-type-entity:            var(--cp-warning-40);
   --roadmap-type-entity-bg:         rgba(217, 119, 6, 0.15);

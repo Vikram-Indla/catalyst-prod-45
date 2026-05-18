@@ -323,7 +323,7 @@ const JiraUserSync: React.FC = () => {
                 {getStatValue(card.key)}
               </div>
               <div className="jira-stat-sub"
-                style={{ fontSize: '11px', marginTop: '4px', color: 'var(--cp-text-muted, #94A3B8)' }}>
+                style={{ fontSize: '11px', marginTop: '4px', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>
                 {card.sub}
               </div>
             </div>
@@ -411,7 +411,7 @@ const JiraUserSync: React.FC = () => {
             <span className="jira-selection-count" style={{ fontSize: '12px', fontWeight: 500, color: 'var(--cp-text-link, #2563EB)' }}>
               {selected.size} users selected
             </span>
-            <span style={{ fontSize: '11px', color: 'var(--cp-text-muted, #94A3B8)' }}>|</span>
+            <span style={{ fontSize: '11px', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>|</span>
 
             <Popover open={assignPopoverOpen} onOpenChange={setAssignPopoverOpen}>
               <PopoverTrigger asChild>
@@ -467,7 +467,7 @@ const JiraUserSync: React.FC = () => {
                             : 'transparent',
                           color: assignPermLevel === lvl
                             ? lvl === 'full' ? '#006644' : lvl === 'edit' ? 'var(--ds-background-brand-bold-hovered, #1D4ED8)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'
-                            : ('var(--cp-text-muted, #94A3B8)'),
+                            : ('var(--cp-text-muted, var(--cp-ink-4, #94A3B8))'),
                         }}
                       >
                         {lvl}
@@ -517,7 +517,7 @@ const JiraUserSync: React.FC = () => {
                       </button>
                     ))}
                   {(jiraProjects || []).filter(p => !assignSearch || p.project_key.toLowerCase().includes(assignSearch.toLowerCase())).length === 0 && (
-                    <div style={{ padding: '16px', textAlign: 'center', fontSize: '11px', color: 'var(--cp-text-muted, #94A3B8)' }}>
+                    <div style={{ padding: '16px', textAlign: 'center', fontSize: '11px', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>
                       No projects found
                     </div>
                   )}
@@ -613,14 +613,14 @@ const JiraUserSync: React.FC = () => {
                   <td colSpan={9} style={{ textAlign: 'center', padding: '60px 20px' }}>
                     {debouncedSearch ? (
                       <>
-                        <span style={{ display: 'flex', justifyContent: 'center', color: 'var(--cp-text-muted, #94A3B8)', marginBottom: 10 }}><SearchIcon label="" size="large" /></span>
+                        <span style={{ display: 'flex', justifyContent: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', marginBottom: 10 }}><SearchIcon label="" size="large" /></span>
                         <div className="jira-text-primary" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-text-secondary, #334155)' }}>No users match '{debouncedSearch}'</div>
                         <button onClick={() => setSearch('')}
                           style={{ marginTop: 8, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-brand, #2563EB)' }}>Clear search</button>
                       </>
                     ) : filter !== 'all' ? (
                       <>
-                        <span style={{ display: 'flex', justifyContent: 'center', color: 'var(--cp-text-muted, #94A3B8)', marginBottom: 10 }}><SearchIcon label="" size="large" /></span>
+                        <span style={{ display: 'flex', justifyContent: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', marginBottom: 10 }}><SearchIcon label="" size="large" /></span>
                         <div className="jira-text-primary" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-text-secondary, #334155)' }}>
                           {filter === 'conflict' ? 'No conflicts found' : filter === 'inactive' ? 'No inactive users' : `No ${filter} users found`}
                         </div>
@@ -629,7 +629,7 @@ const JiraUserSync: React.FC = () => {
                       </>
                     ) : (
                       <>
-                        <span style={{ display: 'flex', justifyContent: 'center', color: 'var(--cp-text-muted, #94A3B8)', marginBottom: 10 }}><PeopleGroupIcon label="" size="large" /></span>
+                        <span style={{ display: 'flex', justifyContent: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', marginBottom: 10 }}><PeopleGroupIcon label="" size="large" /></span>
                         <div className="jira-text-primary" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-text-secondary, #334155)' }}>No synced users yet</div>
                         <button onClick={handleSync} disabled={isSyncing}
                           style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: '5px', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: isSyncing ? 'not-allowed' : 'pointer' }}>
@@ -731,14 +731,14 @@ const JiraUserSync: React.FC = () => {
                           );
                         })}
                         {perms.length > 2 && <span style={{ fontSize: '10px', fontWeight: 500, whiteSpace: 'nowrap', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>+{perms.length - 2} more</span>}
-                        {perms.length === 0 && <span style={{ fontSize: '10px', color: 'var(--cp-text-muted, #94A3B8)' }}>—</span>}
+                        {perms.length === 0 && <span style={{ fontSize: '10px', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>—</span>}
                       </div>
                     </td>
 
                     {/* Synced At */}
                     <td style={{ padding: '8px 12px' }}>
                       {isCatalystOnly ? (
-                        <span style={{ fontSize: '11px', fontStyle: 'italic', color: 'var(--cp-text-muted, #94A3B8)' }}>Not synced</span>
+                        <span style={{ fontSize: '11px', fontStyle: 'italic', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>Not synced</span>
                       ) : (
                         <div className="flex items-center gap-1">
                           <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success, #16A34A))', flexShrink: 0 }} />
@@ -815,7 +815,7 @@ const JiraUserSync: React.FC = () => {
             </button>
             {getPageNumbers(page, totalPages).map((p, i) =>
               p === '...' ? (
-                <span key={`ell-${i}`} style={{ width: '28px', textAlign: 'center', fontSize: '11px', color: 'var(--cp-text-muted, #94A3B8)' }}>…</span>
+                <span key={`ell-${i}`} style={{ width: '28px', textAlign: 'center', fontSize: '11px', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>…</span>
               ) : (
                 <button
                   key={p}

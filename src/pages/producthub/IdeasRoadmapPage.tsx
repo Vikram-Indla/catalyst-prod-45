@@ -12,7 +12,7 @@ import { DK, LK } from '@/utils/dark-mode-styles';
 const TEAMS = ['All Teams', 'Senaie BAU', 'Integration Team', 'Mobile App Team'];
 
 const ROADMAP_COLS = [
-  { key: null, label: 'NO QUARTER', borderColor: 'transparent', textColor: 'var(--ds-text-subtlest, #94A3B8)' },
+  { key: null, label: 'NO QUARTER', borderColor: 'transparent', textColor: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' },
   { key: 'Q1', label: 'Q1 2026', borderColor: 'var(--ds-text-danger, #991B1B)', textColor: 'var(--ds-text-danger, #991B1B)' },
   { key: 'Q2', label: 'Q2 2026', borderColor: '#1E40AF', textColor: '#1E40AF' },
   { key: 'Q3', label: 'Q3 2026', borderColor: '#115E59', textColor: '#115E59' },

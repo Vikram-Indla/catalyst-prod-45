@@ -109,7 +109,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
             {lanes.map(([key, lane]) => {
               const isUnassigned = lane.name === 'Unassigned';
               const initials = isUnassigned ? '?' : getInitials(lane.name);
-              const avatarColor = isUnassigned ? 'var(--ds-text-subtlest, #94A3B8)' : hashColor(lane.name);
+              const avatarColor = isUnassigned ? 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' : hashColor(lane.name);
               
               return (
                 <div key={key}>

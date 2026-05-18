@@ -130,7 +130,7 @@ export default function TagsListPage() {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
-          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
           <input type="text" placeholder="Search tags..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
             style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
         </div>
@@ -154,7 +154,7 @@ export default function TagsListPage() {
         <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)' }}>
           <Tags size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
           <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0 }}>No tags found</p>
-          <p style={{ fontSize: 14, color: 'var(--cp-text-muted, #94A3B8)', margin: '8px 0 0' }}>Create tags to organize your test assets</p>
+          <p style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', margin: '8px 0 0' }}>Create tags to organize your test assets</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -170,7 +170,7 @@ export default function TagsListPage() {
                     onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))'; e.currentTarget.style.boxShadow = 'none'; }}>
                     <span style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: tag.color, flexShrink: 0 }} />
                     <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)' }}>{tag.name}</span>
-                    <span style={{ fontSize: 11, color: 'var(--cp-text-muted, #94A3B8)', backgroundColor: 'var(--cp-bg-sunken, #F1F5F9)', padding: '2px 6px', borderRadius: 4 }}>{tag.usage_count}</span>
+                    <span style={{ fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', backgroundColor: 'var(--cp-bg-sunken, #F1F5F9)', padding: '2px 6px', borderRadius: 4 }}>{tag.usage_count}</span>
                     <div style={{ display: 'flex', gap: 4, marginLeft: 4 }}>
                       <button onClick={(e) => { e.stopPropagation(); setEditingTag(tag); setShowCreateModal(true); }}
                         style={{ width: 24, height: 24, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

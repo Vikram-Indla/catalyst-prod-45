@@ -493,7 +493,7 @@ export default function TestHubDocsPage() {
                 }}>
                   {item.label}
                 </div>
-                {i < arr.length - 1 && <ArrowRight size={16} style={{ color: 'var(--ds-text-subtlest, #94A3B8)', flexShrink: 0 }} />}
+                {i < arr.length - 1 && <ArrowRight size={16} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', flexShrink: 0 }} />}
               </div>
             ))}
           </div>
@@ -549,7 +549,7 @@ export default function TestHubDocsPage() {
                       {section.summary}
                     </div>
                   </div>
-                  {isOpen ? <ChevronDown size={18} style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} /> : <ChevronRight size={18} style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />}
+                  {isOpen ? <ChevronDown size={18} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} /> : <ChevronRight size={18} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />}
                 </button>
                 {isOpen && (
                   <div style={{
@@ -594,7 +594,7 @@ export default function TestHubDocsPage() {
             <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: 'var(--cp-font-body)' }}>
               Download the full guide as Markdown
             </div>
-            <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #94A3B8)', fontFamily: 'var(--cp-font-body)', marginTop: 4 }}>
+            <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontFamily: 'var(--cp-font-body)', marginTop: 4 }}>
               Open in any Markdown editor (VS Code, Obsidian, Notion) for the best reading experience
             </div>
           </div>

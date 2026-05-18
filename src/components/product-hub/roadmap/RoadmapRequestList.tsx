@@ -33,7 +33,7 @@ function OwnerAvatar({ initials, name }: { initials?: string; name?: string }) {
         style={{ width: 22, height: 22, background: 'var(--ds-border, var(--cp-border, #E2E8F0))' }}
         title="Unassigned"
       >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, #94A3B8)" strokeWidth="2" strokeLinecap="round">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" strokeWidth="2" strokeLinecap="round">
           <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
           <circle cx="12" cy="7" r="4"/>
         </svg>
@@ -175,7 +175,7 @@ function RequestRow({
   selectedBg: string;
   hoverBg: string;
 }) {
-  const typeColor = TYPE_COLORS[item.type]?.solid || 'var(--ds-text-subtlest, #94A3B8)';
+  const typeColor = TYPE_COLORS[item.type]?.solid || 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))';
 
   return (
     <div

@@ -33,7 +33,7 @@ export const RH = {
   ink1: 'var(--fg-1, #0F172A)',
   ink2: 'var(--ds-text-subtle, #334155)',
   ink3: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
-  ink4: 'var(--ds-text-subtlest, #94A3B8)',
+  ink4: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
 
   // Fonts
   fontDisplay: "'Sora', system-ui, sans-serif",
@@ -126,7 +126,7 @@ export const SIGNOFF_LOZENGE: Record<string, LozengeStyle> = {
 
 // Section accents for change timeline
 export const SECTION_ACCENT: Record<string, string> = {
-  past: 'var(--ds-text-subtlest, #94A3B8)',
+  past: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
   today: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
   this_week: 'var(--ds-text-brand, #2563EB)',
   upcoming: 'var(--cp-teal-60, #0D9488)',

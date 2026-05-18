@@ -19,7 +19,7 @@ interface Props {
 }
 
 const DOT_COLORS: Record<string, string> = {
-  'Fast-Track': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Merge': 'var(--ds-text-brand, #2563EB)', 'Investigate': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Defer': 'var(--ds-text-subtlest, #94A3B8)',
+  'Fast-Track': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Merge': 'var(--ds-text-brand, #2563EB)', 'Investigate': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Defer': 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
 };
 
 const CATEGORY_TEXT_COLORS: Record<string, string> = {
@@ -158,7 +158,7 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
               <Sparkles size={18} color="var(--ds-text-brand, #2563EB)" strokeWidth={2} />
               <span style={{ fontSize: '16px', fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>AI Intelligence — Triage Results</span>
             </div>
-            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cp-text-muted, #94A3B8)', padding: '4px' }}><X size={18} /></button>
+            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', padding: '4px' }}><X size={18} /></button>
           </div>
           <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginTop: '4px' }}>
             {ideas.length} ideas analyzed · {totalRecommendations} recommendations
@@ -219,7 +219,7 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
           )}
 
           {totalRecommendations === 0 && (
-            <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--cp-text-muted, #94A3B8)', fontSize: '14px' }}>
+            <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', fontSize: '14px' }}>
               No triage recommendations at this time.
             </div>
           )}
@@ -274,7 +274,7 @@ function TriageCard({ badge, ideaKey, title, body, aiSuggestion, primary, second
   secondary: { label: string; icon: React.ReactNode; onClick: () => void };
 }) {
   const { isDark } = useTheme();
-  const dotColor = DOT_COLORS[badge] || 'var(--ds-text-subtlest, #94A3B8)';
+  const dotColor = DOT_COLORS[badge] || 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))';
   return (
     <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: '12px', padding: '16px', marginBottom: '10px', boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>

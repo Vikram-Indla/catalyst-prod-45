@@ -275,7 +275,7 @@ export function SidebarProjectNav({
               <span className="dark:text-[#7D7D7D]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, #6B778C)' }}>
                 Recents
               </span>
-              <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: 'var(--cp-text-muted, #94A3B8)', fontFamily: 'var(--cp-font-mono)' }}>
+              <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', fontFamily: 'var(--cp-font-mono)' }}>
                 {recentItems.length}
               </span>
             </button>
