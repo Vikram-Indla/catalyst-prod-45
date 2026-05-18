@@ -365,7 +365,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
 
   return (
     <div>
-      {/* Button row */}
+      {/* Button row — native <button> to guarantee onClick fires (Atlaskit Button/new swallows clicks in TabPanel context) */}
       <div
         style={{
           display: 'flex',
@@ -376,40 +376,40 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
         }}
       >
         {status === 'observed' && (
-          <Button
-            appearance="primary"
-            spacing="compact"
+          <button
+            type="button"
+            style={{ padding: '4px 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('color.background.brand.bold', '#0C66E4'), color: '#fff' }}
             onClick={() => setPanel(panel === 'mark-canonical' ? null : 'mark-canonical')}
           >
             Mark canonical
-          </Button>
+          </button>
         )}
         {(status === 'canonical' || status === 'observed') && (
-          <Button
-            appearance="default"
-            spacing="compact"
+          <button
+            type="button"
+            style={{ padding: '4px 12px', borderRadius: 3, border: `1px solid ${token('color.border', '#DCDFE4')}`, cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('elevation.surface', '#FFFFFF'), color: token('color.text', '#172B4D') }}
             onClick={() => setPanel(panel === 'deprecate' ? null : 'deprecate')}
           >
             Deprecate →
-          </Button>
+          </button>
         )}
         {(status === 'deprecated' || status === 'banned') && (
-          <Button
-            appearance="default"
-            spacing="compact"
+          <button
+            type="button"
+            style={{ padding: '4px 12px', borderRadius: 3, border: `1px solid ${token('color.border', '#DCDFE4')}`, cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('elevation.surface', '#FFFFFF'), color: token('color.text', '#172B4D') }}
             onClick={() => setPanel(panel === 'restore' ? null : 'restore')}
           >
             Restore ↑
-          </Button>
+          </button>
         )}
         {status !== 'banned' && (
-          <Button
-            appearance="danger"
-            spacing="compact"
+          <button
+            type="button"
+            style={{ padding: '4px 12px', borderRadius: 3, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 500, background: token('color.background.danger.bold', '#AE2A19'), color: '#fff' }}
             onClick={() => setPanel(panel === 'ban' ? null : 'ban')}
           >
             Ban ✕
-          </Button>
+          </button>
         )}
       </div>
 
@@ -445,7 +445,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
             <Button appearance="danger" spacing="compact" onClick={() => { navigator.clipboard.writeText(banSnippet); }}>
               Copy snippet
             </Button>
-            <Button appearance="subtle" spacing="compact" onClick={() => setPanel(null)}>Dismiss</Button>
+            <button type="button" style={{ padding: "4px 10px", borderRadius: 3, border: "none", cursor: "pointer", fontSize: 13, background: "transparent", color: "var(--ds-text-subtle, #44546F)" }} onClick={() => setPanel(null)}>Dismiss</button>
           </div>
         </div>
       )}
@@ -476,7 +476,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
             <Button appearance="warning" spacing="compact" onClick={() => { navigator.clipboard.writeText(deprecateSnippet); }}>
               Copy snippet
             </Button>
-            <Button appearance="subtle" spacing="compact" onClick={() => setPanel(null)}>Dismiss</Button>
+            <button type="button" style={{ padding: "4px 10px", borderRadius: 3, border: "none", cursor: "pointer", fontSize: 13, background: "transparent", color: "var(--ds-text-subtle, #44546F)" }} onClick={() => setPanel(null)}>Dismiss</button>
           </div>
         </div>
       )}
@@ -495,7 +495,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
             <Button appearance="primary" spacing="compact" onClick={() => { navigator.clipboard.writeText(canonicalSnippet); }}>
               Copy snippet
             </Button>
-            <Button appearance="subtle" spacing="compact" onClick={() => setPanel(null)}>Dismiss</Button>
+            <button type="button" style={{ padding: "4px 10px", borderRadius: 3, border: "none", cursor: "pointer", fontSize: 13, background: "transparent", color: "var(--ds-text-subtle, #44546F)" }} onClick={() => setPanel(null)}>Dismiss</button>
           </div>
         </div>
       )}
@@ -518,7 +518,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
             <Button appearance="default" spacing="compact" onClick={() => { navigator.clipboard.writeText(restoreSnippet); }}>
               Copy snippet
             </Button>
-            <Button appearance="subtle" spacing="compact" onClick={() => setPanel(null)}>Dismiss</Button>
+            <button type="button" style={{ padding: "4px 10px", borderRadius: 3, border: "none", cursor: "pointer", fontSize: 13, background: "transparent", color: "var(--ds-text-subtle, #44546F)" }} onClick={() => setPanel(null)}>Dismiss</button>
           </div>
         </div>
       )}
