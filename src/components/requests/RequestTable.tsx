@@ -16,7 +16,9 @@ import type { Request, RequestStatus, Density } from '@/types/request';
 import { getPriorityLevel } from '@/types/request';
 import { StatusBadge } from './StatusBadge';
 import { PriorityBadge } from './PriorityBadge';
-import { UserAvatar } from './UserAvatar';
+import { UserAvatar } from '@/components/shared/UserAvatar';
+import { formatShortName } from '@/lib/format-name';
+import { Tooltip } from '@/components/ads';
 import { ProgressBar } from './ProgressBar';
 import { RelativeDate } from './RelativeDate';
 
@@ -243,9 +245,21 @@ export function RequestTable({
         size: 160,
         minSize: 120,
         header: 'Assignee',
-        cell: ({ getValue }) => (
-          <UserAvatar name={getValue()} size={24} showName />
-        ),
+        cell: ({ getValue }) => {
+          const name = getValue();
+          return (
+            <Tooltip content={name ?? 'Unassigned'} delay={500}>
+              <div className="flex items-center gap-2 min-w-0">
+                <UserAvatar name={name} size="small" />
+                {name ? (
+                  <span className="text-[13px] text-zinc-900 truncate">{formatShortName(name)}</span>
+                ) : (
+                  <span className="text-[13px] text-zinc-400 italic truncate">Unassigned</span>
+                )}
+              </div>
+            </Tooltip>
+          );
+        },
       }),
       col.accessor('department_name', {
         id: 'department_name',

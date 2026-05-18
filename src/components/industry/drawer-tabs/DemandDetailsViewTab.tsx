@@ -18,6 +18,7 @@ import { format, parseISO } from 'date-fns';
 import { Calendar as CalendarIcon, Lock } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { UserAvatar } from '@/components/shared/UserAvatar';
 
 // Unified quarter options - using space format to match database storage
 const QUARTER_OPTIONS = [
@@ -74,30 +75,6 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Avatar component
-function UserAvatar({ name, size = 'sm' }: { name: string; size?: 'sm' | 'md' }) {
-  const initials = name
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-  
-  const sizeClasses = size === 'sm' ? 'w-6 h-6 text-[10px]' : 'w-8 h-8 text-xs';
-  
-  return (
-    <div 
-      className={cn(
-        "rounded-full flex items-center justify-center font-semibold text-white shrink-0",
-        sizeClasses
-      )}
-      style={{ backgroundColor: 'hsl(var(--secondary-bronze))' }}
-    >
-      {initials}
-    </div>
-  );
-}
-
 // Assignee Select component
 function AssigneeSelect({ value, onChange }: { value: string | null; onChange: (name: string | null) => void }) {
   const { data: profiles = [] } = useQuery({
@@ -120,7 +97,7 @@ function AssigneeSelect({ value, onChange }: { value: string | null; onChange: (
         <SelectValue placeholder="Select assignee">
           {value ? (
             <div className="flex items-center gap-2 min-w-0">
-              <UserAvatar name={value} size="sm" />
+              <UserAvatar name={value} size="small" />
               <span className="truncate">{value}</span>
             </div>
           ) : (
@@ -352,7 +329,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
           >
             {reporterName ? (
               <>
-                <UserAvatar name={reporterName} size="sm" />
+                <UserAvatar name={reporterName} size="small" />
                 <span className="text-sm font-medium truncate flex-1 min-w-0" style={{ color: 'var(--text-1)' }}>
                   {reporterName}
                 </span>
@@ -391,7 +368,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
           >
             {data.business_owner ? (
               <>
-                <UserAvatar name={data.business_owner} size="sm" />
+                <UserAvatar name={data.business_owner} size="small" />
                 <span className="text-sm font-medium truncate flex-1 min-w-0" style={{ color: 'var(--text-1)' }}>
                   {data.business_owner}
                 </span>

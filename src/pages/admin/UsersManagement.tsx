@@ -618,9 +618,10 @@ export default function UsersManagement() {
                     </td>
                     <td>
                       <div className="ct-name-cell" onClick={() => openDrawer(user)}>
-                        <UserAvatar 
-                          name={user.full_name} 
+                        <UserAvatar
+                          name={user.full_name}
                           country={user.country}
+                          size="medium"
                         />
                         <div className="ct-user-info">
                           <div className="ct-user-name">{user.full_name || '—'}</div>
