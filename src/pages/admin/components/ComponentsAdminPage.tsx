@@ -16,7 +16,7 @@
  *   - ADS tokens only (2026-05-04)
  *   - Modals use isOpen guard pattern (no ModalTransition — portal renders empty)
  */
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Heading from '@atlaskit/heading';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import {
@@ -29,12 +29,6 @@ import {
 import Lozenge from '@atlaskit/lozenge';
 import Badge from '@atlaskit/badge';
 import Button from '@atlaskit/button/new';
-import ModalDialog, {
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-} from '@atlaskit/modal-dialog';
 import Textfield from '@atlaskit/textfield';
 import { token } from '@atlaskit/tokens';
 
@@ -304,162 +298,55 @@ function StatusChip({ status }: { status: UnifiedEntry['status'] }) {
   return <Lozenge>Observed</Lozenge>;
 }
 
-// ─── Action modals — isOpen guard pattern (ModalTransition portal renders empty) ─
+// ─── Inline action panels (replaces ModalDialog — portal system broken in admin context) ───
 
-function DeprecateModal({
-  entry, onClose, isOpen,
-}: { entry: UnifiedEntry; onClose: () => void; isOpen: boolean }) {
-  const [replacement, setReplacement] = useState(entry.deprecation_target ?? '');
-  if (!isOpen) return null;
+const PANEL_BASE: React.CSSProperties = {
+  marginTop: token('space.200', '16px'),
+  borderRadius: 6,
+  padding: token('space.200', '16px'),
+  fontSize: 13,
+};
 
-  const snippet = `// In src/registry/components.registry.ts — add or update in CANONICAL array:
-{
-  id: '${entry.id.replace('observed::', '')}',
-  name: '${entry.name}',
-  // ... keep existing fields, then add:
-  status: 'deprecated',
-  deprecation_target: '${replacement || '<replacement-component-id>'}',
-},`;
+const SNIPPET_STYLE: React.CSSProperties = {
+  display: 'block',
+  fontSize: 12,
+  background: token('color.background.neutral.subtle', '#F7F8F9'),
+  border: `1px solid ${token('color.border', '#DCDFE4')}`,
+  borderRadius: 4,
+  padding: token('space.150', '12px'),
+  overflowX: 'auto',
+  fontFamily: 'ui-monospace, "Roboto Mono", monospace',
+  marginTop: token('space.150', '12px'),
+  whiteSpace: 'pre',
+};
 
-  return (
-    <ModalDialog onClose={onClose} width="medium">
-      <ModalHeader>
-        <ModalTitle appearance="warning">Deprecate {entry.name}</ModalTitle>
-      </ModalHeader>
-      <ModalBody>
-        <p style={{ fontSize: 14, color: token('color.text', '#172B4D'), marginBottom: token('space.200', '16px') }}>
-          Mark <strong>{entry.name}</strong> as deprecated. Engineers will see a yellow DEPRECATED badge
-          and be redirected to the replacement component.
-          {entry.consumers.length > 0 && (
-            <span style={{ color: token('color.text.warning', '#7F5F01'), display: 'block', marginTop: 8 }}>
-              ⚠ {entry.consumers.length} consumer{entry.consumers.length === 1 ? '' : 's'} will need migration.
-            </span>
-          )}
-        </p>
-        <div style={{ marginBottom: token('space.200', '16px') }}>
-          <label
-            style={{
-              display: 'block',
-              fontSize: 12,
-              fontWeight: 600,
-              color: token('color.text', '#172B4D'),
-              marginBottom: token('space.075', '6px'),
-            }}
-          >
-            Replacement component id (deprecation_target)
-          </label>
-          <Textfield
-            value={replacement}
-            onChange={(e) => setReplacement((e.target as HTMLInputElement).value)}
-            placeholder="e.g. jira-table"
-          />
-        </div>
-        <pre
-          style={{
-            fontSize: 12,
-            background: token('color.background.warning', '#FFF7D6'),
-            border: `1px solid ${token('color.border.warning', '#F5CD47')}`,
-            borderRadius: 4,
-            padding: token('space.150', '12px'),
-            overflowX: 'auto',
-            fontFamily: 'ui-monospace, "Roboto Mono", monospace',
-          }}
-        >
-          {snippet}
-        </pre>
-      </ModalBody>
-      <ModalFooter>
-        <Button appearance="subtle" onClick={() => { navigator.clipboard.writeText(snippet); }}>
-          Copy snippet
-        </Button>
-        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
-      </ModalFooter>
-    </ModalDialog>
-  );
-}
+// ─── ActionBar ────────────────────────────────────────────────────────────────
 
-function BanModal({
-  entry, onClose, isOpen,
-}: { entry: UnifiedEntry; onClose: () => void; isOpen: boolean }) {
-  const [reason, setReason] = useState('');
-  if (!isOpen) return null;
+function ActionBar({ entry }: { entry: UnifiedEntry }) {
+  const [panel, setPanel] = useState<ActiveModal>(null);
+  const [banReason, setBanReason] = useState('');
+  const [deprecateTarget, setDeprecateTarget] = useState(entry.deprecation_target ?? '');
+  const { status } = entry;
 
-  const snippet = `// In src/registry/components.registry.ts — add to BANNED array:
-{
+  const today = new Date().toISOString().slice(0, 10);
+
+  const banSnippet = `{
   id: '${entry.id.replace('observed::', '')}',
   name: '${entry.name}',
   category: 'molecule', // ← update
   origin: 'feature',
   status: 'banned',
   version: '0.0.0',
-  banned_anchor: '${new Date().toISOString().slice(0, 10)}',
-  banned_reason: '${reason || 'Permanently banned from Catalyst. Do not re-introduce.'}',
+  banned_anchor: '${today}',
+  banned_reason: '${banReason || 'Permanently banned from Catalyst. Do not re-introduce.'}',
   tags: ['banned'],
 },`;
 
-  return (
-    <ModalDialog onClose={onClose} width="medium">
-      <ModalHeader>
-        <ModalTitle appearance="danger">Ban {entry.name}</ModalTitle>
-      </ModalHeader>
-      <ModalBody>
-        <p style={{ fontSize: 14, color: token('color.text', '#172B4D'), marginBottom: token('space.200', '16px') }}>
-          This permanently bans <strong>{entry.name}</strong> from Catalyst. It will appear with a{' '}
-          red <strong>BANNED</strong> badge so future engineers cannot re-introduce it.
-          {entry.consumers.length > 0 && (
-            <span style={{ color: token('color.text.danger', '#AE2A19'), display: 'block', marginTop: 8 }}>
-              ⚠ {entry.consumers.length} live reference{entry.consumers.length === 1 ? '' : 's'} must be removed first.
-            </span>
-          )}
-        </p>
-        <div style={{ marginBottom: token('space.200', '16px') }}>
-          <label
-            style={{
-              display: 'block',
-              fontSize: 12,
-              fontWeight: 600,
-              color: token('color.text', '#172B4D'),
-              marginBottom: token('space.075', '6px'),
-            }}
-          >
-            Ban reason (banned_reason)
-          </label>
-          <Textfield
-            value={reason}
-            onChange={(e) => setReason((e.target as HTMLInputElement).value)}
-            placeholder="One sentence — why this component must never be used"
-          />
-        </div>
-        <pre
-          style={{
-            fontSize: 12,
-            background: token('color.background.danger', '#FFEDEB'),
-            border: `1px solid ${token('color.border.danger', '#FF8F73')}`,
-            borderRadius: 4,
-            padding: token('space.150', '12px'),
-            overflowX: 'auto',
-            fontFamily: 'ui-monospace, "Roboto Mono", monospace',
-          }}
-        >
-          {snippet}
-        </pre>
-      </ModalBody>
-      <ModalFooter>
-        <Button appearance="subtle" onClick={() => { navigator.clipboard.writeText(snippet); }}>
-          Copy to clipboard
-        </Button>
-        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
-      </ModalFooter>
-    </ModalDialog>
-  );
-}
+  const deprecateSnippet = `// Find or add id: '${entry.id.replace('observed::', '')}' in CANONICAL array:
+  status: 'deprecated',
+  deprecation_target: '${deprecateTarget || '<replacement-id>'}',`;
 
-function MarkCanonicalModal({
-  entry, onClose, isOpen,
-}: { entry: UnifiedEntry; onClose: () => void; isOpen: boolean }) {
-  if (!isOpen) return null;
-  const snippet = `// In src/registry/components.registry.ts — add to CANONICAL array:
-{
+  const canonicalSnippet = `{
   id: '${entry.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}',
   name: '${entry.name}',
   category: 'molecule', // ← update: atom | molecule | organism | page | pattern
@@ -467,141 +354,175 @@ function MarkCanonicalModal({
   status: 'canonical',
   version: '1.0.0',
   file_path: '${entry.file_path ?? 'src/components/...'}',
-  jsdoc_excerpt: 'Short description of what this component does.',
+  jsdoc_excerpt: 'Short description.',
   dark_light_supported: true,
-  tags: ['${entry.tags?.[0] ?? 'add-tags'}'],
+  tags: ['add-tags'],
 },`;
 
-  return (
-    <ModalDialog onClose={onClose} width="medium">
-      <ModalHeader>
-        <ModalTitle>Mark {entry.name} as canonical</ModalTitle>
-      </ModalHeader>
-      <ModalBody>
-        <p style={{ fontSize: 14, color: token('color.text', '#172B4D'), marginBottom: token('space.200', '16px') }}>
-          Promote <strong>{entry.name}</strong> to canonical status. This adds it to the curated registry
-          with a green CANONICAL badge and makes it the standard for its use case.
-        </p>
-        <pre
-          style={{
-            fontSize: 12,
-            background: token('color.background.success', '#DFFCF0'),
-            border: `1px solid ${token('color.border.success', '#4BCE97')}`,
-            borderRadius: 4,
-            padding: token('space.150', '12px'),
-            overflowX: 'auto',
-            fontFamily: 'ui-monospace, "Roboto Mono", monospace',
-          }}
-        >
-          {snippet}
-        </pre>
-        <p style={{ fontSize: 12, color: token('color.text.subtle', '#44546F'), marginTop: token('space.150', '12px') }}>
-          After copying this snippet, add it to the <code>CANONICAL</code> array in{' '}
-          <code>src/registry/components.registry.ts</code> and update the fields marked ← update.
-        </p>
-      </ModalBody>
-      <ModalFooter>
-        <Button appearance="primary" onClick={() => { navigator.clipboard.writeText(snippet); }}>
-          Copy snippet
-        </Button>
-        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
-      </ModalFooter>
-    </ModalDialog>
-  );
-}
-
-function RestoreModal({
-  entry, onClose, isOpen,
-}: { entry: UnifiedEntry; onClose: () => void; isOpen: boolean }) {
-  if (!isOpen) return null;
-  const snippet = `// In src/registry/components.registry.ts — update the entry:
-// Find id: '${entry.id}' and change:
-status: 'canonical',
-// Remove banned_reason, banned_anchor, deprecation_target if present.`;
+  const restoreSnippet = `// Find id: '${entry.id}' in components.registry.ts and set:
+  status: 'canonical',
+  // Remove banned_reason, banned_anchor, deprecation_target.`;
 
   return (
-    <ModalDialog onClose={onClose} width="medium">
-      <ModalHeader>
-        <ModalTitle>Restore {entry.name}</ModalTitle>
-      </ModalHeader>
-      <ModalBody>
-        <p style={{ fontSize: 14, color: token('color.text', '#172B4D'), marginBottom: token('space.200', '16px') }}>
-          Restore <strong>{entry.name}</strong> from {entry.status} to canonical status.
-          {entry.status === 'banned' && (
-            <span style={{ color: token('color.text.danger', '#AE2A19'), display: 'block', marginTop: 8 }}>
-              ⚠ Restoring a banned component requires Vikram's explicit approval. Banned components
-              are permanently out of scope unless the product direction changes.
-            </span>
-          )}
-        </p>
-        <pre
-          style={{
-            fontSize: 12,
-            background: token('color.background.neutral.subtle', '#F7F8F9'),
-            border: `1px solid ${token('color.border', '#DCDFE4')}`,
-            borderRadius: 4,
-            padding: token('space.150', '12px'),
-            overflowX: 'auto',
-            fontFamily: 'ui-monospace, "Roboto Mono", monospace',
-          }}
-        >
-          {snippet}
-        </pre>
-      </ModalBody>
-      <ModalFooter>
-        <Button appearance="subtle" onClick={() => { navigator.clipboard.writeText(snippet); }}>
-          Copy snippet
-        </Button>
-        <Button appearance="subtle" onClick={onClose}>Cancel</Button>
-      </ModalFooter>
-    </ModalDialog>
-  );
-}
-
-// ─── ActionBar ────────────────────────────────────────────────────────────────
-
-function ActionBar({ entry }: { entry: UnifiedEntry }) {
-  const [modal, setModal] = useState<ActiveModal>(null);
-  const { status } = entry;
-
-  return (
-    <>
+    <div>
+      {/* Button row */}
       <div
         style={{
           display: 'flex',
           gap: token('space.100', '8px'),
           flexWrap: 'wrap',
           paddingBottom: token('space.150', '12px'),
-          marginBottom: token('space.200', '16px'),
           borderBottom: `1px solid ${token('color.border', '#DCDFE4')}`,
         }}
       >
         {status === 'observed' && (
-          <Button appearance="primary" spacing="compact" onClick={() => setModal('mark-canonical')}>
+          <Button
+            appearance="primary"
+            spacing="compact"
+            onClick={() => setPanel(panel === 'mark-canonical' ? null : 'mark-canonical')}
+          >
             Mark canonical
           </Button>
         )}
         {(status === 'canonical' || status === 'observed') && (
-          <Button appearance="default" spacing="compact" onClick={() => setModal('deprecate')}>
+          <Button
+            appearance="default"
+            spacing="compact"
+            onClick={() => setPanel(panel === 'deprecate' ? null : 'deprecate')}
+          >
             Deprecate →
           </Button>
         )}
         {(status === 'deprecated' || status === 'banned') && (
-          <Button appearance="default" spacing="compact" onClick={() => setModal('restore')}>
+          <Button
+            appearance="default"
+            spacing="compact"
+            onClick={() => setPanel(panel === 'restore' ? null : 'restore')}
+          >
             Restore ↑
           </Button>
         )}
         {status !== 'banned' && (
-          <Button appearance="danger" spacing="compact" onClick={() => setModal('ban')}>
+          <Button
+            appearance="danger"
+            spacing="compact"
+            onClick={() => setPanel(panel === 'ban' ? null : 'ban')}
+          >
             Ban ✕
           </Button>
         )}
       </div>
-      <DeprecateModal entry={entry} isOpen={modal === 'deprecate'} onClose={() => setModal(null)} />
-      <BanModal entry={entry} isOpen={modal === 'ban'} onClose={() => setModal(null)} />
-      <MarkCanonicalModal entry={entry} isOpen={modal === 'mark-canonical'} onClose={() => setModal(null)} />
-      <RestoreModal entry={entry} isOpen={modal === 'restore'} onClose={() => setModal(null)} />
-    </>
+
+      {/* Inline action panels — expand below buttons, no portal needed */}
+
+      {panel === 'ban' && (
+        <div style={{ ...PANEL_BASE, background: token('color.background.danger', '#FFEDEB'), border: `1px solid ${token('color.border.danger', '#FF8F73')}` }}>
+          <div style={{ fontWeight: 600, color: token('color.text.danger', '#AE2A19'), marginBottom: 8 }}>
+            Ban {entry.name}
+          </div>
+          <p style={{ color: token('color.text', '#172B4D'), marginBottom: 12 }}>
+            Permanently bans this component. It will appear with a red BANNED badge so future engineers
+            cannot re-introduce it.
+            {entry.consumers.length > 0 && (
+              <span style={{ color: token('color.text.danger', '#AE2A19'), display: 'block', marginTop: 6, fontWeight: 600 }}>
+                ⚠ {entry.consumers.length} live reference{entry.consumers.length === 1 ? '' : 's'} must be removed first.
+              </span>
+            )}
+          </p>
+          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text', '#172B4D'), marginBottom: 4 }}>
+            Ban reason (banned_reason)
+          </label>
+          <Textfield
+            value={banReason}
+            onChange={(e) => setBanReason((e.target as HTMLInputElement).value)}
+            placeholder="One sentence — why this component must never be used"
+          />
+          <div style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtle', '#44546F'), marginTop: 12, marginBottom: 4 }}>
+            Add to BANNED array in <code>src/registry/components.registry.ts</code>:
+          </div>
+          <code style={SNIPPET_STYLE}>{banSnippet}</code>
+          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+            <Button appearance="danger" spacing="compact" onClick={() => { navigator.clipboard.writeText(banSnippet); }}>
+              Copy snippet
+            </Button>
+            <Button appearance="subtle" spacing="compact" onClick={() => setPanel(null)}>Dismiss</Button>
+          </div>
+        </div>
+      )}
+
+      {panel === 'deprecate' && (
+        <div style={{ ...PANEL_BASE, background: token('color.background.warning', '#FFF7D6'), border: `1px solid ${token('color.border.warning', '#F5CD47')}` }}>
+          <div style={{ fontWeight: 600, color: token('color.text.warning', '#7F5F01'), marginBottom: 8 }}>
+            Deprecate {entry.name}
+          </div>
+          <p style={{ color: token('color.text', '#172B4D'), marginBottom: 12 }}>
+            Engineers will see a yellow DEPRECATED badge and a migration pointer.
+            {entry.consumers.length > 0 && (
+              <span style={{ color: token('color.text.warning', '#7F5F01'), display: 'block', marginTop: 6, fontWeight: 600 }}>
+                ⚠ {entry.consumers.length} consumer{entry.consumers.length === 1 ? '' : 's'} will need migration.
+              </span>
+            )}
+          </p>
+          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: token('color.text', '#172B4D'), marginBottom: 4 }}>
+            Replacement component id (deprecation_target)
+          </label>
+          <Textfield
+            value={deprecateTarget}
+            onChange={(e) => setDeprecateTarget((e.target as HTMLInputElement).value)}
+            placeholder="e.g. jira-table"
+          />
+          <code style={SNIPPET_STYLE}>{deprecateSnippet}</code>
+          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+            <Button appearance="warning" spacing="compact" onClick={() => { navigator.clipboard.writeText(deprecateSnippet); }}>
+              Copy snippet
+            </Button>
+            <Button appearance="subtle" spacing="compact" onClick={() => setPanel(null)}>Dismiss</Button>
+          </div>
+        </div>
+      )}
+
+      {panel === 'mark-canonical' && (
+        <div style={{ ...PANEL_BASE, background: token('color.background.success', '#DFFCF0'), border: `1px solid ${token('color.border.success', '#4BCE97')}` }}>
+          <div style={{ fontWeight: 600, color: token('color.text.success', '#216E4E'), marginBottom: 8 }}>
+            Mark {entry.name} as canonical
+          </div>
+          <p style={{ color: token('color.text', '#172B4D'), marginBottom: 12 }}>
+            Promotes this component to canonical status — green badge, standard for its use case.
+            Copy the snippet below and add it to the CANONICAL array, updating the fields marked ← update.
+          </p>
+          <code style={SNIPPET_STYLE}>{canonicalSnippet}</code>
+          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+            <Button appearance="primary" spacing="compact" onClick={() => { navigator.clipboard.writeText(canonicalSnippet); }}>
+              Copy snippet
+            </Button>
+            <Button appearance="subtle" spacing="compact" onClick={() => setPanel(null)}>Dismiss</Button>
+          </div>
+        </div>
+      )}
+
+      {panel === 'restore' && (
+        <div style={{ ...PANEL_BASE, background: token('color.background.neutral.subtle', '#F7F8F9'), border: `1px solid ${token('color.border', '#DCDFE4')}` }}>
+          <div style={{ fontWeight: 600, color: token('color.text', '#172B4D'), marginBottom: 8 }}>
+            Restore {entry.name}
+          </div>
+          <p style={{ color: token('color.text', '#172B4D'), marginBottom: 12 }}>
+            Restore from <strong>{entry.status}</strong> to canonical status.
+            {entry.status === 'banned' && (
+              <span style={{ color: token('color.text.danger', '#AE2A19'), display: 'block', marginTop: 6, fontWeight: 600 }}>
+                ⚠ Restoring a banned component requires Vikram's explicit approval.
+              </span>
+            )}
+          </p>
+          <code style={SNIPPET_STYLE}>{restoreSnippet}</code>
+          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+            <Button appearance="default" spacing="compact" onClick={() => { navigator.clipboard.writeText(restoreSnippet); }}>
+              Copy snippet
+            </Button>
+            <Button appearance="subtle" spacing="compact" onClick={() => setPanel(null)}>Dismiss</Button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -1037,62 +958,44 @@ function BannedRegistryPanel() {
 
 // ─── AI Recommendations pane ─────────────────────────────────────────────────
 
-function ApplyModal({
-  rec, onClose, isOpen,
-}: { rec: AiRec; onClose: () => void; isOpen: boolean }) {
-  if (!isOpen || !rec) return null;
-
+// ApplyPanel — inline (no portal, replaces ModalDialog)
+function ApplyPanel({ rec, onClose }: { rec: AiRec; onClose: () => void }) {
   const snippet =
     rec.type === 'ban-violation'
-      ? `// Remove all references to "${rec.entry.name}" from:\n${rec.entry.consumers.map((c) => `//   ${c}`).join('\n')}\n// Then verify: grep -r "${rec.entry.name}" src/ should return 0 results.`
+      ? `// Remove all references to "${rec.entry.name}" from:\n${rec.entry.consumers.map((c) => `//   ${c}`).join('\n')}\n// Then: grep -r "${rec.entry.name}" src/ should return 0 results.`
       : rec.type === 'deprecation-pending' && rec.entry.deprecation_target
       ? `// Replace all usages of ${rec.entry.name} with ${rec.entry.deprecation_target}:\n${rec.entry.consumers.map((c) => `//   ${c}`).join('\n')}`
       : `// Add to CANONICAL array in src/registry/components.registry.ts:\n{\n  id: '${rec.entry.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}',\n  name: '${rec.entry.name}',\n  status: 'canonical',\n  version: '1.0.0',\n}`;
 
-  const appearance = rec.severity === 'urgent' ? 'danger' : rec.severity === 'high' ? 'warning' : 'default';
+  const bg = rec.severity === 'urgent'
+    ? token('color.background.danger', '#FFEDEB')
+    : rec.severity === 'high'
+    ? token('color.background.warning', '#FFF7D6')
+    : token('color.background.neutral.subtle', '#F7F8F9');
+
+  const border = rec.severity === 'urgent'
+    ? `1px solid ${token('color.border.danger', '#FF8F73')}`
+    : rec.severity === 'high'
+    ? `1px solid ${token('color.border.warning', '#F5CD47')}`
+    : `1px solid ${token('color.border', '#DCDFE4')}`;
 
   return (
-    <ModalDialog onClose={onClose} width="medium">
-      <ModalHeader>
-        <ModalTitle appearance={appearance === 'default' ? undefined : appearance}>
-          Apply: {rec.title}
-        </ModalTitle>
-      </ModalHeader>
-      <ModalBody>
-        <p style={{ fontSize: 14, color: token('color.text', '#172B4D'), marginBottom: token('space.200', '16px') }}>
-          {rec.detail}
-        </p>
-        <div
-          style={{
-            fontSize: 13,
-            fontWeight: 600,
-            color: token('color.text', '#172B4D'),
-            marginBottom: token('space.100', '8px'),
-          }}
-        >
-          Suggested action: {rec.suggestedAction}
-        </div>
-        <pre
-          style={{
-            fontSize: 12,
-            background: token('color.background.neutral.subtle', '#F7F8F9'),
-            border: `1px solid ${token('color.border', '#DCDFE4')}`,
-            borderRadius: 4,
-            padding: token('space.150', '12px'),
-            overflowX: 'auto',
-            fontFamily: 'ui-monospace, "Roboto Mono", monospace',
-          }}
-        >
-          {snippet}
-        </pre>
-      </ModalBody>
-      <ModalFooter>
-        <Button appearance="subtle" onClick={() => { navigator.clipboard.writeText(snippet); }}>
+    <div style={{ ...PANEL_BASE, background: bg, border, marginBottom: token('space.200', '16px') }}>
+      <div style={{ fontWeight: 600, color: token('color.text', '#172B4D'), marginBottom: 6 }}>
+        Apply: {rec.title}
+      </div>
+      <p style={{ color: token('color.text', '#172B4D'), marginBottom: 8 }}>{rec.detail}</p>
+      <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtle', '#44546F'), marginBottom: 4 }}>
+        Action: {rec.suggestedAction}
+      </div>
+      <code style={SNIPPET_STYLE}>{snippet}</code>
+      <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+        <Button appearance="primary" spacing="compact" onClick={() => { navigator.clipboard.writeText(snippet); }}>
           Copy steps
         </Button>
-        <Button appearance="subtle" onClick={onClose}>Close</Button>
-      </ModalFooter>
-    </ModalDialog>
+        <Button appearance="subtle" spacing="compact" onClick={onClose}>Dismiss</Button>
+      </div>
+    </div>
   );
 }
 
@@ -1229,7 +1132,7 @@ function AiRecommendationsPane() {
       })}
 
       {applyRec && (
-        <ApplyModal rec={applyRec} isOpen={true} onClose={() => setApplyRec(null)} />
+        <ApplyPanel rec={applyRec} onClose={() => setApplyRec(null)} />
       )}
     </div>
   );
