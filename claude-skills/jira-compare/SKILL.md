@@ -449,22 +449,17 @@ FAIL paths:
 
 ---
 
-## 9. Defect filing
+## 9. Defect reporting
 
-Every defect is a JIRA bug on the BAU board (`BAU` project, current
-tenant). Use Atlassian Rovo MCP `createJiraIssue`. Required fields:
+Every defect is reported as text-only description in chat. Provide:
 
 - Summary: `[jira-compare] <surface> — <one-line defect>`
 - Description: lane evidence (Lane A DOM snippet, Lane B backend value, Lane C if applicable), expected (Jira side), actual (Catalyst side), Atlaskit primitive citation if ADS-related.
-- Issue type: `Bug`.
 - Priority: P0 (blocks CRUD parity), P1 (visible regression), P2 (polish), P-A11Y (a11y).
-- Labels: `jira-compare`, `<surface-slug>`.
 
-No defect is "tracked in chat only". File it.
+No tool calls for external system integration. All reporting is text-only.
 
-(Caveat — when the active directive is "no JIRA bugs filed during the
-audit", honour that. The current cycle uses chat-only tracking; switch
-back to JIRA filing when Vikram lifts it.)
+(Note — all audit output uses text-only descriptions in chat. No tool calls for filing defects in external systems.)
 
 ---
 
