@@ -131,6 +131,50 @@ function FeatureFlagsTable({ flags }: { flags: NonNullable<ComponentRegistryEntr
   );
 }
 
+/** Maps a file path to a human-readable breadcrumb e.g. "Project > Backlog" */
+function getConsumerBreadcrumb(filePath: string): string {
+  const p = filePath;
+  if (p.includes('/_graveyard/') || p.includes('/graveyard/')) return 'Graveyard';
+  if (p.includes('/admin/components/')) return 'Admin > Component Library';
+  if (p.includes('/admin/')) return 'Admin';
+  if (p.includes('BacklogPage') || p.includes('/project-hub/backlog/')) return 'Project > Backlog';
+  if (p.includes('StoryBacklog')) return 'Project > Story Backlog';
+  if (p.includes('/project-hub/allwork/') || p.includes('UWVTable') || p.includes('AllWork')) return 'Project > All Work';
+  if (p.includes('KanbanBoard') || p.includes('PragmaticBoard') || p.includes('/project-hub/kanban/')) return 'Project > Kanban';
+  if (p.includes('AllProjectsPage') || p.includes('AllProjectsTable') || p.includes('/project-hub/projects/')) return 'Project > Projects';
+  if (p.includes('/project-hub/')) return 'Project';
+  if (p.includes('IncidentList') || p.includes('/incidenthub/')) return 'Incidents > List';
+  if (p.includes('CatalystSidebarDetails')) return 'Issue > Detail > Sidebar';
+  if (p.includes('CatalystViewBase')) return 'Issue > Detail > Shell';
+  if (p.includes('CatalystKeyDetails')) return 'Issue > Detail > Key Details';
+  if (p.includes('CatalystStatusPill') || p.includes('CatalystQuickActions')) return 'Issue > Detail > Header';
+  if (p.includes('WatchersChip')) return 'Issue > Detail > Header';
+  if (p.includes('SubtasksPanel')) return 'Issue > Detail > Subtasks';
+  if (p.includes('ActivityPanel') || p.includes('ActivityItem')) return 'Issue > Detail > Activity';
+  if (p.includes('/catalyst-detail-views/story/')) return 'Issue > Detail > Story';
+  if (p.includes('/catalyst-detail-views/epic/')) return 'Issue > Detail > Epic';
+  if (p.includes('/catalyst-detail-views/task/')) return 'Issue > Detail > Task';
+  if (p.includes('/catalyst-detail-views/defect/')) return 'Issue > Detail > QA Bug';
+  if (p.includes('/catalyst-detail-views/incident/')) return 'Issue > Detail > Incident';
+  if (p.includes('/catalyst-detail-views/feature/')) return 'Issue > Detail > Feature';
+  if (p.includes('/catalyst-detail-views/')) return 'Issue > Detail';
+  if (p.includes('/shared/JiraTable/')) return 'Shared > Table';
+  if (p.includes('CanonicalDescriptionField') || p.includes('/rich-text/') || p.includes('DescriptionField')) return 'Shared > Editor';
+  if (p.includes('/shared/')) return 'Shared';
+  if (p.includes('GlobalSearch')) return 'Shell > Search';
+  if (p.includes('Notification')) return 'Shell > Notifications';
+  if (p.includes('Sidebar') || p.includes('/navigation/')) return 'Shell > Navigation';
+  if (p.includes('R360') || p.includes('Resource360') || p.includes('MyResource')) return 'Resources > R360';
+  if (p.includes('/testhub/') || p.includes('TestHub') || p.includes('TestRepository')) return 'Test Hub';
+  if (p.includes('/producthub/') || p.includes('ProductHub')) return 'Products';
+  if (p.includes('/releases/') || p.includes('Release')) return 'Releases';
+  if (p.includes('Caty') || p.includes('caty') || p.includes('CatyAI')) return 'AI > Caty';
+  const parts = p.replace(/^src\//, '').split('/');
+  return parts.slice(0, Math.min(2, parts.length))
+    .map(s => s.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()))
+    .join(' > ');
+}
+
 function ConsumerList({ name }: { name: string }) {
   const consumers = getAllConsumersByName(name);
   const variants = getUsageByName(name);
@@ -145,13 +189,32 @@ function ConsumerList({ name }: { name: string }) {
           fontStyle: 'italic',
         }}
       >
-        No live consumers found by the AST scan. (This is expected for entries
-        not yet rendered, or names that don't match any imported identifier.)
+        No live consumers found by the AST scan.
       </div>
     );
   }
 
-  const visible = expanded ? consumers : consumers.slice(0, CONSUMER_PREVIEW_LIMIT);
+  // Group by functional breadcrumb area
+  const grouped = new Map<string, string[]>();
+  for (const p of consumers) {
+    const area = getConsumerBreadcrumb(p);
+    if (!grouped.has(area)) grouped.set(area, []);
+    grouped.get(area)!.push(p);
+  }
+  const sortedAreas = Array.from(grouped.entries()).sort(([a], [b]) => a.localeCompare(b));
+
+  // For the collapsed view, show up to CONSUMER_PREVIEW_LIMIT across all groups
+  const visibleAreas = expanded ? sortedAreas : (() => {
+    let count = 0;
+    const result: Array<[string, string[]]> = [];
+    for (const [area, paths] of sortedAreas) {
+      if (count >= CONSUMER_PREVIEW_LIMIT) break;
+      const slice = paths.slice(0, CONSUMER_PREVIEW_LIMIT - count);
+      result.push([area, slice]);
+      count += slice.length;
+    }
+    return result;
+  })();
 
   return (
     <div>
@@ -160,7 +223,7 @@ function ConsumerList({ name }: { name: string }) {
           display: 'flex',
           alignItems: 'center',
           gap: token('space.100', '8px'),
-          marginBottom: token('space.100', '8px'),
+          marginBottom: token('space.150', '12px'),
         }}
       >
         <Heading size="xsmall">Consumers</Heading>
@@ -171,22 +234,65 @@ function ConsumerList({ name }: { name: string }) {
           </span>
         )}
       </div>
-      <ul
-        style={{
-          margin: 0,
-          padding: 0,
-          listStyle: 'none',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: token('space.050', '4px'),
-        }}
-      >
-        {visible.map(path => (
-          <li key={path}>
-            <VscodeLink path={path} />
-          </li>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {visibleAreas.map(([area, paths]) => (
+          <div key={area}>
+            {/* Breadcrumb group header */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 5,
+                marginBottom: 4,
+              }}
+            >
+              {area.split(' > ').map((crumb, i, arr) => (
+                <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 600,
+                      color: i === arr.length - 1
+                        ? token('color.text', '#172B4D')
+                        : token('color.text.subtlest', '#626F86'),
+                      background: i === arr.length - 1
+                        ? token('color.background.neutral', '#091E420F')
+                        : 'transparent',
+                      padding: i === arr.length - 1 ? '1px 6px' : '0',
+                      borderRadius: i === arr.length - 1 ? 3 : 0,
+                    }}
+                  >
+                    {crumb}
+                  </span>
+                  {i < arr.length - 1 && (
+                    <span style={{ color: token('color.text.subtlest', '#626F86'), fontSize: 10 }}>›</span>
+                  )}
+                </span>
+              ))}
+            </div>
+            {/* Files in this group */}
+            <ul
+              style={{
+                margin: 0,
+                padding: '0 0 0 10px',
+                listStyle: 'none',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+                borderLeft: `2px solid ${token('color.border', '#DCDFE4')}`,
+              }}
+            >
+              {paths.map(p => (
+                <li key={p}>
+                  <VscodeLink path={p} label={p.split('/').slice(-2).join('/')} />
+                </li>
+              ))}
+            </ul>
+          </div>
         ))}
-      </ul>
+      </div>
+
       {consumers.length > CONSUMER_PREVIEW_LIMIT && (
         <div style={{ marginTop: token('space.150', '12px') }}>
           <Button
@@ -203,7 +309,6 @@ function ConsumerList({ name }: { name: string }) {
     </div>
   );
 }
-
 export interface ComponentSpecCardProps {
   entry: ComponentRegistryEntry;
 }

@@ -226,8 +226,6 @@ export default function CascadeImpactPanel() {
             style={{
               fontSize: 11,
               fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
               color: token('color.text.subtle', '#44546F'),
               display: 'block',
               marginBottom: token('space.075', '6px'),
@@ -247,8 +245,6 @@ export default function CascadeImpactPanel() {
             style={{
               fontSize: 11,
               fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
               color: token('color.text.subtle', '#44546F'),
               display: 'block',
               marginBottom: token('space.075', '6px'),

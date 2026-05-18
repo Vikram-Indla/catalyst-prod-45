@@ -116,7 +116,275 @@ function StatsStrip() {
   );
 }
 
-// ─── Inventory tab — side-nav + main pane placeholder ────────────────────────
+// ─── AI Intelligence pane ─────────────────────────────────────────────────────
+
+type AiRecAction = 'replace' | 'deprecate' | 'remove' | 'rewrite';
+type AiRecUrgency = 'P0' | 'P1' | 'P2';
+
+interface AiRec {
+  name: string;
+  action: AiRecAction;
+  urgency: AiRecUrgency;
+  consumers: number;
+  reason: string;
+  replacement: string | null;
+}
+
+const AI_RECS: AiRec[] = [
+  // ── P0 — WCAG 2.1 AA failures (hand-rolled menus) ──
+  {
+    name: 'HierarchyContextMenu',
+    action: 'rewrite',
+    urgency: 'P0',
+    consumers: 1,
+    reason: 'Hand-rolled dropdown state (no ARIA, no keyboard nav). WCAG 2.1 AA failure.',
+    replacement: '@atlaskit/dropdown-menu',
+  },
+  {
+    name: 'FolderPanel (context menu)',
+    action: 'rewrite',
+    urgency: 'P0',
+    consumers: 1,
+    reason: 'Hand-rolled folderContextMenu state. WCAG 2.1 AA failure.',
+    replacement: '@atlaskit/dropdown-menu',
+  },
+  {
+    name: 'TestRepositoryPage (context menu)',
+    action: 'rewrite',
+    urgency: 'P0',
+    consumers: 1,
+    reason: 'Hand-rolled contextMenu state. WCAG 2.1 AA failure.',
+    replacement: '@atlaskit/dropdown-menu',
+  },
+  // ── P1 — dead files and ADS violations ──
+  {
+    name: 'dynamic-table (DynamicTable)',
+    action: 'remove',
+    urgency: 'P1',
+    consumers: 1,
+    reason: 'Deprecated in registry. Only legacy StoryBacklogPage still uses it.',
+    replacement: 'JiraTable',
+  },
+  {
+    name: 'StoryRichTextEditor',
+    action: 'remove',
+    urgency: 'P1',
+    consumers: 0,
+    reason: 'Tombstoned 2026-04-20 (exports undefined). Dead file with footgun risk.',
+    replacement: 'CanonicalDescriptionField',
+  },
+  {
+    name: 'CatalystMdtRefField',
+    action: 'remove',
+    urgency: 'P1',
+    consumers: 0,
+    reason: 'Banned (2026-05-05). File exists in repo — footgun risk for future devs.',
+    replacement: null,
+  },
+  {
+    name: 'CatalystAssessmentFeatureField',
+    action: 'remove',
+    urgency: 'P1',
+    consumers: 0,
+    reason: 'Banned (2026-05-07). File exists in repo — footgun risk for future devs.',
+    replacement: null,
+  },
+  {
+    name: '@/components/ui/button (Radix/shadcn)',
+    action: 'deprecate',
+    urgency: 'P1',
+    consumers: 890,
+    reason: 'Radix + Tailwind CSS. Highest-footprint ADS violation in the codebase.',
+    replacement: '@atlaskit/button/new',
+  },
+  {
+    name: '@/components/ui/dialog (Radix/shadcn)',
+    action: 'deprecate',
+    urgency: 'P1',
+    consumers: 258,
+    reason: 'Radix + Tailwind. ADS violation — use Atlaskit modal instead.',
+    replacement: '@atlaskit/modal-dialog',
+  },
+  {
+    name: '@/components/ui/select (Radix/shadcn)',
+    action: 'deprecate',
+    urgency: 'P1',
+    consumers: 296,
+    reason: 'Radix + Tailwind. ADS violation — use Atlaskit select instead.',
+    replacement: '@atlaskit/select',
+  },
+  {
+    name: '@/components/ui/dropdown-menu (Radix/shadcn)',
+    action: 'deprecate',
+    urgency: 'P1',
+    consumers: 151,
+    reason: 'Radix + Tailwind. ADS violation — use Atlaskit dropdown-menu instead.',
+    replacement: '@atlaskit/dropdown-menu',
+  },
+  // ── P2 — deprecated shims ──
+  {
+    name: 'WorkItemIcon (shim)',
+    action: 'remove',
+    urgency: 'P2',
+    consumers: 4,
+    reason: 'Deprecated alias for JiraIssueTypeIcon. ESLint blocks new usages. 4 non-graveyard consumers remain.',
+    replacement: 'JiraIssueTypeIcon',
+  },
+  {
+    name: '@/components/ui/StatusLozenge (shim)',
+    action: 'remove',
+    urgency: 'P2',
+    consumers: 22,
+    reason: 'Legacy shim wrapping @atlaskit/lozenge. 22 files still import via the shim path.',
+    replacement: '@atlaskit/lozenge',
+  },
+  {
+    name: 'ActivityItem (lozenge import path)',
+    action: 'rewrite',
+    urgency: 'P2',
+    consumers: 1,
+    reason: "Imports from '../status/Lozenge' — a third import path for the same ADS primitive.",
+    replacement: '@atlaskit/lozenge',
+  },
+];
+
+const AI_ACTION_COLORS: Record<AiRecAction, { bg: string; text: string; label: string }> = {
+  replace:   { bg: '#E9F2FF', text: '#0055CC', label: 'Replace' },
+  deprecate: { bg: '#FFF7D6', text: '#7F5F01', label: 'Deprecate' },
+  remove:    { bg: '#FFEDEB', text: '#AE2A19', label: 'Remove' },
+  rewrite:   { bg: '#F3F0FF', text: '#5E4DB2', label: 'Rewrite' },
+};
+
+const AI_URGENCY_COLORS: Record<AiRecUrgency, string> = {
+  P0: '#AE2A19',
+  P1: '#7F5F01',
+  P2: '#44546F',
+};
+
+function AiRecommendationsPane() {
+  const grouped: Record<AiRecUrgency, AiRec[]> = { P0: [], P1: [], P2: [] };
+  for (const rec of AI_RECS) grouped[rec.urgency].push(rec);
+
+  const urgencyLabels: Record<AiRecUrgency, string> = {
+    P0: 'P0 — Fix before next release (WCAG blockers)',
+    P1: 'P1 — Fix in current sprint (ADS violations)',
+    P2: 'P2 — Polish backlog (deprecated shims)',
+  };
+
+  return (
+    <div
+      style={{
+        marginTop: token('space.200', '16px'),
+        display: 'flex',
+        flexDirection: 'column',
+        gap: token('space.300', '24px'),
+      }}
+    >
+      <p
+        style={{
+          margin: 0,
+          fontSize: 13,
+          color: token('color.text.subtle', '#44546F'),
+          lineHeight: '20px',
+          maxWidth: 760,
+        }}
+      >
+        AI-driven analysis of component usage across the codebase (AST scan + CLAUDE.md audit).
+        Recommendations are classified by urgency — P0 blocks ship, P1 should land this sprint, P2 is polish.
+      </p>
+
+      {(['P0', 'P1', 'P2'] as AiRecUrgency[]).map(urgency => (
+        <div key={urgency}>
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: 700,
+              color: AI_URGENCY_COLORS[urgency],
+              marginBottom: token('space.150', '12px'),
+              paddingBottom: 6,
+              borderBottom: `1px solid ${token('color.border', '#DCDFE4')}`,
+            }}
+          >
+            {urgencyLabels[urgency]} · {grouped[urgency].length} item{grouped[urgency].length === 1 ? '' : 's'}
+          </div>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+              gap: token('space.150', '12px'),
+            }}
+          >
+            {grouped[urgency].map(rec => {
+              const actionStyle = AI_ACTION_COLORS[rec.action];
+              return (
+                <div
+                  key={rec.name}
+                  style={{
+                    border: `1px solid ${token('color.border', '#DCDFE4')}`,
+                    borderRadius: 6,
+                    padding: token('space.150', '12px'),
+                    background: token('elevation.surface', '#FFFFFF'),
+                  }}
+                >
+                  <div
+                    style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 6 }}
+                  >
+                    <span style={{ fontWeight: 600, fontSize: 13, flex: 1, color: token('color.text', '#172B4D') }}>
+                      {rec.name}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: 10,
+                        fontWeight: 700,
+                        padding: '2px 6px',
+                        borderRadius: 3,
+                        background: actionStyle.bg,
+                        color: actionStyle.text,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {actionStyle.label}
+                    </span>
+                  </div>
+                  <p style={{ margin: '0 0 8px', fontSize: 12, color: token('color.text.subtle', '#44546F'), lineHeight: '17px' }}>
+                    {rec.reason}
+                  </p>
+                  <div style={{ display: 'flex', gap: 12, fontSize: 11, color: token('color.text.subtlest', '#626F86') }}>
+                    <span>
+                      {rec.consumers} consumer{rec.consumers === 1 ? '' : 's'}
+                    </span>
+                    {rec.replacement && (
+                      <span>
+                        {'→ '}<code style={{ fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", monospace', fontSize: 11 }}>{rec.replacement}</code>
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Inventory tab — side-nav + main pane ────────────────────────────────────
+
+/** Short functional context subtitle shown below each sidebar list item */
+function getComponentFunctionalContext(entry: ComponentRegistryEntry): string {
+  if (entry.atlaskit_package) return entry.atlaskit_package.replace('@atlaskit/', '');
+  if (entry.file_path) {
+    const p = entry.file_path;
+    if (p.includes('/shared/JiraTable/')) return 'Shared › Table';
+    if (p.includes('/catalyst-detail-views/shared/')) return 'Issue › Detail › Shared';
+    if (p.includes('/catalyst-detail-views/')) return 'Issue › Detail';
+    if (p.includes('/shared/')) return 'Shared';
+    if (p.includes('/lib/')) return 'Lib';
+    if (p.includes('/admin/')) return 'Admin';
+  }
+  return entry.origin;
+}
 
 function StatusBadge({ status }: { status: ComponentRegistryEntry['status'] }) {
   if (status === 'canonical') return <Lozenge appearance="success">Canonical</Lozenge>;
@@ -139,6 +407,7 @@ function ComponentListItem({
     <ButtonItem
       isSelected={selected}
       onClick={onSelect}
+      description={getComponentFunctionalContext(entry)}
       iconAfter={
         <span style={{ fontSize: 11, color: token('color.text.subtle', '#44546F') }}>
           {consumerCount}
@@ -310,26 +579,6 @@ function BannedPane() {
   );
 }
 
-// ─── Placeholder panes (Steps 9 + 11) ────────────────────────────────────────
-
-function PlaceholderPane({ step, title }: { step: number; title: string }) {
-  return (
-    <div
-      style={{
-        marginTop: token('space.200', '16px'),
-        padding: token('space.300', '24px'),
-        border: `1px solid ${token('color.border', '#DCDFE4')}`,
-        borderRadius: 6,
-        background: token('color.background.neutral.subtle', '#F7F8F9'),
-        color: token('color.text.subtle', '#44546F'),
-        fontSize: 13,
-      }}
-    >
-      {title} — lands in Step {step}.
-    </div>
-  );
-}
-
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function ComponentsAdminPage() {
@@ -365,6 +614,7 @@ export default function ComponentsAdminPage() {
             <Tab>Inventory ({registryStats.canonical + registryStats.deprecated})</Tab>
             <Tab>Banned ({registryStats.banned})</Tab>
             <Tab>Violations ({adsViolationsStats.total})</Tab>
+            <Tab>AI Intelligence ({AI_RECS.length})</Tab>
             <Tab>Cascade</Tab>
             <Tab>Publish</Tab>
             <Tab>History</Tab>
@@ -377,6 +627,9 @@ export default function ComponentsAdminPage() {
           </TabPanel>
           <TabPanel>
             <ADSViolationsPanel />
+          </TabPanel>
+          <TabPanel>
+            <AiRecommendationsPane />
           </TabPanel>
           <TabPanel>
             <CascadeImpactPanel />
