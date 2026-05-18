@@ -185,13 +185,13 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                   {label}
                 </div>
                 {i === 0 && selectedParentIssue && (
-                  <div style={{ fontSize: 12, color: 'var(--ds-text, #172B4D)', marginTop: 4 }}>
+                  <div style={{ fontSize: 12, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', marginTop: 4 }}>
                     Parent Issue: <strong>{selectedParentIssue.issue_key}</strong><br />
                     Sub-task Type: <strong>{subtaskType}</strong>
                   </div>
                 )}
                 {i === 1 && step > 1 && (
-                  <div style={{ fontSize: 12, color: 'var(--ds-text, #172B4D)', marginTop: 4 }}>
+                  <div style={{ fontSize: 12, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', marginTop: 4 }}>
                     Status: <strong>{newStatus}</strong>
                   </div>
                 )}
@@ -203,7 +203,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
         {/* Right content */}
         <div style={{ flex: 1, padding: '28px 36px', display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-            <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--ds-text, #172B4D)', margin: 0 }}>
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', margin: 0 }}>
               Convert Issue to Sub-task: {issueKey}
             </h2>
             <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
@@ -225,12 +225,12 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
             <div style={{ flex: 1 }}>
               {/* Parent search */}
               <div style={{ marginBottom: 20 }}>
-                <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #172B4D)', display: 'block', marginBottom: 6 }}>Parent Issue</label>
+                <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', display: 'block', marginBottom: 6 }}>Parent Issue</label>
                 {selectedParentIssue ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 4, border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', background: 'var(--ds-surface-sunken, #F4F5F7)' }}>
                     <JiraIssueTypeIcon type={selectedParentIssue.issue_type} size={16} />
                     <span style={{ fontSize: 13, fontWeight: 600, color: '#0C66E4' }}>{selectedParentIssue.issue_key}</span>
-                    <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', flex: 1 }}>{selectedParentIssue.summary}</span>
+                    <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', flex: 1 }}>{selectedParentIssue.summary}</span>
                     <button onClick={() => { setSelectedParentId(null); setSelectedParentIssue(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
                       <X size={14} color="var(--ds-text-subtlest, #6B778C)" />
                     </button>
@@ -267,7 +267,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                             >
                               <JiraIssueTypeIcon type={p.issue_type} size={16} />
                               <span style={{ fontWeight: 600, color: '#0C66E4', flexShrink: 0 }}>{p.issue_key}</span>
-                              <span style={{ color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{p.summary}</span>
+                              <span style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{p.summary}</span>
                               <span style={{ display: 'inline-block', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', padding: '2px 6px', borderRadius: 3, background: lozBg, color: lozColor, flexShrink: 0, whiteSpace: 'nowrap' }}>{p.status}</span>
                             </button>
                           );
@@ -284,7 +284,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
 
               {/* Sub-task type */}
               <div>
-                <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #172B4D)', display: 'block', marginBottom: 6 }}>Sub-task Type</label>
+                <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', display: 'block', marginBottom: 6 }}>Sub-task Type</label>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   {getAvailableSubtaskTypes(issueType).map(t => (
                     <label key={t} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 4, cursor: 'pointer', background: subtaskType === t ? '#E9F2FF' : 'transparent' }}
@@ -293,7 +293,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                     >
                       <input type="radio" name="subtask-type" checked={subtaskType === t} onChange={() => setSubtaskType(t)} style={{ accentColor: '#0C66E4' }} />
                       <JiraIssueTypeIcon type={t} size={16} />
-                      <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>{t}</span>
+                      <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{t}</span>
                     </label>
                   ))}
                 </div>
@@ -305,7 +305,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
           {step === 1 && (
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #172B4D)', flexShrink: 0 }}>Select New Status:</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', flexShrink: 0 }}>Select New Status:</div>
                 <span style={{ display: 'inline-block', height: 20, lineHeight: '20px', padding: '0 6px', borderRadius: 3, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text, #253858)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', whiteSpace: 'nowrap', flexShrink: 0 }}>{currentStatus}</span>
                 <span style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 16 }}>→</span>
                 <Select value={newStatus} onValueChange={setNewStatus}>
@@ -340,24 +340,24 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
               </div>
               <div style={{ borderTop: '1px solid #EBECF0' }}>
                 <div style={{ display: 'flex', padding: '12px 0', borderBottom: '1px solid #EBECF0' }}>
-                  <span style={{ width: 140, fontSize: 13, fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>Type</span>
+                  <span style={{ width: 140, fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Type</span>
                   <span style={{ fontSize: 13, color: '#DE350B' }}>{issueType}</span>
                 </div>
                 <div style={{ display: 'flex', padding: '12px 0', borderBottom: '1px solid #EBECF0' }}>
-                  <span style={{ width: 140, fontSize: 13, fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>Status (Workflow)</span>
+                  <span style={{ width: 140, fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Status (Workflow)</span>
                   <span style={{ padding: '2px 8px', borderRadius: 3, background: '#FFFAE6', border: '1px solid #FFE380', fontSize: 12, fontWeight: 700, textTransform: 'uppercase' as const }}>{currentStatus}</span>
                 </div>
                 <div style={{ display: 'flex', padding: '12px 0', borderBottom: '1px solid #EBECF0' }}>
-                  <span style={{ width: 140, fontSize: 13, fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>New Type</span>
+                  <span style={{ width: 140, fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>New Type</span>
                   <span style={{ fontSize: 13, color: '#0C66E4' }}>{subtaskType}</span>
                 </div>
                 <div style={{ display: 'flex', padding: '12px 0', borderBottom: '1px solid #EBECF0' }}>
-                  <span style={{ width: 140, fontSize: 13, fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>New Parent</span>
+                  <span style={{ width: 140, fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>New Parent</span>
                   <span style={{ fontSize: 13, color: '#0C66E4' }}>{selectedParentIssue?.issue_key}</span>
                 </div>
                 <div style={{ display: 'flex', padding: '12px 0', borderBottom: '1px solid #EBECF0' }}>
-                  <span style={{ width: 140, fontSize: 13, fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>New Status</span>
-                  <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>{newStatus}</span>
+                  <span style={{ width: 140, fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>New Status</span>
+                  <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{newStatus}</span>
                 </div>
               </div>
             </div>
@@ -366,7 +366,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
           {/* Navigation buttons */}
           <div style={{ display: 'flex', gap: 8, marginTop: 20, borderTop: '1px solid #EBECF0', paddingTop: 16 }}>
             {step > 0 && (
-              <button onClick={() => setStep(s => s - 1)} style={{ padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface-sunken, #F4F5F7)', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: 'var(--ds-text, #172B4D)' }}>
+              <button onClick={() => setStep(s => s - 1)} style={{ padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface-sunken, #F4F5F7)', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
                 Back
               </button>
             )}

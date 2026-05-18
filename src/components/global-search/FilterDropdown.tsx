@@ -182,7 +182,7 @@ export function FilterDropdown({
                 >
                   <Checkbox isChecked={checked} onChange={() => toggle(opt.id)} />
                   {opt.icon ?? <Avatar appearance="circle" size="small" name={opt.name} src={opt.avatarSrc} />}
-                  <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--cp-font-body)' }}>
+                  <span style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontFamily: 'var(--cp-font-body)' }}>
                     {opt.name}
                     {opt.tag ? <span style={{ color: 'var(--ds-text-subtle, #626F86)' }}> ({opt.tag})</span> : null}
                   </span>
@@ -206,7 +206,7 @@ export function FilterDropdown({
               padding: '12px 16px',
               borderTop: '1px solid var(--ds-border)',
               fontSize: 14,
-              color: 'var(--ds-text, #172B4D)',
+              color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
               fontFamily: 'var(--cp-font-body)',
             }}
           >

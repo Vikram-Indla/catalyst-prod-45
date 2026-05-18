@@ -37,7 +37,7 @@ function AkBtn({
           : hover ? token('color.background.neutral.hovered', '#F1F2F4') : token('elevation.surface', '#FFFFFF'),
         fontSize: 14,
         fontWeight: 500,
-        color: primary ? '#FFFFFF' : token('color.text', '#172B4D'),
+        color: primary ? '#FFFFFF' : token('color.text', 'var(--cp-text-primary, #172B4D)'),
         cursor: 'pointer',
         fontFamily: 'inherit',
         display: 'inline-flex',
@@ -101,7 +101,7 @@ export function ProductDashboardPage() {
               margin: '4px 0 0',
               fontSize: 20,
               fontWeight: 600,
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
               lineHeight: '24px',
             }}
           >

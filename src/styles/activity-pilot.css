@@ -10,7 +10,7 @@
 /* ── Heading ── */
 .ap-heading {
   font: 600 16px/22px system-ui, -apple-system, sans-serif;
-  color: var(--aw-text, #172B4D);
+  color: var(--aw-text, var(--cp-text-primary, #172B4D));
   margin: 0 0 8px;
 }
 
@@ -37,7 +37,7 @@
   cursor: pointer;
   transition: color 150ms, border-color 150ms;
 }
-.ap-tab:hover { color: var(--ds-text, #172B4D); }
+.ap-tab:hover { color: var(--ds-text, var(--cp-text-primary, #172B4D)); }
 .ap-tab.active {
   color: var(--cp-primary-60, #0052CC);
   border-bottom-color: var(--cp-primary-60, #0052CC);
@@ -106,7 +106,7 @@
   cursor: pointer;
   transition: background 150ms, color 150ms;
 }
-.ap-quick-btn:hover { background: var(--ds-surface-sunken, #F4F5F7); color: var(--ds-text, #172B4D); }
+.ap-quick-btn:hover { background: var(--ds-surface-sunken, #F4F5F7); color: var(--ds-text, var(--cp-text-primary, #172B4D)); }
 
 /* ── Composer expanded ── */
 .ap-composer-expanded {
@@ -156,7 +156,7 @@
   cursor: pointer;
   transition: color 150ms;
 }
-.ap-cancel-btn:hover { color: var(--ds-text, #172B4D); }
+.ap-cancel-btn:hover { color: var(--ds-text, var(--cp-text-primary, #172B4D)); }
 
 .ap-composer-hints {
   margin-top: 8px;
@@ -187,7 +187,7 @@
   border-radius: 3px;
   background: var(--ds-surface-sunken, #F4F5F7);
   font: 700 11px/16px var(--cp-font-mono);
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
 }
 
 /* ── Loading editor fallback ── */
@@ -208,7 +208,7 @@
 .ap-timeline-content { flex: 1; min-width: 0; }
 .ap-timeline-name {
   font: 500 14px/20px system-ui, -apple-system, sans-serif;
-  color: var(--aw-text, #172B4D);
+  color: var(--aw-text, var(--cp-text-primary, #172B4D));
 }
 .ap-timeline-name strong { font-weight: 600; }
 .ap-timeline-time {
@@ -223,7 +223,7 @@
 }
 .ap-comment-plain {
   font: 400 14px/22px system-ui, -apple-system, sans-serif;
-  color: var(--aw-text, #172B4D);
+  color: var(--aw-text, var(--cp-text-primary, #172B4D));
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -247,7 +247,7 @@
   border-radius: 3px;
   font: 600 11px/16px system-ui, -apple-system, sans-serif;
   text-transform: uppercase;
-  color: var(--aw-text, #172B4D);
+  color: var(--aw-text, var(--cp-text-primary, #172B4D));
   white-space: nowrap;
 }
 .ap-assignee-chip {
@@ -255,7 +255,7 @@
   align-items: center;
   gap: 6px;
   font: 400 13px/18px system-ui, -apple-system, sans-serif;
-  color: var(--aw-text, #172B4D);
+  color: var(--aw-text, var(--cp-text-primary, #172B4D));
 }
 .ap-assignee-mini {
   width: 22px;
@@ -273,7 +273,7 @@
 }
 .ap-change-new {
   font: 500 13px/18px system-ui;
-  color: var(--aw-text, #172B4D);
+  color: var(--aw-text, var(--cp-text-primary, #172B4D));
 }
 
 /* States */

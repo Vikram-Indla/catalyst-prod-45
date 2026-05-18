@@ -200,7 +200,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
             <ModalTitle appearance="warning">Remove member</ModalTitle>
           </ModalHeader>
           <ModalBody>
-            <p style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', margin: 0 }}>
+            <p style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', margin: 0 }}>
               Remove <strong>{pendingRemove.name}</strong> from this project? They will lose access to all project work items and settings.
             </p>
           </ModalBody>

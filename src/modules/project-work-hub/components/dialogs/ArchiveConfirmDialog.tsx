@@ -135,7 +135,7 @@ export function ArchiveConfirmDialog({
             <ModalTitle appearance={isArchive ? 'warning' : undefined}>{titleText}</ModalTitle>
           </ModalHeader>
           <ModalBody>
-            <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', lineHeight: 1.5 }}>
               <div style={{ marginBottom: 8, color: 'var(--ds-text-subtle, #42526E)' }}>
                 <strong>{issue.issue_key}</strong> — {issue.summary}
               </div>

@@ -29,7 +29,7 @@ export const WorkListHeader = memo(function WorkListHeader({
           margin: 0,
           fontSize: '16px',
           fontWeight: 600,
-          color: '#172B4D',
+          color: 'var(--cp-text-primary, #172B4D)',
         }}
       >
         Work Items{' '}

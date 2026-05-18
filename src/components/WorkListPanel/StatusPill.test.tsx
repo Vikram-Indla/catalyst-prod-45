@@ -38,7 +38,7 @@ describe('StatusPill', () => {
     // Should have light grey background
     expect(computed.backgroundColor).toBeTruthy();
     // Should have dark text for contrast
-    expect(computed.color).toContain('23'); // rgb(23, 43, 77) = #172B4D
+    expect(computed.color).toContain('23'); // rgb(23, 43, 77) = var(--cp-text-primary, #172B4D)
   });
 
   it('renders inprogress category with blue background', () => {
@@ -66,7 +66,7 @@ describe('StatusPill', () => {
     // Should have green background
     expect(computed.backgroundColor).toBeTruthy();
     // Should have dark text for contrast
-    expect(computed.color).toContain('23'); // rgb(23, 43, 77) = #172B4D
+    expect(computed.color).toContain('23'); // rgb(23, 43, 77) = var(--cp-text-primary, #172B4D)
   });
 
   it('renders with correct typography (11px, 600 weight, uppercase)', () => {

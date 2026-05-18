@@ -30,7 +30,7 @@ export function ConfirmArchiveDialog({
         <ModalTitle appearance="warning">Archive issue</ModalTitle>
       </ModalHeader>
       <ModalBody>
-        <p style={{ margin: '0 0 8px', fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>
+        <p style={{ margin: '0 0 8px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
           {issueSummary ? (
             <>Archive <strong>{issueSummary.slice(0, 80)}{issueSummary.length > 80 ? '…' : ''}</strong>?</>
           ) : (

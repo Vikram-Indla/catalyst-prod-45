@@ -101,7 +101,7 @@ function SidebarMemberRow({
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
           fontSize: 13, fontWeight: active ? 600 : 400,
-          color: active ? token('color.text.selected', 'var(--cp-primary-60, #0052CC)') : token('color.text', '#172B4D'),
+          color: active ? token('color.text.selected', 'var(--cp-primary-60, #0052CC)') : token('color.text', 'var(--cp-text-primary, #172B4D)'),
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {name}
@@ -198,7 +198,7 @@ function SidebarRoster({
             border: `2px solid ${focused ? token('color.border.focused', '#388BFF') : token('color.border.input', '#8590A2')}`,
             borderRadius: 3,
             background: token('color.background.input', '#FAFBFC'),
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
             outline: 'none',
             boxSizing: 'border-box' as const,
             transition: 'border-color 120ms ease',
@@ -299,7 +299,7 @@ function MemberPill({
         cursor: 'pointer', transition: 'all 120ms ease', gap: 1,
       }}
     >
-      <span style={{ fontSize: 13, fontWeight: active ? 600 : 400, color: active ? token('color.text.selected', 'var(--cp-primary-60, #0052CC)') : token('color.text', '#172B4D'), whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 13, fontWeight: active ? 600 : 400, color: active ? token('color.text.selected', 'var(--cp-primary-60, #0052CC)') : token('color.text', 'var(--cp-text-primary, #172B4D)'), whiteSpace: 'nowrap' }}>
         {label}
       </span>
       {sublabel && (

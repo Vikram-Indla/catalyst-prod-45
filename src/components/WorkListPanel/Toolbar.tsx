@@ -94,7 +94,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             background: 'transparent',
             fontSize: '13px',
             fontWeight: 400,
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
             fontFamily: 'var(--cp-font-body)',
           }}
         />
@@ -178,7 +178,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             background: 'transparent',
             fontSize: '13px',
             fontWeight: 400,
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
             cursor: 'pointer',
             fontFamily: 'var(--cp-font-body)',
             outline: 'none',

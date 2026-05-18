@@ -161,7 +161,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
     <div className="mt-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-semibold text-[var(--ds-text,#172B4D)]">Activity</h2>
+        <h2 className="text-base font-semibold text-[var(--ds-text,var(--cp-text-primary, #172B4D))]">Activity</h2>
         <div className="flex items-center gap-1">
           <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,#F4F5F7)] text-[#42526E]">
             <Filter className="w-4 h-4" />
@@ -207,7 +207,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
             <div>
               <textarea
                 autoFocus
-                className="w-full border-2 border-[var(--ds-text-brand,#2563eb)] rounded p-3 text-sm text-[var(--ds-text,#172B4D)] outline-none min-h-[80px] resize-none"
+                className="w-full border-2 border-[var(--ds-text-brand,#2563eb)] rounded p-3 text-sm text-[var(--ds-text,var(--cp-text-primary, #172B4D))] outline-none min-h-[80px] resize-none"
                 placeholder="Add a comment..."
                 value={comment}
                 onChange={e => setComment(e.target.value)}
@@ -221,7 +221,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
                   Save
                 </button>
                 <button
-                  className="px-3 h-8 rounded text-sm text-[var(--ds-text,#172B4D)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)]"
+                  className="px-3 h-8 rounded text-sm text-[var(--ds-text,var(--cp-text-primary, #172B4D))] hover:bg-[var(--ds-surface-sunken,#F4F5F7)]"
                   onClick={() => { setIsComposerExpanded(false); setComment(''); }}
                 >
                   Cancel
@@ -258,14 +258,14 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
               </div>
               <div className="flex-1">
                 <div className="flex flex-wrap items-baseline gap-1.5 mb-0.5">
-                  <span className="text-sm font-semibold text-[var(--ds-text,#172B4D)]">{entry.author_name ?? 'System'}</span>
+                  <span className="text-sm font-semibold text-[var(--ds-text,var(--cp-text-primary, #172B4D))]">{entry.author_name ?? 'System'}</span>
                   {entry.type === 'history' && entry.field_name && (
-                    <span className="text-sm text-[var(--ds-text,#172B4D)]">
+                    <span className="text-sm text-[var(--ds-text,var(--cp-text-primary, #172B4D))]">
                       changed <span className="font-medium">{formatFieldName(entry.field_name)}</span>
                     </span>
                   )}
                   {entry.type === 'comment' && (
-                    <span className="text-sm text-[var(--ds-text,#172B4D)]">added a comment</span>
+                    <span className="text-sm text-[var(--ds-text,var(--cp-text-primary, #172B4D))]">added a comment</span>
                   )}
                 </div>
                 <div className="text-[11px] text-[var(--ds-text-subtlest,#6B778C)] mb-1.5">
@@ -274,20 +274,20 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
                 {entry.type === 'history' && (entry.old_value || entry.new_value) && (
                   <div className="flex items-center gap-2 mt-1">
                     {entry.old_value && (
-                      <span className="text-[11px] font-medium px-2 py-0.5 rounded border border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))] bg-white text-[var(--ds-text,#172B4D)]">
+                      <span className="text-[11px] font-medium px-2 py-0.5 rounded border border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))] bg-white text-[var(--ds-text,var(--cp-text-primary, #172B4D))]">
                         {entry.old_value}
                       </span>
                     )}
                     {entry.old_value && entry.new_value && <span className="text-[#A5ADBA]">→</span>}
                     {entry.new_value && (
-                      <span className="text-[11px] font-medium px-2 py-0.5 rounded border border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))] bg-white text-[var(--ds-text,#172B4D)]">
+                      <span className="text-[11px] font-medium px-2 py-0.5 rounded border border-[var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))] bg-white text-[var(--ds-text,var(--cp-text-primary, #172B4D))]">
                         {entry.new_value}
                       </span>
                     )}
                   </div>
                 )}
                 {entry.type === 'comment' && entry.content && (
-                  <div className="text-sm text-[var(--ds-text,#172B4D)] leading-5 mt-1 whitespace-pre-wrap">
+                  <div className="text-sm text-[var(--ds-text,var(--cp-text-primary, #172B4D))] leading-5 mt-1 whitespace-pre-wrap">
                     {entry.content}
                   </div>
                 )}

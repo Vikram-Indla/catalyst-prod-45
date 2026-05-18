@@ -581,7 +581,7 @@ export function CatalystViewBase({
             ) : isNotFound ? (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60%', gap: 12, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>
                 <span style={{ fontSize: 32 }}>⚠️</span>
-                <div style={{ fontSize: 16, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Issue not found</div>
+                <div style={{ fontSize: 16, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Issue not found</div>
                 <div style={{ fontSize: 14 }}>This issue may have been deleted or the key is invalid.</div>
               </div>
             ) : leftContent}

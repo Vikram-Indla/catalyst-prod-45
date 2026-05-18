@@ -123,7 +123,7 @@ export function GlobalMobileDrawer({
             style={{
               fontSize: 14,
               fontWeight: 600,
-              color: 'var(--ds-text, var(--cp-t1, #172B4D))',
+              color: 'var(--ds-text, var(--cp-t1, var(--cp-text-primary, #172B4D)))',
             }}
           >
             Navigation

@@ -100,7 +100,7 @@ function KpiCell({
         style={{
           fontSize: 12,
           fontWeight: 600,
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
           display: 'block',
         }}
       >
@@ -131,7 +131,7 @@ function KpiCell({
           style={{
             fontSize: 28,
             fontWeight: 700,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
             lineHeight: 1,
           }}
         >

@@ -163,7 +163,7 @@ function InviteUserModal({ onClose }: { onClose: () => void }) {
         }}
       >
         <div style={{ padding: '20px 24px 16px', borderBottom: `1px solid ${token('color.border', '#EBECF0')}` }}>
-          <h2 id="invite-user-modal-title" style={{ margin: 0, fontSize: 20, fontWeight: 500, color: token('color.text', '#172B4D') }}>
+          <h2 id="invite-user-modal-title" style={{ margin: 0, fontSize: 20, fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, #172B4D)') }}>
             Invite User
           </h2>
         </div>
@@ -213,7 +213,7 @@ function InviteUserModal({ onClose }: { onClose: () => void }) {
                   key={m.key}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8,
-                    fontSize: 13, color: token('color.text', '#172B4D'),
+                    fontSize: 13, color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
                     cursor: m.default ? 'default' : 'pointer',
                     opacity: m.default ? 0.65 : 1,
                   }}
@@ -446,7 +446,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
             size="large"
           />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {user.full_name || user.email}
             </div>
             {user.full_name && (
@@ -500,7 +500,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                   key={m.key}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8,
-                    fontSize: 13, color: 'var(--ds-text, #172B4D)',
+                    fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
                     cursor: (m.default || saving) ? 'default' : 'pointer',
                     opacity: m.default ? 0.65 : 1, userSelect: 'none',
                   }}
@@ -549,13 +549,13 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                 )}
               </span>
               <span style={{ color: 'var(--ds-text-subtle, #6B778C)', fontWeight: 500 }}>Joined</span>
-              <span style={{ color: 'var(--ds-text, #172B4D)' }}>
+              <span style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
                 {user.created_at
                   ? new Date(user.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
                   : '—'}
               </span>
               <span style={{ color: 'var(--ds-text-subtle, #6B778C)', fontWeight: 500 }}>Active modules</span>
-              <span style={{ color: 'var(--ds-text, #172B4D)' }}>
+              <span style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
                 {Object.values(moduleAccess).filter(Boolean).length} / {MODULE_ITEMS.length}
               </span>
             </div>
@@ -571,7 +571,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
               {/* Send password reset email */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Password reset email</div>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Password reset email</div>
                   <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>Send a reset link to {user.email}</div>
                 </div>
                 <Button
@@ -588,7 +588,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
               <div style={{ borderTop: '1px solid var(--ds-border-subtle, #F4F5F7)', paddingTop: 10 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: pwOpen ? 12 : 0 }}>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Set new password</div>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Set new password</div>
                     <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>Override password without email</div>
                   </div>
                   <Button
@@ -873,7 +873,7 @@ function PeopleTab() {
                     <span style={{
                       display: 'inline-block',
                       background: modCount > 0 ? 'var(--ds-background-neutral, var(--cp-lozenge-grey-bg, #DFE1E6))' : 'var(--ds-background-neutral-subtle, #F4F5F7)',
-                      color: modCount > 0 ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-disabled, #A5ADBA)',
+                      color: modCount > 0 ? 'var(--ds-text, var(--cp-text-primary, #172B4D))' : 'var(--ds-text-disabled, #A5ADBA)',
                       borderRadius: 10, padding: '1px 8px', fontSize: 12, fontWeight: 500,
                     }}>
                       {modCount}/{MODULE_ITEMS.length}
@@ -1022,7 +1022,7 @@ function InvitationsTab() {
                             style={{
                               background: 'none', border: '1px solid var(--ds-border, #EBECF0)',
                               borderRadius: 3, padding: '3px 8px', fontSize: 12, fontWeight: 500,
-                              color: 'var(--ds-text, #172B4D)',
+                              color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
                               cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.5 : 1,
                             }}
                           >

@@ -153,7 +153,7 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
               
               <TabsContent value="password" className="space-y-4 mt-4">
                 <div className="space-y-2">
-                  <label htmlFor="new-password" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Default Password</label>
+                  <label htmlFor="new-password" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Default Password</label>
                   <Textfield
                     id="new-password"
                     type={showPassword ? 'text' : 'password'}
@@ -230,7 +230,7 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <label htmlFor="reset-link" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Reset Link</label>
+                <label htmlFor="reset-link" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Reset Link</label>
                 <div className="flex gap-2">
                   <div className="flex-1">
                     <Textfield
@@ -269,7 +269,7 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Password set to:</label>
+                <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Password set to:</label>
                 <div className="flex gap-2">
                   <div className="flex-1">
                     <Textfield

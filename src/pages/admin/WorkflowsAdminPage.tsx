@@ -33,7 +33,7 @@ export default function WorkflowsAdminPage() {
   return (
     <div style={{ padding: 32, fontFamily: 'var(--cp-font-body)' }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 600, margin: 0, color: 'var(--ds-text, #172B4D)' }}>
+        <h1 style={{ fontSize: 24, fontWeight: 600, margin: 0, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
           Workflows
         </h1>
         <p style={{ color: '#44546F', margin: '4px 0 0 0', fontSize: 14 }}>
@@ -85,7 +85,7 @@ function WorkflowCard({
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
         <div>
-          <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0, color: 'var(--ds-text, #172B4D)' }}>
+          <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
             {workflow.name} workflow
           </h2>
           <div style={{ marginTop: 6, display: 'flex', gap: 6, flexWrap: 'wrap' }}>

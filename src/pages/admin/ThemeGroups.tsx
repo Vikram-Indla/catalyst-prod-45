@@ -71,7 +71,7 @@ export default function ThemeGroups() {
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--ds-text, #172B4D)' }}>Strategic Themes</h1>
+            <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Strategic Themes</h1>
             <p className="mt-2" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
               Manage strategic theme configurations and linked items
             </p>
@@ -88,27 +88,27 @@ export default function ThemeGroups() {
         <div className="grid gap-4 md:grid-cols-3">
           <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Total Themes</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Total Themes</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{themes.length}</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{themes.length}</div>
           </div>
           <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Active Themes</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Active Themes</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{activeCount}</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{activeCount}</div>
           </div>
           <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Linked Items</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Linked Items</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{totalLinkedItems}</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{totalLinkedItems}</div>
           </div>
         </div>
 
         <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <div style={{ marginBottom: '12px' }}>
-            <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Theme Configuration</h2>
+            <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Theme Configuration</h2>
             <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
               Configure themes for strategic organization. Toggle status or manage linked items.
             </p>
@@ -140,12 +140,12 @@ export default function ThemeGroups() {
                 <table className="w-full">
                   <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
                     <tr>
-                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Theme Name</th>
-                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Description</th>
-                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Linked Items</th>
-                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Status</th>
-                      <th className="text-center p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Active</th>
-                      <th className="text-right p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Actions</th>
+                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Theme Name</th>
+                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Description</th>
+                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Linked Items</th>
+                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Status</th>
+                      <th className="text-center p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Active</th>
+                      <th className="text-right p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -160,7 +160,7 @@ export default function ThemeGroups() {
                           onMouseEnter={() => setHoveredRow(theme.id)}
                           onMouseLeave={() => setHoveredRow(null)}
                         >
-                          <td className="p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>
+                          <td className="p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
                             <div className="flex items-center gap-2">
                               {theme.color_tag && (
                                 <span

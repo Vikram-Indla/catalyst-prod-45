@@ -719,7 +719,7 @@ function CatalystShellContent() {
               background: 'var(--ds-background-neutral-subtle, transparent)',
               border: 'none',
               cursor: 'pointer',
-              color: 'var(--ds-text, var(--cp-t1, #172B4D))',
+              color: 'var(--ds-text, var(--cp-t1, var(--cp-text-primary, #172B4D)))',
               zIndex: 50,
             }}
           >

@@ -237,7 +237,7 @@ export function BulkEditCommandBar({
                   </PopoverTrigger>
                   <PopoverContent className="w-64 p-3" align="center" side="top">
                     <div className="space-y-3">
-                      <label style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text, #172B4D)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <label style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', display: 'flex', alignItems: 'center', gap: '4px' }}>
                         {field.icon}
                         Set {field.label}
                       </label>

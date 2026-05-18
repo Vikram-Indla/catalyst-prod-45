@@ -155,7 +155,7 @@ export default function ThemeStatuses() {
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--ds-text, #172B4D)' }}>Theme Status</h1>
+            <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Theme Status</h1>
             <p className="mt-2" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
               Manage status options for Strategic Themes
             </p>
@@ -168,23 +168,23 @@ export default function ThemeStatuses() {
         <div className="grid gap-4 md:grid-cols-3">
           <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Total Statuses</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Total Statuses</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{statuses.length}</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{statuses.length}</div>
           </div>
           <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Active Statuses</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Active Statuses</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
               {statuses.filter(s => s.is_active).length}
             </div>
           </div>
           <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Inactive Statuses</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Inactive Statuses</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
               {statuses.filter(s => !s.is_active).length}
             </div>
           </div>
@@ -192,7 +192,7 @@ export default function ThemeStatuses() {
 
         <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <div style={{ marginBottom: '12px' }}>
-            <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Theme Status Configuration</h2>
+            <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Theme Status Configuration</h2>
             <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
               Configure statuses that appear in Strategic Theme dropdowns and tables. Select colors and click "Save Settings" to apply changes across the entire application.
             </p>
@@ -221,12 +221,12 @@ export default function ThemeStatuses() {
                 <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
                   <tr>
                     <th className="text-left p-3 text-sm font-medium w-10"></th>
-                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Color</th>
-                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Label</th>
-                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Value (Key)</th>
-                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Order</th>
-                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Active</th>
-                    <th className="text-right p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Actions</th>
+                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Color</th>
+                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Label</th>
+                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Value (Key)</th>
+                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Order</th>
+                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Active</th>
+                    <th className="text-right p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -270,7 +270,7 @@ export default function ThemeStatuses() {
                             )}
                           </div>
                         </td>
-                        <td className="p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>{status.label}</td>
+                        <td className="p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{status.label}</td>
                         <td className="p-3 text-sm font-mono" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>{status.value}</td>
                         <td className="p-3 text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>{status.sort_order}</td>
                         <td className="p-3 text-sm">
@@ -311,7 +311,7 @@ export default function ThemeStatuses() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <label htmlFor="label" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Display Label</label>
+                <label htmlFor="label" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Display Label</label>
                 <Textfield
                   id="label"
                   value={formData.label}
@@ -321,7 +321,7 @@ export default function ThemeStatuses() {
               </div>
               {!editingStatus && (
                 <div className="space-y-2">
-                  <label htmlFor="value" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Value (Key)</label>
+                  <label htmlFor="value" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Value (Key)</label>
                   <Textfield
                     id="value"
                     value={formData.value}

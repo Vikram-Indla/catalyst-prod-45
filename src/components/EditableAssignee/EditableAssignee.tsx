@@ -125,7 +125,7 @@ export const EditableAssignee = memo(function EditableAssignee({
           borderRadius: '3px',
           fontSize: 14,
           fontWeight: 500,
-          color: 'var(--ds-text, #172B4D)',
+          color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
           textAlign: 'left',
           fontFamily: 'var(--cp-font-body)',
         }}
@@ -172,7 +172,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                     outline: 'none',
                     fontSize: 13,
                     fontWeight: 400,
-                    color: 'var(--ds-text, #172B4D)',
+                    color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
                     background: 'transparent',
                     fontFamily: 'var(--cp-font-body)',
                   }}
@@ -201,7 +201,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                     fontFamily: 'var(--cp-font-body)',
                     fontSize: 14,
                     fontWeight: 400,
-                    color: 'var(--ds-text, #172B4D)',
+                    color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
                     transition: 'background 150ms',
                   }}
                   onMouseEnter={e => {
@@ -243,7 +243,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                         fontFamily: 'var(--cp-font-body)',
                         fontSize: 14,
                         fontWeight: 400,
-                        color: 'var(--ds-text, #172B4D)',
+                        color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
                         transition: 'background 150ms',
                       }}
                       onMouseEnter={e => {

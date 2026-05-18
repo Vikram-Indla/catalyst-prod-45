@@ -333,7 +333,7 @@ export function makeKeyCell(
 // wire it on the column with `onCellEdit`.
 //
 // Apr 27, 2026 (L60): typography per Jira-parity spec — 14/20/400 with
-// `color.text` (var(--ds-text, #172B4D)). Inherits from JiraTable's tbody td baseline so
+// `color.text` (var(--ds-text, var(--cp-text-primary, #172B4D))). Inherits from JiraTable's tbody td baseline so
 // no explicit fontSize is needed here; only truncation behavior.
 //
 // Tooltip on truncated text is the user's spec requirement — added via
@@ -566,7 +566,7 @@ export function makeStatusEditCell<T>(opts: {
                     cursor: 'pointer',
                     textAlign: 'left',
                     fontSize: 14,
-                    color: token('color.text', '#172B4D'),
+                    color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
                   }}
                   onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = isActive ? token('color.background.selected', '#E9F2FF') : token('color.background.neutral.subtle.hovered', '#F7F8F9'); }}
                   onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = isActive ? token('color.background.selected', '#E9F2FF') : 'transparent'; }}
@@ -619,7 +619,7 @@ export function makeAssigneeCell(getAssignee: (row: any) => AssigneeCellInput | 
         <Avatar size="small" name={a.name} src={a.avatarUrl || undefined} appearance="circle" />
         <span
           style={{
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -905,7 +905,7 @@ export function makeFixVersionsCell(getFixVersions: (row: any) => string[] | nul
               padding: '2px 6px',
               fontSize: 12,
               fontWeight: 400,
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',

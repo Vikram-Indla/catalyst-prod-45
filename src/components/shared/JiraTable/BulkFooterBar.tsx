@@ -55,7 +55,7 @@ export function BulkFooterBar({
         style={{
           fontSize: 14,
           fontWeight: 500,
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
         }}
       >
         {selectedCount} selected
@@ -120,7 +120,7 @@ export function BulkFooterBar({
             borderRadius: 3,
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
             background: token('color.background.neutral', '#FFFFFF'),
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
             cursor: 'pointer',
             fontSize: 14,
             fontWeight: 500,
@@ -139,7 +139,7 @@ export function BulkFooterBar({
             borderRadius: 3,
             border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
             background: token('color.background.neutral', '#FFFFFF'),
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
             cursor: 'pointer',
             fontSize: 14,
             fontWeight: 500,

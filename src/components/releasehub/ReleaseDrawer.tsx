@@ -774,7 +774,7 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
                     {entry.actor_name || (isAI ? 'Catalyst AI' : 'System')}
                   </span>
                   <span style={{ fontSize: 12, fontWeight: 400, color: '#42526E' }}>

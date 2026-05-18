@@ -171,7 +171,7 @@ export default function BusinessOwners() {
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--ds-text, #172B4D)' }}>Business Owners</h1>
+            <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Business Owners</h1>
             <p className="mt-2" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
               Manage business owners and their department mappings
             </p>
@@ -184,29 +184,29 @@ export default function BusinessOwners() {
         <div className="grid gap-4 md:grid-cols-3">
           <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Total Business Owners</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Total Business Owners</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{owners.length}</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{owners.length}</div>
           </div>
           <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Active Owners</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Active Owners</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
               {owners.filter(o => o.is_active).length}
             </div>
           </div>
           <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Mapped to Departments</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Mapped to Departments</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{mappings.length}</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{mappings.length}</div>
           </div>
         </div>
 
         <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <div style={{ marginBottom: '12px' }}>
-            <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Business Owner Configuration</h2>
+            <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Business Owner Configuration</h2>
             <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
               Configure business owners and their 1:1 department mappings. When a department is selected in a Business Request, the mapped owner is auto-assigned.
             </p>
@@ -228,10 +228,10 @@ export default function BusinessOwners() {
                 <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
                   <tr>
                     <th className="text-left p-3 text-sm font-medium w-10"></th>
-                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Business Owner</th>
-                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Mapped Department</th>
-                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Status</th>
-                    <th className="text-right p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Actions</th>
+                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Business Owner</th>
+                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Mapped Department</th>
+                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Status</th>
+                    <th className="text-right p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -260,7 +260,7 @@ export default function BusinessOwners() {
                           <td className="p-3">
                             <span style={{ cursor: 'grab', display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><DragHandlerIcon label="" size="small" /></span>
                           </td>
-                          <td className="p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>{owner.name}</td>
+                          <td className="p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{owner.name}</td>
                           <td className="p-3 text-sm">
                             {dept ? (
                               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs" style={{ background: 'var(--ds-background-brand-subtler, #E9F2FF)', color: 'var(--ds-text-brand, #0C66E4)' }}>
@@ -300,7 +300,7 @@ export default function BusinessOwners() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <label htmlFor="name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Business Owner Name</label>
+                <label htmlFor="name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Business Owner Name</label>
                 <Textfield
                   id="name"
                   value={newOwnerName}
@@ -309,7 +309,7 @@ export default function BusinessOwners() {
                 />
               </div>
               <div className="space-y-2">
-                <label htmlFor="department" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Mapped Department (1:1)</label>
+                <label htmlFor="department" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Mapped Department (1:1)</label>
                 <AdsSelect
                   inputId="department"
                   options={departmentOptions}

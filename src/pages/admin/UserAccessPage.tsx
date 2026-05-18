@@ -352,7 +352,7 @@ export default function UserAccessPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold flex items-center gap-2" style={{ color: 'var(--ds-text, #172B4D)' }}>
+          <h1 className="text-2xl font-semibold flex items-center gap-2" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
             <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><PersonIcon label="" size="medium" /></span>
             User Access
           </h1>
@@ -421,7 +421,7 @@ export default function UserAccessPage() {
                     <td className="px-4 py-3 font-mono text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                       {user.rid || '—'}
                     </td>
-                    <td className="px-4 py-3 font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>{user.name}</td>
+                    <td className="px-4 py-3 font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{user.name}</td>
                     <td className="px-4 py-3" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                       {editingEmailId === user.id ? (
                         <div className="flex items-center gap-1">
@@ -460,7 +460,7 @@ export default function UserAccessPage() {
                         <div
                           className="flex items-center gap-1.5 group cursor-pointer transition-colors"
                           onClick={() => { setEditingEmailId(user.id); setEditingEmailValue(user.email || ''); }}
-                          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #172B4D)')}
+                          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, #172B4D))')}
                           onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)')}
                         >
                           {user.email ? (

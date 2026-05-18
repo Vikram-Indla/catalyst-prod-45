@@ -234,7 +234,7 @@ export function EditableAssignee({ issueId, issueKey, projectId, currentAssignee
             )}
             <span style={{
               fontSize: 14,
-              color: opt.value === UNASSIGNED_VALUE ? 'var(--ds-text-subtlest, #6B6E76)' : 'var(--ds-text, #172B4D)',
+              color: opt.value === UNASSIGNED_VALUE ? 'var(--ds-text-subtlest, #6B6E76)' : 'var(--ds-text, var(--cp-text-primary, #172B4D))',
               fontWeight: 400,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -364,7 +364,7 @@ export function EditableReporter({ issueId, projectId, currentReporterId, curren
             )}
             <span style={{
               fontSize: 14,
-              color: opt.value === REPORTER_NONE_VALUE ? 'var(--ds-text-subtlest, #6B6E76)' : 'var(--ds-text, #172B4D)',
+              color: opt.value === REPORTER_NONE_VALUE ? 'var(--ds-text-subtlest, #6B6E76)' : 'var(--ds-text, var(--cp-text-primary, #172B4D))',
               fontWeight: 400,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -425,7 +425,7 @@ export function EditablePriority({ issueId, issueKey, currentPriority, onUpdate 
             <span style={{ display: 'flex', flexShrink: 0 }}>
               <CanonicalPriorityIcon level={opt.value} size={16} label="" />
             </span>
-            <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', fontWeight: 400 }}>
+            <span style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontWeight: 400 }}>
               {opt.label}
             </span>
           </span>
@@ -525,7 +525,7 @@ export function EditableLabels({ issueId, issueKey, currentLabels, onUpdate }: {
           }),
           multiValueLabel: (base) => ({
             ...base,
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
             fontSize: 12,
             fontWeight: 500,
           }),
@@ -568,7 +568,7 @@ export function EditableStoryPoints({ issueId, currentPoints, onUpdate }: {
         onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
-        <span style={{ fontSize: 14, color: currentPoints != null ? 'var(--ds-text, #172B4D)' : '#97A0AF', fontWeight: 400 }}>
+        <span style={{ fontSize: 14, color: currentPoints != null ? 'var(--ds-text, var(--cp-text-primary, #172B4D))' : '#97A0AF', fontWeight: 400 }}>
           {currentPoints != null ? currentPoints : 'None'}
         </span>
       </div>
@@ -592,7 +592,7 @@ export function EditableStoryPoints({ issueId, currentPoints, onUpdate }: {
             <div key={p} onClick={() => updateMutation.mutate(p)}
               style={{
                 height: 36, padding: '0 12px', display: 'flex', alignItems: 'center',
-                cursor: 'pointer', fontSize: 14, fontWeight: 400, color: 'var(--ds-text, #172B4D)',
+                cursor: 'pointer', fontSize: 14, fontWeight: 400, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
                 background: p === currentPoints ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
               }}
               onMouseEnter={e => { if (p !== currentPoints) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
@@ -808,7 +808,7 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
         {parentKey && currentParent ? (
           <>
             <EpicIconInline />
-            <span style={{ flex: 1, fontSize: 14, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ flex: 1, fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {currentParent.issue_key} {currentParent.summary}
             </span>
             {/* Clear button — hover only */}
@@ -848,13 +848,13 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
                 style={{
                   width: '100%', height: 40, padding: '0 12px',
                   border: '2px solid var(--ds-border-focused, #4C9AFF)', borderRadius: 3,
-                  fontSize: 14, fontFamily: 'inherit', outline: 'none', color: 'var(--ds-text, #172B4D)',
+                  fontSize: 14, fontFamily: 'inherit', outline: 'none', color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
                 }} />
             </div>
 
             {/* Show done checkbox */}
             <div style={{ padding: '6px 12px', borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
                 <input type="checkbox" checked={showDone} onChange={e => setShowDone(e.target.checked)}
                   style={{ width: 16, height: 16, accentColor: 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))', cursor: 'pointer' }} />
                 Show done work items
@@ -882,7 +882,7 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
                       <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 12 }}>{result.issue_key}</span>
                     </div>
                     {/* Line 2: summary */}
-                    <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', paddingLeft: 22, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', paddingLeft: 22, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {result.summary}
                     </div>
                   </div>

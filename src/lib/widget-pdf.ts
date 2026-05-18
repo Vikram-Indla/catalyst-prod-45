@@ -26,7 +26,7 @@ interface DownloadOptions {
 
 const HEADER_HEIGHT_MM = 22;
 const PAGE_MARGIN_MM = 12;
-const HEADER_PRIMARY = '#172B4D';
+const HEADER_PRIMARY = 'var(--cp-text-primary, #172B4D)';
 const HEADER_SUBTLE = '#505258';
 const BRAND_BLUE = '#0C66E4';
 

@@ -102,7 +102,7 @@ export function CatalystConfigureDrawer({
             margin: 0,
             fontSize: 20,
             fontWeight: 600,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
             lineHeight: '24px',
           }}>
             Configure issue layout
@@ -225,7 +225,7 @@ function FieldConfigRow({
     >
       <span style={{
         fontSize: 14,
-        color: token('color.text', '#172B4D'),
+        color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
         fontWeight: 400,
       }}>
         {label}
@@ -242,7 +242,7 @@ function FieldConfigRow({
           border: `1px solid ${isPinned ? token('color.border.brand', 'var(--cp-primary-60, #0052CC)') : token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`,
           borderRadius: 3,
           background: isPinned ? token('color.background.brand.bold', 'var(--cp-primary-60, #0052CC)') : 'transparent',
-          color: isPinned ? '#FFFFFF' : token('color.text', '#172B4D'),
+          color: isPinned ? '#FFFFFF' : token('color.text', 'var(--cp-text-primary, #172B4D)'),
           fontSize: 12,
           fontWeight: 500,
           cursor: 'pointer',

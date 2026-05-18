@@ -260,7 +260,7 @@
 /* Summary */
 [data-sdm-scope] .sdm-child-summary {
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -354,7 +354,7 @@
 }
 [data-sdm-scope] .sdm-row-action-btn:hover {
   background: rgba(9, 30, 66, 0.08);
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
 }
 [data-sdm-scope] .sdm-row-action-btn--danger:hover {
   background: #FFF1EF;
@@ -399,7 +399,7 @@
   background: var(--ds-text-inverse, #FFFFFF);
   font-family: var(--cp-font-body);
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
@@ -466,7 +466,7 @@
 [data-sdm-scope] .sdm-child-empty-heading {
   font-size: 14px;
   font-weight: 500;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   font-family: var(--cp-font-body);
 }
 
@@ -600,7 +600,7 @@
   border-radius: 4px;
   font-family: var(--cp-font-body);
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   outline: none;
 }
 [data-sdm-scope] .sdm-popover-input:focus {
@@ -640,7 +640,7 @@
 
 [data-sdm-scope] .sdm-popover-result-name {
   font-size: 12px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -751,7 +751,7 @@
   background: var(--ds-text-inverse, #FFFFFF);
   font-family: var(--cp-font-body);
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   cursor: pointer;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B778C' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
@@ -772,7 +772,7 @@
   border-radius: 4px;
   font-family: var(--cp-font-body);
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   outline: none;
 }
 [data-sdm-scope] .sdm-ai-focus-input::placeholder { color: #8993A4; }
@@ -830,7 +830,7 @@
   padding: 10px 12px;
   font-size: 13px;
   line-height: 1.65;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   max-height: 200px;
   overflow-y: auto;
   background: var(--ds-text-inverse, #FFFFFF);
@@ -917,7 +917,7 @@
   border: 1px solid rgba(9, 30, 66, 0.14);
   border-radius: 4px;
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   line-height: 1.6;
   cursor: text;
   min-height: 60px;
@@ -1074,7 +1074,7 @@
   font-family: var(--cp-font-mono);
   font-size: 12px;
   line-height: 1.5;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   border: 1px solid #EBECF0;
 }
 [data-sdm-scope] .adf-editor-content pre code,
@@ -1133,11 +1133,11 @@
 }
 
 /* ── Headings ── */
-[data-sdm-scope] .adf-editor-content h1 { font-size: 24px; font-weight: 700; margin: 20px 0 8px; color: var(--ds-text, #172B4D); }
-[data-sdm-scope] .adf-editor-content h2 { font-size: 20px; font-weight: 700; margin: 16px 0 6px; color: var(--ds-text, #172B4D); }
-[data-sdm-scope] .adf-editor-content h3 { font-size: 16px; font-weight: 600; margin: 14px 0 6px; color: var(--ds-text, #172B4D); }
-[data-sdm-scope] .adf-editor-content h4 { font-size: 14px; font-weight: 600; margin: 12px 0 4px; color: var(--ds-text, #172B4D); }
-[data-sdm-scope] .adf-editor-content h5 { font-size: 13px; font-weight: 600; margin: 10px 0 4px; color: var(--ds-text, #172B4D); }
+[data-sdm-scope] .adf-editor-content h1 { font-size: 24px; font-weight: 700; margin: 20px 0 8px; color: var(--ds-text, var(--cp-text-primary, #172B4D)); }
+[data-sdm-scope] .adf-editor-content h2 { font-size: 20px; font-weight: 700; margin: 16px 0 6px; color: var(--ds-text, var(--cp-text-primary, #172B4D)); }
+[data-sdm-scope] .adf-editor-content h3 { font-size: 16px; font-weight: 600; margin: 14px 0 6px; color: var(--ds-text, var(--cp-text-primary, #172B4D)); }
+[data-sdm-scope] .adf-editor-content h4 { font-size: 14px; font-weight: 600; margin: 12px 0 4px; color: var(--ds-text, var(--cp-text-primary, #172B4D)); }
+[data-sdm-scope] .adf-editor-content h5 { font-size: 13px; font-weight: 600; margin: 10px 0 4px; color: var(--ds-text, var(--cp-text-primary, #172B4D)); }
 [data-sdm-scope] .adf-editor-content h6 { font-size: 12px; font-weight: 600; margin: 10px 0 4px; color: var(--ds-text-subtlest, #6B778C); }
 
 /* ── Panels (info, note, warning, success, error) ── */
@@ -1175,7 +1175,7 @@
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   background: var(--ds-surface-sunken, #FAFBFC);
   border-radius: 4px;
   user-select: none;
@@ -1249,7 +1249,7 @@
 [data-sdm-scope] .adf-status--neutral  { background: var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6)); color: var(--ds-text, #253858); }
 [data-sdm-scope] .adf-status--blue     { background: #DEEBFF; color: #0747A6; }
 [data-sdm-scope] .adf-status--green    { background: #E3FCEF; color: #006644; }
-[data-sdm-scope] .adf-status--yellow   { background: #FFFAE6; color: var(--ds-text, #172B4D); }
+[data-sdm-scope] .adf-status--yellow   { background: #FFFAE6; color: var(--ds-text, var(--cp-text-primary, #172B4D)); }
 [data-sdm-scope] .adf-status--red      { background: #FFEBE6; color: #BF2600; }
 [data-sdm-scope] .adf-status--purple   { background: #EAE6FF; color: #403294; }
 
@@ -1257,7 +1257,7 @@
 [data-sdm-scope] .adf-date {
   display: inline-block;
   background: #EBECF0;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   padding: 1px 6px;
   border-radius: 3px;
   font-size: 12px;
@@ -1318,13 +1318,13 @@
   overflow-wrap: break-word;
   font-size: 14px;
   line-height: 1.43;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
 }
 
 [data-sdm-scope] .jira-desc-view th {
   background-color: var(--ds-surface-sunken, #F4F5F7);
   font-weight: 600;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
 }
 
 [data-sdm-scope] .jira-desc-view tbody th {

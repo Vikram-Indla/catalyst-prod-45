@@ -27,7 +27,7 @@ export default function DeactivatedPage() {
           margin: '0 0 12px',
           fontSize: 24,
           fontWeight: 600,
-          color: 'var(--ds-text, #172B4D)',
+          color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
         }}>
           Account deactivated
         </h1>

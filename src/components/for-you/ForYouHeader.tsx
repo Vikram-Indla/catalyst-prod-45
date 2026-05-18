@@ -22,7 +22,7 @@ export function ForYouHeader() {
         margin: 0,
         font: '600 24px/28px var(--ds-font-family-body, "Inter", system-ui, sans-serif)',
         letterSpacing: 'normal',
-        color: token('color.text', '#172B4D'),
+        color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
       }}>
         For you
       </h1>

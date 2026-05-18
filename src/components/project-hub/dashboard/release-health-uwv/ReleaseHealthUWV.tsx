@@ -141,7 +141,7 @@ function ReleaseItemsRows({
             background: 'var(--ds-surface-sunken, #FAFBFC)',
             borderBottom: '1px solid #F1F2F4',
             fontSize: 13,
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
           }}
         >
           <div /> {/* indent column */}
@@ -264,7 +264,7 @@ function ReleaseRow({
           style={{
             fontSize: 13,
             fontWeight: 650,
-            color: 'var(--ds-text, #172B4D)',
+            color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -390,7 +390,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
               fontFamily: 'var(--cp-font-heading)' + FONT_STACK,
               fontSize: 16,
               fontWeight: 650,
-              color: 'var(--ds-text, #172B4D)',
+              color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
               lineHeight: 1.25,
             }}
           >

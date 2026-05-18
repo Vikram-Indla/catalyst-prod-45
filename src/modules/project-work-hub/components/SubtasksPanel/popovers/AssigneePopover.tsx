@@ -139,7 +139,7 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
                 placeholder="Assign to..."
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                style={{ flex: 1, border: 'none', outline: 'none', fontSize: 13, background: 'transparent', color: 'var(--ds-text, #172B4D)' }}
+                style={{ flex: 1, border: 'none', outline: 'none', fontSize: 13, background: 'transparent', color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}
               />
             </div>
 
@@ -162,7 +162,7 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
                 <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--ds-text-subtlest, #6B778C)' }}>
                   <UserX size={12} />
                 </span>
-                <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>Unassigned</span>
+                <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Unassigned</span>
                 {showActive && !currentAccountId && <Check size={14} color="var(--cp-primary-60, #0052CC)" style={{ marginLeft: 'auto' }} />}
               </button>
 
@@ -187,7 +187,7 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
                     onClick={() => { onChange({ accountId: p.jira_account_id, displayName: p.display_name }); setIsOpen(false); }}
                   >
                     <Avatar size="small" name={p.display_name} src={p.avatar_url ?? undefined} borderColor="transparent" />
-                    <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {p.display_name}
                     </span>
                     {active && <Check size={14} color="var(--cp-primary-60, #0052CC)" style={{ marginLeft: 'auto' }} />}

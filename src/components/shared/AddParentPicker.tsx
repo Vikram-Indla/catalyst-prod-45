@@ -255,7 +255,7 @@ export function AddParentPicker({
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
               padding: '4px 8px', display: 'flex', alignItems: 'center', gap: 8,
-              borderRadius: 3, fontSize: 14, color: 'var(--ds-text, #172B4D)',
+              borderRadius: 3, fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
               transition: 'background 150ms', width: '100%', textAlign: 'left',
             }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
@@ -276,7 +276,7 @@ export function AddParentPicker({
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
               padding: '4px 8px', display: 'flex', alignItems: 'center', gap: 8,
-              borderRadius: 3, fontSize: 14, color: 'var(--ds-text, #172B4D)',
+              borderRadius: 3, fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
               transition: 'background 150ms',
             }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
@@ -377,7 +377,7 @@ export function AddParentPicker({
                   style={{
                     width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
                     textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
-                    fontSize: 14, color: 'var(--ds-text, #172B4D)', transition: 'background 100ms',
+                    fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', transition: 'background 100ms',
                   }}
                   onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -397,7 +397,7 @@ export function AddParentPicker({
                   onClick={() => handleSelect(null)}
                   style={{
                     width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
-                    textAlign: 'left', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)', fontWeight: 400,
+                    textAlign: 'left', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontWeight: 400,
                     transition: 'background 100ms',
                   }}
                   onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
@@ -410,7 +410,7 @@ export function AddParentPicker({
                 onClick={() => setShowAllPanel(true)}
                 style={{
                   width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
-                  textAlign: 'left', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)', fontWeight: 500,
+                  textAlign: 'left', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontWeight: 500,
                   transition: 'background 100ms',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
@@ -423,16 +423,16 @@ export function AddParentPicker({
         ) : (
           /* "View all" panel with search */
           <div style={{ padding: '20px 24px' }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--ds-text, #172B4D)', marginBottom: 8 }}>Change {noun}</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', marginBottom: 8 }}>Change {noun}</div>
             <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4 }}>
               Select a parent work item. Work items can only belong to one parent at a time.
             </div>
             {parentKey && (
-              <div style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', marginBottom: 16 }}>
+              <div style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', marginBottom: 16 }}>
                 <strong>{issueKey}</strong> is currently assigned to <strong>{parentKey}</strong>.
               </div>
             )}
-            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 6 }}>{Noun}</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', marginBottom: 6 }}>{Noun}</div>
             <div style={{ position: 'relative' }}>
               <input
                 type="text"
@@ -442,7 +442,7 @@ export function AddParentPicker({
                 autoFocus
                 style={{
                   width: '100%', padding: '8px 12px', border: '2px solid #4C9AFF', borderRadius: 4,
-                  fontSize: 14, color: 'var(--ds-text, #172B4D)', outline: 'none', background: 'var(--ds-surface, #FFF)',
+                  fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', outline: 'none', background: 'var(--ds-surface, #FFF)',
                   boxSizing: 'border-box',
                 }}
               />
@@ -475,7 +475,7 @@ export function AddParentPicker({
                       style={{
                         width: '100%', padding: '10px 14px', border: 'none', background: 'transparent',
                         textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
-                        fontSize: 14, color: 'var(--ds-text, #172B4D)', transition: 'background 100ms',
+                        fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', transition: 'background 100ms',
                       }}
                       onMouseEnter={e => (e.currentTarget.style.background = '#DEEBFF')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}

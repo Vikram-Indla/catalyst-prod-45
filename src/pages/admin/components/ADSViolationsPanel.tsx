@@ -97,7 +97,7 @@ export default function ADSViolationsPanel() {
           : token('elevation.surface', '#FFFFFF'),
         color: isActive
           ? token('color.text.selected', '#0C66E4')
-          : token('color.text', '#172B4D'),
+          : token('color.text', 'var(--cp-text-primary, #172B4D)'),
         fontSize: 12,
         fontWeight: 500,
         cursor: 'pointer',
@@ -199,7 +199,7 @@ export default function ADSViolationsPanel() {
                     style={{
                       padding: token('space.100', '8px'),
                       verticalAlign: 'top',
-                      color: token('color.text', '#172B4D'),
+                      color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
                     }}
                   >
                     {CATEGORY_LABELS[v.category]}
@@ -226,7 +226,7 @@ export default function ADSViolationsPanel() {
                     style={{
                       padding: token('space.100', '8px'),
                       verticalAlign: 'top',
-                      color: token('color.text', '#172B4D'),
+                      color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
                     }}
                   >
                     <div>{v.rule}</div>

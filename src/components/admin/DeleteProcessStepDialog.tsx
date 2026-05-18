@@ -106,7 +106,7 @@ export function DeleteProcessStepDialog({
 
               {/* Linked tickets list */}
               <div className="space-y-2">
-                <span className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>
+                <span className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
                   Linked Tickets ({linkedData?.count})
                 </span>
                 <ScrollArea className="h-32 border rounded-md p-2">
@@ -135,7 +135,7 @@ export function DeleteProcessStepDialog({
 
               {/* Reassign section */}
               <div className="space-y-2 pt-2 border-t">
-                <label htmlFor="new-process-step-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                <label htmlFor="new-process-step-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
                   Reassign all tickets to:
                 </label>
                 <div className="flex gap-2">

@@ -834,7 +834,7 @@ function PriorityBars({ priority }: { priority: string | null }) {
       style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: cfg.color, fontSize: 14, whiteSpace: 'nowrap' }}
     >
       {cfg.icon}
-      <span style={{ color: token('color.text', '#172B4D') }}>{cfg.label}</span>
+      <span style={{ color: token('color.text', 'var(--cp-text-primary, #172B4D)') }}>{cfg.label}</span>
     </span>
   );
 }
@@ -1207,7 +1207,7 @@ export function makeDateEditCell<T>({
       : null;
 
     const display = formatted
-      ? <span style={{ fontSize: 14, color: token('color.text', '#172B4D') }}>{formatted}</span>
+      ? <span style={{ fontSize: 14, color: token('color.text', 'var(--cp-text-primary, #172B4D)') }}>{formatted}</span>
       : <span style={{ display: 'inline-block', minWidth: 1, height: 18 }} />;
 
     if (!editable) return display;
@@ -1305,7 +1305,7 @@ export function makeLabelsEditCell<T>({
                   padding: '1px 6px',
                   borderRadius: 3,
                   background: token('color.background.neutral', '#F4F5F7'),
-                  color: token('color.text', '#172B4D'),
+                  color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
                   fontSize: 12,
                   whiteSpace: 'nowrap',
                 }}
@@ -1392,7 +1392,7 @@ function LabelsPopoverContent<T>({ row, labels, onChange, close }: {
               padding: '2px 6px',
               borderRadius: 3,
               background: token('color.background.neutral', '#F4F5F7'),
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
               fontSize: 12,
             }}
           >
@@ -1423,7 +1423,7 @@ function LabelsPopoverContent<T>({ row, labels, onChange, close }: {
         <button
           type="button"
           onClick={close}
-          style={{ fontSize: 12, padding: '4px 8px', border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`, borderRadius: 3, background: 'transparent', cursor: 'pointer', color: token('color.text', '#172B4D') }}
+          style={{ fontSize: 12, padding: '4px 8px', border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`, borderRadius: 3, background: 'transparent', cursor: 'pointer', color: token('color.text', 'var(--cp-text-primary, #172B4D)') }}
         >
           Done
         </button>

@@ -59,7 +59,7 @@ function LinkAsDropdown({ value, onChange }: { value: string; onChange: (v: stri
           height: 32, padding: '0 10px 0 12px',
           border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', borderRadius: 3,
           background: 'var(--ds-surface, #fff)', cursor: 'pointer', fontSize: 13,
-          fontFamily: 'inherit', color: 'var(--ds-text, #172B4D)', whiteSpace: 'nowrap',
+          fontFamily: 'inherit', color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', whiteSpace: 'nowrap',
         }}
       >
         Link as {value}
@@ -78,7 +78,7 @@ function LinkAsDropdown({ value, onChange }: { value: string; onChange: (v: stri
               onClick={() => { onChange(opt); setOpen(false); }}
               style={{
                 display: 'flex', alignItems: 'center', height: 36, padding: '0 12px',
-                cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)',
+                cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
                 background: opt === value ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
               }}
               onMouseEnter={e => { if (opt !== value) (e.currentTarget).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
@@ -207,7 +207,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth="1.5" fill="none"/>
           </svg>
-          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Link similar work items</span>
+          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Link similar work items</span>
         </div>
         {isLoading ? (
           <Spinner size="small" />
@@ -216,7 +216,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
             onClick={() => setExpanded(true)}
             style={{
               height: 28, padding: '0 12px', border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', borderRadius: 3,
-              background: 'var(--ds-surface, #fff)', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)',
+              background: 'var(--ds-surface, #fff)', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
               fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap',
             }}
           >
@@ -245,7 +245,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth="1.5" fill="none"/>
           </svg>
-          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Link similar work items</span>
+          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Link similar work items</span>
         </div>
         <ChevronDown size={16} color="var(--ds-text-subtlest, #6B778C)" style={{ transform: 'rotate(180deg)' }} />
       </div>
@@ -259,7 +259,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
             <button onClick={() => refetch()} style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
               border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', borderRadius: 3, background: 'var(--ds-surface, #fff)',
-              padding: '4px 10px', fontSize: 12, cursor: 'pointer', color: 'var(--ds-text, #172B4D)',
+              padding: '4px 10px', fontSize: 12, cursor: 'pointer', color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
             }}>
               <RefreshCw size={12} /> Retry
             </button>
@@ -282,7 +282,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
               padding: '10px 0 6px', borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)',
             }}>
               <Checkbox checked={allSelected} onChange={toggleAll} />
-              <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+              <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
                 {allSelected ? 'Deselect all' : 'Select all'}
               </span>
             </div>
@@ -302,7 +302,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
               >
                 <Checkbox checked={selectedKeys.has(s.issue_key)} onChange={() => toggleOne(s.issue_key)} />
                 <IssueIcon type={s.issue_type || 'task'} size={16} />
-                <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   <span style={{ fontWeight: 600 }}>{s.issue_key}:</span> {s.summary}
                 </span>
               </div>

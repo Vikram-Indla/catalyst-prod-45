@@ -220,7 +220,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
                 cursor: 'pointer',
                 fontSize: 13,
                 fontWeight: 500,
-                color: 'var(--cp-t1, #172B4D)',
+                color: 'var(--cp-t1, var(--cp-text-primary, #172B4D))',
                 transition: 'background 100ms',
                 textAlign: 'left',
               }}

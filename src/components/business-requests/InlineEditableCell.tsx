@@ -142,7 +142,7 @@ export function InlineEditableCell({
         }
       }}
     >
-      {displayValue || <span className="text-[14px] text-[var(--ds-text,#172B4D)] truncate">{value || '-'}</span>}
+      {displayValue || <span className="text-[14px] text-[var(--ds-text,var(--cp-text-primary, #172B4D))] truncate">{value || '-'}</span>}
     </div>
   );
 

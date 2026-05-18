@@ -195,7 +195,7 @@
   --cp-bg-surface: #FFFFFF;
   --cp-bg-sunken: #F1F5F9;
   --cp-bg-elevated: #FFFFFF;
-  --cp-text-primary: #172B4D;
+  --cp-text-primary: var(--cp-text-primary, #172B4D);
   --cp-text-secondary: #44546F;
   --cp-text-tertiary: #626F86;
   --cp-text-muted: #626F86;
@@ -5381,14 +5381,14 @@ input[type="range"]::-moz-range-thumb {
   min-width: 48px;
   font-size: 14px;
   line-height: 1.43;
-  color: #172B4D;
+  color: var(--cp-text-primary, #172B4D);
 }
 
 .adf-content table th,
 .adf-description-content table th {
   background-color: #F4F5F7;
   font-weight: 600;
-  color: #172B4D;
+  color: var(--cp-text-primary, #172B4D);
 }
 
 .adf-content table tbody th,
@@ -5433,7 +5433,7 @@ input[type="range"]::-moz-range-thumb {
 .adf-description-content .adf-date {
   display: inline-block;
   background: #EBECF0;
-  color: #172B4D;
+  color: var(--cp-text-primary, #172B4D);
   border-radius: 3px;
   padding: 1px 6px;
   font-size: 13px;

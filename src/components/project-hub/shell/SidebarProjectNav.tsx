@@ -163,7 +163,7 @@ export function SidebarProjectNav({
               >
                 <div className="min-w-0">
                   <div className="text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '0.03em', textTransform: 'uppercase' }}>{projectKey}</div>
-                  <div className="truncate text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]" style={{ fontSize: 14, fontWeight: 600, fontFamily: 'var(--cp-font-heading)', lineHeight: '18px' }}>
+                  <div className="truncate text-[var(--ds-text,var(--cp-text-primary, #172B4D))] dark:text-[var(--ds-text,#EDEDED)]" style={{ fontSize: 14, fontWeight: 600, fontFamily: 'var(--cp-font-heading)', lineHeight: '18px' }}>
                     {projectName}
                   </div>
                 </div>
@@ -303,7 +303,7 @@ export function SidebarProjectNav({
                       <JiraIssueTypeIcon type={item.entity_type} size={14} />
                     </span>
                     <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                      <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-primary, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-primary, var(--cp-text-primary, #172B4D))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {(item.display_summary ?? '').replace(/^\[.*?\]\s*/, '') || item.display_summary}
                       </span>
                       <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--cp-text-secondary, #42526E)', fontFamily: 'var(--cp-font-mono)', letterSpacing: '-0.02em' }}>

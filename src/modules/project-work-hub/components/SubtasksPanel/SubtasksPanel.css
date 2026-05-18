@@ -22,7 +22,7 @@
   margin-top: 24px;
   padding: 0;
   font-family: var(--cp-font-body);
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
 }
 
 /* ══════════════════════════════════════════════
@@ -93,7 +93,7 @@
 }
 .sp-icon-btn:hover {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.08));
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
 }
 .sp-icon-btn--add:hover {
   background: var(--ds-background-selected-subtle, #E9F2FF);
@@ -260,7 +260,7 @@
 }
 .sp-panel .sp-desc-trigger:hover {
   background: #EBECF0;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
 }
 .sp-panel .sp-desc-trigger:focus-visible {
   outline: none;
@@ -288,7 +288,7 @@
   border-radius: 3px;
   outline: none;
   font-size: 14px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   background: var(--ds-surface, #FFFFFF);
   font-family: inherit;
 }
@@ -391,7 +391,7 @@
 .sp-row-actions-btn:hover,
 .sp-row-actions-btn[aria-expanded="true"] {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.08));
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   opacity: 1;
 }
 
@@ -486,7 +486,7 @@
   border-radius: 6px;
   box-shadow: var(--ds-shadow-overlay, 0 6px 16px rgba(9,30,66,0.15));
   background: var(--ds-surface-overlay, #FFFFFF);
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   font-family: var(--cp-font-body);
 }
 
@@ -503,7 +503,7 @@
   border: none;
   outline: none;
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   background: transparent;
   font-family: inherit;
 }
@@ -541,7 +541,7 @@
   font-family: inherit;
   text-align: left;
   transition: background 0.1s;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
 }
 .sp-pop-row:hover:not(:disabled) {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
@@ -593,7 +593,7 @@
   cursor: pointer;
   transition: background 0.12s;
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
 }
 .sp-colpicker-item:hover {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04));
@@ -628,7 +628,7 @@
   background: var(--ds-surface, #FFFFFF);
   cursor: pointer;
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   font-family: inherit;
 }
 .sp-type-selector-btn:hover {
@@ -654,7 +654,7 @@
   padding: 0 12px;
   cursor: pointer;
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
 }
 .sp-type-selector-item:hover {
   background: var(--ds-background-neutral-subtle-hovered, #F4F5F7);
@@ -714,7 +714,7 @@
   font-family: inherit;
 }
 .sp-create-cancel:hover {
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   text-decoration: underline;
 }
 
@@ -754,7 +754,7 @@
   cursor: pointer;
   font-family: inherit;
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   text-align: left;
   border-radius: 3px;
   transition: background 0.1s;
@@ -776,7 +776,7 @@
   padding: 32px 16px;
   text-align: center;
 }
-/* jira-compare 2026-05-04 (D4): corrected stale #172B4D fallback → #292A2E. */
+/* jira-compare 2026-05-04 (D4): corrected stale var(--cp-text-primary, #172B4D) fallback → #292A2E. */
 .sp-empty-heading {
   font-size: 14px;
   font-weight: 600;
@@ -789,7 +789,7 @@
 }
 /* jira-compare 2026-05-04 (D2): ADS Button defaults — 32px height, 14px/500,
    neutral background (not outlined). Matched to @atlaskit/button default style.
-   font-size 13→14px, font-weight 400→500, stale #172B4D token → #292A2E. */
+   font-size 13→14px, font-weight 400→500, stale var(--cp-text-primary, #172B4D) token → #292A2E. */
 .sp-empty-cta {
   display: inline-flex;
   align-items: center;
@@ -891,7 +891,7 @@
 }
 .sp-board-card-summary {
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   line-height: 1.35;
   margin-bottom: 8px;
   display: -webkit-box;

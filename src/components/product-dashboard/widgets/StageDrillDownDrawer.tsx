@@ -93,7 +93,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
             margin: 0,
             fontSize: 16,
             fontWeight: 600,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
           }}
         >
           {stageLabel}
@@ -148,7 +148,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
               background: token('color.background.information', '#E9F2FF'),
               borderRadius: 6,
               fontSize: 13,
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
               lineHeight: 1.5,
             }}
           >
@@ -206,7 +206,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
                       style={{
                         flex: 1,
                         fontSize: 13,
-                        color: token('color.text', '#172B4D'),
+                        color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
@@ -272,7 +272,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
                 <span style={{ fontSize: 12, color: token('color.text.subtle', '#505258'), flex: 1 }}>
                   {band.label}
                 </span>
-                <span style={{ fontSize: 13, fontWeight: 600, color: token('color.text', '#172B4D') }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: token('color.text', 'var(--cp-text-primary, #172B4D)') }}>
                   {band.count}
                 </span>
               </div>
@@ -324,7 +324,7 @@ export function StageDrillDownDrawer({ stageValue, stageLabel, onClose }: StageD
                   background: token('color.background.neutral', '#F4F5F7'),
                   borderRadius: 12,
                   fontSize: 12,
-                  color: token('color.text', '#172B4D'),
+                  color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
                 }}
               >
                 <span>{name}</span>

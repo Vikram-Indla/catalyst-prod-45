@@ -139,7 +139,7 @@ export default function ModulesPackages() {
           <div className="min-w-0">
             <h1
               className="text-2xl font-semibold truncate"
-              style={{ color: 'var(--ds-text, #172B4D)' }}
+              style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}
             >
               Modules &amp; Packages
             </h1>
@@ -162,27 +162,27 @@ export default function ModulesPackages() {
         <div className="grid gap-4 md:grid-cols-3">
           <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Enabled Modules</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Enabled Modules</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{enabledCount}</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{enabledCount}</div>
           </div>
           <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Available Modules</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Available Modules</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{totalCount}</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{totalCount}</div>
           </div>
           <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Active Package</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Active Package</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{activePackageName}</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{activePackageName}</div>
           </div>
         </div>
 
         {/* Package Selector */}
         <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
-          <h2 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+          <h2 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
             Assigned Package
           </h2>
           <p style={{ margin: '0 0 12px', fontSize: '14px', color: 'var(--ds-text-subtle, #44546F)' }}>
@@ -205,7 +205,7 @@ export default function ModulesPackages() {
 
         {/* Modules List */}
         <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
-          <h2 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+          <h2 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
             Module Configuration
           </h2>
           <p style={{ margin: '0 0 16px', fontSize: '14px', color: 'var(--ds-text-subtle, #44546F)' }}>
@@ -231,7 +231,7 @@ export default function ModulesPackages() {
                     </div>
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                        <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
                           {module.name}
                         </label>
                         <Lozenge appearance={isEnabled ? 'success' : 'default'}>

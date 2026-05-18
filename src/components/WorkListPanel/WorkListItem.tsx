@@ -79,7 +79,7 @@ export const WorkListItem = memo(function WorkListItem({
           style={{
             fontSize: '13px',
             fontWeight: 400,
-            color: '#172B4D',
+            color: 'var(--cp-text-primary, #172B4D)',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',

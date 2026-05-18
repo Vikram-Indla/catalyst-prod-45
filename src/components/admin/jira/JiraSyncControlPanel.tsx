@@ -286,7 +286,7 @@ export function JiraSyncControlPanel() {
                   </ul>
                 </div>
                 <div>
-                  <label htmlFor="freeze-note" style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                  <label htmlFor="freeze-note" style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
                     Optional freeze note
                   </label>
                   <div className="mt-1">

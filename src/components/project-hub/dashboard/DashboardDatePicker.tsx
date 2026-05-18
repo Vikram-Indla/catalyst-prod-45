@@ -60,7 +60,7 @@ export default function DashboardDatePicker() {
       background: 'var(--ds-surface-sunken, #FAFBFC)',
       fontSize: 13,
       fontWeight: 500,
-      color: open ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text, #172B4D)',
+      color: open ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text, var(--cp-text-primary, #172B4D))',
       cursor: 'pointer',
     }) as React.CSSProperties,
     [open],
@@ -243,7 +243,7 @@ function Row({
         border: 0,
         cursor: 'pointer',
         fontSize: 13,
-        color: active ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text, #172B4D)',
+        color: active ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text, var(--cp-text-primary, #172B4D))',
         fontWeight: active ? 600 : 400,
         textAlign: 'left',
       }}
@@ -300,7 +300,7 @@ function CustomRangePanel({
 
   return (
     <div style={{ padding: 12, borderTop: '1px solid #F1F2F4' }}>
-      <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: 12, color: 'var(--ds-text, #172B4D)' }}>
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: 12, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
         <DateInput label="From" value={from} onChange={setFrom} />
         <span style={{ color: '#7A869A' }}>→</span>
         <DateInput label="To" value={to} onChange={setTo} />
@@ -394,7 +394,7 @@ function DateInput({
           borderRadius: 3,
           fontSize: 12,
           background: 'var(--ds-surface-sunken, #FAFBFC)',
-          color: 'var(--ds-text, #172B4D)',
+          color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
         }}
       />
     </label>
@@ -427,7 +427,7 @@ function MonthHeader({
       >
         ‹
       </button>
-      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>{format(month, 'MMMM yyyy')}</span>
+      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{format(month, 'MMMM yyyy')}</span>
       <button
         type="button"
         onClick={onNext}
@@ -506,7 +506,7 @@ function MonthGrid({
           const isToday = isSameDay(d, today);
 
           let bg = 'transparent';
-          let color = isOtherMonth ? 'var(--ds-border-disabled, #C1C7D0)' : 'var(--ds-text, #172B4D)';
+          let color = isOtherMonth ? 'var(--ds-border-disabled, #C1C7D0)' : 'var(--ds-text, var(--cp-text-primary, #172B4D))';
           let radius = '3px';
           if (isStart || isEnd) {
             bg = 'var(--cp-primary-60, #0052CC)';

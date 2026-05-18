@@ -83,7 +83,7 @@ export function BRAssigneePicker({ value, saveAs = 'name', onChange, placeholder
         {currentName ? (
           <>
             <AvatarCircle userId={currentId} name={currentName} avatarUrl={currentAvatar} />
-            <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', fontWeight: 400 }}>{currentName}</span>
+            <span style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontWeight: 400 }}>{currentName}</span>
           </>
         ) : (
           <span style={{ fontSize: 14, color: '#97A0AF' }}>{placeholder}</span>
@@ -130,7 +130,7 @@ export function BRAssigneePicker({ value, saveAs = 'name', onChange, placeholder
                   >
                     <AvatarCircle userId={u.id} name={u.full_name ?? '?'} avatarUrl={u.avatar_url} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 400, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.full_name ?? u.email}</div>
+                      <div style={{ fontSize: 14, fontWeight: 400, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.full_name ?? u.email}</div>
                     </div>
                     {isActive && <CheckmarkSVG />}
                   </div>

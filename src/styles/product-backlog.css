@@ -10,7 +10,7 @@
   --cp-bg-sunken: var(--ds-surface-sunken, #F1F5F9);
   --cp-bg-elevated: var(--ds-surface, #FFFFFF);
 
-  --cp-text-primary: var(--ds-text, #172B4D);
+  --cp-text-primary: var(--ds-text, var(--cp-text-primary, #172B4D));
   --cp-text-secondary: var(--ds-text-subtle, #44546F);
   --cp-text-tertiary: var(--ds-text-subtlest, #626F86);
   --cp-text-muted: var(--ds-text-subtlest, #626F86);

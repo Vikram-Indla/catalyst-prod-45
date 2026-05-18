@@ -95,7 +95,7 @@ export function RoleDetails({
       {/* Role Summary Card */}
       <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
         <div className="flex flex-row items-center justify-between" style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
-          <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>Role: {role.name}</h2>
+          <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Role: {role.name}</h2>
           {canManageRoles && (
             <IconButton
               appearance="subtle"
@@ -129,7 +129,7 @@ export function RoleDetails({
       {/* Users with this Role */}
       <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
         <div className="flex flex-row items-center justify-between" style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
-          <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>Users with this role</h2>
+          <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Users with this role</h2>
           {canManageRoles && (
             <Button
               appearance="primary"

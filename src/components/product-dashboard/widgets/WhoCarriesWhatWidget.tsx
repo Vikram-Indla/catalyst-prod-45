@@ -84,7 +84,7 @@ function WorkloadRow({
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
           }}
         >
           {name}
@@ -115,7 +115,7 @@ function WorkloadRow({
           fontWeight: 700,
           textAlign: 'right',
           fontVariantNumeric: 'tabular-nums',
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
         }}
       >
         {count}

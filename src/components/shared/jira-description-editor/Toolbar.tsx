@@ -251,7 +251,7 @@ function ColorBtn({ editor }: { editor: Editor }) {
       >
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
           <Type size={13} />
-          <div style={{ width: 12, height: 3, borderRadius: 1, background: currentColor ?? '#172B4D' }} />
+          <div style={{ width: 12, height: 3, borderRadius: 1, background: currentColor ?? 'var(--cp-text-primary, #172B4D)' }} />
         </div>
       </button>
       {open && (
@@ -267,7 +267,7 @@ function ColorBtn({ editor }: { editor: Editor }) {
                 setOpen(false);
               }}
               className="jde-color-swatch"
-              style={{ background: c.value ?? '#172B4D', outline: currentColor === c.value ? '2px solid #2563EB' : 'none' }}
+              style={{ background: c.value ?? 'var(--cp-text-primary, #172B4D)', outline: currentColor === c.value ? '2px solid #2563EB' : 'none' }}
             />
           ))}
         </div>

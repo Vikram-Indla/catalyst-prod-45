@@ -52,7 +52,7 @@ function ToggleGroup({
             padding: '4px 10px',
             fontSize: 11,
             fontWeight: 500,
-            color: o.value === active ? token('color.text', '#172B4D') : token('color.text.subtle', '#44546F'),
+            color: o.value === active ? token('color.text', 'var(--cp-text-primary, #172B4D)') : token('color.text.subtle', '#44546F'),
             cursor: 'pointer',
             borderRadius: 3,
             boxShadow: o.value === active ? '0 1px 1px rgba(9,30,66,0.15)' : 'none',
@@ -149,7 +149,7 @@ function AttentionRow({
         {brKey(id)}
       </span>
       <div>
-        <div style={{ fontSize: 14, fontWeight: 500, color: token('color.text', '#172B4D') }}>
+        <div style={{ fontSize: 14, fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, #172B4D)') }}>
           {title}
         </div>
         {assignee && (

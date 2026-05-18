@@ -251,7 +251,7 @@ export function WorkflowStatusesPanel({ onChanges }: WorkflowStatusesPanelProps)
           
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label htmlFor="ws-name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Name</label>
+              <label htmlFor="ws-name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Name</label>
               <Textfield
                 id="ws-name"
                 value={formData.name}
@@ -261,7 +261,7 @@ export function WorkflowStatusesPanel({ onChanges }: WorkflowStatusesPanelProps)
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="ws-key" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Key</label>
+              <label htmlFor="ws-key" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Key</label>
               <Textfield
                 id="ws-key"
                 value={formData.status_key}
@@ -272,7 +272,7 @@ export function WorkflowStatusesPanel({ onChanges }: WorkflowStatusesPanelProps)
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="ws-category-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Category</label>
+              <label htmlFor="ws-category-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Category</label>
               <AdsSelect
                 inputId="ws-category-select"
                 value={{ label: CATEGORY_LABELS[formData.category], value: formData.category }}

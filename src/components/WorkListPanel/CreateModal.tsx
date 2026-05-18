@@ -71,7 +71,7 @@ export const CreateModal = memo(function CreateModal({
             margin: '0 0 20px 0',
             fontSize: '18px',
             fontWeight: 600,
-            color: '#172B4D',
+            color: 'var(--cp-text-primary, #172B4D)',
           }}
         >
           {selectedType ? `Create ${selectedType}` : 'Create Issue'}
@@ -100,7 +100,7 @@ export const CreateModal = memo(function CreateModal({
                 style={{
                   padding: '8px 12px',
                   backgroundColor: '#F1F2F4',
-                  color: '#172B4D',
+                  color: 'var(--cp-text-primary, #172B4D)',
                   border: 'none',
                   borderRadius: '3px',
                   fontSize: '14px',
@@ -122,7 +122,7 @@ export const CreateModal = memo(function CreateModal({
                 style={{
                   padding: '8px 12px',
                   backgroundColor: '#F1F2F4',
-                  color: '#172B4D',
+                  color: 'var(--cp-text-primary, #172B4D)',
                   border: 'none',
                   borderRadius: '3px',
                   fontSize: '14px',
@@ -149,7 +149,7 @@ export const CreateModal = memo(function CreateModal({
               style={{
                 padding: '8px 12px',
                 backgroundColor: '#F1F2F4',
-                color: '#172B4D',
+                color: 'var(--cp-text-primary, #172B4D)',
                 border: 'none',
                 borderRadius: '3px',
                 fontSize: '14px',

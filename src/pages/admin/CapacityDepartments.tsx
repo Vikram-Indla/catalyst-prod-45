@@ -113,7 +113,7 @@ export default function CapacityDepartmentsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>Resource Departments</h1>
+          <h1 className="text-2xl font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Resource Departments</h1>
           <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
             Configure departments for resource management. Changes sync in real-time.
           </p>
@@ -155,7 +155,7 @@ export default function CapacityDepartmentsPage() {
                           onClick={() => copyToClipboard(dept.department_id)}
                           className="w-6 h-6 rounded flex items-center justify-center transition-colors"
                           style={{ color: 'var(--ds-text-subtle, #44546F)' }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #172B4D)'; }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, #172B4D))'; }}
                           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)'; }}
                         >
                           <CopyIcon label="" size="small" />
@@ -164,7 +164,7 @@ export default function CapacityDepartmentsPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>{dept.name}</span>
+                    <span className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{dept.name}</span>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-center gap-1">
@@ -172,7 +172,7 @@ export default function CapacityDepartmentsPage() {
                         onClick={() => openEdit(dept)}
                         className="w-8 h-8 rounded flex items-center justify-center transition-colors"
                         style={{ color: 'var(--ds-text-subtle, #44546F)' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #172B4D)'; }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, #172B4D))'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)'; }}
                       >
                         <EditIcon label="" size="small" />
@@ -209,7 +209,7 @@ export default function CapacityDepartmentsPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Name *</label>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Name *</label>
               <Textfield
                 value={formData.name}
                 onChange={(e) => setFormData(f => ({ ...f, name: (e.target as HTMLInputElement).value }))}
@@ -238,7 +238,7 @@ export default function CapacityDepartmentsPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Name *</label>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Name *</label>
               <Textfield
                 value={formData.name}
                 onChange={(e) => setFormData(f => ({ ...f, name: (e.target as HTMLInputElement).value }))}

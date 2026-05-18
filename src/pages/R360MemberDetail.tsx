@@ -423,7 +423,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                           style={{
                             fontSize: 11, padding: '1px 4px', borderRadius: 3,
                             border: `1px solid ${token('color.border.focused', '#388BFF')}`,
-                            color: token('color.text', '#172B4D'),
+                            color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
                             background: token('elevation.surface', '#FFFFFF'),
                             outline: 'none', maxWidth: 180,
                           }}
@@ -506,7 +506,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                       (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle', '#F7F8F9');
                     }}
                   >
-                    <div style={{ fontSize: 22, fontWeight: 700, lineHeight: '26px', fontVariantNumeric: 'tabular-nums', color: token('color.text', '#172B4D') }}>
+                    <div style={{ fontSize: 22, fontWeight: 700, lineHeight: '26px', fontVariantNumeric: 'tabular-nums', color: token('color.text', 'var(--cp-text-primary, #172B4D)') }}>
                       {bannerOpenCount}
                     </div>
                     <div style={{ fontSize: 10, fontWeight: 600, lineHeight: '13px', letterSpacing: '0.04em', color: token('color.text.subtle', '#44546F') }}>
@@ -558,7 +558,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                   </button>
                 )}
                 {/* Quarter label — computed from current date */}
-                <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: token('color.background.neutral', '#F1F2F4'), border: 'none', borderRadius: '6px', color: token('color.text', '#172B4D'), fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
+                <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: token('color.background.neutral', '#F1F2F4'), border: 'none', borderRadius: '6px', color: token('color.text', 'var(--cp-text-primary, #172B4D)'), fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
                   <Calendar size={13} /> {`Q${Math.ceil((new Date().getMonth() + 1) / 3)}-${new Date().getFullYear()}`}
                 </button>
                 {/* Intelligence — brand blue standard */}
@@ -598,7 +598,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
               {workItems.length > 0 && lastActivityDate && (
                 <div style={{ margin: '16px auto', maxWidth: 560, padding: '16px 24px', borderRadius: '8px', border: `1px solid ${token('color.border', '#091E4224')}`, background: token('elevation.surface', '#FFFFFF'), textAlign: 'center' }}>
                   <div style={{ fontSize: '13px', color: token('color.text.subtle', '#626F86'), marginBottom: '10px' }}>
-                    <strong style={{ color: token('color.text', '#172B4D') }}>{allOpenItems.length} open item{allOpenItems.length !== 1 ? 's' : ''}</strong> across all time
+                    <strong style={{ color: token('color.text', 'var(--cp-text-primary, #172B4D)') }}>{allOpenItems.length} open item{allOpenItems.length !== 1 ? 's' : ''}</strong> across all time
                     {allStaleItems.length > 0 && <span> · {allStaleItems.length} stale</span>}
                   </div>
                   <div style={{ fontSize: '12.5px', color: token('color.text.subtlest', '#8590A2'), marginBottom: '12px' }}>

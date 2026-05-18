@@ -16,7 +16,7 @@
 
 .lwi-root {
   font-family: var(--cp-font-body);
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   display: block;
   margin-top: 16px;
 }
@@ -39,7 +39,7 @@
   padding: 4px 6px 4px 2px;
   margin: -4px -6px -4px -2px;
   cursor: pointer;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   font-family: inherit;
   border-radius: 4px;
   transition: background-color 150ms ease;
@@ -93,7 +93,7 @@
 
 .lwi-header__add:hover {
   background-color: rgba(0, 0, 0, 0.04);
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
 }
 
 .lwi-header__add:focus-visible {
@@ -176,7 +176,7 @@
   font-family: inherit;
   font-size: 13px;
   font-weight: 600;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   background: transparent;
   border: none;
   padding: 2px 2px;
@@ -198,7 +198,7 @@
 
 .lwi-row__summary {
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   background: transparent;
   border: none;
   padding: 2px 2px;
@@ -282,7 +282,7 @@
 
 .lwi-row__action-btn:hover {
   background-color: rgba(0, 0, 0, 0.06);
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
 }
 
 .lwi-row__action-btn:focus-visible {
@@ -414,7 +414,7 @@
 
 .lwi-toolbar__create:hover:not(:disabled) {
   background-color: rgba(0, 0, 0, 0.04);
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   text-decoration: underline;
 }
 
@@ -460,7 +460,7 @@
 
 .lwi-option__summary {
   font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

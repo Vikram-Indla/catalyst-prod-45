@@ -79,7 +79,7 @@ function InterventionCard({
         style={{
           fontSize: 14,
           fontWeight: 500,
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
           marginTop: 2,
         }}
       >
@@ -161,7 +161,7 @@ function ApprovalCard({
         </span>
       </div>
 
-      <div style={{ fontSize: 14, fontWeight: 500, color: token('color.text', '#172B4D'), marginTop: 2 }}>
+      <div style={{ fontSize: 14, fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, #172B4D)'), marginTop: 2 }}>
         {title}
       </div>
 
@@ -195,7 +195,7 @@ function ColHeader({ label, summary }: { label: string; summary: string }) {
         marginBottom: 4,
       }}
     >
-      <span style={{ fontSize: 16, fontWeight: 600, color: token('color.text', '#172B4D') }}>
+      <span style={{ fontSize: 16, fontWeight: 600, color: token('color.text', 'var(--cp-text-primary, #172B4D)') }}>
         {label}
       </span>
       <span style={{ fontSize: 11, color: token('color.text.subtle', '#44546F') }}>

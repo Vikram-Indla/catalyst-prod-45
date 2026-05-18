@@ -98,7 +98,7 @@ export function WidgetShell({
               margin: 0,
               fontSize: 20,
               fontWeight: 500,
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
               lineHeight: '24px',
             }}
           >

@@ -34,7 +34,7 @@ export function WidgetSettingsPanel({ onClose, children }: WidgetSettingsPanelPr
             margin: 0,
             fontSize: 13,
             fontWeight: 600,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
           }}
         >
           Widget Settings

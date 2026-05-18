@@ -689,12 +689,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
            cell-renderers (Lozenge, Avatar, dates, etc.) override locally;
            all unstyled text inherits this default so we don't drift.
            Apr 28, 2026 (jira-compare cycle 2 typography RCA): switched
-           from legacy hardcoded var(--ds-text, #172B4D) (rgb 23,43,77 — old Atlassian
+           from legacy hardcoded var(--ds-text, var(--cp-text-primary, #172B4D)) (rgb 23,43,77 — old Atlassian
            Refresh "neutral 800") to the modern --ds-text token (resolves
            to rgb 41,42,46 on Jira /list per live probe of Catalyst H1
            AND Jira BAU body cells). The legacy hex was the cause of the
            washed-out / blue-shifted body text Vikram flagged: every body
-           td was rendering var(--ds-text, #172B4D) while headers + H1 used the modern
+           td was rendering var(--ds-text, var(--cp-text-primary, #172B4D)) while headers + H1 used the modern
            token. Token-first ensures dark-mode + Dark mode switch flips
            too. Fallback hex updated to #292A2E to match Jira's resolved
            --ds-text in light theme. */
@@ -2073,7 +2073,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     border: 'none',
                     background: 'transparent',
                     // Apr 28, 2026 (jira-compare cycle 3 typography sweep):
-                    // legacy var(--ds-text, #172B4D) → --ds-text fallback #292A2E to match
+                    // legacy var(--ds-text, var(--cp-text-primary, #172B4D)) → --ds-text fallback #292A2E to match
                     // the rest of the table's body-text token swap.
                     color: a.danger ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text, #292A2E)',
                     fontSize: 14,

@@ -223,7 +223,7 @@ export function RecentReleasesWidget() {
                     </span>
                   </td>
                   <td style={{ padding: '12px 12px', borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, #DFE1E6)')}`, verticalAlign: 'middle' }}>
-                    <div style={{ fontSize: 14, fontWeight: 500, color: token('color.text', '#172B4D') }}>
+                    <div style={{ fontSize: 14, fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, #172B4D)') }}>
                       {item.title}
                     </div>
                     {item.assignee && (

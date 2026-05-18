@@ -356,7 +356,7 @@ export function HubSwitcher() {
               outline: 'none',
               background: 'transparent',
               fontSize: 14,
-              color: 'var(--ds-text, #172B4D)',
+              color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
             }}
           />
         </div>

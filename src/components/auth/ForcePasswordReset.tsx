@@ -99,7 +99,7 @@ export function ForcePasswordReset({ userId: _userId, email, onSuccess }: ForceP
           margin: '0 0 6px',
           fontSize: 20,
           fontWeight: 600,
-          color: 'var(--ds-text, #172B4D)',
+          color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
         }}>
           Create your password
         </h2>

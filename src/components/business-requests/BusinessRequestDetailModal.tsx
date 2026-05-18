@@ -145,7 +145,7 @@ function BRTextareaEditor({ initialValue, placeholder, minHeight = 120, onSave, 
           border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
           borderRadius: 3,
           background: 'var(--ds-surface, #FFFFFF)',
-          color: 'var(--ds-text, #172B4D)',
+          color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
           fontSize: 14,
           lineHeight: 1.5,
           fontFamily: 'var(--cp-font-body)',
@@ -423,7 +423,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
   const menuItem: React.CSSProperties = {
     display: 'flex', alignItems: 'center', gap: 10, width: '100%',
     padding: '8px 14px', border: 'none', background: 'transparent',
-    textAlign: 'left', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)',
+    textAlign: 'left', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
     transition: 'background 0.1s', fontFamily: 'inherit',
   };
 
@@ -561,7 +561,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                 onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } if (e.key === 'Escape') { e.currentTarget.textContent = request.title ?? ''; e.currentTarget.blur(); } }}
                 style={{
                   fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontSize: 22, fontWeight: 700, color: 'var(--ds-text, #172B4D)', lineHeight: 1.3,
+                  fontSize: 22, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', lineHeight: 1.3,
                   margin: '0 0 12px', outline: 'none', cursor: 'text', borderRadius: 3,
                   padding: '4px 6px', wordBreak: 'break-word', transition: 'background 0.15s, box-shadow 0.15s',
                   background: titleFocused ? 'var(--ds-surface, #FFFFFF)' : 'transparent',
@@ -586,7 +586,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                     fontSize: 18,
                     fontWeight: 600,
                     textAlign: 'right',
-                    color: 'var(--ds-text, #172B4D)',
+                    color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
                   }}
                 />
               </div>
@@ -759,13 +759,13 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ marginBottom: 4 }}>
-                            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>{c.actor_name || 'Unknown'}</span>
+                            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{c.actor_name || 'Unknown'}</span>
                             {' '}
                             <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>{fmtDate(c.created_at)}</span>
                           </div>
                           <div
                             dangerouslySetInnerHTML={{ __html: c.new_value || '' }}
-                            style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', lineHeight: 1.6 }}
+                            style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', lineHeight: 1.6 }}
                           />
                         </div>
                       </div>
@@ -789,13 +789,13 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ds-surface, #FFF)" strokeWidth="2"><rect x="8" y="2" width="8" height="4" rx="1"/><rect x="4" y="4" width="16" height="18" rx="2"/></svg>
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', lineHeight: 1.5, marginBottom: 2 }}>
+                          <div style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', lineHeight: 1.5, marginBottom: 2 }}>
                             <span style={{ fontWeight: 600 }}>{e.actor_name || 'System'}</span>{' '}
                             changed the <span style={{ fontWeight: 600 }}>{e.field_changed}</span>
                           </div>
                           <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>{fmtDate(e.created_at)}</div>
                           {(e.old_value || e.new_value) && (
-                            <div style={{ marginTop: 6, fontSize: 14, color: 'var(--ds-text, #172B4D)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <div style={{ marginTop: 6, fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', display: 'flex', alignItems: 'center', gap: 8 }}>
                               <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>{e.old_value || 'None'}</span>
                               <span style={{ color: '#97A0AF' }}>→</span>
                               <span style={{ fontWeight: 500 }}>{e.new_value || 'None'}</span>
@@ -884,7 +884,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
               <div style={{ marginBottom: 20 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12, userSelect: 'none' }}>
                   <ChevronDown size={14} color="#42526E" />
-                  <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>Details</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Details</span>
                 </div>
 
                 {/* Priority */}
@@ -902,7 +902,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                       onMouseLeave={e => { if (!showPriorityDropdown) e.currentTarget.style.background = 'transparent'; }}
                     >
                       {PRIORITY_SVG[priorityLabel] || PRIORITY_SVG.Medium}
-                      <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>{priorityLabel === 'Unscored' ? 'Medium' : priorityLabel}</span>
+                      <span style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{priorityLabel === 'Unscored' ? 'Medium' : priorityLabel}</span>
                     </div>
                     {showPriorityDropdown && (
                       <div style={{
@@ -925,7 +925,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                               onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                             >
                               {PRIORITY_SVG[p]}
-                              <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>{p}</span>
+                              <span style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{p}</span>
                               {isActive && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--cp-primary-60, #0052CC)" strokeWidth="2.5" style={{ marginLeft: 'auto' }}><polyline points="20 6 9 17 4 12"/></svg>}
                             </div>
                           );
@@ -994,7 +994,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                           color: 'var(--ds-surface, #FFF)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: 10, fontWeight: 700, flexShrink: 0,
                         }}>{getInitials(businessOwnerName)}</div>
-                        <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>{businessOwnerName}</span>
+                        <span style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{businessOwnerName}</span>
                       </>
                     ) : <span style={{ color: '#42526E', fontSize: 14 }}>Auto-assigned</span>}
                   </div>
@@ -1080,7 +1080,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                 {formData.rank && (
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
                     <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Rank</div>
-                    <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', fontWeight: 500, paddingTop: 6 }}>#{formData.rank}</span>
+                    <span style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontWeight: 500, paddingTop: 6 }}>#{formData.rank}</span>
                   </div>
                 )}
 
@@ -1116,7 +1116,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
               <div style={{ marginBottom: 20 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12, userSelect: 'none' }}>
                   <ChevronDown size={14} color="#42526E" />
-                  <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>Dates</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Dates</span>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
@@ -1157,7 +1157,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
       {showDeleteConfirm && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(9,30,66,0.4)' }}>
           <div style={{ background: 'var(--ds-surface, #FFF)', borderRadius: 8, padding: 28, width: 400, maxWidth: '95vw' }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--ds-text, #172B4D)', marginBottom: 8 }}>Delete {request.request_key}?</h3>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', marginBottom: 8 }}>Delete {request.request_key}?</h3>
             <p style={{ fontSize: 13, color: '#5E6C84', lineHeight: 1.6, marginBottom: 20 }}>This request will be moved to deleted items and can be restored within 30 days.</p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
               <button onClick={() => setShowDeleteConfirm(false)} style={{ padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface, #FFF)', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#5E6C84' }}>Cancel</button>
@@ -1179,7 +1179,7 @@ function CollapsibleSection({ title, defaultOpen = false, children }: { title: s
         <span style={{ width: 16, height: 16, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#5E6C84', transition: 'transform 0.2s', transform: open ? 'rotate(0deg)' : 'rotate(-90deg)', flexShrink: 0 }}>
           <ChevronDown size={14} />
         </span>
-        <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>{title}</span>
+        <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{title}</span>
       </div>
       {open && <div style={{ paddingLeft: 22 }}>{children}</div>}
     </div>
@@ -1191,7 +1191,7 @@ function SidebarField({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.03em', marginBottom: 2 }}>{label}</div>
-      <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', fontWeight: 400 }}>{value}</div>
+      <div style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontWeight: 400 }}>{value}</div>
     </div>
   );
 }

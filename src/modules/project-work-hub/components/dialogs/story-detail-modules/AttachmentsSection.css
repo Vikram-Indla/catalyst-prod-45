@@ -60,7 +60,7 @@
    BAU-5814 (Story) and BAU-5824 / BAU-5751 (QA Bug). Atomic CSS classes
    match @atlaskit/heading size="small".
    Corrects the 2026-05-04 D3 measurement (14/500/#505258) and the
-   2026-05-08 K.11 lesson (14/600/#172B4D) — both had measured layout
+   2026-05-08 K.11 lesson (14/600/var(--cp-text-primary, #172B4D)) — both had measured layout
    wrappers or inner field labels, not the canonical section heading. */
 .att-heading-label {
   display: block;
@@ -146,7 +146,7 @@
   text-align: left;
   cursor: pointer;
   font-size: 14px;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, var(--cp-text-primary, #172B4D));
   font-family: var(--cp-font-body);
   transition: background 0.1s ease;
 }

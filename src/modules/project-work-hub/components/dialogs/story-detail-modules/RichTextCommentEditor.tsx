@@ -276,7 +276,7 @@ export function RichTextCommentEditor({
           data-placeholder={placeholder}
           style={{
             minHeight: 80, padding: '12px 14px', outline: 'none',
-            fontSize: 14, color: 'var(--ds-text, #172B4D)', lineHeight: 1.6, fontFamily: 'inherit',
+            fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', lineHeight: 1.6, fontFamily: 'inherit',
             background: 'var(--ds-surface, #FFF)', overflowY: 'auto', maxHeight: 300,
             position: 'relative',
           }}
@@ -295,7 +295,7 @@ export function RichTextCommentEditor({
                 onMouseDown={e => { e.preventDefault(); insertMention(m); }}
                 style={{
                   width: '100%', padding: '8px 12px', border: 'none', textAlign: 'left', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--ds-text, #172B4D)',
+                  display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
                   background: idx === mentionIndex ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
                 }}
                 onMouseEnter={() => setMentionIndex(idx)}
