@@ -80,7 +80,7 @@ function useTokens(dk: boolean) {
     borderSubtle: dk ? 'var(--ds-border, #292929)' : '#f3f4f6',
     borderInput:  dk ? 'var(--ds-border-bold, #454545)' : '#DDDEE1',
     borderFocus:  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
-    text1:        dk ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))',
+    text1:        dk ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
     text2:        dk ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #475569)',
     text3:        dk ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
     textMuted:    dk ? 'var(--ds-text-subtlest, #878787)' : '#9ca3af',

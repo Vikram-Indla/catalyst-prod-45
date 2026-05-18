@@ -168,7 +168,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
         <div className="min-w-0">
           <div
             className="truncate"
-            style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}
+            style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}
             title={flag.module_name}
           >
             {flag.module_name}
@@ -479,7 +479,7 @@ export default function FeatureFlagsPage() {
     return (
       <div className={`flex-1 flex flex-col items-center justify-center py-20 gap-3 ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`}>
         <span style={{ display: 'flex', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}><CrossCircleIcon label="" size="large" /></span>
-        <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>
+        <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
           Failed to load feature flags
         </p>
         <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, #71717A)' }}>
@@ -507,7 +507,7 @@ export default function FeatureFlagsPage() {
         <div>
           <div className="flex items-center gap-2">
             <span style={{ display: 'inline-flex', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}><FlagIcon label="" size="medium" /></span>
-            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', letterSpacing: '-0.025em', margin: 0 }}>
+            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', letterSpacing: '-0.025em', margin: 0 }}>
               Feature Flags
             </h1>
           </div>
@@ -539,7 +539,7 @@ export default function FeatureFlagsPage() {
         >
           {/* Left: count */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontVariantNumeric: 'tabular-nums' }}>
               {stats.enabled}
             </span>
             <span style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>/</span>
@@ -671,7 +671,7 @@ export default function FeatureFlagsPage() {
             border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.14))'}`,
             borderRadius: 4,
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-            color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
+            color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
           }}
         >
           <option value="all">All Categories</option>
@@ -745,7 +745,7 @@ export default function FeatureFlagsPage() {
           <div
             style={{ padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
             onClick={() => handleSort('updated_at')}
-            className="select-none hover:text-[var(--ds-text,var(--cp-ink-1, #0F172A))] transition-colors duration-[120ms]"
+            className="select-none hover:text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] transition-colors duration-[120ms]"
             role="columnheader"
             tabIndex={0}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSort('updated_at'); } }}
@@ -766,7 +766,7 @@ export default function FeatureFlagsPage() {
             {flags?.length === 0 ? (
               <>
                 <span style={{ display: 'inline-flex', color: 'rgba(15,23,42,0.15)' }}><SettingsIcon label="" size="large" /></span>
-                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>
+                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
                   No modules configured
                 </p>
                 <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, #71717A)' }}>
@@ -776,7 +776,7 @@ export default function FeatureFlagsPage() {
             ) : (
               <>
                 <span style={{ display: 'inline-flex', color: 'rgba(15,23,42,0.15)' }}><FlagIcon label="" size="large" /></span>
-                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>
+                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
                   No modules match your filters
                 </p>
                 {hasActiveFilters && (

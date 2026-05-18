@@ -54,7 +54,7 @@ export function ThemeToggle({ testId }: ThemeToggleProps = {}) {
           borderRadius: 6,
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.color = token('color.text', 'var(--cp-ink-1, #0F172A)');
+          e.currentTarget.style.color = token('color.text', 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))');
           e.currentTarget.style.background = token('color.background.neutral.hovered', 'rgba(0,0,0,0.04)');
         }}
         onMouseLeave={(e) => {
@@ -62,7 +62,7 @@ export function ThemeToggle({ testId }: ThemeToggleProps = {}) {
           e.currentTarget.style.background = 'transparent';
         }}
         onFocus={(e) => {
-          e.currentTarget.style.color = token('color.text', 'var(--cp-ink-1, #0F172A)');
+          e.currentTarget.style.color = token('color.text', 'var(--cp-ink-1, var(--cp-ink-1, #0F172A))');
         }}
         onBlur={(e) => {
           e.currentTarget.style.color = token('color.text.subtle', '#626F86');

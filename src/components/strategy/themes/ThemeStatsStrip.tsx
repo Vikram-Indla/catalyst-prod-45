@@ -101,7 +101,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
           </div>
           <p style={{
             fontSize: 26, fontWeight: 800,
-            color: (c as any).valueColor || (isDark ? DK.t1 : 'var(--ds-text, var(--cp-ink-1, #0F172A))'),
+            color: (c as any).valueColor || (isDark ? DK.t1 : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))'),
             lineHeight: 1.1, marginBottom: 4, letterSpacing: '-0.5px',
           }}>{c.value}</p>
           <p style={{

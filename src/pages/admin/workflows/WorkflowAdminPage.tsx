@@ -42,7 +42,7 @@ export default function WorkflowAdminPage() {
   return (
     <AdminGuard>
     <div
-      className="space-y-0 bg-white min-h-screen text-[var(--ds-text,var(--cp-ink-1, #0F172A))]"
+      className="space-y-0 bg-white min-h-screen text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]"
       style={{
         // Shrink main content when CATY panel is open to prevent overlap
         marginRight: catyOpen ? 380 : 0,
@@ -56,7 +56,7 @@ export default function WorkflowAdminPage() {
             <BoardsIcon label="" size="small" />
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-[var(--ds-text,var(--cp-ink-1, #0F172A))] font-['Sora']">
+            <h1 className="text-lg font-semibold text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] font-['Sora']">
               Workflows
             </h1>
             <p className="text-xs text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">
@@ -107,8 +107,8 @@ export default function WorkflowAdminPage() {
                 value={t.key}
                 className={cn(
                   'relative px-4 py-2 text-xs font-medium rounded-none border-b-2 transition-colors data-[state=active]:shadow-none',
-                  'data-[state=active]:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] data-[state=active]:text-[var(--ds-text,var(--cp-ink-1, #0F172A))]',
-                  'data-[state=inactive]:border-transparent data-[state=inactive]:text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] data-[state=inactive]:hover:text-[var(--ds-text,var(--cp-ink-1, #0F172A))]',
+                  'data-[state=active]:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] data-[state=active]:text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]',
+                  'data-[state=inactive]:border-transparent data-[state=inactive]:text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] data-[state=inactive]:hover:text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]',
                   'bg-transparent'
                 )}
               >

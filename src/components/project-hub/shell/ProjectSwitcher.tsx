@@ -64,7 +64,7 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search projects..."
-          className="flex-1 bg-transparent outline-none border-none text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]"
+          className="flex-1 bg-transparent outline-none border-none text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]"
           style={{ fontSize: 12 }}
         />
       </div>

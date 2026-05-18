@@ -49,7 +49,7 @@ export default function ReportDetailPage() {
   const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)';
   const borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))';
   const borderSubtle = 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))';
-  const textPrimary = 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))';
+  const textPrimary = 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))';
   const textSecondary = 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
   const textMuted = 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
   const textBody = 'var(--cp-ink-2, var(--cp-ink-2, #334155))';

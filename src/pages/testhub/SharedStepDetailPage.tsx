@@ -110,7 +110,7 @@ export default function SharedStepDetailPage() {
         >
           <ArrowLeft size={16} /> Shared Steps
         </button>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 8px' }}>{step.name}</h1>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: '0 0 8px' }}>{step.name}</h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
           {step.category && (
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>

@@ -55,7 +55,7 @@ export function WikiAdminPagesTab() {
             style={{
               border: 'none', outline: 'none', background: 'transparent',
               fontFamily: 'var(--cp-font-body)', fontSize: 12, width: '100%',
-              color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
+              color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
             }}
           />
         </div>
@@ -115,7 +115,7 @@ export function WikiAdminPagesTab() {
                         <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, padding: '2px 6px', borderRadius: 4, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{p.domain_code ?? '—'}</span>
                       </td>
                       <td style={{ padding: '8px 12px' }}><PageStatusLoz status={p.status} /></td>
-                      <td style={{ padding: '8px 12px', fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: isLowConf ? 'var(--sem-danger)' : 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', fontWeight: isLowConf ? 700 : 400 }}>
+                      <td style={{ padding: '8px 12px', fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: isLowConf ? 'var(--sem-danger)' : 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontWeight: isLowConf ? 700 : 400 }}>
                         {p.ai_confidence != null ? `${Math.round(p.ai_confidence * 100)}%` : '—'}
                       </td>
                       <td style={{ padding: '8px 12px', fontFamily: 'var(--cp-font-mono)', fontSize: 11 }}>
@@ -191,7 +191,7 @@ function PagBtn({ disabled, onClick, children }: { disabled: boolean; onClick: (
       border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
       background: 'transparent', cursor: disabled ? 'default' : 'pointer',
       opacity: disabled ? 0.4 : 1, display: 'flex', alignItems: 'center',
-      color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', outline: 'none',
+      color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', outline: 'none',
     }}
       onFocus={(e) => { if (!disabled) e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
       onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}

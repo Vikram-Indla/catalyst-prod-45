@@ -65,7 +65,7 @@ const mkFieldRow = (isDark: boolean): React.CSSProperties => ({
 });
 
 const mkFieldKey = (isDark: boolean): React.CSSProperties => ({ fontSize: '11px', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' });
-const mkFieldVal = (isDark: boolean): React.CSSProperties => ({ fontSize: '12px', fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', textAlign: 'right' as const });
+const mkFieldVal = (isDark: boolean): React.CSSProperties => ({ fontSize: '12px', fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', textAlign: 'right' as const });
 const monoSmall: React.CSSProperties = { fontFamily: 'var(--cp-font-mono)', fontSize: '10px' };
 const Code: React.FC<{ children: React.ReactNode; isDark?: boolean }> = ({ children, isDark = false }) => (
   <code style={{
@@ -199,7 +199,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                         style={{ width: '12px', height: '12px', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}
                       />
                     </td>
-                    <td style={{ padding: '6px 9px', fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', whiteSpace: 'nowrap' }} className="jus-field-val">
+                    <td style={{ padding: '6px 9px', fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', whiteSpace: 'nowrap' }} className="jus-field-val">
                       {p.project_name || p.project_key}
                     </td>
                     <td style={{ padding: '6px 9px' }}>
@@ -306,7 +306,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
     text2: 'var(--ds-text-subtlest, #A1A1A1)', text3: 'var(--ds-text-subtlest, #878787)', sunken: 'var(--ds-surface, #0A0A0A)',
     elevated: 'var(--ds-surface-raised, #1A1A1A)', inputBg: 'var(--ds-surface-raised, #1A1A1A)',
   } : {
-    surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'rgba(15,23,42,0.10)', text1: 'var(--ds-text, var(--cp-ink-1, #0F172A))',
+    surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'rgba(15,23,42,0.10)', text1: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
     text2: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', text3: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', sunken: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
     elevated: 'var(--ds-surface-sunken, #F8FAFC)', inputBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   };

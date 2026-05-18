@@ -25,7 +25,7 @@ interface CreateTagModalProps {
 const PRESET_COLORS = [
   'var(--ds-text-danger, #EF4444)', '#F97316', 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', '#EAB308', '#84CC16', 'var(--ds-text-success, #22C55E)', '#10B981',
   '#14B8A6', '#06B6D4', '#0EA5E9', 'var(--ds-text-brand, #3B82F6)', '#6366F1', '#8B5CF6', '#A855F7',
-  '#D946EF', '#EC4899', '#F43F5E', '#78716C', 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', 'var(--ds-text, var(--cp-ink-1, #0F172A))',
+  '#D946EF', '#EC4899', '#F43F5E', '#78716C', 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
 ];
 
 const CATEGORY_SUGGESTIONS = [
@@ -135,7 +135,7 @@ export function CreateTagModal({ isOpen, onClose, onSaved, editingTag }: CreateT
             </label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
               {PRESET_COLORS.map((c) => (
-                <button key={c} onClick={() => setColor(c)} style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: c, border: color === c ? '3px solid var(--cp-ink-1, #0F172A)' : '2px solid transparent', cursor: 'pointer', transition: 'transform 0.1s' }}
+                <button key={c} onClick={() => setColor(c)} style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: c, border: color === c ? '3px solid var(--cp-ink-1, var(--cp-ink-1, #0F172A))' : '2px solid transparent', cursor: 'pointer', transition: 'transform 0.1s' }}
                   onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'} />
               ))}
             </div>

@@ -150,7 +150,7 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {PRESET_COLORS.map(c => (
                 <button key={c} onClick={() => setColor(c)} style={{
-                  width: 36, height: 50, borderRadius: 8, backgroundColor: c, border: color === c ? '3px solid var(--cp-ink-1, #0F172A)' : '3px solid transparent',
+                  width: 36, height: 50, borderRadius: 8, backgroundColor: c, border: color === c ? '3px solid var(--cp-ink-1, var(--cp-ink-1, #0F172A))' : '3px solid transparent',
                   cursor: 'pointer', transition: 'transform 0.1s', padding: 0,
                 }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'} onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'} />
               ))}

@@ -178,7 +178,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
             border: 'none',
             outline: 'none',
             fontSize: 12,
-            color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))',
+            color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
           }}
         />
       </div>

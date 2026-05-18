@@ -167,7 +167,7 @@ export default function AuditTrailPage() {
             <ChevronLeft size={14} color="var(--ds-text-subtle, #475569)" />
             Back to Cleanup
           </button>
-          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>
+          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
             Audit Trail
           </div>
           <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: 2 }}>
@@ -227,7 +227,7 @@ export default function AuditTrailPage() {
             style={{
               height: 36, fontSize: 13, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
               borderRadius: 6, padding: '0 10px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', fontFamily: 'var(--cp-font-body)',
+              color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontFamily: 'var(--cp-font-body)',
             }}
           />
           <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>To</span>
@@ -238,7 +238,7 @@ export default function AuditTrailPage() {
             style={{
               height: 36, fontSize: 13, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
               borderRadius: 6, padding: '0 10px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', fontFamily: 'var(--cp-font-body)',
+              color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontFamily: 'var(--cp-font-body)',
             }}
           />
         </div>
@@ -267,7 +267,7 @@ export default function AuditTrailPage() {
           <div key={cell.label}>
             <div style={{
               fontFamily: 'var(--cp-font-mono)', fontSize: 20,
-              fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))',
+              fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
             }}>
               {cell.value}
             </div>
@@ -333,7 +333,7 @@ export default function AuditTrailPage() {
                         {entry.item_key}
                       </div>
                       <div style={{
-                        fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginTop: 2,
+                        fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginTop: 2,
                         maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
                       }}>
@@ -358,7 +358,7 @@ export default function AuditTrailPage() {
                             {initials(entry.closed_by_name)}
                           </span>
                         </div>
-                        <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>
+                        <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
                           {entry.closed_by_name}
                         </span>
                       </div>
@@ -414,7 +414,7 @@ export default function AuditTrailPage() {
                                 {initials(entry.restored_by_name)}
                               </span>
                             </div>
-                            <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>
+                            <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
                               {entry.restored_by_name}
                             </span>
                           </div>

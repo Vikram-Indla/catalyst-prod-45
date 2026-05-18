@@ -23,7 +23,7 @@ export default function CommentPreview({ text, attachmentFilename }: CommentPrev
       marginTop: 8,
       fontFamily: 'var(--cp-font-body)',
       fontSize: 13,
-      color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
+      color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
       lineHeight: '18px',
       maxHeight: expanded ? 'none' : 80,
       overflow: 'hidden',

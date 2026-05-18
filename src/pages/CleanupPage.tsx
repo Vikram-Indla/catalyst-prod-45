@@ -552,7 +552,7 @@ export default function CleanupPage() {
         flexShrink: 0,
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1 }}>
-          <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>
+          <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
             AI Cleanup
           </span>
         </div>
@@ -604,7 +604,7 @@ export default function CleanupPage() {
                 padding: '10px 24px', border: 'none', cursor: 'pointer',
                 background: 'transparent', fontFamily: 'var(--cp-font-body)',
                 fontSize: 13, fontWeight: activeTab === tab.key ? 700 : 500,
-                color: activeTab === tab.key ? 'var(--ds-text, var(--cp-ink-1, #0F172A))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
+                color: activeTab === tab.key ? 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                 borderBottom: activeTab === tab.key ? '2px solid #2563EB' : '2px solid transparent',
               }}
             >
@@ -626,7 +626,7 @@ export default function CleanupPage() {
                   display: 'flex', alignItems: 'center', gap: 4,
                   height: 32, padding: '0 12px', border: 'none', cursor: 'pointer',
                   fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 500,
-                  background: viewMode === v.key ? 'var(--ds-text, var(--cp-ink-1, #0F172A))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                  background: viewMode === v.key ? 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   color: viewMode === v.key ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                   transition: 'background 100ms, color 100ms',
                 }}
@@ -656,7 +656,7 @@ export default function CleanupPage() {
               <div key={cell.label} style={{ textAlign: 'center' }}>
                 <div style={{
                    fontFamily: 'var(--cp-font-mono)', fontSize: 24,
-                   fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))',
+                   fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
                  }}>
                   {cell.value}
                 </div>
@@ -723,7 +723,7 @@ export default function CleanupPage() {
                            }}
                          >
                            <CatIcon size={16} color="var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" />
-                           <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>
+                           <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
                              {cat.name}
                            </span>
                            <span style={{
@@ -839,7 +839,7 @@ export default function CleanupPage() {
 
                           {/* LINE 2 — Title */}
                           <div style={{
-                            fontSize: 13, fontWeight: 500, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))',
+                            fontSize: 13, fontWeight: 500, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
                             marginTop: 4, paddingLeft: cat.isReporterOnus ? 0 : 28,
                             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                           }}>
@@ -927,7 +927,7 @@ export default function CleanupPage() {
                     onCheckedChange={handleMasterCheck}
                     style={{ width: 16, height: 16 }}
                   />
-                  <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', whiteSpace: 'nowrap' }}>
                     {someListChecked
                       ? `${listCheckableItems.filter(i => selected.has(i.id)).length} of ${listCheckableItems.length} selected`
                       : `Select all ${listCheckableItems.length}`
@@ -1100,7 +1100,7 @@ export default function CleanupPage() {
                             {/* Summary */}
                             <td style={{
                               padding: '8px 12px', fontSize: 13, fontWeight: 500,
-                              color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', maxWidth: 0,
+                              color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', maxWidth: 0,
                               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                             }}>
                               {item.title}
@@ -1263,7 +1263,7 @@ export default function CleanupPage() {
               justifyContent: 'space-between', zIndex: 50,
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>
+                <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
                   {selected.size} selected
                 </span>
                 {firstSelectedCatKey !== null && viewMode === 'group' && (
@@ -1292,7 +1292,7 @@ export default function CleanupPage() {
                 </Button>
                 <Button
                   variant="outline"
-                  style={{ height: 36, fontSize: 14, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', color: 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}
+                  style={{ height: 36, fontSize: 14, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}
                   onClick={() => toast.info('Force Close via workflow — coming soon')}
                 >
                   Force Close (via workflow)
@@ -1354,7 +1354,7 @@ export default function CleanupPage() {
                         {entry.item_key}
                       </span>
                     </td>
-                    <td style={{ padding: '8px 12px', fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '8px 12px', fontSize: 13, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {entry.item_key}
                     </td>
                     <td style={{ padding: '8px 12px', fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
@@ -1409,7 +1409,7 @@ export default function CleanupPage() {
           <div style={{ padding: '24px 24px 0' }}>
             <h2 style={{
               fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700,
-              color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', margin: 0,
+              color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0,
             }}>
               Force close {selected.size} item{selected.size !== 1 ? 's' : ''}?
             </h2>
@@ -1472,7 +1472,7 @@ export default function CleanupPage() {
                         <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>{initials(r.name)}</span>
                       </div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>{r.name}</div>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{r.name}</div>
                         <div style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
                           {r.items.length} item{r.items.length !== 1 ? 's' : ''}
                         </div>
@@ -1495,7 +1495,7 @@ export default function CleanupPage() {
             <Select value={closureReason} onValueChange={setClosureReason}>
               <SelectTrigger style={{
                 width: '100%', height: 40, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
-                borderRadius: 6, fontSize: 14, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))',
+                borderRadius: 6, fontSize: 14, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
                 background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', padding: '0 12px',
               }}>
                 <SelectValue />

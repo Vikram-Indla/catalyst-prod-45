@@ -59,7 +59,7 @@ export default function IncidentAnalyticsPage() {
             <BarChart3 size={18} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
           </div>
           <div>
-            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>Analytics</h1>
+            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>Analytics</h1>
             <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Incident management metrics and trends</p>
           </div>
         </div>
@@ -69,7 +69,7 @@ export default function IncidentAnalyticsPage() {
           {[
             { label: 'Avg Resolution', value: '\u2014', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
             { label: 'SLA Breach Rate', value: incidents ? `${Math.round((incidents.filter(i => i.resolution_breached).length / Math.max(incidents.length, 1)) * 100)}%` : '0%', accent: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
-            { label: 'Total Incidents', value: stats.total, accent: 'var(--ds-text, var(--cp-ink-1, #0F172A))' },
+            { label: 'Total Incidents', value: stats.total, accent: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' },
             { label: 'MTTR', value: '\u2014', accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
           ].map(s => (
             <div key={s.label} className="p-3" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
@@ -83,7 +83,7 @@ export default function IncidentAnalyticsPage() {
         <div className="grid grid-cols-2 gap-4">
           {/* By Severity */}
           <div className="p-4" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
-            <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 12 }}>Incidents by Severity</h3>
+            <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 12 }}>Incidents by Severity</h3>
             <div className="space-y-2">
               {analytics.bySeverity.map(([sev, count]) => (
                 <div key={sev} className="flex items-center gap-2">
@@ -91,7 +91,7 @@ export default function IncidentAnalyticsPage() {
                   <div className="flex-1" style={{ height: 16, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${(count / maxCount(analytics.bySeverity)) * 100}%`, backgroundColor: SEV_BAR_COLORS[sev] || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 2 }} />
                   </div>
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', width: 24, textAlign: 'right' }}>{count}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', width: 24, textAlign: 'right' }}>{count}</span>
                 </div>
               ))}
             </div>
@@ -99,7 +99,7 @@ export default function IncidentAnalyticsPage() {
 
           {/* By Status */}
           <div className="p-4" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
-            <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 12 }}>Status Distribution</h3>
+            <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 12 }}>Status Distribution</h3>
             <div className="space-y-2">
               {analytics.byStatus.map(([status, count]) => (
                 <div key={status} className="flex items-center gap-2">
@@ -107,7 +107,7 @@ export default function IncidentAnalyticsPage() {
                   <div className="flex-1" style={{ height: 16, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${(count / maxCount(analytics.byStatus)) * 100}%`, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 2 }} />
                   </div>
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', width: 24, textAlign: 'right' }}>{count}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', width: 24, textAlign: 'right' }}>{count}</span>
                 </div>
               ))}
             </div>
@@ -115,7 +115,7 @@ export default function IncidentAnalyticsPage() {
 
           {/* By Assignee */}
           <div className="p-4" style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
-            <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 12 }}>Assignee Workload</h3>
+            <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 12 }}>Assignee Workload</h3>
             <div className="space-y-2">
               {analytics.byAssignee.slice(0, 8).map(([name, count]) => (
                 <div key={name} className="flex items-center gap-2">
@@ -123,7 +123,7 @@ export default function IncidentAnalyticsPage() {
                   <div className="flex-1" style={{ height: 16, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 4, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${(count / maxCount(analytics.byAssignee)) * 100}%`, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 2 }} />
                   </div>
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', width: 24, textAlign: 'right' }}>{count}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', width: 24, textAlign: 'right' }}>{count}</span>
                 </div>
               ))}
             </div>

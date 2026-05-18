@@ -130,7 +130,7 @@ export default function MyTestScopePage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <UserCheck size={22} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>
             My Test Scope
           </h1>
           <span style={{
@@ -217,7 +217,7 @@ export default function MyTestScopePage() {
                     }}>
                       {first.cycle_key}
                     </span>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))' }}>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
                       {first.cycle_name}
                     </span>
                     <span style={{
@@ -261,7 +261,7 @@ export default function MyTestScopePage() {
                           }}>
                             {item.case_key}
                           </span>
-                          <span style={{ fontSize: 13, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', fontWeight: 500 }}>
+                          <span style={{ fontSize: 13, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontWeight: 500 }}>
                             {item.title}
                           </span>
                         </div>

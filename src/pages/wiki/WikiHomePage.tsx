@@ -46,7 +46,7 @@ const SectionHeader = React.memo(({ title, count, rightLabel, rightAction, isDar
 }) => (
   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
     <div style={{ width: 3, height: 16, borderRadius: 4, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
-    <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>{title}</span>
+    <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{title}</span>
     {count !== undefined && (
       <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{count}</span>
     )}
@@ -114,7 +114,7 @@ export default function WikiHomePage() {
   const bookmarkSet = new Set(bookmarkedIds ?? []);
 
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, #F8FAFC)', minHeight: '100%' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, #F8FAFC)', minHeight: '100%' }}>
       {/* Onboarding Wizard */}
       {showOnboarding && <WikiOnboardingWizard onComplete={() => setOnboardingDismissed(true)} />}
 
@@ -132,7 +132,7 @@ export default function WikiHomePage() {
 
         <div style={{ padding: '48px 40px 40px', display: 'flex', gap: 40, alignItems: 'flex-start', position: 'relative', zIndex: 1, flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: 320, maxWidth: 640 }}>
-            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, margin: '0 0 4px', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>WikiHub</h1>
+            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, margin: '0 0 4px', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>WikiHub</h1>
             <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '0 0 20px' }}>
               Ministry of Industry Knowledge Platform — 9 Domains · {stats?.totalArticles ?? 0} Articles · {stats?.totalDocuments ?? 0} Documents
             </p>
@@ -305,7 +305,7 @@ const StatCard = React.memo(({ label, value, valueColor, isDark }: { label: stri
     onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.currentTarget.style.background = isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)'; }}
     onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(0,0,0,0.06)'; e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F8FAFC)'; }}
   >
-    <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 28, fontWeight: 700, color: valueColor || (isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))') }}>{value}</div>
+    <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 28, fontWeight: 700, color: valueColor || (isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))') }}>{value}</div>
     <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', letterSpacing: '0.05em', marginTop: 4 }}>{label}</div>
   </div>
 ));
@@ -339,7 +339,7 @@ const QuickRefCard = React.memo(({ qr, onClick, isDark }: { qr: any; onClick: ()
       <div style={{ width: 30, height: 30, borderRadius: 6, background: isDark ? 'rgba(37,99,235,0.12)' : dc.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
         <Icon size={15} style={{ color: dc.fg }} />
       </div>
-      <div style={{ fontSize: 12, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 8, lineHeight: 1.3 }}>{qr.title}</div>
+      <div style={{ fontSize: 12, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 8, lineHeight: 1.3 }}>{qr.title}</div>
       <div style={{ display: 'flex', gap: 12, fontSize: 10 }}>
         <span style={{ fontFamily: 'var(--cp-font-mono)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontWeight: 500 }}>{qr.steps} steps</span>
         <span style={{ fontFamily: 'var(--cp-font-mono)', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontWeight: 500 }}>{formatK(qr.view_count ?? qr.views ?? 0)} views</span>
@@ -368,7 +368,7 @@ const DomainCard = React.memo(({ d, Icon, navigate, isDark }: { d: any; Icon: Re
           </div>
           <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 700, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '1px 5px', borderRadius: 3 }}>{d.domain_code}</span>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 12.5, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>{d.name}</div>
+            <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 12.5, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{d.name}</div>
           </div>
           <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', padding: '2px 6px', borderRadius: 4, background: isDark ? 'rgba(55,48,163,0.15)' : tagStyle.bg, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : tagStyle.color, letterSpacing: '0.04em' }}>{d.tag}</span>
         </div>
@@ -377,7 +377,7 @@ const DomainCard = React.memo(({ d, Icon, navigate, isDark }: { d: any; Icon: Re
         <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginBottom: 10 }}>
           {[{ v: d.article_count, l: 'Articles' }, { v: formatK(d.view_count), l: 'Views' }, { v: d.knowledge_gaps, l: 'Gaps' }].map(s => (
             <div key={s.l} style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>{s.v}</div>
+              <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{s.v}</div>
               <div style={{ fontSize: 9, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{s.l}</div>
             </div>
           ))}
@@ -389,7 +389,7 @@ const DomainCard = React.memo(({ d, Icon, navigate, isDark }: { d: any; Icon: Re
           <div style={{ flex: 1, height: 3, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }}>
             <div style={{ height: '100%', borderRadius: 4, background: coverageColor, width: `${d.coverage_percent}%`, transition: 'width 600ms' }} />
           </div>
-          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>{d.coverage_percent}%</span>
+          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{d.coverage_percent}%</span>
         </div>
       </div>
     </div>
@@ -411,7 +411,7 @@ const LearningPathCard = React.memo(({ p, navigate, isDark }: { p: any; navigate
           <GraduationCap size={16} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 12.5, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>{p.title}</div>
+          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 12.5, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{p.title}</div>
         </div>
         <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: diffColor }}>{p.difficulty}</span>
       </div>
@@ -459,7 +459,7 @@ const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDa
 
       {/* Article title + TL;DR */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, paddingRight: 8 }}>
-        <span style={{ fontWeight: 500, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 12.5 }}>{a.title}</span>
+        <span style={{ fontWeight: 500, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 12.5 }}>{a.title}</span>
         {a.tldr && (
           <span title={a.tldr} style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textDecoration: 'underline', textDecorationStyle: 'dashed', textUnderlineOffset: 2, cursor: 'help', flexShrink: 0 }}>TL;DR</span>
         )}

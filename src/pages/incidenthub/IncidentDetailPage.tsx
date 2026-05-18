@@ -101,7 +101,7 @@ export default function IncidentDetailPage() {
         <div className="flex items-center gap-1" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
           <span className="cursor-pointer hover:underline" onClick={() => navigate('/incident-hub')}>Incident List</span>
           <ChevronRight size={12} />
-          <span style={{ color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', fontWeight: 650 }}>{incident.incident_key || incident.jira_key || 'INC'}</span>
+          <span style={{ color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontWeight: 650 }}>{incident.incident_key || incident.jira_key || 'INC'}</span>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" style={{ borderRadius: 6, fontSize: 12 }} onClick={() => setShowConvert(true)}>Convert</Button>
@@ -118,7 +118,7 @@ export default function IncidentDetailPage() {
             <svg width="20" height="20" viewBox="0 0 16 16" className="shrink-0 mt-0.5">
               <path fill="#FF5630" fillRule="evenodd" d="M4.78545267,10 L11.2145473,10 L10.5007848,8 L5.49921516,8 L4.78545267,10 Z M4,11 C3.44771525,11 3,11.4477153 3,12 L3,13 L13,13 L13,12 C13,11.4477153 12.5522847,11 12,11 L4,11 Z M5.8560964,7 L10.1439036,7 L8.94181993,3.63169838 C8.8409899,3.34916733 8.61864892,3.12682636 8.33611787,3.02599632 C7.81596508,2.84036355 7.24381284,3.1115456 7.05818007,3.63169838 L5.8560964,7 Z M2,0 L14,0 C15.1045695,-2.02906125e-16 16,0.8954305 16,2 L16,14 C16,15.1045695 15.1045695,16 14,16 L2,16 C0.8954305,16 1.3527075e-16,15.1045695 0,14 L0,2 C-1.3527075e-16,0.8954305 0.8954305,2.02906125e-16 2,0 Z"/>
             </svg>
-            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', letterSpacing: '-0.02em' }}>
+            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', letterSpacing: '-0.02em' }}>
               {incident.title}
             </h1>
           </div>
@@ -163,7 +163,7 @@ export default function IncidentDetailPage() {
 
           {/* Description */}
           <div className="mb-6">
-            <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: 8 }}>Description</h3>
+            <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 8 }}>Description</h3>
             <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, lineHeight: 1.75, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
               {incident.description || 'No description provided.'}
             </p>
@@ -172,7 +172,7 @@ export default function IncidentDetailPage() {
           {/* Tags/Labels */}
           {incident.labels && Array.isArray(incident.labels) && incident.labels.length > 0 && (
             <div className="mb-6">
-              <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: 8 }}>Labels</h3>
+              <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 8 }}>Labels</h3>
               <div className="flex flex-wrap gap-1">
                 {(incident.labels as string[]).map((label: string) => (
                   <span key={label} className="px-2 py-0.5" style={{ fontSize: 11, backgroundColor: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.08)', borderRadius: 4, color: 'var(--cp-text-secondary, #475569)' }}>{label}</span>
@@ -183,7 +183,7 @@ export default function IncidentDetailPage() {
 
           {/* Activity Section */}
           <div>
-            <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: 8 }}>Activity</h3>
+            <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 8 }}>Activity</h3>
             <div className="flex items-center gap-1 mb-4">
               {(['comments', 'history'] as const).map(tab => (
                 <button
@@ -231,7 +231,7 @@ export default function IncidentDetailPage() {
                       <div className="rounded-full flex items-center justify-center" style={{ width: 24, height: 24, backgroundColor: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', fontSize: 10, fontWeight: 650, color: 'var(--cp-text-secondary, #475569)' }}>
                         {(c.author?.full_name || c.author_name || 'U').charAt(0).toUpperCase()}
                       </div>
-                      <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>
+                      <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
                         {c.author?.full_name || c.author_name || 'User'}
                       </span>
                       <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
@@ -253,13 +253,13 @@ export default function IncidentDetailPage() {
                   <div key={h.id} className="flex items-start gap-3 mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
                     <div className="shrink-0 mt-1" style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: isDark ? '2px solid #0A0A0A' : '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', boxShadow: '0 0 0 1px #2563EB' }} />
                     <div>
-                      <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>
+                      <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
                         {h.field_name} changed
                       </div>
                       <div className="flex items-center gap-1 mt-0.5">
                         {h.old_value && (h.field_name === 'status' ? <StatusLozenge status={h.old_value} /> : <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{h.old_value}</span>)}
                         <span style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontSize: 11 }}>&rarr;</span>
-                        {h.new_value && (h.field_name === 'status' ? <StatusLozenge status={h.new_value} /> : <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{h.new_value}</span>)}
+                        {h.new_value && (h.field_name === 'status' ? <StatusLozenge status={h.new_value} /> : <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{h.new_value}</span>)}
                       </div>
                       <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
                         {h.changed_at ? formatDistanceToNow(new Date(h.changed_at), { addSuffix: true }) : ''}
@@ -293,7 +293,7 @@ export default function IncidentDetailPage() {
             ].map(row => (
               <div key={row.label} className="flex items-center gap-2">
                 <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', width: 80, flexShrink: 0 }}>{row.label}</span>
-                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>
+                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
                   {typeof row.value === 'string' ? row.value : row.value}
                 </div>
               </div>

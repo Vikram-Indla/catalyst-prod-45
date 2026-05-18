@@ -427,7 +427,7 @@ export default function TestHubDocsPage() {
         justifyContent: 'space-between',
       }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0, fontFamily: 'var(--cp-font-body)' }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0, fontFamily: 'var(--cp-font-body)' }}>
             📘 TestHub Functional Flow Guide
           </h1>
           <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '4px 0 0', fontFamily: 'var(--cp-font-body)' }}>
@@ -441,7 +441,7 @@ export default function TestHubDocsPage() {
             alignItems: 'center',
             gap: 8,
             padding: '10px 20px',
-            backgroundColor: 'var(--ds-text, var(--cp-ink-1, #0F172A))',
+            backgroundColor: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: 'none',
             borderRadius: 8,
@@ -466,7 +466,7 @@ export default function TestHubDocsPage() {
           padding: 24,
           marginBottom: 24,
         }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 16px', fontFamily: 'var(--cp-font-body)' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: '0 0 16px', fontFamily: 'var(--cp-font-body)' }}>
             Dependency Flow (Follow This Order)
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
@@ -542,7 +542,7 @@ export default function TestHubDocsPage() {
                     <Icon size={18} style={{ color: section.color }} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', fontFamily: 'var(--cp-font-body)' }}>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', fontFamily: 'var(--cp-font-body)' }}>
                       {section.title}
                     </div>
                     <div style={{ fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-body)', marginTop: 2 }}>
@@ -584,7 +584,7 @@ export default function TestHubDocsPage() {
         <div style={{
           marginTop: 24,
           padding: 20,
-          backgroundColor: 'var(--ds-text, var(--cp-ink-1, #0F172A))',
+          backgroundColor: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
           borderRadius: 12,
           display: 'flex',
           alignItems: 'center',
@@ -606,7 +606,7 @@ export default function TestHubDocsPage() {
               gap: 8,
               padding: '10px 20px',
               backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
+              color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
               border: 'none',
               borderRadius: 8,
               fontSize: 14,

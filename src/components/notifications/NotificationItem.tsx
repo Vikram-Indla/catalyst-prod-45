@@ -136,7 +136,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
   const isDeleted = notification.entity_deleted;
 
   const T = {
-    text1: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
+    text1: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
     text2: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
     text3: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
     hover: 'var(--cp-interact-hover, rgba(15,23,42,0.04))',

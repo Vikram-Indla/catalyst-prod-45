@@ -69,9 +69,9 @@
    TEXT COLOR OVERRIDES — match inline style hex values to dark tokens
    ══════════════════════════════════════════════════════════════════════════ */
 
-/* Primary text (var(--ds-text, var(--cp-ink-1, #0F172A)), #1E293B) → t1 */
+/* Primary text (var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A))), #1E293B) → t1 */
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(15, 23, 42)"],
-[data-theme="dark"] [data-goals-page] [style*="color: var(--cp-ink-1, #0F172A)"],
+[data-theme="dark"] [data-goals-page] [style*="color: var(--cp-ink-1, var(--cp-ink-1, #0F172A))"],
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(30, 41, 59)"],
 .dark [data-goals-page] [style*="color: #1E293B"] , [data-theme="dark"] [data-goals-page] [style*="color: #1E293B"] {
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;

@@ -57,7 +57,7 @@ export default function ReleasesListPage() {
       {/* Page Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
             <Package style={{ width: 24, height: 24, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
             Releases
           </h1>
@@ -218,7 +218,7 @@ function TableView({ releases, navigate }: { releases: Release[]; navigate: any 
                   <span style={{ fontFamily: 'monospace', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontWeight: 600 }}>{r.version}</span>
                 </td>
                 <td style={tdStyle}>
-                  <div style={{ fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))' }}>{r.name}</div>
+                  <div style={{ fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{r.name}</div>
                   {r.vehicle && (
                     <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{r.vehicle.name}</span>
                   )}
@@ -290,7 +290,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
               <div>
                 <span style={{ fontFamily: 'monospace', fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontWeight: 600 }}>{r.version}</span>
-                <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', margin: '2px 0 0' }}>{r.name}</h3>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: '2px 0 0' }}>{r.name}</h3>
               </div>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, width: 8, height: 8, borderRadius: '50%', backgroundColor: hc.dot }} />
             </div>
@@ -311,7 +311,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
             <div style={{ marginBottom: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
                 <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Test Progress</span>
-                <span style={{ fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))' }}>{execPct}%</span>
+                <span style={{ fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{execPct}%</span>
               </div>
               <div style={{ height: 6, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', borderRadius: 3 }}>
                 <div style={{ height: '100%', width: `${execPct}%`, backgroundColor: execPct >= 80 ? 'var(--ds-text-success, #22C55E)' : execPct >= 50 ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : 'var(--ds-text-brand, #3B82F6)', borderRadius: 4, transition: 'width 0.3s' }} />

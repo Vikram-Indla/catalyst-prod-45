@@ -160,7 +160,7 @@ export default function RequirementsListPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
             <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }}>
               <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Total Requirements</p>
-              <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '8px 0 0' }}>{requirements.length}</p>
+              <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: '8px 0 0' }}>{requirements.length}</p>
             </div>
             <div style={{ backgroundColor: '#F0FDF4', borderRadius: 12, padding: 20, border: '1px solid #BBF7D0' }}>
               <p style={{ fontSize: 12, color: 'var(--ds-text-success, var(--cp-success, #16A34A))', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Fully Covered</p>
@@ -267,7 +267,7 @@ export default function RequirementsListPage() {
                     onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--cp-interact-hover, rgba(0,0,0,0.04))'; }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}>
                     <td style={{ padding: '8px 12px', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{req.req_key}</td>
-                    <td style={{ padding: '8px 12px', fontSize: 13, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{req.title}</td>
+                    <td style={{ padding: '8px 12px', fontSize: 13, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{req.title}</td>
                     <td style={{ padding: '8px 12px' }}>
                       <span style={{ fontSize: 11, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '2px 8px', borderRadius: 4 }}>{type.label}</span>
                     </td>

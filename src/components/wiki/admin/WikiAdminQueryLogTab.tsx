@@ -34,7 +34,7 @@ export function WikiAdminQueryLogTab() {
           placeholder="Search queries..."
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-          style={{ border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--cp-font-body)', fontSize: 12, width: '100%', color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}
+          style={{ border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--cp-font-body)', fontSize: 12, width: '100%', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}
         />
       </div>
 
@@ -95,7 +95,7 @@ function PagBtn({ disabled, onClick, children }: { disabled: boolean; onClick: (
       border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
       background: 'transparent', cursor: disabled ? 'default' : 'pointer',
       opacity: disabled ? 0.4 : 1, display: 'flex', alignItems: 'center',
-      color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', outline: 'none',
+      color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', outline: 'none',
     }}
       onFocus={(e) => { if (!disabled) e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
       onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}

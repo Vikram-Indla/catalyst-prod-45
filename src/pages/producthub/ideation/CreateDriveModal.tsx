@@ -118,7 +118,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
   };
   const inputStyle: React.CSSProperties = {
     width: '100%', border: `1.5px solid ${'var(--cp-border-strong, #CBD5E1)'}`, borderRadius: '8px',
-    padding: '10px 12px', fontSize: '14px', color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', outline: 'none',
+    padding: '10px 12px', fontSize: '14px', color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', outline: 'none',
     fontFamily: 'var(--cp-font-body)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   };
   const errorStyle: React.CSSProperties = {
@@ -142,7 +142,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
       }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0, fontFamily: 'var(--cp-font-body)' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0, fontFamily: 'var(--cp-font-body)' }}>
             Create Innovation Drive
           </h3>
           <button
@@ -277,7 +277,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                   }}
                 >
                   <CalendarIcon size={16} style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', flexShrink: 0 }} />
-                  <span style={{ fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{format(deadline, 'MMM d, yyyy')}</span>
+                  <span style={{ fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{format(deadline, 'MMM d, yyyy')}</span>
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start" style={{ zIndex: 400 }}>
@@ -329,7 +329,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                   width: '48px', height: '50px',
                   borderLeft: `1.5px solid ${'var(--cp-border-strong, #CBD5E1)'}`, borderRight: `1.5px solid ${'var(--cp-border-strong, #CBD5E1)'}`,
                   borderTop: 'none', borderBottom: 'none',
-                  textAlign: 'center', fontSize: '16px', fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', outline: 'none',
+                  textAlign: 'center', fontSize: '16px', fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', outline: 'none',
                   fontFamily: 'var(--cp-font-body)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 }}
               />
@@ -365,7 +365,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               color: 'var(--cp-text-secondary, #475569)', background: 'transparent', border: 'none',
               borderRadius: '8px', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))'; }}
             onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--cp-text-secondary, #475569)'; }}
           >
             Cancel

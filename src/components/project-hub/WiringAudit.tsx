@@ -152,7 +152,7 @@ export function WiringAudit() {
       }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-        <h3 style={{ fontSize: 14, fontWeight: 650, color: "var(--ds-text, var(--cp-ink-1, #0F172A))", margin: 0 }}>
+        <h3 style={{ fontSize: 14, fontWeight: 650, color: "var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))", margin: 0 }}>
           P8 Wiring Audit — {checks.length} checks
         </h3>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -217,7 +217,7 @@ export function WiringAudit() {
           >
             {r.status === "pass" ? "✓" : "✗"}
           </span>
-          <span style={{ fontWeight: 600, color: "var(--ds-text, var(--cp-ink-1, #0F172A))", minWidth: 180 }}>{r.name}</span>
+          <span style={{ fontWeight: 600, color: "var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))", minWidth: 180 }}>{r.name}</span>
           <span style={{ color: "var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))" }}>{r.detail}</span>
         </div>
       ))}

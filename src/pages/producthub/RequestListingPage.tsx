@@ -762,7 +762,7 @@ export default function RequestListingPage() {
           {overdueActive ? (
             <>
               <Clock size={40} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" strokeWidth={1.5} />
-              <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginTop: 16 }}>No overdue business requests</p>
+              <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginTop: 16 }}>No overdue business requests</p>
               <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: 4 }}>All business requests are on track with their target dates</p>
               <button
                 onClick={() => { setOverdueActive(false); setPage(1); }}
@@ -774,7 +774,7 @@ export default function RequestListingPage() {
           ) : (
             <>
               <LayoutGrid size={40} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" strokeWidth={1.5} />
-              <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginTop: 16 }}>No business requests match your filters</p>
+              <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginTop: 16 }}>No business requests match your filters</p>
               <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: 4 }}>Try adjusting your search or filter criteria</p>
             </>
           )}

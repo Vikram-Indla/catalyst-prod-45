@@ -43,7 +43,7 @@
   font-family: var(--cp-font-heading);
   font-size: 18px;
   font-weight: 700;
-  color: var(--ds-text, var(--cp-ink-1, #0F172A));
+  color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
 }
 
 .th-page-actions {
@@ -410,7 +410,7 @@
 }
 
 .th-test-count strong {
-  color: var(--ds-text, var(--cp-ink-1, #0F172A));
+  color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
 }
 
 .th-view-toggle {
@@ -457,7 +457,7 @@
   height: 40px;
   padding: 0 12px 0 40px;
   font-size: 14px;
-  color: var(--ds-text, var(--cp-ink-1, #0F172A));
+  color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1.5px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   border-radius: 8px;
@@ -699,7 +699,7 @@
 
 .th-cell-title {
   font-weight: 500;
-  color: var(--ds-text, var(--cp-ink-1, #0F172A));
+  color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
 }
 
 .th-cell-time {
@@ -816,7 +816,7 @@
 .th-empty-title {
   font-size: 18px;
   font-weight: 600;
-  color: var(--ds-text, var(--cp-ink-1, #0F172A));
+  color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
   margin-bottom: 8px;
 }
 
@@ -855,7 +855,7 @@
   padding: 0 12px;
   font-family: var(--cp-font-body);
   font-size: 14px;
-  color: var(--ds-text, var(--cp-ink-1, #0F172A));
+  color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1.5px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   border-radius: 8px;
@@ -877,7 +877,7 @@
   padding: 10px 12px;
   font-family: var(--cp-font-body);
   font-size: 14px;
-  color: var(--ds-text, var(--cp-ink-1, #0F172A));
+  color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1.5px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   border-radius: 8px;
@@ -896,7 +896,7 @@
   padding: 0 36px 0 12px;
   font-family: var(--cp-font-body);
   font-size: 14px;
-  color: var(--ds-text, var(--cp-ink-1, #0F172A));
+  color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;
   border: 1.5px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   border-radius: 8px;
@@ -914,7 +914,7 @@
   display: block;
   font-size: 13px;
   font-weight: 600;
-  color: var(--ds-text, var(--cp-ink-1, #0F172A));
+  color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
   margin-bottom: 6px;
 }
 
@@ -977,7 +977,7 @@
   font-family: var(--cp-font-body);
   font-size: 18px;
   font-weight: 700;
-  color: var(--ds-text, var(--cp-ink-1, #0F172A));
+  color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
 }
 
 .th-modal-subtitle {
@@ -1002,7 +1002,7 @@
 
 .th-modal-close:hover {
   background: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
-  color: var(--ds-text, var(--cp-ink-1, #0F172A));
+  color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
 }
 
 .th-modal-close svg {
@@ -1072,7 +1072,7 @@
 .th-steps-title {
   font-size: 14px;
   font-weight: 600;
-  color: var(--ds-text, var(--cp-ink-1, #0F172A));
+  color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
 }
 
 .th-steps-count {
@@ -1170,7 +1170,7 @@
   padding: 10px 12px;
   font-family: var(--cp-font-body);
   font-size: 14px;
-  color: var(--ds-text, var(--cp-ink-1, #0F172A));
+  color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1.5px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   border-radius: 8px;

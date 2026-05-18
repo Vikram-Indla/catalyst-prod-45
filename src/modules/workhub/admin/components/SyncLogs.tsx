@@ -169,7 +169,7 @@ export function SyncLogs() {
     <div className="wh-module space-y-6">
       {/* Page Header */}
       <div>
-        <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '18px', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))' }}>
+        <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '18px', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
           Sync & Logs
         </h1>
         <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginTop: '4px' }}>
@@ -180,10 +180,10 @@ export function SyncLogs() {
       {/* Health Strip */}
       <div className="grid grid-cols-5 gap-3">
         <HealthBox label="SYNC STATUS" value={syncStatus === 'healthy' ? '● Healthy' : syncStatus === 'syncing' ? '● Syncing' : syncStatus === 'error' ? '● Error' : '● Waiting'} valueColor={syncStatus === 'healthy' ? '#10B981' : syncStatus === 'syncing' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : syncStatus === 'error' ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'} loading={healthLoading} spinning={syncStatus === 'syncing'} />
-        <HealthBox label="LAST SYNC" value={health?.lastSync ? formatDistanceToNow(new Date(health.lastSync.started_at), { addSuffix: true }) : '—'} valueColor="var(--ds-text, var(--cp-ink-1, #0F172A))" loading={healthLoading} />
-        <HealthBox label="ISSUES CACHED" value={formatNumber(health?.issueCachedCount || 0)} valueColor="var(--ds-text, var(--cp-ink-1, #0F172A))" loading={healthLoading} />
-        <HealthBox label="VERSIONS CACHED" value={formatNumber(health?.versionCachedCount || 0)} valueColor="var(--ds-text, var(--cp-ink-1, #0F172A))" loading={healthLoading} />
-        <HealthBox label="PROJECTS" value={String(health?.projectCount || 0)} valueColor="var(--ds-text, var(--cp-ink-1, #0F172A))" loading={healthLoading} />
+        <HealthBox label="LAST SYNC" value={health?.lastSync ? formatDistanceToNow(new Date(health.lastSync.started_at), { addSuffix: true }) : '—'} valueColor="var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))" loading={healthLoading} />
+        <HealthBox label="ISSUES CACHED" value={formatNumber(health?.issueCachedCount || 0)} valueColor="var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))" loading={healthLoading} />
+        <HealthBox label="VERSIONS CACHED" value={formatNumber(health?.versionCachedCount || 0)} valueColor="var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))" loading={healthLoading} />
+        <HealthBox label="PROJECTS" value={String(health?.projectCount || 0)} valueColor="var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))" loading={healthLoading} />
       </div>
 
       {/* Error Banner */}
@@ -208,7 +208,7 @@ export function SyncLogs() {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <FilterIcon label="" size="small" />
-            <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '13px', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))' }}>
+            <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '13px', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
               Sync Filters
             </span>
             {hasFilters && (
@@ -397,7 +397,7 @@ export function SyncLogs() {
 
       {/* Sync Schedule */}
       <div style={{ background: 'var(--bg-1, #F8FAFC)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: '8px', padding: '20px' }}>
-        <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '13px', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', marginBottom: '16px' }}>
+        <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '13px', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: '16px' }}>
           Sync Schedule
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -430,7 +430,7 @@ export function SyncLogs() {
       {/* Sync Log */}
       <div style={{ background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: '8px', overflow: 'hidden' }}>
         <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '13px', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))' }}>Sync Log</span>
+          <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '13px', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>Sync Log</span>
           <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '2px 8px', borderRadius: '4px' }}>Last 10 runs</span>
         </div>
         <div style={{ maxHeight: '340px', overflowY: 'auto' }}>

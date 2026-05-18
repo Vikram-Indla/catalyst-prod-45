@@ -53,7 +53,7 @@ export function WorkflowTab({ projectId: _ }: WorkflowTabProps) {
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <BoardsIcon label="" size="small" />
-          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
             Workflow Scheme
           </span>
         </div>
@@ -113,8 +113,8 @@ export function WorkflowTab({ projectId: _ }: WorkflowTabProps) {
                   value={t.key}
                   className={cn(
                     'relative px-4 py-2 text-xs font-medium rounded-none border-b-2 transition-colors data-[state=active]:shadow-none',
-                    'data-[state=active]:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] data-[state=active]:text-[var(--ds-text,var(--cp-ink-1, #0F172A))]',
-                    'data-[state=inactive]:border-transparent data-[state=inactive]:text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] data-[state=inactive]:hover:text-[var(--ds-text,var(--cp-ink-1, #0F172A))]',
+                    'data-[state=active]:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] data-[state=active]:text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]',
+                    'data-[state=inactive]:border-transparent data-[state=inactive]:text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] data-[state=inactive]:hover:text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))]',
                     'bg-transparent'
                   )}
                 >

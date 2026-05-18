@@ -50,7 +50,7 @@ export function KrListItem({ status, title, meta, progress, onClick, className =
           style={{
             fontSize: 13,
             fontWeight: 500,
-            color: 'var(--catalyst-text-primary, var(--cp-ink-1, #0F172A))',
+            color: 'var(--catalyst-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
             lineHeight: 1.4,
           }}
         >

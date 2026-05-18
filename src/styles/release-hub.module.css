@@ -37,7 +37,7 @@
   --rh-bg-muted: var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)));
 
   /* Text */
-  --rh-text-primary: var(--ds-text, var(--cp-ink-1, #0F172A));
+  --rh-text-primary: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
   --rh-text-secondary: var(--cp-ink-2, var(--cp-ink-2, #334155));
   --rh-text-tertiary: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
   --rh-text-muted: var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)));

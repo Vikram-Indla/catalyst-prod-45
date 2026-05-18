@@ -64,7 +64,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
           >
             {project.key}
           </div>
-          <span className="truncate" style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>
+          <span className="truncate" style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
             {project.name}
           </span>
           <span

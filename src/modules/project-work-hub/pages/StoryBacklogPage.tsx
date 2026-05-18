@@ -787,7 +787,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   const v2EmptyState = (
     <div className="flex flex-col items-center justify-center" style={{ padding: '64px 0' }}>
       <BookOpen className="h-12 w-12 mb-4" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
-      <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 4 }}>No stories found</p>
+      <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 4 }}>No stories found</p>
       <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginBottom: 16 }}>Try adjusting your filters or search</p>
     </div>
   );
@@ -899,7 +899,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       return (
         <div className="flex flex-col items-center justify-center" style={{ padding: '64px 0' }}>
           <BookOpen className="h-12 w-12 mb-4" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
-          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 4 }}>No stories found</p>
+          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 4 }}>No stories found</p>
           <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginBottom: 16 }}>Try adjusting your filters or search</p>
         </div>
       );

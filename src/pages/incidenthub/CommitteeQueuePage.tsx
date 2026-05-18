@@ -30,7 +30,7 @@ export default function CommitteeQueuePage() {
             <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: '#FEF3C7' }}>
               <Users size={18} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }} />
             </div>
-            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>Committee Queue</h1>
+            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>Committee Queue</h1>
           </div>
           <Button size="sm" className="gap-1.5" style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 6 }}>
             <Plus size={14} /> New Committee
@@ -87,7 +87,7 @@ export default function CommitteeQueuePage() {
                     {item.incident_key}
                   </span>
                 </div>
-                <div className="px-3 truncate" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>
+                <div className="px-3 truncate" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>
                   {item.title}
                 </div>
                 <div className="px-3"><SeverityChip severity={item.severity || 'SEV4'} /></div>

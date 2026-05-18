@@ -148,7 +148,7 @@ export default function ImportExportPage() {
               <FileUp size={18} style={{ color: '#14B8A6' }} />
               <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase' }}>Total Imports</span>
             </div>
-            <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>{stats.total_imports}</p>
+            <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0 }}>{stats.total_imports}</p>
             <p style={{ fontSize: 12, color: 'var(--quality-high, #059669)', margin: '4px 0 0' }}>
               {stats.records_imported.toLocaleString()} records
             </p>
@@ -158,7 +158,7 @@ export default function ImportExportPage() {
               <FileDown size={18} style={{ color: '#14B8A6' }} />
               <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase' }}>Total Exports</span>
             </div>
-            <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>{stats.total_exports}</p>
+            <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0 }}>{stats.total_exports}</p>
             <p style={{ fontSize: 12, color: 'var(--quality-high, #059669)', margin: '4px 0 0' }}>
               {stats.records_exported.toLocaleString()} records
             </p>
@@ -190,7 +190,7 @@ export default function ImportExportPage() {
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '10px 20px', border: 'none', borderRadius: 8,
             backgroundColor: activeTab === 'import' ? ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))') : 'transparent',
-            color: activeTab === 'import' ? ('var(--cp-text-primary, var(--cp-ink-1, #0F172A))') : ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'),
+            color: activeTab === 'import' ? ('var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))') : ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'),
             fontSize: 14, fontWeight: 500, cursor: 'pointer',
             boxShadow: activeTab === 'import' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
           }}
@@ -203,7 +203,7 @@ export default function ImportExportPage() {
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '10px 20px', border: 'none', borderRadius: 8,
             backgroundColor: activeTab === 'export' ? ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))') : 'transparent',
-            color: activeTab === 'export' ? ('var(--cp-text-primary, var(--cp-ink-1, #0F172A))') : ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'),
+            color: activeTab === 'export' ? ('var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))') : ('var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'),
             fontSize: 14, fontWeight: 500, cursor: 'pointer',
             boxShadow: activeTab === 'export' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
           }}
@@ -259,7 +259,7 @@ export default function ImportExportPage() {
                           <StatusIcon size={12} /> {status.label}
                         </span>
                       </div>
-                      <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>{job.name}</p>
+                      <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0 }}>{job.name}</p>
                       <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '4px 0 0' }}>
                         {type.label} • {job.source_format.toUpperCase()} • {formatDate(job.created_at)}
                       </p>
@@ -336,7 +336,7 @@ export default function ImportExportPage() {
                           <StatusIcon size={12} /> {status.label}
                         </span>
                       </div>
-                      <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>{job.name}</p>
+                      <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0 }}>{job.name}</p>
                       <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '4px 0 0' }}>
                         {type.label} • {job.export_format.toUpperCase()} • {job.total_items} items • {formatDate(job.created_at)}
                       </p>

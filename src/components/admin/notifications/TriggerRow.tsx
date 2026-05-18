@@ -119,7 +119,7 @@ export const TriggerRow = memo(function TriggerRow({
             className="flex items-center gap-1.5 min-w-0 text-left"
             onClick={onOpenRecipients}
           >
-            <span className="text-xs font-medium text-[var(--ds-text,var(--cp-ink-1, #0F172A))] truncate leading-none">
+            <span className="text-xs font-medium text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] truncate leading-none">
               {displayName}
             </span>
           </button>

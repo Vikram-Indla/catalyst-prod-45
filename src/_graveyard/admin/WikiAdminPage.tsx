@@ -58,7 +58,7 @@ function WikiAdminContent() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <h1 style={{
             fontFamily: 'var(--cp-font-heading)', fontSize: 22, fontWeight: 700,
-            color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0,
+            color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: 0,
           }}>
             Wiki Admin Dashboard
           </h1>
@@ -112,7 +112,7 @@ function WikiAdminContent() {
                   transition: 'color 120ms ease, border-color 120ms ease',
                   marginBottom: -1,
                 }}
-                onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.color = 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))'; }}
+                onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.color = 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))'; }}
                 onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.color = 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'; }}
               >
                 <Icon style={{ width: 15, height: 15, strokeWidth: 1.6 }} />

@@ -47,7 +47,7 @@
 .ph-card-title {
   font-size: 15px;
   font-weight: 600;
-  color: var(--ds-text, var(--cp-ink-1, #0F172A));
+  color: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
   font-family: var(--cp-font-heading);
   padding-bottom: 12px;
   margin-bottom: 16px;
