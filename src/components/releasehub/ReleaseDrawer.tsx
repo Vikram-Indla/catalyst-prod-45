@@ -493,7 +493,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
 
         {notesState === 'error' && (
           <div className="flex items-center gap-2 py-6 justify-center text-[13px]">
-            <AlertCircle size={16} className="text-[var(--ds-text-danger,#DC2626)]" />
+            <AlertCircle size={16} className="text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]" />
             <span className="text-[var(--ds-text-subtle,#475569)]">Could not generate notes.</span>
             <button
               onClick={generateReleaseNotes}
@@ -588,7 +588,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
               <div key={tc.id} className="border border-[rgba(15,23,42,0.12)] rounded-lg p-4 group relative">
                 <button
                   onClick={() => handleUnlink(tc.test_cycle_id)}
-                  className="absolute top-3 right-3 w-6 h-6 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-[var(--ds-text-subtlest,#94A3B8)] hover:text-[var(--ds-text-danger,#DC2626)] hover:bg-[var(--ds-background-danger,#FEF2F2)] transition-opacity"
+                  className="absolute top-3 right-3 w-6 h-6 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-[var(--ds-text-subtlest,#94A3B8)] hover:text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] hover:bg-[var(--ds-background-danger,#FEF2F2)] transition-opacity"
                   title="Unlink test cycle"
                 >
                   <XIcon size={14} />
@@ -710,7 +710,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
                 <button onClick={() => approveSignoff.mutate(so.id, { onSuccess: () => toast.success('Approved') })}
                   className="h-7 px-3 rounded bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white text-[11px] font-bold hover:bg-[#004D33]">Approve</button>
                 <button onClick={() => rejectSignoff.mutate({ signoffId: so.id, comment: 'Rejected' }, { onSuccess: () => toast.success('Rejected') })}
-                  className="h-7 px-3 rounded border border-[var(--ds-border-danger,#FCA5A5)] text-[var(--ds-text-danger,#DC2626)] text-[11px] font-bold hover:bg-[var(--ds-background-danger,#FEF2F2)]">Reject</button>
+                  className="h-7 px-3 rounded border border-[var(--ds-border-danger,#FCA5A5)] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] text-[11px] font-bold hover:bg-[var(--ds-background-danger,#FEF2F2)]">Reject</button>
               </div>
             ))}
           </div>

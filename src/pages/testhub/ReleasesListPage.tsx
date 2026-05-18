@@ -29,7 +29,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; dot: string }> = {
   healthy: { label: 'Healthy', color: 'var(--quality-high, #059669)', dot: 'var(--ds-text-success, #22C55E)' },
   at_risk: { label: 'At Risk', color: 'var(--ds-text-warning, #D97706)', dot: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' },
-  critical: { label: 'Critical', color: 'var(--ds-text-danger, #DC2626)', dot: 'var(--ds-text-danger, #EF4444)' },
+  critical: { label: 'Critical', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', dot: 'var(--ds-text-danger, #EF4444)' },
   none: { label: '—', color: 'var(--ds-text-subtlest, #94A3B8)', dot: 'var(--ds-text-disabled, #CBD5E1)' },
 };
 
@@ -245,7 +245,7 @@ function TableView({ releases, navigate }: { releases: Release[]; navigate: any 
                   </span>
                 </td>
                 <td style={tdStyle}>
-                  <span style={{ fontSize: 12, color: r.critical_defects > 0 ? 'var(--ds-text-danger, #DC2626)' : 'var(--ds-text-subtle, #334155)', fontWeight: r.critical_defects > 0 ? 600 : 400 }}>
+                  <span style={{ fontSize: 12, color: r.critical_defects > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-subtle, #334155)', fontWeight: r.critical_defects > 0 ? 600 : 400 }}>
                     {r.defects_open} open{r.critical_defects > 0 ? ` (${r.critical_defects} critical)` : ''}
                   </span>
                 </td>
@@ -321,7 +321,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
             {/* Stats row */}
             <div style={{ display: 'flex', gap: 16, fontSize: 12, color: 'var(--ds-text-subtlest, #64748B)' }}>
               <span><strong style={{ color: 'var(--quality-high, #059669)' }}>{r.test_cases_passed}</strong> passed</span>
-              <span><strong style={{ color: 'var(--ds-text-danger, #DC2626)' }}>{r.test_cases_failed || 0}</strong> failed</span>
+              <span><strong style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{r.test_cases_failed || 0}</strong> failed</span>
               <span><strong style={{ color: 'var(--ds-text-warning, #D97706)' }}>{r.defects_open}</strong> defects</span>
             </div>
 

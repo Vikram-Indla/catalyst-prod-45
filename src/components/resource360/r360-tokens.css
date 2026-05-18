@@ -45,12 +45,12 @@
   --r360-hub-project: var(--ds-text-brand, #2563EB);
   --r360-hub-release: var(--cp-teal-60, #0D9488);
   --r360-hub-test: #C2410C;
-  --r360-hub-incident: var(--ds-text-danger, #DC2626);
+  --r360-hub-incident: var(--ds-text-danger, var(--cp-danger, #DC2626));
   --r360-hub-task: #4F46E5;
 
   /* ─── PRIORITY — WARM SPECTRUM ─── */
   --r360-pri-critical: #BE123C;
-  --r360-pri-highest: var(--ds-text-danger, #DC2626);
+  --r360-pri-highest: var(--ds-text-danger, var(--cp-danger, #DC2626));
   --r360-pri-high: #EA580C;
   --r360-pri-medium: #CA8A04;
   --r360-pri-low: #57534E;

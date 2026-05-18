@@ -351,11 +351,11 @@ export default function ProjectListPage() {
             <div style={{ height: 1, background: T.border, margin: '4px 0' }} />
             <button onClick={() => { archiveProject(ctxMenu.project.id, ctxMenu.project.name); setCtxMenu(null); }}
               className="w-full flex items-center gap-2.5 px-3 transition-colors"
-              style={{ height: 50, fontSize: 13, color: 'var(--ds-text-danger, #DC2626)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ height: 50, fontSize: 13, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', background: 'transparent', border: 'none', cursor: 'pointer' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-err-bg, #FEF2F2)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <Archive size={16} color="var(--ds-text-danger, #DC2626)" /> Archive
+              <Archive size={16} color="var(--ds-text-danger, var(--cp-danger, #DC2626))" /> Archive
             </button>
           </div>
         )}

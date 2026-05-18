@@ -191,7 +191,7 @@ export default function FreezeWindowsPage() {
                   <td className="px-3 py-0 max-w-[240px] truncate" style={{ color: 'var(--cp-text-tertiary, #64748B)' }} title={fw.reason || ''}>{fw.reason ? (fw.reason.length > 40 ? fw.reason.slice(0, 40) + '…' : fw.reason) : '—'}</td>
                   <td className="px-3 py-0">
                     <button onClick={() => handleDelete(fw.id, fw.name)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 rounded flex items-center justify-center hover:bg-[#FEE2E2] text-[var(--ds-text-subtlest,#94A3B8)] hover:text-[var(--ds-text-danger,#DC2626)]">
+                      className="opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 rounded flex items-center justify-center hover:bg-[#FEE2E2] text-[var(--ds-text-subtlest,#94A3B8)] hover:text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]">
                       <Trash2 size={14} />
                     </button>
                   </td>
@@ -233,7 +233,7 @@ export default function FreezeWindowsPage() {
                 placeholder="e.g. National holiday / major go-live" rows={3}
                 className="w-full px-3 py-2 rounded border border-[var(--ds-border,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,#EDEDED)] text-[13px] placeholder:text-[var(--ds-text-subtlest,#94A3B8)] resize-none focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,#2563EB)]/20 focus:border-[var(--ds-text-brand,#2563EB)]" />
             </div>
-            {formError && <p className="text-[12px] text-[var(--ds-text-danger,#DC2626)]">{formError}</p>}
+            {formError && <p className="text-[12px] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]">{formError}</p>}
           </div>
           <DialogFooter>
             <button onClick={() => { setShowModal(false); setForm({ name: '', start_date: '', end_date: '', reason: '' }); setFormError(''); }}

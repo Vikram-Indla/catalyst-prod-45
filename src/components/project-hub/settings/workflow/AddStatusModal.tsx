@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { X } from '@/lib/atlaskit-icons';
 
 const CATEGORIES = ['To Do', 'In Progress', 'Done', 'Terminal'];
-const COLORS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, #DC2626)', '#EA580C', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-success, #16A34A)', '#0284C7'];
+const COLORS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#EA580C', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-success, #16A34A)', '#0284C7'];
 
 interface AddStatusModalProps {
   open: boolean;

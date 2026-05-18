@@ -896,7 +896,7 @@ function MenuButton({ icon, label, onClick, danger }: {
   return (
     <button onClick={onClick} style={{
       width: '100%', height: 50, padding: '8px 12px', border: 'none', borderRadius: 6,
-      backgroundColor: 'transparent', color: danger ? 'var(--ds-text-danger, #DC2626)' : 'inherit',
+      backgroundColor: 'transparent', color: danger ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'inherit',
       fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
       textAlign: 'left', fontFamily: 'var(--cp-font-body)',
     }}>

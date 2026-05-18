@@ -69,7 +69,7 @@ function isAgeing(text: string): { value: string; color: string } | null {
   const unit = match[2].toLowerCase();
   let color = 'var(--ds-text-success, #16A34A)';
   if (unit.startsWith('d')) {
-    color = num > 3 ? 'var(--ds-text-danger, #DC2626)' : 'var(--ds-text-warning, #D97706)';
+    color = num > 3 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-warning, #D97706)';
   } else if ((unit === 'h' || unit === 'hr' || unit === 'hrs') && num > 12) {
     color = 'var(--ds-text-warning, #D97706)';
   }
@@ -401,8 +401,8 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
   const confConfig = {
     high: { color: '#0D7331', label: 'High confidence' },
     medium: { color: 'var(--ds-text-warning, #D97706)', label: 'Medium confidence' },
-    low: { color: 'var(--ds-text-danger, #DC2626)', label: 'Low confidence — verify with sources' },
-    insufficient: { color: 'var(--ds-text-danger, #DC2626)', label: 'Insufficient data' },
+    low: { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Low confidence — verify with sources' },
+    insufficient: { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Insufficient data' },
   }[confidence] || { color: '#71717A', label: '' };
 
   // Parse "Showing X of Y" from the response text for scope bar

@@ -293,7 +293,7 @@ export function ExecutionRunMode({
         {/* Status buttons */}
         {[
           { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: onPass, color: 'var(--quality-high, #059669)', bg: 'var(--cp-success-light, #ECFDF5)', activeBg: 'linear-gradient(135deg, #10B981, var(--quality-high, #059669))' },
-          { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: onFail, color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--cp-danger-light, #FEF2F2)', activeBg: 'linear-gradient(135deg, var(--ds-text-danger, #EF4444), var(--ds-text-danger, #DC2626))' },
+          { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: onFail, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--cp-danger-light, #FEF2F2)', activeBg: 'linear-gradient(135deg, var(--ds-text-danger, #EF4444), var(--ds-text-danger, var(--cp-danger, #DC2626)))' },
           { key: 'blocked', label: 'Block', shortcut: 'B', icon: AlertTriangle, onClick: onBlocked, color: 'var(--ds-text-warning, #D97706)', bg: 'var(--cp-warning-light, #FFFBEB)', activeBg: 'linear-gradient(135deg, var(--ds-text-warning, var(--cp-amber, #F59E0B)), var(--ds-text-warning, #D97706))' },
           { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: onSkip, color: 'var(--cp-text-tertiary, #64748B)', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, var(--ds-text-subtlest, #64748B), var(--ds-text-subtle, #475569))' },
         ].map(btn => {
@@ -339,7 +339,7 @@ export function ExecutionRunMode({
             const isDisabled = !anyStepMarked || isSubmitting;
             const statusColors: Record<string, { bg: string; text: string }> = {
               passed:  { bg: 'var(--ds-text-success, #16A34A)', text: 'var(--ds-text-inverse, #FFFFFF)' },
-              failed:  { bg: 'var(--ds-text-danger, #DC2626)', text: 'var(--ds-text-inverse, #FFFFFF)' },
+              failed:  { bg: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', text: 'var(--ds-text-inverse, #FFFFFF)' },
               blocked: { bg: 'var(--ds-text-warning, #D97706)', text: 'var(--ds-text-inverse, #FFFFFF)' },
               skipped: { bg: 'var(--ds-text-subtle, #475569)', text: 'var(--ds-text-inverse, #FFFFFF)' },
               not_run: { bg: 'var(--cp-border, #E2E8F0)', text: 'var(--cp-text-tertiary, #64748B)' },

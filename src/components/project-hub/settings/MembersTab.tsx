@@ -116,7 +116,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
     }
   };
 
-  const AVATAR_COLORS = ['var(--cp-purple-60, #7C3AED)', 'var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, #DC2626)'];
+  const AVATAR_COLORS = ['var(--cp-purple-60, #7C3AED)', 'var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))'];
 
   return (
     <div className="ph-card">

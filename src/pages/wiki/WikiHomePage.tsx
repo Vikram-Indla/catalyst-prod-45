@@ -431,7 +431,7 @@ LearningPathCard.displayName = 'LearningPathCard';
 /* ── Article Row ── */
 const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDark }: { a: any; navigate: any; bookmarked: boolean; onToggleBookmark: () => void; isDark?: boolean }) => {
   const formatIcon = a.format === 'pdf'
-    ? <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 4, background: isDark ? 'rgba(220,38,38,0.15)' : '#FEE2E2', color: 'var(--ds-text-danger, #DC2626)' }}>PDF</span>
+    ? <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 4, background: isDark ? 'rgba(220,38,38,0.15)' : '#FEE2E2', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>PDF</span>
     : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)' }} />;
 
   const verStatus = a.verification_status || 'unverified';

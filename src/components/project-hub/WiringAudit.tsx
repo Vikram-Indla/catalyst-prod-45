@@ -160,7 +160,7 @@ export function WiringAudit() {
             <span style={{ fontSize: 12, color: "var(--ds-text-subtle, #475569)" }}>
               <span style={{ color: "#006644", fontWeight: 600 }}>{passCount} pass</span>
               {failCount > 0 && (
-                <span style={{ color: "var(--ds-text-danger, #DC2626)", fontWeight: 600, marginLeft: 8 }}>{failCount} fail</span>
+                <span style={{ color: "var(--ds-text-danger, var(--cp-danger, #DC2626))", fontWeight: 600, marginLeft: 8 }}>{failCount} fail</span>
               )}
             </span>
           )}
@@ -211,7 +211,7 @@ export function WiringAudit() {
               fontSize: 11,
               fontWeight: 700,
               color: "var(--ds-text-inverse, #FFFFFF)",
-              backgroundColor: r.status === "pass" ? "#006644" : "var(--ds-text-danger, #DC2626)",
+              backgroundColor: r.status === "pass" ? "#006644" : "var(--ds-text-danger, var(--cp-danger, #DC2626))",
               flexShrink: 0,
             }}
           >

@@ -7,7 +7,7 @@ import { EmptyState } from '@/components/releasehub/EmptyState';
 import { BarChart3 } from '@/lib/atlaskit-icons';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend } from 'recharts';
 
-const RADAR_COLORS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-subtlest, #64748B)'];
+const RADAR_COLORS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-subtlest, #64748B)'];
 const statusScore: Record<string, number> = { todo: 20, in_progress: 55, done: 100, archived: 10 };
 
 export default function ReleaseComparePage() {
@@ -31,10 +31,10 @@ export default function ReleaseComparePage() {
     return [
       { label: 'Status', values: selectedReleases.map((r: any) => r.status), render: (v: any) => <ReleaseStatusBadge status={v} />, bestIdx: -1 },
       { label: 'Target Date', values: selectedReleases.map((r: any) => r.target_date), render: (v: any) => v ? new Date(v).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—', bestIdx: -1 },
-      { label: 'Days Remaining', values: selectedReleases.map((r: any) => r.days_remaining ?? 0), render: (v: any, r: any) => r?.is_overdue ? <span className="text-[var(--ds-text-danger,#DC2626)] font-bold">{Math.abs(v)}d OVERDUE</span> : <span>{v}d</span>, bestIdx: getBestIdx(selectedReleases.map((r: any) => r.days_remaining ?? 0), true) },
+      { label: 'Days Remaining', values: selectedReleases.map((r: any) => r.days_remaining ?? 0), render: (v: any, r: any) => r?.is_overdue ? <span className="text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] font-bold">{Math.abs(v)}d OVERDUE</span> : <span>{v}d</span>, bestIdx: getBestIdx(selectedReleases.map((r: any) => r.days_remaining ?? 0), true) },
       { label: 'CHG Count', values: selectedReleases.map((r: any) => r.change_count || r.chg_count || 0), render: (v: any) => <span className="font-bold" style={{ fontFamily: RH.fontMono, color: v === 0 ? 'var(--cp-teal-60, #0D9488)' : RH.ink1 }}>{v}</span>, bestIdx: -1 },
       { label: 'Test Cycles', values: selectedReleases.map((r: any) => r.test_cycle_count || 0), render: (v: any) => <span>{v}</span>, bestIdx: getBestIdx(selectedReleases.map((r: any) => r.test_cycle_count || 0), true) },
-      { label: 'Sign-offs Pending', values: selectedReleases.map((r: any) => r.pending_signoffs || 0), render: (v: any) => <span className={v > 0 ? 'text-[var(--ds-text-danger,#DC2626)] font-bold' : ''}>{v}</span>, bestIdx: getBestIdx(selectedReleases.map((r: any) => r.pending_signoffs || 0), false) },
+      { label: 'Sign-offs Pending', values: selectedReleases.map((r: any) => r.pending_signoffs || 0), render: (v: any) => <span className={v > 0 ? 'text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] font-bold' : ''}>{v}</span>, bestIdx: getBestIdx(selectedReleases.map((r: any) => r.pending_signoffs || 0), false) },
     ];
   }, [selectedReleases]);
 

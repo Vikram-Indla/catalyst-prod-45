@@ -27,7 +27,7 @@
   --di-success-bg: #F0FDF4;
   --di-warning: var(--ds-text-warning, #D97706);
   --di-warning-bg: #FFFBEB;
-  --di-danger: var(--ds-text-danger, #DC2626);
+  --di-danger: var(--ds-text-danger, var(--cp-danger, #DC2626));
   --di-danger-bg: var(--ds-background-danger, #FEF2F2);
   --di-purple: var(--cp-purple-60, #7C3AED);
   --di-purple-bg: #F5F3FF;

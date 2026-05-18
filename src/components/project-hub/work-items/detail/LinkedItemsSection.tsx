@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 
 const TYPE_COLORS: Record<string, string> = {
   Epic: 'var(--cp-purple-60, #7C3AED)', Feature: 'var(--ds-text-brand, #2563EB)', Story: 'var(--cp-teal-60, #0D9488)',
-  Bug: 'var(--ds-text-danger, #DC2626)', Task: 'var(--ds-text-warning, #D97706)', Subtask: 'var(--ds-text-subtlest, #94A3B8)',
+  Bug: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', Task: 'var(--ds-text-warning, #D97706)', Subtask: 'var(--ds-text-subtlest, #94A3B8)',
 };
 
 const LINK_TYPES = [

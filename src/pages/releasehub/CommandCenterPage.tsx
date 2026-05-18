@@ -33,7 +33,7 @@ function KPICard({ label, value, delta, deltaLabel, color, icon: Icon, loading, 
             <p className="text-[32px] mt-1" style={{ fontFamily: RH.fontDisplay, fontWeight: 700, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>{value}</p>
           )}
           {delta && !loading && (
-            <p className="text-[12px] mt-1" style={{ fontWeight: 600, color: deltaLabel === 'neutral' ? ('var(--cp-text-tertiary, #64748B)') : delta.startsWith('+') ? 'var(--ds-text-danger, #DC2626)' : 'var(--ds-text-success, #16A34A)' }}>
+            <p className="text-[12px] mt-1" style={{ fontWeight: 600, color: deltaLabel === 'neutral' ? ('var(--cp-text-tertiary, #64748B)') : delta.startsWith('+') ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-success, #16A34A)' }}>
               {delta}
             </p>
           )}
@@ -231,7 +231,7 @@ export default function CommandCenterPage() {
     };
   }, [allSignoffs, pendingSignoffs, testCycles, prodEvents, changes]);
 
-  const alertBorderColor = computed.alertSeverity === 'destructive' ? 'var(--ds-text-danger, #DC2626)'
+  const alertBorderColor = computed.alertSeverity === 'destructive' ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))'
     : computed.alertSeverity === 'warning' ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-success, #16A34A)';
   const alertBgColor = computed.alertSeverity === 'destructive' ? 'var(--ds-background-danger, #FEF2F2)'
     : computed.alertSeverity === 'warning' ? '#FFFBEB' : '#F0FDF4';
@@ -250,7 +250,7 @@ export default function CommandCenterPage() {
       <div className="grid grid-cols-4 gap-4 mb-6">
         <KPICard label="Active Releases" value={activeReleases} color="var(--ds-text-brand, #2563EB)" icon={Rocket} loading={isLoading} onClick={() => navigate('/release-hub/releases')} isDark={isDark} />
         <KPICard label="Changes In Flight" value={changesInFlight} delta={`${changesInFlight} active`} deltaLabel="neutral" color="var(--cp-teal-60, #0D9488)" icon={ArrowLeftRight} loading={isLoading} onClick={() => navigate('/release-hub/changes')} isDark={isDark} />
-        <KPICard label="Sign-offs Pending" value={signoffsPending} color="var(--ds-text-danger, #DC2626)" icon={CheckSquare} loading={isLoading} onClick={() => navigate('/release-hub/sign-off-queue')} isDark={isDark} />
+        <KPICard label="Sign-offs Pending" value={signoffsPending} color="var(--ds-text-danger, var(--cp-danger, #DC2626))" icon={CheckSquare} loading={isLoading} onClick={() => navigate('/release-hub/sign-off-queue')} isDark={isDark} />
         <KPICard label="Test Cycles Running" value={kpis?.test_cycles_running ?? 0} color="var(--ds-text-success, #16A34A)" icon={FlaskConical} loading={isLoading} isDark={isDark} />
       </div>
 
@@ -424,9 +424,9 @@ export default function CommandCenterPage() {
               <div className="grid grid-cols-2 gap-3">
                 {computed.gates.map(gate => {
                   const pass = !gate.noData && Math.round(gate.rate * 100) >= gate.threshold;
-                  const borderColor = gate.noData ? 'var(--ds-border, #DFE1E6)' : pass ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-danger, #DC2626)';
+                  const borderColor = gate.noData ? 'var(--ds-border, #DFE1E6)' : pass ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
                   const GateIcon = gate.noData ? Minus : pass ? CheckCircle2 : XCircle;
-                  const iconColor = gate.noData ? 'var(--ds-text-subtlest, #94A3B8)' : pass ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-danger, #DC2626)';
+                  const iconColor = gate.noData ? 'var(--ds-text-subtlest, #94A3B8)' : pass ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
 
                   return (
                     <div
@@ -507,7 +507,7 @@ export default function CommandCenterPage() {
               {prodEvents.slice(0, 4).map((ev: any) => (
                 <div key={ev.id} className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{
-                    border: `2px solid ${ev.deployment_result === 'SUCCESS' ? 'var(--ds-text-success, #16A34A)' : ev.deployment_result === 'ROLLED_BACK' ? 'var(--ds-text-danger, #DC2626)' : 'var(--ds-text-subtlest, #94A3B8)'}`,
+                    border: `2px solid ${ev.deployment_result === 'SUCCESS' ? 'var(--ds-text-success, #16A34A)' : ev.deployment_result === 'ROLLED_BACK' ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-subtlest, #94A3B8)'}`,
                     background: isDark ? 'var(--cp-bg-surface, #242528)' : 'white',
                   }} />
                   <div className="flex-1 min-w-0">

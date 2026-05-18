@@ -14,7 +14,7 @@ interface ProgressBarProps {
 function getProgressColor(value: number): string {
   if (value >= 70) return 'var(--exec-blue-700, #1E40AF)';
   if (value >= 40) return 'var(--exec-signal-amber, #D97706)';
-  return 'var(--exec-signal-red, #DC2626)';
+  return 'var(--exec-signal-red, var(--cp-danger, #DC2626))';
 }
 
 export function ProgressBar({ value, color, height = 6, showLabel = false, animated = true, className = '' }: ProgressBarProps) {

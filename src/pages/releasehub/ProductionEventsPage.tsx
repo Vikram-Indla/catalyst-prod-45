@@ -41,7 +41,7 @@ function getDotStyle(event: any) {
   let size = 16;
 
   if (type === 'ROLLBACK' || result === 'ROLLED_BACK') {
-    borderColor = 'var(--ds-text-danger, #DC2626)';
+    borderColor = 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
     size = 14;
   } else if (type === 'HOTFIX') {
     borderColor = 'var(--ds-text-subtlest, #64748B)';

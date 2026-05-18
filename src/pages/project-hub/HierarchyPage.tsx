@@ -92,7 +92,7 @@ function filterTree(items: WorkItem[], search: string, filters: Filters): WorkIt
 }
 
 /* ── Avatar color palette ── */
-const FILTER_AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, #2563EB)','var(--ds-text-danger, #DC2626)','var(--ds-text-success, #16A34A)','var(--ds-text-subtlest, #64748B)','#0284C7','var(--quality-high, #059669)','#BE123C','var(--ds-background-brand-bold-hovered, #1D4ED8)','#0F766E'];
+const FILTER_AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, #2563EB)','var(--ds-text-danger, var(--cp-danger, #DC2626))','var(--ds-text-success, #16A34A)','var(--ds-text-subtlest, #64748B)','#0284C7','var(--quality-high, #059669)','#BE123C','var(--ds-background-brand-bold-hovered, #1D4ED8)','#0F766E'];
 function getFilterAvatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -131,7 +131,7 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
         <span
           onClick={e => { e.stopPropagation(); onClear(); }}
           style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: 9999, cursor: 'pointer', color: 'var(--cp-text-tertiary)' }}
-          onMouseEnter={e => (e.currentTarget.style.color = 'var(--ds-text-danger, #DC2626)')}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--ds-text-danger, var(--cp-danger, #DC2626))')}
           onMouseLeave={e => (e.currentTarget.style.color = 'var(--ds-text-subtlest, #94A3B8)')}
         >
           <X size={10} />
@@ -148,7 +148,7 @@ const STATUS_DOT_COLORS: Record<string, string> = {
   'In Development': 'var(--ds-text-brand, #2563EB)', 'In Progress': 'var(--ds-text-brand, #2563EB)', 'In Beta': 'var(--ds-text-brand, #2563EB)', 'In QA': 'var(--ds-text-brand, #2563EB)', 'UAT Ready': 'var(--ds-text-brand, #2563EB)', 'In Review': 'var(--ds-text-brand, #2563EB)',
   'Ready for Production': 'var(--cp-teal-60, #0D9488)', 'Ready for QA': 'var(--cp-teal-60, #0D9488)',
   'Backlog': 'var(--ds-text-subtlest, #94A3B8)', 'To Do': 'var(--ds-text-subtlest, #94A3B8)', 'Open': 'var(--ds-text-subtlest, #94A3B8)',
-  'On Hold': 'var(--ds-text-warning, #D97706)', 'Awaiting Info': 'var(--ds-text-warning, #D97706)', 'Awaiting Information': 'var(--ds-text-warning, #D97706)', 'Blocked': 'var(--ds-text-danger, #DC2626)',
+  'On Hold': 'var(--ds-text-warning, #D97706)', 'Awaiting Info': 'var(--ds-text-warning, #D97706)', 'Awaiting Information': 'var(--ds-text-warning, #D97706)', 'Blocked': 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
 };
 function getStatusDotColor(status: string): string {
   return STATUS_DOT_COLORS[status] || 'var(--ds-text-subtlest, #94A3B8)';
@@ -163,7 +163,7 @@ function PriorityIcon({ name }: { name: string }) {
   else if (n === 'high' || n === 'highest') level = 3;
   else if (n === 'medium') level = 2;
   else if (n === 'low' || n === 'lowest') level = 1;
-  const color = level >= 3 ? 'var(--ds-text-danger, #DC2626)' : level === 2 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-subtlest, #64748B)';
+  const color = level >= 3 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : level === 2 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-subtlest, #64748B)';
   return (
     <div style={{ display: 'flex', gap: 1.5, alignItems: 'flex-end', height: 14, width: 14 }}>
       {[1, 2, 3, 4].map(i => (
@@ -543,7 +543,7 @@ export default function HierarchyPage() {
                 background: 'none', border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 4, cursor: 'pointer',
                 color: 'var(--cp-text-tertiary)', transition: 'all 80ms',
               }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-danger, #DC2626)'; e.currentTarget.style.color = 'var(--ds-text-danger, #DC2626)'; }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-danger, var(--cp-danger, #DC2626))'; e.currentTarget.style.color = 'var(--ds-text-danger, var(--cp-danger, #DC2626))'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--cp-border-default)'; e.currentTarget.style.color = 'var(--ds-text-subtlest, #64748B)'; }}
               title="Clear all filters"
             >
@@ -560,7 +560,7 @@ export default function HierarchyPage() {
             <TableSkeleton rows={10} />
           ) : isError ? (
             <div style={{ border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 8, background: 'var(--cp-bg-elevated)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 200, gap: 12, padding: 24, textAlign: 'center' }}>
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-danger, #DC2626)', margin: 0 }}>Failed to load work items</p>
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: 0 }}>Failed to load work items</p>
               <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary)', margin: 0 }}>There was an error fetching the work items.</p>
               <button onClick={() => refetch()} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600, fontFamily: 'var(--cp-font-body)', color: 'var(--ds-surface, #FFFFFF)', background: 'var(--ds-text-brand, #2563EB)', border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <RefreshCw size={14} /> Retry

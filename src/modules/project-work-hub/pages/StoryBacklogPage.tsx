@@ -141,7 +141,7 @@ function groupStories(items: BacklogStory[], groupBy: GroupByKey): { label: stri
 
 
 
-const AVATAR_COLOURS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, #DC2626)', '#DB2777'];
+const AVATAR_COLOURS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#DB2777'];
 
 // ── V2 table feature flag ──
 // When localStorage.catalyst.table.v2 === '1', the backlog renders via the
@@ -782,7 +782,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     );
   }
 
-  if (error) return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: 'var(--ds-text-danger, #DC2626)' }}>Error loading stories</div>;
+  if (error) return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>Error loading stories</div>;
 
   const v2EmptyState = (
     <div className="flex flex-col items-center justify-center" style={{ padding: '64px 0' }}>

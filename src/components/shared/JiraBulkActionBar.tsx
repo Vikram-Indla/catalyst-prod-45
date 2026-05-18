@@ -187,7 +187,7 @@ export function JiraBulkActionBar({
               style={{
                 height: 32,
                 padding: '0 12px',
-                backgroundColor: 'var(--ds-text-danger, #DC2626)',
+                backgroundColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
                 color: 'var(--ds-surface, #FFFFFF)',
                 fontSize: 13,
                 fontWeight: 600,

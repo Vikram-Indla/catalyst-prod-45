@@ -68,7 +68,7 @@ export const STATUS_CONFIG: Record<IssueStatus, { label: string; color: string; 
 
 /** Priority display config */
 export const PRIORITY_CONFIG: Record<IssuePriority, { label: string; color: string }> = {
-  urgent: { label: 'Urgent', color: '#DC2626' },
+  urgent: { label: 'Urgent', color: 'var(--cp-danger, #DC2626)' },
   high:   { label: 'High',   color: '#D97706' },
   medium: { label: 'Medium', color: '#2563EB' },
   low:    { label: 'Low',    color: '#64748B' },
@@ -79,7 +79,7 @@ export const ISSUE_TYPE_CONFIG: Record<IssueType, { icon: string; color: string;
   epic:    { icon: '◆', color: 'var(--cp-purple-60, #7C3AED)', label: 'Epic' },
   feature: { icon: '▲', color: '#2563EB', label: 'Feature' },
   story:   { icon: '●', color: 'var(--cp-teal-60, #0D9488)', label: 'Story' },
-  bug:     { icon: '⬡', color: '#DC2626', label: 'Bug' },
+  bug:     { icon: '⬡', color: 'var(--cp-danger, #DC2626)', label: 'Bug' },
   task:    { icon: '■', color: '#D97706', label: 'Task' },
   subtask: { icon: '○', color: '#94A3B8', label: 'Subtask' },
 };

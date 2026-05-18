@@ -181,7 +181,7 @@ export default function IdeasRoadmapPage() {
         height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
         justifyContent: 'center', gap: 12, background: 'var(--cp-bg-elevated, #FFFFFF)', fontFamily: 'var(--cp-font-body)',
       }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-danger, #DC2626)' }}>Failed to load roadmap</div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>Failed to load roadmap</div>
         <button
           onClick={() => refetch()}
           style={{

@@ -55,7 +55,7 @@ const SYNC_STATUS_CFG: Record<string, { renderIcon: () => React.ReactNode; color
   pending:  { renderIcon: () => <ClockIcon label="" size="small" />,        color: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.1)',  label: 'PENDING' },
   syncing:  { renderIcon: () => <Spinner size="small" />,                   color: 'var(--ds-text-brand, #2563EB)', bg: 'rgba(37,99,235,0.1)',  label: 'SYNCING' },
   success:  { renderIcon: () => <CheckCircleIcon label="" size="small" />,  color: 'var(--quality-high, #059669)', bg: 'rgba(5,150,105,0.1)',  label: 'SUCCESS' },
-  failed:   { renderIcon: () => <CrossCircleIcon label="" size="small" />,  color: 'var(--ds-text-danger, #DC2626)', bg: 'rgba(220,38,38,0.1)',  label: 'FAILED' },
+  failed:   { renderIcon: () => <CrossCircleIcon label="" size="small" />,  color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'rgba(220,38,38,0.1)',  label: 'FAILED' },
   skipped:  { renderIcon: () => <ArrowRightIcon label="" size="small" />,   color: '#6B7280', bg: 'rgba(107,114,128,0.1)', label: 'SKIPPED' },
 };
 
@@ -165,13 +165,13 @@ function SummaryStats({ items }: { items: SyncActivity[] }) {
     { label: 'Inbound', value: stats.inbound, color: 'var(--ds-text-brand, #2563EB)', bg: 'rgba(37,99,235,0.08)' },
     { label: 'Outbound', value: stats.outbound, color: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.08)' },
     { label: 'Success', value: stats.success, color: 'var(--quality-high, #059669)', bg: 'rgba(5,150,105,0.08)' },
-    { label: 'Failed', value: stats.failed, color: 'var(--ds-text-danger, #DC2626)', bg: 'rgba(220,38,38,0.08)' },
+    { label: 'Failed', value: stats.failed, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'rgba(220,38,38,0.08)' },
     { label: 'Pending', value: stats.pending, color: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.08)' },
     { label: 'Skipped', value: stats.skipped, color: '#6B7280', bg: 'rgba(107,114,128,0.08)' },
   ];
 
   if (stats.conflicts > 0) {
-    pills.push({ label: 'Conflicts', value: stats.conflicts, color: 'var(--ds-text-danger, #DC2626)', bg: 'rgba(220,38,38,0.08)' });
+    pills.push({ label: 'Conflicts', value: stats.conflicts, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'rgba(220,38,38,0.08)' });
   }
 
   return (
@@ -479,7 +479,7 @@ export default function JiraActivitySyncPage() {
                     <td style={{ padding: '6px 12px' }}>
                       {item.error_message ? (
                         <Tooltip position="top" content={item.error_message}>
-                          <span style={{ fontSize: 11, color: 'var(--ds-text-danger, #DC2626)', fontWeight: 500, cursor: 'help' }}>
+                          <span style={{ fontSize: 11, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontWeight: 500, cursor: 'help' }}>
                             Error: {item.error_message.substring(0, 30)}…
                           </span>
                         </Tooltip>

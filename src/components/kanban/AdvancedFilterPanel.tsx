@@ -208,7 +208,7 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
         <div className="flex items-center gap-2">
           {activeCount > 0 && (
             <button onClick={clearAll} style={{
-              fontSize: 12, color: 'var(--ds-text-danger, #DC2626)', background: 'none', border: 'none',
+              fontSize: 12, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', background: 'none', border: 'none',
               cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4,
             }}>
               <Trash2 size={13} /> Clear all
@@ -454,7 +454,7 @@ function DateRangeFilterSection({
             <button
               onClick={() => { onChangeAfter(null); onChangeBefore(null); }}
               style={{
-                fontSize: 12, color: 'var(--ds-text-danger, #DC2626)', background: 'none', border: 'none',
+                fontSize: 12, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', background: 'none', border: 'none',
                 cursor: 'pointer', padding: 0, fontWeight: 500,
               }}
             >Clear dates</button>

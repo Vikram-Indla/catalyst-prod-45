@@ -466,7 +466,7 @@
 }
 .healthChipCritical {
   background: var(--rh-danger-bg);
-  color: var(--ds-text-danger, #DC2626);
+  color: var(--ds-text-danger, var(--cp-danger, #DC2626));
 }
 
 /* ─── Status Badge ─── */

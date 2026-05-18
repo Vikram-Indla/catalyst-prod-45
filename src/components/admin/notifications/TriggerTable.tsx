@@ -132,7 +132,7 @@ function CategoryAccordion({
 
           {/* Mandatory indicator */}
           {mandatoryCount > 0 && (
-            <div className="flex items-center gap-1 text-[10px] text-[var(--ds-text-danger,#DC2626)]">
+            <div className="flex items-center gap-1 text-[10px] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]">
               <ShieldIcon label="" size="small" />
               <span>{mandatoryCount} mandatory</span>
             </div>

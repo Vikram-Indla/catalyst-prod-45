@@ -38,7 +38,7 @@ const SECTION_ORDER = ['details', 'people', 'dates'];
 
 function VisibilityDot({ visible, required }: { visible: boolean; required: boolean }) {
   if (required) return (
-    <span style={{ fontSize: 10, fontWeight: 700, color: '#DC2626', marginLeft: 4 }} title="Required">*</span>
+    <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--cp-danger, #DC2626)', marginLeft: 4 }} title="Required">*</span>
   );
   return (
     <span
@@ -107,7 +107,7 @@ function TypeLayoutPanel({ workTypeId, typeName }: { workTypeId: string; typeNam
                     >
                       <span style={{ fontSize: 13, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
                         {f.field_label}
-                        {f.is_required && <span style={{ color: '#DC2626', marginLeft: 3 }}>*</span>}
+                        {f.is_required && <span style={{ color: 'var(--cp-danger, #DC2626)', marginLeft: 3 }}>*</span>}
                       </span>
                       <span
                         style={{

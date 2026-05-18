@@ -262,7 +262,7 @@ function SignoffsTab({ changeId }: { changeId: string }) {
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 ${
               status === 'approved' ? 'bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white' :
               status === 'pending' ? 'bg-[#0C66E4] text-white' :
-              status === 'rejected' ? 'bg-[var(--ds-background-danger,#FEF2F2)] text-[var(--ds-text-danger,#DC2626)]' :
+              status === 'rejected' ? 'bg-[var(--ds-background-danger,#FEF2F2)] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]' :
               'bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtlest,#94A3B8)]'
             }`}>
               {status === 'approved' ? '✓' : status === 'rejected' ? '✕' : status === 'pending' ? i + 1 : '🔒'}
@@ -283,7 +283,7 @@ function SignoffsTab({ changeId }: { changeId: string }) {
                   className="h-7 px-3 rounded bg-[var(--cp-lozenge-green-bg, #1B7F37)] text-white text-[11px] font-bold hover:bg-[#004D33] disabled:opacity-50">Approve</button>
                 <button onClick={() => rejectSignoff.mutate({ signoffId: signoff.id, comment: 'Rejected' }, { onSuccess: () => toast.success('Rejected') })}
                   disabled={rejectSignoff.isPending}
-                  className="h-7 px-3 rounded border border-[var(--ds-border-danger,#FCA5A5)] text-[var(--ds-text-danger,#DC2626)] text-[11px] font-bold hover:bg-[var(--ds-background-danger,#FEF2F2)] disabled:opacity-50">Reject</button>
+                  className="h-7 px-3 rounded border border-[var(--ds-border-danger,#FCA5A5)] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))] text-[11px] font-bold hover:bg-[var(--ds-background-danger,#FEF2F2)] disabled:opacity-50">Reject</button>
               </div>
             )}
           </div>

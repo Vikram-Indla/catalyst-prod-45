@@ -53,7 +53,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   healthy: { label: 'Healthy', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
   degraded: { label: 'Degraded', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', icon: AlertTriangle },
-  down: { label: 'Down', color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)', icon: XCircle },
+  down: { label: 'Down', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', icon: XCircle },
   unknown: { label: 'Unknown', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: HelpCircle },
 };
 
@@ -199,10 +199,10 @@ export default function EnvironmentsListPage() {
           <div style={{ backgroundColor: 'var(--ds-background-danger, #FEF2F2)', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <p style={{ fontSize: 12, color: 'var(--ds-text-danger, #DC2626)', margin: 0, textTransform: 'uppercase' }}>Down</p>
-                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-danger, #DC2626)', margin: '8px 0 0' }}>{summary.down_count}</p>
+                <p style={{ fontSize: 12, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: 0, textTransform: 'uppercase' }}>Down</p>
+                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: '8px 0 0' }}>{summary.down_count}</p>
               </div>
-              <XCircle size={24} style={{ color: 'var(--ds-text-danger, #DC2626)' }} />
+              <XCircle size={24} style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }} />
             </div>
           </div>
         </div>

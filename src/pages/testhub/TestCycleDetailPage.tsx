@@ -65,13 +65,13 @@ const statusConfig: Record<string, { label: string; color: string; bg: string }>
 const executionStatusConfig: Record<string, { label: string; color: string; bg: string; Icon: any }> = {
   not_run: { label: 'Not Run', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', Icon: Clock },
   passed: { label: 'Passed', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', Icon: CheckCircle2 },
-  failed: { label: 'Failed', color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)', Icon: XCircle },
+  failed: { label: 'Failed', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', Icon: XCircle },
   blocked: { label: 'Blocked', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', Icon: AlertTriangle },
   skipped: { label: 'Skipped', color: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F8FAFC)', Icon: Clock },
 };
 
 const priorityConfig: Record<string, { color: string; bg: string }> = {
-  critical: { color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)' },
+  critical: { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)' },
   high: { color: '#EA580C', bg: '#FFF7ED' },
   medium: { color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB' },
   low: { color: 'var(--quality-high, #059669)', bg: '#ECFDF5' },
@@ -454,9 +454,9 @@ export default function TestCycleDetailPage() {
               <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--quality-high, #059669)' }}>{passedCount}</span>
             </button>
             <button onClick={() => setStatusFilter('failed')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'failed' ? ('var(--cp-danger-light, #FEF2F2)') : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
-              <XCircle size={18} style={{ color: 'var(--ds-text-danger, #DC2626)' }} />
+              <XCircle size={18} style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }} />
               <span style={{ flex: 1, fontSize: 14, color: 'var(--cp-text-secondary, #334155)' }}>Failed</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--ds-text-danger, #DC2626)' }}>{failedCount}</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{failedCount}</span>
             </button>
             <button onClick={() => setStatusFilter('blocked')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'blocked' ? ('var(--cp-warning-light, #FFFBEB)') : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <AlertTriangle size={18} style={{ color: 'var(--ds-text-warning, #D97706)' }} />
@@ -570,7 +570,7 @@ export default function TestCycleDetailPage() {
                 onClick={() => setIsRemoveConfirmOpen(true)}
                 style={{
                   height: 50, padding: '0 14px', border: '1.5px solid #FECACA', borderRadius: 8,
-                  backgroundColor: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #DC2626)', fontSize: 13, fontWeight: 600,
+                  backgroundColor: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontSize: 13, fontWeight: 600,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
                 }}
               >
@@ -784,7 +784,7 @@ export default function TestCycleDetailPage() {
                 width: 40, height: 40, borderRadius: 12, backgroundColor: 'var(--ds-background-danger, #FEF2F2)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <Trash2 size={20} style={{ color: 'var(--ds-text-danger, #DC2626)' }} />
+                <Trash2 size={20} style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }} />
               </div>
               <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>
                 Remove Test Cases
@@ -812,7 +812,7 @@ export default function TestCycleDetailPage() {
                 onClick={handleRemoveTestCases}
                 style={{
                   height: 40, padding: '0 20px',
-                  background: 'linear-gradient(135deg, var(--ds-text-danger, #EF4444) 0%, var(--ds-text-danger, #DC2626) 100%)',
+                  background: 'linear-gradient(135deg, var(--ds-text-danger, #EF4444) 0%, var(--ds-text-danger, var(--cp-danger, #DC2626)) 100%)',
                   border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600,
                   color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
                 }}

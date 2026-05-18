@@ -50,7 +50,7 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> 
   testing: { label: 'Testing', color: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF' },
   staging: { label: 'Staging', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB' },
   uat: { label: 'UAT', color: '#0891B2', bg: '#ECFEFF' },
-  production: { label: 'Production', color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)' },
+  production: { label: 'Production', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)' },
   other: { label: 'Other', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
 };
 
@@ -64,7 +64,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   healthy: { label: 'Healthy', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
   degraded: { label: 'Degraded', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', icon: AlertTriangle },
-  down: { label: 'Down', color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)', icon: XCircle },
+  down: { label: 'Down', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', icon: XCircle },
   unknown: { label: 'Unknown', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: HelpCircle },
 };
 
@@ -190,7 +190,7 @@ export default function EnvironmentDetailPage() {
             {Object.entries(STATUS_CONFIG).map(([key, val]) => <option key={key} value={key}>{val.label}</option>)}
           </select>
           <button onClick={deleteEnvironment}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: '1px solid #FECACA', borderRadius: 8, backgroundColor: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #DC2626)', fontSize: 13, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: '1px solid #FECACA', borderRadius: 8, backgroundColor: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontSize: 13, cursor: 'pointer' }}>
             <Trash2 size={16} />
           </button>
         </div>

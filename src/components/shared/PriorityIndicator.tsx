@@ -6,7 +6,7 @@
  *
  * Values:  Critical | High | Medium | Low
  * Visual:  4 colored bars (filled count = level) + optional text label
- * Colors:  Critical=#DC2626  High=#F97316  Medium=#EAB308  Low=#94A3B8
+ * Colors:  Critical=var(--cp-danger, #DC2626)  High=#F97316  Medium=#EAB308  Low=#94A3B8
  */
 
 import React from 'react';
@@ -22,7 +22,7 @@ export interface PriorityConfig {
 }
 
 export const PRIORITY_MAP: Record<PriorityLevel, PriorityConfig> = {
-  critical: { label: 'Critical', level: 4, filledColor: 'var(--ds-text-danger, #DC2626)', textColor: 'var(--ds-text-danger, #991B1B)', textColorDark: '#F87171' },
+  critical: { label: 'Critical', level: 4, filledColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', textColor: 'var(--ds-text-danger, #991B1B)', textColorDark: '#F87171' },
   high:     { label: 'High',     level: 3, filledColor: '#F97316', textColor: '#C2410C', textColorDark: '#FB923C' },
   medium:   { label: 'Medium',   level: 2, filledColor: '#EAB308', textColor: '#A16207', textColorDark: '#FBBF24' },
   low:      { label: 'Low',      level: 1, filledColor: 'var(--ds-text-subtlest, #94A3B8)', textColor: 'var(--ds-text-subtlest, #64748B)', textColorDark: 'var(--ds-text-subtlest, #94A3B8)' },

@@ -30,7 +30,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; dot: string }> = {
   healthy: { label: 'Healthy', color: 'var(--quality-high, #059669)', dot: 'var(--ds-text-success, #22C55E)' },
   at_risk: { label: 'At Risk', color: 'var(--ds-text-warning, #D97706)', dot: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' },
-  critical: { label: 'Critical', color: 'var(--ds-text-danger, #DC2626)', dot: 'var(--ds-text-danger, #EF4444)' },
+  critical: { label: 'Critical', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', dot: 'var(--ds-text-danger, #EF4444)' },
   none: { label: '—', color: 'var(--ds-text-subtlest, #94A3B8)', dot: 'var(--ds-text-disabled, #CBD5E1)' },
 };
 
@@ -104,9 +104,9 @@ export default function ReleaseDetailPage() {
           <StatCard label="Days Left" value={daysLeft !== null ? String(daysLeft) : '—'} color="var(--ds-text-brand, #2563EB)" isDark={isDark} />
           <StatCard label="Total Tests" value={String(release.test_cases_total || 0)} color={'var(--cp-text-secondary, #334155)'} isDark={isDark} />
           <StatCard label="Execution" value={`${execRate}%`} color={execRate >= 80 ? 'var(--quality-high, #059669)' : 'var(--ds-text-warning, #D97706)'} isDark={isDark} />
-          <StatCard label="Pass Rate" value={`${passRate}%`} color={passRate >= 80 ? 'var(--quality-high, #059669)' : 'var(--ds-text-danger, #DC2626)'} isDark={isDark} />
-          <StatCard label="Open Defects" value={String(release.defects_open || 0)} color={release.defects_open > 0 ? 'var(--ds-text-danger, #DC2626)' : 'var(--quality-high, #059669)'} isDark={isDark} />
-          <StatCard label="Critical" value={String(release.critical_defects || 0)} color={release.critical_defects > 0 ? 'var(--ds-text-danger, #DC2626)' : 'var(--quality-high, #059669)'} isDark={isDark} />
+          <StatCard label="Pass Rate" value={`${passRate}%`} color={passRate >= 80 ? 'var(--quality-high, #059669)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))'} isDark={isDark} />
+          <StatCard label="Open Defects" value={String(release.defects_open || 0)} color={release.defects_open > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--quality-high, #059669)'} isDark={isDark} />
+          <StatCard label="Critical" value={String(release.critical_defects || 0)} color={release.critical_defects > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--quality-high, #059669)'} isDark={isDark} />
         </div>
       </div>
 
@@ -251,7 +251,7 @@ function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isL
                 <td style={tdStyle}><span style={{ fontSize: 12, textTransform: 'capitalize' }}>{cycle.status}</span></td>
                 <td style={tdStyle}>{cycle.total_cases || 0}</td>
                 <td style={tdStyle}><span style={{ color: 'var(--quality-high, #059669)', fontWeight: 600 }}>{cycle.passed_count || 0}</span></td>
-                <td style={tdStyle}><span style={{ color: 'var(--ds-text-danger, #DC2626)', fontWeight: 600 }}>{cycle.failed_count || 0}</span></td>
+                <td style={tdStyle}><span style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontWeight: 600 }}>{cycle.failed_count || 0}</span></td>
                 <td style={tdStyle}><ChevronRight style={{ width: 14, height: 14, color: 'var(--ds-text-disabled, #CBD5E1)' }} /></td>
               </tr>
             );
@@ -269,11 +269,11 @@ function DefectsTab({ release, isDark }: { release: any; isDark: boolean }) {
       <p style={{ fontSize: 14, fontWeight: 500 }}>Defects linked to this release</p>
       <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 16 }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-danger, #DC2626)' }}>{release.defects_open || 0}</div>
+          <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{release.defects_open || 0}</div>
           <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>Open</div>
         </div>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-danger, #DC2626)' }}>{release.critical_defects || 0}</div>
+          <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{release.critical_defects || 0}</div>
           <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>Critical</div>
         </div>
       </div>

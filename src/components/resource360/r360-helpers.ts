@@ -98,7 +98,7 @@ export const getStatusStyle = getStatusStyleFallback;
 export function getPriorityColor(priority: string): string {
   switch (priority?.toLowerCase()) {
     case 'critical': return '#BE123C';
-    case 'highest': return 'var(--ds-text-danger, #DC2626)';
+    case 'highest': return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
     case 'high': return '#EA580C';
     case 'medium': return '#CA8A04';
     case 'low': return '#57534E';

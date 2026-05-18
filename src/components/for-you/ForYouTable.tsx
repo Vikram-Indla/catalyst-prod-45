@@ -46,7 +46,7 @@ const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
   Test:     { bg: 'var(--cp-hover)', color: 'var(--cp-t3)', border: 'var(--cp-t3)' },
 };
 
-const AVATAR_COLOURS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, #DC2626)', '#DB2777'];
+const AVATAR_COLOURS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#DB2777'];
 
 const FORYOU_COLUMNS: TColDef[] = [
   { key: 'checkbox', label: '', defaultWidth: 40, minWidth: 40, locked: true },

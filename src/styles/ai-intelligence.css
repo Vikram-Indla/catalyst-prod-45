@@ -22,7 +22,7 @@
   --rai-success-bg: #F0FDF4;
   --rai-warning: var(--ds-text-warning, #D97706);
   --rai-warning-bg: #FFFBEB;
-  --rai-danger: var(--ds-text-danger, #DC2626);
+  --rai-danger: var(--ds-text-danger, var(--cp-danger, #DC2626));
   --rai-danger-bg: var(--ds-background-danger, #FEF2F2);
   --rai-purple: var(--cp-purple-60, #7C3AED);
   --rai-purple-bg: #F5F3FF;

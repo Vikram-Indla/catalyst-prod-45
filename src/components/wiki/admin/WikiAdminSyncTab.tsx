@@ -262,7 +262,7 @@ export function WikiAdminSyncTab() {
                   flexShrink: 0, fontSize: 11, fontWeight: 700,
                   fontFamily: 'var(--cp-font-mono)',
                   background: isDone ? 'var(--cp-lozenge-green-bg, #1B7F37)' : isStepFailed ? 'rgba(220,38,38,0.08)' : isActive ? '#0C66E4' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-sunken, #F1F5F9)'),
-                  color: isDone ? 'var(--ds-surface, #FFFFFF)' : isStepFailed ? 'var(--ds-text-danger, #DC2626)' : isActive ? 'var(--ds-surface, #FFFFFF)' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-tertiary, #64748B)'),
+                  color: isDone ? 'var(--ds-surface, #FFFFFF)' : isStepFailed ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : isActive ? 'var(--ds-surface, #FFFFFF)' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-tertiary, #64748B)'),
                   ...(isActive ? { boxShadow: '0 0 0 3px rgba(37,99,235,0.2)' } : {}),
                 }}>
                   {isDone
@@ -310,7 +310,7 @@ export function WikiAdminSyncTab() {
                   {isStepFailed && (
                     <span style={{
                       padding: '2px 8px', borderRadius: 4,
-                      background: 'rgba(220,38,38,0.08)', color: 'var(--ds-text-danger, #DC2626)',
+                      background: 'rgba(220,38,38,0.08)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
                       fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em',
                     }}>Failed</span>
                   )}
@@ -401,7 +401,7 @@ export function StatusLoz({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
     complete: { bg: '#E3FCEF', color: '#006644' },
     running: { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-    failed: { bg: 'rgba(220,38,38,0.08)', color: 'var(--ds-text-danger, #DC2626)' },
+    failed: { bg: 'rgba(220,38,38,0.08)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
     partial: { bg: 'var(--ds-border, #DFE1E6)', color: '#44546F' },
   };
   const s = map[status] ?? map.failed;

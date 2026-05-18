@@ -42,7 +42,7 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
   return (
     <div className="flex flex-col items-center justify-center py-12" aria-live="assertive">
       <div className="w-12 h-12 rounded-xl bg-[var(--ds-background-danger,#FEF2F2)] flex items-center justify-center mb-4">
-        <AlertCircle size={24} className="text-[var(--ds-text-danger,#DC2626)]" />
+        <AlertCircle size={24} className="text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]" />
       </div>
       <h3 className="text-[14px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: 'var(--sem-danger)' }}>Something went wrong</h3>
       <p className="text-[13px] text-[var(--ds-text-subtlest,#64748B)] mb-4">{message}</p>

@@ -59,7 +59,7 @@ export default function FeatureBacklogPage({ projectId: propProjectId }: { proje
     );
   }
 
-  if (error) return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: 'var(--ds-text-danger, #DC2626)' }}>Error loading features</div>;
+  if (error) return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>Error loading features</div>;
 
   const total = features?.length || 0;
 
@@ -129,12 +129,12 @@ export default function FeatureBacklogPage({ projectId: propProjectId }: { proje
                         <div style={{ width: 20, height: 20, borderRadius: '50%', background: tk.chipBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: tk.t2, flexShrink: 0 }}>{getInitials(null)}</div>
                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Unassigned</span>
                       </div>
-                      <div style={{ width: 96, flexShrink: 0, fontSize: 12, color: overdue ? 'var(--ds-text-danger, #DC2626)' : tk.t2 }}>{formatDueDate(feat.planned_end_date)}</div>
+                      <div style={{ width: 96, flexShrink: 0, fontSize: 12, color: overdue ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : tk.t2 }}>{formatDueDate(feat.planned_end_date)}</div>
                       <div style={{ width: 88, flexShrink: 0, fontSize: 12, position: 'relative' }}>
                         <span style={{ color: getPriorityColor(feat.priority) }}>{getPriorityLabel(feat.priority)}</span>
                         <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-1" style={{ background: isDark ? 'rgba(10,10,10,0.95)' : 'var(--ds-text, #EDEDED)' }}>
                           <button onClick={() => setEditFeatureId(feat.id)} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Edit"><Pencil className="h-3.5 w-3.5" style={{ color: tk.t2 }} /></button>
-                          <button onClick={() => setDeleteTarget(feat)} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Delete"><Trash2 className="h-3.5 w-3.5" style={{ color: 'var(--ds-text-danger, #DC2626)' }} /></button>
+                          <button onClick={() => setDeleteTarget(feat)} className="p-1 rounded" onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)} onMouseLeave={(e) => (e.currentTarget.style.background = '')} title="Delete"><Trash2 className="h-3.5 w-3.5" style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }} /></button>
                         </div>
                       </div>
                     </div>

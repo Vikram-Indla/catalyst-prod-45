@@ -57,7 +57,7 @@ function PriorityCell({ priority }: { priority: string | null }) {
 }
 
 // ── Avatar colours (deterministic) ──
-const AVATAR_COLOURS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, #DC2626)', '#DB2777', 'var(--cp-purple-60, #7C3AED)', 'var(--quality-high, #059669)', 'var(--ds-text-warning, #D97706)'];
+const AVATAR_COLOURS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#DB2777', 'var(--cp-purple-60, #7C3AED)', 'var(--quality-high, #059669)', 'var(--ds-text-warning, #D97706)'];
 
 // ── Age formatter ──
 function getRelativeAge(createdAt: string): string {

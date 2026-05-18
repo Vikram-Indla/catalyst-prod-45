@@ -236,7 +236,7 @@ export default function WikiTemplatesPage() {
             {(publishAt || archiveAt) && (
               <button onClick={() => { setPublishAt(''); setArchiveAt(''); }} style={{
                 fontSize: 10, fontWeight: 600, padding: '4px 10px', borderRadius: 4,
-                border: '1px solid rgba(220,38,38,0.2)', background: isDark ? 'rgba(220,38,38,0.12)' : 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #DC2626)',
+                border: '1px solid rgba(220,38,38,0.2)', background: isDark ? 'rgba(220,38,38,0.12)' : 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
                 cursor: 'pointer', alignSelf: 'flex-end', marginBottom: 18,
               }}>Clear Dates</button>
             )}

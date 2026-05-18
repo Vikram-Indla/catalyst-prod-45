@@ -46,7 +46,7 @@ function StatusLozenge({ status }: { status: string }) {
   // Grey: everything else (backlog, todo, onhold, new, waiting, blocked)
   // Blocked gets a red left border accent on grey lozenge
   if (s === 'blocked') {
-    leftBorder = '3px solid #DC2626';
+    leftBorder = '3px solid var(--cp-danger, #DC2626)';
   }
 
   return (

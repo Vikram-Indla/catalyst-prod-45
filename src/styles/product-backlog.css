@@ -27,7 +27,7 @@
   --cp-success-10: var(--ds-background-success, #DCFCE7);
   --cp-warning-60: var(--ds-text-warning, #D97706);
   --cp-warning-10: #FEF3C7;
-  --cp-danger-60: var(--ds-text-danger, #DC2626);
+  --cp-danger-60: var(--ds-text-danger, var(--cp-danger, #DC2626));
   --cp-danger-10: #FEE2E2;
   --cp-purple-60: var(--cp-purple-60, #7C3AED);
 

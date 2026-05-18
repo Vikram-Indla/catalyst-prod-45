@@ -78,7 +78,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const PRIORITY_CONFIG: Record<string, { color: string; bg: string }> = {
-  critical: { color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)' },
+  critical: { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)' },
   high: { color: '#EA580C', bg: '#FFF7ED' },
   medium: { color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB' },
   low: { color: 'var(--quality-high, #059669)', bg: '#ECFDF5' },
@@ -364,7 +364,7 @@ export default function CycleReportPage() {
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               {failureReasons.map((f, i) => (
                 <div key={i} style={{ backgroundColor: 'var(--ds-background-danger, #FEF2F2)', border: '1px solid #FECACA', borderRadius: 12, padding: '12px 20px', textAlign: 'center' }}>
-                  <p style={{ fontSize: 20, fontWeight: 700, color: 'var(--ds-text-danger, #DC2626)', margin: '0 0 4px' }}>{f.count}</p>
+                  <p style={{ fontSize: 20, fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: '0 0 4px' }}>{f.count}</p>
                   <p style={{ fontSize: 12, color: '#92400E', margin: 0 }}>{FAILURE_REASON_LABELS[f.failure_reason] || f.failure_reason}</p>
                 </div>
               ))}

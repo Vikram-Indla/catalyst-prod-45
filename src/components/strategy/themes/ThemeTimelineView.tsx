@@ -87,8 +87,8 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
 
               {/* Today marker */}
               {todayPct !== null && (
-                <div className="absolute top-0 bottom-0" style={{ left: `${todayPct}%`, width: 2, background: 'var(--ds-text-danger, #DC2626)', zIndex: 2 }}>
-                  <div style={{ position: 'absolute', top: -16, left: -14, fontSize: 9, color: 'var(--ds-text-danger, #DC2626)', fontWeight: 600, whiteSpace: 'nowrap' }}>Today</div>
+                <div className="absolute top-0 bottom-0" style={{ left: `${todayPct}%`, width: 2, background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', zIndex: 2 }}>
+                  <div style={{ position: 'absolute', top: -16, left: -14, fontSize: 9, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontWeight: 600, whiteSpace: 'nowrap' }}>Today</div>
                 </div>
               )}
 

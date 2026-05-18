@@ -39,7 +39,7 @@ function statusBadge(status: string, isDark = false) {
     on_track:    { dot: 'var(--ds-text-success, #16A34A)', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDk: '#182820', txtDk: '#86EFAC', label: 'On Track' },
     completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDk: '#1A2030', txtDk: '#93C5FD', label: 'Completed' },
     at_risk:     { dot: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', bgDk: '#2A2418', txtDk: '#FBBF24', label: 'At Risk' },
-    off_track:   { dot: 'var(--ds-text-danger, #EF4444)', bg: 'rgba(239,68,68,0.08)',  text: 'var(--ds-text-danger, #DC2626)', bgDk: '#2A1C1E', txtDk: 'var(--ds-border-danger, #FCA5A5)', label: 'Off Track' },
+    off_track:   { dot: 'var(--ds-text-danger, #EF4444)', bg: 'rgba(239,68,68,0.08)',  text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bgDk: '#2A1C1E', txtDk: 'var(--ds-border-danger, #FCA5A5)', label: 'Off Track' },
     draft:       { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F1F5F9)',               text: 'var(--ds-text-subtlest, #64748B)', bgDk: 'var(--ds-surface-raised, #1A1A1A)', txtDk: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Draft' },
     not_started: { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F1F5F9)',               text: 'var(--ds-text-subtlest, #64748B)', bgDk: 'var(--ds-surface-raised, #1A1A1A)', txtDk: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Not Started' },
     cancelled:   { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F1F5F9)',               text: 'var(--ds-text-subtlest, #64748B)', bgDk: 'var(--ds-surface-raised, #1A1A1A)', txtDk: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Cancelled' },

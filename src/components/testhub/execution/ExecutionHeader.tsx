@@ -91,7 +91,7 @@ export function ExecutionHeader({
         <div style={{ display: 'flex', gap: 6 }}>
           {[
             { count: cycle.passed_count, color: 'var(--quality-high, #059669)', bg: 'var(--cp-success-light, #ECFDF5)', Icon: CheckCircle2 },
-            { count: cycle.failed_count, color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--cp-danger-light, #FEF2F2)', Icon: XCircle },
+            { count: cycle.failed_count, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--cp-danger-light, #FEF2F2)', Icon: XCircle },
             { count: cycle.blocked_count, color: 'var(--ds-text-warning, #D97706)', bg: 'var(--cp-warning-light, #FFFBEB)', Icon: AlertTriangle },
           ].map((s, i) => (
             <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '4px 8px', backgroundColor: s.bg, borderRadius: 6, fontSize: 11, fontWeight: 600, color: s.color }}>

@@ -121,7 +121,7 @@
   --cap-uat: #D97706;
   --quality-high: var(--quality-high, #059669);
   --quality-mid: #D97706;
-  --quality-low: #DC2626;
+  --quality-low: var(--cp-danger, #DC2626);
   --primary-50: #EFF6FF;
   --teal-50: #F0FDFA;
   --violet-50: #F5F3FF;
@@ -141,7 +141,7 @@
   --ra-slot-done: var(--cp-teal-60, #0D9488);
   --ra-slot-processing: #2563EB;
   --ra-slot-pending: #E5E5E5;
-  --ra-slot-error: #DC2626;
+  --ra-slot-error: var(--cp-danger, #DC2626);
 
   /* ═══ CATALYST V12 HYBRID PRECISION — NotifyHub Tokens ═══ */
   --cp-primary: #2563EB;
@@ -162,7 +162,7 @@
   --cp-warning: #D97706;
   --cp-warning-light: #FEF3C7;
   --cp-warning-text: #92400E;
-  --cp-danger: #DC2626;
+  --cp-danger: var(--cp-danger, #DC2626);
   --cp-danger-light: #FEE2E2;
   --cp-danger-text: #991B1B;
   --cp-amber: var(--cp-amber, #F59E0B);
@@ -217,7 +217,7 @@
   --cp-purple-5: #F5F3FF;
   --cp-success-60: #16A34A;
   --cp-warning-60: #D97706;
-  --cp-danger-60: #DC2626;
+  --cp-danger-60: var(--cp-danger, #DC2626);
   --cp-teal-60: var(--cp-teal-60, #0D9488);
   --cp-lozenge-grey-bg: #DFE1E6;
   --cp-lozenge-grey-text: #42526E;
@@ -259,9 +259,9 @@
   --cp-ok-bg: rgba(22,163,74,0.08);
   --cp-warn: #D97706;
   --cp-warn-bg: rgba(217,119,6,0.08);
-  --cp-err: #DC2626;
+  --cp-err: var(--cp-danger, #DC2626);
   --cp-err-bg: rgba(220,38,38,0.08);
-  --cp-err-text: #DC2626;
+  --cp-err-text: var(--cp-danger, #DC2626);
   --cp-prg-bg: rgba(37,99,235,0.08);
   --cp-lz-gy-bg: #DFE1E6;
   --cp-lz-gy-t: #42526E;

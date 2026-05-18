@@ -40,7 +40,7 @@ const STATS_CONFIG = [
   { key: 'catalystOnly', dot: 'var(--cp-purple-60, #7C3AED)', label: 'Catalyst Only',  sub: 'Not in Jira' },
   { key: 'proxyAuth',    dot: 'var(--ds-text-brand, #2563EB)', label: 'Proxy Auth',     sub: 'Jira password active' },
   { key: 'conflicts',    dot: 'var(--ds-text-warning, #D97706)', label: 'Conflicts',      sub: 'Needs resolution' },
-  { key: 'inactive',     dot: 'var(--ds-text-danger, #DC2626)', label: 'Inactive',       sub: 'Access revoked' },
+  { key: 'inactive',     dot: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Inactive',       sub: 'Access revoked' },
   { key: 'webhooks24h',  dot: 'var(--cp-teal-60, #0D9488)', label: 'Webhooks / 24h', sub: 'Real-time events' },
 ] as const;
 
@@ -530,7 +530,7 @@ const JiraUserSync: React.FC = () => {
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
                 background: 'var(--cp-bg-elevated, #FFFFFF)',
-                color: 'var(--ds-text-danger, #DC2626)',
+                color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}>
               <CrossCircleIcon label="" size="small" /> Deactivate
@@ -775,8 +775,8 @@ const JiraUserSync: React.FC = () => {
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
                           padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500,
                           background: 'var(--cp-bg-elevated, #FFFFFF)',
-                          border: `1px solid ${user.is_active_in_catalyst ? 'var(--ds-text-danger, #DC2626)' : 'var(--ds-text-success, #16A34A)'}`,
-                          color: user.is_active_in_catalyst ? 'var(--ds-text-danger, #DC2626)' : 'var(--ds-text-success, #16A34A)',
+                          border: `1px solid ${user.is_active_in_catalyst ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-success, #16A34A)'}`,
+                          color: user.is_active_in_catalyst ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-success, #16A34A)',
                           cursor: togglingId === user.id ? 'not-allowed' : 'pointer',
                           opacity: togglingId === user.id ? 0.6 : undefined, whiteSpace: 'nowrap',
                         }}>

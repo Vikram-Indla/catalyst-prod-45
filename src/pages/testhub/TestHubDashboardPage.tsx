@@ -249,7 +249,7 @@ export default function TestHubDashboardPage() {
   const totalExecuted = totalPassed + totalFailed + totalBlocked;
   const totalAll = totalExecuted + totalNotRun;
   const passRate = overallPassRate;
-  const passRateColor = passRate < 60 ? 'var(--ds-text-danger, #DC2626)' : passRate < 80 ? 'var(--ds-text-warning, #D97706)' : 'var(--quality-high, #059669)';
+  const passRateColor = passRate < 60 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : passRate < 80 ? 'var(--ds-text-warning, #D97706)' : 'var(--quality-high, #059669)';
 
   const execSegments = useMemo(() => {
     if (totalAll === 0) return [];
@@ -329,16 +329,16 @@ export default function TestHubDashboardPage() {
             trend={{ direction: 'up', value: '+3', color: 'var(--quality-high, #059669)' }}
             subtitle={`${totalCycles} cycles total`} sparkData={[4, 6, 5, 8, 10, 9, 12, 14]} />
           <KPICard label="Overall pass rate" value={`${passRate}%`} accent={passRate < 60 ? "var(--ds-text-danger, #EF4444)" : "var(--ds-text-warning, #D97706)"}
-            trend={{ direction: 'down', value: '−12%', color: 'var(--ds-text-danger, #DC2626)' }}
+            trend={{ direction: 'down', value: '−12%', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}
             subtitle={`${totalExecuted} of ${totalAll} executed`} sparkData={[80, 72, 65, 58, 52, 48, 46, 47]}
             valueColor={passRateColor} isDanger={passRate < 60} />
           <KPICard label="Active cycles" value={activeCycles.length} accent="var(--ds-text-brand, #3B82F6)"
             trend={{ direction: 'flat', value: '—', color: 'var(--ds-text-subtlest, #94A3B8)' }}
             subtitle={`${completedCyclesCount} completed`} sparkData={[3, 4, 5, 5, 5, 5, 5, 5]} />
           <KPICard label="Blocked tests" value={totalBlocked} accent="var(--ds-text-danger, #EF4444)"
-            trend={{ direction: 'up', value: '+2', color: 'var(--ds-text-danger, #DC2626)' }}
+            trend={{ direction: 'up', value: '+2', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}
             subtitle={`${totalFailed} failed tests`} sparkData={[0, 1, 1, 2, 2, 3, 3, 3]}
-            valueColor={totalBlocked > 0 ? 'var(--ds-text-danger, #DC2626)' : undefined} />
+            valueColor={totalBlocked > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : undefined} />
           <KPICard label="Automation coverage" value={`${automationCoverage}%`} accent="#10B981"
             trend={{ direction: 'flat', value: '—', color: 'var(--ds-text-subtlest, #94A3B8)' }}
             subtitle={`${automatedCount} of ${totalTestCases} automated`}
@@ -420,7 +420,7 @@ export default function TestHubDashboardPage() {
                        <div style={{ display: 'flex', gap: 6, fontSize: 12, fontWeight: 600, justifyContent: 'flex-end' }}>
                          <span style={{ color: 'var(--quality-high, #059669)' }}>{csPassed}P</span>
                          <span style={{ color: 'var(--ds-text-subtlest, #64748B)' }}>·</span>
-                         <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>{csFailed}F</span>
+                         <span style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{csFailed}F</span>
                          <span style={{ color: 'var(--ds-text-subtlest, #64748B)' }}>·</span>
                          <span style={{ color: 'var(--ds-text-subtlest, #64748B)' }}>{csNotRun}NR</span>
                        </div>
@@ -453,7 +453,7 @@ export default function TestHubDashboardPage() {
              }}>
                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                  <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>Top Failing Tests</span>
-                 <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-danger, #DC2626)', background: 'var(--cp-danger-light, #FEF2F2)', padding: '2px 8px', borderRadius: 10 }}>
+                 <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', background: 'var(--cp-danger-light, #FEF2F2)', padding: '2px 8px', borderRadius: 10 }}>
                    {failingTests.length}
                  </span>
                </div>
@@ -470,7 +470,7 @@ export default function TestHubDashboardPage() {
                  <>
                    {failingTests.slice(0, 10).map(test => {
                      const sevColor = test.priority?.toLowerCase() === 'high' || test.priority?.toLowerCase() === 'critical'
-                       ? { bg: 'var(--cp-danger-light, #FEF2F2)', color: 'var(--ds-text-danger, #DC2626)' }
+                       ? { bg: 'var(--cp-danger-light, #FEF2F2)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }
                        : { bg: 'var(--cp-warning-light, #FFFBEB)', color: 'var(--ds-text-warning, #D97706)' };
                      return (
                        <div key={test.test_case_id} onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
@@ -486,7 +486,7 @@ export default function TestHubDashboardPage() {
                          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                            {test.title}
                          </span>
-                         <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ds-text-danger, #DC2626)' }}>
+                         <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>
                            {test.failure_count} fail{test.failure_count !== 1 ? 's' : ''}
                          </span>
                          <span style={{
@@ -551,7 +551,7 @@ export default function TestHubDashboardPage() {
               <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>Needs attention</span>
                 <span style={{
-                  fontSize: 12, fontWeight: 600, color: 'var(--ds-text-danger, #DC2626)', background: 'var(--cp-danger-light, #FEF2F2)',
+                  fontSize: 12, fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', background: 'var(--cp-danger-light, #FEF2F2)',
                   padding: '2px 8px', borderRadius: 12,
                 }}>
                   {attentionItems.length}
@@ -568,7 +568,7 @@ export default function TestHubDashboardPage() {
                       width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       background: item.danger ? ('var(--cp-danger-light, #FEF2F2)') : ('var(--cp-warning-light, #FFFBEB)'),
                     }}>
-                      <AlertTriangle size={12} color={item.danger ? 'var(--ds-text-danger, #DC2626)' : 'var(--ds-text-warning, #D97706)'} />
+                      <AlertTriangle size={12} color={item.danger ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-warning, #D97706)'} />
                     </div>
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)' }}>{item.title}</div>
@@ -704,7 +704,7 @@ function Card({ title, badge, badgeDanger, badgeColor, onViewAll, children, styl
 }) {
   const { isDark } = useTheme();
   const bg = badgeDanger ? ('var(--cp-danger-light, #FEF2F2)') : ('var(--cp-bg-sunken, #F1F5F9)');
-  const color = badgeDanger ? 'var(--ds-text-danger, #DC2626)' : badgeColor || ('var(--cp-text-tertiary, #64748B)');
+  const color = badgeDanger ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : badgeColor || ('var(--cp-text-tertiary, #64748B)');
   return (
     <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0, ...style }}>
       <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}`, flexShrink: 0 }}>

@@ -36,7 +36,7 @@ function statusBadge(status: string) {
     completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Completed' },
     achieved:    { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Achieved' },
     at_risk:     { dot: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', label: 'At Risk' },
-    off_track:   { dot: 'var(--sem-danger)', bg: 'rgba(239,68,68,0.08)',  text: 'var(--ds-text-danger, #DC2626)', label: 'Off Track' },
+    off_track:   { dot: 'var(--sem-danger)', bg: 'rgba(239,68,68,0.08)',  text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Off Track' },
     draft:       { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Draft' },
     not_started: { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Not Started' },
     cancelled:   { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Cancelled' },

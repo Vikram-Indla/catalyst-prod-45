@@ -240,7 +240,7 @@ export default function IncidentListPage() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: 'var(--cp-danger-light, #FEE2E2)' }}>
-              <AlertTriangle size={18} style={{ color: 'var(--ds-text-danger, #DC2626)' }} />
+              <AlertTriangle size={18} style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }} />
             </div>
             <div>
               <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: textPrimary }}>Incident List</h1>
@@ -262,7 +262,7 @@ export default function IncidentListPage() {
         {/* Stat Cards (unchanged) */}
         <div className="grid grid-cols-5 gap-3 mb-4">
           {[
-            { label: 'Critical (SEV-1)', value: stats.sev1, accent: 'var(--ds-text-danger, #DC2626)' },
+            { label: 'Critical (SEV-1)', value: stats.sev1, accent: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
             { label: 'High (SEV-2)', value: stats.sev2, accent: 'var(--ds-text-warning, #D97706)' },
             { label: 'Active Incidents', value: stats.active, accent: 'var(--cp-text-link, #2563EB)' },
             { label: 'Committee Pending', value: stats.committeePending, accent: textSecondary },

@@ -39,7 +39,7 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> 
   user_story: { label: 'User Story', color: '#0891B2', bg: '#ECFEFF' },
   epic: { label: 'Epic', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
   feature: { label: 'Feature', color: 'var(--quality-high, #059669)', bg: '#ECFDF5' },
-  bug_fix: { label: 'Bug Fix', color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)' },
+  bug_fix: { label: 'Bug Fix', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
@@ -171,8 +171,8 @@ export default function RequirementsListPage() {
               <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-warning, #D97706)', margin: '8px 0 0' }}>{partialCount}</p>
             </div>
             <div style={{ backgroundColor: 'var(--ds-background-danger, #FEF2F2)', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>
-              <p style={{ fontSize: 12, color: 'var(--ds-text-danger, #DC2626)', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>No Coverage</p>
-              <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-danger, #DC2626)', margin: '8px 0 0' }}>{noneCount}</p>
+              <p style={{ fontSize: 12, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>No Coverage</p>
+              <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: '8px 0 0' }}>{noneCount}</p>
             </div>
           </div>
         );

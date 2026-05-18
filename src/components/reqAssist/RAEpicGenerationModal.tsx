@@ -317,7 +317,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
             </div>
 
             <div style={{
-              background: 'var(--ds-background-danger, #FEF2F2)', border: '1.5px solid #DC2626', borderRadius: 6,
+              background: 'var(--ds-background-danger, #FEF2F2)', border: '1.5px solid var(--cp-danger, #DC2626)', borderRadius: 6,
               padding: '14px 16px', marginBottom: 16, maxHeight: 120, overflowY: 'auto' as const,
             }}>
               <code style={{

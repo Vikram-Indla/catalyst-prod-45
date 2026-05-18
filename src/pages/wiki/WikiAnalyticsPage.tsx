@@ -9,7 +9,7 @@ import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, Cart
 
 const DOMAIN_COLORS: Record<string, string> = {
   D1: 'var(--ds-text-brand, #2563EB)', D2: 'var(--cp-teal-60, #0D9488)', D3: 'var(--ds-text-warning, #D97706)', D4: 'var(--ds-text-success, #16A34A)',
-  D5: 'var(--ds-text-danger, #DC2626)', D6: '#0891B2', D7: 'var(--ds-text-subtlest, #64748B)', D8: '#4F46E5', D9: '#CA8A04',
+  D5: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', D6: '#0891B2', D7: 'var(--ds-text-subtlest, #64748B)', D8: '#4F46E5', D9: '#CA8A04',
 };
 
 export default function WikiAnalyticsPage() {
@@ -213,7 +213,7 @@ export default function WikiAnalyticsPage() {
               }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,99,235,0.04)'}
                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <span style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
-                <span style={{ fontFamily: F.mono, fontSize: 11, color: 'var(--ds-text-danger, #DC2626)' }}>{Math.round(a.helpfulness_score ?? 0)}%</span>
+                <span style={{ fontFamily: F.mono, fontSize: 11, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{Math.round(a.helpfulness_score ?? 0)}%</span>
                 <span style={{ fontFamily: F.mono, fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)' }}>{a.helpfulness_votes}</span>
               </div>
             ))}

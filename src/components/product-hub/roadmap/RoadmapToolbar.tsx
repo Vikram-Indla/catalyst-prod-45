@@ -108,7 +108,7 @@ export function RoadmapToolbar({ zoom, onZoomChange, groupBy, onGroupByChange, v
           style={{
             border: '1.5px solid #EF4444',
             borderRadius: 6,
-            color: 'var(--ds-text-danger, #DC2626)',
+            color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
             fontWeight: 600,
             transition: 'all 0.15s ease',
           }}

@@ -920,8 +920,8 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
-          borderRadius: 6, border: '0.75px solid #DC2626',
-          background: 'transparent', color: 'var(--ds-text-danger, #DC2626)', cursor: 'pointer',
+          borderRadius: 6, border: '0.75px solid var(--cp-danger, #DC2626)',
+          background: 'transparent', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', cursor: 'pointer',
           fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
         }}
       >

@@ -39,7 +39,7 @@ export default function IncidentAnalyticsPage() {
   const maxCount = (arr: [string, number][]) => Math.max(...arr.map(a => a[1]), 1);
 
   const SEV_BAR_COLORS: Record<string, string> = {
-    SEV1: 'var(--ds-text-danger, #DC2626)', SEV2: 'var(--ds-text-warning, #D97706)', SEV3: 'var(--ds-text-brand, #2563EB)', SEV4: 'var(--ds-text-subtlest, #94A3B8)',
+    SEV1: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', SEV2: 'var(--ds-text-warning, #D97706)', SEV3: 'var(--ds-text-brand, #2563EB)', SEV4: 'var(--ds-text-subtlest, #94A3B8)',
   };
 
   const STATUS_BAR_COLORS: Record<string, string> = {
@@ -68,7 +68,7 @@ export default function IncidentAnalyticsPage() {
         <div className="grid grid-cols-4 gap-3 mb-6">
           {[
             { label: 'Avg Resolution', value: '\u2014', accent: 'var(--ds-text-brand, #2563EB)' },
-            { label: 'SLA Breach Rate', value: incidents ? `${Math.round((incidents.filter(i => i.resolution_breached).length / Math.max(incidents.length, 1)) * 100)}%` : '0%', accent: 'var(--ds-text-danger, #DC2626)' },
+            { label: 'SLA Breach Rate', value: incidents ? `${Math.round((incidents.filter(i => i.resolution_breached).length / Math.max(incidents.length, 1)) * 100)}%` : '0%', accent: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
             { label: 'Total Incidents', value: stats.total, accent: 'var(--ds-text, #0F172A)' },
             { label: 'MTTR', value: '\u2014', accent: 'var(--ds-text-success, #16A34A)' },
           ].map(s => (

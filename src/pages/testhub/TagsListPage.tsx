@@ -177,7 +177,7 @@ export default function TagsListPage() {
                         <Edit2 size={12} />
                       </button>
                       <button onClick={(e) => { e.stopPropagation(); deleteTag(tag.id, tag.name); }}
-                        style={{ width: 24, height: 24, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: 'var(--ds-text-danger, #DC2626)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        style={{ width: 24, height: 24, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Trash2 size={12} />
                       </button>
                     </div>

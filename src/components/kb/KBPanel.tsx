@@ -282,7 +282,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               <AlertCircle size={14} />
               <span style={{ flex: 1 }}>{error}</span>
               <button onClick={() => reset()} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
-                <RefreshCw size={13} color="var(--cp-danger-60, #DC2626)" />
+                <RefreshCw size={13} color="var(--cp-danger-60, var(--cp-danger, #DC2626))" />
               </button>
             </div>
           )}

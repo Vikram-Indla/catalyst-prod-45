@@ -940,7 +940,7 @@ export function TestRepositoryPage() {
                       backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
                       border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
                       borderRadius: 6, fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500,
-                      color: 'var(--ds-text-danger, #DC2626)', cursor: 'pointer',
+                      color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', gap: 6,
                     }}
                     onMouseEnter={(e) => {

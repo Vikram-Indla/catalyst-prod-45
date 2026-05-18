@@ -71,7 +71,7 @@ export function TableContextMenu({
             <span className="text-[11px]" style={{ color: 'var(--sem-danger)' }}>Confirm?</span>
             <button
               onClick={() => { onDelete(); onClose(); }}
-              className="text-[11px] font-semibold px-2 py-0.5 rounded bg-[var(--ds-text-danger,#DC2626)] text-white"
+              className="text-[11px] font-semibold px-2 py-0.5 rounded bg-[var(--ds-text-danger,var(--cp-danger, #DC2626))] text-white"
             >
               Yes
             </button>

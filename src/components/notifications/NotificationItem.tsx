@@ -71,7 +71,7 @@ function WorkItemIcon({ type }: { type: string }) {
     return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--cp-teal-60, #0D9488)"/><path d="M4 4h8v8H4z" fill="none" stroke="white" strokeWidth="1.2"/><path d="M6 7l1.5 1.5 3-3" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round"/></svg>;
   // Incident / production incident — red warning
   if (t === 'incident' || t === 'production incident')
-    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-text-danger, #DC2626)"/><path d="M8 4v5M8 10.5v1.5" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>;
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-text-danger, var(--cp-danger, #DC2626))"/><path d="M8 4v5M8 10.5v1.5" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>;
   // Default — blue task (safe fallback for unknown Jira types)
   return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-text-brand, #2563EB)"/><path d="M4 8.5l2.5 2.5 5.5-5.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
 }
@@ -178,7 +178,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
     // Initials fallback
     const name = actorName || '?';
     const initials = name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
-    const colours = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-warning, #D97706)'];
+    const colours = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, #D97706)'];
     const bg = colours[(notification.actor_user_id || '').charCodeAt(0) % colours.length];
     return (
       <div style={{

@@ -93,7 +93,7 @@ const CATEGORY_BADGE: Record<ModuleCategory, { bg: string; text: string; border:
   Product:    { bg: '#F4F4F5', text: '#3F3F46', border: '#D4D4D8' },
   Delivery:   { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)', border: '#BFDBFE' },
   Quality:    { bg: '#F0FDFA', text: 'var(--cp-teal-60, #0D9488)', border: '#99F6E4' },
-  Operations: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #DC2626)', border: '#FECACA' },
+  Operations: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', border: '#FECACA' },
 };
 
 const ENVIRONMENT = 'production' as const;
@@ -478,7 +478,7 @@ export default function FeatureFlagsPage() {
   if (error) {
     return (
       <div className={`flex-1 flex flex-col items-center justify-center py-20 gap-3 ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`}>
-        <span style={{ display: 'flex', color: 'var(--ds-text-danger, #DC2626)' }}><CrossCircleIcon label="" size="large" /></span>
+        <span style={{ display: 'flex', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}><CrossCircleIcon label="" size="large" /></span>
         <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)' }}>
           Failed to load feature flags
         </p>
@@ -604,8 +604,8 @@ export default function FeatureFlagsPage() {
                 padding: '0 14px',
                 borderRadius: 6,
                 background: 'transparent',
-                border: '0.75px solid #DC2626',
-                color: 'var(--ds-text-danger, #DC2626)',
+                border: '0.75px solid var(--cp-danger, #DC2626)',
+                color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
                 fontFamily: 'var(--cp-font-body)',
                 fontSize: 13,
                 fontWeight: 500,
@@ -838,7 +838,7 @@ export default function FeatureFlagsPage() {
       <AlertDialog open={bulkDisableOpen} onOpenChange={(open) => { setBulkDisableOpen(open); if (!open) setConfirmText(''); }}>
         <AlertDialogContent className="sm:max-w-md" style={{ borderRadius: 8 }}>
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2" style={{ color: 'var(--ds-text-danger, #DC2626)' }}>
+            <AlertDialogTitle className="flex items-center gap-2" style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>
               <span style={{ display: 'inline-flex' }}><CrossCircleIcon label="" size="small" /></span>
               Disable All Modules?
             </AlertDialogTitle>

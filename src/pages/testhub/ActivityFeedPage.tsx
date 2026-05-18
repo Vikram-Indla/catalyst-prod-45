@@ -35,7 +35,7 @@ interface AuditStats {
 const ACTION_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
   create: { label: 'Created', color: 'var(--quality-high, #059669)', icon: Plus },
   update: { label: 'Updated', color: 'var(--ds-text-brand, #2563EB)', icon: Edit2 },
-  delete: { label: 'Deleted', color: 'var(--ds-text-danger, #DC2626)', icon: Trash2 },
+  delete: { label: 'Deleted', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', icon: Trash2 },
   execute: { label: 'Executed', color: 'var(--cp-purple-60, #7C3AED)', icon: Play },
   assign: { label: 'Assigned', color: '#0891B2', icon: UserPlus },
   status_change: { label: 'Status Changed', color: 'var(--ds-text-warning, #D97706)', icon: ArrowRight },
@@ -46,7 +46,7 @@ const ACTION_CONFIG: Record<string, { label: string; color: string; icon: any }>
 
 const ENTITY_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
   test_case: { label: 'Test Case', color: 'var(--ds-text-brand, #2563EB)', icon: FileText },
-  defect: { label: 'Defect', color: 'var(--ds-text-danger, #DC2626)', icon: Bug },
+  defect: { label: 'Defect', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', icon: Bug },
   test_cycle: { label: 'Test Cycle', color: '#0891B2', icon: RefreshCcw },
   test_plan: { label: 'Test Plan', color: 'var(--cp-purple-60, #7C3AED)', icon: ClipboardList },
   requirement: { label: 'Requirement', color: 'var(--quality-high, #059669)', icon: FileCheck },
@@ -165,8 +165,8 @@ export default function ActivityFeedPage() {
             <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--ds-text-brand, #2563EB)', margin: '4px 0 0' }}>{stats.updates}</p>
           </div>
           <div style={{ backgroundColor: 'var(--ds-background-danger, #FEF2F2)', borderRadius: 12, padding: 16, border: '1px solid #FECACA' }}>
-            <p style={{ fontSize: 11, color: 'var(--ds-text-danger, #DC2626)', margin: 0, textTransform: 'uppercase' }}>Deleted</p>
-            <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--ds-text-danger, #DC2626)', margin: '4px 0 0' }}>{stats.deletes}</p>
+            <p style={{ fontSize: 11, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: 0, textTransform: 'uppercase' }}>Deleted</p>
+            <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: '4px 0 0' }}>{stats.deletes}</p>
           </div>
           <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 16, border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
             <p style={{ fontSize: 11, color: 'var(--cp-text-tertiary, #64748B)', margin: 0, textTransform: 'uppercase' }}>Active Users</p>

@@ -203,18 +203,18 @@ export function CreateProjectDialog({ open, onClose }: Props) {
         <div style={{ padding: 24, overflowY: 'auto', flex: 1 }}>
           {/* Project Name */}
           <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>Project name <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>*</span></label>
+            <label style={labelStyle}>Project name <span style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>*</span></label>
             <input
               value={name} onChange={e => setName(e.target.value)}
               placeholder="e.g. Digital Transformation Request"
               style={inputStyle} onFocus={focusIn} onBlur={focusOut}
             />
-            {errors.name && <p style={{ fontSize: 12, color: 'var(--ds-text-danger, #DC2626)', marginTop: 4 }}>{errors.name}</p>}
+            {errors.name && <p style={{ fontSize: 12, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', marginTop: 4 }}>{errors.name}</p>}
           </div>
 
           {/* Project Key */}
           <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>Project key <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>*</span></label>
+            <label style={labelStyle}>Project key <span style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>*</span></label>
             <input
               value={key}
               onChange={e => {
@@ -225,12 +225,12 @@ export function CreateProjectDialog({ open, onClose }: Props) {
               style={{
                 ...inputStyle, textTransform: 'uppercase',
                 fontFamily: 'var(--cp-font-mono)', letterSpacing: '0.05em',
-                borderColor: (errors.key || isDuplicate) ? 'var(--ds-text-danger, #DC2626)' : border,
+                borderColor: (errors.key || isDuplicate) ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : border,
               }}
               onFocus={e => { if (!errors.key && !isDuplicate) focusIn(e); }}
               onBlur={e => { if (!errors.key && !isDuplicate) focusOut(e); }}
             />
-            {errors.key && <p style={{ fontSize: 12, color: 'var(--ds-text-danger, #DC2626)', marginTop: 4 }}>{errors.key}</p>}
+            {errors.key && <p style={{ fontSize: 12, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', marginTop: 4 }}>{errors.key}</p>}
             {!errors.key && <p style={{ fontSize: 11, color: textMuted, marginTop: 4 }}>2–6 uppercase letters. Used as issue prefix.</p>}
           </div>
 
@@ -366,11 +366,11 @@ export function CreateProjectDialog({ open, onClose }: Props) {
                   style={{
                     ...inputStyle, textTransform: 'uppercase',
                     fontFamily: 'var(--cp-font-mono)',
-                    borderColor: errors.jiraKey ? 'var(--ds-text-danger, #DC2626)' : border,
+                    borderColor: errors.jiraKey ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : border,
                   }}
                   onFocus={focusIn} onBlur={focusOut}
                 />
-                {errors.jiraKey && <p style={{ fontSize: 12, color: 'var(--ds-text-danger, #DC2626)', marginTop: 4 }}>{errors.jiraKey}</p>}
+                {errors.jiraKey && <p style={{ fontSize: 12, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', marginTop: 4 }}>{errors.jiraKey}</p>}
               </div>
             )}
           </div>

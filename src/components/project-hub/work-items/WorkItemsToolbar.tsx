@@ -221,7 +221,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
               style={{ color: 'var(--cp-blue)', border: '1px solid var(--cp-primary-20)' }}
             >
               {chip.label}: {chip.value}
-              <button onClick={chip.remove} className="hover:text-[var(--ds-text-danger,#DC2626)]"><CrossIconCore label="" style={{ color: 'var(--ds-text-danger, #DC2626)' }} /></button>
+              <button onClick={chip.remove} className="hover:text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]"><CrossIconCore label="" style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }} /></button>
             </span>
           ))}
           <button

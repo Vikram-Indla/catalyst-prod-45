@@ -13,7 +13,7 @@ function issueTypeToLevel(type: string): { level: number; name: string; color: s
     case 'Sub-task':
       return { level: 4, name: 'Sub-task', color: '#64748B', colorText: '#475569' };
     case 'QA Bug':
-      return { level: 3, name: 'QA Bug', color: '#DC2626', colorText: '#B91C1C' };
+      return { level: 3, name: 'QA Bug', color: 'var(--cp-danger, #DC2626)', colorText: '#B91C1C' };
     case 'Frontend':
       return { level: 3, name: 'Frontend', color: '#0891B2', colorText: '#0E7490' };
     case 'Backend':
@@ -21,7 +21,7 @@ function issueTypeToLevel(type: string): { level: number; name: string; color: s
     case 'Task':
       return { level: 3, name: 'Task', color: '#D97706', colorText: '#B45309' };
     case 'Production Incident':
-      return { level: 3, name: 'Incident', color: '#DC2626', colorText: '#B91C1C' };
+      return { level: 3, name: 'Incident', color: 'var(--cp-danger, #DC2626)', colorText: '#B91C1C' };
     case 'Change Request':
       return { level: 3, name: 'Change Req', color: '#EA580C', colorText: '#C2410C' };
     case 'Business Gap':

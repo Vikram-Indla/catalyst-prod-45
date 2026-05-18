@@ -287,7 +287,7 @@ export default function WikiSearchPage() {
                 {paginatedResults.map((r: any) => {
                   const conf = Math.round((r.ai_confidence ?? 0) * 100);
                   const fmtIcon = r.format === 'pdf'
-                    ? <FileDown size={14} style={{ color: 'var(--ds-text-danger, #DC2626)', flexShrink: 0 }} />
+                    ? <FileDown size={14} style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', flexShrink: 0 }} />
                     : r.format === 'video'
                     ? <Video size={14} style={{ color: 'var(--cp-purple-60, #7C3AED)', flexShrink: 0 }} />
                     : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)', flexShrink: 0 }} />;

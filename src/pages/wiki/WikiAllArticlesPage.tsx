@@ -97,7 +97,7 @@ export default function WikiAllArticlesPage() {
               <button key={a.key} onClick={() => { setBulkAction(a.key); if (a.key === 'archive') setShowConfirm(true); }} style={{
                 fontSize: 10, fontWeight: 650, padding: '4px 10px', borderRadius: 4,
                 border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)',
-                color: a.key === 'archive' ? 'var(--ds-text-danger, #DC2626)' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #334155)'), cursor: 'pointer',
+                color: a.key === 'archive' ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #334155)'), cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 4,
               }}>{a.icon} {a.label}</button>
             ))}
@@ -155,7 +155,7 @@ export default function WikiAllArticlesPage() {
               }}>Cancel</button>
               <button onClick={executeBulk} style={{
                 fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 6, border: 'none',
-                background: bulkAction === 'archive' ? 'var(--ds-text-danger, #DC2626)' : 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer',
+                background: bulkAction === 'archive' ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer',
               }}>Confirm</button>
             </div>
           </div>
@@ -200,7 +200,7 @@ export default function WikiAllArticlesPage() {
                     style={{ width: 14, height: 14, cursor: 'pointer', accentColor: 'var(--ds-text-brand, #2563EB)' }} />
                 </span>
                 <span onClick={() => navigate(`/wiki/${a.slug}`)}>
-                  {a.format === 'pdf' ? <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 4, background: isDark ? 'rgba(220,38,38,0.12)' : '#FEE2E2', color: 'var(--ds-text-danger, #DC2626)' }}>PDF</span> : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)' }} />}
+                  {a.format === 'pdf' ? <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 4, background: isDark ? 'rgba(220,38,38,0.12)' : '#FEE2E2', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>PDF</span> : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)' }} />}
                 </span>
                 <span onClick={() => navigate(`/wiki/${a.slug}`)} style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
                 <span style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)' }}>{a.domain_code}</span>

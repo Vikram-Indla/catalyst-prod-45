@@ -49,7 +49,7 @@ interface ExecutionSidebarProps {
 }
 
 const SEVERITY_COLORS: Record<string, string> = {
-  critical: 'var(--ds-text-danger, #DC2626)',
+  critical: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
   major: '#EA580C',
   minor: 'var(--ds-text-warning, #D97706)',
   trivial: 'var(--ds-text-success, #16A34A)',
@@ -57,7 +57,7 @@ const SEVERITY_COLORS: Record<string, string> = {
 
 const STEP_COLORS: Record<string, { text: string; bg: string; border: string }> = {
   passed:  { text: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', border: '#BBF7D0' },
-  failed:  { text: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)', border: '#FECACA' },
+  failed:  { text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', border: '#FECACA' },
   blocked: { text: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', border: '#FED7AA' },
   skipped: { text: 'var(--ds-text-subtle, #475569)', bg: 'var(--bg-1, #F8FAFC)', border: 'var(--bd-default, #E2E8F0)' },
   not_run: { text: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', border: 'var(--bd-default, #E2E8F0)' },

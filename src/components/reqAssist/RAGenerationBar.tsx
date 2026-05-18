@@ -32,7 +32,7 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
   const isFailed = ps === 'failed';
   const pct = epicCount > 0 ? 100 : (STAGE_PROGRESS[ps] ?? 0);
 
-  const barColor = isComplete ? 'var(--ds-text-success, #16A34A)' : isFailed ? 'var(--ds-text-danger, #DC2626)' : 'var(--ds-text-brand, #2563EB)';
+  const barColor = isComplete ? 'var(--ds-text-success, #16A34A)' : isFailed ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-brand, #2563EB)';
 
   let labelText = '';
   let labelColor = 'var(--ds-text-subtlest, #64748B)';
@@ -53,7 +53,7 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
     }
   } else if (isFailed) {
     labelText = 'Failed';
-    labelColor = 'var(--ds-text-danger, #DC2626)';
+    labelColor = 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
   }
   // intake + epicCount=0 → empty bar, show em-dash
 

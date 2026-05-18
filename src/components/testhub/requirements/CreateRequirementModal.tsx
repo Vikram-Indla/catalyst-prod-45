@@ -109,7 +109,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
 
   const inputStyle = (hasError?: boolean): React.CSSProperties => ({
     width: '100%', height: 44, padding: '0 14px',
-    border: `1.5px solid ${hasError ? 'var(--ds-text-danger, #DC2626)' : 'var(--cp-border, #E2E8F0)'}`,
+    border: `1.5px solid ${hasError ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--cp-border, #E2E8F0)'}`,
     borderRadius: 12, fontSize: 14,
     backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : undefined,
     color: isDark ? 'var(--ds-text, #EDEDED)' : undefined,
@@ -135,12 +135,12 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
         <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
           <div style={{ marginBottom: 20 }}>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 6 }}>
-              Title <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>*</span>
+              Title <span style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>*</span>
             </label>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g., User can login with email and password" style={inputStyle(!!errors.title)} />
             {errors.title && (
-              <p style={{ fontSize: 12, color: 'var(--ds-text-danger, #DC2626)', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <p style={{ fontSize: 12, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}>
                 <AlertCircle size={12} /> {errors.title}
               </p>
             )}

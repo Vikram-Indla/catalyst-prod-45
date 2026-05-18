@@ -65,7 +65,7 @@ export default function IncidentReportsPage() {
             <div className="grid grid-cols-3 gap-3 mb-6">
               <div className="p-3" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }}>
                 <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--ds-text-subtlest, #64748B)', marginBottom: 4 }}>Total Breaches</div>
-                <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--ds-text-danger, #DC2626)' }}>{breachedCount}</div>
+                <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{breachedCount}</div>
               </div>
               <div className="p-3" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }}>
                 <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--ds-text-subtlest, #64748B)', marginBottom: 4 }}>Breach Rate</div>
@@ -94,7 +94,7 @@ export default function IncidentReportsPage() {
           <div>
             <div className="flex items-center gap-2 mb-4">
               {[
-                { label: 'Open', color: 'var(--ds-text-danger, #DC2626)', count: incidents?.filter(i => i.status === 'open').length || 0 },
+                { label: 'Open', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', count: incidents?.filter(i => i.status === 'open').length || 0 },
                 { label: 'Triage', color: 'var(--ds-text-warning, #D97706)', count: incidents?.filter(i => i.status === 'triage').length || 0 },
                 { label: 'In Progress', color: 'var(--ds-text-brand, #2563EB)', count: incidents?.filter(i => i.status === 'in_progress').length || 0 },
                 { label: 'Resolved', color: 'var(--ds-text-success, #16A34A)', count: incidents?.filter(i => i.status === 'resolved').length || 0 },

@@ -11,7 +11,7 @@ interface SyncLegendProps {
 const LEGEND_ITEMS = [
   { color: 'var(--ds-text-success, #16A34A)', label: 'Synced' },
   { color: 'var(--ds-text-warning, #D97706)', label: 'Stale (>3 days)' },
-  { color: 'var(--ds-text-danger, #DC2626)', label: 'Conflict' },
+  { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Conflict' },
   { color: 'var(--ds-text-brand, #2563EB)', label: 'Syncing', pulse: true },
 ];
 

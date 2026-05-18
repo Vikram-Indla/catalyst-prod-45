@@ -298,8 +298,8 @@ export function NotionImportWizard() {
                 <div className="flex items-start gap-2.5 p-3 rounded-lg bg-[var(--ds-background-danger,#FEF2F2)] border border-[#FECACA]">
                   <CrossCircleIcon label="" size="small" />
                   <div>
-                    <p className="text-[13px] font-semibold text-[var(--ds-text-danger,#DC2626)]">Connection failed</p>
-                    <p className="text-[12px] text-[var(--ds-text-danger,#DC2626)]/80 mt-0.5">{fetchError}</p>
+                    <p className="text-[13px] font-semibold text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]">Connection failed</p>
+                    <p className="text-[12px] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]/80 mt-0.5">{fetchError}</p>
                   </div>
                 </div>
               )}
@@ -406,7 +406,7 @@ export function NotionImportWizard() {
               {mapError && !summaryMapped && (
                 <div className="flex items-start gap-2.5 p-3 rounded-lg bg-[var(--ds-background-danger,#FEF2F2)] border border-[#FECACA]">
                   <AlertIcon label="" size="small" />
-                  <p className="text-[13px] text-[var(--ds-text-danger,#DC2626)]">Map at least one column to <strong>Summary</strong> to proceed.</p>
+                  <p className="text-[13px] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]">Map at least one column to <strong>Summary</strong> to proceed.</p>
                 </div>
               )}
             </div>
@@ -478,7 +478,7 @@ export function NotionImportWizard() {
                       <span className="px-2.5 py-1 rounded-full bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtlest,#64748B)]">{importResult.skipped} skipped</span>
                     )}
                     {importResult.failed > 0 && (
-                      <span className="px-2.5 py-1 rounded-full bg-[#FEE2E2] text-[var(--ds-text-danger,#DC2626)]">{importResult.failed} failed</span>
+                      <span className="px-2.5 py-1 rounded-full bg-[#FEE2E2] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]">{importResult.failed} failed</span>
                     )}
                   </div>
                   <Button appearance="default" onClick={() => navigate('/producthub/backlog')} iconAfter={LinkExternalIcon}>

@@ -25,7 +25,7 @@ function getPriorityLabel(score: number | null): { label: string; color: string 
   if (score >= 4.0) return { label: 'High', color: 'var(--quality-high, #059669)' };
   if (score >= 3.0) return { label: 'Medium', color: 'var(--ds-text-brand, #2563EB)' };
   if (score >= 2.0) return { label: 'Low', color: 'var(--ds-text-warning, #D97706)' };
-  return { label: 'Rejected', color: 'var(--ds-text-danger, #DC2626)' };
+  return { label: 'Rejected', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' };
 }
 
 function getDateColor(dateStr: string | null): string {

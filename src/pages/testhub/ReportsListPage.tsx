@@ -39,7 +39,7 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; ic
   cycle_summary: { label: 'Cycle Summary', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', icon: BarChart3 },
   plan_summary: { label: 'Plan Summary', color: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', icon: FileText },
   coverage: { label: 'Coverage', color: '#0891B2', bg: '#ECFEFF', icon: Shield },
-  defect: { label: 'Defect Report', color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)', icon: AlertCircle },
+  defect: { label: 'Defect Report', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', icon: AlertCircle },
   trend: { label: 'Trend Analysis', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: TrendingUp },
   custom: { label: 'Custom', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: FileBarChart },
 };
@@ -48,7 +48,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
   draft: { label: 'Draft', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
   generating: { label: 'Generating', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB' },
   ready: { label: 'Ready', color: 'var(--quality-high, #059669)', bg: '#ECFDF5' },
-  failed: { label: 'Failed', color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)' },
+  failed: { label: 'Failed', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)' },
   archived: { label: 'Archived', color: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F8FAFC)' },
 };
 
@@ -255,7 +255,7 @@ export default function ReportsListPage() {
                       </button>
                     )}
                     <button onClick={(e) => deleteReport(report.id, e)}
-                      style={{ width: 36, height: 50, border: '1px solid #FECACA', borderRadius: 8, backgroundColor: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #DC2626)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      style={{ width: 36, height: 50, border: '1px solid #FECACA', borderRadius: 8, backgroundColor: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Trash2 size={16} />
                     </button>
                   </div>

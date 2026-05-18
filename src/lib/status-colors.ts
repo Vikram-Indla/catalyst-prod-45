@@ -47,7 +47,7 @@ export function getStatusLozengeColors(status: string | null | undefined): { bg:
 // ── Priority colors (consistent across all modules) ──────────────────────────
 
 export const PRIORITY_COLORS = {
-  critical: { hex: '#DC2626', bg: '#FEF2F2', text: '#991B1B' },
+  critical: { hex: 'var(--cp-danger, #DC2626)', bg: '#FEF2F2', text: '#991B1B' },
   high:     { hex: '#F97316', bg: '#FFF7ED', text: '#9A3412' },
   medium:   { hex: '#EAB308', bg: '#FEFCE8', text: '#854D0E' },
   low:      { hex: '#22C55E', bg: '#F0FDF4', text: '#166534' },

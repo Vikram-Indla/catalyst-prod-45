@@ -46,7 +46,7 @@ export function priorityDotColor(p: string) {
 // ── Priority border color for board/ring cards (D-R7) ──
 export function priorityBorderColor(p: string): string {
   const l = (p || '').toLowerCase();
-  if (l === 'highest' || l === 'critical' || l === 'high') return 'var(--ds-text-danger, #DC2626)';
+  if (l === 'highest' || l === 'critical' || l === 'high') return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
   if (l === 'medium') return 'var(--ds-text-warning, #D97706)';
   return 'var(--ds-text-subtlest, #94A3B8)';
 }

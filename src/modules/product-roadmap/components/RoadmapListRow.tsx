@@ -24,7 +24,7 @@ const AVATAR_COLORS = [
   'var(--ds-text-warning, #D97706)', // amber
   'var(--ds-text-success, #16A34A)', // green
   '#0891B2', // cyan
-  'var(--ds-text-danger, #DC2626)', // red
+  'var(--ds-text-danger, var(--cp-danger, #DC2626))', // red
   'var(--ds-text-subtle, #334155)', // slate
 ];
 

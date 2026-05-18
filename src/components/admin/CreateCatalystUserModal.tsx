@@ -117,19 +117,19 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
 
           {/* Full Name */}
           <div style={{ marginBottom: '12px' }}>
-            <label style={labelStyle}>Full Name <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>*</span></label>
+            <label style={labelStyle}>Full Name <span style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>*</span></label>
             <Textfield
               value={displayName}
               onChange={e => { setDisplayName((e.target as HTMLInputElement).value); setErrors(p => ({ ...p, displayName: '' })); }}
               placeholder="e.g. Dr. Ahmed Al-Rashid"
               isInvalid={!!errors.displayName}
             />
-            {errors.displayName && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, #DC2626)', marginTop: '2px', display: 'block' }}>{errors.displayName}</span>}
+            {errors.displayName && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', marginTop: '2px', display: 'block' }}>{errors.displayName}</span>}
           </div>
 
           {/* Email */}
           <div style={{ marginBottom: '12px' }}>
-            <label style={labelStyle}>Email <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>*</span></label>
+            <label style={labelStyle}>Email <span style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>*</span></label>
             <Textfield
               type="email"
               value={email}
@@ -137,12 +137,12 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
               placeholder="user@moi.gov.sa"
               isInvalid={!!errors.email}
             />
-            {errors.email && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, #DC2626)', marginTop: '2px', display: 'block' }}>{errors.email}</span>}
+            {errors.email && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', marginTop: '2px', display: 'block' }}>{errors.email}</span>}
           </div>
 
           {/* Password */}
           <div style={{ marginBottom: '12px' }}>
-            <label style={labelStyle}>Password <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>*</span></label>
+            <label style={labelStyle}>Password <span style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>*</span></label>
             <Textfield
               type={showPassword ? 'text' : 'password'}
               value={password}
@@ -162,7 +162,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             <span style={{ fontSize: '10px', color: 'var(--ds-text-subtlest, #94A3B8)', marginTop: '2px', display: 'block' }}>
               Min 8 characters. Stored securely in Catalyst (bcrypt).
             </span>
-            {errors.password && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, #DC2626)', marginTop: '1px', display: 'block' }}>{errors.password}</span>}
+            {errors.password && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', marginTop: '1px', display: 'block' }}>{errors.password}</span>}
           </div>
 
           {/* Role + Department */}

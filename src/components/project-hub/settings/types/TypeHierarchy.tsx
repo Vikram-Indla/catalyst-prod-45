@@ -8,7 +8,7 @@ const TYPE_CONFIG: Record<string, { color: string; icon: string }> = {
   Epic: { color: 'var(--cp-purple-60, #7C3AED)', icon: 'Zap' },
   Feature: { color: 'var(--ds-text-brand, #2563EB)', icon: 'Layers' },
   Story: { color: 'var(--cp-teal-60, #0D9488)', icon: 'Bookmark' },
-  Bug: { color: 'var(--ds-text-danger, #DC2626)', icon: 'Bug' },
+  Bug: { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', icon: 'Bug' },
   Task: { color: 'var(--ds-text-warning, #D97706)', icon: 'CheckSquare' },
   Subtask: { color: 'var(--ds-text-subtlest, #64748B)', icon: 'CornerDownRight' },
 };

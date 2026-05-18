@@ -38,11 +38,11 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       value: `${avgProgress}%`,
       sub: `${progressDelta >= 0 ? '↑' : '↓'} ${Math.abs(progressDelta)}% vs target`,
       icon: progressDelta >= 0 ? TrendingUp : TrendingDown,
-      iconColor: progressDelta >= 0 ? 'var(--cp-teal-60, #0D9488)' : 'var(--ds-text-danger, #DC2626)',
+      iconColor: progressDelta >= 0 ? 'var(--cp-teal-60, #0D9488)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
       iconBg: isDark
         ? (progressDelta >= 0 ? 'rgba(13,148,136,0.12)' : 'rgba(220,38,38,0.12)')
         : (progressDelta >= 0 ? '#F0FDFA' : 'var(--ds-background-danger, #FEF2F2)'),
-      subColor: progressDelta >= 0 ? 'var(--cp-teal-60, #0D9488)' : 'var(--ds-text-danger, #DC2626)',
+      subColor: progressDelta >= 0 ? 'var(--cp-teal-60, #0D9488)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
       cardBg: undefined,
     },
     {
@@ -68,11 +68,11 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       value: atRiskCount,
       sub: atRiskCount > 0 ? 'Needs attention' : 'All healthy',
       icon: AlertTriangle,
-      iconColor: atRiskCount > 0 ? 'var(--ds-text-danger, #DC2626)' : 'var(--quality-high, #059669)',
+      iconColor: atRiskCount > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--quality-high, #059669)',
       iconBg: isDark
         ? (atRiskCount > 0 ? 'rgba(220,38,38,0.12)' : 'rgba(5,150,105,0.12)')
         : (atRiskCount > 0 ? 'var(--ds-background-danger, #FEF2F2)' : '#ECFDF5'),
-      valueColor: atRiskCount > 0 ? 'var(--ds-text-danger, #DC2626)' : undefined,
+      valueColor: atRiskCount > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : undefined,
       cardBg: undefined,
     },
   ];

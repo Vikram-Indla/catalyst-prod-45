@@ -111,8 +111,8 @@ export default function CommitteeQueuePage() {
                 </div>
                 <div className="px-3">
                   {isMajor && (
-                    <span className="inline-flex items-center gap-1" style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-text-danger, #DC2626)' }}>
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--ds-text-danger, #DC2626)', display: 'inline-block' }} />
+                    <span className="inline-flex items-center gap-1" style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', display: 'inline-block' }} />
                       MAJ
                     </span>
                   )}

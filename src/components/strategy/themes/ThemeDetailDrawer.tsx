@@ -378,7 +378,7 @@ function FinancialsTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
 // ═══ MILESTONES ═══
 const MILESTONE_CATEGORIES = ['discover', 'define', 'design', 'deliver'] as const;
 const MILESTONE_STATES = ['not_started', 'in_progress', 'completed', 'missed'] as const;
-const STATE_COLORS: Record<string, string> = { not_started: 'var(--ds-text-subtlest, #94A3B8)', in_progress: 'var(--ds-text-brand, #2563EB)', completed: 'var(--ds-text-success, #16A34A)', missed: 'var(--ds-text-danger, #DC2626)' };
+const STATE_COLORS: Record<string, string> = { not_started: 'var(--ds-text-subtlest, #94A3B8)', in_progress: 'var(--ds-text-brand, #2563EB)', completed: 'var(--ds-text-success, #16A34A)', missed: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' };
 
 function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?: boolean }) {
   const d = dk(isDark);
@@ -466,7 +466,7 @@ function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
               <span className="shrink-0 rounded px-1.5 py-0.5" style={{ fontSize: 9, background: 'var(--cp-bg-sunken, #F1F5F9)', color: d.t2 }}>{m.category}</span>
               <span className="shrink-0" style={{ fontSize: 10, color: d.t3 }}>{m.state.replace(/_/g, ' ')}</span>
               <button onClick={() => startEdit(m)} className="opacity-0 group-hover:opacity-100 p-0.5" style={{ border: 'none', background: 'none', cursor: 'pointer' }}><Pencil size={12} color={d.t2} /></button>
-              <button onClick={() => deleteMilestone.mutate({ id: m.id, themeId: theme.id })} className="opacity-0 group-hover:opacity-100 p-0.5" style={{ border: 'none', background: 'none', cursor: 'pointer' }}><Trash2 size={12} color="var(--ds-text-danger, #DC2626)" /></button>
+              <button onClick={() => deleteMilestone.mutate({ id: m.id, themeId: theme.id })} className="opacity-0 group-hover:opacity-100 p-0.5" style={{ border: 'none', background: 'none', cursor: 'pointer' }}><Trash2 size={12} color="var(--ds-text-danger, var(--cp-danger, #DC2626))" /></button>
             </div>
           ))}
         </div>

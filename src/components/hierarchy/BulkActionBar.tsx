@@ -101,7 +101,7 @@ export function BulkActionBar({
           <span style={{ fontSize: 12, color: 'var(--ds-border-danger, #FCA5A5)' }}>Delete {selectedCount} items?</span>
           <button onClick={() => { onBulkDelete(); setConfirmDelete(false); }} style={{
             fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 4,
-            background: 'var(--ds-text-danger, #DC2626)', color: 'var(--ds-surface, #FFFFFF)', border: 'none', cursor: 'pointer',
+            background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', color: 'var(--ds-surface, #FFFFFF)', border: 'none', cursor: 'pointer',
           }}>Yes, delete</button>
           <button onClick={() => setConfirmDelete(false)} style={{
             fontSize: 11, padding: '4px 10px', borderRadius: 4,

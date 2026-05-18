@@ -32,7 +32,7 @@ const STATUS_GROUPS = [
     items: [
       { value: 'in_support', label: 'In Support', color: 'var(--cp-purple-60, #7C3AED)' },
       { value: 'done', label: 'Done', color: 'var(--ds-text-success, #16A34A)' },
-      { value: 'cancelled', label: 'Cancelled', color: 'var(--ds-text-danger, #DC2626)' },
+      { value: 'cancelled', label: 'Cancelled', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
     ],
   },
 ];

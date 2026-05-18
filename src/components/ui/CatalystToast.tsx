@@ -24,7 +24,7 @@ const toastConfig = {
   },
   error: {
     icon: XCircle,
-    iconColor: 'var(--ds-text-danger, #DC2626)',
+    iconColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
     bgColor: 'var(--ds-background-danger, #FEF2F2)',
     borderColor: '#FECACA',
     titleColor: 'var(--ds-text-danger, #991B1B)',

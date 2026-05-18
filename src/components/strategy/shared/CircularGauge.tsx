@@ -15,7 +15,7 @@ interface CircularGaugeProps {
 function getGaugeColor(value: number): string {
   if (value >= 70) return 'var(--exec-blue-700, #1E40AF)';
   if (value >= 40) return 'var(--exec-signal-amber, #D97706)';
-  return 'var(--exec-signal-red, #DC2626)';
+  return 'var(--exec-signal-red, var(--cp-danger, #DC2626))';
 }
 
 export function CircularGauge({ value, size = 100, strokeWidth = 10, color, label, animated = true, className = '' }: CircularGaugeProps) {

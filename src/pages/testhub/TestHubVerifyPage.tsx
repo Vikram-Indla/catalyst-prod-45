@@ -448,7 +448,7 @@ function computeModuleScore(checks: VCheck[], checkIds: string[]): { passed: num
 function barColor(pct: number): string {
   if (pct >= 100) return 'var(--ds-text-success, #16A34A)';
   if (pct >= 50) return 'var(--ds-text-warning, #D97706)';
-  return 'var(--ds-text-danger, #DC2626)';
+  return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
 }
 
 function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadingCount: number }) {
@@ -564,7 +564,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
           width: 120,
           height: 120,
           borderRadius: '50%',
-          border: `3px solid ${overallPct >= 90 ? 'var(--ds-text-success, #16A34A)' : overallPct >= 70 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #DC2626)'}`,
+          border: `3px solid ${overallPct >= 90 ? 'var(--ds-text-success, #16A34A)' : overallPct >= 70 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))'}`,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',

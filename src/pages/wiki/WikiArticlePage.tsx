@@ -62,7 +62,7 @@ const Sk = ({ w, h, style, isDark }: { w: string | number; h: number; style?: Re
 const MODULE_COLORS: Record<string, { bg: string; color: string; label: string }> = {
   task: { bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)', label: 'TaskHub' },
   product: { bg: '#F5F3FF', color: 'var(--cp-purple-60, #7C3AED)', label: 'ProductHub' },
-  incident: { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #DC2626)', label: 'IncidentHub' },
+  incident: { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'IncidentHub' },
   release: { bg: '#ECFDF5', color: 'var(--quality-high, #059669)', label: 'ReleaseHub' },
   requirement: { bg: '#FFFBEB', color: 'var(--ds-text-warning, #D97706)', label: 'Requirements' },
   wiki: { bg: '#F0F9FF', color: '#0284C7', label: 'WikiHub' },
@@ -181,7 +181,7 @@ function ExportDropdown({ onClose }: { onClose: () => void }) {
         onMouseEnter={e => e.currentTarget.style.background = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--ds-surface-sunken, #F8FAFC)'}
         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
       >
-        <Download size={13} style={{ color: 'var(--ds-text-danger, #DC2626)' }} /> Export as PDF
+        <Download size={13} style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }} /> Export as PDF
       </button>
       <button onClick={handlePrint} style={{
         width: '100%', padding: '8px 14px', fontSize: 12, fontWeight: 500,
@@ -374,7 +374,7 @@ export default function WikiArticlePage() {
   const helpScore = (page as any).helpfulness_score ?? 0;
   const helpVotes = (page as any).helpfulness_votes ?? 0;
   const formatIcon = (page as any).format === 'pdf'
-    ? <FileDown size={14} style={{ color: 'var(--ds-text-danger, #DC2626)' }} />
+    ? <FileDown size={14} style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }} />
     : (page as any).format === 'video'
     ? <Video size={14} style={{ color: 'var(--cp-purple-60, #7C3AED)' }} />
     : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)' }} />;
@@ -402,7 +402,7 @@ export default function WikiArticlePage() {
       <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: info.donePercent >= 80 ? 'var(--ds-surface, #FFFFFF)' : 'var(--ds-surface, #FFFFFF)' }}>{info.donePercent}%</span>
     ) : null, show: info.donePercent != null },
     { label: 'Open Defects', value: info.openDefects != null ? (
-      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: info.openDefects > 0 ? 'var(--ds-text-danger, #DC2626)' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)') }}>{info.openDefects}</span>
+      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: info.openDefects > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)') }}>{info.openDefects}</span>
     ) : null, show: info.openDefects != null },
     { label: 'Sprint', value: info.currentSprint, show: !!info.currentSprint },
     { label: 'Owner', value: info.owner ? <span style={{ fontWeight: 600 }}>{info.owner}</span> : null, show: !!info.owner },
@@ -635,7 +635,7 @@ export default function WikiArticlePage() {
                 }}><ThumbsUp size={13} /> Yes</button>
                 <button onClick={() => handleFeedback(false)} style={{
                   fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 6,
-                  border: '1px solid rgba(220,38,38,0.3)', background: isDark ? 'rgba(220,38,38,0.12)' : 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #DC2626)',
+                  border: '1px solid rgba(220,38,38,0.3)', background: isDark ? 'rgba(220,38,38,0.12)' : 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
                   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
                 }}><ThumbsDown size={13} /> No</button>
                 <div style={{ marginLeft: 8, display: 'flex', alignItems: 'center', gap: 6 }}>

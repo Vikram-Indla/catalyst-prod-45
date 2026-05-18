@@ -21,7 +21,7 @@ export const RH = {
   success: 'var(--ds-text-success, #16A34A)',
   successBg: 'var(--cp-lozenge-green-bg, #1B7F37)',
   warning: 'var(--ds-text-warning, #D97706)',
-  danger: 'var(--ds-text-danger, #DC2626)',
+  danger: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
   dangerBg: 'var(--ds-background-danger, #FEF2F2)',
 
   // AI = Blue, NOT purple
@@ -97,7 +97,7 @@ export const CHG_STATUS_ORDER: string[] = ['new', 'in_uat', 'in_beta', 'in_produ
 export const RISK_BADGE: Record<string, { bg: string; text: string }> = {
   standard: { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' },
   low: { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' },
-  high: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #DC2626)' },
+  high: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
   emergency: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)' },
   critical: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)' },
   medium: { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' },
@@ -127,7 +127,7 @@ export const SIGNOFF_LOZENGE: Record<string, LozengeStyle> = {
 // Section accents for change timeline
 export const SECTION_ACCENT: Record<string, string> = {
   past: 'var(--ds-text-subtlest, #94A3B8)',
-  today: 'var(--ds-text-danger, #DC2626)',
+  today: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
   this_week: 'var(--ds-text-brand, #2563EB)',
   upcoming: 'var(--cp-teal-60, #0D9488)',
   future: 'var(--ds-text-success, #16A34A)',

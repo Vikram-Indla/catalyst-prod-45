@@ -40,7 +40,7 @@ const STATUS_PILL_STYLES: Record<string, { color: string; bg: string; border: st
   implementation_review: { color: '#F97316', bg: '#FFF7ED', border: 'rgba(249,115,22,0.2)' },
   in_support: { color: '#10B981', bg: '#ECFDF5', border: 'rgba(16,185,129,0.2)' },
   done: { color: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', border: 'rgba(22,163,74,0.2)' },
-  cancelled: { color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)', border: 'rgba(220,38,38,0.2)' },
+  cancelled: { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', border: 'rgba(220,38,38,0.2)' },
 };
 
 const DEFAULT_STATUS_PILL = { color: '#71717A', bg: '#F4F4F5', border: 'rgba(113,113,122,0.2)' };

@@ -288,9 +288,9 @@ export default function ReqAssistGenerate() {
           {/* Qualify fail */}
           {qualifyResult && !qualifyResult.qualified && (
             <div style={{ marginTop: 12, padding: '14px 16px', background: 'var(--ds-background-danger, #FEF2F2)', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6, display: 'flex', gap: 10 }}>
-              <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={12} color="var(--ds-text-danger, #DC2626)" /></div>
+              <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={12} color="var(--ds-text-danger, var(--cp-danger, #DC2626))" /></div>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-danger, #DC2626)', fontFamily: 'var(--cp-font-body)' }}>✗ Not Qualified</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontFamily: 'var(--cp-font-body)' }}>✗ Not Qualified</div>
                 {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: 'var(--ds-text-danger, #991B1B)', margin: '4px 0 0', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>• {r}</p>)}
               </div>
             </div>
@@ -313,7 +313,7 @@ export default function ReqAssistGenerate() {
           {/* Error */}
           {genError && (
             <div style={{ marginTop: 12, padding: '14px 16px', background: 'var(--ds-background-danger, #FEF2F2)', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-danger, #DC2626)', fontFamily: 'var(--cp-font-body)' }}>Generation Error</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontFamily: 'var(--cp-font-body)' }}>Generation Error</div>
               <p style={{ fontSize: 12, color: 'var(--ds-text-danger, #991B1B)', margin: '4px 0 0', fontFamily: 'var(--cp-font-body)' }}>{sanitiseError(genError)}</p>
             </div>
           )}
@@ -382,8 +382,8 @@ export default function ReqAssistGenerate() {
             {/* STATE BANNERS */}
             {brdState === 'generated' && (
               <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: 'var(--ds-background-danger, #FEF2F2)', border: '0.75px solid #FECACA', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <AlertTriangle size={15} color="var(--ds-text-danger, #DC2626)" style={{ flexShrink: 0 }} />
-                <span style={{ fontSize: 13, color: 'var(--ds-text-danger, #DC2626)', fontFamily: 'var(--cp-font-body)' }}>
+                <AlertTriangle size={15} color="var(--ds-text-danger, var(--cp-danger, #DC2626))" style={{ flexShrink: 0 }} />
+                <span style={{ fontSize: 13, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontFamily: 'var(--cp-font-body)' }}>
                   This BRD has not been saved yet. Save to Library to enable Epics generation and WikiHub sync.
                 </span>
               </div>
@@ -514,7 +514,7 @@ export default function ReqAssistGenerate() {
               </BtnPrimary>
               <button onClick={() => setOverwriteConfirmOpen(true)} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
-                border: '0.75px solid #DC2626', borderRadius: 6, background: 'transparent', color: 'var(--ds-text-danger, #DC2626)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
+                border: '0.75px solid var(--cp-danger, #DC2626)', borderRadius: 6, background: 'transparent', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>Overwrite</button>
               <BtnGhost onClick={() => { setDupModalOpen(false); setDuplicateDoc(null); }}>Cancel</BtnGhost>
             </div>
@@ -542,7 +542,7 @@ export default function ReqAssistGenerate() {
                 } catch (err: any) { setGenError(err.message); } finally { setGenerating(false); setOverwriteConfirmOpen(false); }
               }} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
-                border: 'none', borderRadius: 6, background: 'var(--ds-text-danger, #DC2626)', color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
+                border: 'none', borderRadius: 6, background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>Yes, Overwrite</button>
               <BtnGhost onClick={() => setOverwriteConfirmOpen(false)}>Go Back</BtnGhost>
             </div>
@@ -635,8 +635,8 @@ function BtnDanger({ children, ...props }: React.ButtonHTMLAttributes<HTMLButton
   return (
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
-      border: '0.75px solid #DC2626', borderRadius: 6, cursor: 'pointer',
-      background: 'transparent', color: 'var(--ds-text-danger, #DC2626)', fontFamily: 'var(--cp-font-body)',
+      border: '0.75px solid var(--cp-danger, #DC2626)', borderRadius: 6, cursor: 'pointer',
+      background: 'transparent', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontFamily: 'var(--cp-font-body)',
       ...props.style,
     }}>{children}</button>
   );

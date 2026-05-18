@@ -190,7 +190,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
 }
 
 /* ── Avatar color palette (no purple/yellow) ── */
-const AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, #2563EB)','var(--ds-text-danger, #DC2626)','var(--ds-text-success, #16A34A)','var(--ds-text-subtlest, #64748B)','#0284C7','var(--quality-high, #059669)','#BE123C','var(--ds-background-brand-bold-hovered, #1D4ED8)','#0F766E'];
+const AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, #2563EB)','var(--ds-text-danger, var(--cp-danger, #DC2626))','var(--ds-text-success, #16A34A)','var(--ds-text-subtlest, #64748B)','#0284C7','var(--quality-high, #059669)','#BE123C','var(--ds-background-brand-bold-hovered, #1D4ED8)','#0F766E'];
 function getAvatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -271,7 +271,7 @@ function DueDateCell({ date }: { date?: string }) {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const dDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
   let color = 'var(--fg-1)';
-  if (dDate < today) color = 'var(--ds-text-danger, #DC2626)';
+  if (dDate < today) color = 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
   else if (dDate.getTime() === today.getTime()) color = '#0284C7';
   return (
     <span style={{ fontSize: 12, color }}>
@@ -283,7 +283,7 @@ function DueDateCell({ date }: { date?: string }) {
 /* ── Type colors ── */
 const TYPE_COLORS: Record<string, string> = {
   'Epic': 'var(--ds-text-brand, #2563EB)', 'Feature': 'var(--cp-teal-60, #0D9488)', 'Story': 'var(--ds-text-success, #16A34A)', 'Sub-task': 'var(--ds-text-subtlest, #64748B)',
-  'Task': 'var(--ds-text-subtlest, #64748B)', 'Bug': 'var(--ds-text-danger, #DC2626)',
+  'Task': 'var(--ds-text-subtlest, #64748B)', 'Bug': 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
 };
 
 /* ── Parent cell (chip style matching ParentEpicChip) ── */

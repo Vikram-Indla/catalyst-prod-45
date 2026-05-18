@@ -196,7 +196,7 @@ export default function WikiSubscriptionsPage() {
             <span style={{ fontSize: 9, fontWeight: 650, padding: '1px 5px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F1F5F9)', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #64748B)' }}>{a.domain_code}</span>
             <button
               onClick={() => toggleSub.mutate({ entityType: 'article', entityId: a.id })}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: 'var(--ds-text-danger, #DC2626)', fontWeight: 500 }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', fontWeight: 500 }}
             >
               Unsubscribe
             </button>

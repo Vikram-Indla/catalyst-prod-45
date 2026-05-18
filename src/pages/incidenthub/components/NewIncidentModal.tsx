@@ -67,7 +67,7 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
         <DialogHeader className="px-6 pt-5 pb-3" style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
           <DialogTitle className="flex items-center gap-2" style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700 }}>
             <div className="flex items-center justify-center rounded" style={{ width: 28, height: 28, backgroundColor: '#FEE2E2' }}>
-              <AlertTriangle size={14} style={{ color: 'var(--ds-text-danger, #DC2626)' }} />
+              <AlertTriangle size={14} style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }} />
             </div>
             New Incident
           </DialogTitle>

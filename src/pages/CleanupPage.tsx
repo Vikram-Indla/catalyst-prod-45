@@ -140,7 +140,7 @@ function StatusLozenge({ value }: { value: string }) {
 
 // ── Helpers ──────────────────────────────────────
 function daysColor(d: number): string {
-  if (d > 90) return 'var(--ds-text-danger, #DC2626)';
+  if (d > 90) return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
   if (d >= 60) return '#92400E';
   return 'var(--ds-text-subtlest, #64748B)';
 }
@@ -967,13 +967,13 @@ export default function CleanupPage() {
                   className="disabled:opacity-100"
                   style={{
                     height: 32, fontSize: 12, fontWeight: 700,
-                    background: selected.size > 0 ? 'var(--ds-text-danger, #DC2626)' : 'var(--ds-surface-sunken, #F1F5F9)',
+                    background: selected.size > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-surface-sunken, #F1F5F9)',
                     color: selected.size > 0 ? 'var(--ds-surface, #ffffff)' : 'var(--ds-text-subtlest, #94A3B8)',
                     border: selected.size > 0 ? 'none' : '1px solid #E2E8F0',
                     cursor: selected.size === 0 ? 'not-allowed' : 'pointer',
                   }}
                   onMouseEnter={e => { if (selected.size > 0) e.currentTarget.style.background = '#B91C1C'; }}
-                  onMouseLeave={e => { if (selected.size > 0) e.currentTarget.style.background = 'var(--ds-text-danger, #DC2626)'; }}
+                  onMouseLeave={e => { if (selected.size > 0) e.currentTarget.style.background = 'var(--ds-text-danger, var(--cp-danger, #DC2626))'; }}
                 >
                   Force Close ({selected.size})
                 </Button>
@@ -1140,7 +1140,7 @@ export default function CleanupPage() {
                                 {(() => {
                                   const name = item.reporter_name || 'Unknown';
                                   const ini = initials(name);
-                                  const clr = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, #DC2626)', '#DB2777'][ini.charCodeAt(0) % 5];
+                                  const clr = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#DB2777'][ini.charCodeAt(0) % 5];
                                   return (
                                     <>
                                       <div style={{
@@ -1168,7 +1168,7 @@ export default function CleanupPage() {
                                 {(() => {
                                   const name = item.reporter_name || 'Unknown';
                                   const ini = initials(name);
-                                  const clr = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, #DC2626)', '#DB2777'][ini.charCodeAt(0) % 5];
+                                  const clr = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#DB2777'][ini.charCodeAt(0) % 5];
                                   return (
                                     <>
                                       <div style={{
@@ -1300,11 +1300,11 @@ export default function CleanupPage() {
                 <Button
                   style={{
                     height: 36, fontSize: 14, fontWeight: 700,
-                    background: 'var(--ds-text-danger, #DC2626)', color: 'var(--ds-surface, #ffffff)', border: 'none',
+                    background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', color: 'var(--ds-surface, #ffffff)', border: 'none',
                   }}
                   onClick={() => setShowForceCloseDialog(true)}
                   onMouseEnter={e => (e.currentTarget.style.background = '#B91C1C')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-text-danger, #DC2626)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-text-danger, var(--cp-danger, #DC2626))')}
                 >
                   Force Close (bypass)
                 </Button>
@@ -1534,11 +1534,11 @@ export default function CleanupPage() {
                 onClick={handleForceClose}
                 style={{
                   height: 36, padding: '0 24px', borderRadius: 6,
-                  background: 'var(--ds-text-danger, #DC2626)', border: 'none',
+                  background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', border: 'none',
                   color: 'var(--ds-surface, #ffffff)', fontSize: 14, fontWeight: 700, cursor: 'pointer',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = '#B91C1C')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-text-danger, #DC2626)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-text-danger, var(--cp-danger, #DC2626))')}
               >
                 Close {selected.size} item{selected.size !== 1 ? 's' : ''}
               </button>
