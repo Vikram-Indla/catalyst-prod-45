@@ -66,7 +66,7 @@ export default function WikiVerificationPage() {
         </div>
         <button onClick={handleRefreshFreshness} disabled={refreshing} style={{
           fontSize: 11, fontWeight: 650, padding: '6px 14px', borderRadius: 6,
-          border: `0.75px solid ${isDark ? 'var(--ds-border-bold, #454545)' : 'rgba(0,0,0,0.12)'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
+          border: `0.75px solid ${isDark ? 'var(--ds-border-bold, #454545)' : 'rgba(0,0,0,0.12)'}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
           cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
           opacity: refreshing ? 0.6 : 1,
         }}>
@@ -75,10 +75,10 @@ export default function WikiVerificationPage() {
         </button>
       </div>
 
-      <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', overflow: 'hidden' }}>
+      <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', overflow: 'hidden' }}>
         <div style={{
           display: 'grid', gridTemplateColumns: '1fr 100px 120px 80px 100px 180px',
-          background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '0 16px', height: 50, alignItems: 'center',
+          background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '0 16px', height: 50, alignItems: 'center',
           fontFamily: 'var(--cp-font-heading)', fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
           color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
         }}>
@@ -127,7 +127,7 @@ export default function WikiVerificationPage() {
                   }}><ShieldCheck size={11} /> Verify</button>
                   <button onClick={() => handleRequestChanges(a.id)} style={{
                     fontSize: 10, fontWeight: 650, padding: '4px 10px', borderRadius: 4,
-                    border: `0.75px solid ${isDark ? 'var(--ds-border-bold, #454545)' : 'rgba(0,0,0,0.12)'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
+                    border: `0.75px solid ${isDark ? 'var(--ds-border-bold, #454545)' : 'rgba(0,0,0,0.12)'}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
                     cursor: 'pointer',
                   }}>Request Changes</button>
                 </div>

@@ -193,7 +193,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8,
           padding: '8px 12px',
-          background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-1)', borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)',
+          background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-1)', borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)',
         }}>
           <button onClick={e => { e.stopPropagation(); onSettings(); }} style={{
             display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 10px',

@@ -130,7 +130,7 @@ export function WikiUploadWizard({ open, onClose }: Props) {
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
       <div style={{
-        width: 640, maxHeight: '85vh', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated)',
+        width: 640, maxHeight: '85vh', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated)',
         borderRadius: 12, boxShadow: isDark ? '0 16px 48px rgba(0,0,0,0.4)' : 'var(--cp-shadow-overlay)',
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
         border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border-default)',
@@ -163,7 +163,7 @@ export function WikiUploadWizard({ open, onClose }: Props) {
                 style={{
                   border: isDark ? '2px dashed #2E2E2E' : '2px dashed var(--cp-border-default)', borderRadius: 6,
                   padding: 40, textAlign: 'center', cursor: 'pointer',
-                  background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-surface)', marginBottom: 16,
+                  background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-surface)', marginBottom: 16,
                 }}
                 onClick={() => document.getElementById('wiki-file-input')?.click()}
               >

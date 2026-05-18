@@ -265,7 +265,7 @@ export default function AllReleasesPage() {
                   <tr key={r.id} onClick={() => setSelectedRelease(r)}
                     className="cursor-pointer"
                     style={{ height: 50, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', transition: 'background 120ms', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}
-                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
+                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'rgba(15,23,42,0.04)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))')}>
                     <td className="px-3 py-0 font-medium" style={{ color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : RH.ink1 }}>
                       <div className="flex items-center gap-2">

@@ -46,7 +46,7 @@ export default function ReportDetailPage() {
 
   // DARK MODE tokens
   const pageBg = 'var(--cp-bg-page, #F8FAFC)';
-  const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)';
+  const surfaceBg = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface, #FFF)';
   const borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))';
   const borderSubtle = 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))';
   const textPrimary = 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))';

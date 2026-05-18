@@ -96,7 +96,7 @@ export default function WikiAllArticlesPage() {
             ].map(a => (
               <button key={a.key} onClick={() => { setBulkAction(a.key); if (a.key === 'archive') setShowConfirm(true); }} style={{
                 fontSize: 10, fontWeight: 650, padding: '4px 10px', borderRadius: 4,
-                border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.12)', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 color: a.key === 'archive' ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'), cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 4,
               }}>{a.icon} {a.label}</button>
@@ -117,7 +117,7 @@ export default function WikiAllArticlesPage() {
           {bulkAction === 'verification' ? (
             <select value={bulkValue} onChange={e => setBulkValue(e.target.value)} style={{
               fontSize: 12, padding: '4px 8px', borderRadius: 4, border: isDark ? '1px solid #2E2E2E' : '1px solid #CBD5E1',
-              background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
+              background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))',
             }}>
               <option value="">Select...</option>
               <option value="verified">Verified</option>
@@ -126,7 +126,7 @@ export default function WikiAllArticlesPage() {
             </select>
           ) : (
             <input value={bulkValue} onChange={e => setBulkValue(e.target.value)} placeholder={bulkAction === 'domain' ? 'e.g. D1' : 'tag1, tag2'}
-              style={{ fontSize: 12, padding: '4px 8px', borderRadius: 4, border: isDark ? '1px solid #2E2E2E' : '1px solid #CBD5E1', width: 200, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }} />
+              style={{ fontSize: 12, padding: '4px 8px', borderRadius: 4, border: isDark ? '1px solid #2E2E2E' : '1px solid #CBD5E1', width: 200, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }} />
           )}
           <button onClick={() => setShowConfirm(true)} disabled={!bulkValue} style={{
             fontSize: 11, fontWeight: 650, padding: '4px 12px', borderRadius: 4, border: 'none',
@@ -143,7 +143,7 @@ export default function WikiAllArticlesPage() {
       {showConfirm && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div onClick={() => setShowConfirm(false)} style={{ position: 'absolute', inset: 0, background: isDark ? 'rgba(0,0,0,0.5)' : 'rgba(15,23,42,0.3)' }} />
-          <div style={{ position: 'relative', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, padding: 24, width: 400, boxShadow: '0 12px 40px rgba(0,0,0,0.15)' }}>
+          <div style={{ position: 'relative', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, padding: 24, width: 400, boxShadow: '0 12px 40px rgba(0,0,0,0.15)' }}>
             <h3 style={{ fontFamily: F.sora, fontSize: 16, fontWeight: 700, marginBottom: 8 }}>Confirm Bulk Action</h3>
             <p style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 20 }}>
               This will {bulkAction === 'archive' ? 'archive' : `update ${bulkAction} for`} <strong>{selected.size} articles</strong>. This cannot be undone easily.
@@ -151,7 +151,7 @@ export default function WikiAllArticlesPage() {
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
               <button onClick={() => setShowConfirm(false)} style={{
                 fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 6,
-                border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', cursor: 'pointer',
+                border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', cursor: 'pointer',
               }}>Cancel</button>
               <button onClick={executeBulk} style={{
                 fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 6, border: 'none',
@@ -163,10 +163,10 @@ export default function WikiAllArticlesPage() {
       )}
 
       {/* Table */}
-      <div style={{ borderRadius: 8, border: `0.75px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', overflow: 'hidden' }}>
+      <div style={{ borderRadius: 8, border: `0.75px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', overflow: 'hidden' }}>
         <div style={{
           display: 'grid', gridTemplateColumns: '32px 3% 1fr 80px 100px 80px 80px 100px 50px',
-          background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '8px 12px', height: 50, alignItems: 'center',
+          background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', padding: '8px 12px', height: 50, alignItems: 'center',
           fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
           color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', letterSpacing: '0.05em', borderBottom: `0.75px solid ${borderColor}`,
         }}>

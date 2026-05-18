@@ -723,14 +723,14 @@ export default function TestCycleDetailPage() {
 
       {/* Comments */}
       <div style={{ padding: '0 32px 24px' }}>
-        <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }}>
+        <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }}>
           <EntityCommentsPanel entityType="test_cycle" entityId={cycle?.id} title="Cycle Comments" />
         </div>
       </div>
 
       {/* Attachments */}
       <div style={{ padding: '0 32px 24px' }}>
-        <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }}>
+        <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }}>
           <EntityAttachmentsPanel entityType="test_cycle" entityId={cycle?.id} title="Cycle Attachments" />
         </div>
       </div>

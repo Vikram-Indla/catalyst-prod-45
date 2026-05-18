@@ -21,7 +21,7 @@ function timeAgo(d: string) {
 /* ── Skeleton ── */
 const Sk = ({ w, h, style, isDark }: { w: string | number; h: number; style?: React.CSSProperties; isDark?: boolean }) => (
   <div style={{
-    width: w, height: h, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
+    width: w, height: h, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
     animation: 'pulse 1.5s ease-in-out infinite', ...style,
   }} />
 );
@@ -112,7 +112,7 @@ export default function WikiSearchPage() {
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px',
           borderRadius: 12, border: `1.5px solid ${borderColor}`,
-          background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', marginBottom: 16,
+          background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', marginBottom: 16,
           transition: 'border-color 150ms, box-shadow 150ms',
         }}
           onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
@@ -150,7 +150,7 @@ export default function WikiSearchPage() {
             <button onClick={() => { setMode('keyword'); setPage(0); }} style={{
               fontSize: 11, fontWeight: 650, padding: '6px 14px', cursor: 'pointer',
               border: 'none', display: 'flex', alignItems: 'center', gap: 4,
-              background: mode === 'keyword' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
+              background: mode === 'keyword' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
               color: mode === 'keyword' ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'),
               transition: 'all 120ms',
             }}><Zap size={11} /> Keyword</button>
@@ -158,7 +158,7 @@ export default function WikiSearchPage() {
               fontSize: 11, fontWeight: 650, padding: '6px 14px', cursor: 'pointer',
               border: 'none', borderLeft: `1px solid ${borderColor}`,
               display: 'flex', alignItems: 'center', gap: 4,
-              background: mode === 'ai' ? 'var(--cp-purple-60, #7C3AED)' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
+              background: mode === 'ai' ? 'var(--cp-purple-60, #7C3AED)' : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
               color: mode === 'ai' ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))'),
               transition: 'all 120ms',
             }}><Sparkles size={11} /> AI Search</button>
@@ -198,7 +198,7 @@ export default function WikiSearchPage() {
         {isLoading && debouncedQuery.length >= 2 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '8px 0' }}>
             {mode === 'ai' && (
-              <div style={{ borderLeft: '3px solid var(--cp-purple-60, #7C3AED)', padding: '16px 20px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FAFAFE', borderRadius: '0 6px 6px 0', marginBottom: 8 }}>
+              <div style={{ borderLeft: '3px solid var(--cp-purple-60, #7C3AED)', padding: '16px 20px', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : '#FAFAFE', borderRadius: '0 6px 6px 0', marginBottom: 8 }}>
                 <Sk w={120} h={14} style={{ marginBottom: 12 }} isDark={isDark} />
                 <Sk w="100%" h={14} style={{ marginBottom: 6 }} isDark={isDark} />
                 <Sk w="90%" h={14} style={{ marginBottom: 6 }} isDark={isDark} />
@@ -222,7 +222,7 @@ export default function WikiSearchPage() {
             {aiAnswer && (
               <div style={{
                 borderLeft: '3px solid var(--cp-purple-60, #7C3AED)', padding: '16px 20px', marginBottom: 24,
-                background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FAFAFE', borderRadius: '0 6px 6px 0',
+                background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : '#FAFAFE', borderRadius: '0 6px 6px 0',
               }}>
                 <span style={{
                   fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4,
@@ -360,7 +360,7 @@ export default function WikiSearchPage() {
                           {(r.tags as string[]).slice(0, 4).map(t => (
                             <span key={t} style={{
                               fontSize: 9, padding: '1px 6px', borderRadius: 4,
-                              background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontWeight: 500,
+                              background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontWeight: 500,
                             }}>{t}</span>
                           ))}
                         </div>
@@ -380,7 +380,7 @@ export default function WikiSearchPage() {
                       onClick={() => setPage(p => p - 1)}
                       style={{
                         fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 4,
-                        border: `1px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                        border: `1px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                         color: page === 0 ? (isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'), cursor: page === 0 ? 'default' : 'pointer',
                       }}
                     >← Previous</button>
@@ -392,7 +392,7 @@ export default function WikiSearchPage() {
                       onClick={() => setPage(p => p + 1)}
                       style={{
                         fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 4,
-                        border: `1px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                        border: `1px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                         color: page >= totalPages - 1 ? (isDark ? 'var(--ds-border, var(--cp-ink-1, #292929))' : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'), cursor: page >= totalPages - 1 ? 'default' : 'pointer',
                       }}
                     >Next →</button>

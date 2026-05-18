@@ -486,7 +486,7 @@
 .dark .jlpSortBtn:hover, .dark .jlpSortBtn.active { background: rgba(12,102,228,0.15); color: #4C9AFF; }
 .dark .jlpToolBtn { color: var(--ds-text-subtlest, #878787); }
 .dark .jlpToolBtn:hover { background: var(--ds-surface-overlay, #1F1F1F); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
-.dark .jlpSortMenu { background: var(--cp-bg-surface, #242528); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
+.dark .jlpSortMenu { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .jlpSortMenuTitle { color: var(--ds-text-subtlest, #878787); }
 .dark .jlpSortOption { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .jlpSortOption:hover { background: var(--ds-surface-overlay, #1F1F1F); }
@@ -1599,16 +1599,16 @@
 /* ── Dark mode ── */
 .dark .awShellWrap { background: var(--cp-bg-page, #1F1F21); }
 .dark .awToolbar { background: var(--cp-bg-page, #1F1F21); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
-.dark .awToolbarBtn { background: var(--cp-bg-surface, #242528); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
+.dark .awToolbarBtn { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awToolbarBtn:hover { background: var(--ds-surface-overlay, #1F1F1F); }
 .dark .awToolbarBtn.awAskAi { background: none; color: var(--ds-text-subtlest, #878787); }
 .dark .awToolbarBtn.awAskAi:hover { color: #4C9AFF; background: rgba(12,102,228,0.12); }
-.dark .awToolbarSearch { background: var(--cp-bg-surface, #242528); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
+.dark .awToolbarSearch { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .awToolbarSearchInput { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awToolbarAvatar { border-color: var(--cp-bg-page, #1F1F21); }
 .dark .awToolbarAvatarFallback { border-color: var(--cp-bg-page, #1F1F21); }
 .dark .awToolbarAvatarOverflow { background: var(--ds-border, var(--cp-ink-1, #292929)); color: var(--ds-text-subtlest, #A1A1A1); border-color: var(--cp-bg-page, #1F1F21); }
-.dark .awViewToggleBtn { background: var(--cp-bg-surface, #242528); color: var(--ds-text-subtlest, #878787); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
+.dark .awViewToggleBtn { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); color: var(--ds-text-subtlest, #878787); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .awViewToggleBtn:hover { background: var(--ds-surface-overlay, #1F1F1F); }
 .dark .awViewToggleBtn.active { background: rgba(12,102,228,0.12); color: #4C9AFF; }
 .dark .awViewToggle { border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
@@ -1618,11 +1618,11 @@
 .dark .awRow:hover, .dark .awSectionHead:hover,
 .dark .awDetailsSectionHead:hover { background: var(--ds-surface-overlay, #1F1F1F); }
 .dark .awRow.awRowSelected { background: rgba(12,102,228,0.12); }
-.dark .awSearch { background-color: var(--cp-bg-surface, #242528); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
-.dark .awChip, .dark .awPill { background: var(--cp-bg-surface, #242528); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
+.dark .awSearch { background-color: var(--cp-bg-surface, var(--cp-ink-1, #242528)); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
+.dark .awChip, .dark .awPill { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 /* .awNavArrow dark-mode rules removed — canonicalized 2026-04-19
    (component: IssueNavChevrons; light-only inline styles for now). */
-.dark .awCollapseBtn { background: var(--cp-bg-surface, #242528); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
+.dark .awCollapseBtn { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .awIssueTitle { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awRowTitle { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .awKey { color: var(--ds-text-subtlest, #A1A1A1); }

@@ -1258,7 +1258,7 @@
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark #r360-root .r3-period-toggle button {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   color: var(--ds-text-subtlest, #A1A1A1) !important;
 }
 .dark #r360-root .r3-period-toggle button.active {
@@ -1280,7 +1280,7 @@
 .dark #r360-root .r3-day-cell,
 .dark #r360-root .r3-board-card,
 .dark #r360-root .r3-chrono-card {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
@@ -1296,7 +1296,7 @@
 }
 .dark #r360-root .r3-ring-card,
 .dark #r360-root .r3-spoke-label {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
 }
 .dark #r360-root .r3-spoke-label {
   color: var(--ds-text-subtlest, #A1A1A1) !important;
@@ -1361,7 +1361,7 @@
 .dark #r360-root .r3-week-nav,
 .dark #r360-root .r3-filter-pill,
 .dark #r360-root select {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   color: var(--ds-text-subtlest, #A1A1A1) !important;
 }
@@ -1387,7 +1387,7 @@
 
 /* Progress bar track */
 .dark #r360-root .r3-progress-track {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
 }
 
 /* ─── RING VIEW — Dark overrides ─── */
@@ -1396,7 +1396,7 @@
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark #r360-root .r3-ring-card {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   box-shadow: none !important;
 }
@@ -1423,7 +1423,7 @@
   color: var(--ds-text-subtlest, #A1A1A1) !important;
 }
 .dark #r360-root .r3-spoke-label {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   color: var(--ds-text-subtlest, #A1A1A1) !important;
 }
@@ -1463,7 +1463,7 @@
 
 /* Quarter outline button — dark */
 .dark #r360-root .r3-btn-outline {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
@@ -1474,7 +1474,7 @@
 
 /* Drawer / side panel */
 .dark #r360-root .item-drawer {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark #r360-root .item-drawer .drawer-header {
@@ -1497,12 +1497,12 @@
 
 /* Select / dropdown overrides */
 .dark #r360-root select {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
 
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 .dark #r360-root .r3-day-cell.today {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 
@@ -1540,7 +1540,7 @@
 .dark #r360-root [style*="background:#fff"],
 .dark #r360-root [style*="background: #F8FAFC"],
 .dark #r360-root [style*="background:#F8FAFC"] {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
 }
 .dark #r360-root [style*="border: 1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))"],
 .dark #r360-root [style*="border-color: var(--cp-border, var(--cp-bg-sunken, #E2E8F0))"],
@@ -1577,7 +1577,7 @@
 .dark #r360-root [style*="background: #FFFBEB"],
 .dark #r360-root [style*="background: #F8FAFC"],
 .dark #r360-root [style*="background: var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))"] {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
 }
 
 /* Light-mode border colors → ADS borders */
@@ -1609,7 +1609,7 @@
 /* rgba wash backgrounds → solid ADS hex */
 .dark #r360-root [style*="background: rgba(15,23,42,0.05)"],
 .dark #r360-root [style*="background: rgba(15, 23, 42, 0.05)"] {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
 }
 
 /* Divider lines using light-mode colors */

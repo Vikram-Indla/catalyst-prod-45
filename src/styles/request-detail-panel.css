@@ -64,7 +64,7 @@
   --idp-ink-tertiary: var(--ds-text-subtlest, #A1A1A1);
   --idp-ink-muted: #7D7D7D;
   --idp-ink-muted-strong: var(--ds-text-subtlest, #878787);
-  --idp-surface: var(--cp-bg-surface, #242528);
+  --idp-surface: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   --idp-surface-secondary: var(--ds-surface-overlay, #1F1F1F);
   --idp-surface-tertiary: var(--ds-border, var(--cp-ink-1, #292929));
   --idp-border: var(--ds-border, var(--cp-ink-1, #2E2E2E));
@@ -117,11 +117,11 @@
 }
 .dark .idp-dd-panel,
 .dark .idp-dd-panel , [data-theme="dark"] .idp-dd-panel {
-  background: var(--cp-bg-surface, #242528);
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
 }
 .dark .idp-ps-panel,
 .dark .idp-ps-panel , [data-theme="dark"] .idp-ps-panel {
-  background: var(--cp-bg-surface, #242528);
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
 }
 .dark .idp-ps-name,
 .dark .idp-ps-name , [data-theme="dark"] .idp-ps-name {

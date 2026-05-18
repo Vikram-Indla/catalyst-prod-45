@@ -471,7 +471,7 @@
 }
 
 /* ── Dark mode ── */
-.dark .csModal { background: var(--cp-bg-surface, #242528); }
+.dark .csModal { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); }
 .dark .csModalTitle { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .csRequiredNote { color: var(--ds-text-subtlest, #878787); }
 .dark .csHeaderBtn { color: var(--ds-text-subtlest, #A1A1A1); }
@@ -481,7 +481,7 @@
 .dark .csInput { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); border-color: var(--ds-border-bold, #454545); }
 .dark .csInput:focus { border-color: #0C66E4; }
 .dark .csSelect { background: var(--ds-border, var(--cp-ink-1, #292929)); border-color: var(--ds-border-bold, #454545); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
-.dark .csDropdown { background: var(--cp-bg-surface, #242528); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
+.dark .csDropdown { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
 .dark .csDropdownItem { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .csDropdownItem:hover { background: var(--ds-border, var(--cp-ink-1, #292929)); }
 .dark .csDropdownItem.selected { background: rgba(12,102,228,0.15); }

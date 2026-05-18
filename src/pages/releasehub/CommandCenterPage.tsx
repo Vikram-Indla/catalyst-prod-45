@@ -311,7 +311,7 @@ export default function CommandCenterPage() {
                   const chgCount = changes.filter((c: any) => c.release_id === r.id).length;
                   return (
                     <tr key={r.id} onClick={() => setSelectedRelease(r)} className="cursor-pointer" style={{ height: 44, borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}
-                      onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
+                      onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'rgba(15,23,42,0.04)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                       <td className="px-3" style={{ fontWeight: 650, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : RH.ink1 }}>{r.name}</td>
                       <td className="px-3"><ReleaseStatusBadge status={r.status} /></td>
@@ -482,7 +482,7 @@ export default function CommandCenterPage() {
               <tbody>
                 {pendingSignoffs.slice(0, 4).map((so: any) => (
                   <tr key={so.id} className="cursor-pointer" style={{ height: 50, borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}
-                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
+                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'rgba(15,23,42,0.04)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                     <td className="px-3" style={{ fontFamily: RH.fontMono, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontWeight: 650 }}>{so.rh_changes?.chg_number || '—'}</td>
                     <td className="px-3" style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>{so.signoff_role || so.stage || '—'}</td>
@@ -508,7 +508,7 @@ export default function CommandCenterPage() {
                 <div key={ev.id} className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{
                     border: `2px solid ${ev.deployment_result === 'SUCCESS' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : ev.deployment_result === 'ROLLED_BACK' ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'}`,
-                    background: isDark ? 'var(--cp-bg-surface, #242528)' : 'white',
+                    background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'white',
                   }} />
                   <div className="flex-1 min-w-0">
                     <p className="text-[12px] truncate" style={{ fontWeight: 650, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : RH.ink1 }}>{ev.title}</p>

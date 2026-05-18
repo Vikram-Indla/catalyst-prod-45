@@ -53,7 +53,7 @@ function StatusLozenge({ status }: { status: string }) {
 /* ── Skeleton ── */
 const Sk = ({ w, h, style, isDark }: { w: string | number; h: number; style?: React.CSSProperties; isDark?: boolean }) => (
   <div style={{
-    width: w, height: h, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
+    width: w, height: h, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
     animation: 'pulse 1.5s ease-in-out infinite', ...style,
   }} />
 );
@@ -78,7 +78,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
   return (
     <div style={{
       position: 'fixed', top: 0, right: 0, bottom: 0, width: 400, zIndex: 200,
-      background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderLeft: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
+      background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderLeft: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
       boxShadow: isDark ? '-8px 0 24px rgba(0,0,0,0.3)' : '-8px 0 24px rgba(15,23,42,0.08)',
       display: 'flex', flexDirection: 'column', fontFamily: 'var(--cp-font-body)',
     }}>
@@ -123,7 +123,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
                   fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 700,
                   color: i === 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                   padding: '2px 6px', borderRadius: 4,
-                  background: i === 0 ? (isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'),
+                  background: i === 0 ? (isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'),
                 }}>v{v.version_number}</span>
                 {i === 0 && (
                   <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--quality-high, #059669)', textTransform: 'uppercase' as const }}>CURRENT</span>
@@ -170,7 +170,7 @@ function ExportDropdown({ onClose }: { onClose: () => void }) {
   return (
     <div style={{
       position: 'absolute', top: '100%', right: 0, marginTop: 4, zIndex: 50,
-      background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 6, border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
+      background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 6, border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
       boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(15,23,42,0.08)', minWidth: 160, overflow: 'hidden',
     }}>
       <button onClick={handlePdf} style={{
@@ -204,7 +204,7 @@ function CrossModuleLinks({ links }: { links: any[] }) {
   return (
     <div style={{
       marginTop: 32, padding: 16, borderRadius: 6,
-      border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+      border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     }}>
       <div style={{
         fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
@@ -499,7 +499,7 @@ export default function WikiArticlePage() {
               {authorName ? (
                 <>
                   <div style={{
-                    width: 24, height: 24, borderRadius: '50%', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
+                    width: 24, height: 24, borderRadius: '50%', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 10, fontWeight: 700, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                   }}>{authorName.charAt(0).toUpperCase()}</div>
@@ -520,7 +520,7 @@ export default function WikiArticlePage() {
                 {tags.map(t => (
                   <span key={t} style={{
                     fontSize: 10, padding: '2px 8px', borderRadius: 4,
-                    background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontWeight: 500,
+                    background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontWeight: 500,
                   }}>{t}</span>
                 ))}
               </div>
@@ -557,7 +557,7 @@ export default function WikiArticlePage() {
             {/* ── Table of Contents ── */}
             {sections.length > 0 && (
               <nav style={{
-                background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F8FAFC)', border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
+                background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--ds-surface-sunken, #F8FAFC)', border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
                 borderRadius: 6, padding: 16, marginBottom: 28,
               }}>
                 <div style={{
@@ -618,7 +618,7 @@ export default function WikiArticlePage() {
             {/* ── Feedback footer ── */}
             <div style={{
               marginTop: 32, padding: 20, borderRadius: 6,
-              border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16,
             }}>
               <div>
@@ -660,7 +660,7 @@ export default function WikiArticlePage() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
                   {(related ?? []).map((r: any) => (
                     <div key={r.id} onClick={() => navigate(`/wiki/${r.slug}`)} style={{
-                      padding: 16, borderRadius: 6, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                      padding: 16, borderRadius: 6, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                       border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', cursor: 'pointer',
                       transition: 'border-color 120ms',
                     }}
@@ -683,7 +683,7 @@ export default function WikiArticlePage() {
           {/* ── Infobox sidebar ── */}
           <aside style={{
             position: 'sticky', top: 80, borderRadius: 6,
-            border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+            border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             overflow: 'hidden', fontSize: 12,
           }}>
             <div style={{

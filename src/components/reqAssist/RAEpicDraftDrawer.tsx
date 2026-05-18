@@ -332,8 +332,8 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                               background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
                               fontFamily: 'var(--cp-font-body)',
                             }}
-                            onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(37,99,235,0.04)')}
-                            onMouseLeave={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)')}
+                            onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'rgba(37,99,235,0.04)')}
+                            onMouseLeave={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-app)')}
                           >
                             <Pencil size={13} /> Edit
                           </button>

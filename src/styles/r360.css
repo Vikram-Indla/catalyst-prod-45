@@ -501,14 +501,14 @@
 
 /* Profile card */
 .dark #r360-root .r3-profile {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* KPI cards */
 .dark #r360-root .r3-kpi--stale,
 .dark #r360-root .r3-kpi {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
@@ -530,7 +530,7 @@
 
 /* Period toggle (Weekly/Monthly) */
 .dark #r360-root .r3-toggle button {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   color: var(--ds-text-subtlest, #A1A1A1) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
@@ -551,7 +551,7 @@
 
 /* Calendar day cells */
 .dark #r360-root .r3-date-cell {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #292929)) !important;
 }
 .dark #r360-root .r3-date-cell.current {
@@ -559,13 +559,13 @@
   border-color: rgba(37,99,235,0.3) !important;
 }
 .dark #r360-root .r3-date-dot--other {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-text-subtlest, #878787) !important;
 }
 
 /* Status filter chips */
 .dark #r360-root .r3-status-chip {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   color: var(--ds-text-subtlest, #A1A1A1) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
@@ -582,7 +582,7 @@
 
 /* Progress bar */
 .dark #r360-root .r3-progress-bg {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
 }
 
 /* Ring view canvas */
@@ -594,7 +594,7 @@
 
 /* Ring view cards */
 .dark #r360-root .r3-ring-card {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   box-shadow: none !important;
 }
@@ -608,7 +608,7 @@
   background: var(--cp-bg-page, #1F1F21) !important;
 }
 .dark #r360-root .r3-board-item {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark #r360-root .r3-board-item:hover {
@@ -623,19 +623,19 @@
   color: var(--ds-text-subtlest, #A1A1A1) !important;
 }
 .dark #r360-root .r3-chrono-item {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Detail panel / drawer */
 .dark #r360-root .r3-detail-panel {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
 /* Search input */
 .dark #r360-root .r3-search {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
@@ -643,7 +643,7 @@
 /* Quarter select + nav buttons */
 .dark #r360-root .r3-quarter-picker,
 .dark #r360-root .r3-nav-btn {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   color: var(--ds-text-subtlest, #A1A1A1) !important;
 }

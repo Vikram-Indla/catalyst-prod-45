@@ -100,7 +100,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
               cursor: 'pointer', textAlign: 'left', fontSize: 12, transition: 'all 80ms',
               display: 'flex', alignItems: 'center', gap: 8,
             }}>
-              <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: active ? 'var(--cp-primary-20)' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bd-zone)'), color: active ? '#1E40AF' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)') }}>{d.code}</span>
+              <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: active ? 'var(--cp-primary-20)' : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bd-zone)'), color: active ? '#1E40AF' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)') }}>{d.code}</span>
               <span style={{ fontWeight: active ? 600 : 400, color: active ? (isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--fg-1)') : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)'), flex: 1, fontSize: 11.5 }}>{d.name}</span>
               {active && <Check size={12} style={{ color: 'var(--cp-blue)' }} />}
             </button>
@@ -152,7 +152,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
         width: 480, maxHeight: '85vh', overflowY: 'auto',
-        background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)', borderRadius: 12, padding: 32,
+        background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-float)', borderRadius: 12, padding: 32,
         boxShadow: isDark ? '0 16px 48px rgba(0,0,0,0.4)' : '0 16px 48px rgba(0,0,0,0.12)', zIndex: 1001,
       }}>
         {/* Step indicators */}

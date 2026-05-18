@@ -1366,15 +1366,15 @@
 .dark .planhub-module {
   /* Surfaces */
   --ph-bg: var(--cp-bg-page, #1F1F21);
-  --ph-surface: var(--cp-bg-surface, #242528);
-  --ph-surface-hover: var(--cp-bg-surface, #242528);
+  --ph-surface: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  --ph-surface-hover: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   --ph-border: rgba(255, 255, 255, 0.08);
   --ph-border-dark: rgba(255, 255, 255, 0.12);
 
   /* Gray Scale (inverted for dark) */
   --ph-white: var(--cp-bg-page, #1F1F21);
-  --ph-gray-50: var(--cp-bg-surface, #242528);
-  --ph-gray-100: var(--cp-bg-surface, #242528);
+  --ph-gray-50: var(--cp-bg-surface, var(--cp-ink-1, #242528));
+  --ph-gray-100: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   --ph-gray-200: var(--ds-border, var(--cp-ink-1, #292929));
   --ph-gray-300: var(--ds-text-subtlest, #878787);
   --ph-gray-400: var(--ds-text-subtlest, #878787);
@@ -1414,7 +1414,7 @@
 /* Dark mode: AI chat bubble adjustments */
 [data-theme="dark"] .planhub-module .ph-ai-message.assistant .ph-ai-bubble,
 .dark .planhub-module .ph-ai-message.assistant .ph-ai-bubble {
-  background: var(--cp-bg-surface, #242528);
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 
@@ -1432,7 +1432,7 @@
 /* Dark mode: AI input field */
 [data-theme="dark"] .planhub-module .ph-ai-input input,
 .dark .planhub-module .ph-ai-input input {
-  background: var(--cp-bg-surface, #242528);
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   border-color: rgba(255, 255, 255, 0.08);
 }
@@ -1440,14 +1440,14 @@
 /* Dark mode: form inputs */
 [data-theme="dark"] .planhub-module .ph-form-input,
 .dark .planhub-module .ph-form-input {
-  background: var(--cp-bg-surface, #242528);
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   border-color: rgba(255, 255, 255, 0.12);
 }
 
 [data-theme="dark"] .planhub-module .ph-select,
 .dark .planhub-module .ph-select {
-  background: var(--cp-bg-surface, #242528);
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   border-color: rgba(255, 255, 255, 0.08);
 }

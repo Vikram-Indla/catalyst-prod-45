@@ -1109,8 +1109,8 @@ html:has(body[data-scroll-locked]) {
        neutral RGB (no blue cast). */
     --bg-0: #1F1F21;                     /* App background — ADS page */
     --bg-1: #1F1F21;                     /* Page canvas */
-    --bg-2: #242528;                     /* Panels / elevated surface */
-    --bg-3: #242528;                     /* Cards — flush */
+    --bg-2: var(--cp-ink-1, #242528);                     /* Panels / elevated surface */
+    --bg-3: var(--cp-ink-1, #242528);                     /* Cards — flush */
     --bg-4: #2B2C2F;                     /* Raised/hover (overlay) */
     --bg-5: #2C333A;                     /* Active/selected surface */
     --bg-app: var(--bg-0);
@@ -1122,7 +1122,7 @@ html:has(body[data-scroll-locked]) {
     --card: 240 3% 12%;                  /* Same as --background — flush cards */
     --card-foreground: 0 0% 93%;
 
-    --popover: 240 3% 16%;               /* #242528 ADS surface */
+    --popover: 240 3% 16%;               /* var(--cp-ink-1, #242528) ADS surface */
     --popover-foreground: 0 0% 93%;
 
     --primary: 217 91% 60%;              /* #3b82f6 blue */
@@ -3250,7 +3250,7 @@ input[type="range"]::-moz-range-thumb {
 .dark, [data-theme="dark"] {
   /* 2026-04-29: ADS canonical dark surfaces. Hex pulled from
      node_modules/@atlaskit/tokens/figma/atlassian-dark.json —
-     elevation.surface=#1F1F21, raised=#242528, sunken=#18191A. */
+     elevation.surface=#1F1F21, raised=var(--cp-ink-1, #242528), sunken=#18191A. */
   /* 2026-04-30 Jira parity: aligned to ADS dark elevation pair.
      background.neutral=#1D2125 (canvas) + elevation.surface=#22272B
      (raised). Prior collapse to #1F1F21 produced the split-tone seam

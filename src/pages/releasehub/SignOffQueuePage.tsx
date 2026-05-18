@@ -95,9 +95,9 @@ export default function SignOffQueuePage() {
                   <tr key={so.id}
                     onClick={() => setSelectedChange(so.rh_changes)}
                     className="cursor-pointer group"
-                    style={{ height: 50, maxHeight: 50, borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)', background: isDark ? 'var(--cp-bg-surface, #242528)' : undefined }}
-                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '')}
+                    style={{ height: 50, maxHeight: 50, borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : undefined }}
+                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'rgba(15,23,42,0.04)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : '')}
                   >
                     <td className="px-3" style={{ fontFamily: RH.fontMono, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontWeight: 650 }}>{so.rh_changes?.chg_number || '—'}</td>
                     <td className="px-3 truncate max-w-[240px]" style={{ color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : RH.ink2 }}>{so.rh_changes?.title || '—'}</td>
@@ -144,12 +144,12 @@ export default function SignOffQueuePage() {
                 <label className="block text-[12px] font-semibold mb-1" style={{ color: 'var(--cp-text-secondary, #475569)' }}>Comment {actionModal.action === 'reject' && '*'}</label>
                 <textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Add a comment..."
                   className="w-full h-24 px-3 py-2 rounded-[4px] text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 resize-none"
-                  style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : undefined, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }} />
+                  style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : undefined, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }} />
               </div>
             </div>
           )}
           <DialogFooter>
-            <button onClick={() => { setActionModal(null); setComment(''); }} className="h-9 px-4 rounded-[6px] text-[13px] font-medium" style={{ color: 'var(--cp-text-secondary, #475569)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : undefined }}>Cancel</button>
+            <button onClick={() => { setActionModal(null); setComment(''); }} className="h-9 px-4 rounded-[6px] text-[13px] font-medium" style={{ color: 'var(--cp-text-secondary, #475569)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : undefined }}>Cancel</button>
             <button onClick={handleAction} disabled={approveSignoff.isPending || rejectSignoff.isPending}
               className={`h-9 px-4 rounded-[6px] text-[13px] font-semibold text-white disabled:opacity-50 ${actionModal?.action === 'approve' ? 'bg-[var(--ds-text-success,var(--cp-success, #16A34A))] hover:bg-[#15803D]' : 'bg-[var(--ds-text-danger,var(--cp-danger, #DC2626))] hover:bg-[#B91C1C]'}`}>
               {actionModal?.action === 'approve' ? 'Approve' : 'Reject'}

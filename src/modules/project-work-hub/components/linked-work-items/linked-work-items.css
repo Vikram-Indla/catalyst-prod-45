@@ -478,8 +478,8 @@
 .dark .lwi-header__add:hover { background-color: var(--ds-surface-overlay, #1F1F1F); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 
 .dark .lwi-group__header { color: var(--ds-text-subtlest, #A1A1A1); }
-.dark .lwi-group__rows { background: var(--cp-bg-surface, #242528); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
-.dark .lwi-row { background: var(--cp-bg-surface, #242528); border-bottom-color: var(--ds-border, var(--cp-ink-1, #292929)); }
+.dark .lwi-group__rows { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
+.dark .lwi-row { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); border-bottom-color: var(--ds-border, var(--cp-ink-1, #292929)); }
 .dark .lwi-row:hover,
 .dark .lwi-row:focus-within { background-color: var(--ds-surface-overlay, #1F1F1F); }
 .dark .lwi-row__key { color: #4C9AFF; }
@@ -492,7 +492,7 @@
 .dark .lwi-empty__sub { color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .lwi-error { background: #3B1F1C; color: #FFB9B0; }
 
-.dark .lwi-skeleton__row { background: var(--cp-bg-surface, #242528); border-color: var(--ds-border, var(--cp-ink-1, #292929)); }
+.dark .lwi-skeleton__row { background: var(--cp-bg-surface, var(--cp-ink-1, #242528)); border-color: var(--ds-border, var(--cp-ink-1, #292929)); }
 .dark .lwi-skeleton__pulse { background: var(--ds-border, var(--cp-ink-1, #292929)); }
 
 .dark .lwi-toolbar { border-top-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
@@ -578,7 +578,7 @@
 
 /* Dark mode DynamicTable overrides */
 .dark .lwi-group__rows table tbody tr {
-  background: var(--cp-bg-surface, #242528);
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528));
   border-bottom-color: var(--ds-border, var(--cp-ink-1, #292929));
 }
 

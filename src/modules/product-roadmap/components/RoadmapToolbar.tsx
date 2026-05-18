@@ -145,7 +145,7 @@ export function RoadmapToolbar({
                 height: 32, padding: '0 10px', border: 'none', cursor: 'pointer',
                 fontSize: 11, fontWeight: viewMode === k ? 600 : 500,
                 color: viewMode === k ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : (hc ? '#3F3F46' : '#71717A')),
-                background: viewMode === k ? ('var(--cp-primary-light, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, #242528)' : (hc ? '#F0F0F0' : 'var(--ds-surface, #fff)')),
+                background: viewMode === k ? ('var(--cp-primary-light, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : (hc ? '#F0F0F0' : 'var(--ds-surface, #fff)')),
                 borderRight: k === 'gantt' ? `1px solid ${borderColor}` : 'none',
               }}
             >

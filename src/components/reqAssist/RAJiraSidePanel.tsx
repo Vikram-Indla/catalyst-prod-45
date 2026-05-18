@@ -406,7 +406,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 5,
                 padding: '5px 12px', height: 28, borderRadius: 6,
-                border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.15)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)',
+                border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.15)', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-app)',
                 fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', cursor: reimporting ? 'not-allowed' : 'pointer',
                 fontFamily: 'var(--cp-font-body)', opacity: reimporting ? 0.6 : 1,
               }}
@@ -423,7 +423,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
           {/* ── PIPELINE STEPPER ── */}
           <div style={{ padding: '16px 20px', borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)' }}>
             <div style={{
-              background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-1)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)', borderRadius: 8,
+              background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-1)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)', borderRadius: 8,
               padding: '14px 16px',
             }}>
               <div style={{ display: 'flex', alignItems: 'flex-start' }}>
@@ -492,7 +492,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 <MetaRow label="Description">
                   <div style={{ flex: 1 }}>
                     <div style={{
-                      background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-1)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)', borderRadius: 6,
+                      background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-1)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)', borderRadius: 6,
                       padding: '10px 12px', fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.6,
                       fontFamily: 'var(--cp-font-body)',
                       maxHeight: descExpanded ? 'none' : 100, overflow: 'hidden',
@@ -588,7 +588,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               {doc.pdf_url ? (
                 <div style={{
                   height: 48, display: 'flex', alignItems: 'center', gap: 12,
-                  background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.10)',
+                  background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-app)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.10)',
                   borderRadius: 6, padding: '0 14px',
                 }}>
                   <FileText size={18} color="var(--sem-danger)" />
@@ -602,7 +602,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   </div>
                   <button onClick={onOpenPdf} style={{
                     height: 26, padding: '0 10px', borderRadius: 6,
-                    border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.15)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)',
+                    border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.15)', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-app)',
                     fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
                     fontFamily: 'var(--cp-font-body)',
                   }}>View</button>
@@ -634,7 +634,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               {brdData.raw_text ? (
                 <>
                   <div style={{
-                    background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-1)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)', borderRadius: 6,
+                    background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-1)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)', borderRadius: 6,
                     padding: '12px 14px', fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.6,
                     fontFamily: 'var(--cp-font-body)',
                     maxHeight: contentExpanded ? 'none' : 120, overflow: 'hidden',
@@ -871,7 +871,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
           ) : (
             <button onClick={() => { if (brdData.id && onViewDrafts) { onClose(); onViewDrafts(brdData.id); } }} style={{
               width: '100%', height: 40, fontSize: 14, fontWeight: 600, borderRadius: 6,
-              border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.15)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)', color: 'var(--fg-2)',
+              border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.15)', background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-app)', color: 'var(--fg-2)',
               cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}>
               View All Epics →

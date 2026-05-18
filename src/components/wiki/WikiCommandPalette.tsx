@@ -103,7 +103,7 @@ export function WikiCommandPalette({ open, onClose }: Props) {
       opacity: 1, transition: 'opacity 150ms ease',
     }}>
       <div onClick={e => e.stopPropagation()} style={{
-        width: 560, maxHeight: 420, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated)',
+        width: 560, maxHeight: 420, background: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--cp-bg-elevated)',
         borderRadius: 12, boxShadow: isDark ? '0 16px 48px rgba(0,0,0,0.4)' : 'var(--cp-shadow-overlay)',
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
         border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border-default)',

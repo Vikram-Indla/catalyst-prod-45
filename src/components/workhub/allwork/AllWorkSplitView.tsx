@@ -229,7 +229,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                 className="absolute top-full left-0 mt-1 w-48 rounded-lg border shadow-lg z-50 py-1 animate-scale-in"
                 style={{
                   borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bd-default, var(--cp-ink-1, #2E2E2E))',
-                  backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)',
+                  backgroundColor: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-app)',
                 }}
                 role="listbox"
                 aria-label="Sort field"
@@ -508,7 +508,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                         className="absolute top-full left-0 mt-1 w-52 rounded-lg border shadow-lg z-50 py-1 animate-scale-in"
                         style={{
                           borderColor: isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--bd-default, var(--cp-ink-1, #2E2E2E))',
-                          backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)',
+                          backgroundColor: isDark ? 'var(--cp-bg-surface, var(--cp-ink-1, #242528))' : 'var(--bg-app)',
                         }}
                         role="menu"
                         aria-label="Add to this work item"

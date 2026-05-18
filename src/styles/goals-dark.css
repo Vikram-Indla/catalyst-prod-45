@@ -136,7 +136,7 @@
 
 /* Filter dropdown panels (float layer) */
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="boxShadow"][style*="position: absolute"] {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
   box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
 }
@@ -211,7 +211,7 @@
 /* Draft/Not Started/Cancelled — grey lozenges */
 [data-theme="dark"] [data-goals-page] span[style*="background: rgb(241, 245, 249)"][style*="borderRadius: 99"],
 .dark [data-goals-page] span[style*="background: var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))"][style*="borderRadius: 99"] , [data-theme="dark"] [data-goals-page] span[style*="background: var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))"][style*="borderRadius: 99"] {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   color: #B8BCC8 !important;
 }
 
@@ -279,7 +279,7 @@
 [data-theme="dark"] [data-goals-page] div[style*="background: var(--cp-bg-elevated, #FFFFFF)"][style*="width: 520px"],
 [data-theme="dark"] [data-goals-page] div[style*="background: #FFFFFF"][style*="width: 520px"],
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="position: fixed"] {
-  background: var(--cp-bg-surface, #242528) !important;
+  background: var(--cp-bg-surface, var(--cp-ink-1, #242528)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 
