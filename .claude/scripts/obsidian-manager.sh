@@ -97,6 +97,27 @@ get_modified_files() {
 save_handover() {
   local branch_name="$1"
   local branch_id="$2"
+  local progress="${3:-50}"
+
+  # If branch_name not provided, auto-detect from current git branch
+  if [ -z "$branch_name" ]; then
+    branch_name=$(git -C "$PROJECT_DIR" branch --show-current)
+    if [ -z "$branch_name" ] || [ "$branch_name" = "HEAD" ]; then
+      log_error "Not on a valid git branch. Please switch to a feature branch first."
+      return 1
+    fi
+  fi
+
+  # If branch_id not provided, extract from branch_name (e.g., BAU-backlog-table-01 -> 01)
+  if [ -z "$branch_id" ]; then
+    branch_id=$(echo "$branch_name" | sed 's/.*-\([0-9][0-9]\)$/\1/')
+    if [ "$branch_id" = "$branch_name" ]; then
+      log_error "Branch name must follow format: {Project}-{SideMenu}-{Component}-{NN}"
+      log_error "Current branch: $branch_name"
+      log_error "Example: BAU-backlog-table-01"
+      return 1
+    fi
+  fi
 
   # Extract components from branch name (format: {Project}-{SideMenu}-{Component}-{NN})
   local project=$(echo "$branch_name" | cut -d'-' -f1)
@@ -334,11 +355,8 @@ case "$command" in
   save)
     branch_name="${2:-}"
     branch_id="${3:-}"
-    progress="${4:-0}"
-    if [ -z "$branch_name" ] || [ -z "$branch_id" ]; then
-      log_error "Usage: obsidian-manager.sh save <branch-name> <branch-id> [progress]"
-      exit 1
-    fi
+    progress="${4:-50}"
+    # Note: branch_name and branch_id are optional — will be auto-detected from current git branch
     save_handover "$branch_name" "$branch_id" "$progress"
     ;;
   retrieve)
@@ -364,15 +382,20 @@ case "$command" in
     echo "Obsidian Handover Manager — Catalyst Branch Context Management"
     echo ""
     echo "Usage:"
-    echo "  obsidian-manager.sh save <branch-name> <branch-id> [progress]"
+    echo "  obsidian-manager.sh save [progress]              # Auto-detect current branch"
     echo "  obsidian-manager.sh retrieve <branch-id>"
     echo "  obsidian-manager.sh list"
     echo "  obsidian-manager.sh delete <branch-id>"
     echo ""
     echo "Examples:"
-    echo "  obsidian-manager.sh save BAU-backlog-table-01 01 60"
-    echo "  obsidian-manager.sh retrieve 01"
-    echo "  obsidian-manager.sh list"
+    echo "  obsidian-manager.sh save                # Auto-detect branch, 50% progress (default)"
+    echo "  obsidian-manager.sh save 75             # Auto-detect branch, 75% progress"
+    echo "  obsidian-manager.sh retrieve 01         # Retrieve handover for branch ID 01"
+    echo "  obsidian-manager.sh list                # List all saved handovers"
+    echo ""
+    echo "Branch Format (auto-detected):"
+    echo "  {Project}-{SideMenu}-{Component}-{NN}"
+    echo "  Example: BAU-backlog-table-01"
     echo ""
     exit 0
     ;;

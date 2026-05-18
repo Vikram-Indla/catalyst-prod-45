@@ -26,14 +26,19 @@ The `/obsidian` skill manages detailed handovers and branch context in the centr
 
 ### `/obsidian save`
 
-Saves a detailed handover to the Obsidian vault.
+Saves a detailed handover to the Obsidian vault. **Auto-detects current branch and numeric ID.**
 
 ```
-/obsidian save
+/obsidian save [progress]
 ```
+
+**Auto-Detection:**
+- **Branch name**: Extracted from current git branch (e.g., `git branch --show-current`)
+- **Numeric ID**: Extracted from branch name suffix (e.g., `BAU-backlog-table-01` → `01`)
+- **Progress**: Optional percentage (0-100). Defaults to 50% if not specified.
 
 **What it captures:**
-- Current branch name and numeric ID
+- Current branch name and numeric ID (auto-detected)
 - Full task description and context
 - Current file changes and uncommitted work
 - Commit history for this branch
@@ -42,17 +47,23 @@ Saves a detailed handover to the Obsidian vault.
 - Time saved and contributor info
 
 **Output:**
-- Creates/updates `handover-{BRANCH-NAME}-{NN}.md` in Obsidian vault
-- Returns confirmation with file location
+- Creates/updates `{BRANCH-NAME}-{NN}.md` in Obsidian vault
+- Returns confirmation with file location and branch ID
 - Stores metadata in `.claude/obsidian-handovers/metadata.json`
 
-**Example:**
+**Examples:**
 ```
+# You're on: BAU-backlog-table-01
 You: /obsidian save
-Claude: Saving handover for branch BAU-backlog-table-01...
-✓ Saved to: .claude/obsidian-handovers/BAU-backlog-table-01.md
-✓ Metadata updated
-✓ Next branch ID will be 02
+Claude: ✓ Saved handover for BAU-backlog-table-01 (ID: 01)
+        ✓ Progress: 50% (default)
+        ✓ Next retrieval: /obsidian branch 01
+
+# With custom progress percentage
+You: /obsidian save 75
+Claude: ✓ Saved handover for BAU-backlog-table-01 (ID: 01)
+        ✓ Progress: 75%
+        ✓ Next retrieval: /obsidian branch 01
 ```
 
 ---
@@ -92,7 +103,8 @@ Retrieves and hydrates context from a previous branch.
 **Example:**
 ```
 You: /obsidian branch 01
-Claude: 
+
+Claude:
   [Reading CLAUDE.md § 2026-05-18...]
   ✓ Branch naming rules loaded: {Project}-{SideMenu}-{Component}-{NN}
   ✓ Design system guardrail verified: @atlaskit/*, var(--ds-*) tokens only
@@ -101,20 +113,19 @@ Claude:
   
   [Retrieving handover 01...]
   ✓ Handover found: BAU-backlog-table-01-01.md
-  ✓ Branch exists locally
   ✓ Context loaded
   ✓ Last saved: 2 days ago
   ✓ Progress: 60% complete
 
 ═══════════════════════════════════════════════════════════════
-HANDOVER CONTEXT (01)
+HANDOVER CONTEXT (ID: 01)
 ═══════════════════════════════════════════════════════════════
 
-Task: Build backlog list table in BAU project
-
-Branch: BAU-backlog-table-01 (ID: 01)
+Branch: BAU-backlog-table-01
 Status: in_progress (60% complete)
 Last saved: 2026-05-16T14:30:00Z
+
+Task: Build backlog list table in BAU project with sorting, filtering, and bulk actions
 
 Previous work (verified against CLAUDE.md rules):
   ✓ Created columns: Key, Summary, Status, Comments
@@ -124,12 +135,16 @@ Previous work (verified against CLAUDE.md rules):
 Remaining work (per CLAUDE.md constraints):
   - Add drag-and-drop row reordering
   - Implement bulk actions footer (Atlaskit + ADS tokens)
-  - Wire up to CRUD API (CLAUDE.md 2026-05-12 data model)
+  - Wire up to CRUD API
   - Run design-critique before marking complete
 
-Continue from: Add drag-and-drop row reordering
-Next: Follow branch-manager.sh validation (BAU-backlog-table-01 naming confirmed)
+Continue from: Add drag-and-drop row reordering (BacklogPage.tsx line 342)
 ═══════════════════════════════════════════════════════════════
+
+To resume:
+1. git switch BAU-backlog-table-01
+2. git pull origin BAU-backlog-table-01
+3. Continue from the "Continue from:" section above
 ```
 
 ---
