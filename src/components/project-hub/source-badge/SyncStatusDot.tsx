@@ -33,7 +33,7 @@ const DOT_COLORS: Record<SyncStatus, string> = {
   synced: 'var(--ds-text-success, var(--cp-success, #16A34A))',
   stale: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
   conflict: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
-  syncing: 'var(--ds-text-brand, #2563EB)',
+  syncing: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   pending: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
 };
 

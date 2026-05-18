@@ -103,7 +103,7 @@ export default function WikiSearchPage() {
       <div style={{ maxWidth: 840, marginInline: 'auto', padding: '24px 28px 48px' }}>
         {/* Breadcrumb */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
-          <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}>Wiki</span>
+          <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>Wiki</span>
           <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
           <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 600 }}>Search</span>
         </nav>
@@ -115,7 +115,7 @@ export default function WikiSearchPage() {
           background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', marginBottom: 16,
           transition: 'border-color 150ms, box-shadow 150ms',
         }}
-          onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+          onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
           onBlur={e => { e.currentTarget.style.borderColor = borderColor; e.currentTarget.style.boxShadow = 'none'; }}
         >
           <Search size={18} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', flexShrink: 0 }} />
@@ -150,7 +150,7 @@ export default function WikiSearchPage() {
             <button onClick={() => { setMode('keyword'); setPage(0); }} style={{
               fontSize: 11, fontWeight: 650, padding: '6px 14px', cursor: 'pointer',
               border: 'none', display: 'flex', alignItems: 'center', gap: 4,
-              background: mode === 'keyword' ? 'var(--ds-text-brand, #2563EB)' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
+              background: mode === 'keyword' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
               color: mode === 'keyword' ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'),
               transition: 'all 120ms',
             }}><Zap size={11} /> Keyword</button>
@@ -175,7 +175,7 @@ export default function WikiSearchPage() {
                 borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
                 border: active ? '1.5px solid #2563EB' : `1px solid ${borderColor}`,
                 background: active ? (isDark ? 'rgba(59,130,246,0.12)' : 'var(--ds-background-selected, #EFF6FF)') : 'transparent',
-                color: active ? 'var(--ds-text-brand, #2563EB)' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'),
+                color: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'),
                 transition: 'all 100ms',
               }}>{f.icon} {f.label}</button>
             );
@@ -250,7 +250,7 @@ export default function WikiSearchPage() {
                               if (slug) navigate(`/wiki/${slug}`);
                             }}
                             style={{
-                              fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer',
+                              fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer',
                             }}
                           >{s.title || s.source_key || 'Source'}</span>
                           {s.similarity != null && (

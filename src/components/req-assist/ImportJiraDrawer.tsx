@@ -16,7 +16,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 
 /* ── Constants ── */
-const PROJECT_COLORS: Record<string, string> = { SEN: 'var(--ds-text-brand, #2563EB)', MDT: '#3F3F46' };
+const PROJECT_COLORS: Record<string, string> = { SEN: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', MDT: '#3F3F46' };
 const getAvatarColor = (key: string) => PROJECT_COLORS[key] || '#3F3F46';
 
 /* ── Small component for live ticket count badge ── */

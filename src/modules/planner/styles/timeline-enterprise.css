@@ -506,7 +506,7 @@
 .timeline-enterprise .btn-primary,
 .timeline-enterprise [class*="bg-blue-600"],
 .timeline-enterprise [class*="bg-primary"] {
-  background-color: var(--ds-text-brand, #2563eb) !important;
+  background-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .timeline-enterprise .btn-primary:hover {

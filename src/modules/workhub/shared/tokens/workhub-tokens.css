@@ -14,7 +14,7 @@
   --wh-tx4: var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8));
 
   /* Primary */
-  --wh-pri: var(--ds-text-brand, #2563EB);
+  --wh-pri: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --wh-pri2: var(--ds-background-brand-bold-hovered, #1D4ED8);
   --wh-pri-bg: var(--ds-background-selected, #EFF6FF);
   --wh-pri-bdr: #BFDBFE;
@@ -63,7 +63,7 @@
 
   /* Primary */
   --wh-pri: var(--ds-text-brand, #3B82F6);
-  --wh-pri2: var(--ds-text-brand, #2563EB);
+  --wh-pri2: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --wh-pri-bg: rgba(59,130,246,0.10);
   --wh-pri-bdr: rgba(59,130,246,0.20);
 

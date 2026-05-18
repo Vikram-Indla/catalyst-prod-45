@@ -218,7 +218,7 @@ export function TestCycleCard({
             height: '100%', width: `${progressPercent}%`,
             background: progressPercent === 100
               ? 'linear-gradient(90deg, #10B981 0%, var(--quality-high, #059669) 100%)'
-              : 'linear-gradient(90deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
+              : 'linear-gradient(90deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
             borderRadius: 4, transition: 'width 0.5s ease',
           }} />
         </div>

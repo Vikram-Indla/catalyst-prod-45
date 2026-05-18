@@ -17,7 +17,7 @@ interface DetailTabBudgetProps {
 
 const CATEGORIES = ['Development', 'Infrastructure', 'Consulting', 'Licensing', 'Training', 'Operations', 'Contingency', 'Other'];
 const CAT_COLORS: Record<string, string> = {
-  Development: 'var(--ds-text-brand, #2563EB)', Infrastructure: '#08736B', Consulting: 'var(--cp-purple-60, #7C3AED)', Licensing: '#9A5402',
+  Development: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', Infrastructure: '#08736B', Consulting: 'var(--cp-purple-60, #7C3AED)', Licensing: '#9A5402',
   Training: '#0D7331', Operations: '#71717A', Contingency: '#D92525', Other: '#3F3F46',
 };
 const STATUSES = ['draft', 'approved', 'committed', 'paid', 'cancelled'];

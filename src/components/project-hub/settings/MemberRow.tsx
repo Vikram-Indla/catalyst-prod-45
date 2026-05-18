@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { X } from '@/lib/atlaskit-icons';
 
-const AVATAR_COLORS = ['var(--cp-purple-60, #7C3AED)', 'var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#EA580C', '#0284C7'];
+const AVATAR_COLORS = ['var(--cp-purple-60, #7C3AED)', 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#EA580C', '#0284C7'];
 
 const ROLE_STYLES: Record<string, { bg: string; text: string }> = {
-  admin: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)' },
+  admin: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
   member: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' },
   viewer: { bg: '#FFFBEB', text: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
 };

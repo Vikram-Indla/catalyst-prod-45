@@ -127,7 +127,7 @@ export const TimelineArea = forwardRef<HTMLDivElement, TimelineAreaProps>(
                 style={{ 
                   left: `${todayPosition}%`, 
                   height: `${totalContentHeight}px`,
-                  backgroundColor: 'var(--ds-text-brand, #2563eb)' 
+                  backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' 
                 }}
               />
             )}

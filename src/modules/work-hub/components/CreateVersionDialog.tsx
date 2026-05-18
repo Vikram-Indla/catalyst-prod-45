@@ -127,7 +127,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
                 if (errors.name) setErrors({ ...errors, name: '' });
               }}
               className={cn(
-                "h-10 text-sm border-border focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-[var(--ds-text-brand,#2563eb)]",
+                "h-10 text-sm border-border focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]",
                 errors.name && "border-red-500 focus:border-red-500 focus:ring-red-500"
               )}
               placeholder=""
@@ -212,7 +212,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
               Driver
             </Label>
             <Select value={driver} onValueChange={setDriver}>
-              <SelectTrigger className="h-10 text-sm border-border focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-[var(--ds-text-brand,#2563eb)]">
+              <SelectTrigger className="h-10 text-sm border-border focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]">
                 <SelectValue placeholder="Select driver">
                   {selectedUser && (
                     <div className="flex items-center gap-2">
@@ -243,7 +243,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="min-h-[100px] text-sm border-border focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-[var(--ds-text-brand,#2563eb)] resize-none"
+              className="min-h-[100px] text-sm border-border focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] resize-none"
               placeholder=""
             />
           </div>
@@ -260,7 +260,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
           </Button>
           <Button
             onClick={handleSave}
-            className="h-9 px-4 text-sm font-medium bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
+            className="h-9 px-4 text-sm font-medium bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
           >
             Save
           </Button>

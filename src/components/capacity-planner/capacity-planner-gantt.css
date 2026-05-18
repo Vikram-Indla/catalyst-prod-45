@@ -83,7 +83,7 @@
   --cpg-primary-50: var(--ds-background-selected, #eff6ff);
   --cpg-primary-100: #dbeafe;
   --cpg-primary-200: #bfdbfe;
-  --cpg-primary-600: var(--ds-text-brand, #2563eb);
+  --cpg-primary-600: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --cpg-primary-700: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --cpg-primary-800: #1e40af;
   
@@ -577,7 +577,7 @@
 }
 
 .cpg-avatar.blue {
-  background: linear-gradient(135deg, var(--ds-text-brand, #2563eb) 0%, var(--ds-background-brand-bold-hovered, #1d4ed8) 100%) !important;
+  background: linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) 0%, var(--ds-background-brand-bold-hovered, #1d4ed8) 100%) !important;
 }
 
 .cpg-avatar.amber {
@@ -792,7 +792,7 @@
 
 /* Committed Pill */
 .cpg-pill.committed {
-  background: linear-gradient(135deg, var(--ds-text-brand, #2563eb) 0%, var(--ds-background-brand-bold-hovered, #1d4ed8) 100%) !important;
+  background: linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) 0%, var(--ds-background-brand-bold-hovered, #1d4ed8) 100%) !important;
   border-left: 4px solid #1e40af !important;
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25) !important;
@@ -805,7 +805,7 @@
 /* Forecast Pill */
 .cpg-pill.forecast {
   background: var(--ds-background-selected, #eff6ff) !important;
-  border: 2px dashed var(--ds-text-brand, #2563eb) !important;
+  border: 2px dashed var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   color: var(--ds-background-brand-bold-hovered, #1d4ed8) !important;
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1) !important;
 }
@@ -1032,7 +1032,7 @@ html.dark .cpg-nav-btn , [data-theme="dark"] .cpg-nav-btn {
 
 html.dark .cpg-nav-btn:hover,
 html.dark .cpg-nav-btn:hover , [data-theme="dark"] .cpg-nav-btn:hover {
-  background: var(--ds-text-brand, #2563eb) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
 }
 
@@ -1074,8 +1074,8 @@ html.dark .cpg-today-btn , [data-theme="dark"] .cpg-today-btn {
 
 html.dark .cpg-today-btn:hover,
 html.dark .cpg-today-btn:hover , [data-theme="dark"] .cpg-today-btn:hover {
-  border-color: var(--ds-text-brand, #2563eb) !important;
-  color: var(--ds-text-brand, #2563eb) !important;
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 /* Legend */
@@ -1191,8 +1191,8 @@ html.dark .cpg-export-btn , [data-theme="dark"] .cpg-export-btn {
 
 html.dark .cpg-export-btn:hover,
 html.dark .cpg-export-btn:hover , [data-theme="dark"] .cpg-export-btn:hover {
-  border-color: var(--ds-text-brand, #2563eb) !important;
-  color: var(--ds-text-brand, #2563eb) !important;
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 /* Contract end marker */

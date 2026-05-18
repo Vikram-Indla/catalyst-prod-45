@@ -83,7 +83,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
           padding: '8px 12px',
         }}
       >
-        <div><input type="checkbox" checked={selected.size === paged.length && paged.length > 0} onChange={toggleAll} style={{ width: 14, height: 14, accentColor: 'var(--ds-text-brand, #2563EB)' }} /></div>
+        <div><input type="checkbox" checked={selected.size === paged.length && paged.length > 0} onChange={toggleAll} style={{ width: 14, height: 14, accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} /></div>
         <div onClick={() => toggleSort('title')} className="cursor-pointer select-none" style={colHeaderStyle}>Theme{sortIndicator('title')}</div>
         <div style={colHeaderStyle}>Status</div>
         <div onClick={() => toggleSort('progress_pct')} className="cursor-pointer select-none" style={colHeaderStyle}>Progress{sortIndicator('progress_pct')}</div>
@@ -117,7 +117,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
           >
             {/* Checkbox */}
             <div onClick={e => e.stopPropagation()}>
-              <input type="checkbox" checked={selected.has(theme.id)} onChange={() => toggleCheck(theme.id)} style={{ width: 14, height: 14, accentColor: 'var(--ds-text-brand, #2563EB)' }} />
+              <input type="checkbox" checked={selected.has(theme.id)} onChange={() => toggleCheck(theme.id)} style={{ width: 14, height: 14, accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
             </div>
 
             {/* Theme */}

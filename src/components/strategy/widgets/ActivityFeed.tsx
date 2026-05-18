@@ -19,7 +19,7 @@ const TEMP_MOCK_FEED: FeedItem[] = [
     time: '2 hours ago',
   },
   {
-    initials: 'AI', color: 'var(--ds-text-brand, #2563EB)',
+    initials: 'AI', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
     text: <><strong>AI Insight</strong> flagged Supply Chain Q3 logistics hub as <strong style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>Off Track</strong> — contractor delays</>,
     time: '3 hours ago',
   },

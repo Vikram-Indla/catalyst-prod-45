@@ -91,7 +91,7 @@ export function WikiAdminAccessTab() {
                           color: hasAccess ? '#0D7331' : 'var(--cp-text-secondary, #44546F)',
                           opacity: entry ? 1 : 0.5, outline: 'none',
                         }}
-                        onFocus={(e) => { if (entry) e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
+                        onFocus={(e) => { if (entry) e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
                         onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
                       >
                         {hasAccess ? 'access' : 'none'}

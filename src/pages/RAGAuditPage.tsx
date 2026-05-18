@@ -273,7 +273,7 @@ export default function RAGAuditPage() {
         onClick={runAllChecks}
         disabled={running}
         style={{
-          height: 50, padding: "0 20px", background: running ? "#93C5FD" : "var(--ds-text-brand, #2563EB)", color: "var(--ds-surface, #FFF)",
+          height: 50, padding: "0 20px", background: running ? "#93C5FD" : "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))", color: "var(--ds-surface, #FFF)",
           border: "none", borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: running ? "not-allowed" : "pointer", marginBottom: 24,
         }}
       >

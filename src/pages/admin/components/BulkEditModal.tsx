@@ -282,7 +282,7 @@ const bulkModalCSS = `
 
 /* Active state: Blue border + subtle blue bg */
 .ct-field-card.active {
-  border-color: var(--ds-text-brand, #2563eb);
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   background: rgba(37, 99, 235, 0.04);
 }
 
@@ -296,7 +296,7 @@ const bulkModalCSS = `
 .ct-field-card-header input[type="checkbox"] {
   width: 20px;
   height: 20px;
-  accent-color: var(--ds-text-brand, #2563eb);
+  accent-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -333,12 +333,12 @@ const bulkModalCSS = `
 }
 
 .ct-field-select-trigger:hover:not(:disabled) {
-  border-color: var(--ds-text-brand, #2563eb);
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 }
 
 .ct-field-select-trigger:focus {
   outline: none;
-  border-color: var(--ds-text-brand, #2563eb);
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
 }
 
@@ -406,7 +406,7 @@ const bulkModalCSS = `
 /* Selected item: Blue tint background */
 .ct-field-select-item.selected {
   background: rgba(37, 99, 235, 0.08);
-  color: var(--ds-text-brand, #2563eb);
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   font-weight: 600;
 }
 
@@ -416,7 +416,7 @@ const bulkModalCSS = `
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ds-text-brand, #2563eb);
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 }
 
 /* Modal Footer */
@@ -450,13 +450,13 @@ const bulkModalCSS = `
 }
 
 .ct-btn:hover {
-  border-color: var(--ds-text-brand, #2563eb);
-  color: var(--ds-text-brand, #2563eb);
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 }
 
 .ct-btn-primary {
-  background: var(--ds-text-brand, #2563eb);
-  border-color: var(--ds-text-brand, #2563eb);
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }
 

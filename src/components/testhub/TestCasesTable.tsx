@@ -279,7 +279,7 @@ export function TestCasesTable({
                                     tc.type === 'api' ? 'rgba(139,92,246,0.1)' : 'var(--cp-bd-zone)',
                     color: tc.type === 'security' ? 'var(--sem-danger)' :
                            tc.type === 'performance' ? '#B45309' :
-                           tc.type === 'api' ? 'var(--ds-text-brand, #2563EB)' : 'var(--fg-2)',
+                           tc.type === 'api' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--fg-2)',
                   }}>
                     {tc.type.toUpperCase()}
                   </span>

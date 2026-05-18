@@ -173,7 +173,7 @@ export function AssignTesterModal({
                 color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', backgroundColor: 'transparent', outline: 'none',
                 boxSizing: 'border-box',
               }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--bd-default, var(--cp-border, #E2E8F0))'; }}
             />
             {searchQuery && (

@@ -11,7 +11,7 @@ interface Props {
 }
 
 const VARIANT_CLASSES = {
-  primary: 'bg-[var(--ds-text-brand,#2563EB)] text-white hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)]',
+  primary: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)]',
   ghost: 'border border-[#C9D3E0] text-[#1E293B] hover:bg-[#F4F7FA]',
   teal: 'border border-[var(--cp-teal-60, #0D9488)] text-[var(--cp-teal-60, #0D9488)] hover:bg-[#F0FDFA]',
 };
@@ -47,7 +47,7 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
       <h3 className="text-[14px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: 'var(--sem-danger)' }}>Something went wrong</h3>
       <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] mb-4">{message}</p>
       {onRetry && (
-        <button onClick={onRetry} className="h-8 px-3.5 rounded-md text-[13px] font-semibold bg-[var(--ds-text-brand,#2563EB)] text-white hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)]">
+        <button onClick={onRetry} className="h-8 px-3.5 rounded-md text-[13px] font-semibold bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)]">
           Retry
         </button>
       )}

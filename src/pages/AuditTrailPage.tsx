@@ -246,7 +246,7 @@ export default function AuditTrailPage() {
         {hasActiveFilters && (
           <span
             onClick={clearFilters}
-            style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer', textDecoration: 'underline' }}
+            style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer', textDecoration: 'underline' }}
           >
             Clear filters
           </span>
@@ -328,7 +328,7 @@ export default function AuditTrailPage() {
                     <td style={{ padding: '8px 12px', minWidth: 200, verticalAlign: 'top' }}>
                       <div style={{
                         fontFamily: 'var(--cp-font-mono)',
-                        fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)',
+                        fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                       }}>
                         {entry.item_key}
                       </div>

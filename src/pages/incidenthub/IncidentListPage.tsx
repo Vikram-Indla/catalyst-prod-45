@@ -219,7 +219,7 @@ export default function IncidentListPage() {
         const k = (row as any).parent_key;
         if (!k) return <span style={{ color: '#7A869A' }}>—</span>;
         return (
-          <span style={{ color: 'var(--cp-text-link, #2563EB)', fontSize: 13 }}>{k}</span>
+          <span style={{ color: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))', fontSize: 13 }}>{k}</span>
         );
       },
     },
@@ -253,7 +253,7 @@ export default function IncidentListPage() {
             <Button variant="ghost" size="sm" className="gap-1.5" style={{ borderRadius: 6 }}>
               <Download size={14} /> Export
             </Button>
-            <Button size="sm" className="gap-1.5" style={{ backgroundColor: 'var(--ds-text-brand, #2563EB)', borderRadius: 6 }} onClick={() => setShowCreateModal(true)}>
+            <Button size="sm" className="gap-1.5" style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 6 }} onClick={() => setShowCreateModal(true)}>
               <Plus size={14} /> New Incident
             </Button>
           </div>
@@ -264,7 +264,7 @@ export default function IncidentListPage() {
           {[
             { label: 'Critical (SEV-1)', value: stats.sev1, accent: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
             { label: 'High (SEV-2)', value: stats.sev2, accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-            { label: 'Active Incidents', value: stats.active, accent: 'var(--cp-text-link, #2563EB)' },
+            { label: 'Active Incidents', value: stats.active, accent: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))' },
             { label: 'Committee Pending', value: stats.committeePending, accent: textSecondary },
             { label: 'Resolved (7d)', value: stats.resolvedWeek, accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
           ].map(s => (
@@ -298,7 +298,7 @@ export default function IncidentListPage() {
                   fontFamily: 'var(--cp-font-body)',
                   fontWeight: statusFilter === c.key ? 650 : 400,
                   backgroundColor: statusFilter === c.key ? ('var(--cp-primary-light, #EFF6FF)') : 'transparent',
-                  color: statusFilter === c.key ? ('var(--cp-text-link, #2563EB)') : textSecondary,
+                  color: statusFilter === c.key ? ('var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))') : textSecondary,
                   border: statusFilter === c.key ? `1px solid ${'var(--cp-primary-light, #BFDBFE)'}` : '1px solid transparent',
                 }}
               >
@@ -337,7 +337,7 @@ export default function IncidentListPage() {
                 {search ? 'No incidents match your search' : 'No incidents found. Create your first incident.'}
               </p>
               {!search && (
-                <Button size="sm" className="mt-3" style={{ backgroundColor: 'var(--ds-text-brand, #2563EB)', borderRadius: 6 }} onClick={() => setShowCreateModal(true)}>
+                <Button size="sm" className="mt-3" style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 6 }} onClick={() => setShowCreateModal(true)}>
                   <Plus size={14} className="mr-1" /> Create Incident
                 </Button>
               )}

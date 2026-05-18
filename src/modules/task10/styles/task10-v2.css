@@ -28,7 +28,7 @@
   --t10-border-strong: var(--ds-text-disabled, #cbd5e1);
   
   /* Accent (Catalyst V5 Blue) */
-  --t10-accent: var(--ds-text-brand, #2563eb);
+  --t10-accent: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --t10-accent-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --t10-accent-subtle: rgba(37, 99, 235, 0.08);
   --t10-accent-light: rgba(37, 99, 235, 0.12);
@@ -120,7 +120,7 @@
   --t10-border-strong: var(--ds-text-disabled, #cbd5e1);
   
   /* Accent (Catalyst V5 Blue) */
-  --t10-accent: var(--ds-text-brand, #2563eb);
+  --t10-accent: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --t10-accent-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --t10-accent-subtle: rgba(37, 99, 235, 0.08);
   --t10-accent-light: rgba(37, 99, 235, 0.12);
@@ -3294,7 +3294,7 @@
 }
 
 .t10-module-v2 .t10-dropdown-footer-btn-apply:hover {
-  background-color: var(--ds-text-brand, #2563eb);
+  background-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════

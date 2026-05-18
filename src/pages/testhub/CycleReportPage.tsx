@@ -158,7 +158,7 @@ export default function CycleReportPage() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', backgroundColor: 'hsl(var(--background))' }}>
-        <div style={{ width: 32, height: 32, border: '3px solid hsl(var(--border))', borderTopColor: 'var(--ds-text-brand, #2563EB)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+        <div style={{ width: 32, height: 32, border: '3px solid hsl(var(--border))', borderTopColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
         <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       </div>
     );
@@ -173,7 +173,7 @@ export default function CycleReportPage() {
   }
 
   const summaryCards = [
-    { icon: FileText, label: 'Total Tests', value: cycle.total_cases, color: 'var(--ds-text-brand, #2563EB)' },
+    { icon: FileText, label: 'Total Tests', value: cycle.total_cases, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
     { icon: CheckCircle2, label: 'Pass Rate', value: `${passRate}%`, color: '#10B981' },
     { icon: BarChart3, label: 'Executed', value: executed, color: 'var(--ds-text-brand, #3B82F6)' },
     { icon: XCircle, label: 'Failed', value: cycle.failed_count, color: 'var(--ds-text-danger, #EF4444)' },
@@ -202,7 +202,7 @@ export default function CycleReportPage() {
         </button>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '4px 10px', borderRadius: 6 }}>{cycle.cycle_key}</span>
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '4px 10px', borderRadius: 6 }}>{cycle.cycle_key}</span>
           <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '4px 10px', borderRadius: 6, textTransform: 'capitalize' }}>{cycle.status}</span>
         </div>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: 'hsl(var(--foreground))', margin: '0 0 8px' }}>{cycle.name} — Report</h1>

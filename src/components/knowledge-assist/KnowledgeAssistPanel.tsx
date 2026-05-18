@@ -172,7 +172,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 <circle cx="22" cy="78" r="10" fill="white" opacity="0.9"/>
                 <circle cx="78" cy="78" r="10" fill="white" opacity="0.9"/>
                 <circle cx="50" cy="50" r="16" fill="white"/>
-                <circle cx="50" cy="50" r="8" fill="var(--ds-text-brand, #2563EB)"/>
+                <circle cx="50" cy="50" r="8" fill="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"/>
               </svg>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>

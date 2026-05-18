@@ -89,9 +89,9 @@ const STATUS_LOZENGE: Record<string, { bg: string; text: string }> = {
 
 // D03: Category badges with distinct colors per MARAM V3.1.1
 const CATEGORY_BADGE: Record<ModuleCategory, { bg: string; text: string; border: string }> = {
-  Strategy:   { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)', border: '#BFDBFE' },
+  Strategy:   { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: '#BFDBFE' },
   Product:    { bg: '#F4F4F5', text: '#3F3F46', border: '#D4D4D8' },
-  Delivery:   { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)', border: '#BFDBFE' },
+  Delivery:   { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: '#BFDBFE' },
   Quality:    { bg: '#F0FDFA', text: 'var(--cp-teal-60, #0D9488)', border: '#99F6E4' },
   Operations: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', border: '#FECACA' },
 };
@@ -152,7 +152,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
           type="checkbox"
           checked={isSelected}
           onChange={(e) => onSelect(flag.id, e.target.checked)}
-          className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,#2563EB)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
+          className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2"
           aria-label={`Select ${flag.module_name}`}
         />
       </div>
@@ -255,14 +255,14 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
       {/* D10: Hover-reveal row actions */}
       <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-[120ms]">
         <button
-          className="w-7 h-7 flex items-center justify-center rounded hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
+          className="w-7 h-7 flex items-center justify-center rounded hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2"
           aria-label="Configure module"
           style={{ borderRadius: 4 }}
         >
           <span style={{ display: 'inline-flex', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}><SettingsIcon label="" size="small" /></span>
         </button>
         <button
-          className="w-7 h-7 flex items-center justify-center rounded hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
+          className="w-7 h-7 flex items-center justify-center rounded hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2"
           aria-label="More options"
           style={{ borderRadius: 4 }}
         >
@@ -506,7 +506,7 @@ export default function FeatureFlagsPage() {
       <div className="flex items-start justify-between mb-5">
         <div>
           <div className="flex items-center gap-2">
-            <span style={{ display: 'inline-flex', color: 'var(--ds-text-brand, #2563EB)' }}><FlagIcon label="" size="medium" /></span>
+            <span style={{ display: 'inline-flex', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}><FlagIcon label="" size="medium" /></span>
             <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', letterSpacing: '-0.025em', margin: 0 }}>
               Feature Flags
             </h1>
@@ -577,7 +577,7 @@ export default function FeatureFlagsPage() {
             <button
               onClick={() => { if (!allEnabled) bulkMutation.mutate({ enabled: true, environment }); }}
               disabled={allEnabled || bulkMutation.isPending}
-              className="inline-flex items-center gap-1.5 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 height: 50,
                 padding: '0 14px',
@@ -598,7 +598,7 @@ export default function FeatureFlagsPage() {
             <button
               onClick={() => { if (!noneEnabled) setBulkDisableOpen(true); }}
               disabled={noneEnabled || bulkMutation.isPending}
-              className="inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 height: 50,
                 padding: '0 14px',
@@ -640,7 +640,7 @@ export default function FeatureFlagsPage() {
             <button
               key={mode}
               onClick={() => setFilterMode(mode)}
-              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
+              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2"
               style={{
                 padding: '8px 12px',
                 height: 50,
@@ -648,7 +648,7 @@ export default function FeatureFlagsPage() {
                 fontSize: 12,
                 fontWeight: filterMode === mode ? 650 : 500,
                 background: filterMode === mode ? 'rgba(37,99,235,0.08)' : 'transparent',
-                color: filterMode === mode ? 'var(--ds-text-brand, #2563EB)' : '#71717A',
+                color: filterMode === mode ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : '#71717A',
                 cursor: 'pointer',
                 transition: 'all 120ms ease',
               }}
@@ -662,7 +662,7 @@ export default function FeatureFlagsPage() {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value as ModuleCategory | 'all')}
-          className="focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
+          className="focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2"
           style={{
             height: 50,
             padding: '8px 12px',
@@ -734,7 +734,7 @@ export default function FeatureFlagsPage() {
               checked={allSelected}
               ref={(el) => { if (el) el.indeterminate = someSelected; }}
               onChange={(e) => handleSelectAll(e.target.checked)}
-              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,#2563EB)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
+              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2"
               aria-label="Select all modules"
             />
           </div>

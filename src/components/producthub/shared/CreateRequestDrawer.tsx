@@ -21,7 +21,7 @@ const T = {
   ink: '#09090B', inkSec: '#18181B', inkMuted: '#71717A',
   surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', surfSec: 'var(--bg-1, #F8FAFC)',
   border: 'var(--bd-default, var(--cp-border, #E2E8F0))', borderStrong: 'var(--ds-text-disabled, #CBD5E1)',
-  primary: 'var(--ds-text-brand, #2563EB)', primaryHover: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', primaryBg: 'var(--ds-background-selected, #EFF6FF)',
+  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', primaryHover: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', primaryBg: 'var(--ds-background-selected, #EFF6FF)',
   danger: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
 };
 

@@ -53,7 +53,7 @@ export default function IdeasRoadmapPage() {
               <strong style={{ fontFamily: 'var(--cp-font-mono)', color: dk.greenText }}>{convertedCount}</strong> converted
             </span>
             <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: dk.t2, cursor: 'pointer' }}>
-              <input type="checkbox" checked={committedOnly} onChange={e => setCommittedOnly(e.target.checked)} style={{ accentColor: 'var(--ds-text-brand, #2563EB)' }} />
+              <input type="checkbox" checked={committedOnly} onChange={e => setCommittedOnly(e.target.checked)} style={{ accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
               Committed only
             </label>
           </div>
@@ -64,8 +64,8 @@ export default function IdeasRoadmapPage() {
       <div style={{ background: dk.pageBg, borderBottom: `1px solid ${dk.border}`, padding: '10px 28px', display: 'flex', alignItems: 'center', gap: '10px' }}>
         {TEAMS.map(t => (
           <button key={t} onClick={() => setTeamFilter(t)} style={{
-            background: teamFilter === t ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'), color: teamFilter === t ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : dk.t2,
-            border: `1px solid ${teamFilter === t ? 'var(--ds-text-brand, #2563EB)' : dk.border}`,
+            background: teamFilter === t ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'), color: teamFilter === t ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : dk.t2,
+            border: `1px solid ${teamFilter === t ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : dk.border}`,
             borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 500, cursor: 'pointer',
           }}>{t}</button>
         ))}

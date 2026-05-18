@@ -307,7 +307,7 @@ function ActivityItem({ activity, onSubjectClick }: { activity: ActivityItemType
     passed: { bg: 'bg-[#f0fdfa]', text: 'text-[#0d9488]', icon: CheckCircle2 },
     failed: { bg: 'bg-[var(--ds-background-danger,#fef2f2)]', text: 'text-[var(--ds-text-danger,#ef4444)]', icon: AlertTriangle },
     defect: { bg: 'bg-[#fef3c7]', text: 'text-[var(--ds-text-warning,#d97706)]', icon: Bug },
-    comment: { bg: 'bg-[var(--ds-background-selected,#eff6ff)]', text: 'text-[var(--ds-text-brand,#2563eb)]', icon: MessageSquare },
+    comment: { bg: 'bg-[var(--ds-background-selected,#eff6ff)]', text: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]', icon: MessageSquare },
   };
   const config = typeConfig[activity.type];
   const Icon = config.icon;

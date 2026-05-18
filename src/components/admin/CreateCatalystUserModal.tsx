@@ -208,7 +208,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             disabled={isPending}
             style={{
               flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
-              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
+              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
               padding: '8px 14px', borderRadius: '6px', fontSize: '13px', fontWeight: 600,
               cursor: isPending ? 'not-allowed' : 'pointer', opacity: isPending ? 0.7 : 1,
             }}

@@ -242,7 +242,7 @@ export const TEST_STATUS_CONFIG: Record<TestCaseStatus, {
   'in-progress': { 
     label: 'In Progress', 
     bgClass: 'bg-[#dbeafe]', 
-    textClass: 'text-[#2563eb]',
+    textClass: 'text-[var(--cp-workstream-catalyst-primary, #2563eb)]',
     icon: 'dot'
   },
 };
@@ -265,7 +265,7 @@ export const PRIORITY_CONFIG: Record<TestCasePriority, {
   medium: { 
     label: 'Medium', 
     bgClass: 'bg-[#dbeafe]', 
-    textClass: 'text-[#2563eb]'
+    textClass: 'text-[var(--cp-workstream-catalyst-primary, #2563eb)]'
   },
   low: { 
     label: 'Low', 
@@ -292,6 +292,6 @@ export const SEVERITY_CONFIG: Record<DefectSeverity, {
   minor: { 
     label: 'Minor', 
     bgClass: 'bg-[#dbeafe]', 
-    textClass: 'text-[#2563eb]'
+    textClass: 'text-[var(--cp-workstream-catalyst-primary, #2563eb)]'
   },
 };

@@ -3,11 +3,11 @@ import { WorkItemTypeIcon } from '@/components/icons';
 
 const LEVEL_STYLES: Record<string, { bg: string; text: string }> = {
   Top: { bg: '#F5F3FF', text: 'var(--cp-purple-60, #7C3AED)' },
-  Mid: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)' },
+  Mid: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
   Work: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' },
   Child: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' },
   top: { bg: '#F5F3FF', text: 'var(--cp-purple-60, #7C3AED)' },
-  mid: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)' },
+  mid: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
   work: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' },
   child: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' },
 };

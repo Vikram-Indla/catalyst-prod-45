@@ -67,7 +67,7 @@ function WikiAdminContent() {
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '7px 16px', borderRadius: 4,
-              background: 'var(--cp-primary-60, #2563EB)', color: '#fff',
+              background: 'var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))', color: '#fff',
               border: 'none', cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 600,
             }}
@@ -105,9 +105,9 @@ function WikiAdminContent() {
                   padding: '8px 16px 10px',
                   fontSize: 13, fontFamily: 'var(--cp-font-body)',
                   fontWeight: isActive ? 600 : 450,
-                  color: isActive ? 'var(--cp-primary-60, #2563EB)' : 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
+                  color: isActive ? 'var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
                   background: 'transparent', border: 'none',
-                  borderBottom: isActive ? '2px solid var(--cp-primary-60, #2563EB)' : '2px solid transparent',
+                  borderBottom: isActive ? '2px solid var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))' : '2px solid transparent',
                   cursor: 'pointer', whiteSpace: 'nowrap',
                   transition: 'color 120ms ease, border-color 120ms ease',
                   marginBottom: -1,

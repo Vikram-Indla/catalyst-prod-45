@@ -79,7 +79,7 @@ export default function InvestorJourneyDetailPage() {
             {debugInfo}
           </span>
         )}
-        <button onClick={handleClose} style={{ marginTop: 8, padding: '8px 16px', background: 'var(--ds-text-brand, #2563EB)', color: '#fff', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
+        <button onClick={handleClose} style={{ marginTop: 8, padding: '8px 16px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: '#fff', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
           Back to backlog
         </button>
       </div>

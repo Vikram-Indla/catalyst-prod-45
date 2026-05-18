@@ -330,8 +330,8 @@ function KPICard({
     },
     info: {
       iconBg: 'rgba(59,130,246,0.15)',
-      iconColor: 'var(--ds-text-brand, #2563EB)',
-      valueColor: 'var(--ds-text-brand, #2563EB)',
+      iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+      valueColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
     },
   };
 

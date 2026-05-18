@@ -13,13 +13,13 @@
 
 :root {
   /* Primary */
-  --ct-primary: var(--ds-text-brand, #2563eb);
+  --ct-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --ct-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --ct-primary-light: rgba(37, 99, 235, 0.08);
   --ct-primary-border: rgba(37, 99, 235, 0.2);
 
   /* Budget/Resource Type Colors */
-  --ct-insourced: var(--ds-text-brand, #2563eb);
+  --ct-insourced: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --ct-insourced-light: rgba(37, 99, 235, 0.08);
   --ct-cosourced: #8b5cf6;
   --ct-cosourced-light: rgba(139, 92, 246, 0.08);
@@ -29,7 +29,7 @@
   /* Resource Type Badge Colors */
   --ct-fixed: var(--ds-text-warning, #d97706);
   --ct-fixed-light: rgba(217, 119, 6, 0.08);
-  --ct-variable: var(--ds-text-brand, #2563eb);
+  --ct-variable: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --ct-variable-light: rgba(37, 99, 235, 0.08);
   --ct-freelance: #8b5cf6;
   --ct-freelance-light: rgba(139, 92, 246, 0.08);

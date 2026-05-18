@@ -67,7 +67,7 @@ function getHealthDisplay(h: number) {
 function getHealthColor(h: number) {
   if (h < 40) return 'var(--ds-text-danger, #ef4444)';
   if (h < 60) return 'var(--ds-text-warning, #d97706)';
-  if (h < 80) return 'var(--ds-text-brand, #2563eb)';
+  if (h < 80) return 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))';
   return '#0d9488';
 }
 function getHealthBg(h: number) {
@@ -80,8 +80,8 @@ function getHealthBg(h: number) {
 const STATUS_DISPLAY: Record<string, { dot: string; bg: string; text: string; label: string }> = {
   planned:  { dot: 'var(--ds-text-subtlest, #94a3b8)', bg: 'var(--ds-surface-sunken, #f1f5f9)', text: 'var(--ds-text-subtle, #475569)', label: 'Planned' },
   planning: { dot: 'var(--ds-text-subtlest, #94a3b8)', bg: 'var(--ds-surface-sunken, #f1f5f9)', text: 'var(--ds-text-subtle, #475569)', label: 'Planning' },
-  active:   { dot: 'var(--ds-text-brand, #2563eb)', bg: '#dbeafe', text: '#1e40af', label: 'Active' },
-  development: { dot: 'var(--ds-text-brand, #2563eb)', bg: 'rgba(37,99,235,0.1)', text: 'var(--ds-text-brand, #2563eb)', label: 'Development' },
+  active:   { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', bg: '#dbeafe', text: '#1e40af', label: 'Active' },
+  development: { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', bg: 'rgba(37,99,235,0.1)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', label: 'Development' },
   staging:  { dot: '#8b5cf6', bg: 'rgba(139,92,246,0.1)', text: '#8b5cf6', label: 'Staging' },
   testing:  { dot: 'var(--ds-text-warning, #d97706)', bg: 'rgba(217,119,6,0.1)', text: 'var(--ds-text-warning, #d97706)', label: 'Testing' },
   uat:      { dot: '#f97316', bg: 'rgba(249,115,22,0.1)', text: '#f97316', label: 'UAT' },
@@ -518,7 +518,7 @@ export default function AllReleasesPage() {
     return (
       <div className="flex flex-col items-center justify-center gap-4" style={{ height: 'calc(100vh - 52px)' }}>
         <div className="flex items-center justify-center w-12 h-12 rounded-full" style={{ background: '#dbeafe' }}>
-          <Package className="w-6 h-6" style={{ color: 'var(--ds-text-brand, #2563eb)' }} />
+          <Package className="w-6 h-6" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }} />
         </div>
         <div className="text-center">
           <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>No releases yet</h3>
@@ -568,9 +568,9 @@ export default function AllReleasesPage() {
           <button
             onClick={() => setIsNewReleaseModalOpen(true)}
             className="flex items-center gap-1.5 transition-colors"
-            style={{ height: '32px', padding: '0 14px', borderRadius: '6px', background: 'var(--ds-text-brand, #2563eb)', color: 'var(--ds-surface, #fff)', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+            style={{ height: '32px', padding: '0 14px', borderRadius: '6px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', color: 'var(--ds-surface, #fff)', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #1d4ed8)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-text-brand, #2563eb)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))')}
           >
             <Plus className="w-3.5 h-3.5" /> New Release
           </button>
@@ -612,7 +612,7 @@ export default function AllReleasesPage() {
             placeholder="Search releases..."
             className="focus:outline-none"
             style={{ width: '200px', height: '32px', paddingLeft: '32px', paddingRight: searchQuery ? '28px' : '8px', border: '1px solid #e2e8f0', borderRadius: '6px', fontSize: '13px', background: 'var(--ds-surface-sunken, #f8fafc)' }}
-            onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563eb)')}
+            onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))')}
             onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)')}
           />
           {searchQuery && (
@@ -683,7 +683,7 @@ export default function AllReleasesPage() {
           className="flex items-center gap-1 transition-colors"
           style={{ fontSize: '13px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', background: 'none', border: 'none', cursor: 'pointer' }}
         >
-          <ArrowUpDown className="w-3.5 h-3.5" style={{ color: 'var(--ds-text-brand, #2563eb)' }} />
+          <ArrowUpDown className="w-3.5 h-3.5" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }} />
           {sortFieldLabel} {sortArrow}
         </button>
 
@@ -700,7 +700,7 @@ export default function AllReleasesPage() {
               className="flex items-center gap-1 transition-colors"
               style={{
                 padding: '4px 12px', fontSize: '13px', fontWeight: 500,
-                background: activeView === v.key ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-surface, #fff)',
+                background: activeView === v.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-surface, #fff)',
                 color: activeView === v.key ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtlest, #64748b)',
                 border: 'none', cursor: 'pointer',
               }}
@@ -784,7 +784,7 @@ export default function AllReleasesPage() {
                       checked={selectAllState === 'all'}
                       ref={el => { if (el) el.indeterminate = selectAllState === 'some'; }}
                       onChange={toggleSelectAll}
-                      style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, #2563eb)' }}
+                      style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }}
                     />
                   </th>
                   <SortableHeader label="RELEASE" field="name" current={sortField} direction={sortDirection} onClick={handleSort} style={{ minWidth: '240px' }} />
@@ -846,7 +846,7 @@ export default function AllReleasesPage() {
             <div className="px-6 py-5">
               <div className="flex gap-4 mb-6">
                 <MetricBox value={detailRelease.health} label="Health Score" color={getHealthColor(detailRelease.health)} />
-                <MetricBox value={`${detailRelease.progress}%`} label="Progress" color="var(--ds-text-brand, #2563eb)" />
+                <MetricBox value={`${detailRelease.progress}%`} label="Progress" color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))" />
                 <MetricBox value={detailRelease.defects} label="Defects" color={detailRelease.defects > 0 ? 'var(--ds-text-danger, #ef4444)' : '#0d9488'} />
               </div>
               <div className="space-y-0">
@@ -899,7 +899,7 @@ export default function AllReleasesPage() {
                 const INSIGHT_ICONS: Record<string, React.ReactNode> = {
                   critical: <AlertTriangle className="w-4 h-4" style={{ color: 'var(--ds-text-danger, #ef4444)' }} />,
                   warning: <AlertTriangle className="w-4 h-4" style={{ color: 'var(--ds-text-warning, #d97706)' }} />,
-                  chart: <ArrowUpDown className="w-4 h-4" style={{ color: 'var(--ds-text-brand, #2563eb)' }} />,
+                  chart: <ArrowUpDown className="w-4 h-4" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }} />,
                   check: <Check className="w-4 h-4" style={{ color: '#0d9488' }} />,
                   info: <Sparkles className="w-4 h-4" style={{ color: '#8b5cf6' }} />,
                 };
@@ -1031,7 +1031,7 @@ const clearBtnStyle: React.CSSProperties = {
   fontSize: '12px', color: 'var(--ds-text-subtlest, #64748b)', background: 'none', border: 'none', cursor: 'pointer',
 };
 const applyBtnStyle: React.CSSProperties = {
-  fontSize: '12px', color: 'var(--ds-text-brand, #2563eb)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer',
+  fontSize: '12px', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer',
 };
 const bulkBarBtnStyle: React.CSSProperties = {
   padding: '4px 10px', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '4px', color: 'var(--ds-surface, #fff)', background: 'transparent', fontSize: '12px', cursor: 'pointer',
@@ -1040,7 +1040,7 @@ const closeBtnStyle: React.CSSProperties = {
   color: 'var(--ds-text-subtlest, #64748b)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px',
 };
 const primaryBtnStyle: React.CSSProperties = {
-  padding: '6px 16px', borderRadius: '6px', background: 'var(--ds-text-brand, #2563eb)', color: 'var(--ds-surface, #fff)', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer',
+  padding: '6px 16px', borderRadius: '6px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', color: 'var(--ds-surface, #fff)', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer',
 };
 
 
@@ -1072,9 +1072,9 @@ function SortableHeader({ label, field, current, direction, onClick, style }: {
     <th
       onClick={() => onClick(field)}
       className="cursor-pointer select-none transition-colors hover:text-[var(--cp-ink-2, var(--cp-ink-2, #334155))]"
-      style={{ ...colHeaderStyle, ...style, color: isActive ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-text-subtlest, #64748b)' }}
+      style={{ ...colHeaderStyle, ...style, color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-text-subtlest, #64748b)' }}
     >
-      {label} {isActive && <span style={{ color: 'var(--ds-text-brand, #2563eb)' }}>{direction === 'asc' ? '↑' : '↓'}</span>}
+      {label} {isActive && <span style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }}>{direction === 'asc' ? '↑' : '↓'}</span>}
     </th>
   );
 }
@@ -1103,14 +1103,14 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
       onMouseLeave={e => { if (!selected) (e.currentTarget.style.background = ''); }}
     >
       <td style={{ textAlign: 'center', padding: '0 4px', position: 'relative', width: '40px', height: '50px', verticalAlign: 'middle' }}>
-        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '3px', background: 'var(--ds-text-brand, #2563eb)', opacity: 0, transition: 'opacity 100ms' }} className="group-hover:!opacity-100" />
+        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '3px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', opacity: 0, transition: 'opacity 100ms' }} className="group-hover:!opacity-100" />
         <input
           type="checkbox"
           checked={selected}
           onChange={e => { e.stopPropagation(); onToggle(); }}
           onClick={e => e.stopPropagation()}
           className="opacity-0 group-hover:opacity-100 transition-opacity"
-          style={{ opacity: selected ? 1 : undefined, cursor: 'pointer', accentColor: 'var(--ds-text-brand, #2563eb)', width: '16px', height: '16px' }}
+          style={{ opacity: selected ? 1 : undefined, cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', width: '16px', height: '16px' }}
         />
       </td>
       <td style={{ ...cellStyle, minWidth: '280px' }}>
@@ -1171,11 +1171,11 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
       </td>
       <td style={{ ...cellStyle, width: '100px' }}>
         {r.owner === 'Unassigned' ? (
-          <div className="flex items-center gap-1.5" style={{ color: 'var(--ds-text-brand, #2563eb)' }}>
+          <div className="flex items-center gap-1.5" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }}>
             <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'var(--ds-surface-sunken, #f1f5f9)', border: '1px dashed #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Plus className="w-2.5 h-2.5" style={{ color: 'var(--ds-text-subtlest, #94a3b8)' }} />
             </div>
-            <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text-brand, #2563eb)' }}>Assign</span>
+            <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }}>Assign</span>
           </div>
         ) : (
           <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{r.owner}</span>
@@ -1188,7 +1188,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
 function CheckboxRow({ checked, label, onChange }: { checked: boolean; label: string; onChange: () => void }) {
   return (
     <label className="flex items-center gap-2 cursor-pointer transition-colors hover:bg-[var(--ds-surface-sunken,#f8fafc)]" style={{ padding: '6px 12px', fontSize: '13px', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
-      <input type="checkbox" checked={checked} onChange={onChange} style={{ accentColor: 'var(--ds-text-brand, #2563eb)' }} />
+      <input type="checkbox" checked={checked} onChange={onChange} style={{ accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }} />
       {label}
     </label>
   );
@@ -1204,9 +1204,9 @@ function FilterPill({ label, active, count, isOpen, onToggle, children }: {
         className="flex items-center gap-1 transition-colors"
         style={{
           height: '32px', padding: '8px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: 500, cursor: 'pointer',
-          border: `1px solid ${active ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-border, #e2e8f0)'}`,
+          border: `1px solid ${active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-border, #e2e8f0)'}`,
           background: active ? '#dbeafe' : 'var(--ds-surface, #fff)',
-          color: active ? 'var(--ds-text-brand, #2563eb)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+          color: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
         }}
       >
         {label}{active && count > 0 ? ` (${count})` : ''} <ChevronDown className="w-3 h-3" />
@@ -1281,11 +1281,11 @@ function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => voi
         <div className="px-6 py-5 space-y-4">
           <div>
             <label style={labelStyle}>RELEASE NAME</label>
-            <input value={name} onChange={e => setName(e.target.value)} style={inputStyle} placeholder="e.g. Q2 2026 Release" autoFocus onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563eb)')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)')} />
+            <input value={name} onChange={e => setName(e.target.value)} style={inputStyle} placeholder="e.g. Q2 2026 Release" autoFocus onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)')} />
           </div>
           <div>
             <label style={labelStyle}>VERSION</label>
-            <input value={version} onChange={e => setVersion(e.target.value)} style={inputStyle} onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563eb)')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)')} />
+            <input value={version} onChange={e => setVersion(e.target.value)} style={inputStyle} onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)')} />
           </div>
           <div className="flex gap-4">
             <div className="flex-1">
@@ -1299,12 +1299,12 @@ function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => voi
             </div>
             <div className="flex-1">
               <label style={labelStyle}>TARGET DATE</label>
-              <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={inputStyle} onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563eb)')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)')} />
+              <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={inputStyle} onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)')} />
             </div>
           </div>
           <div>
             <label style={labelStyle}>DESCRIPTION (optional)</label>
-            <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2} style={{ ...inputStyle, resize: 'vertical' }} onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563eb)')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)')} />
+            <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2} style={{ ...inputStyle, resize: 'vertical' }} onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)')} />
           </div>
         </div>
         <div className="flex justify-end gap-2 px-6 py-4 border-t" style={{ borderColor: 'var(--ds-border, #e2e8f0)' }}>
@@ -1327,7 +1327,7 @@ function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => voi
 const HEALTH_BADGE: Record<string, { bg: string; text: string }> = {
   critical: { bg: 'rgba(239,68,68,0.1)', text: 'var(--ds-text-danger, #ef4444)' },
   'at-risk': { bg: 'rgba(217,119,6,0.1)', text: 'var(--ds-text-warning, #d97706)' },
-  attention: { bg: 'rgba(37,99,235,0.1)', text: 'var(--ds-text-brand, #2563eb)' },
+  attention: { bg: 'rgba(37,99,235,0.1)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
   healthy: { bg: 'rgba(13,148,136,0.1)', text: '#0d9488' },
 };
 
@@ -1348,7 +1348,7 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
               className="group cursor-pointer transition-all relative"
               style={{
                 background: selected ? 'var(--ds-background-selected, #eff6ff)' : 'var(--ds-surface, #fff)',
-                border: `1px solid ${selected ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-border, #e2e8f0)'}`,
+                border: `1px solid ${selected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-border, #e2e8f0)'}`,
                 borderRadius: '8px', padding: '16px',
                 animation: `fadeInUp 0.3s ease both`,
                 animationDelay: `${i * 30}ms`,
@@ -1362,7 +1362,7 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
                 onChange={e => { e.stopPropagation(); onToggle(r.id); }}
                 onClick={e => e.stopPropagation()}
                 className="absolute transition-opacity"
-                style={{ top: '12px', left: '12px', opacity: selected ? 1 : 0, cursor: 'pointer', accentColor: 'var(--ds-text-brand, #2563eb)' }}
+                style={{ top: '12px', left: '12px', opacity: selected ? 1 : 0, cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }}
                 onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
                 onMouseLeave={e => { if (!selected) e.currentTarget.style.opacity = '0'; }}
               />
@@ -1432,7 +1432,7 @@ function getTimelineBarColor(r: ViewRelease): string {
   if (r.progress === 0) return 'var(--ds-text-disabled, #cbd5e1)';
   if (r.health < 40) return 'var(--ds-text-danger, #ef4444)';
   if (r.health < 60) return 'var(--ds-text-warning, #d97706)';
-  if (r.health < 80) return 'var(--ds-text-brand, #2563eb)';
+  if (r.health < 80) return 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))';
   return '#0d9488';
 }
 const LEGEND_ITEMS = [

@@ -46,7 +46,7 @@ interface LinkedCycle {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  development: { label: 'Development', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)' },
+  development: { label: 'Development', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)' },
   testing: { label: 'Testing', color: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF' },
   staging: { label: 'Staging', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB' },
   uat: { label: 'UAT', color: '#0891B2', bg: '#ECFEFF' },
@@ -228,7 +228,7 @@ export default function EnvironmentDetailPage() {
                 <div>
                   <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: 4 }}><Globe size={12} /> Application URL</p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <a href={environment.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: 'var(--ds-text-brand, #2563EB)', textDecoration: 'none' }}>{environment.url}</a>
+                    <a href={environment.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', textDecoration: 'none' }}>{environment.url}</a>
                     <ExternalLink size={14} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
                   </div>
                 </div>
@@ -311,7 +311,7 @@ export default function EnvironmentDetailPage() {
                   <div key={cycle.cycle_id} onClick={() => navigate(`/testhub/cycles/${cycle.cycle_id}`)}
                     style={{ padding: 12, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 8, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '2px 6px', borderRadius: 4, marginRight: 8 }}>{cycle.cycle_key}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '2px 6px', borderRadius: 4, marginRight: 8 }}>{cycle.cycle_key}</span>
                       <span style={{ fontSize: 13, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{cycle.name}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

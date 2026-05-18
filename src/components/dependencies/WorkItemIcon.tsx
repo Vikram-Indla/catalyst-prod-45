@@ -36,7 +36,7 @@ const SIZE_MAP = {
 function getTypeColor(type: WorkItemIconType): string {
   switch (type) {
     case 'objective':
-      return 'var(--info-fg, #2563eb)'; // Blue
+      return 'var(--info-fg, var(--cp-workstream-catalyst-primary, #2563eb))'; // Blue
     case 'keyresult':
       return 'var(--brand-teal, #0d9488)';
     case 'epic':
@@ -44,17 +44,17 @@ function getTypeColor(type: WorkItemIconType): string {
     case 'feature':
       return 'var(--success-fg, #22c55e)'; // Green
     case 'story':
-      return 'var(--info-fg, #2563eb)'; // Blue
+      return 'var(--info-fg, var(--cp-workstream-catalyst-primary, #2563eb))'; // Blue
     case 'demand':
-      return 'var(--info-fg, #2563eb)'; // Blue
+      return 'var(--info-fg, var(--cp-workstream-catalyst-primary, #2563eb))'; // Blue
     case 'dependency':
-      return 'var(--info-fg, #2563eb)'; // Blue
+      return 'var(--info-fg, var(--cp-workstream-catalyst-primary, #2563eb))'; // Blue
     case 'risk':
       return 'var(--warning-fg, #f97316)'; // Orange
     case 'theme':
-      return 'var(--info-fg, #2563eb)'; // Blue
+      return 'var(--info-fg, var(--cp-workstream-catalyst-primary, #2563eb))'; // Blue
     case 'snapshot':
-      return 'var(--info-fg, #2563eb)'; // Blue
+      return 'var(--info-fg, var(--cp-workstream-catalyst-primary, #2563eb))'; // Blue
     default:
       return 'var(--fg-3)';
   }

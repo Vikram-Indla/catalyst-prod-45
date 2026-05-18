@@ -301,7 +301,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 <div style={{ fontSize: '11px', color: dk.t3, marginTop: '2px' }}>Convert to an request to begin planning.</div>
               </div>
               <button onClick={() => onConvert?.(rawIdea.idea_key)} style={{
-                background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '6px',
+                background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '6px',
                 padding: '7px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
               }}>
                 → Convert
@@ -411,7 +411,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <div style={{
-                      width: '24px', height: '24px', borderRadius: '50%', background: 'var(--ds-text-brand, #2563EB)',
+                      width: '24px', height: '24px', borderRadius: '50%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       color: 'var(--ds-surface, #FFF)', fontSize: '10px', fontWeight: 700, flexShrink: 0,
                     }}>{assigneeInitials}</div>
@@ -448,7 +448,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                   onClick={() => setLocalIsCommitted(!localIsCommitted)}
                   style={{
                     width: '44px', height: '24px', borderRadius: '12px', border: 'none',
-                    backgroundColor: localIsCommitted ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-border-strong, var(--cp-border, #E2E8F0))'),
+                    backgroundColor: localIsCommitted ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-border-strong, var(--cp-border, #E2E8F0))'),
                     cursor: 'pointer', position: 'relative', transition: 'background 200ms ease',
                   }}
                 >
@@ -540,7 +540,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                   <div style={{ height: '4px', borderRadius: '4px', backgroundColor: 'var(--cp-border, var(--cp-border, #E2E8F0))', overflow: 'hidden' }}>
                     <div style={{
                       height: '100%', width: `${(dim.score / 5) * 100}%`,
-                      backgroundColor: dim.score > 0 ? 'var(--ds-text-brand, #2563EB)' : 'transparent',
+                      backgroundColor: dim.score > 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
                       borderRadius: '4px', transition: 'width 300ms ease',
                     }} />
                   </div>
@@ -581,7 +581,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
             </button>
             <button onClick={handleSave} disabled={updateIdea.isPending} style={{
               height: '50px', padding: '0 16px', borderRadius: '6px',
-              border: 'none', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              border: 'none', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               fontSize: '13px', fontWeight: 600, cursor: 'pointer',
               opacity: updateIdea.isPending ? 0.7 : 1,
             }}>
@@ -647,7 +647,7 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <div style={{
-                      width: '28px', height: '28px', borderRadius: '50%', background: 'var(--ds-text-brand, #2563EB)',
+                      width: '28px', height: '28px', borderRadius: '50%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       color: 'var(--ds-surface, #FFF)', fontSize: '10px', fontWeight: 700,
                     }}>{initials}</div>
@@ -682,7 +682,7 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
             onClick={handleSubmit}
             disabled={addComment.isPending}
             style={{
-              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFF)', border: 'none', borderRadius: '6px',
+              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #FFF)', border: 'none', borderRadius: '6px',
               width: '36px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', flexShrink: 0,
             }}

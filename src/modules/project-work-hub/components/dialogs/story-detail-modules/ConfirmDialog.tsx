@@ -43,7 +43,7 @@ export function ConfirmDialog({
           >{cancelLabel}</button>
           <button onClick={onConfirm} style={{
             padding: '7px 16px', borderRadius: 4,
-            background: destructive ? '#DE350B' : 'var(--ds-text-brand, #2563EB)',
+            background: destructive ? '#DE350B' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
             color: 'var(--ds-surface, #FFF)', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer',
             transition: 'opacity 0.15s',
           }}

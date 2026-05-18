@@ -185,7 +185,7 @@ export const KanbanCard = memo(function KanbanCard({
       <div className="flex items-start justify-between mb-1.5">
         <button
           onClick={handleKeyClick}
-          className="font-mono text-sm font-semibold hover:underline text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)]"
+          className="font-mono text-sm font-semibold hover:underline text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:text-[var(--ds-text-brand,#60a5fa)]"
         >
           {incident.incident_key}
         </button>
@@ -254,7 +254,7 @@ export const KanbanCard = memo(function KanbanCard({
       {isInCommittee && (
         <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mt-2 pt-2 border-t border-border">
           {/* Approvers count */}
-          <span className="flex items-center gap-0.5 text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)]">
+          <span className="flex items-center gap-0.5 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:text-[var(--ds-text-brand,#60a5fa)]">
             <Users className="h-3 w-3" />
             <span className="font-medium">{approverCount}</span>
           </span>
@@ -280,7 +280,7 @@ export const KanbanCard = memo(function KanbanCard({
               <Tooltip position="top" content="Edit Committee">
                 <button
                   onClick={handleEditCommitteeClick}
-                  className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-[var(--ds-text-brand,#2563eb)] dark:hover:text-[var(--ds-text-brand,#60a5fa)] transition-colors"
+                  className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:hover:text-[var(--ds-text-brand,#60a5fa)] transition-colors"
                 >
                   <Settings className="h-3 w-3" />
                 </button>

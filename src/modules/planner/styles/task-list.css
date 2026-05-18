@@ -23,10 +23,10 @@
   --tl-border: var(--ds-border, #e2e8f0);             /* H2, N6: default */
   --tl-border-light: var(--ds-surface-sunken, #f1f5f9);
   --tl-border-strong: var(--ds-text-disabled, #cbd5e1);      /* N6 */
-  --tl-border-focus: var(--ds-text-brand, #2563eb);       /* I6 */
+  --tl-border-focus: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));       /* I6 */
   
   /* === Interactive (I, N1) === */
-  --tl-primary: var(--ds-text-brand, #2563eb);            /* N1: primary button */
+  --tl-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));            /* N1: primary button */
   --tl-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);      /* I2 */
   
   /* === Priority Dot Colors (A2) === */
@@ -534,7 +534,7 @@
   font-size: 0.625rem;     /* K3: 10px */
   font-weight: 600;
   color: white;            /* K2 */
-  background: var(--ds-text-brand, #2563eb);     /* K1: hash-based would vary */
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));     /* K1: hash-based would vary */
   flex-shrink: 0;
 }
 
@@ -633,7 +633,7 @@
   overflow: hidden;
 }
 
-/* L2: Progress fill var(--ds-text-brand, #2563eb) */
+/* L2: Progress fill var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) */
 .planner-task-list-content .tl-progress-fill {
   height: 100%;
   border-radius: 4px;
@@ -824,8 +824,8 @@
 }
 
 .planner-task-list-content .tl-row input[type="checkbox"]:checked {
-  background-color: var(--ds-text-brand, #2563eb);  /* I6: blue-600 */
-  border-color: var(--ds-text-brand, #2563eb);
+  background-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));  /* I6: blue-600 */
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 }
 
 /* ============================================================================

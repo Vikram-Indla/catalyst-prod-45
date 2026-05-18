@@ -32,7 +32,7 @@ interface Resource {
 
 /* ── Constants ── */
 const DEPT_COLORS: Record<string, string> = {
-  Delivery: 'var(--ds-text-brand, #2563EB)',
+  Delivery: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   Product: 'var(--cp-purple-60, #7C3AED)',
   Governance: 'var(--cp-teal-60, #0D9488)',
   Operations: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
@@ -79,7 +79,7 @@ function useTokens(dk: boolean) {
     border:       dk ? 'var(--ds-border, #2E2E2E)' : 'var(--ds-border, var(--cp-border, #E2E8F0))',
     borderSubtle: dk ? 'var(--ds-border, #292929)' : '#f3f4f6',
     borderInput:  dk ? 'var(--ds-border-bold, #454545)' : '#DDDEE1',
-    borderFocus:  'var(--ds-text-brand, #2563EB)',
+    borderFocus:  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
     text1:        dk ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))',
     text2:        dk ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #475569)',
     text3:        dk ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
@@ -448,7 +448,7 @@ export default function ResourceListingPage() {
                         }}>
                           <span style={{
                             width: '6px', height: '6px', borderRadius: '50%',
-                            background: DEPT_COLORS[r.dept_name] || 'var(--ds-text-brand, #2563EB)', flexShrink: 0,
+                            background: DEPT_COLORS[r.dept_name] || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', flexShrink: 0,
                           }} />
                           {r.dept_name}
                         </span>
@@ -494,7 +494,7 @@ export default function ResourceListingPage() {
                         />
                         <ActionBtn
                           tooltip="Chronology View"
-                          bg="var(--ds-text-brand, #2563eb)" bgHover="var(--ds-background-brand-bold-hovered, #1d4ed8)"
+                          bg="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))" bgHover="var(--ds-background-brand-bold-hovered, #1d4ed8)"
                           shadowColor="rgba(37,99,235,0.2)"
                           icon={<Clock size={13} strokeWidth={1.9} />}
                           onClick={(e) => { e.stopPropagation(); navTo(r.id, 'chronology'); }}
@@ -546,8 +546,8 @@ export default function ResourceListingPage() {
                     onClick={() => setPage(n)}
                     style={{
                       width: 28, height: 28, borderRadius: 4,
-                      border: `1px solid ${safePage === n ? 'var(--ds-text-brand, #2563EB)' : t.border}`,
-                      background: safePage === n ? 'var(--ds-text-brand, #2563EB)' : 'transparent',
+                      border: `1px solid ${safePage === n ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : t.border}`,
+                      background: safePage === n ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
                       color: safePage === n ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : t.text2,
                       fontWeight: safePage === n ? 600 : 400,
                       cursor: 'pointer', fontSize: 12,

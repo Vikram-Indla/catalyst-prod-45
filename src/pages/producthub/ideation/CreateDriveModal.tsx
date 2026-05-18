@@ -167,7 +167,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               onBlur={() => handleBlur('title')}
-              onFocus={(e) => { e.target.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+              onFocus={(e) => { e.target.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
               maxLength={100}
             />
             {touched.title && errors.title && <div style={errorStyle}>{errors.title}</div>}
@@ -186,7 +186,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               onBlur={() => handleBlur('description')}
-              onFocus={(e) => { e.target.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+              onFocus={(e) => { e.target.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
               maxLength={500}
             />
             {touched.description && errors.description && <div style={errorStyle}>{errors.description}</div>}
@@ -213,7 +213,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     onMouseEnter={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = 'var(--cp-border-strong, #CBD5E1)'; e.currentTarget.style.background = 'var(--cp-bg-page, #F8FAFC)'; } }}
                     onMouseLeave={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = 'var(--cp-border-strong, var(--cp-border, #E2E8F0))'; e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; } }}
                   >
-                    <Icon size={20} strokeWidth={1.75} color={isSelected ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-ink-2, var(--cp-ink-2, #334155))')} />
+                    <Icon size={20} strokeWidth={1.75} color={isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-ink-2, var(--cp-ink-2, #334155))')} />
                   </button>
                 );
               })}
@@ -377,7 +377,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             style={{
               padding: '10px 24px', fontSize: '14px', fontWeight: 600,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              background: (!isValid || createMutation.isPending) ? '#93C5FD' : 'var(--ds-text-brand, #2563EB)',
+              background: (!isValid || createMutation.isPending) ? '#93C5FD' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
               border: 'none', borderRadius: '8px',
               cursor: (!isValid || createMutation.isPending) ? 'not-allowed' : 'pointer',
               display: 'inline-flex', alignItems: 'center', gap: '6px',
@@ -385,7 +385,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               transition: 'background 150ms ease', fontFamily: 'var(--cp-font-body)',
             }}
             onMouseEnter={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #1D4ED8)'; }}
-            onMouseLeave={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = 'var(--ds-text-brand, #2563EB)'; }}
+            onMouseLeave={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
           >
             {createMutation.isPending && <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />}
             Create Drive

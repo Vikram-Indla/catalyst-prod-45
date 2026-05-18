@@ -141,7 +141,7 @@ export function ReleaseDetail() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 52, marginBottom: 16, flexWrap: 'wrap' }}>
           <FolderGit2 size={14} style={{ color: 'var(--fg-4)' }} />
           {release.projects.map((proj, i) => {
-            const colors = ['var(--ds-text-brand, #2563eb)', '#7c3aed', '#0d9488', 'var(--ds-text-warning, #d97706)', 'var(--ds-text-danger, #ef4444)', '#0891b2', 'var(--ds-text-success, #16a34a)', '#6366f1'];
+            const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', '#7c3aed', '#0d9488', 'var(--ds-text-warning, #d97706)', 'var(--ds-text-danger, #ef4444)', '#0891b2', 'var(--ds-text-success, #16a34a)', '#6366f1'];
             const c = colors[i % colors.length];
             return (
               <span key={proj} style={{

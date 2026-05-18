@@ -32,7 +32,7 @@ export default function CommitteeQueuePage() {
             </div>
             <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>Committee Queue</h1>
           </div>
-          <Button size="sm" className="gap-1.5" style={{ backgroundColor: 'var(--ds-text-brand, #2563EB)', borderRadius: 6 }}>
+          <Button size="sm" className="gap-1.5" style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 6 }}>
             <Plus size={14} /> New Committee
           </Button>
         </div>
@@ -83,7 +83,7 @@ export default function CommitteeQueuePage() {
                 onClick={() => navigate(`/incident-hub/view/${item.incident_id}`)}
               >
                 <div className="px-3">
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-brand, #2563EB)', backgroundColor: 'var(--cp-primary-light, #EFF6FF)', padding: '0 4px', borderRadius: 3 }}>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', backgroundColor: 'var(--cp-primary-light, #EFF6FF)', padding: '0 4px', borderRadius: 3 }}>
                     {item.incident_key}
                   </span>
                 </div>

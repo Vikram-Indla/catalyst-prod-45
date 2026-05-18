@@ -47,7 +47,7 @@ function InsightItem({ insight, onActionClick }: { insight: AIReleaseInsight; on
       </div>
       <button
         onClick={() => onActionClick?.(insight)}
-        className="mt-2 flex items-center gap-1 text-[11px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:text-[var(--ds-background-brand-bold-hovered,#1D4ED8)] transition-colors"
+        className="mt-2 flex items-center gap-1 text-[11px] font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] hover:text-[var(--ds-background-brand-bold-hovered,#1D4ED8)] transition-colors"
       >
         {insight.action}
         <ArrowRightIcon label="" size="small" primaryColor="currentColor" />
@@ -91,7 +91,7 @@ export function AIInsightsDrawer({ isOpen, onClose, insights, onActionClick }: A
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
           <div className="flex items-center gap-2.5">
             <div className="p-1.5 rounded-lg" style={{ background: '#DBEAFE' }}>
-              <SparklesIcon label="" size="small" primaryColor="var(--ds-text-brand, #2563EB)" />
+              <SparklesIcon label="" size="small" primaryColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />
             </div>
             <h2 className="font-semibold text-sm text-slate-900">AI Insights</h2>
             {criticalCount > 0 && (

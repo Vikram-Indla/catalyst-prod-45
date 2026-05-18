@@ -37,7 +37,7 @@ export function DrawerMetadataChips({
       <div
         className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium"
         style={{
-          background: 'var(--ds-text-brand, #2563eb)',
+          background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
           border: '1px solid rgba(37, 99, 235, 0.3)',
           color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         }}

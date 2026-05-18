@@ -251,7 +251,7 @@ export const PRIORITY_CONFIG: Record<TaskPriority, { label: string; color: strin
 export const DUE_DATE_GROUPS = [
   { id: 'overdue', title: 'Overdue', color: 'var(--ds-text-danger, #ef4444)' },     // red-500
   { id: 'today', title: 'Due Today', color: 'var(--ds-text-warning, #d97706)' },     // amber-600
-  { id: 'thisWeek', title: 'This Week', color: 'var(--ds-text-brand, #2563eb)' },  // blue-600
+  { id: 'thisWeek', title: 'This Week', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },  // blue-600
   { id: 'nextWeek', title: 'Next Week', color: '#0d9488' },  // teal-600
   { id: 'later', title: 'Later', color: 'var(--ds-text-subtlest, #64748b)' },         // slate-500
   { id: 'noDueDate', title: 'No Due Date', color: 'var(--ds-text-subtlest, #94a3b8)' }, // slate-400
@@ -260,7 +260,7 @@ export const DUE_DATE_GROUPS = [
 // Status colors for insights - Deep, vibrant semantic status colors
 export const STATUS_COLORS: Record<TaskStatus, string> = {
   backlog: 'var(--ds-text-subtlest, #64748b)',   // slate-500 (neutral gray)
-  planned: 'var(--ds-text-brand, #2563eb)',   // blue-600 (vibrant blue)
+  planned: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',   // blue-600 (vibrant blue)
   'in-progress': '#f97316', // orange-500 (vibrant orange)
   review: '#8b5cf6',    // violet-500 (vibrant violet)
   done: 'var(--ds-text-success, #22c55e)',      // green-500 (vibrant green)
@@ -275,7 +275,7 @@ export const getProgressColor = (progress: number): string => {
 
 // Avatar colors for resources - Catalyst V5 (Blue, Teal, Gray only)
 export const AVATAR_COLORS = [
-  'var(--ds-text-brand, #2563eb)', // Blue (brand-primary)
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // Blue (brand-primary)
   '#0d9488', // Teal (brand-teal)
   '#6b7280', // Gray (secondary-grey)
 ];

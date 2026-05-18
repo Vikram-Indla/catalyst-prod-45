@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { ChevronDown, Search, X, Check, User } from '@/lib/atlaskit-icons';
 
-const AVATAR_COLORS = ['var(--ds-text-brand, #2563eb)', '#0d9488', '#0369a1', 'var(--ds-text-warning, #d97706)', '#0891b2', '#1e40af', '#b45309', '#0f766e', 'var(--ds-text-subtle, #475569)', 'var(--cp-ink-2, var(--cp-ink-2, #334155))'];
+const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', '#0d9488', '#0369a1', 'var(--ds-text-warning, #d97706)', '#0891b2', '#1e40af', '#b45309', '#0f766e', 'var(--ds-text-subtle, #475569)', 'var(--cp-ink-2, var(--cp-ink-2, #334155))'];
 
 function hashColor(name: string): string {
   let h = 0;

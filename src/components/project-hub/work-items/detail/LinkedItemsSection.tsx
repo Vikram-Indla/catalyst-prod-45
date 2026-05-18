@@ -7,7 +7,7 @@ import { Plus, Search, X, Link as LinkIcon, Check } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 
 const TYPE_COLORS: Record<string, string> = {
-  Epic: 'var(--cp-purple-60, #7C3AED)', Feature: 'var(--ds-text-brand, #2563EB)', Story: 'var(--cp-teal-60, #0D9488)',
+  Epic: 'var(--cp-purple-60, #7C3AED)', Feature: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', Story: 'var(--cp-teal-60, #0D9488)',
   Bug: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', Task: 'var(--ds-text-warning, var(--cp-warning, #D97706))', Subtask: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
 };
 
@@ -179,7 +179,7 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
           <select
             value={linkType}
             onChange={e => setLinkType(e.target.value)}
-            className="w-full text-[13px] px-3 py-2 rounded mb-4 focus:outline-none focus:ring-1 focus:ring-[var(--ds-text-brand,#2563EB)] bg-[var(--cp-float)]"
+            className="w-full text-[13px] px-3 py-2 rounded mb-4 focus:outline-none focus:ring-1 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] bg-[var(--cp-float)]"
             style={{ border: '1px solid var(--divider)' }}
           >
             {LINK_TYPES.map(t => (
@@ -212,7 +212,7 @@ function AddLinkModal({ workItemId, projectId, onClose, onCreated }: {
                 <span className="text-[10px] shrink-0" style={{ fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-3)' }}>{item.item_key}</span>
                 <span className="text-[13px] font-medium truncate" style={{ color: 'var(--fg-1)' }}>{item.title}</span>
                 <StatusLozenge name={item.status_name} category={item.status_category} />
-                {selectedId === item.id && <Check size={13} className="ml-auto text-[var(--ds-text-brand,#2563EB)]" />}
+                {selectedId === item.id && <Check size={13} className="ml-auto text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />}
               </button>
             ))}
             {search.length >= 2 && searchResults.length === 0 && (

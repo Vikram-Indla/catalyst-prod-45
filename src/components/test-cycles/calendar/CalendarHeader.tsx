@@ -62,7 +62,7 @@ export function CalendarHeader({
         <Button
           variant="ghost"
           onClick={() => onNavigate('today')}
-          className="h-8 px-3 bg-[#dbeafe] text-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-text-brand,#2563eb)] hover:text-white"
+          className="h-8 px-3 bg-[#dbeafe] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:text-white"
         >
           Today
         </Button>
@@ -87,7 +87,7 @@ export function CalendarHeader({
             onClick={() => onViewChange(v)}
             className={`h-8 px-4 capitalize ${
               view === v
-                ? 'bg-[var(--ds-text-brand,#2563eb)] text-white hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]'
+                ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] text-white hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]'
                 : 'text-[var(--ds-text-subtle,#475569)] hover:bg-white'
             }`}
           >

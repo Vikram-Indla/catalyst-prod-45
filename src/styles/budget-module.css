@@ -4,8 +4,8 @@
  * Version: 8.0 - Production Ready
  * 
  * DESIGN TOKENS FROM SPECIFICATION:
- * - Primary: var(--ds-text-brand, #2563eb) (buttons, active states)
- * - Insourced: var(--ds-text-brand, #2563eb), Cosourced: #0d9488, Outsourced: var(--ds-text-warning, #d97706)
+ * - Primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) (buttons, active states)
+ * - Insourced: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)), Cosourced: #0d9488, Outsourced: var(--ds-text-warning, #d97706)
  * - Licenses: #7c3aed
  * - Text: var(--ds-text, #0f172a) primary, var(--cp-ink-2, var(--cp-ink-2, #334155)) secondary, var(--ds-text-subtlest, #64748b) muted
  * - 5px solid top borders on cards, font-mono for values
@@ -15,7 +15,7 @@
   /* ============================================
      V8 PRIMARY COLORS
      ============================================ */
-  --budget-primary: var(--ds-text-brand, #2563eb);
+  --budget-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --budget-primary-dark: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --budget-primary-light: rgba(37, 99, 235, 0.08);
   --budget-primary-bg: var(--ds-background-selected, #eff6ff);
@@ -23,7 +23,7 @@
   /* ============================================
      V8 BUDGET TYPE COLORS — PER SPEC
      ============================================ */
-  --budget-insourced: var(--ds-text-brand, #2563eb);      /* Blue */
+  --budget-insourced: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));      /* Blue */
   --budget-insourced-dark: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --budget-insourced-light: rgba(37, 99, 235, 0.08);
   
@@ -48,7 +48,7 @@
   --budget-warning-light: rgba(217, 119, 6, 0.1);
   --budget-danger: var(--ds-text-danger, #dc2626);
   --budget-danger-light: rgba(220, 38, 38, 0.1);
-  --budget-info: var(--ds-text-brand, #2563eb);
+  --budget-info: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 
   /* ============================================
      V8 NEUTRALS (WCAG AA COMPLIANT)
@@ -866,7 +866,7 @@
   font-weight: 600;
 }
 
-.budget-module .cost-cell.insourced { color: var(--ds-text-brand, #2563eb); }
+.budget-module .cost-cell.insourced { color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)); }
 .budget-module .cost-cell.cosourced { color: #0d9488; }
 .budget-module .cost-cell.outsourced { color: var(--ds-text-warning, #d97706); }
 .budget-module .cost-cell.muted { color: var(--budget-text-muted); }
@@ -1334,7 +1334,7 @@
 /* Parent row expansion indicator - blue left border */
 .budget-module tbody tr.expanded-parent {
   background: var(--ds-background-selected, #eff6ff) !important; /* blue-50 */
-  border-left: 4px solid var(--ds-text-brand, #2563eb) !important;
+  border-left: 4px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .budget-module tbody tr.expanded-parent:hover {
@@ -1349,7 +1349,7 @@
 
 .budget-module .expand-chevron.expanded {
   transform: rotate(90deg);
-  color: var(--ds-text-brand, #2563eb); /* blue-600 */
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)); /* blue-600 */
 }
 
 .budget-module .expanded-row td {

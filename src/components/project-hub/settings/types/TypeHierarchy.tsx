@@ -6,7 +6,7 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
 
 const TYPE_CONFIG: Record<string, { color: string; icon: string }> = {
   Epic: { color: 'var(--cp-purple-60, #7C3AED)', icon: 'Zap' },
-  Feature: { color: 'var(--ds-text-brand, #2563EB)', icon: 'Layers' },
+  Feature: { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', icon: 'Layers' },
   Story: { color: 'var(--cp-teal-60, #0D9488)', icon: 'Bookmark' },
   Bug: { color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', icon: 'Bug' },
   Task: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', icon: 'CheckSquare' },

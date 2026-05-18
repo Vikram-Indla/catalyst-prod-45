@@ -92,7 +92,7 @@ export default function IdeationDrivesView() {
         <button
           onClick={() => setCreateOpen(true)}
           style={{
-            height: 50, background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '6px',
+            height: 50, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '6px',
             padding: '0 16px', fontSize: '13px', fontWeight: 650, cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: '6px',
           }}
@@ -169,7 +169,7 @@ export default function IdeationDrivesView() {
               }}>
                 <div style={{
                   width: `${Math.min(pct, 100)}%`, height: '100%',
-                  background: pct >= 100 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-brand, #2563EB)',
+                  background: pct >= 100 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                   borderRadius: 4,
                   transition: 'width 0.3s',
                   minWidth: pct > 0 ? 4 : 0,
@@ -188,7 +188,7 @@ export default function IdeationDrivesView() {
               )}
               {drive.ideas.map(idea => (
                 <span key={idea.idea_key} style={{
-                  fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)',
+                  fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                   background: 'var(--ds-background-selected, #EFF6FF)', border: '1px solid #DBEAFE', borderRadius: '4px', padding: '1px 6px',
                 }}>{idea.idea_key}</span>
               ))}

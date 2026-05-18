@@ -243,7 +243,7 @@ export const ASSIGNMENT_COLOR_MAP: Record<string, string> = {
 
 // Department gradients for avatars
 export const DEPARTMENT_GRADIENTS: Record<string, string> = {
-  Delivery: 'linear-gradient(145deg, #3b82f6, #2563eb)',
+  Delivery: 'linear-gradient(145deg, #3b82f6, var(--cp-workstream-catalyst-primary, #2563eb))',
   Product: 'linear-gradient(145deg, #8b5cf6, #7c3aed)',
   Operations: 'linear-gradient(145deg, #f97316, #ea580c)',
   'Technical Support': 'linear-gradient(145deg, #14b8a6, #0d9488)',

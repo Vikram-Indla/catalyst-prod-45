@@ -61,7 +61,7 @@
 
 /* Focus ring for form inputs */
 .ph-input:focus {
-  border-color: var(--ds-text-brand, #2563EB) !important;
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) !important;
   box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
 }
 

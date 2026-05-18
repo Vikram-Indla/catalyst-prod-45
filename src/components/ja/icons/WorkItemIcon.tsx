@@ -7,10 +7,10 @@ import { Tooltip } from '@/components/ads';
 const ICON_COLORS: Record<string, string> = {
   // Enterprise
   theme: '#0d9488',      // Teal
-  objective: 'var(--ds-text-brand, #2563eb)',  // Blue
+  objective: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',  // Blue
   
   // Product
-  'business-request': 'var(--ds-text-brand, #2563eb)', // Blue
+  'business-request': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // Blue
   
   // Program
   epic: '#904EE2',       // Purple

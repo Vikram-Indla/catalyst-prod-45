@@ -73,7 +73,7 @@ header.caty-header-fixed,
   height: 52px !important;
   min-width: 52px !important;
   flex-shrink: 0 !important;
-  background: var(--ds-text-brand, #2563eb) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   border-radius: 14px !important;
   display: flex !important;
   align-items: center !important;
@@ -224,14 +224,14 @@ button.caty-header-btn,
 button.caty-header-btn:hover {
   background: var(--ds-border, #e2e8f0) !important;
   background-color: var(--ds-border, #e2e8f0) !important;
-  color: var(--ds-text-brand, #2563eb) !important;
-  border-color: var(--ds-text-brand, #2563eb) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .caty-header-btn:hover svg,
 .caty-header-actions button:hover svg {
-  color: var(--ds-text-brand, #2563eb) !important;
-  stroke: var(--ds-text-brand, #2563eb) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
+  stroke: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 /* HEADER ICON */
@@ -240,7 +240,7 @@ button.caty-header-btn:hover {
   width: 52px !important;
   height: 52px !important;
   min-width: 52px !important;
-  background: var(--ds-text-brand, #2563eb) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   border-radius: 14px !important;
 }
 
@@ -320,8 +320,8 @@ button.caty-department-pill,
 }
 
 .caty-department-pill:hover {
-  border-color: var(--ds-text-brand, #2563eb) !important;
-  color: var(--ds-text-brand, #2563eb) !important;
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   background: var(--ds-background-selected, #eff6ff) !important;
 }
 
@@ -377,7 +377,7 @@ button.caty-department-pill,
 
 /* USER BUBBLE */
 .caty-message.user .caty-bubble {
-  background: var(--ds-text-brand, #2563eb) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border-radius: 14px !important;
   border-bottom-right-radius: 4px !important;
@@ -392,7 +392,7 @@ button.caty-department-pill,
 }
 
 .caty-avatar.assistant {
-  background: var(--ds-text-brand, #2563eb) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .caty-avatar.user {
@@ -437,7 +437,7 @@ button.caty-department-pill,
   font-family: var(--cp-font-mono);
   font-size: 1.75rem !important;
   font-weight: 700 !important;
-  color: var(--ds-text-brand, #2563eb) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   line-height: 1.2 !important;
 }
 
@@ -496,7 +496,7 @@ button.caty-department-pill,
 }
 
 .caty-data-card-header.info {
-  border-left-color: var(--ds-text-brand, #2563eb) !important;
+  border-left-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .caty-data-card-title {
@@ -582,7 +582,7 @@ button.caty-department-pill,
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  color: var(--ds-text-brand, #2563eb) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   font-size: 1.125rem !important;
   font-weight: 700 !important;
   letter-spacing: -0.01em !important;
@@ -788,7 +788,7 @@ button.caty-department-pill,
   font-family: var(--cp-font-mono);
   font-size: 1rem !important;
   font-weight: 700 !important;
-  color: var(--ds-text-brand, #2563eb) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .caty-team-util {
@@ -812,7 +812,7 @@ button.caty-department-pill,
 }
 
 .caty-action-btn.primary {
-  background: var(--ds-text-brand, #2563eb) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
 }
 
@@ -854,8 +854,8 @@ button.caty-department-pill,
 
 .caty-suggestion:hover {
   background: #dbeafe !important;
-  border-color: var(--ds-text-brand, #2563eb) !important;
-  color: var(--ds-text-brand, #2563eb) !important;
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .caty-suggestion.alert {
@@ -881,7 +881,7 @@ button.caty-department-pill,
 }
 
 .caty-input-wrapper:focus-within {
-  border-color: var(--ds-text-brand, #2563eb) !important;
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   box-shadow: 0 0 0 3px #dbeafe !important;
 }
 
@@ -913,7 +913,7 @@ button.caty-department-pill,
 .caty-send-btn {
   width: 48px !important;
   height: 48px !important;
-  background: var(--ds-text-brand, #2563eb) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: none !important;
   border-radius: 12px !important;
@@ -927,7 +927,7 @@ button.caty-department-pill,
 /* SHOW MORE */
 .caty-show-more {
   font-size: 0.75rem !important;
-  color: var(--ds-text-brand, #2563eb) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   text-align: center !important;
   padding: 10px !important;
   cursor: pointer !important;
@@ -1021,7 +1021,7 @@ button.caty-fab {
   min-width: 60px !important;
   min-height: 60px !important;
   border-radius: 50% !important;
-  background: linear-gradient(135deg, var(--ds-text-brand, #2563eb), var(--ds-background-brand-bold-hovered, #1d4ed8)) !important;
+  background: linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)), var(--ds-background-brand-bold-hovered, #1d4ed8)) !important;
   border: none !important;
   cursor: pointer !important;
   display: flex !important;
@@ -1066,7 +1066,7 @@ button.caty-fab {
 
 /* Preserve the center blue dot */
 .caty-fab svg circle:last-child {
-  fill: var(--ds-text-brand, #2563eb) !important;
+  fill: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1148,7 +1148,7 @@ button.caty-fab {
   font-size: 1.625rem !important;
   font-weight: 700 !important;
   line-height: 1 !important;
-  color: var(--ds-text-brand, #2563eb) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .caty-viewport__stat-value--danger {
@@ -1208,7 +1208,7 @@ button.caty-fab {
 }
 
 .caty-viewport__section-indicator--info {
-  background: var(--ds-text-brand, #2563eb) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .caty-viewport__section-title {
@@ -1293,7 +1293,7 @@ button.caty-fab {
 .caty-viewport__probe-item--info {
   background: var(--ds-background-selected, #eff6ff) !important;
   border-color: #bfdbfe !important;
-  border-left-color: var(--ds-text-brand, #2563eb) !important;
+  border-left-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .caty-viewport__probe-item--info:hover {
@@ -1452,7 +1452,7 @@ button.caty-fab {
 .dark .caty-header-fixed .caty-header-icon,
 .dark .caty-header-left .caty-header-icon,
 .dark .caty-header-icon {
-  background: var(--ds-text-brand, #2563eb) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .dark .caty-widget .caty-header-title,
@@ -1508,19 +1508,19 @@ button.caty-fab {
 .dark button.caty-header-btn:hover {
   background: var(--ds-border, #2c2c2c) !important;
   background-color: var(--ds-border, #2c2c2c) !important;
-  color: var(--ds-text-brand, #2563eb) !important;
-  border-color: var(--ds-text-brand, #2563eb) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .dark .caty-header-btn:hover svg,
 .dark .caty-header-actions button:hover svg {
-  color: var(--ds-text-brand, #2563eb) !important;
-  stroke: var(--ds-text-brand, #2563eb) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
+  stroke: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .dark .caty-header-icon,
 .dark [class*="header-icon"] {
-  background: var(--ds-text-brand, #2563eb) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .dark .caty-header-title,
@@ -1558,8 +1558,8 @@ button.caty-fab {
 }
 
 .dark .caty-department-pill:hover {
-  border-color: var(--ds-text-brand, #2563eb) !important;
-  color: var(--ds-text-brand, #2563eb) !important;
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   background: var(--ds-background-selected, #1c2b4a) !important;
 }
 
@@ -1579,12 +1579,12 @@ button.caty-fab {
 }
 
 .dark .caty-message.user .caty-bubble {
-  background: var(--ds-text-brand, #2563eb) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   color: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
 }
 
 .dark .caty-avatar.assistant {
-  background: var(--ds-text-brand, #2563eb) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .dark .caty-avatar.user {
@@ -1611,7 +1611,7 @@ button.caty-fab {
 }
 
 .dark .caty-metric-value {
-  color: var(--ds-text-brand, #2563eb) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .dark .caty-metric-card.danger .caty-metric-value {
@@ -1654,7 +1654,7 @@ button.caty-fab {
 }
 
 .dark .caty-data-card-header.info {
-  border-left-color: var(--ds-text-brand, #2563eb) !important;
+  border-left-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .dark .caty-data-card-title {
@@ -1699,7 +1699,7 @@ button.caty-fab {
 .dark .caty-data-avatar-box {
   background: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
   border: 2px solid var(--ds-border, #2c2c2c) !important;
-  color: var(--ds-text-brand, #2563eb) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .dark .caty-data-name {
@@ -1794,7 +1794,7 @@ button.caty-fab {
 }
 
 .dark .caty-team-count {
-  color: var(--ds-text-brand, #2563eb) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .dark .caty-team-util {
@@ -1802,7 +1802,7 @@ button.caty-fab {
 }
 
 .dark .caty-action-btn.primary {
-  background: var(--ds-text-brand, #2563eb) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   color: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
 }
 
@@ -1828,8 +1828,8 @@ button.caty-fab {
 }
 
 .dark .caty-suggestion:hover {
-  border-color: var(--ds-text-brand, #2563eb) !important;
-  color: var(--ds-text-brand, #2563eb) !important;
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .dark .caty-suggestion.alert {
@@ -1847,7 +1847,7 @@ button.caty-fab {
 }
 
 .dark .caty-input-wrapper:focus-within {
-  border-color: var(--ds-text-brand, #2563eb) !important;
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .dark .caty-widget .caty-input-field,
@@ -1858,7 +1858,7 @@ button.caty-fab {
 }
 
 .dark .caty-send-btn {
-  background: var(--ds-text-brand, #2563eb) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   color: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
 }
 
@@ -1867,7 +1867,7 @@ button.caty-fab {
 }
 
 .dark .caty-show-more {
-  color: var(--ds-text-brand, #2563eb) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .dark .caty-thinking {
@@ -1876,11 +1876,11 @@ button.caty-fab {
 
 .dark .caty-fab,
 .dark button.caty-fab {
-  background: linear-gradient(135deg, var(--ds-text-brand, #2563eb), var(--ds-text-brand, #2563eb)) !important;
+  background: linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)), var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))) !important;
 }
 
 .dark .caty-fab svg circle:last-child {
-  fill: var(--ds-text-brand, #2563eb) !important;
+  fill: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .dark .caty-viewport__stats {
@@ -1889,7 +1889,7 @@ button.caty-fab {
 }
 
 .dark .caty-viewport__stat-value {
-  color: var(--ds-text-brand, #2563eb) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .dark .caty-viewport__stat-value--danger {
@@ -1906,7 +1906,7 @@ button.caty-fab {
 }
 
 .dark .caty-viewport__section-indicator--info {
-  background: var(--ds-text-brand, #2563eb) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .dark .caty-viewport__section-title {
@@ -1935,7 +1935,7 @@ button.caty-fab {
 
 .dark .caty-viewport__probe-item--info {
   background: var(--ds-background-selected, #1c2b4a) !important;
-  border-left-color: var(--ds-text-brand, #2563eb) !important;
+  border-left-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 .dark .caty-viewport__probe-text {

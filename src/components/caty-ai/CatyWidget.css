@@ -32,7 +32,7 @@
    ───────────────────────────────────────────────────────────────────────────── */
 .caty-widget {
   /* Primary */
-  --caty-primary: var(--ds-text-brand, #2563eb);
+  --caty-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --caty-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --caty-primary-muted: #dbeafe;
   --caty-primary-subtle: var(--ds-background-selected, #eff6ff);
@@ -56,7 +56,7 @@
   --caty-danger-bg: var(--ds-background-danger, #fef2f2);
   --caty-danger-border: rgba(220, 38, 38, 0.3);
   
-  --caty-info: var(--ds-text-brand, #2563eb);
+  --caty-info: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --caty-info-bg: #dbeafe;
   
   /* Backgrounds */
@@ -141,7 +141,7 @@
   width: 52px !important;
   height: 52px !important;
   min-width: 52px !important;
-  background: var(--ds-text-brand, #2563eb) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
   border-radius: 14px !important;
   display: flex !important;
   align-items: center !important;
@@ -202,7 +202,7 @@
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    DARK MODE — Rule 3 paired overrides for !important hex in this file.
-   Brand-blue icon background (var(--ds-text-brand, #2563eb)), success/danger dots (var(--quality-high, #059669)/#dc2626)
+   Brand-blue icon background (var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))), success/danger dots (var(--quality-high, #059669)/#dc2626)
    and white svg text on the brand circle are intentional — kept as-is.
    We flip the white panel header and dark text to ADS dark tokens.
    ═══════════════════════════════════════════════════════════════════════════════ */
@@ -834,7 +834,7 @@
   width: 44px;
   height: 44px;
   min-width: 44px;
-  background: linear-gradient(135deg, var(--ds-text-brand, #3b82f6) 0%, var(--ds-text-brand, #2563eb) 100%);
+  background: linear-gradient(135deg, var(--ds-text-brand, #3b82f6) 0%, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) 100%);
   border-radius: var(--caty-radius-md);
   display: flex;
   align-items: center;
@@ -1112,7 +1112,7 @@
 .caty-profile-avatar {
   width: 56px;
   height: 56px;
-  background: linear-gradient(135deg, var(--ds-text-brand, #3b82f6) 0%, var(--ds-text-brand, #2563eb) 100%);
+  background: linear-gradient(135deg, var(--ds-text-brand, #3b82f6) 0%, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) 100%);
   border-radius: var(--caty-radius-lg);
   display: flex;
   align-items: center;

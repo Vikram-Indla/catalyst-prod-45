@@ -299,7 +299,7 @@ export function TeamRoomSidebar({ teamId, expanded, onToggle, className }: TeamR
                         top: expanded ? '4px' : '6px',
                         bottom: expanded ? '4px' : '6px',
                         width: '3px',
-                        background: 'var(--nav-accent-bar, #2563eb)',
+                        background: 'var(--nav-accent-bar, var(--cp-workstream-catalyst-primary, #2563eb))',
                         borderRadius: '0 2px 2px 0',
                       }}
                     />
@@ -309,7 +309,7 @@ export function TeamRoomSidebar({ teamId, expanded, onToggle, className }: TeamR
                     style={{ 
                       width: '17px', 
                       height: '17px',
-                      color: active ? 'var(--ds-text-brand, #2563EB)' : 'var(--nav-text-secondary, #3F3F46)',
+                      color: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--nav-text-secondary, #3F3F46)',
                       strokeWidth: 1.4,
                     }}
                   />
@@ -361,7 +361,7 @@ export function TeamRoomSidebar({ teamId, expanded, onToggle, className }: TeamR
                                 top: '4px',
                                 bottom: '4px',
                                 width: '3px',
-                                background: 'var(--nav-accent-bar, #2563eb)',
+                                background: 'var(--nav-accent-bar, var(--cp-workstream-catalyst-primary, #2563eb))',
                                 borderRadius: '0 2px 2px 0',
                               }}
                             />
@@ -398,7 +398,7 @@ export function TeamRoomSidebar({ teamId, expanded, onToggle, className }: TeamR
                                 top: '4px',
                                 bottom: '4px',
                                 width: '3px',
-                                background: 'var(--nav-accent-bar, #2563eb)',
+                                background: 'var(--nav-accent-bar, var(--cp-workstream-catalyst-primary, #2563eb))',
                                 borderRadius: '0 2px 2px 0',
                               }}
                             />
@@ -435,7 +435,7 @@ export function TeamRoomSidebar({ teamId, expanded, onToggle, className }: TeamR
                                 top: '4px',
                                 bottom: '4px',
                                 width: '3px',
-                                background: 'var(--nav-accent-bar, #2563eb)',
+                                background: 'var(--nav-accent-bar, var(--cp-workstream-catalyst-primary, #2563eb))',
                                 borderRadius: '0 2px 2px 0',
                               }}
                             />

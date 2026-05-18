@@ -32,14 +32,14 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
   const isFailed = ps === 'failed';
   const pct = epicCount > 0 ? 100 : (STAGE_PROGRESS[ps] ?? 0);
 
-  const barColor = isComplete ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : isFailed ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-brand, #2563EB)';
+  const barColor = isComplete ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : isFailed ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
 
   let labelText = '';
   let labelColor = 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
 
   if (isProcessing) {
     labelText = `~${etaMinutes ?? 4}m left`;
-    labelColor = 'var(--ds-text-brand, #2563EB)';
+    labelColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
   } else if (isComplete) {
     if (epicCount > 0) {
       labelText = 'Complete';

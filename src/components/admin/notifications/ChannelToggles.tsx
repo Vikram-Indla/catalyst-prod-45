@@ -116,13 +116,13 @@ export function ChannelToggleCard({
             disabled={disabled}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-md border text-left transition-colors duration-150 ${
               channels[key]
-                ? 'bg-[rgba(37,99,235,0.04)] border-[var(--ds-text-brand,#2563EB)]/20'
+                ? 'bg-[rgba(37,99,235,0.04)] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20'
                 : 'bg-white border-[var(--bd-default,var(--cp-border, #E2E8F0))] hover:bg-[rgba(0,0,0,0.02)]'
             } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
           >
             <span
               style={{
-                color: channels[key] ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
+                color: channels[key] ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
                 display: 'flex',
                 flexShrink: 0,
               }}

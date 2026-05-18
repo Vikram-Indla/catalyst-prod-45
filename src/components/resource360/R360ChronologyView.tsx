@@ -55,7 +55,7 @@ function JiraIcon({ type }: { type: string }) {
   return <TaskIcon />;
 }
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', LND: 'var(--cp-purple-60, #7C3AED)' };
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', LND: 'var(--cp-purple-60, #7C3AED)' };
 const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
 const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
 
@@ -152,7 +152,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {groupItems.map((item: any) => {
                   const cat = getCatFromStatus(item.status_name || item.status || '', item.status_category);
-                  const accentDot = cat === 'done' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : cat === 'progress' ? 'var(--ds-text-brand, #2563EB)' : cat === 'blocked' ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
+                  const accentDot = cat === 'done' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : cat === 'progress' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : cat === 'blocked' ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
                   const projColor = pColor(item.project_key, item.project_color);
                   return (
                     <div key={item.id} onClick={() => onItemClick(item)} style={{

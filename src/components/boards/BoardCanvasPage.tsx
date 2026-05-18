@@ -21,9 +21,9 @@ const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-vie
 
 /* Board accent colors — use board.color from DB, fallback map */
 const BOARD_ACCENT: Record<string, string> = {
-  'Demand Analysis Kanban': 'var(--ds-text-brand, #2563EB)',
+  'Demand Analysis Kanban': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   'Business Request Kanban': 'var(--ds-text-warning, var(--cp-warning, #D97706))',
-  'Delivery Board': 'var(--ds-text-brand, #2563EB)',
+  'Delivery Board': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   'QA Board': 'var(--ds-text-success, var(--cp-success, #16A34A))',
   'Design Board': 'var(--cp-purple-60, #7C3AED)',
   'My Planning Board': 'var(--ds-text-warning, var(--cp-warning, #D97706))',

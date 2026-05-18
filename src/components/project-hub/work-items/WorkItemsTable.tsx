@@ -266,7 +266,7 @@ export function WorkItemsTable({
                           type="checkbox"
                           checked={isAllSelected}
                           onChange={selectAll}
-                          className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,#2563EB)]"
+                          className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
                         />
                       </div>
                     ) : (

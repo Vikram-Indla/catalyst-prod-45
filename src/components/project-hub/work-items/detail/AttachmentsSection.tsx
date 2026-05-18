@@ -164,7 +164,7 @@ export function AttachmentsSection({ workItemId, projectId }: Props) {
         onClick={() => document.getElementById('att-file-input')?.click()}
       >
         {uploading ? (
-          <Loader2 size={18} className="animate-spin text-[var(--ds-text-brand,#2563EB)] mx-auto" />
+          <Loader2 size={18} className="animate-spin text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] mx-auto" />
         ) : (
           <>
             <Upload size={16} className="mx-auto mb-1" style={{ color: 'var(--fg-4)' }} />

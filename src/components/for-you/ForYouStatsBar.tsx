@@ -6,7 +6,7 @@
 import React from 'react';
 
 const HUB_DOT_COLORS: Record<string, string> = {
-  Project: 'var(--ds-text-brand, #2563EB)',
+  Project: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   Product: 'var(--cp-purple-60, #7C3AED)',
   Task: '#EA580C',
   Incident: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',

@@ -223,7 +223,7 @@ export function EditResourceForm({
         <Button
           onClick={onSave}
           disabled={isSaving}
-          className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]"
+          className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]"
         >
           Save
         </Button>

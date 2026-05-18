@@ -99,7 +99,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
         ) : (
           // Fallback: bar is entirely outside visible timeline range — show indicator
           <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full" style={{ background: 'var(--ds-text-brand, #2563EB)' }} />
+            <div className="w-2 h-2 rounded-full" style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
             <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>Outside timeline range</span>
           </div>
         )}

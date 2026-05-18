@@ -46,7 +46,7 @@ const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
   Test:     { bg: 'var(--cp-hover)', color: 'var(--cp-t3)', border: 'var(--cp-t3)' },
 };
 
-const AVATAR_COLOURS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#DB2777'];
+const AVATAR_COLOURS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#DB2777'];
 
 const FORYOU_COLUMNS: TColDef[] = [
   { key: 'checkbox', label: '', defaultWidth: 40, minWidth: 40, locked: true },
@@ -262,7 +262,7 @@ export function CatalystTable({
                         <Checkbox checked={isSelected} onCheckedChange={(v) => handleSelectItem(item.id, !!v)} />
                       </div>
                       <JiraIssueTypeIcon type={item.issueType} size={16} />
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>{item.key}</span>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{item.key}</span>
                       {(item.attachmentCount ?? 0) > 0 && (
                         <Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', transform: 'rotate(-45deg)' }} />
                       )}
@@ -363,7 +363,7 @@ export function CatalystTable({
               {(item.attachmentCount ?? 0) > 0 && (
                 <span title="Attachments"><Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>
               )}
-              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>{item.key}</span>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{item.key}</span>
             </div>
           </td>
         );

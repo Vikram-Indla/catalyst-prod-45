@@ -17,7 +17,7 @@ import { useJiraConnection, useUpdateJiraConnection, useTestConnection } from '.
 import '../../shared/tokens/workhub-tokens.css';
 
 const WORKSTREAM_COLORS: Record<string, string> = {
-  software: 'var(--ds-text-brand, #2563EB)',
+  software: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   business: 'var(--ds-text-brand, #3B82F6)',
   service_desk: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))',
 };

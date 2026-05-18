@@ -50,7 +50,7 @@
 }
 
 .lwi-header__toggle:focus-visible {
-  outline: 2px solid var(--ds-text-brand, #2563EB);
+  outline: 2px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   outline-offset: 2px;
 }
 
@@ -97,7 +97,7 @@
 }
 
 .lwi-header__add:focus-visible {
-  outline: 2px solid var(--ds-text-brand, #2563EB);
+  outline: 2px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   outline-offset: 2px;
 }
 
@@ -192,7 +192,7 @@
 }
 
 .lwi-row__key:focus-visible {
-  outline: 2px solid var(--ds-text-brand, #2563EB);
+  outline: 2px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   outline-offset: 2px;
 }
 
@@ -217,7 +217,7 @@
 }
 
 .lwi-row__summary:focus-visible {
-  outline: 2px solid var(--ds-text-brand, #2563EB);
+  outline: 2px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   outline-offset: 2px;
 }
 
@@ -286,7 +286,7 @@
 }
 
 .lwi-row__action-btn:focus-visible {
-  outline: 2px solid var(--ds-text-brand, #2563EB);
+  outline: 2px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   outline-offset: 2px;
 }
 
@@ -419,7 +419,7 @@
 }
 
 .lwi-toolbar__create:focus-visible {
-  outline: 2px solid var(--ds-text-brand, #2563EB);
+  outline: 2px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   outline-offset: 2px;
 }
 

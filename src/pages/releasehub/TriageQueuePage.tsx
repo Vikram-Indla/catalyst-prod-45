@@ -82,7 +82,7 @@ export default function TriageQueuePage() {
                 return (
                   <tr key={c.id} className="border-b border-[rgba(15,23,42,0.06)]" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                     <td className="px-3 py-2">
-                      <span className="text-[13px] font-medium text-[var(--ds-text-brand,#2563EB)]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
+                      <span className="text-[13px] font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
                     </td>
                     <td className="px-3 py-2 max-w-[220px]">
                       <span className="text-[13px] text-[var(--ds-text,var(--cp-ink-1, #0F172A))] truncate block">{c.title}</span>
@@ -95,9 +95,9 @@ export default function TriageQueuePage() {
                     <td className="px-3 py-2">
                       {rec ? (
                         <div className="bg-[var(--ds-background-selected,#EFF6FF)] border border-[#DBEAFE] rounded-md px-2.5 py-2 flex items-start gap-2 max-w-[260px]">
-                          <Sparkles className="w-3.5 h-3.5 text-[var(--ds-text-brand,#2563EB)] flex-shrink-0 mt-0.5" />
+                          <Sparkles className="w-3.5 h-3.5 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] flex-shrink-0 mt-0.5" />
                           <div className="text-[12px] leading-relaxed">
-                            <span className="font-semibold text-[var(--ds-text-brand,#2563EB)]">Suggested:</span>{' '}
+                            <span className="font-semibold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]">Suggested:</span>{' '}
                             <span className="text-[var(--ds-text,var(--cp-ink-1, #0F172A))]">{rec.releaseName}</span>
                             <br />
                             <span className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]">{rec.reason}</span>
@@ -112,7 +112,7 @@ export default function TriageQueuePage() {
                         {rec ? (
                           <button onClick={() => linkChangeToRelease(c.id, rec.releaseId)}
                             className="h-7 px-3 rounded text-[11px] font-semibold text-white"
-                            style={{ background: 'var(--ds-text-brand, #2563EB)' }}>
+                            style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
                             Link Release
                           </button>
                         ) : (
@@ -140,7 +140,7 @@ function TriageLinkDropdown({ releases, onLink }: { releases: any[]; onLink: (re
   return (
     <div className="relative">
       <button onClick={() => setOpen(!open)}
-        className="h-7 px-3 rounded text-[11px] font-semibold border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,#2E2E2E)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] text-[var(--ds-text-brand,#2563EB)] flex items-center gap-1">
+        className="h-7 px-3 rounded text-[11px] font-semibold border border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,#2E2E2E)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] flex items-center gap-1">
         Link Release <ChevronDown size={10} />
       </button>
       {open && (

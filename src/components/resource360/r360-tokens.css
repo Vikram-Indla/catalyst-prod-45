@@ -29,8 +29,8 @@
   --r360-todo-text: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --r360-todo-soft: #FDE8E8;
 
-  --r360-progress: var(--ds-text-brand, #2563EB);
-  --r360-progress-bg: var(--ds-text-brand, #2563EB);
+  --r360-progress: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
+  --r360-progress-bg: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --r360-progress-text: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --r360-progress-soft: #E0EDFF;
 
@@ -41,8 +41,8 @@
 
   /* ─── HUB COLORS — SATURATED ─── */
   --r360-hub-strategy: #0284C7;
-  --r360-hub-product: var(--ds-text-brand, #2563EB);
-  --r360-hub-project: var(--ds-text-brand, #2563EB);
+  --r360-hub-product: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
+  --r360-hub-project: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --r360-hub-release: var(--cp-teal-60, #0D9488);
   --r360-hub-test: #C2410C;
   --r360-hub-incident: var(--ds-text-danger, var(--cp-danger, #DC2626));

@@ -36,7 +36,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 2,
               padding: '4px 8px',
-              border: `0.5px solid ${isHov ? 'var(--ds-text-brand, #2563EB)' : 'rgba(15,23,42,.08)'}`,
+              border: `0.5px solid ${isHov ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'rgba(15,23,42,.08)'}`,
               borderRadius: 20,
               background: isHov ? 'rgba(15,23,42,.04)' : 'transparent',
               cursor: 'pointer',
@@ -82,7 +82,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
       {onViewThread && (
         <button
           onClick={(e) => { e.stopPropagation(); onViewThread(); }}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', fontFamily: 'var(--cp-font-body)', textDecoration: 'none' }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontFamily: 'var(--cp-font-body)', textDecoration: 'none' }}
           onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
           onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
         >

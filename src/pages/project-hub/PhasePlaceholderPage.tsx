@@ -30,7 +30,7 @@ export default function PhasePlaceholderPage({ title, phase, icon: Icon = List, 
           </p>
           <span
             className="inline-flex items-center gap-1 mt-4 rounded-full"
-            style={{ fontSize: 11, fontWeight: 500, padding: '4px 12px', background: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)' }}
+            style={{ fontSize: 11, fontWeight: 500, padding: '4px 12px', background: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}
           >
             Coming in {phase}
           </span>

@@ -114,7 +114,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
         {/* Header */}
         <div style={{ padding: '20px 24px', borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: 'var(--ds-text-brand, #2563EB)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Link2 size={22} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>Link Test Cases</h2>
@@ -132,7 +132,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
               style={{ width: '100%', height: 40, padding: '0 14px 0 44px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
           </div>
           <button onClick={toggleAll}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', border: 'none', backgroundColor: 'transparent', color: 'var(--ds-text-brand, #2563EB)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', border: 'none', backgroundColor: 'transparent', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
             {selectedIds.size === filtered.length && filtered.length > 0 ? 'Deselect All' : 'Select All'}
           </button>
         </div>
@@ -152,13 +152,13 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
                 <div key={tc.id} onClick={() => toggleSelect(tc.id)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 12, padding: 12, marginBottom: 6,
-                    borderRadius: 12, border: `1.5px solid ${isSelected ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-border, var(--cp-border, #E2E8F0))')}`,
+                    borderRadius: 12, border: `1.5px solid ${isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-border, var(--cp-border, #E2E8F0))')}`,
                     backgroundColor: isSelected ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'), cursor: 'pointer', transition: 'all 0.15s',
                   }}>
-                  {isSelected ? <CheckSquare size={18} style={{ color: 'var(--ds-text-brand, #2563EB)', flexShrink: 0 }} /> : <Square size={18} style={{ color: 'var(--cp-border, var(--cp-border, #E2E8F0))', flexShrink: 0 }} />}
+                  {isSelected ? <CheckSquare size={18} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', flexShrink: 0 }} /> : <Square size={18} style={{ color: 'var(--cp-border, var(--cp-border, #E2E8F0))', flexShrink: 0 }} />}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '2px 8px', borderRadius: 4 }}>{tc.case_key}</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '2px 8px', borderRadius: 4 }}>{tc.case_key}</span>
                       <span style={{ fontSize: 11, fontWeight: 500, color: priorityColor }}>{priorityName}</span>
                     </div>
                     <p style={{ fontSize: 13, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tc.title}</p>
@@ -175,7 +175,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
           <div style={{ display: 'flex', gap: 12 }}>
             <button onClick={onClose} style={{ height: 40, padding: '0 16px', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 12, fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer' }}>Cancel</button>
             <button onClick={handleSubmit} disabled={selectedIds.size === 0 || isSubmitting}
-              style={{ height: 40, padding: '0 20px', backgroundColor: selectedIds.size === 0 ? ('var(--cp-border, var(--cp-border, #E2E8F0))') : 'var(--ds-text-brand, #2563EB)', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: selectedIds.size === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+              style={{ height: 40, padding: '0 20px', backgroundColor: selectedIds.size === 0 ? ('var(--cp-border, var(--cp-border, #E2E8F0))') : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: selectedIds.size === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Link2 size={16} /> {isSubmitting ? 'Linking...' : `Link ${selectedIds.size > 0 ? `(${selectedIds.size})` : ''}`}
             </button>
           </div>

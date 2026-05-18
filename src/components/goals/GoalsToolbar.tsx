@@ -70,7 +70,7 @@ function FilterDropdown({
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           padding: '5px 10px', fontSize: 12, fontWeight: 500,
-          color: selected.length > 0 ? 'var(--ds-text-brand, #2563EB)' : (isDark ? DK.t2 : 'var(--fg-3)'),
+          color: selected.length > 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? DK.t2 : 'var(--fg-3)'),
           background: selected.length > 0 ? 'rgba(37,99,235,0.06)' : (isDark ? 'transparent' : 'var(--bg-app)'),
           border: `1px solid ${selected.length > 0 ? 'rgba(37,99,235,0.3)' : (isDark ? DK.border : 'var(--divider)')}`,
           borderRadius: 8, cursor: 'pointer',

@@ -97,7 +97,7 @@ function PagBtn({ disabled, onClick, children }: { disabled: boolean; onClick: (
       opacity: disabled ? 0.4 : 1, display: 'flex', alignItems: 'center',
       color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', outline: 'none',
     }}
-      onFocus={(e) => { if (!disabled) e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
+      onFocus={(e) => { if (!disabled) e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
       onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
     >{children}</button>
   );

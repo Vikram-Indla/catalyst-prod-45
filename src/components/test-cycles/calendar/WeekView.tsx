@@ -53,7 +53,7 @@ export function WeekView({
               className={cn(
                 'flex-1 px-2 py-3 text-center border-r border-[var(--ds-border,#e2e8f0)] last:border-r-0',
                 isInRange && 'bg-[var(--ds-background-selected,#eff6ff)]',
-                isCurrentDay && 'border-t-2 border-t-[var(--ds-text-brand,#2563eb)]'
+                isCurrentDay && 'border-t-2 border-t-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]'
               )}
             >
               <div className="text-xs font-medium text-[var(--ds-text-subtlest,#64748b)] uppercase">
@@ -62,7 +62,7 @@ export function WeekView({
               <div
                 className={cn(
                   'mt-1 text-lg font-semibold',
-                  isCurrentDay ? 'text-[var(--ds-text-brand,#2563eb)]' : 'text-[var(--ds-text,#0f172a)]'
+                  isCurrentDay ? 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' : 'text-[var(--ds-text,#0f172a)]'
                 )}
               >
                 {format(day, 'd')}
@@ -103,7 +103,7 @@ export function WeekView({
                 />
               ))}
               {events.length > 3 && (
-                <div className="text-xs text-[var(--ds-text-brand,#2563eb)] font-medium px-2">
+                <div className="text-xs text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] font-medium px-2">
                   +{events.length - 3} more
                 </div>
               )}

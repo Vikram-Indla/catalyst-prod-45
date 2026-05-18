@@ -436,7 +436,7 @@ export function GoalsTreeView({
                             style={{
                               display: 'inline-flex', alignItems: 'center', gap: 3,
                               padding: '2px 8px', fontSize: 10.5, fontWeight: 500,
-                              color: 'var(--ds-text-brand, #2563EB)', background: 'transparent',
+                              color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', background: 'transparent',
                               border: '1px solid #2563EB', borderRadius: 99, cursor: 'pointer',
                               opacity: 0, transition: 'opacity 150ms', flexShrink: 0,
                             }}

@@ -52,7 +52,7 @@ export default function WikiVerificationPage() {
   return (
     <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, #F8FAFC)', minHeight: '100%', padding: '24px 40px 48px' }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
-        <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}>Wiki</span>
+        <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
         <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 600 }}>Verification Queue</span>
       </nav>
@@ -106,7 +106,7 @@ export default function WikiVerificationPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
                   {stale && <AlertTriangle size={12} style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', flexShrink: 0 }} />}
                   <span onClick={() => navigate(`/wiki/${a.slug}`)} style={{
-                    fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer',
+                    fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer',
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                   }}>{a.title}</span>
                 </div>
@@ -122,7 +122,7 @@ export default function WikiVerificationPage() {
                 <div style={{ display: 'flex', gap: 6 }}>
                   <button onClick={() => handleVerify(a.id)} style={{
                     fontSize: 10, fontWeight: 650, padding: '4px 10px', borderRadius: 4, border: 'none',
-                    background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
+                    background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', gap: 3,
                   }}><ShieldCheck size={11} /> Verify</button>
                   <button onClick={() => handleRequestChanges(a.id)} style={{

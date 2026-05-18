@@ -53,7 +53,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
             style={{
               width: 28,
               height: 24,
-              backgroundColor: project.color || 'var(--ds-text-brand, #2563EB)',
+              backgroundColor: project.color || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               fontSize: project.key.length > 2 ? 9 : 10,
               fontWeight: 700,

@@ -641,7 +641,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                 <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, #0f172a)' }}>{progress}% complete</span>
               </div>
               <div style={{ height: '8px', backgroundColor: 'var(--ds-border, #e2e8f0)', borderRadius: '4px', overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${progress}%`, backgroundColor: 'var(--ds-text-brand, #2563eb)', borderRadius: '4px', transition: 'width 0.3s ease' }} />
+                <div style={{ height: '100%', width: `${progress}%`, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', borderRadius: '4px', transition: 'width 0.3s ease' }} />
               </div>
             </div>
           </div>
@@ -763,7 +763,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
                             >
                               <div style={avatarStyle(user.avatarColor, 28)}>{user.initials}</div>
                               <span style={{ fontSize: '14px', color: 'var(--ds-text, #0f172a)' }}>{user.name}</span>
-                              {lead?.id === user.resourceId && <Check size={16} style={{ marginLeft: 'auto', color: 'var(--ds-text-brand, #2563eb)' }} />}
+                              {lead?.id === user.resourceId && <Check size={16} style={{ marginLeft: 'auto', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }} />}
                             </button>
                           ))}
                           {filteredUsersForLead.length === 0 && !isLoadingUsers && (
@@ -960,7 +960,7 @@ const sectionLabelStyle: React.CSSProperties = {
 const editLinkStyle: React.CSSProperties = {
   fontSize: '13px',
   fontWeight: 500,
-  color: 'var(--ds-text-brand, #2563eb)',
+  color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   backgroundColor: 'transparent',
   border: 'none',
   cursor: 'pointer',
@@ -974,7 +974,7 @@ const primaryButtonStyle: React.CSSProperties = {
   justifyContent: 'center',
   gap: '6px',
   padding: '8px 16px',
-  backgroundColor: 'var(--ds-text-brand, #2563eb)',
+  backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   border: 'none',
   borderRadius: '6px',
@@ -1069,7 +1069,7 @@ const navTabStyle = (isActive: boolean): React.CSSProperties => ({
   justifyContent: 'center',
   gap: '6px',
   padding: '10px 16px',
-  backgroundColor: isActive ? 'var(--ds-text-brand, #2563eb)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+  backgroundColor: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtle, #475569)',
   border: isActive ? 'none' : '1px solid #e2e8f0',
   borderRadius: '8px',

@@ -13,7 +13,7 @@ import type { RoadmapDemand, TimelineConfig } from '../types/roadmap';
 import { addMonths } from 'date-fns';
 import { User } from '@/lib/atlaskit-icons';
 
-const AVATAR_COLORS = ['var(--ds-text-brand, #2563EB)', '#6366F1', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-success, var(--cp-success, #16A34A))', '#0891B2', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--cp-ink-2, var(--cp-ink-2, #334155))'];
+const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', '#6366F1', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-success, var(--cp-success, #16A34A))', '#0891B2', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--cp-ink-2, var(--cp-ink-2, #334155))'];
 
 function hashColor(name: string): string {
   let hash = 0;
@@ -185,7 +185,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                           />
                         ) : (
                           <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full" style={{ background: 'var(--ds-text-brand, #2563EB)' }} />
+                            <div className="w-2 h-2 rounded-full" style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
                             <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>Outside range</span>
                           </div>
                         )}

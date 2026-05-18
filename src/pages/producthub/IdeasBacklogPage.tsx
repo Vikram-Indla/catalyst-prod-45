@@ -35,7 +35,7 @@ function toIdea(r: IdeaRow): Idea {
     votes: r.vote_count,
     request: r.linked_initiative_key || null,
     dept: r.assigned_team || '',
-    assignee: r.assigned_to_name ? { name: r.assigned_to_name, initials: r.assigned_to_name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2), color: 'var(--ds-text-brand, #2563EB)' } : null,
+    assignee: r.assigned_to_name ? { name: r.assigned_to_name, initials: r.assigned_to_name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2), color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' } : null,
     ai: r.ai_enrichment_status === 'completed' ? 'ready' : 'pending',
     theme: r.theme,
     assigned_team: r.assigned_team,
@@ -128,10 +128,10 @@ export default function IdeasBacklogPage() {
             <p style={{ fontSize: '13px', color: dk.t3, margin: '4px 0 0' }}>Capture, evaluate, and promote ideas into requests — powered by IMPACT scoring & AI Intelligence</p>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button onClick={() => setIntelligenceOpen(true)} style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text-brand, #2563EB)', border: '1px solid #2563EB', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <button onClick={() => setIntelligenceOpen(true)} style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: '1px solid #2563EB', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Sparkles size={14} /> Intelligence
             </button>
-            <button onClick={() => setCreateOpen(true)} style={{ background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFF)', border: 'none', borderRadius: '6px', padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <button onClick={() => setCreateOpen(true)} style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #FFF)', border: 'none', borderRadius: '6px', padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Plus size={14} /> New Idea
             </button>
           </div>
@@ -186,14 +186,14 @@ export default function IdeasBacklogPage() {
           const isActive = statusFilter === pill.key;
           return (
             <button key={pill.key} onClick={() => setStatusFilter(pill.key)} style={{
-              background: isActive ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'), color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : dk.t2,
-              border: `1px solid ${isActive ? 'var(--ds-text-brand, #2563EB)' : dk.border}`,
+              background: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'), color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : dk.t2,
+              border: `1px solid ${isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : dk.border}`,
               borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', transition: 'all 150ms',
             }}>{pill.label}</button>
           );
         })}
         <div style={{ flex: 1 }} />
-        <button onClick={() => setTriageOpen(true)} style={{ background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFF)', border: 'none', borderRadius: '6px', padding: '6px 12px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <button onClick={() => setTriageOpen(true)} style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #FFF)', border: 'none', borderRadius: '6px', padding: '6px 12px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
           <Sparkles size={12} /> AI Triage ({ideas.length})
         </button>
       </div>
@@ -214,7 +214,7 @@ export default function IdeasBacklogPage() {
               <thead>
                 <tr style={{ height: '50px', background: 'var(--cp-bg-page, var(--cp-bg-sunken, #F1F5F9))' }}>
                   <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
-                    <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, #2563EB)' }} />
+                    <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
                   </th>
                   {[
                     { label: 'KEY', width: '90px' }, { label: 'TITLE' }, { label: 'STATUS', width: '140px' },
@@ -240,7 +240,7 @@ export default function IdeasBacklogPage() {
                       onMouseLeave={e => { if (!selectedRows.has(idea.idea_key)) e.currentTarget.style.background = 'transparent'; }}
                     >
                       <td style={{ padding: '0 8px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
-                        <input type="checkbox" checked={selectedRows.has(idea.idea_key)} onChange={() => toggleRow(idea.idea_key)} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, #2563EB)' }} />
+                        <input type="checkbox" checked={selectedRows.has(idea.idea_key)} onChange={() => toggleRow(idea.idea_key)} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
                       </td>
                       <td style={{ padding: '8px 12px' }}>
                         <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '13px', fontWeight: 600, color: dk.blueKey, cursor: 'pointer' }}
@@ -289,7 +289,7 @@ export default function IdeasBacklogPage() {
                       <td style={{ padding: '8px 12px' }}>
                         {idea.assigned_to_name ? (
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'var(--ds-text-brand, #2563EB)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-surface, #FFF)', fontSize: '9px', fontWeight: 700, flexShrink: 0 }}>
+                            <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-surface, #FFF)', fontSize: '9px', fontWeight: 700, flexShrink: 0 }}>
                               {idea.assigned_to_name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2)}
                             </div>
                             <span style={{ fontSize: '13px', color: dk.t2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{idea.assigned_to_name}</span>
@@ -444,7 +444,7 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '4px' }}>
             <button onClick={onClose} style={{ height: '50px', padding: '0 16px', borderRadius: '6px', border: `1px solid ${dk.border}`, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: dk.t2, fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
-            <button onClick={handleCreate} disabled={createIdea.isPending} style={{ height: '50px', padding: '0 16px', borderRadius: '6px', border: 'none', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: '13px', fontWeight: 600, cursor: 'pointer', opacity: createIdea.isPending ? 0.7 : 1 }}>
+            <button onClick={handleCreate} disabled={createIdea.isPending} style={{ height: '50px', padding: '0 16px', borderRadius: '6px', border: 'none', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: '13px', fontWeight: 600, cursor: 'pointer', opacity: createIdea.isPending ? 0.7 : 1 }}>
               {createIdea.isPending ? 'Creating...' : 'Create Idea'}
             </button>
           </div>

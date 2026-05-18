@@ -25,7 +25,7 @@ export const COLORS = {
   borderDefault: 'var(--ds-text-disabled, #cbd5e1)',
 
   // Brand
-  accent: 'var(--ds-text-brand, #2563eb)',
+  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   accentHover: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
   accentLight: '#dbeafe',
   accentLighter: 'var(--ds-background-selected, #eff6ff)',

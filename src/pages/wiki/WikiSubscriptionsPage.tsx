@@ -102,7 +102,7 @@ export default function WikiSubscriptionsPage() {
     <div style={{ fontFamily: F.inter, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, #F8FAFC)', minHeight: '100%', padding: '24px 40px 60px' }}>
       {/* Breadcrumb */}
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
-        <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}>Wiki</span>
+        <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
         <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 600 }}>Subscriptions</span>
       </nav>
@@ -111,7 +111,7 @@ export default function WikiSubscriptionsPage() {
       <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginBottom: 32 }}>Get notified when content you follow is updated.</p>
 
       {/* ═══ DOMAIN SUBSCRIPTIONS ═══ */}
-      <SectionLabel icon={<Layers size={14} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />} label="Domain Subscriptions" isDark={isDark} />
+      <SectionLabel icon={<Layers size={14} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />} label="Domain Subscriptions" isDark={isDark} />
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 8, marginBottom: 32 }}>
         {DOMAINS.map(d => {
           const active = domainSubs.has(d.code);
@@ -121,7 +121,7 @@ export default function WikiSubscriptionsPage() {
               onClick={() => toggleSub.mutate({ entityType: 'domain', entityId: d.code })}
               style={{
                 display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px',
-                borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${active ? 'var(--ds-text-brand, #2563EB)' : border}`,
+                borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : border}`,
                 cursor: 'pointer', transition: 'all 120ms', textAlign: 'left',
               }}
             >
@@ -129,7 +129,7 @@ export default function WikiSubscriptionsPage() {
               <span style={{ fontSize: 12.5, fontWeight: 500, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', flex: 1 }}>{d.name}</span>
               <div style={{
                 width: 36, height: 20, borderRadius: 12,
-                background: active ? 'var(--ds-text-brand, #2563EB)' : (isDark ? 'var(--ds-border, #292929)' : 'var(--ds-border, var(--cp-border, #E2E8F0))'),
+                background: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-border, #292929)' : 'var(--ds-border, var(--cp-border, #E2E8F0))'),
                 position: 'relative', transition: 'background 150ms',
               }}>
                 <div style={{
@@ -145,7 +145,7 @@ export default function WikiSubscriptionsPage() {
       </div>
 
       {/* ═══ TAG SUBSCRIPTIONS ═══ */}
-      <SectionLabel icon={<Tag size={14} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />} label="Tag Subscriptions" isDark={isDark} />
+      <SectionLabel icon={<Tag size={14} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />} label="Tag Subscriptions" isDark={isDark} />
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
         {tagSubs.map((tag: string) => (
           <span key={tag} style={{
@@ -172,7 +172,7 @@ export default function WikiSubscriptionsPage() {
           }}
         />
         <button onClick={addTag} style={{
-          height: 32, padding: '0 14px', borderRadius: 6, background: 'var(--ds-text-brand, #2563EB)',
+          height: 32, padding: '0 14px', borderRadius: 6, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
           color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', fontSize: 11, fontWeight: 600,
           cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
         }}>
@@ -181,7 +181,7 @@ export default function WikiSubscriptionsPage() {
       </div>
 
       {/* ═══ ARTICLE SUBSCRIPTIONS ═══ */}
-      <SectionLabel icon={<FileText size={14} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />} label="Article Subscriptions" isDark={isDark} />
+      <SectionLabel icon={<FileText size={14} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />} label="Article Subscriptions" isDark={isDark} />
       <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', overflow: 'hidden' }}>
         {subArticles.length > 0 ? subArticles.map((a: any) => (
           <div key={a.id} style={{

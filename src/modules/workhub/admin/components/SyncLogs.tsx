@@ -179,7 +179,7 @@ export function SyncLogs() {
 
       {/* Health Strip */}
       <div className="grid grid-cols-5 gap-3">
-        <HealthBox label="SYNC STATUS" value={syncStatus === 'healthy' ? '● Healthy' : syncStatus === 'syncing' ? '● Syncing' : syncStatus === 'error' ? '● Error' : '● Waiting'} valueColor={syncStatus === 'healthy' ? '#10B981' : syncStatus === 'syncing' ? 'var(--ds-text-brand, #2563EB)' : syncStatus === 'error' ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))'} loading={healthLoading} spinning={syncStatus === 'syncing'} />
+        <HealthBox label="SYNC STATUS" value={syncStatus === 'healthy' ? '● Healthy' : syncStatus === 'syncing' ? '● Syncing' : syncStatus === 'error' ? '● Error' : '● Waiting'} valueColor={syncStatus === 'healthy' ? '#10B981' : syncStatus === 'syncing' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : syncStatus === 'error' ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))'} loading={healthLoading} spinning={syncStatus === 'syncing'} />
         <HealthBox label="LAST SYNC" value={health?.lastSync ? formatDistanceToNow(new Date(health.lastSync.started_at), { addSuffix: true }) : '—'} valueColor="var(--ds-text, var(--cp-ink-1, #0F172A))" loading={healthLoading} />
         <HealthBox label="ISSUES CACHED" value={formatNumber(health?.issueCachedCount || 0)} valueColor="var(--ds-text, var(--cp-ink-1, #0F172A))" loading={healthLoading} />
         <HealthBox label="VERSIONS CACHED" value={formatNumber(health?.versionCachedCount || 0)} valueColor="var(--ds-text, var(--cp-ink-1, #0F172A))" loading={healthLoading} />
@@ -212,7 +212,7 @@ export function SyncLogs() {
               Sync Filters
             </span>
             {hasFilters && (
-              <span style={{ fontSize: '10px', padding: '1px 8px', borderRadius: '12px', background: '#DBEAFE', color: 'var(--ds-text-brand, #2563EB)', fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
+              <span style={{ fontSize: '10px', padding: '1px 8px', borderRadius: '12px', background: '#DBEAFE', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
                 {activeFilterCount} active
               </span>
             )}
@@ -246,7 +246,7 @@ export function SyncLogs() {
                       fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
                       border: lookbackMonths === opt.value ? '1px solid #2563EB' : '1px solid var(--bd-default, var(--cp-border, #E2E8F0))',
                       background: lookbackMonths === opt.value ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface, #fff)',
-                      color: lookbackMonths === opt.value ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+                      color: lookbackMonths === opt.value ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
                     }}
                   >
                     {opt.label}
@@ -274,7 +274,7 @@ export function SyncLogs() {
               onChange={setSelectedTypes}
               placeholder="Select work item types…"
               emptyMessage="Run a sync first to populate types"
-              accentColor="var(--ds-text-brand, #2563EB)"
+              accentColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"
             />
 
             {/* Fix Versions */}
@@ -321,7 +321,7 @@ export function SyncLogs() {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: '6px',
             padding: '8px 16px', borderRadius: '6px', border: 'none',
-            background: isSyncing ? 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' : !hasFilters ? 'var(--ds-text-disabled, #CBD5E1)' : 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #fff)',
+            background: isSyncing ? 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' : !hasFilters ? 'var(--ds-text-disabled, #CBD5E1)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)',
             fontSize: '12px', fontWeight: 600, cursor: isSyncing || !hasFilters ? 'not-allowed' : 'pointer',
             fontFamily: 'var(--cp-font-body)',
           }}
@@ -476,10 +476,10 @@ function LogRow({ log, formatDuration }: { log: SyncLogEntry; formatDuration: (m
     success: { bg: '#ECFDF5', text: '#10B981' },
     warning: { bg: '#FFFBEB', text: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' },
     error: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #EF4444)' },
-    running: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)' },
+    running: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
   }
   const typeColors: Record<string, { bg: string; text: string }> = {
-    incremental: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)' },
+    incremental: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
     full: { bg: '#F5F3FF', text: 'var(--cp-purple-60, #7C3AED)' },
   }
   const sc = statusColors[log.status] || statusColors.running

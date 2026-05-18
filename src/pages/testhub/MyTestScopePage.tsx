@@ -118,7 +118,7 @@ export default function MyTestScopePage() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
-        <RefreshCw size={28} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-brand, #2563EB)' }} />
+        <RefreshCw size={28} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
         <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       </div>
     );
@@ -129,7 +129,7 @@ export default function MyTestScopePage() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <UserCheck size={22} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
+          <UserCheck size={22} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
           <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>
             My Test Scope
           </h1>
@@ -161,7 +161,7 @@ export default function MyTestScopePage() {
             style={{
               height: 32, padding: '0 14px', border: 'none', borderRadius: 6,
               fontSize: 13, fontWeight: 500, cursor: 'pointer',
-              backgroundColor: statusFilter === tab.key ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
+              backgroundColor: statusFilter === tab.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
               color: statusFilter === tab.key ? 'var(--ds-surface, #FFF)' : 'var(--ds-text-subtle, #475569)',
               transition: 'all 0.15s',
             }}
@@ -212,7 +212,7 @@ export default function MyTestScopePage() {
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <span style={{
-                      fontSize: 12, fontWeight: 700, color: 'var(--ds-text-brand, #2563EB)',
+                      fontSize: 12, fontWeight: 700, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                       fontFamily: 'var(--cp-font-mono)',
                     }}>
                       {first.cycle_key}
@@ -256,7 +256,7 @@ export default function MyTestScopePage() {
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
                           <span style={{
-                            fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)',
+                            fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                             fontFamily: 'var(--cp-font-mono)', minWidth: 70,
                           }}>
                             {item.case_key}
@@ -286,7 +286,7 @@ export default function MyTestScopePage() {
                             style={{
                               display: 'flex', alignItems: 'center', gap: 4,
                               height: 28, padding: '0 10px', border: 'none', borderRadius: 6,
-                              backgroundColor: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFF)',
+                              backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #FFF)',
                               fontSize: 12, fontWeight: 500, cursor: 'pointer',
                             }}
                           >

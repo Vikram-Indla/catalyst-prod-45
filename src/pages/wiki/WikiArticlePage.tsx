@@ -60,7 +60,7 @@ const Sk = ({ w, h, style, isDark }: { w: string | number; h: number; style?: Re
 
 /* ── Module icon map for cross-links ── */
 const MODULE_COLORS: Record<string, { bg: string; color: string; label: string }> = {
-  task: { bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)', label: 'TaskHub' },
+  task: { bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', label: 'TaskHub' },
   product: { bg: '#F5F3FF', color: 'var(--cp-purple-60, #7C3AED)', label: 'ProductHub' },
   incident: { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'IncidentHub' },
   release: { bg: '#ECFDF5', color: 'var(--quality-high, #059669)', label: 'ReleaseHub' },
@@ -88,11 +88,11 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <History size={16} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
+          <History size={16} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
           <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 700, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>Version History</span>
           <span style={{
             fontSize: 10, fontWeight: 650, padding: '2px 6px', borderRadius: 9999,
-            background: isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)',
+            background: isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
           }}>{versions.length}</span>
         </div>
         <button onClick={onClose} style={{
@@ -121,7 +121,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{
                   fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 700,
-                  color: i === 0 ? 'var(--ds-text-brand, #2563EB)' : isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+                  color: i === 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
                   padding: '2px 6px', borderRadius: 4,
                   background: i === 0 ? (isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))'),
                 }}>v{v.version_number}</span>
@@ -132,7 +132,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
               {i > 0 && (
                 <button onClick={() => onRestore(v)} style={{
                   fontSize: 10, fontWeight: 650, padding: '4px 10px', borderRadius: 4,
-                  border: '1px solid rgba(37,99,235,0.3)', background: isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)',
+                  border: '1px solid rgba(37,99,235,0.3)', background: isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
                 }}>
                   <RotateCcw size={10} /> Restore
@@ -349,7 +349,7 @@ export default function WikiArticlePage() {
         <div style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginBottom: 16 }}>The article you're looking for doesn't exist or has been removed.</div>
         <button onClick={() => navigate('/wiki')} style={{
           fontSize: 12, fontWeight: 650, padding: '8px 20px', borderRadius: 6,
-          background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', cursor: 'pointer',
+          background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', cursor: 'pointer',
         }}>Return to Wiki</button>
       </div>
     );
@@ -388,13 +388,13 @@ export default function WikiArticlePage() {
     { label: 'Hub', value: info.hub, show: !!info.hub },
     { label: 'Project', value: info.project, show: !!info.project },
     { label: 'Epic', value: info.epicKey ? (
-      <span style={{ fontSize: 11, fontWeight: 650, color: 'var(--ds-text-brand, #2563EB)', fontFamily: 'var(--cp-font-mono)' }}>{info.epicKey}</span>
+      <span style={{ fontSize: 11, fontWeight: 650, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontFamily: 'var(--cp-font-mono)' }}>{info.epicKey}</span>
     ) : null, show: !!info.epicKey },
     { label: 'Stories', value: info.totalStories ? (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11 }}>{info.doneStories ?? 0}/{info.totalStories} done</span>
         <div style={{ width: 40, height: 3, borderRadius: 4, background: isDark ? 'var(--ds-border, #292929)' : 'var(--ds-border, var(--cp-border, #E2E8F0))' }}>
-          <div style={{ height: '100%', borderRadius: 4, background: 'var(--ds-text-brand, #2563EB)', width: `${info.donePercent ?? 0}%` }} />
+          <div style={{ height: '100%', borderRadius: 4, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', width: `${info.donePercent ?? 0}%` }} />
         </div>
       </div>
     ) : null, show: !!info.totalStories },
@@ -424,7 +424,7 @@ export default function WikiArticlePage() {
         background: isDark ? 'var(--ds-border, #292929)' : 'rgba(15,23,42,0.04)',
       }}>
         <div style={{
-          height: '100%', background: 'var(--ds-text-brand, #2563EB)', width: `${scrollPct}%`,
+          height: '100%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', width: `${scrollPct}%`,
           transition: 'width 60ms linear',
         }} />
       </div>
@@ -432,9 +432,9 @@ export default function WikiArticlePage() {
       <div style={{ padding: '20px 40px 48px' }}>
         {/* ── Breadcrumb ── */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
-          <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}>Wiki</span>
+          <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>Wiki</span>
           <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
-          <span onClick={() => navigate(`/wiki/category/${DOMAIN_SLUGS[page.domain_code || ''] || ''}`)} style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}>{domainName}</span>
+          <span onClick={() => navigate(`/wiki/category/${DOMAIN_SLUGS[page.domain_code || ''] || ''}`)} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>{domainName}</span>
           <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
           <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 600 }}>{title}</span>
         </nav>
@@ -476,7 +476,7 @@ export default function WikiArticlePage() {
               <button onClick={() => setShowHistory(prev => !prev)} style={{
                 fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
                 border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: showHistory ? (isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)') : 'transparent',
-                color: showHistory ? 'var(--ds-text-brand, #2563EB)' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'), display: 'flex', alignItems: 'center', gap: 4,
+                color: showHistory ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'), display: 'flex', alignItems: 'center', gap: 4,
               }}>
                 <History size={12} /> History
               </button>
@@ -486,7 +486,7 @@ export default function WikiArticlePage() {
                 <button onClick={(e) => { e.stopPropagation(); setShowExport(prev => !prev); }} style={{
                   fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
                   border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: showExport ? (isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)') : 'transparent',
-                  color: showExport ? 'var(--ds-text-brand, #2563EB)' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'), display: 'flex', alignItems: 'center', gap: 4,
+                  color: showExport ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'), display: 'flex', alignItems: 'center', gap: 4,
                 }}>
                   <Download size={12} /> Export <ChevronDown size={10} />
                 </button>
@@ -566,7 +566,7 @@ export default function WikiArticlePage() {
                 }}>Contents</div>
                 {sections.map((s: any, i: number) => (
                   <a key={s.id} href={`#section-${i}`} style={{
-                    display: 'block', fontSize: 12, color: 'var(--ds-text-brand, #2563EB)', padding: '3px 0',
+                    display: 'block', fontSize: 12, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', padding: '3px 0',
                     textDecoration: 'none',
                   }}>
                     <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', marginRight: 8 }}>{i + 1}.</span>
@@ -588,7 +588,7 @@ export default function WikiArticlePage() {
                   {s.is_live_data && (
                     <span style={{
                       fontSize: 9, fontWeight: 650, padding: '2px 6px', borderRadius: 4,
-                      background: isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)',
+                      background: isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                     }}>LIVE DATA</span>
                   )}
                 </h2>
@@ -654,7 +654,7 @@ export default function WikiArticlePage() {
             {(related ?? []).length > 0 && (
               <div style={{ marginTop: 40 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                  <div style={{ width: 3, height: 16, borderRadius: 4, background: 'var(--ds-text-brand, #2563EB)' }} />
+                  <div style={{ width: 3, height: 16, borderRadius: 4, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
                   <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>Related Articles</span>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
@@ -664,7 +664,7 @@ export default function WikiArticlePage() {
                       border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', cursor: 'pointer',
                       transition: 'border-color 120ms',
                     }}
-                      onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'}
+                      onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'}
                       onMouseLeave={e => e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(15,23,42,0.12)'}
                     >
                       <div style={{ fontSize: 13, fontWeight: 600, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 6 }}>{r.title}</div>
@@ -687,7 +687,7 @@ export default function WikiArticlePage() {
             overflow: 'hidden', fontSize: 12,
           }}>
             <div style={{
-              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', padding: '10px 14px',
+              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', padding: '10px 14px',
               fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.04em',
             }}>Article Info</div>
 
@@ -751,7 +751,7 @@ function ReferencesSection({ refs }: { refs: any[] }) {
         <div key={r.ref_number ?? r.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
           <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', minWidth: 24 }}>[{r.ref_number}]</span>
           {r.source_type === 'jira' ? (
-            <span style={{ fontSize: 11, fontWeight: 650, color: 'var(--ds-text-brand, #2563EB)', fontFamily: 'var(--cp-font-mono)' }}>{r.source_key}</span>
+            <span style={{ fontSize: 11, fontWeight: 650, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontFamily: 'var(--cp-font-mono)' }}>{r.source_key}</span>
           ) : r.source_type === 'document' ? (
             <span style={{ fontSize: 11, fontWeight: 650, padding: '2px 6px', borderRadius: 4, background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', color: 'var(--cp-purple-60, #7C3AED)' }}>{r.source_key}</span>
           ) : (

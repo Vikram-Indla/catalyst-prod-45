@@ -69,7 +69,7 @@ export default function AllReleasesPage() {
 
   const accentColor = (status: string) => {
     const s = mapStatus(status);
-    if (s === 'in_progress') return 'var(--ds-text-brand, #2563EB)';
+    if (s === 'in_progress') return 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
     if (s === 'released') return 'var(--ds-text-success, var(--cp-success, #16A34A))';
     if (s === 'planning') return 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
     return 'rgba(15,23,42,0.12)';
@@ -115,7 +115,7 @@ export default function AllReleasesPage() {
             <Download size={14} /> Import from Jira
           </button>
           <button onClick={() => setShowCreate(true)}
-            className="h-9 px-4 rounded-md bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-colors">
+            className="h-9 px-4 rounded-md bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-colors">
             <Plus size={14} /> New Release
           </button>
         </div>
@@ -158,7 +158,7 @@ export default function AllReleasesPage() {
           <button key={s.key} onClick={() => setFilter(s.key)}
             className="h-8 px-3 rounded-md text-[12px] font-semibold flex items-center gap-1.5 border transition-colors"
             style={filter === s.key
-              ? { borderColor: 'var(--ds-text-brand, #2563EB)', background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)' }
+              ? { borderColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }
               : { borderColor: 'var(--cp-border-default, rgba(15,23,42,0.12))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-secondary, #475569)' }
             }>
             {s.label}
@@ -173,12 +173,12 @@ export default function AllReleasesPage() {
         <div className="relative">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }} />
           <input type="text" placeholder="Search releases..." value={search} onChange={e => setSearch(e.target.value)}
-            className="h-9 w-64 pl-9 pr-3 rounded text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,#2563EB)]/20 focus:border-[var(--ds-text-brand,#2563EB)]"
+            className="h-9 w-64 pl-9 pr-3 rounded text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
             style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }} />
         </div>
         <div className="flex items-center gap-1 rounded-md p-0.5" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
-          <button onClick={() => setView('cards')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'cards' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)' } : { color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}><LayoutGrid size={14} /></button>
-          <button onClick={() => setView('table')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'table' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)' } : { color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}><List size={14} /></button>
+          <button onClick={() => setView('cards')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'cards' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' } : { color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}><LayoutGrid size={14} /></button>
+          <button onClick={() => setView('table')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'table' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' } : { color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}><List size={14} /></button>
         </div>
       </div>
 

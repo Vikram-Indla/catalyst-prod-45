@@ -17,7 +17,7 @@ export function DefectBreakdown({ blocker, critical, major, minor, isWinner }: D
   const severities = [
     { label: 'B', count: blocker, color: 'var(--ds-text-danger, #ef4444)' },  // Danger
     { label: 'C', count: critical, color: 'var(--ds-text-warning, #d97706)' }, // Warning
-    { label: 'M', count: major, color: 'var(--ds-text-brand, #2563eb)' },    // Primary
+    { label: 'M', count: major, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },    // Primary
     { label: 'm', count: minor, color: 'var(--ds-text-subtlest, #94a3b8)' },    // Gray 400
   ];
   

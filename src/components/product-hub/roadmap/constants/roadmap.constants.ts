@@ -24,7 +24,7 @@ export const TYPE_COLORS: Record<string, {
 export const PRIORITY_COLORS: Record<string, { color: string; bg: string; label: string }> = {
   P0: { color: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', label: 'Critical' },
   P1: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', label: 'High' },
-  P2: { color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', label: 'Medium' },
+  P2: { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', label: 'Medium' },
 };
 
 // ── Status Colors ──
@@ -79,10 +79,10 @@ export const LIST_PANEL_WIDTH = 420;
 export const DETAIL_PANEL_WIDTH = 420;
 
 // ── Avatar (AUDIT #3: always blue) ──
-export const AVATAR_BG = 'var(--ds-text-brand, #2563EB)';
+export const AVATAR_BG = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
 
 // ── Owner palette (for avatar backgrounds) — AUDIT #3: all blue ──
-export const OWNER_COLORS = ['var(--ds-text-brand, #2563EB)'];
+export const OWNER_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'];
 
 // ── Scrollbar CSS ──
 export const SCROLLBAR_CSS = `

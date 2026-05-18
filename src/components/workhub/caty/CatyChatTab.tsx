@@ -58,7 +58,7 @@ export function CatyChatTab() {
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center text-white"
               style={{
-                background: 'linear-gradient(135deg, var(--ds-text-brand, #2563eb), var(--ds-background-brand-bold-hovered, #1D4ED8))',
+                background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)), var(--ds-background-brand-bold-hovered, #1D4ED8))',
               }}
             >
               <MessageSquare className="w-5 h-5" />

@@ -61,7 +61,7 @@ const STATUS_PILL: Record<string, { color: string; bg: string }> = {
   'On Hold': { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB' },
   'Under Review': { color: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF' },
   Approved: { color: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA' },
-  New: { color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)' },
+  New: { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)' },
 };
 
 // ── Field component (matches backlog) ──
@@ -259,7 +259,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-md flex items-center justify-center"
                       style={{ background: '#DBEAFE' }}>
-                      <Map className="w-4 h-4" style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
+                      <Map className="w-4 h-4" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
                     </div>
                     <div>
                       <div className="text-[13px] font-semibold text-foreground">On Roadmap</div>
@@ -269,7 +269,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                   <button
                     onClick={handleRoadmapToggle}
                     className="relative w-10 h-5 rounded-full transition-colors"
-                    style={{ background: 'var(--ds-text-brand, #2563EB)' }}
+                    style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}
                   >
                     <span
                       className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm"

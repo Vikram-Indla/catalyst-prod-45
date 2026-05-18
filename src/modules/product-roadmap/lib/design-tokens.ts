@@ -7,7 +7,7 @@
 export const catalystTokens = {
   // Brand - Catalyst V5 Blue
   brand: {
-    primary: 'var(--ds-text-brand, #2563eb)',
+    primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
     primaryHover: 'var(--ds-text-brand, #3b82f6)',
   },
 
@@ -29,7 +29,7 @@ export const catalystTokens = {
       text: '#b91c1c',
     },
     info: {
-      base: 'var(--ds-text-brand, #2563eb)',
+      base: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
       bg: 'rgba(37, 99, 235, 0.1)',
       text: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
     },
@@ -38,7 +38,7 @@ export const catalystTokens = {
   // Secondary Palette (Product Colors)
   secondary: {
     blue: {
-      base: 'var(--ds-text-brand, #2563eb)',
+      base: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
       bg: 'rgba(37, 99, 235, 0.15)',
     },
     teal: {
@@ -106,7 +106,7 @@ export const catalystTokens = {
 
 // Timeline bar colors by product - Catalyst V5 palette
 export const PRODUCT_COLORS: Record<string, string> = {
-  MINI: 'var(--ds-text-brand, #2563eb)',  // Primary blue
+  MINI: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',  // Primary blue
   SEN: '#0d9488',   // Teal/Success
   ENT: '#71717a',   // Neutral gray
   UNA: '#52525b',   // Muted gray
@@ -123,7 +123,7 @@ export const TIMELINE_COLORS = {
   gridLine: 'rgba(255, 255, 255, 0.05)',
   gridLineDark: 'rgba(255, 255, 255, 0.05)',
   todayLine: 'var(--ds-text-danger, #ef4444)',      // Danger red
-  milestoneMarker: 'var(--ds-text-brand, #2563eb)', // Primary blue
-  barDefault: 'var(--ds-text-brand, #2563eb)',      // Primary blue
+  milestoneMarker: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // Primary blue
+  barDefault: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',      // Primary blue
   barHover: 'var(--ds-text-brand, #3b82f6)',        // Primary hover
 };

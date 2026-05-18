@@ -139,7 +139,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                       fontWeight: 600,
                       fontFamily: 'var(--cp-font-mono)',
                       backgroundColor: 'rgba(59,130,246,0.1)',
-                      color: 'var(--ds-text-brand, #2563eb)',
+                      color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
                       flexShrink: 0,
                     }}>
                       {item.request_key}
@@ -220,7 +220,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                     padding: '10px 12px',
                     fontSize: '13px',
                     fontWeight: activeTab === tab.key ? 600 : 400,
-                    color: activeTab === tab.key ? 'var(--ds-text-brand, #2563eb)' : '#71717a',
+                    color: activeTab === tab.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : '#71717a',
                     backgroundColor: 'transparent',
                     border: 'none',
                     borderBottom: activeTab === tab.key ? '2px solid #2563eb' : '2px solid transparent',

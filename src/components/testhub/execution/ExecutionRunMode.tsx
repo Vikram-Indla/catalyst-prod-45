@@ -43,7 +43,7 @@ const highlightVariables = (text: string) => {
   const parts = text.split(/(\{\{[^}]+\}\})/g);
   return parts.map((part, i) => {
     if (part.match(/^\{\{[^}]+\}\}$/)) {
-      return <span key={i} style={{ backgroundColor: 'rgba(37,99,235,0.15)', color: 'var(--ds-text-brand, #2563EB)', padding: '2px 6px', borderRadius: 4, fontFamily: 'monospace', fontSize: '0.9em' }}>{part}</span>;
+      return <span key={i} style={{ backgroundColor: 'rgba(37,99,235,0.15)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', padding: '2px 6px', borderRadius: 4, fontFamily: 'monospace', fontSize: '0.9em' }}>{part}</span>;
     }
     return part;
   });
@@ -131,7 +131,7 @@ export function ExecutionRunMode({
             </span>
           )}
           {previousRunData && (
-            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '3px 8px', borderRadius: 5 }}>
+            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '3px 8px', borderRadius: 5 }}>
               RE-RUN (prev: Run #{previousRunData.execution_number})
             </span>
           )}

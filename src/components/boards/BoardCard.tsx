@@ -66,7 +66,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
 
   const visibilityChip = () => {
     if (board.visibility === 'private') return { label: '🔒 Private', bg: 'rgba(217,119,6,0.06)', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' };
-    if (board.visibility === 'global') return { label: '🌐 Organisation', bg: 'rgba(37,99,235,0.06)', color: 'var(--ds-text-brand, #2563EB)' };
+    if (board.visibility === 'global') return { label: '🌐 Organisation', bg: 'rgba(37,99,235,0.06)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' };
     return { label: 'Project', bg: 'var(--bg-1)', color: 'var(--fg-3)' };
   };
 
@@ -155,7 +155,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           </button>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
-            {board.isPersonal && <Chip bg={'var(--cp-primary-light, #EFF6FF)'} color="var(--ds-text-brand, #2563EB)">Personal</Chip>}
+            {board.isPersonal && <Chip bg={'var(--cp-primary-light, #EFF6FF)'} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))">Personal</Chip>}
             <Chip bg={vis.bg} color={vis.color}>{vis.label}</Chip>
             {board.swimlaneType !== 'none' && (
               <Chip bg={'var(--cp-bg-page, #F8FAFC)'} color={'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'}>By {board.swimlaneType}</Chip>

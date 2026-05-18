@@ -34,7 +34,7 @@ export default function CommentPreview({ text, attachmentFilename }: CommentPrev
           onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
           style={{
             background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginLeft: 4,
-            color: 'var(--ds-text-brand, #2563EB)', fontSize: 12, fontFamily: 'var(--cp-font-body)', fontWeight: 500,
+            color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontSize: 12, fontFamily: 'var(--cp-font-body)', fontWeight: 500,
           }}
         >
           Show more

@@ -60,8 +60,8 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     cardHoverShadow: 'rgba(9,30,66,0.31) 0 2px 4px 0, rgba(9,30,66,0.31) 0 0 1px 0',
     cardDragShadow: 'rgba(30,31,33,.45) 0 8px 16px 0, rgba(30,31,33,.31) 0 0 1px 0',
     dropHighlight: '#DFE3E8',  /* Jira drop tint */
-    dropIndicator: 'var(--ds-text-brand, #2563EB)',  /* 2px accent line on insertion */
-    selectedAccent: 'var(--ds-text-brand, #2563EB)',
+    dropIndicator: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',  /* 2px accent line on insertion */
+    selectedAccent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
     chipBg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
     chipText: '#42526E',
     inputBg: 'var(--ds-surface-sunken, #FAFBFC)',
@@ -90,8 +90,8 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     cardHoverShadow: 'rgba(0,0,0,.55) 0 2px 4px 0, rgba(0,0,0,.55) 0 0 1px 0',
     cardDragShadow: 'rgba(0,0,0,.65) 0 8px 16px 0, rgba(0,0,0,.55) 0 0 1px 0',
     dropHighlight: 'var(--ds-border, #292929)',
-    dropIndicator: 'var(--ds-text-brand, #2563EB)',
-    selectedAccent: 'var(--ds-text-brand, #2563EB)',
+    dropIndicator: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+    selectedAccent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
     chipBg: 'var(--ds-border, #292929)',
     chipText: 'var(--ds-text-subtlest, #A1A1A1)',
     inputBg: '#111111',

@@ -505,7 +505,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                   background: 'none', border: 'none', borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
                   cursor: 'pointer',
                   fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: isActive ? 600 : 500,
-                  color: isActive ? 'var(--ds-text-brand, #2563EB)' : T.text2,
+                  color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.text2,
                   transition: 'color 150ms ease',
                 }}
                 onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = T.text1; }}

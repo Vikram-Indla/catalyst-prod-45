@@ -48,7 +48,7 @@ export function CalendarHeader({
             <DownloadIcon label="" size="small" primaryColor="currentColor" />
             Export
           </Button>
-          <Button className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-text-brand,#2563eb)]/90">
+          <Button className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/90">
             <AddIcon label="" size="small" primaryColor="currentColor" />
             New Release
           </Button>

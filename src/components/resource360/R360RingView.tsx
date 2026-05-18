@@ -12,9 +12,9 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string; a
   'Re-Open':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open',     accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
   'In Requirements':      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements',accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
   'Awaiting Info':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting',    accent: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
-  'In Progress':          { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress', accent: 'var(--ds-text-brand, #2563EB)' },
-  'In Development':       { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress', accent: 'var(--ds-text-brand, #2563EB)' },
-  'Under Implementation': { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress', accent: 'var(--ds-text-brand, #2563EB)' },
+  'In Progress':          { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+  'In Development':       { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
+  'Under Implementation': { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
   'In Review':            { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review',   accent: 'var(--cp-teal-60, #0D9488)' },
   'In QA':                { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA',       accent: 'var(--cp-teal-60, #0D9488)' },
   'Ready for QA':         { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'Ready QA',    accent: 'var(--cp-teal-60, #0D9488)' },
@@ -69,7 +69,7 @@ const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success,
 const trunc = (s: string, l: number) => s && s.length > l ? s.slice(0, l) + '…' : s || '';
 const ageLabel = (d: number) => d === 0 ? 'Today' : d === 1 ? '1d ago' : `${d}d ago`;
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', LND: 'var(--cp-purple-60, #7C3AED)' };
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', LND: 'var(--cp-purple-60, #7C3AED)' };
 const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
 
 const SPOTS = [

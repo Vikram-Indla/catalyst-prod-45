@@ -496,7 +496,7 @@
   }
 
   .mobile-bottom-nav-item.active {
-    color: var(--ds-text-brand, #2563eb);
+    color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
     background: var(--ds-background-selected, #eff6ff);
   }
 

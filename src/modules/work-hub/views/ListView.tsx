@@ -159,13 +159,13 @@ function AssigneeCell({ assignee, onAssigneeChange }: {
         </div>
         <div className="flex flex-col max-h-60 overflow-auto p-1">
           <button
-            className="flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors text-left text-[var(--ds-text-brand,#2563eb)]"
+            className="flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors text-left text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]"
             onClick={() => onAssigneeChange(null)}
           >
             Unassigned
           </button>
           <button
-            className="flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-[var(--ds-text-brand,#2563eb)]/20 bg-[var(--ds-text-brand,#2563eb)]/10 transition-colors text-left text-[var(--ds-text-brand,#2563eb)] font-medium"
+            className="flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/20 bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/10 transition-colors text-left text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] font-medium"
             onClick={() => onAssigneeChange({ name: 'Vikram India' })}
           >
             <span className="flex-shrink-0">

@@ -21,7 +21,7 @@ export const COLORS = {
   borderFocus: 'var(--ds-text-brand, #3b82f6)',
   
   // Accent
-  accent: 'var(--ds-text-brand, #2563eb)',
+  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   accentHover: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
   accentLight: '#dbeafe',
   
@@ -35,7 +35,7 @@ export const COLORS = {
   filePdfBg: 'var(--ds-background-danger, #fef2f2)',
   filePdfIcon: 'var(--ds-text-danger, #dc2626)',
   fileDocBg: 'var(--ds-background-selected, #eff6ff)',
-  fileDocIcon: 'var(--ds-text-brand, #2563eb)',
+  fileDocIcon: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   fileImgBg: '#f0fdf4',
   fileImgIcon: 'var(--ds-text-success, #16a34a)'
 } as const;

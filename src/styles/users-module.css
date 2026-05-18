@@ -14,7 +14,7 @@
   /* ═══════════════════════════════════════════════════════════
      PRIMARY PALETTE
      ═══════════════════════════════════════════════════════════ */
-  --ct-primary: var(--ds-text-brand, #2563eb);
+  --ct-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --ct-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --ct-primary-light: rgba(37, 99, 235, 0.08);
   --ct-primary-lighter: rgba(37, 99, 235, 0.04);
@@ -59,7 +59,7 @@
 
   --ct-border: var(--ds-border, #e2e8f0);
   --ct-border-light: var(--ds-surface-sunken, #f1f5f9);
-  --ct-border-focus: var(--ds-text-brand, #2563eb);
+  --ct-border-focus: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 
   /* ═══════════════════════════════════════════════════════════
      SHADOWS (V8 4-LEVEL SCALE)
@@ -1525,10 +1525,10 @@
 .ct-badge.variable,
 .users-module .ct-badge.variable {
   background: rgba(37, 99, 235, 0.08) !important;
-  color: var(--ds-text-brand, #2563eb) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 .ct-badge.variable .ct-badge-dot {
-  background: var(--ds-text-brand, #2563eb) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 
 /* Permanent Badge — TEAL */
@@ -1556,7 +1556,7 @@
   background: #8b5cf6 !important;
 }
 .ct-stat-dot.variable {
-  background: var(--ds-text-brand, #2563eb) !important;
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) !important;
 }
 .ct-stat-dot.permanent {
   background: #0d9488 !important;
@@ -1595,7 +1595,7 @@
   border-radius: var(--ct-radius-md, 6px);
   font-size: var(--ct-text-xs, 11px);
   font-weight: 600;
-  color: var(--ct-primary, #2563eb);
+  color: var(--ct-primary, var(--cp-workstream-catalyst-primary, #2563eb));
 }
 
 /* Widget Grid - 6 columns for 5 departments + licenses */
@@ -1624,14 +1624,14 @@
   top: 0;
   bottom: 0;
   width: 4px;
-  background: var(--ct-primary, #2563eb);
+  background: var(--ct-primary, var(--cp-workstream-catalyst-primary, #2563eb));
   opacity: 0.5;
 }
 
 .ct-runrate-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--ct-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
-  border-color: var(--ct-primary, #2563eb);
+  border-color: var(--ct-primary, var(--cp-workstream-catalyst-primary, #2563eb));
   cursor: pointer;
 }
 
@@ -1641,7 +1641,7 @@
 
 /* Active state when filtering */
 .ct-runrate-card.active {
-  border-color: var(--ct-primary, #2563eb);
+  border-color: var(--ct-primary, var(--cp-workstream-catalyst-primary, #2563eb));
   background: rgba(37, 99, 235, 0.04);
   box-shadow: var(--ct-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
 }
@@ -1725,7 +1725,7 @@
 .ct-runrate-yearly-label {
   font-size: var(--ct-text-xs, 11px);
   font-weight: 600;
-  color: var(--ct-primary, #2563eb);
+  color: var(--ct-primary, var(--cp-workstream-catalyst-primary, #2563eb));
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }

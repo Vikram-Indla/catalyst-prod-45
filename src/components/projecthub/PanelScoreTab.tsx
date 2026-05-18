@@ -83,9 +83,9 @@ export function PanelScoreTab({ projectId }: Props) {
                     onClick={() => setValues(v => ({ ...v, [f.key]: n }))}
                     style={{
                       flex: 1, height: 36, borderRadius: 6, fontSize: 13, fontWeight: 600,
-                      background: sel ? 'var(--ds-text-brand, #2563EB)' : 'transparent',
+                      background: sel ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
                       color: sel ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--fg-2)',
-                      border: `1px solid ${sel ? 'var(--ds-text-brand, #2563EB)' : 'var(--divider)'}`,
+                      border: `1px solid ${sel ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--divider)'}`,
                       cursor: 'pointer',
                     }}
                   >
@@ -102,7 +102,7 @@ export function PanelScoreTab({ projectId }: Props) {
         disabled={saving}
         style={{
           marginTop: 20, width: '100%', height: 40, borderRadius: 6,
-          background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
+          background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
           fontSize: 13, fontWeight: 600, cursor: saving ? 'default' : 'pointer',
           opacity: saving ? 0.6 : 1,
         }}

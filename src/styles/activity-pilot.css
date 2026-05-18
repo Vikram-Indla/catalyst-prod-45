@@ -318,7 +318,7 @@
 .dark .ap-composer-editor .atlaskit-editor-wrapper { border-color: var(--ds-border-bold, #454545); }
 .dark .ap-composer-editor .atlaskit-editor-wrapper:focus-within { border-color: #4C9AFF; }
 .dark .ap-save-btn { background: var(--ds-background-brand-bold-hovered, #1D4ED8); }
-.dark .ap-save-btn:hover { background: var(--ds-text-brand, #2563EB); }
+.dark .ap-save-btn:hover { background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); }
 .dark .ap-save-btn:disabled { background: var(--ds-border, #292929); color: var(--ds-text-subtlest, #878787); }
 .dark .ap-cancel-btn { color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .ap-cancel-btn:hover { color: var(--ds-text, #EDEDED); }

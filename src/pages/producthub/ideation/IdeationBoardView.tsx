@@ -198,7 +198,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
       {showFullAiStrip && (
         <div style={{
           marginTop: '8px', background: 'var(--cp-primary-light, #EFF6FF)', borderRadius: '6px',
-          padding: '5px 8px', fontSize: '10px', color: 'var(--cp-text-link, #2563EB)', fontWeight: 600,
+          padding: '5px 8px', fontSize: '10px', color: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))', fontWeight: 600,
         }}>
           {aiInsight}
         </div>
@@ -220,7 +220,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         <button
           onClick={e => { e.stopPropagation(); onConvert?.(idea.key); }}
           style={{
-            width: '100%', marginTop: '8px', padding: '6px', background: 'var(--ds-text-brand, #2563EB)',
+            width: '100%', marginTop: '8px', padding: '6px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '6px', fontSize: '11px',
             fontWeight: 700, cursor: 'pointer',
           }}

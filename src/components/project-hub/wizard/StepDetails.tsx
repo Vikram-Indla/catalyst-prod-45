@@ -320,7 +320,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
                       <div className="truncate" style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{p.display_name}</div>
                       <div className="truncate" style={{ fontSize: 11, color: 'var(--fg-3)' }}>{p.role || 'Team Member'}</div>
                     </div>
-                    {p.id === data.lead_id && <Check size={14} className="ml-auto text-[var(--ds-text-brand,#2563EB)]" />}
+                    {p.id === data.lead_id && <Check size={14} className="ml-auto text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />}
                   </button>
                 ))
               )}

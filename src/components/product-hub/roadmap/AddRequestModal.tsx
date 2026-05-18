@@ -157,7 +157,7 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
                 <div className="w-1 rounded" style={{ height: 32, background: 'var(--ds-icon-accent-yellow, #B38600)' }} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span style={{ fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>{item.key}</span>
+                    <span style={{ fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{item.key}</span>
                     <SourceBadge source={item.source} size="xs" />
                     <span className="truncate" style={{ fontSize: 13, fontWeight: 500, color: INK[1] }}>{item.title}</span>
                   </div>
@@ -185,7 +185,7 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
                     onClick={() => handleAdd(item.id, item.title)}
                     disabled={addMutation.isPending}
                     className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
-                    style={{ color: 'var(--ds-text-brand, #2563EB)', border: '1px solid #BFDBFE', background: 'var(--ds-background-selected, #EFF6FF)', transition: 'background-color 0.15s ease' }}
+                    style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: '1px solid #BFDBFE', background: 'var(--ds-background-selected, #EFF6FF)', transition: 'background-color 0.15s ease' }}
                     onMouseEnter={e => { if (!addMutation.isPending) e.currentTarget.style.backgroundColor = '#DBEAFE'; }}
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'var(--ds-background-selected, #EFF6FF)')}
                   >

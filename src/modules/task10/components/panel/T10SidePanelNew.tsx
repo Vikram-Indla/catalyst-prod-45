@@ -273,7 +273,7 @@ export function T10SidePanelNew({
         {/* Header - clean blue bar */}
         <div
           style={{
-            background: 'var(--ds-text-brand, #2563eb)',
+            background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
             padding: '14px 20px',
             flexShrink: 0,
             display: 'flex',

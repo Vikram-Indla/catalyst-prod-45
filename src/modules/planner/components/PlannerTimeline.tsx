@@ -479,10 +479,10 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
 
           {/* Right: Controls */}
           <div className="flex items-center gap-3">
-            {/* M3: Primary button color var(--ds-text-brand, #2563eb) */}
+            {/* M3: Primary button color var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) */}
             <Button 
               onClick={() => setIsCreateOpen(true)}
-              className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white shadow-md"
+              className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white shadow-md"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Task
@@ -516,7 +516,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                   className={cn(
                     "px-4 py-1.5 text-sm font-medium rounded-md transition-all capitalize",
                     viewMode === mode
-                      ? "bg-[var(--ds-text-brand,#2563eb)] text-white shadow-sm"
+                      ? "bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] text-white shadow-sm"
                       : "text-[var(--ds-text-subtlest,#64748b)] dark:text-slate-400 hover:text-[var(--cp-ink-2, var(--cp-ink-2, #334155))] dark:hover:text-slate-300"
                   )}
                 >
@@ -803,7 +803,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                           {/* I2-I3: Workstream name font-weight 500, color var(--ds-text, #0f172a) */}
                           <button
                             onClick={() => wsForDrawer && openWorkstreamDrawer(wsForDrawer)}
-                            className="workstream-name font-medium text-sm text-[var(--ds-text,#0f172a)] dark:text-slate-200 hover:text-[var(--ds-text-brand,#2563eb)] dark:hover:text-blue-400 transition-colors truncate text-left w-full"
+                            className="workstream-name font-medium text-sm text-[var(--ds-text,#0f172a)] dark:text-slate-200 hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:hover:text-blue-400 transition-colors truncate text-left w-full"
                             title={lane.name}
                           >
                             {lane.name}

@@ -46,7 +46,7 @@ export function SchedulingRules() {
       onClick={() => onChange(!checked)}
       style={{
         width: 38, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer',
-        background: checked ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-disabled, #CBD5E1)', position: 'relative', flexShrink: 0,
+        background: checked ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-disabled, #CBD5E1)', position: 'relative', flexShrink: 0,
         transition: 'background .2s',
       }}
     >
@@ -195,7 +195,7 @@ export function SchedulingRules() {
             disabled={batchUpdate.isPending}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
+              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
               opacity: batchUpdate.isPending ? 0.6 : 1,
             }}
           >

@@ -125,7 +125,7 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
 
         <DialogFooter className="px-6 py-3" style={{ borderTop: '0.75px solid rgba(15,23,42,0.06)' }}>
           <Button variant="ghost" onClick={onClose} style={{ borderRadius: 6 }}>Cancel</Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting || !title.trim()} style={{ backgroundColor: 'var(--ds-text-brand, #2563EB)', borderRadius: 6 }}>
+          <Button onClick={handleSubmit} disabled={isSubmitting || !title.trim()} style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 6 }}>
             {isSubmitting ? 'Creating...' : 'Create Incident'}
           </Button>
         </DialogFooter>

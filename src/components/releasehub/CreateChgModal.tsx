@@ -67,13 +67,13 @@ export function CreateChgModal({ onClose }: Props) {
           <div>
             <label className="block text-[12px] font-semibold text-[var(--ds-text-subtle,#475569)] mb-1">Title *</label>
             <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Describe the change..."
-              className="w-full h-9 px-3 rounded-md border border-[rgba(15,23,42,0.12)] text-[13px] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,#2563EB)]/20 focus:border-[var(--ds-text-brand,#2563EB)]" />
+              className="w-full h-9 px-3 rounded-md border border-[rgba(15,23,42,0.12)] text-[13px] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />
           </div>
           <div>
             <label className="block text-[12px] font-semibold text-[var(--ds-text-subtle,#475569)] mb-1">Planned Date *</label>
             <Popover>
               <PopoverTrigger asChild>
-                <button className={`w-full h-9 px-3 rounded-md border border-[rgba(15,23,42,0.12)] text-[13px] text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,#2563EB)]/20 focus:border-[var(--ds-text-brand,#2563EB)] ${deployDate ? 'text-[#1E293B]' : 'text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]'}`}>
+                <button className={`w-full h-9 px-3 rounded-md border border-[rgba(15,23,42,0.12)] text-[13px] text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] ${deployDate ? 'text-[#1E293B]' : 'text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]'}`}>
                   {deployDate ? format(deployDate, 'MMM d, yyyy') : 'Select date...'}
                   <CalendarIcon size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]" />
                 </button>
@@ -105,7 +105,7 @@ export function CreateChgModal({ onClose }: Props) {
         <div className="sticky bottom-0 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-t border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,#2E2E2E)] px-6 py-3 flex justify-end gap-2">
           <button onClick={onClose} className="h-9 px-4 rounded-md border border-[rgba(15,23,42,0.12)] text-[13px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[var(--ds-surface-sunken,#F8FAFC)]">Cancel</button>
           <button onClick={handleSubmit} disabled={!title || !deployDate || createChange.isPending}
-            className="h-9 px-4 rounded-md bg-[var(--ds-text-brand,#2563EB)] text-white text-[13px] font-semibold hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] disabled:opacity-50">
+            className="h-9 px-4 rounded-md bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white text-[13px] font-semibold hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] disabled:opacity-50">
             {createChange.isPending ? 'Creating...' : 'Create Change'}
           </button>
         </div>

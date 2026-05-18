@@ -56,7 +56,7 @@ function WorkItemIcon({ type }: { type: string }) {
       || t === 'frontend' || t === 'backend' || t === 'integration'
       || t === 'brd task' || t === 'change request' || t === 'figma'
       || t === 'entity figma' || t === 'issue')
-    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-text-brand, #2563EB)"/><path d="M4 8.5l2.5 2.5 5.5-5.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"/><path d="M4 8.5l2.5 2.5 5.5-5.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
   // Epic — purple lightning
   if (t === 'epic')
     return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--cp-purple-60, #7C3AED)"/><path d="M9.5 3L5.5 9h4L6.5 13l6-7H9l.5-3z" fill="white"/></svg>;
@@ -73,7 +73,7 @@ function WorkItemIcon({ type }: { type: string }) {
   if (t === 'incident' || t === 'production incident')
     return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-text-danger, var(--cp-danger, #DC2626))"/><path d="M8 4v5M8 10.5v1.5" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>;
   // Default — blue task (safe fallback for unknown Jira types)
-  return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-text-brand, #2563EB)"/><path d="M4 8.5l2.5 2.5 5.5-5.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
+  return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"/><path d="M4 8.5l2.5 2.5 5.5-5.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
 }
 
 /* ═══ M-03/M-04: getActionText — consistent grammar ═══ */
@@ -178,7 +178,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
     // Initials fallback
     const name = actorName || '?';
     const initials = name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
-    const colours = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, var(--cp-warning, #D97706))'];
+    const colours = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, var(--cp-warning, #D97706))'];
     const bg = colours[(notification.actor_user_id || '').charCodeAt(0) % colours.length];
     return (
       <div style={{
@@ -251,7 +251,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
               </span>
               {/* C-01: unread dot OR mark-read button — inline, no overlap */}
               {isUnread && !isHovered && (
-                <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--ds-text-brand, #2563EB)', flexShrink: 0 }} />
+                <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', flexShrink: 0 }} />
               )}
               {isUnread && isHovered && (
                 <button

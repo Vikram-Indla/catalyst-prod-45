@@ -58,7 +58,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
   const PRIORITY_ACCENT: Record<string, string> = {
     urgent: 'var(--ds-text-danger, #EF4444)',
     high: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
-    medium: 'var(--ds-text-brand, #2563EB)',
+    medium: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
     low: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
   };
 

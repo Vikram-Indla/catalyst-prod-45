@@ -14,7 +14,7 @@ export const RH = {
   borderStrong: 'rgba(15,23,42,0.20)',
 
   // Colors
-  primary: 'var(--ds-text-brand, #2563EB)',
+  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   primaryDark: 'var(--ds-background-brand-bold-hovered, #1D4ED8)',
   primaryLt: 'var(--ds-background-selected, #EFF6FF)',
   teal: 'var(--cp-teal-60, #0D9488)',
@@ -25,7 +25,7 @@ export const RH = {
   dangerBg: 'var(--ds-background-danger, #FEF2F2)',
 
   // AI = Blue, NOT purple
-  ai: 'var(--ds-text-brand, #2563EB)',
+  ai: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   aiLt: 'var(--ds-background-selected, #EFF6FF)',
   aiBorder: '#DBEAFE',
 
@@ -128,7 +128,7 @@ export const SIGNOFF_LOZENGE: Record<string, LozengeStyle> = {
 export const SECTION_ACCENT: Record<string, string> = {
   past: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
   today: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
-  this_week: 'var(--ds-text-brand, #2563EB)',
+  this_week: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   upcoming: 'var(--cp-teal-60, #0D9488)',
   future: 'var(--ds-text-success, var(--cp-success, #16A34A))',
 };

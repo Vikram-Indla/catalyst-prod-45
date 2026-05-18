@@ -193,7 +193,7 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
                           onClick={() => setSelectedTypeId(isSelected ? null : t.id)}
                           style={{
                             width: 28, height: 28, border: 'none', borderRadius: 4,
-                            background: isSelected ? 'var(--ds-background-selected-bold,#2563EB)' : 'transparent',
+                            background: isSelected ? 'var(--ds-background-selected-bold,var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
                             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                             color: isSelected ? '#fff' : 'var(--fg-3)',
                             fontSize: 16, fontWeight: 700, lineHeight: 1,

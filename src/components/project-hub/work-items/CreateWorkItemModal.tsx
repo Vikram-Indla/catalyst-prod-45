@@ -308,7 +308,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
               value={title}
               onChange={e => setTitle(e.target.value)}
               placeholder="What needs to be done?"
-              className="w-full rounded-md border px-3 text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,#2563EB)] transition-shadow"
+              className="w-full rounded-md border px-3 text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] transition-shadow"
               style={{ height: 40, borderColor: 'var(--divider)', color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) handleSubmit(); }}
             />
@@ -367,7 +367,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                         value={assigneeSearch}
                         onChange={e => setAssigneeSearch(e.target.value)}
                         placeholder="Search..."
-                        className="w-full pl-7 pr-2 py-1 text-[11px] rounded border focus:outline-none focus:ring-1 focus:ring-[var(--ds-text-brand,#2563EB)]"
+                        className="w-full pl-7 pr-2 py-1 text-[11px] rounded border focus:outline-none focus:ring-1 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
                         style={{ borderColor: 'var(--divider)', height: 28 }}
                         autoFocus
                       />
@@ -465,7 +465,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                   type="date"
                   value={dueDate}
                   onChange={e => setDueDate(e.target.value)}
-                  className="w-full rounded-md border pl-8 pr-2.5 text-[12px] font-medium focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,#2563EB)] transition-shadow"
+                  className="w-full rounded-md border pl-8 pr-2.5 text-[12px] font-medium focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] transition-shadow"
                   style={{ height: 50, borderColor: 'var(--divider)', color: 'var(--fg-2)', fontFamily: 'var(--cp-font-mono)' }}
                 />
               </div>
@@ -533,7 +533,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                       value={parentSearch}
                       onChange={e => setParentSearch(e.target.value)}
                       placeholder="Search by key or title..."
-                      className="w-full pl-7 pr-2 py-1 text-[11px] rounded border focus:outline-none focus:ring-1 focus:ring-[var(--ds-text-brand,#2563EB)]"
+                      className="w-full pl-7 pr-2 py-1 text-[11px] rounded border focus:outline-none focus:ring-1 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
                       style={{ borderColor: 'var(--divider)', height: 28 }}
                       autoFocus
                     />
@@ -573,7 +573,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
               type="checkbox"
               checked={createAnother}
               onChange={e => setCreateAnother(e.target.checked)}
-              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,#2563EB)]"
+              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
             />
             Create another
           </label>
@@ -634,7 +634,7 @@ function ProfileAvatar({ name, url, size = 20 }: { name: string; url: string | n
   const initials = (name || '?').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  const colors = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))'];
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))'];
   const bg = colors[Math.abs(hash) % colors.length];
 
   if (url) {

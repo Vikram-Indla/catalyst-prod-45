@@ -115,9 +115,9 @@ export default function DefectDetailPage() {
               <>
                 <div><span className="text-muted-foreground">Source</span><p className="font-medium">Execution</p></div>
                 {defect.source_test_case_id && (
-                  <div><span className="text-muted-foreground">Test Case</span><p className="font-medium"><a href={`/testhub/repository?case=${defect.source_test_case_id}`} style={{ color: 'var(--ds-text-brand, #2563EB)' }}>View Test Case</a></p></div>
+                  <div><span className="text-muted-foreground">Test Case</span><p className="font-medium"><a href={`/testhub/repository?case=${defect.source_test_case_id}`} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>View Test Case</a></p></div>
                 )}
-                <div><span className="text-muted-foreground">Test Run</span><p className="font-medium"><a href={`/testhub/execution/${defect.source_test_run_id}`} style={{ color: 'var(--ds-text-brand, #2563EB)' }}>View Execution</a></p></div>
+                <div><span className="text-muted-foreground">Test Run</span><p className="font-medium"><a href={`/testhub/execution/${defect.source_test_run_id}`} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>View Execution</a></p></div>
                 <div><span className="text-muted-foreground">Environment</span><p className="font-medium">{defect.environment ?? '—'}</p></div>
               </>
             ) : (

@@ -97,9 +97,9 @@ export default function ProjectBoardPage() {
   const projectName = key?.toUpperCase() ?? 'AI GOVERNANCE';
 
   const statCards = [
-    { label: 'Total Issues', value: stats.total, icon: BarChart3, color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', accent: '' },
+    { label: 'Total Issues', value: stats.total, icon: BarChart3, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', accent: '' },
     { label: 'Completed', value: stats.completed, icon: CheckCircle2, color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DCFCE7)', accent: '' },
-    { label: 'In Progress', value: stats.inProgress, icon: Clock, color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', accent: '' },
+    { label: 'In Progress', value: stats.inProgress, icon: Clock, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', accent: '' },
     { label: 'Overdue', value: stats.overdue, icon: AlertTriangle, color: stats.overdue > 0 ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: stats.overdue > 0 ? 'var(--ds-background-danger, #FEF2F2)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', accent: '' },
     { label: 'AI Features', value: '0%', icon: Sparkles, color: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', accent: 'var(--cp-purple-60, #7C3AED)' },
   ];
@@ -181,7 +181,7 @@ export default function ProjectBoardPage() {
                   fontFamily: 'var(--cp-font-body)',
                   borderRadius: 6, cursor: 'pointer', border: 'none',
                   background: isActive ? ('var(--cp-bg-elevated)') : 'transparent',
-                  color: isActive ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-secondary)'),
+                  color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-secondary)'),
                   boxShadow: isActive ? '0 1px 3px rgba(0,0,0,.08)' : 'none',
                   transition: 'all 150ms ease',
                 }}
@@ -222,7 +222,7 @@ export default function ProjectBoardPage() {
             borderRadius: 6, cursor: 'pointer',
             border: hasActiveFilters ? '1px solid #BFDBFE' : ('1px solid var(--cp-border-default)'),
             background: hasActiveFilters ? ('var(--cp-interact-selected)') : ('var(--cp-bg-elevated)'),
-            color: hasActiveFilters ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-secondary)'),
+            color: hasActiveFilters ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-secondary)'),
             fontFamily: 'var(--cp-font-body)',
             transition: 'all 150ms ease',
           }}
@@ -232,7 +232,7 @@ export default function ProjectBoardPage() {
           {hasActiveFilters && (
             <span
               className="rounded-full flex items-center justify-center"
-              style={{ width: 16, height: 16, background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #fff)', fontSize: 9, fontWeight: 700 }}
+              style={{ width: 16, height: 16, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)', fontSize: 9, fontWeight: 700 }}
             >
               {[filterType, filterStatus, filterPriority, filterSource].filter(Boolean).length}
             </span>
@@ -445,7 +445,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
               onMouseLeave={e => { if (value !== o.value) e.currentTarget.style.background = 'transparent'; }}
             >
               {o.label}
-              {value === o.value && <span style={{ float: 'right', color: 'var(--ds-text-brand, #2563EB)', fontSize: 11 }}>✓</span>}
+              {value === o.value && <span style={{ float: 'right', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontSize: 11 }}>✓</span>}
             </button>
           ))}
         </div>

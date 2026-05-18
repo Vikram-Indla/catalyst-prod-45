@@ -200,7 +200,7 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
           {activeCount > 0 && (
             <span style={{
               fontSize: 11, fontWeight: 700, color: 'var(--ds-surface, #fff)',
-              background: 'var(--ds-text-brand, #2563EB)', borderRadius: 10, padding: '2px 8px',
+              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 10, padding: '2px 8px',
               lineHeight: '16px',
             }}>{activeCount}</span>
           )}
@@ -320,7 +320,7 @@ function MultiSelectFilterSection({
           {selected.length > 0 && (
             <span style={{
               fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #fff)',
-              background: 'var(--ds-text-brand, #2563EB)', borderRadius: 10, padding: '1px 7px',
+              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 10, padding: '1px 7px',
               lineHeight: '16px',
             }}>{selected.length}</span>
           )}
@@ -344,7 +344,7 @@ function MultiSelectFilterSection({
                   fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', background: 'var(--ds-surface-sunken, #FAFBFC)',
                   outline: 'none', fontFamily: 'var(--cp-font-body)',
                 }}
-                onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)')}
+                onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))')}
                 onBlur={e => (e.currentTarget.style.borderColor = '#DDDEE1')}
               />
             </div>
@@ -369,7 +369,7 @@ function MultiSelectFilterSection({
                   <span style={{
                     width: 18, height: 18, borderRadius: 3,
                     border: isSelected ? 'none' : '2px solid #C1C7D0',
-                    background: isSelected ? 'var(--ds-text-brand, #2563EB)' : 'transparent',
+                    background: isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexShrink: 0,
                     transition: 'all 150ms',
@@ -423,7 +423,7 @@ function DateRangeFilterSection({
           {hasValue && (
             <span style={{
               fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #fff)',
-              background: 'var(--ds-text-brand, #2563EB)', borderRadius: 10, padding: '1px 7px',
+              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 10, padding: '1px 7px',
               lineHeight: '16px',
             }}>1</span>
           )}

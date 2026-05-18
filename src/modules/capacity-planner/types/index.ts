@@ -177,7 +177,7 @@ export type GroupByType = 'none' | 'project' | 'department' | 'assignment';
 // Catalyst V5 Design System Colors
 export const CatalystColors = {
   brand: {
-    blue: 'var(--ds-text-brand, #2563eb)',
+    blue: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
     blueHover: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
     blueBg: 'rgba(37, 99, 235, 0.08)',
     teal: '#0d9488',
@@ -203,14 +203,14 @@ export const CatalystColors = {
 export const ProjectColors: Record<string, string> = {
   'Digital Investor Portal': '#0d9488',
   'Industrial Marketplace': '#10b981',
-  'Industrial Platform Modernization': 'var(--ds-text-brand, #2563eb)',
+  'Industrial Platform Modernization': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   'Mobile App Request': 'var(--ds-text-brand, #3b82f6)',
   default: '#6b7280',
 };
 
 export const DepartmentColors: Record<string, { bg: string; text: string; badge: string }> = {
-  Product: { bg: 'bg-[var(--ds-text-brand,#3b82f6)]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,#3b82f6)]/15 text-[var(--ds-text-brand,#2563eb)]' },
-  Delivery: { bg: 'bg-[#0d9488]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,#2563eb)]/10 text-[var(--ds-text-brand,#2563eb)]' },
+  Product: { bg: 'bg-[var(--ds-text-brand,#3b82f6)]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,#3b82f6)]/15 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' },
+  Delivery: { bg: 'bg-[#0d9488]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/10 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' },
   Support: { bg: 'bg-[#10b981]', text: 'text-white', badge: 'bg-[#10b981]/15 text-[#10b981]' },
   default: { bg: 'bg-muted', text: 'text-muted-foreground', badge: 'bg-muted text-muted-foreground' },
 };

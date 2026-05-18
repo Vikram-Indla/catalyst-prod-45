@@ -15,7 +15,7 @@
   --text-3: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
   --text-4: var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8));
   --text-inv: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  --text-link: var(--ds-text-brand, #2563EB);
+  --text-link: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --bd-subtle: rgba(15,23,42,0.06);
   --bd-default: rgba(15,23,42,0.12);
   --bd-strong: rgba(15,23,42,0.20);
@@ -23,7 +23,7 @@
   --press: rgba(15,23,42,0.08);
   --sel: rgba(37,99,235,0.08);
   --sel-hover: rgba(37,99,235,0.12);
-  --p60: var(--ds-text-brand, #2563EB);
+  --p60: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --p70: var(--ds-background-brand-bold-hovered, #1D4ED8);
   --p5: rgba(37,99,235,0.06);
   --ok60: var(--ds-text-success, var(--cp-success, #16A34A));
@@ -62,7 +62,7 @@
   --sel: rgba(96,165,250,0.10);
   --sel-hover: rgba(96,165,250,0.15);
   --p60: var(--ds-text-brand, #3B82F6);
-  --p70: var(--ds-text-brand, #2563EB);
+  --p70: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --p5: rgba(59,130,246,0.08);
   --ok60: var(--ds-text-success, #22C55E);
   --warn60: var(--ds-text-warning, var(--cp-amber, #F59E0B));

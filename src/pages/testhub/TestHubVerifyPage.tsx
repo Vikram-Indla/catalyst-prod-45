@@ -241,7 +241,7 @@ export default function TestHubVerifyPage() {
           style={{
             height: 50,
             padding: '0 16px',
-            backgroundColor: 'var(--ds-text-brand, #2563EB)',
+            backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
             border: 'none',
             borderRadius: 6,
             fontSize: 13,

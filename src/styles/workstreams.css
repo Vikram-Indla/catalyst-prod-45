@@ -16,7 +16,7 @@
 
 :root {
   /* Primary Colors - Catalyst V5 */
-  --ws-primary: var(--ds-text-brand, #2563eb);
+  --ws-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --ws-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --ws-primary-light: var(--ds-background-selected, #eff6ff);
   

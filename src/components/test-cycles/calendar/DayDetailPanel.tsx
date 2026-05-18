@@ -150,7 +150,7 @@ export function DayDetailPanel({
                           variant="ghost"
                           size="sm"
                           onClick={() => onReschedule(event)}
-                          className="h-7 px-2 text-xs text-[var(--ds-text-subtlest,#64748b)] hover:text-[var(--ds-text-brand,#2563eb)]"
+                          className="h-7 px-2 text-xs text-[var(--ds-text-subtlest,#64748b)] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]"
                         >
                           <Calendar className="h-3 w-3 mr-1" />
                           Reschedule
@@ -159,7 +159,7 @@ export function DayDetailPanel({
                           variant="ghost"
                           size="sm"
                           onClick={() => onViewDetails(event)}
-                          className="h-7 px-2 text-xs text-[var(--ds-text-subtlest,#64748b)] hover:text-[var(--ds-text-brand,#2563eb)]"
+                          className="h-7 px-2 text-xs text-[var(--ds-text-subtlest,#64748b)] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]"
                         >
                           <ExternalLink className="h-3 w-3 mr-1" />
                           View
@@ -183,7 +183,7 @@ export function DayDetailPanel({
 
       {/* Footer */}
       <div className="p-4 border-t border-[var(--ds-border,#e2e8f0)]">
-        <Button className="w-full bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white">
+        <Button className="w-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white">
           Add Test to This Day
         </Button>
       </div>

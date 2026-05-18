@@ -157,7 +157,7 @@ export default function EnvironmentsListPage() {
           style={{
             display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 20px',
             border: 'none', borderRadius: 12,
-            background: 'var(--ds-text-brand, #2563EB)',
+            background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 600, cursor: 'pointer',
             boxShadow: 'none',
           }}

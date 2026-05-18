@@ -56,7 +56,7 @@ export function RescheduleModal({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-[var(--ds-text-brand,#2563eb)]" />
+            <Calendar className="h-5 w-5 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />
             Reschedule Tests
           </DialogTitle>
         </DialogHeader>
@@ -67,7 +67,7 @@ export function RescheduleModal({
             <div
               className={cn(
                 'p-4 rounded-lg border-2 cursor-pointer',
-                mode === 'shift' ? 'border-[var(--ds-text-brand,#2563eb)] bg-[var(--ds-background-selected,#eff6ff)]' : 'border-[var(--ds-border,#e2e8f0)]'
+                mode === 'shift' ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] bg-[var(--ds-background-selected,#eff6ff)]' : 'border-[var(--ds-border,#e2e8f0)]'
               )}
               onClick={() => setMode('shift')}
             >
@@ -117,7 +117,7 @@ export function RescheduleModal({
             <div
               className={cn(
                 'p-4 rounded-lg border-2 cursor-pointer',
-                mode === 'range' ? 'border-[var(--ds-text-brand,#2563eb)] bg-[var(--ds-background-selected,#eff6ff)]' : 'border-[var(--ds-border,#e2e8f0)]'
+                mode === 'range' ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] bg-[var(--ds-background-selected,#eff6ff)]' : 'border-[var(--ds-border,#e2e8f0)]'
               )}
               onClick={() => setMode('range')}
             >
@@ -191,7 +191,7 @@ export function RescheduleModal({
           <Button
             onClick={handleSubmit}
             disabled={mode === 'shift' && shiftDays === 0}
-            className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
+            className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
           >
             Apply Changes
           </Button>

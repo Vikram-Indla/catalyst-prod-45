@@ -17,7 +17,7 @@
   --cp-text-inverse: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --cp-text-link: var(--ds-text-brand, var(--cp-primary-60, #0052CC));
 
-  --cp-primary-60: var(--ds-text-brand, #2563EB);
+  --cp-primary-60: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --cp-primary-70: var(--ds-background-brand-bold-hovered, #1D4ED8);
   --cp-primary-80: #1E3A8A;
   --cp-primary-5: var(--ds-background-selected, #EFF6FF);
@@ -34,7 +34,7 @@
   --cp-border-subtle: rgba(15, 23, 42, 0.06);
   --cp-border-default: rgba(15, 23, 42, 0.12);
   --cp-border-strong: rgba(15, 23, 42, 0.20);
-  --cp-border-interactive: var(--ds-text-brand, #2563EB);
+  --cp-border-interactive: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
 
   --cp-interact-hover: rgba(15, 23, 42, 0.04);
   --cp-interact-press: rgba(15, 23, 42, 0.08);
@@ -49,7 +49,7 @@
   --cp-input-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --cp-input-border: rgba(15, 23, 42, 0.14);
   --cp-input-border-hover: rgba(15, 23, 42, 0.22);
-  --cp-input-border-focus: var(--ds-text-brand, #2563EB);
+  --cp-input-border-focus: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
 
 
   --cp-radius-sm: 3px;

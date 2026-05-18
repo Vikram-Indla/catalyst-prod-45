@@ -10,14 +10,14 @@ export type { ViewType, ResourceMetric, CapacityProject, AiRecommendation, Resou
 
 // Department colors - Catalyst V5 compliant
 export const departmentColors: Record<string, { bg: string; text: string; badge: string }> = {
-  Product: { bg: 'bg-[var(--ds-text-brand,#3b82f6)]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,#3b82f6)]/15 text-[var(--ds-text-brand,#2563eb)]' },
-  Delivery: { bg: 'bg-[#0d9488]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,#2563eb)]/10 text-[var(--ds-text-brand,#2563eb)]' },
+  Product: { bg: 'bg-[var(--ds-text-brand,#3b82f6)]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,#3b82f6)]/15 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' },
+  Delivery: { bg: 'bg-[#0d9488]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/10 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' },
   Support: { bg: 'bg-[#10b981]', text: 'text-white', badge: 'bg-[#10b981]/15 text-[#10b981]' },
   default: { bg: 'bg-muted', text: 'text-muted-foreground', badge: 'bg-muted text-muted-foreground' },
 };
 
 export const projectColors = [
-  'var(--ds-text-brand, #2563eb)', // Blue
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // Blue
   '#0d9488', // Teal
   '#10b981', // Green
   'var(--ds-text-brand, #3b82f6)', // Light Blue
@@ -27,8 +27,8 @@ export const projectColors = [
 
 // FILLED project colors for Timeline bars — Catalyst V5 compliant
 export const TIMELINE_PROJECT_COLORS: Record<string, { bg: string; text: string }> = {
-  'Senaei BAU': { bg: 'var(--ds-text-brand, #2563eb)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'Senaei': { bg: 'var(--ds-text-brand, #2563eb)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Senaei BAU': { bg: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Senaei': { bg: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   'Innovation Platform': { bg: 'var(--ds-background-brand-bold-hovered, #1d4ed8)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   'Innovation': { bg: 'var(--ds-background-brand-bold-hovered, #1d4ed8)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   'Inspection Project': { bg: '#0d9488', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
@@ -43,7 +43,7 @@ export const TIMELINE_PROJECT_COLORS: Record<string, { bg: string; text: string 
   'Tahommena': { bg: '#0d9488', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   'Data Platform': { bg: 'var(--ds-text-brand, #3b82f6)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   'Data': { bg: 'var(--ds-text-brand, #3b82f6)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  'ICP': { bg: 'var(--ds-text-brand, #2563eb)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'ICP': { bg: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
 };
 
 // Get project color with fallback

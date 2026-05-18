@@ -610,8 +610,8 @@
   transition: background 0.12s, border-color 0.12s;
 }
 .sp-colpicker-check--active {
-  background: var(--ds-background-brand-bold, #2563EB);
-  border-color: var(--ds-background-brand-bold, #2563EB);
+  background: var(--ds-background-brand-bold, var(--cp-workstream-catalyst-primary, #2563EB));
+  border-color: var(--ds-background-brand-bold, var(--cp-workstream-catalyst-primary, #2563EB));
 }
 
 /* ══════════════════════════════════════════════

@@ -34,7 +34,7 @@ interface Requirement {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  functional: { label: 'Functional', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)' },
+  functional: { label: 'Functional', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)' },
   non_functional: { label: 'Non-Functional', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
   user_story: { label: 'User Story', color: '#0891B2', bg: '#ECFEFF' },
   epic: { label: 'Epic', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
@@ -142,7 +142,7 @@ export default function RequirementsListPage() {
           style={{
             display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 20px',
             border: 'none', borderRadius: 8,
-            backgroundColor: 'var(--ds-text-brand, #2563EB)',
+            backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 600, cursor: 'pointer',
           }}
         >
@@ -232,7 +232,7 @@ export default function RequirementsListPage() {
       {/* Requirements Table */}
       {isLoading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}>
-          <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-brand, #2563EB)' }} />
+          <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
         </div>
       ) : filteredRequirements.length === 0 ? (
         <div style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)' }}>
@@ -266,7 +266,7 @@ export default function RequirementsListPage() {
                     style={{ cursor: 'pointer', height: 50, maxHeight: 50, borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid var(--cp-border, #E2E8F0)' }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--cp-interact-hover, rgba(0,0,0,0.04))'; }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}>
-                    <td style={{ padding: '8px 12px', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>{req.req_key}</td>
+                    <td style={{ padding: '8px 12px', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{req.req_key}</td>
                     <td style={{ padding: '8px 12px', fontSize: 13, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{req.title}</td>
                     <td style={{ padding: '8px 12px' }}>
                       <span style={{ fontSize: 11, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '2px 8px', borderRadius: 4 }}>{type.label}</span>

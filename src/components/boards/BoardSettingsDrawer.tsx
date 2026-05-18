@@ -20,7 +20,7 @@ const TABS: { key: SettingsTab; label: string }[] = [
 ];
 
 const COLOR_SWATCHES = [
-  'var(--ds-text-brand, #2563EB)', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-teal-60, #0D9488)', '#525252', '#0284C7',
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-teal-60, #0D9488)', '#525252', '#0284C7',
 ];
 
 const VISIBILITY_OPTIONS: { value: BoardVisibility; label: string; desc: string; warning?: boolean }[] = [
@@ -238,7 +238,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                       fontFamily: 'var(--cp-font-body)', flex: 1, minWidth: 0,
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     }}>{col.name}</span>
-                    {col.isBacklog && <Badge bg="rgba(37,99,235,0.06)" color="var(--ds-text-brand, #2563EB)">Backlog</Badge>}
+                    {col.isBacklog && <Badge bg="rgba(37,99,235,0.06)" color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))">Backlog</Badge>}
                     {col.isDone && <Badge bg="#F0FDF4" color="var(--sem-success)">Done</Badge>}
                     <button onClick={() => deleteCol.mutate({ columnId: col.id, boardId: board.id })} style={{
                       width: 22, height: 22, borderRadius: 4, border: 'none',

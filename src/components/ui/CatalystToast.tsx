@@ -40,7 +40,7 @@ const toastConfig = {
   },
   info: {
     icon: Info,
-    iconColor: 'var(--ds-text-brand, #2563EB)',
+    iconColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
     bgColor: 'var(--ds-background-selected, #EFF6FF)',
     borderColor: '#BFDBFE',
     titleColor: '#1E40AF',

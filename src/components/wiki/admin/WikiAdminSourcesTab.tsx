@@ -19,12 +19,12 @@ export function WikiAdminSourcesTab() {
         {(['documents', 'jira'] as const).map(t => (
           <button key={t} onClick={() => setSubTab(t)} style={{
             padding: '8px 16px', fontSize: 12, fontFamily: 'var(--cp-font-body)', fontWeight: subTab === t ? 600 : 450,
-            color: subTab === t ? 'var(--cp-primary-60, #2563EB)' : 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
+            color: subTab === t ? 'var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
             background: 'transparent', border: 'none', cursor: 'pointer',
-            borderBottom: subTab === t ? '2px solid var(--cp-primary-60, #2563EB)' : '2px solid transparent',
+            borderBottom: subTab === t ? '2px solid var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))' : '2px solid transparent',
             textTransform: 'capitalize', outline: 'none',
           }}
-            onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
+            onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
             onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
           >{t === 'jira' ? 'Jira Tables' : 'Documents'}</button>
         ))}
@@ -71,7 +71,7 @@ function DocumentsTable() {
           fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 600,
           color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', outline: 'none',
         }}
-          onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
+          onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
           onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
         >
           <Download style={{ width: 12, height: 12 }} /> Export Manifest
@@ -166,7 +166,7 @@ function SmBtn({ icon, title, onClick }: { icon: React.ReactElement; title: stri
       background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center',
       color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', outline: 'none',
     }}
-      onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
+      onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
       onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
       onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
       onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}

@@ -33,7 +33,7 @@ export function hubLabel(hub?: string | null): string {
 /** Hub source → accent colour (legacy UWVRow). */
 export function hubColour(hub?: string | null): string {
   switch ((hub ?? '').toLowerCase()) {
-    case 'projecthub': return 'var(--ds-text-brand, #2563EB)';
+    case 'projecthub': return 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
     case 'producthub': return '#3F3F46';
     case 'taskhub': return '#D4D4D8';
     case 'incidenthub': return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';

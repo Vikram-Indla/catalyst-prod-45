@@ -50,7 +50,7 @@ export function HierarchyTreeView({ workItems }: HierarchyTreeViewProps) {
       },
       epic: { 
         icon: <Zap className="w-4 h-4 text-white" />, 
-        bg: 'bg-[var(--ds-text-brand,#2563eb)]' 
+        bg: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' 
       },
       feature: { 
         icon: <Target className="w-4 h-4 text-white" />, 
@@ -75,7 +75,7 @@ export function HierarchyTreeView({ workItems }: HierarchyTreeViewProps) {
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { bg: string; text: string; label: string }> = {
       current: { bg: 'bg-[#0d9488]/10', text: 'text-[#0d9488]', label: 'CURRENT' },
-      future: { bg: 'bg-[var(--ds-text-brand,#2563eb)]/10', text: 'text-[var(--ds-text-brand,#2563eb)]', label: 'FUTURE' },
+      future: { bg: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/10', text: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]', label: 'FUTURE' },
       completed: { bg: 'bg-muted', text: 'text-muted-foreground', label: 'COMPLETED' },
     };
     const config = statusMap[status] || statusMap.current;

@@ -41,7 +41,7 @@ export function AIIntelligenceButton({
       style={{
         background: disabled
           ? 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))'
-          : 'var(--ds-text-brand, #2563EB)',
+          : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
         color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         border: 'none',
         borderRadius: 20,

@@ -279,7 +279,7 @@ export function T10AssigneeFieldNew({
                   )}
                 </div>
                 {isSelected && (
-                  <Check size={14} style={{ color: 'var(--ds-text-brand, #2563eb)', flexShrink: 0 }} />
+                  <Check size={14} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', flexShrink: 0 }} />
                 )}
               </button>
             );

@@ -67,8 +67,8 @@ export function KBInputArea({
               flexShrink: 0,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = 'var(--cp-primary-60, #2563EB)';
-              e.currentTarget.style.color = 'var(--cp-primary-60, #2563EB)';
+              e.currentTarget.style.borderColor = 'var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))';
+              e.currentTarget.style.color = 'var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))';
               e.currentTarget.style.background = 'var(--cp-primary-5, #EFF6FF)';
             }}
             onMouseLeave={(e) => {
@@ -115,7 +115,7 @@ export function KBInputArea({
             animation: isListening ? 'kb-mic-pulse 1.5s infinite' : 'none',
           }}
           onMouseEnter={(e) => {
-            if (!isListening) e.currentTarget.style.color = 'var(--cp-primary-60, #2563EB)';
+            if (!isListening) e.currentTarget.style.color = 'var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))';
           }}
           onMouseLeave={(e) => {
             if (!isListening) e.currentTarget.style.color = 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))';
@@ -168,7 +168,7 @@ export function KBInputArea({
             if (hasText) e.currentTarget.style.background = 'var(--cp-primary-70, #1D4ED8)';
           }}
           onMouseLeave={(e) => {
-            if (hasText) e.currentTarget.style.background = 'var(--cp-primary-60, #2563EB)';
+            if (hasText) e.currentTarget.style.background = 'var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))';
             else e.currentTarget.style.background = 'transparent';
           }}
         >

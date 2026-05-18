@@ -87,14 +87,14 @@ export const STATUS_CALENDAR_COLORS: Record<CalendarEventStatus, { bg: string; b
   passed: { bg: 'bg-[#ccfbf1]', border: 'border-[#0d9488]', text: 'text-[#0d9488]' },
   failed: { bg: 'bg-[#fee2e2]', border: 'border-[#ef4444]', text: 'text-[#ef4444]' },
   blocked: { bg: 'bg-[#fef3c7]', border: 'border-[#d97706]', text: 'text-[#d97706]' },
-  in_progress: { bg: 'bg-[#dbeafe]', border: 'border-[#2563eb]', text: 'text-[#2563eb]' },
+  in_progress: { bg: 'bg-[#dbeafe]', border: 'border-[var(--cp-workstream-catalyst-primary, #2563eb)]', text: 'text-[var(--cp-workstream-catalyst-primary, #2563eb)]' },
   not_started: { bg: 'bg-[#f1f5f9]', border: 'border-[#cbd5e1]', text: 'text-[#64748b]' },
 };
 
 export const PRIORITY_COLORS: Record<CalendarEventPriority, string> = {
   critical: 'bg-[#fee2e2] text-[#ef4444]',
   high: 'bg-[#fef3c7] text-[#d97706]',
-  medium: 'bg-[#dbeafe] text-[#2563eb]',
+  medium: 'bg-[#dbeafe] text-[var(--cp-workstream-catalyst-primary, #2563eb)]',
   low: 'bg-[#f1f5f9] text-[#64748b]',
 };
 

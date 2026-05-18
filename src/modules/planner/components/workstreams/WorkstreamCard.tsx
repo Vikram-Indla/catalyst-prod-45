@@ -28,7 +28,7 @@ const COLORS = {
   borderLight: 'var(--ds-border, #e2e8f0)',
   borderDefault: 'var(--ds-text-disabled, #cbd5e1)',
   
-  accent: 'var(--ds-text-brand, #2563eb)',
+  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   danger: 'var(--ds-text-danger, #dc2626)',
   warning: 'var(--ds-text-warning, #f59e0b)',
   success: 'var(--ds-text-success, #16a34a)'

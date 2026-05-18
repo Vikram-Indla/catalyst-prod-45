@@ -376,9 +376,9 @@ function StatChip({ value, label, color, isActive, onClick, pulse }: StatChipPro
       inactiveText: 'text-[var(--ds-text-subtle,#475569)] dark:text-[var(--text-secondary)]',
     },
     blue: {
-      dot: 'bg-[var(--ds-text-brand,#2563eb)]',
+      dot: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]',
       activeBg: 'bg-[var(--ds-background-selected,#eff6ff)] dark:bg-blue-900/50',
-      activeText: 'text-[var(--ds-text-brand,#2563eb)] dark:text-blue-300',
+      activeText: 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] dark:text-blue-300',
       inactiveText: 'text-[var(--ds-text-subtle,#475569)] dark:text-[var(--text-secondary)]',
     },
     rose: {
@@ -424,8 +424,8 @@ function UtilizationBadge({ value }: { value: number }) {
   const bgColor = value > 100 
     ? 'bg-[var(--ds-text-danger,#dc2626)]' 
     : value > 90 
-      ? 'bg-[var(--ds-text-brand,#2563eb)]' 
-      : 'bg-[var(--ds-text-brand,#2563eb)]';
+      ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]' 
+      : 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]';
   
   return (
     <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-lg border" style={{

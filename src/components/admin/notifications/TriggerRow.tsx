@@ -91,7 +91,7 @@ export const TriggerRow = memo(function TriggerRow({
           checked={isSelected}
           onChange={onSelect}
           disabled={isMandatory}
-          className="h-3.5 w-3.5 rounded border-[var(--ds-text-disabled,#CBD5E1)] text-[var(--ds-text-brand,#2563EB)] focus:ring-[var(--ds-text-brand,#2563EB)] focus:ring-offset-0 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+          className="h-3.5 w-3.5 rounded border-[var(--ds-text-disabled,#CBD5E1)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus:ring-offset-0 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
         />
       </div>
 
@@ -142,7 +142,7 @@ export const TriggerRow = memo(function TriggerRow({
         {/* Override indicator dot */}
         {isOverridden && !isMandatory && !isSilent && (
           <Tooltip delay={200} content="Overridden from defaults">
-            <span className="h-1.5 w-1.5 rounded-full bg-[var(--ds-text-brand,#2563EB)] flex-shrink-0" />
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] flex-shrink-0" />
           </Tooltip>
         )}
 

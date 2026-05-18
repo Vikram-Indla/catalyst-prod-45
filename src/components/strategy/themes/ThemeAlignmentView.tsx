@@ -28,9 +28,9 @@ import { AIStrategyIntelligencePanel } from '@/components/strategy/intelligence/
 
 // ── Layer colors (NO purple for KRs) ──
 const LAYER = {
-  theme:      { color: 'var(--ds-text-brand, #2563EB)', badgeBg: 'var(--ds-background-selected, #EFF6FF)', badgeText: '#1E40AF', border: 'var(--ds-text-brand, #2563EB)' },
+  theme:      { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', badgeBg: 'var(--ds-background-selected, #EFF6FF)', badgeText: '#1E40AF', border: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
   goal:       { color: 'var(--cp-teal-60, #0D9488)', badgeBg: '#F0FDFA', badgeText: '#115E59', border: 'var(--cp-teal-60, #0D9488)' },
-  kr:         { color: 'var(--ds-text-brand, #2563EB)', badgeBg: '#DBEAFE', badgeText: '#1E40AF', border: 'var(--ds-text-brand, #2563EB)' },
+  kr:         { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', badgeBg: '#DBEAFE', badgeText: '#1E40AF', border: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
   initiative: { color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', badgeBg: '#FFFBEB', badgeText: '#92400E', border: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
   epic:       { color: '#4F46E5', badgeBg: '#EEF2FF', badgeText: '#3730A3', border: '#4F46E5' },
 } as const;
@@ -42,9 +42,9 @@ const STATUS_CONFIG: Record<string, { dot: string; bg: string; text: string; lab
   off_track:    { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)', label: 'Off Track' },
   draft:        { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Draft' },
   planned:      { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Planned' },
-  completed:    { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E40AF', label: 'Done' },
+  completed:    { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E40AF', label: 'Done' },
   cancelled:    { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Cancelled' },
-  in_progress:  { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E40AF', label: 'In Progress' },
+  in_progress:  { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E40AF', label: 'In Progress' },
   not_started:  { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Not Started' },
   approved:     { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', text: '#115E59', label: 'Approved' },
   proposed:     { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Proposed' },
@@ -128,7 +128,7 @@ function AILoadingState() {
     <div className="px-8 py-8">
       <div className="flex items-center gap-3 mb-8">
         <div className="flex items-center justify-center rounded-xl" style={{ width: 40, height: 40, background: '#F3E8FF' }}>
-          <Sparkles size={16} className="animate-pulse" style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
+          <Sparkles size={16} className="animate-pulse" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
         </div>
         <div>
           <div className="h-3 w-48 bg-muted rounded-full animate-pulse" />

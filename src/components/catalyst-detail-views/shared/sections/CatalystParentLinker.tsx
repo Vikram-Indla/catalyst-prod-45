@@ -793,8 +793,8 @@ function renderGroupMulti(
             {/* Checkbox */}
             <div style={{
               width: 16, height: 16, borderRadius: 3, flexShrink: 0,
-              border: `1.5px solid ${isLinked ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-border-disabled, #C1C7D0)'}`,
-              background: isLinked ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-surface, #FFF)',
+              border: `1.5px solid ${isLinked ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-border-disabled, #C1C7D0)'}`,
+              background: isLinked ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-surface, #FFF)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'background 0.12s, border-color 0.12s',
             }}>

@@ -121,7 +121,7 @@ export function HierarchyMapping() {
             Hierarchy Levels
           </h2>
           <span style={{
-            fontSize: 9, background: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)', padding: '2px 8px',
+            fontSize: 9, background: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', padding: '2px 8px',
             borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.3px',
           }}>Drag to reorder</span>
         </div>
@@ -201,7 +201,7 @@ export function HierarchyMapping() {
             disabled={batchUpdate.isPending}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
+              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
               opacity: batchUpdate.isPending ? 0.6 : 1,
             }}
           >

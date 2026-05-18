@@ -26,8 +26,8 @@ interface PCRequestCardProps {
 }
 
 const STATUS_PILL_STYLES: Record<string, { color: string; bg: string; border: string }> = {
-  new: { color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', border: 'rgba(37,99,235,0.2)' },
-  new_demand: { color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', border: 'rgba(37,99,235,0.2)' },
+  new: { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', border: 'rgba(37,99,235,0.2)' },
+  new_demand: { color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', border: 'rgba(37,99,235,0.2)' },
   portfolio_review: { color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', border: 'rgba(22,163,74,0.2)' },
   under_review: { color: '#8B5CF6', bg: '#F5F3FF', border: 'rgba(139,92,246,0.2)' },
   technical_validation: { color: '#A855F7', bg: '#FAF5FF', border: 'rgba(168,85,247,0.2)' },

@@ -209,7 +209,7 @@ function DynamicRow({ item, columns, onDelete, onCopyLink, onStatusUpdate, onCli
           onClick={e => { e.stopPropagation(); onClickKey(item.id); }}
           style={{
             background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-mono)',
-            fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', padding: 0, flexShrink: 0,
+            fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', padding: 0, flexShrink: 0,
             textDecoration: 'none',
           }}
           onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}

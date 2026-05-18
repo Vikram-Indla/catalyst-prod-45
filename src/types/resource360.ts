@@ -71,7 +71,7 @@ export const WorkItemConfig = {
   theme: { color: '#0d9488', bgColor: 'bg-[#0d9488]/10', label: 'Theme', level: 'enterprise' },
   objective: { color: '#6b7280', bgColor: 'bg-[#6b7280]/10', label: 'Objective', level: 'enterprise' },
   key_result: { color: '#3b82f6', bgColor: 'bg-[#3b82f6]/10', label: 'Key Result', level: 'enterprise' },
-  epic: { color: '#2563eb', bgColor: 'bg-[#2563eb]/10', label: 'Epic', level: 'program' },
+  epic: { color: '#2563eb', bgColor: 'bg-[var(--cp-workstream-catalyst-primary, #2563eb)]/10', label: 'Epic', level: 'program' },
   feature: { color: '#0d9488', bgColor: 'bg-[#0d9488]/10', label: 'Feature', level: 'project' },
   story: { color: '#10b981', bgColor: 'bg-[#10b981]/10', label: 'Story', level: 'project' },
   defect: { color: '#dc2626', bgColor: 'bg-[#dc2626]/10', label: 'Defect', level: 'project' },
@@ -81,7 +81,7 @@ export const WorkItemConfig = {
 
 export const StatusConfig = {
   current: { color: '#0d9488', bgColor: 'bg-[#0d9488]/10', label: 'CURRENT' },
-  future: { color: '#2563eb', bgColor: 'bg-[#2563eb]/10', label: 'FUTURE' },
+  future: { color: '#2563eb', bgColor: 'bg-[var(--cp-workstream-catalyst-primary, #2563eb)]/10', label: 'FUTURE' },
   completed: { color: '#6b7280', bgColor: 'bg-[#6b7280]/10', label: 'COMPLETED' },
   cancelled: { color: '#dc2626', bgColor: 'bg-[#dc2626]/10', label: 'CANCELLED' },
 } as const;

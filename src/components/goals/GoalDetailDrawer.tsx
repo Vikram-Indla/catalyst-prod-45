@@ -226,7 +226,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
             <button key={tab} onClick={() => setActiveTab(tab)} style={{
               padding: '10px 16px', fontSize: 13,
               fontWeight: activeTab === tab ? 600 : 500,
-              color: activeTab === tab ? 'var(--ds-text-brand, #2563EB)' : 'var(--fg-3)',
+              color: activeTab === tab ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--fg-3)',
               background: 'none', border: 'none',
               borderBottom: activeTab === tab ? '2px solid var(--cp-blue)' : '2px solid transparent',
               cursor: 'pointer', transition: 'all 150ms',
@@ -445,7 +445,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
       {/* AI Health Score — purple branded */}
       <div style={{ background: '#DBEAFE', border: '1px solid rgba(37,99,235,0.15)', borderRadius: 12, padding: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-          <Sparkles size={14} color="var(--ds-text-brand, #2563EB)" />
+          <Sparkles size={14} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />
           <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Health Score</span>
         </div>
         <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-blue)', marginBottom: 6 }}>{aiScore != null ? aiScore : '—'}/100</div>
@@ -687,7 +687,7 @@ function CheckinsTab({ checkins, krs }: { checkins: KRCheckin[]; krs: KeyResult[
 // ── Tab: Activity ──
 function ActivityTab({ goal, krs, checkins }: { goal: Goal; krs: KeyResult[]; checkins: KRCheckin[] }) {
   const items = [
-    { icon: <Activity size={12} color="var(--ds-text-brand, #2563EB)" />, user: 'System', text: 'Goal created', date: goal.created_at || goal.start_date },
+    { icon: <Activity size={12} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />, user: 'System', text: 'Goal created', date: goal.created_at || goal.start_date },
     ...(krs.length > 0 ? [{ icon: <BarChart3 size={12} color="var(--cp-teal-60, #0D9488)" />, user: 'System', text: `${krs.length} Key Results added`, date: goal.created_at }] : []),
     ...(checkins.length > 0 ? [{ icon: <Clock size={12} color="var(--ds-text-warning, var(--cp-warning, #D97706))" />, user: 'Team', text: `${checkins.length} check-ins recorded`, date: checkins[0]?.created_at }] : []),
   ];

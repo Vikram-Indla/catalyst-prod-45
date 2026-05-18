@@ -7,7 +7,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-const AVATAR_COLORS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-purple-60, #7C3AED)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))', '#0284C7', '#6366F1'];
+const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-purple-60, #7C3AED)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))', '#0284C7', '#6366F1'];
 function getColor(name: string) {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -18,7 +18,7 @@ function initials(name: string) {
 }
 
 const ROLE_COLOR: Record<string, string> = {
-  admin: 'var(--ds-text-brand, #2563EB)',
+  admin: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   contributor: 'var(--ds-text-success, var(--cp-success, #16A34A))',
   viewer: 'var(--cp-purple-60, #7C3AED)',
 };
@@ -223,7 +223,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
             <div key={g.category} className="mt-4">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{g.category}</span>
-                <span className="rounded-full bg-[var(--ds-background-selected,#EFF6FF)] dark:bg-[rgba(59,130,246,0.15)] text-[var(--ds-text-brand,#2563EB)] dark:text-[var(--ds-text-brand,#60A5FA)]" style={{ padding: '1px 7px', fontSize: 10, fontWeight: 700 }}>{g.members.length}</span>
+                <span className="rounded-full bg-[var(--ds-background-selected,#EFF6FF)] dark:bg-[rgba(59,130,246,0.15)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] dark:text-[var(--ds-text-brand,#60A5FA)]" style={{ padding: '1px 7px', fontSize: 10, fontWeight: 700 }}>{g.members.length}</span>
                 <div className="flex-1 bg-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:bg-[var(--ds-border,#2E2E2E)]" style={{ height: 1 }} />
               </div>
 

@@ -60,7 +60,7 @@ function getStatusStyleFallback(statusName: string, statusCategory?: string): St
   if (lower === 'todo' || lower === 'to do')
     return { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', text: '#78350F', category: 'unstarted' };
   if (lower === 'in progress' || lower === 'under implementation' || lower === 'in development')
-    return { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E3A5F', category: 'started' };
+    return { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E3A5F', category: 'started' };
   if (lower === 'in review' || lower === 'in qa' || lower === 'ready for qa' || lower === 'retest')
     return { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', text: '#134E4A', category: 'started' };
   if (lower === 'in uat' || lower === 'uat ready')
@@ -82,7 +82,7 @@ function getStatusStyleFallback(statusName: string, statusCategory?: string): St
     if (catLower === 'done' || catLower === 'complete')
       return { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', text: '#14532D', category: 'completed' };
     if (catLower === 'in progress' || catLower === 'indeterminate')
-      return { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E3A5F', category: 'started' };
+      return { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E3A5F', category: 'started' };
     if (catLower === 'to do' || catLower === 'new')
       return { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', text: '#78350F', category: 'unstarted' };
   }

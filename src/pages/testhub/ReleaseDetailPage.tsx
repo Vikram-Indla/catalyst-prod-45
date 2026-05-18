@@ -18,7 +18,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
   planning: { label: 'Planning', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: Clock },
   planned: { label: 'Planned', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: Clock },
   development: { label: 'Development', color: '#8B5CF6', bg: '#F5F3FF', icon: Settings2 },
-  testing: { label: 'Testing', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', icon: Beaker },
+  testing: { label: 'Testing', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', icon: Beaker },
   uat: { label: 'UAT', color: '#EA580C', bg: '#FFF7ED', icon: Monitor },
   staging: { label: 'Staging', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', icon: Rocket },
   ready: { label: 'Ready', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
@@ -101,7 +101,7 @@ export default function ReleaseDetailPage() {
 
         {/* Stat cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 }}>
-          <StatCard label="Days Left" value={daysLeft !== null ? String(daysLeft) : '—'} color="var(--ds-text-brand, #2563EB)" isDark={isDark} />
+          <StatCard label="Days Left" value={daysLeft !== null ? String(daysLeft) : '—'} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" isDark={isDark} />
           <StatCard label="Total Tests" value={String(release.test_cases_total || 0)} color={'var(--cp-ink-2, var(--cp-ink-2, #334155))'} isDark={isDark} />
           <StatCard label="Execution" value={`${execRate}%`} color={execRate >= 80 ? 'var(--quality-high, #059669)' : 'var(--ds-text-warning, var(--cp-warning, #D97706))'} isDark={isDark} />
           <StatCard label="Pass Rate" value={`${passRate}%`} color={passRate >= 80 ? 'var(--quality-high, #059669)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))'} isDark={isDark} />
@@ -123,7 +123,7 @@ export default function ReleaseDetailPage() {
                 display: 'flex', alignItems: 'center', gap: 7, padding: '12px 20px',
                 fontSize: 14, fontWeight: active ? 600 : 500, border: 'none',
                 borderBottom: active ? '2px solid #2563EB' : '2px solid transparent',
-                color: active ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'), background: 'none', cursor: 'pointer',
+                color: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'), background: 'none', cursor: 'pointer',
               }}
             >
               <TabIcon style={{ width: 15, height: 15 }} />

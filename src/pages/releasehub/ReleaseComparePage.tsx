@@ -7,7 +7,7 @@ import { EmptyState } from '@/components/releasehub/EmptyState';
 import { BarChart3 } from '@/lib/atlaskit-icons';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend } from 'recharts';
 
-const RADAR_COLORS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'];
+const RADAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'];
 const statusScore: Record<string, number> = { todo: 20, in_progress: 55, done: 100, archived: 10 };
 
 export default function ReleaseComparePage() {

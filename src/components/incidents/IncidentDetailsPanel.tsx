@@ -228,7 +228,7 @@ export function IncidentDetailsPanel({
                 key={label}
                 variant="ghost"
                 size="sm"
-                className="h-6 text-xs text-[#8C8C8C] hover:text-[var(--ds-text-brand,#2563eb)]"
+                className="h-6 text-xs text-[#8C8C8C] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]"
                 onClick={() => handleAddLabel(label)}
               >
                 + {label}

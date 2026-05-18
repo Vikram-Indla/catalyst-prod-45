@@ -34,7 +34,7 @@ interface AuditStats {
 
 const ACTION_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
   create: { label: 'Created', color: 'var(--quality-high, #059669)', icon: Plus },
-  update: { label: 'Updated', color: 'var(--ds-text-brand, #2563EB)', icon: Edit2 },
+  update: { label: 'Updated', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', icon: Edit2 },
   delete: { label: 'Deleted', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', icon: Trash2 },
   execute: { label: 'Executed', color: 'var(--cp-purple-60, #7C3AED)', icon: Play },
   assign: { label: 'Assigned', color: '#0891B2', icon: UserPlus },
@@ -45,7 +45,7 @@ const ACTION_CONFIG: Record<string, { label: string; color: string; icon: any }>
 };
 
 const ENTITY_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
-  test_case: { label: 'Test Case', color: 'var(--ds-text-brand, #2563EB)', icon: FileText },
+  test_case: { label: 'Test Case', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', icon: FileText },
   defect: { label: 'Defect', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', icon: Bug },
   test_cycle: { label: 'Test Cycle', color: '#0891B2', icon: RefreshCcw },
   test_plan: { label: 'Test Plan', color: 'var(--cp-purple-60, #7C3AED)', icon: ClipboardList },
@@ -161,8 +161,8 @@ export default function ActivityFeedPage() {
             <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--quality-high, #059669)', margin: '4px 0 0' }}>{stats.creates}</p>
           </div>
           <div style={{ backgroundColor: 'var(--ds-background-selected, #EFF6FF)', borderRadius: 12, padding: 16, border: '1px solid #BFDBFE' }}>
-            <p style={{ fontSize: 11, color: 'var(--ds-text-brand, #2563EB)', margin: 0, textTransform: 'uppercase' }}>Updated</p>
-            <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--ds-text-brand, #2563EB)', margin: '4px 0 0' }}>{stats.updates}</p>
+            <p style={{ fontSize: 11, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', margin: 0, textTransform: 'uppercase' }}>Updated</p>
+            <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', margin: '4px 0 0' }}>{stats.updates}</p>
           </div>
           <div style={{ backgroundColor: 'var(--ds-background-danger, #FEF2F2)', borderRadius: 12, padding: 16, border: '1px solid #FECACA' }}>
             <p style={{ fontSize: 11, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: 0, textTransform: 'uppercase' }}>Deleted</p>
@@ -247,7 +247,7 @@ export default function ActivityFeedPage() {
                           </span>
                         </div>
                         <p style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', margin: '4px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {activity.entity_key && <span style={{ fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>{activity.entity_key}</span>}
+                          {activity.entity_key && <span style={{ fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{activity.entity_key}</span>}
                           {activity.entity_key && activity.entity_name && ' - '}
                           {activity.entity_name}
                         </p>

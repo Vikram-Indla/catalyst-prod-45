@@ -23,7 +23,7 @@ function getScoreBorderClass(score: number | null): string {
 function getPriorityLabel(score: number | null): { label: string; color: string } {
   if (score === null) return { label: 'Unscored', color: '#6B7280' };
   if (score >= 4.0) return { label: 'High', color: 'var(--quality-high, #059669)' };
-  if (score >= 3.0) return { label: 'Medium', color: 'var(--ds-text-brand, #2563EB)' };
+  if (score >= 3.0) return { label: 'Medium', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' };
   if (score >= 2.0) return { label: 'Low', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' };
   return { label: 'Rejected', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' };
 }

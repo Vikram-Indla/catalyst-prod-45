@@ -187,9 +187,9 @@ export function JiraSyncControlPanel() {
             </span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-            <StatCard icon={DatabaseIcon}    label="Work Items"  value={config?.preserved_work_items} colour="var(--ds-text-brand, #2563EB)" />
-            <StatCard icon={RefreshIcon}  label="Projects"    value={config?.preserved_projects}    colour="var(--ds-text-brand, #2563EB)" />
-            <StatCard icon={PeopleGroupIcon}       label="Users Mapped" value={config?.preserved_users}      colour="var(--ds-text-brand, #2563EB)" />
+            <StatCard icon={DatabaseIcon}    label="Work Items"  value={config?.preserved_work_items} colour="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />
+            <StatCard icon={RefreshIcon}  label="Projects"    value={config?.preserved_projects}    colour="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />
+            <StatCard icon={PeopleGroupIcon}       label="Users Mapped" value={config?.preserved_users}      colour="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />
           </div>
         </>
       )}

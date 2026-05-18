@@ -274,7 +274,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
 
 function activityDotColor(eventType: string): string {
   if (eventType === 'index_start' || eventType === 'index_complete') return 'var(--cp-teal-60, #0D9488)';
-  if (eventType === 'import') return 'var(--ds-text-brand, #2563EB)';
+  if (eventType === 'import') return 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
   if (eventType === 'epic_generated' || eventType === 'published') return 'var(--ds-text-success, var(--cp-success, #16A34A))';
   if (eventType === 'uat_generated') return 'var(--cp-teal-60, #0D9488)';
   return 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))';

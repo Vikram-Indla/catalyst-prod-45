@@ -11,14 +11,14 @@ import type { RoadmapDemand } from '../types/roadmap';
 
 // ── Request type color map ──
 const TYPE_COLORS: Record<string, string> = {
-  project: 'var(--ds-text-brand, #2563EB)',
+  project: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   enhancement: 'var(--cp-teal-60, #0D9488)',
   improvement: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
 };
 
 // ── Avatar color — deterministic from initials ──
 const AVATAR_COLORS = [
-  'var(--ds-text-brand, #2563EB)', // blue
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', // blue
   '#6366F1', // indigo
   'var(--cp-teal-60, #0D9488)', // teal
   'var(--ds-text-warning, var(--cp-warning, #D97706))', // amber

@@ -154,7 +154,7 @@ export default function IdeationPage() {
             <button
               onClick={() => setWizardOpen(true)}
               style={{
-                background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
+                background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
                 borderRadius: '6px', padding: '8px 16px', fontSize: '13px', fontWeight: 600,
                 cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px',
                 fontFamily: 'var(--cp-font-body)',
@@ -231,11 +231,11 @@ export default function IdeationPage() {
       {/* Filtered context indicator */}
       {activeFilter !== 'all' && (
         <div style={{ padding: '6px 28px', background: 'var(--cp-primary-light, #EFF6FF)', borderBottom: `1px solid ${'var(--cp-primary-light, #DBEAFE)'}`, display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--cp-text-link, #2563EB)' }}>
+          <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
             Showing {activeFilter.replace('_', ' ')} ideas only
           </span>
           <span style={{ color: dk.t3 }}>·</span>
-          <button onClick={() => setActiveFilter('all')} style={{ fontSize: '11px', color: 'var(--cp-text-link, #2563EB)', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+          <button onClick={() => setActiveFilter('all')} style={{ fontSize: '11px', color: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
             Clear filter
           </button>
         </div>
@@ -257,7 +257,7 @@ export default function IdeationPage() {
               background: 'var(--cp-bg-page, #F8FAFC)', border: `1px solid ${dk.border}`, borderRadius: '6px',
               fontSize: '13px', color: dk.t1, outline: 'none',
             }}
-            onFocus={e => { e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; }}
+            onFocus={e => { e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
             onBlur={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))'; }}
           />
         </div>
@@ -270,9 +270,9 @@ export default function IdeationPage() {
               key={pill.key}
               onClick={() => setActiveFilter(pill.key)}
               style={{
-                background: isActive ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
+                background: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
                 color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : dk.t2,
-                border: `1px solid ${isActive ? 'var(--ds-text-brand, #2563EB)' : dk.border}`,
+                border: `1px solid ${isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : dk.border}`,
                 borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 500,
                 cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
                 transition: 'all 150ms',
@@ -359,7 +359,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
         <thead>
           <tr style={{ height: '50px', background: 'var(--cp-bg-page, #F8FAFC)' }}>
             <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
-              <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, #2563EB)' }} />
+              <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
             </th>
             {[
               { label: 'KEY', width: '100px' },
@@ -399,7 +399,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
               onMouseLeave={e => { if (!selectedRows.has(idea.key)) e.currentTarget.style.background = 'transparent'; }}
             >
               <td style={{ padding: '0 8px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
-                <input type="checkbox" checked={selectedRows.has(idea.key)} onChange={() => toggleRow(idea.key)} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, #2563EB)' }} />
+                <input type="checkbox" checked={selectedRows.has(idea.key)} onChange={() => toggleRow(idea.key)} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
               </td>
               <td style={{ padding: '8px 12px' }}>
                 <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '13px', fontWeight: 600, color: dk.blueKey, cursor: 'pointer' }}
@@ -492,7 +492,7 @@ function PriorityBadge({ priority }: { priority: string }) {
 }
 
 function ImpactCell({ score }: { score: number }) {
-  const textColor = score >= 4 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : score >= 3 ? 'var(--ds-text-brand, #2563EB)' : score >= 2 ? 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))';
+  const textColor = score >= 4 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : score >= 3 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : score >= 2 ? 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))';
   return (
     <span style={{
       fontFamily: 'var(--cp-font-mono)', fontSize: '13px', fontWeight: 500,
@@ -530,7 +530,7 @@ function AssigneeCell({ assignee }: { assignee: Idea['assignee'] }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
       <div style={{
-        width: '24px', height: '24px', borderRadius: '50%', background: 'var(--ds-text-brand, #2563EB)',
+        width: '24px', height: '24px', borderRadius: '50%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         color: 'var(--ds-surface, #FFF)', fontSize: '10px', fontWeight: 700, flexShrink: 0,
       }}>{assignee.initials}</div>

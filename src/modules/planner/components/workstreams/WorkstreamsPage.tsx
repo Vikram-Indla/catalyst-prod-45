@@ -510,7 +510,7 @@ export function WorkstreamsPage() {
                   borderRadius: '8px',
                   fontSize: '13px',
                   fontWeight: 500,
-                  color: healthFilter ? 'var(--ds-text-brand, #2563eb)' : COLORS.textSecondary,
+                  color: healthFilter ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : COLORS.textSecondary,
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                 }}
@@ -521,7 +521,7 @@ export function WorkstreamsPage() {
                     width: '6px',
                     height: '6px',
                     borderRadius: '50%',
-                    backgroundColor: 'var(--ds-text-brand, #2563eb)',
+                    backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
                   }} />
                 )}
                 <ChevronDown size={16} style={{ color: COLORS.textMuted }} />
@@ -605,7 +605,7 @@ export function WorkstreamsPage() {
                   borderRadius: '8px',
                   fontSize: '13px',
                   fontWeight: 500,
-                  color: leadFilter ? 'var(--ds-text-brand, #2563eb)' : COLORS.textSecondary,
+                  color: leadFilter ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : COLORS.textSecondary,
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                 }}
@@ -616,7 +616,7 @@ export function WorkstreamsPage() {
                     width: '6px',
                     height: '6px',
                     borderRadius: '50%',
-                    backgroundColor: 'var(--ds-text-brand, #2563eb)',
+                    backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
                   }} />
                 )}
                 <ChevronDown size={16} style={{ color: COLORS.textMuted }} />

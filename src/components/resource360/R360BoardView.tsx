@@ -11,9 +11,9 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'Re-Open':              { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
   'In Requirements':      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements' },
   'Awaiting Info':        { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting' },
-  'In Progress':          { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
-  'In Development':       { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
-  'Under Implementation': { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
+  'In Progress':          { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
+  'In Development':       { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
+  'Under Implementation': { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
   'In Review':            { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
   'In QA':                { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA' },
   'Ready for QA':         { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'Ready QA' },
@@ -42,7 +42,7 @@ function resolveStatus(item: any) {
   return SCD;
 }
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', LND: 'var(--cp-purple-60, #7C3AED)' };
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', LND: 'var(--cp-purple-60, #7C3AED)' };
 const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
 const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
 
@@ -52,7 +52,7 @@ const PRI_DOT: Record<string, string> = {
 
 const COLS = [
   { key: 'todo', label: 'TO DO', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', cats: ['unstarted', 'blocked'] },
-  { key: 'ip', label: 'IN PROGRESS', color: 'var(--ds-text-brand, #2563EB)', cats: ['started'] },
+  { key: 'ip', label: 'IN PROGRESS', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cats: ['started'] },
   { key: 'done', label: 'DONE', color: 'var(--ds-text-success, var(--cp-success, #16A34A))', cats: ['completed'] },
 ];
 

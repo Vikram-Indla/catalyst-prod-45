@@ -258,7 +258,7 @@ export default function ReqAssistGenerate() {
       <div style={{ padding: '24px 28px' }}>
         {/* HEADER */}
         <div style={{ marginBottom: 24 }}>
-          <button onClick={() => navigate('/product/req-assist')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text-brand, #2563EB)', fontWeight: 500, marginBottom: 16, padding: 0, fontFamily: 'var(--cp-font-body)' }}>
+          <button onClick={() => navigate('/product/req-assist')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontWeight: 500, marginBottom: 16, padding: 0, fontFamily: 'var(--cp-font-body)' }}>
             <ArrowLeft size={14} /> Back to Library
           </button>
           <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, #111827)', margin: '0 0 6px' }}>Generate BRD from Text</h2>
@@ -585,7 +585,7 @@ function BtnPrimary({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
       border: 'none', borderRadius: 4, cursor: props.disabled ? 'not-allowed' : 'pointer',
-      background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+      background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       fontFamily: 'var(--cp-font-body)',
       opacity: props.disabled ? 0.6 : 1, transition: 'filter 120ms',
       ...props.style,
@@ -673,7 +673,7 @@ function CatalystTopNav() {
         return (
           <button key={h.label} onClick={() => navigate(h.path)} style={{
             height: 48, padding: '0 14px', fontSize: 13, fontWeight: isActive ? 600 : 400,
-            color: isActive ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', background: 'transparent', border: 'none', cursor: 'pointer',
+            color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', background: 'transparent', border: 'none', cursor: 'pointer',
             borderBottom: isActive ? '3px solid #2563EB' : '3px solid transparent', transition: 'color 120ms', fontFamily: 'var(--cp-font-body)',
           }}>{h.label}</button>
         );

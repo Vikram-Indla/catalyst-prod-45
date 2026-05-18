@@ -2,7 +2,7 @@
  * TIMELINE VIEW STYLES — CATALYST V5
  * 
  * COLOR RULES:
- * - Primary actions: var(--ds-text-brand, #2563eb) (primary-600)
+ * - Primary actions: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) (primary-600)
  * - Success/Available: #0d9488 (teal-600)
  * - Warning: var(--ds-text-warning, #d97706) (warning)
  * - Danger: var(--ds-text-danger, #ef4444) (danger)
@@ -99,7 +99,7 @@
 
 .monthHeaderCurrent {
   background: rgba(37, 99, 235, 0.04); /* primary with alpha */
-  color: var(--ds-text-brand, #2563eb); /* primary-600 */
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)); /* primary-600 */
   position: relative;
 }
 
@@ -111,7 +111,7 @@
   transform: translateX(-50%);
   width: 32px;
   height: 3px;
-  background: linear-gradient(90deg, var(--ds-text-brand, #3b82f6), var(--ds-text-brand, #2563eb)); /* primary gradient */
+  background: linear-gradient(90deg, var(--ds-text-brand, #3b82f6), var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))); /* primary gradient */
   border-radius: 4px 3px 0 0;
 }
 
@@ -140,7 +140,7 @@
   top: 8px;
   bottom: 8px;
   width: 3px;
-  background: linear-gradient(180deg, var(--ds-text-brand, #3b82f6) 0%, var(--ds-text-brand, #2563eb) 100%);
+  background: linear-gradient(180deg, var(--ds-text-brand, #3b82f6) 0%, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) 100%);
   border-radius: 0 3px 3px 0;
   opacity: 0;
   transform: translateX(-3px);
@@ -248,7 +248,7 @@
 }
 
 .avatarPrimary {
-  background: var(--ds-text-brand, #2563eb); /* primary-600 */
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)); /* primary-600 */
   /* Multi-layer shadow for premium depth */
   box-shadow: 
     0 1px 2px rgba(37, 99, 235, 0.1),
@@ -361,7 +361,7 @@
   outline: none;
   box-shadow: 
     0 0 0 2px white,
-    0 0 0 4px var(--ds-text-brand, #2563eb);
+    0 0 0 4px var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -386,7 +386,7 @@
 }
 
 .barCommitted .barBadge {
-  background: var(--ds-text-brand, #2563eb);
+  background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   color: white;
   padding: 3px 8px;
   border-radius: 4px;
@@ -553,21 +553,21 @@
   font-weight: 600;
 }
 
-.barPrimaryForecast .barText { color: var(--ds-text-brand, #2563eb); }
+.barPrimaryForecast .barText { color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)); }
 .barTealForecast .barText { color: #0d9488; }
 .barWarningForecast .barText { color: var(--ds-text-warning, #d97706); }
 .barSlateForecast .barText { color: var(--ds-text-subtle, #475569); }
 .barDangerForecast .barText { color: var(--ds-text-danger, #ef4444); }
 
 /* Bar badge for legacy bars */
-.barPrimary .barBadge { background: var(--ds-text-brand, #2563eb); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barPrimary .barBadge { background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
 .barTeal .barBadge { background: #0d9488; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
 .barWarning .barBadge { background: var(--ds-text-warning, #d97706); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
 .barSlate .barBadge { background: var(--ds-text-subtle, #475569); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
 .barDanger .barBadge { background: var(--ds-text-danger, #ef4444); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
 
 /* Forecast bar badges - outlined style */
-.barPrimaryForecast .barBadge { background: transparent; color: var(--ds-text-brand, #2563eb); border: 1px solid var(--ds-text-brand, #2563eb); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barPrimaryForecast .barBadge { background: transparent; color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)); border: 1px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
 .barTealForecast .barBadge { background: transparent; color: #0d9488; border: 1px solid #0d9488; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
 .barWarningForecast .barBadge { background: transparent; color: var(--ds-text-warning, #d97706); border: 1px solid var(--ds-text-warning, #d97706); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
 .barSlateForecast .barBadge { background: transparent; color: var(--ds-text-subtle, #475569); border: 1px solid var(--ds-text-subtle, #475569); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }

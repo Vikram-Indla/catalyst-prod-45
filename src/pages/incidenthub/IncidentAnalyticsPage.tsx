@@ -39,7 +39,7 @@ export default function IncidentAnalyticsPage() {
   const maxCount = (arr: [string, number][]) => Math.max(...arr.map(a => a[1]), 1);
 
   const SEV_BAR_COLORS: Record<string, string> = {
-    SEV1: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', SEV2: 'var(--ds-text-warning, var(--cp-warning, #D97706))', SEV3: 'var(--ds-text-brand, #2563EB)', SEV4: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
+    SEV1: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', SEV2: 'var(--ds-text-warning, var(--cp-warning, #D97706))', SEV3: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', SEV4: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
   };
 
   const STATUS_BAR_COLORS: Record<string, string> = {
@@ -56,7 +56,7 @@ export default function IncidentAnalyticsPage() {
       <div className="px-6 pt-6 pb-4">
         <div className="flex items-center gap-3 mb-6">
           <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: 'var(--ds-background-selected, #EFF6FF)' }}>
-            <BarChart3 size={18} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
+            <BarChart3 size={18} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
           </div>
           <div>
             <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>Analytics</h1>
@@ -67,7 +67,7 @@ export default function IncidentAnalyticsPage() {
         {/* Stat Cards */}
         <div className="grid grid-cols-4 gap-3 mb-6">
           {[
-            { label: 'Avg Resolution', value: '\u2014', accent: 'var(--ds-text-brand, #2563EB)' },
+            { label: 'Avg Resolution', value: '\u2014', accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
             { label: 'SLA Breach Rate', value: incidents ? `${Math.round((incidents.filter(i => i.resolution_breached).length / Math.max(incidents.length, 1)) * 100)}%` : '0%', accent: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
             { label: 'Total Incidents', value: stats.total, accent: 'var(--ds-text, var(--cp-ink-1, #0F172A))' },
             { label: 'MTTR', value: '\u2014', accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
@@ -89,7 +89,7 @@ export default function IncidentAnalyticsPage() {
                 <div key={sev} className="flex items-center gap-2">
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', width: 40 }}>{sev}</span>
                   <div className="flex-1" style={{ height: 16, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', borderRadius: 4, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${(count / maxCount(analytics.bySeverity)) * 100}%`, backgroundColor: SEV_BAR_COLORS[sev] || 'var(--ds-text-brand, #2563EB)', borderRadius: 2 }} />
+                    <div style={{ height: '100%', width: `${(count / maxCount(analytics.bySeverity)) * 100}%`, backgroundColor: SEV_BAR_COLORS[sev] || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 2 }} />
                   </div>
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', width: 24, textAlign: 'right' }}>{count}</span>
                 </div>
@@ -105,7 +105,7 @@ export default function IncidentAnalyticsPage() {
                 <div key={status} className="flex items-center gap-2">
                   <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', width: 80, textTransform: 'capitalize' }}>{status.replace(/_/g, ' ')}</span>
                   <div className="flex-1" style={{ height: 16, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', borderRadius: 4, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${(count / maxCount(analytics.byStatus)) * 100}%`, backgroundColor: 'var(--ds-text-brand, #2563EB)', borderRadius: 2 }} />
+                    <div style={{ height: '100%', width: `${(count / maxCount(analytics.byStatus)) * 100}%`, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 2 }} />
                   </div>
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', width: 24, textAlign: 'right' }}>{count}</span>
                 </div>
@@ -121,7 +121,7 @@ export default function IncidentAnalyticsPage() {
                 <div key={name} className="flex items-center gap-2">
                   <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', width: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
                   <div className="flex-1" style={{ height: 16, backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', borderRadius: 4, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${(count / maxCount(analytics.byAssignee)) * 100}%`, backgroundColor: 'var(--ds-text-brand, #2563EB)', borderRadius: 2 }} />
+                    <div style={{ height: '100%', width: `${(count / maxCount(analytics.byAssignee)) * 100}%`, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 2 }} />
                   </div>
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', width: 24, textAlign: 'right' }}>{count}</span>
                 </div>

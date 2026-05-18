@@ -153,7 +153,7 @@ export function AttachmentPreviewModal({ attachments, initialId, onClose }: Prop
             <a
               href={signedUrl}
               download={current.file_name}
-              className="mt-2 flex items-center gap-2 px-4 h-9 rounded bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white text-sm font-medium transition-colors"
+              className="mt-2 flex items-center gap-2 px-4 h-9 rounded bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white text-sm font-medium transition-colors"
             >
               <Download size={14} /> Download
             </a>

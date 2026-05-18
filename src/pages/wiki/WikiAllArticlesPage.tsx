@@ -78,7 +78,7 @@ export default function WikiAllArticlesPage() {
   return (
     <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, #F8FAFC)', minHeight: '100%', padding: '24px 40px 48px' }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
-        <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}>Wiki</span>
+        <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
         <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 600 }}>All Articles</span>
       </nav>
@@ -87,7 +87,7 @@ export default function WikiAllArticlesPage() {
         <h1 style={{ fontFamily: F.sora, fontSize: 18, fontWeight: 700, margin: 0 }}>All Articles</h1>
         {selected.size > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>{selected.size} selected</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{selected.size} selected</span>
             {[
               { key: 'domain', label: 'Change Domain', icon: <FolderOpen size={12} /> },
               { key: 'verification', label: 'Set Verification', icon: <Check size={12} /> },
@@ -111,7 +111,7 @@ export default function WikiAllArticlesPage() {
           marginBottom: 16, padding: '12px 16px', borderRadius: 8, background: isDark ? 'rgba(59,130,246,0.12)' : 'var(--ds-background-selected, #EFF6FF)',
           border: '1px solid rgba(37,99,235,0.2)', display: 'flex', alignItems: 'center', gap: 12,
         }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
             {bulkAction === 'domain' ? 'New Domain Code:' : bulkAction === 'verification' ? 'New Status:' : 'Tags (comma-separated):'}
           </span>
           {bulkAction === 'verification' ? (
@@ -130,7 +130,7 @@ export default function WikiAllArticlesPage() {
           )}
           <button onClick={() => setShowConfirm(true)} disabled={!bulkValue} style={{
             fontSize: 11, fontWeight: 650, padding: '4px 12px', borderRadius: 4, border: 'none',
-            background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer', opacity: bulkValue ? 1 : 0.5,
+            background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer', opacity: bulkValue ? 1 : 0.5,
           }}>Apply to {selected.size}</button>
           <button onClick={() => { setBulkAction(null); setBulkValue(''); }} style={{
             fontSize: 11, padding: '4px 8px', borderRadius: 4, border: 'none',
@@ -155,7 +155,7 @@ export default function WikiAllArticlesPage() {
               }}>Cancel</button>
               <button onClick={executeBulk} style={{
                 fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 6, border: 'none',
-                background: bulkAction === 'archive' ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
+                background: bulkAction === 'archive' ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
               }}>Confirm</button>
             </div>
           </div>
@@ -172,7 +172,7 @@ export default function WikiAllArticlesPage() {
         }}>
           <span>
             <input type="checkbox" checked={articles?.length ? selected.size === articles.length : false} onChange={toggleAll}
-              style={{ width: 14, height: 14, cursor: 'pointer', accentColor: 'var(--ds-text-brand, #2563EB)' }} />
+              style={{ width: 14, height: 14, cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
           </span>
           <span></span><span>Article</span><span>Domain</span><span>Verification</span><span>Conf.</span><span>Views</span><span>Updated</span><span>Ver.</span>
         </div>
@@ -180,7 +180,7 @@ export default function WikiAllArticlesPage() {
           (articles ?? []).length === 0 ? <div style={{ padding: 32, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontSize: 12 }}>No articles found.</div> :
           (articles ?? []).map((a: any) => {
             const conf = Math.round((a.ai_confidence ?? 0) * 100);
-            const confColor = conf >= 90 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : conf >= 70 ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
+            const confColor = conf >= 90 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : conf >= 70 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
             const verStatus = a.verification_status || 'unverified';
             const verBadge = verStatus === 'verified' ? { bg: 'rgba(22,163,74,0.08)', color: 'var(--ds-text-success, var(--cp-success, #16A34A))', label: 'Verified' }
               : verStatus === 'needs_review' ? { bg: 'rgba(217,119,6,0.08)', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'Review' }
@@ -197,7 +197,7 @@ export default function WikiAllArticlesPage() {
                  onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}>
                 <span onClick={e => e.stopPropagation()}>
                   <input type="checkbox" checked={isSelected} onChange={() => toggleSelect(a.id)}
-                    style={{ width: 14, height: 14, cursor: 'pointer', accentColor: 'var(--ds-text-brand, #2563EB)' }} />
+                    style={{ width: 14, height: 14, cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
                 </span>
                 <span onClick={() => navigate(`/wiki/${a.slug}`)}>
                   {a.format === 'pdf' ? <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 4, background: isDark ? 'rgba(220,38,38,0.12)' : '#FEE2E2', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>PDF</span> : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />}

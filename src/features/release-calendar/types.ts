@@ -69,7 +69,7 @@ export interface CalendarView {
 
 // Catalyst V5 Color Constants
 export const CATALYST_COLORS = {
-  primary: 'var(--ds-text-brand, #2563eb)',
+  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   primaryLight: 'var(--ds-background-selected, #eff6ff)',
   teal: '#0d9488',
   tealDark: '#0f766e',

@@ -20,7 +20,7 @@ const WORKSTREAM_COLORS = [
   { name: 'Pink', value: '#ec4899' },
   { name: 'Lime', value: '#84cc16' },
   { name: 'Teal', value: '#14b8a6' },
-  { name: 'Blue', value: 'var(--ds-text-brand, #2563eb)' },
+  { name: 'Blue', value: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
   { name: 'Red', value: 'var(--ds-text-danger, #ef4444)' },
   { name: 'Emerald', value: '#10b981' },
 ];

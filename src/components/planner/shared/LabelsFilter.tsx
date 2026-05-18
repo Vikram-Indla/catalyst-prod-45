@@ -19,7 +19,7 @@ const COLORS = {
   surfaceHover: 'var(--ds-surface-sunken, #f1f5f9)',
   borderLight: 'var(--ds-border, #e2e8f0)',
   borderDefault: 'var(--ds-text-disabled, #cbd5e1)',
-  accent: 'var(--ds-text-brand, #2563eb)',
+  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   accentLight: '#dbeafe'
 };
 

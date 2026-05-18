@@ -178,7 +178,7 @@ export default function KBDataAudit() {
           onClick={runLiveTest}
           disabled={liveTest.loading}
           style={{
-            background: "var(--ds-text-brand, #2563EB)",
+            background: "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))",
             color: "var(--ds-surface, #fff)",
             border: "none",
             borderRadius: 6,

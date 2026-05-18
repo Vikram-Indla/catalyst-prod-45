@@ -53,7 +53,7 @@
   min-width: 18px;
   height: 18px;
   padding: 0 4px;
-  background-color: var(--ds-text-brand, #2563EB);
+  background-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border-radius: 9px;
   font-size: 10px;
@@ -254,7 +254,7 @@
   align-items: center;
   margin-left: 4px;
   flex-shrink: 0;
-  color: var(--ds-text-brand, #2563EB);
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
 }
 .jf-category-badge {
   display: flex;
@@ -263,7 +263,7 @@
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
-  background-color: var(--ds-text-brand, #2563EB);
+  background-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border-radius: 9px;
   font-size: 10px;
@@ -287,7 +287,7 @@
   font-family: inherit;
   transition: color 120ms;
 }
-.jf-clear-btn:hover:not(:disabled) { color: var(--ds-text-brand, #2563EB); }
+.jf-clear-btn:hover:not(:disabled) { color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); }
 .jf-clear-btn:disabled { opacity: 0.4; cursor: default; }
 
 /* ─── RIGHT PANE ─── */
@@ -539,8 +539,8 @@
 }
 .dark .jf-trigger-btn--active {
   background-color: #0D1526;
-  border-color: var(--ds-text-brand, #2563EB);
-  color: var(--ds-text-brand, #2563EB);
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
 }
 
 .dark .jf-panel {
@@ -561,7 +561,7 @@
   color: var(--ds-text, #EDEDED);
 }
 .dark .jf-tab--active {
-  background-color: var(--ds-text-brand, #2563EB);
+  background-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }
 
@@ -577,14 +577,14 @@
 }
 .dark .jf-category-item--active {
   background-color: #0D1526;
-  color: var(--ds-text-brand, #2563EB);
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
 }
 
 .dark .jf-clear-btn {
   color: var(--ds-text-subtlest, #878787);
 }
 .dark .jf-clear-btn:hover:not(:disabled) {
-  color: var(--ds-text-brand, #2563EB);
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
 }
 
 .dark .jf-search-box {
@@ -592,7 +592,7 @@
   border-color: var(--ds-border, #2E2E2E);
 }
 .dark .jf-search-box:focus-within {
-  border-color: var(--ds-text-brand, #2563EB);
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
 }
 .dark .jf-search-icon-wrap {
   color: var(--ds-text-subtlest, #878787);

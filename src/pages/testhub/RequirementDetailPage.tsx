@@ -54,7 +54,7 @@ const COVERAGE_CONFIG: Record<string, { label: string; color: string; bg: string
 };
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  functional: { label: 'Functional', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)' },
+  functional: { label: 'Functional', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)' },
   non_functional: { label: 'Non-Functional', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
   user_story: { label: 'User Story', color: '#0891B2', bg: '#ECFEFF' },
   epic: { label: 'Epic', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))' },
@@ -115,7 +115,7 @@ const RequirementDefectsPanel = ({ requirementId }: { requirementId?: string }) 
             return (
               <tr key={d.id} style={{ height: 36, backgroundColor: 'var(--ds-surface-raised, #1A1A1A)', borderBottom: '0.75px solid #2E2E2E' }}>
                 <td style={{ padding: '8px 12px' }}>
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
                     {d.defect_key}
                   </span>
                 </td>
@@ -233,7 +233,7 @@ export default function RequirementDetailPage() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
-        <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-brand, #2563EB)' }} />
+        <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
         <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       </div>
     );
@@ -258,7 +258,7 @@ export default function RequirementDetailPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '6px 14px', borderRadius: 8 }}>{requirement.req_key}</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '6px 14px', borderRadius: 8 }}>{requirement.req_key}</span>
             <span style={{ fontSize: 12, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '4px 10px', borderRadius: 6 }}>{type.label}</span>
             <span style={{
               fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
@@ -295,7 +295,7 @@ export default function RequirementDetailPage() {
       {requirement.description && (
         <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', marginBottom: 24 }}>
           <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <FileText size={18} style={{ color: 'var(--ds-text-brand, #2563EB)' }} /> Description
+            <FileText size={18} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} /> Description
           </h3>
           <p style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', margin: 0, whiteSpace: 'pre-wrap' }}>{requirement.description}</p>
         </div>
@@ -305,10 +305,10 @@ export default function RequirementDetailPage() {
       <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Link2 size={18} style={{ color: 'var(--ds-text-brand, #2563EB)' }} /> Linked Test Cases ({linkedTests.length})
+            <Link2 size={18} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} /> Linked Test Cases ({linkedTests.length})
           </h3>
           <button onClick={() => setShowLinkModal(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 50, padding: '0 14px', border: 'none', borderRadius: 8, backgroundColor: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFF)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 50, padding: '0 14px', border: 'none', borderRadius: 8, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #FFF)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
             <Plus size={16} /> Link Test Case
           </button>
         </div>
@@ -326,7 +326,7 @@ export default function RequirementDetailPage() {
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 14, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 12, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '2px 8px', borderRadius: 4 }}>{test.case_key}</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '2px 8px', borderRadius: 4 }}>{test.case_key}</span>
                     <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{test.priority}</span>
                     {(() => {
                       const cov = COVERAGE_CONFIG[test.coverage_status] || COVERAGE_CONFIG['Not Run'];

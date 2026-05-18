@@ -222,7 +222,7 @@ export function T10LabelsFieldNew({
               fontSize: '13px',
               fontWeight: 500,
               color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              backgroundColor: 'var(--ds-text-brand, #2563eb)',
+              backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
               border: 'none',
               borderRadius: '6px',
               cursor: !newLabelName.trim() ? 'not-allowed' : 'pointer',
@@ -293,7 +293,7 @@ export function T10LabelsFieldNew({
                       ? '2px solid #2563eb'
                       : '2px solid #d1d5db',
                     borderRadius: '4px',
-                    backgroundColor: isSelected ? 'var(--ds-text-brand, #2563eb)' : 'transparent',
+                    backgroundColor: isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'transparent',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',

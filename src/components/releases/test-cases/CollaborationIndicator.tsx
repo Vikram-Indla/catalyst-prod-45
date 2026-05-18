@@ -38,7 +38,7 @@ const MOCK_COLLABORATORS: Collaborator[] = [
     name: 'Sarah Chen',
     email: 'sarah.chen@company.com',
     avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-    color: 'var(--ds-text-brand, #2563EB)',
+    color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
     status: 'editing',
     lastActive: new Date(),
     cursorPosition: { section: 'steps', field: 'step-2' },

@@ -97,7 +97,7 @@ export function TemplateTestSelector({
                   className={`
                     px-3 py-1.5 rounded-full text-sm font-medium transition-colors
                     ${criteria.modules?.includes(module)
-                      ? 'bg-[var(--ds-text-brand,#2563eb)] text-white'
+                      ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] text-white'
                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }
                   `}
@@ -138,7 +138,7 @@ export function TemplateTestSelector({
             {[
               { value: 'critical', color: 'var(--ds-text-danger, #ef4444)', bg: '#fee2e2' },
               { value: 'high', color: 'var(--ds-text-warning, #d97706)', bg: '#fef3c7' },
-              { value: 'medium', color: 'var(--ds-text-brand, #2563eb)', bg: '#dbeafe' },
+              { value: 'medium', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', bg: '#dbeafe' },
               { value: 'low', color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, #f1f5f9)' },
             ].map(priority => (
               <div key={priority.value} className="flex items-center space-x-2">
@@ -201,7 +201,7 @@ export function TemplateTestSelector({
                   <button
                     key={tag}
                     onClick={() => addTag(tag)}
-                    className="text-xs text-[var(--ds-text-brand,#2563eb)] hover:underline mr-2"
+                    className="text-xs text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:underline mr-2"
                   >
                     {tag}
                   </button>
@@ -241,7 +241,7 @@ export function TemplateTestSelector({
                 {[
                   { label: 'Critical', count: preview.criticalCount, color: 'var(--ds-text-danger, #ef4444)', bg: '#fee2e2' },
                   { label: 'High', count: preview.highCount, color: 'var(--ds-text-warning, #d97706)', bg: '#fef3c7' },
-                  { label: 'Medium', count: preview.mediumCount, color: 'var(--ds-text-brand, #2563eb)', bg: '#dbeafe' },
+                  { label: 'Medium', count: preview.mediumCount, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', bg: '#dbeafe' },
                   { label: 'Low', count: preview.lowCount, color: 'var(--ds-text-subtle, #475569)', bg: 'var(--ds-surface-sunken, #f1f5f9)' },
                 ].map(item => (
                   <div key={item.label} className="flex items-center gap-2">

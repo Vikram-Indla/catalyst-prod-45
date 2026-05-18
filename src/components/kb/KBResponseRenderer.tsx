@@ -193,7 +193,7 @@ function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendH
             width: '100%', textAlign: 'left',
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)';
+            e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
             e.currentTarget.style.background = 'var(--ds-background-selected, #EFF6FF)';
             e.currentTarget.style.boxShadow = '0 1px 4px rgba(37,99,235,0.08)';
           }}
@@ -207,7 +207,7 @@ function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendH
             width: 32, height: 32, minWidth: 32, background: 'var(--cp-blue-wash)',
             borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <ArrowUpRight size={16} strokeWidth={2} color="var(--ds-text-brand, #2563EB)" />
+            <ArrowUpRight size={16} strokeWidth={2} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' }}>{extendLabel}</span>

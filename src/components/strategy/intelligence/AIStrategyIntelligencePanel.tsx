@@ -89,12 +89,12 @@ export function AIStrategyIntelligencePanel({
         transition: 'transform 400ms cubic-bezier(0.16, 1, 0.3, 1)',
       }}
     >
-      <div className="h-[2px] w-full shrink-0" style={{ background: 'linear-gradient(90deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-text-brand, #60A5FA) 50%, var(--ds-text-brand, #2563EB) 100%)' }} />
+      <div className="h-[2px] w-full shrink-0" style={{ background: 'linear-gradient(90deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-text-brand, #60A5FA) 50%, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 100%)' }} />
 
       <div className="px-7 pt-4 pb-0 shrink-0">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB), #1E3A8A)' }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)), #1E3A8A)' }}>
               <Sparkles size={16} className="text-white" />
             </div>
             <h2 className="text-[15px] font-[700]" style={{ color: 'var(--fg-1)' }}>Strategy Intelligence</h2>
@@ -336,7 +336,7 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
         </div>
         <div className="border border-slate-200 rounded-lg p-3.5">
           <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 10 }}>AI Health</p>
-          <p className="font-bold leading-none" style={{ fontSize: 20, color: 'var(--ds-text-brand, #2563EB)' }}>
+          <p className="font-bold leading-none" style={{ fontSize: 20, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
             {goalHealth}/100
           </p>
         </div>
@@ -406,7 +406,7 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
             {briefContent}
           </ReactMarkdown>
           {isBriefGenerating && (
-            <div className="flex items-center gap-2 mt-4" style={{ color: 'var(--ds-text-brand, #2563EB)', fontSize: 12 }}>
+            <div className="flex items-center gap-2 mt-4" style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontSize: 12 }}>
               <Sparkles size={14} className="animate-pulse" />
               <span className="font-medium">Generating…</span>
             </div>
@@ -629,7 +629,7 @@ function EpicsStoriesTab({ metrics, stories, aiResult, isAILoading }: { metrics:
                 <div className="flex h-3 rounded-full overflow-hidden mb-2">
                   {m.storiesInProd > 0 && <div style={{ width: `${m.storiesInProd / m.storiesTotal * 100}%`, background: 'var(--sem-success)' }} />}
                   {(m.storiesDone - m.storiesInProd) > 0 && <div style={{ width: `${(m.storiesDone - m.storiesInProd) / m.storiesTotal * 100}%`, background: '#86EFAC' }} />}
-                  {m.storiesInProgress > 0 && <div style={{ width: `${m.storiesInProgress / m.storiesTotal * 100}%`, background: 'var(--ds-text-brand, #2563EB)' }} />}
+                  {m.storiesInProgress > 0 && <div style={{ width: `${m.storiesInProgress / m.storiesTotal * 100}%`, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />}
                   {m.storiesBlocked > 0 && <div style={{ width: `${m.storiesBlocked / m.storiesTotal * 100}%`, background: 'var(--sem-danger)' }} />}
                   {m.storiesBacklog > 0 && <div style={{ width: `${m.storiesBacklog / m.storiesTotal * 100}%`, background: 'var(--divider)' }} />}
                 </div>

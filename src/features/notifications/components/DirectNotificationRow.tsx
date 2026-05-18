@@ -51,7 +51,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
   const text2    = isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : token('color.text.subtle',    '#626F86');
   const text3    = isDark ? 'var(--ds-text-subtlest, #878787)' : token('color.text.subtlest',  '#8590A2');
   const linkClr  = isDark ? '#6698FF' : token('color.link',           '#0C66E4');
-  const dotColor = 'var(--ds-text-brand, #2563EB)';
+  const dotColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
 
   const threadBorderColor = isDark ? 'rgba(255,255,255,0.10)' : 'rgba(11,18,14,0.14)';
   const threadBg          = 'transparent';

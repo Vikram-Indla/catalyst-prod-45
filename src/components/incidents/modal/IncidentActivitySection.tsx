@@ -30,7 +30,7 @@ const ACTIVITY_TABS: { id: ActivityTab; label: string }[] = [
 ];
 
 function avatarColor(name: string) {
-  const colors = ['bg-[var(--ds-text-brand,#2563eb)]', 'bg-[#5243AA]', 'bg-[#00A3BF]', 'bg-[#FF8800]', 'bg-[var(--cp-primary-60, #0052CC)]'];
+  const colors = ['bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]', 'bg-[#5243AA]', 'bg-[#00A3BF]', 'bg-[#FF8800]', 'bg-[var(--cp-primary-60, #0052CC)]'];
   return colors[(name?.charCodeAt(0) ?? 0) % colors.length];
 }
 
@@ -192,7 +192,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
 
       {/* Comment Composer */}
       <div className="flex gap-3 mb-5">
-        <div className="w-8 h-8 shrink-0 rounded-full bg-[var(--ds-text-brand,#2563eb)] text-white text-xs font-medium flex items-center justify-center">
+        <div className="w-8 h-8 shrink-0 rounded-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] text-white text-xs font-medium flex items-center justify-center">
           V
         </div>
         <div className="flex-1">
@@ -207,7 +207,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
             <div>
               <textarea
                 autoFocus
-                className="w-full border-2 border-[var(--ds-text-brand,#2563eb)] rounded p-3 text-sm text-[var(--ds-text,var(--cp-text-primary, #172B4D))] outline-none min-h-[80px] resize-none"
+                className="w-full border-2 border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] rounded p-3 text-sm text-[var(--ds-text,var(--cp-text-primary, #172B4D))] outline-none min-h-[80px] resize-none"
                 placeholder="Add a comment..."
                 value={comment}
                 onChange={e => setComment(e.target.value)}

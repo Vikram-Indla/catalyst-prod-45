@@ -118,7 +118,7 @@ export default function ResourceVendorsPage() {
           </p>
         </div>
         <Button 
-          className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8]"
+          className="gap-2 bg-[var(--cp-workstream-catalyst-primary, #2563eb)] hover:bg-[#1d4ed8]"
           onClick={() => setCreateModalOpen(true)}
         >
           <Plus className="h-4 w-4" />
@@ -213,7 +213,7 @@ export default function ResourceVendorsPage() {
             <Button 
               onClick={handleCreate}
               disabled={createVendor.isPending}
-              className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+              className="bg-[var(--cp-workstream-catalyst-primary, #2563eb)] hover:bg-[#1d4ed8]"
             >
               {createVendor.isPending ? 'Creating...' : 'Create'}
             </Button>
@@ -242,7 +242,7 @@ export default function ResourceVendorsPage() {
             <Button 
               onClick={handleUpdate}
               disabled={updateVendor.isPending}
-              className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+              className="bg-[var(--cp-workstream-catalyst-primary, #2563eb)] hover:bg-[#1d4ed8]"
             >
               {updateVendor.isPending ? 'Saving...' : 'Save'}
             </Button>

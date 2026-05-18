@@ -85,7 +85,7 @@ export function WeekStripCollapsible({
               padding: '5px 14px', fontSize: '12.5px', fontWeight: isActive ? 600 : 500,
               borderRadius: '6px', cursor: 'pointer', transition: 'all 120ms ease',
               background: isActive ? 'rgba(37,99,235,0.10)' : 'transparent',
-              color: isActive ? 'var(--ds-text-brand, #2563EB)' : ('var(--ds-text-subtlest, #626F86)'),
+              color: isActive ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--ds-text-subtlest, #626F86)'),
               border: 'none',
             }}
             onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}

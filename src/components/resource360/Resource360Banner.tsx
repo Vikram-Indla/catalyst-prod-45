@@ -89,7 +89,7 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
       {/* Avatar */}
       <div style={{
         width: 56, height: 56, borderRadius: '50%', flexShrink: 0,
-        background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB), var(--ds-background-brand-bold-hovered, #1D4ED8))',
+        background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)), var(--ds-background-brand-bold-hovered, #1D4ED8))',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         overflow: 'hidden',
       }}>
@@ -132,7 +132,7 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
               >
                 <span style={{ maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis' }}>{chip.name}</span>
                 <span style={{
-                  background: chip.overdue ? 'var(--sem-danger, #EF4444)' : 'var(--ds-text-brand, #2563EB)',
+                  background: chip.overdue ? 'var(--sem-danger, #EF4444)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                   color: '#fff', borderRadius: 8, padding: '0 5px', fontSize: 10, fontWeight: 700,
                 }}>{chip.count}</span>
                 {chip.daysLabel && (

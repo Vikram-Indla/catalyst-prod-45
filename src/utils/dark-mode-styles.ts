@@ -70,8 +70,8 @@ export const LK: DarkTokens = {
   borderStrong: 'var(--cp-border-strong, rgba(15,23,42,0.20))',
   divider:      'var(--cp-border-default, rgba(15,23,42,0.06))',
 
-  blue:      'var(--cp-blue-text, #2563EB)',
-  blueKey:   'var(--cp-blue-text, #2563EB)',
+  blue:      'var(--cp-blue-text, var(--cp-workstream-catalyst-primary, #2563EB))',
+  blueKey:   'var(--cp-blue-text, var(--cp-workstream-catalyst-primary, #2563EB))',
   green:     'var(--cp-ok, var(--cp-success, #16A34A))',
   greenText: 'var(--cp-ok, #11853D)',
 

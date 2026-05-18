@@ -1539,7 +1539,7 @@
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0; transition: background 0.12s, border-color 0.12s;
 }
-.sp-colpicker-check--active { background: var(--ds-text-brand, #2563EB); border-color: var(--ds-text-brand, #2563EB); }
+.sp-colpicker-check--active { background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); }
 
 /* ── Inline create ── */
 .sp-create-input {
@@ -1650,7 +1650,7 @@
 .dark .awCommentTextarea2 { color: var(--ds-text, #EDEDED); }
 .dark .awCommentTextarea2::placeholder { color: var(--ds-text-subtlest, #878787); }
 .dark .awCommentSaveBtn { background: var(--ds-background-brand-bold-hovered, #1D4ED8); }
-.dark .awCommentSaveBtn:hover { background: var(--ds-text-brand, #2563EB); }
+.dark .awCommentSaveBtn:hover { background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); }
 .dark .awCommentCancelBtn { color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .awCommentCancelBtn:hover { color: var(--ds-text, #EDEDED); }
 .dark .awTimelineName { color: var(--ds-text, #EDEDED); }
@@ -1671,7 +1671,7 @@
 .dark .awLogWorkCancel { border-color: var(--ds-border, #2E2E2E); color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .awLogWorkCancel:hover { background: var(--ds-surface-overlay, #1F1F1F); }
 .dark .awLogWorkSubmit { background: var(--ds-background-brand-bold-hovered, #1D4ED8); }
-.dark .awLogWorkSubmit:hover { background: var(--ds-text-brand, #2563EB); }
+.dark .awLogWorkSubmit:hover { background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); }
 .dark .awDescriptionContent { color: var(--ds-text, #EDEDED); }
 .dark .awDescPlaceholder:hover { background: var(--ds-surface-overlay, #1F1F1F); }
 .dark .awAddParentLink { color: var(--ds-text-subtlest, #878787); }

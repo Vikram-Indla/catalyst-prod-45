@@ -235,8 +235,8 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
               const now = new Date();
               const startDate = new Date(alloc.start_date);
               const isCommitted = startDate <= now;
-              const accentColor = isCommitted ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-text-warning, #f59e0b)'; // Blue for committed, Amber for forecast
-              const pctColor = isCommitted ? 'var(--ds-text-brand, #2563eb)' : '#92400e';
+              const accentColor = isCommitted ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-text-warning, #f59e0b)'; // Blue for committed, Amber for forecast
+              const pctColor = isCommitted ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : '#92400e';
 
               return (
                 <span

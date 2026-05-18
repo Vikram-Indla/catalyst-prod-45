@@ -7,7 +7,7 @@ import { useTheme } from '@/hooks/useTheme';
 import type * as D3Type from 'd3';
 
 const DOMAIN_COLORS: Record<string, string> = {
-  D1: 'var(--ds-text-brand, #2563EB)', D2: 'var(--cp-teal-60, #0D9488)', D3: 'var(--ds-text-warning, var(--cp-warning, #D97706))', D4: 'var(--ds-text-success, var(--cp-success, #16A34A))',
+  D1: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', D2: 'var(--cp-teal-60, #0D9488)', D3: 'var(--ds-text-warning, var(--cp-warning, #D97706))', D4: 'var(--ds-text-success, var(--cp-success, #16A34A))',
   D5: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', D6: '#0891B2', D7: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', D8: '#4F46E5', D9: '#CA8A04',
 };
 
@@ -159,7 +159,7 @@ export default function WikiKnowledgeGraphPage() {
     <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, #F8FAFC)', height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ padding: '20px 40px 0' }}>
         <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
-          <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}>Wiki</span>
+          <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>Wiki</span>
           <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
           <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 600 }}>Knowledge Graph</span>
         </nav>

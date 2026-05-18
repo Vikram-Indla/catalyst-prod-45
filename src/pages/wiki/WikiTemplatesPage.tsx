@@ -33,7 +33,7 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
             }}>{Math.round((d.similarity ?? 0.8) * 100)}%</span>
             <span
               onClick={() => navigate(`/wiki/${d.slug}`)}
-              style={{ fontSize: 12, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer', fontWeight: 600 }}
+              style={{ fontSize: 12, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer', fontWeight: 600 }}
             >{d.title}</span>
           </div>
         ))}
@@ -165,7 +165,7 @@ export default function WikiTemplatesPage() {
   };
 
   const borderColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.06)';
-  const cardBorderHover = 'var(--ds-text-brand, #2563EB)';
+  const cardBorderHover = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
 
   return (
     <div style={{
@@ -175,7 +175,7 @@ export default function WikiTemplatesPage() {
       minHeight: '100%', padding: '24px 40px 48px',
     }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
-        <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}>Wiki</span>
+        <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
         <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 600 }}>Templates</span>
       </nav>
@@ -211,7 +211,7 @@ export default function WikiTemplatesPage() {
           fontSize: 12, fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', background: 'transparent',
           border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, width: '100%',
         }}>
-          <CalendarIcon size={14} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
+          <CalendarIcon size={14} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
           Content Scheduling
           <span style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontWeight: 500, marginLeft: 'auto' }}>
             {showScheduling ? '▾' : '▸'} {publishAt || archiveAt ? '(configured)' : '(optional)'}
@@ -291,7 +291,7 @@ export default function WikiTemplatesPage() {
                 disabled={creatingSlug !== null}
                 style={{
                   fontSize: 11, fontWeight: 650, padding: '6px 16px', borderRadius: 4,
-                  border: 'none', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer', width: '100%',
+                  border: 'none', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer', width: '100%',
                   opacity: creatingSlug ? 0.6 : 1,
                 }}
               >{creatingSlug ? 'Creating…' : 'Use Template'}</button>

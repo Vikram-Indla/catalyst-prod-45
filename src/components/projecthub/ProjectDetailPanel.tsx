@@ -19,15 +19,15 @@ interface Props {
   onToggleFav: () => void;
 }
 
-const CAT_DOT: Record<string, string> = { todo: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', in_progress: 'var(--ds-text-brand, #2563EB)', done: 'var(--ds-text-success, var(--cp-success, #16A34A))' };
+const CAT_DOT: Record<string, string> = { todo: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', in_progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', done: 'var(--ds-text-success, var(--cp-success, #16A34A))' };
 
 function getAvatarGradient(key: string) {
   const letter = (key[0] || '').toUpperCase();
   const map: Record<string, string> = {
-    A: 'var(--ds-text-brand, #2563EB)', B: 'var(--ds-text-brand, #2563EB)', C: 'var(--ds-text-brand, #2563EB)', D: 'var(--cp-purple-60, #7C3AED)', E: 'var(--cp-purple-60, #7C3AED)', F: 'var(--cp-purple-60, #7C3AED)',
+    A: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', B: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', C: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', D: 'var(--cp-purple-60, #7C3AED)', E: 'var(--cp-purple-60, #7C3AED)', F: 'var(--cp-purple-60, #7C3AED)',
     G: 'var(--cp-teal-60, #0D9488)', H: 'var(--cp-teal-60, #0D9488)', I: 'var(--cp-teal-60, #0D9488)', J: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', K: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', L: 'var(--ds-background-brand-bold-hovered, #1D4ED8)',
     M: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', N: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', O: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', P: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', Q: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', R: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
-    S: 'var(--ds-text-brand, #2563EB)', T: 'var(--ds-text-brand, #2563EB)', U: 'var(--ds-text-brand, #2563EB)', V: 'var(--ds-text-success, var(--cp-success, #16A34A))', W: 'var(--ds-text-success, var(--cp-success, #16A34A))', X: 'var(--ds-text-success, var(--cp-success, #16A34A))', Y: 'var(--ds-text-success, var(--cp-success, #16A34A))', Z: 'var(--ds-text-success, var(--cp-success, #16A34A))',
+    S: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', T: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', U: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', V: 'var(--ds-text-success, var(--cp-success, #16A34A))', W: 'var(--ds-text-success, var(--cp-success, #16A34A))', X: 'var(--ds-text-success, var(--cp-success, #16A34A))', Y: 'var(--ds-text-success, var(--cp-success, #16A34A))', Z: 'var(--ds-text-success, var(--cp-success, #16A34A))',
   };
   return map[letter] || '#0284C7';
 }
@@ -97,7 +97,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
                   padding: '8px 16px',
                   fontSize: 13,
                   fontWeight: tab === t ? 600 : 400,
-                  color: tab === t ? 'var(--ds-text-brand, #2563EB)' : 'var(--fg-3)',
+                  color: tab === t ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--fg-3)',
                   borderBottom: tab === t ? '2px solid #2563EB' : '2px solid transparent',
                   background: 'none',
                   border: 'none',

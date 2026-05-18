@@ -564,8 +564,8 @@ function TransitionCell({ active, onClick }: { active: boolean; onClick: () => v
       className={cn(
         'w-6 h-6 rounded border flex items-center justify-center mx-auto transition-all',
         active
-          ? 'bg-[var(--ds-text-brand,#2563EB)] border-[var(--ds-text-brand,#2563EB)] text-white'
-          : 'bg-white border-[var(--ds-border,var(--cp-border, #E2E8F0))] text-transparent hover:border-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-selected,#EFF6FF)]'
+          ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white'
+          : 'bg-white border-[var(--ds-border,var(--cp-border, #E2E8F0))] text-transparent hover:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] hover:bg-[var(--ds-background-selected,#EFF6FF)]'
       )}
     >
       <CheckMarkIcon label="" size="small" />

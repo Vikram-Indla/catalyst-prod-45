@@ -31,7 +31,7 @@ export default function WatchButton({ issueId, size = "sm", showCount = false, c
       });
     } else {
       toast("Watching — you'll be notified of all activity", {
-        icon: <Eye size={16} color="var(--ds-text-brand, #2563EB)" />,
+        icon: <Eye size={16} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />,
         duration: 2000,
       });
     }
@@ -57,7 +57,7 @@ export default function WatchButton({ issueId, size = "sm", showCount = false, c
           borderRadius: 4,
           border: "none",
           background: isWatching ? "rgba(37,99,235,0.08)" : "transparent",
-          color: isWatching ? "var(--ds-text-brand, #2563EB)" : "var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))",
+          color: isWatching ? "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" : "var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))",
           cursor: isLoading ? "not-allowed" : "pointer",
           opacity: isLoading ? 0.5 : 1,
           transition: "background 120ms, color 120ms",

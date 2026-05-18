@@ -111,9 +111,9 @@ export default function ProductionEventsPage() {
             className="h-8 px-3 rounded-[6px] text-[12px] transition-colors"
             style={{
               fontWeight: 600,
-              border: `0.75px solid ${resultFilter === chip.key ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-border-default, rgba(15,23,42,0.12))'}`,
+              border: `0.75px solid ${resultFilter === chip.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-border-default, rgba(15,23,42,0.12))'}`,
               background: resultFilter === chip.key ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
-              color: resultFilter === chip.key ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'),
+              color: resultFilter === chip.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'),
             }}
           >
             {chip.label}

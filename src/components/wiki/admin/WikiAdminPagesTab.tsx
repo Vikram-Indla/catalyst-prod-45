@@ -64,12 +64,12 @@ export function WikiAdminPagesTab() {
             style={{
               padding: '4px 12px', borderRadius: 4,
               border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
-              background: statusFilter === s ? 'var(--cp-primary-60, #2563EB)' : 'transparent',
+              background: statusFilter === s ? 'var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
               color: statusFilter === s ? 'var(--ds-surface, #fff)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
               fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 600,
               cursor: 'pointer', textTransform: 'capitalize', outline: 'none',
             }}
-            onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
+            onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
             onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
           >{s}</button>
         ))}
@@ -138,7 +138,7 @@ export function WikiAdminPagesTab() {
                             fontFamily: 'var(--cp-font-body)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
                             outline: 'none',
                           }}
-                          onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
+                          onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
                           onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
                         >
                           {['published', 'draft', 'review', 'archived'].map(s => <option key={s} value={s}>{s}</option>)}
@@ -174,7 +174,7 @@ function ActionBtn({ icon, title, onClick }: { icon: React.ReactNode; title: str
       background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center',
       color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', outline: 'none',
     }}
-      onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
+      onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
       onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
       onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
       onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
@@ -193,7 +193,7 @@ function PagBtn({ disabled, onClick, children }: { disabled: boolean; onClick: (
       opacity: disabled ? 0.4 : 1, display: 'flex', alignItems: 'center',
       color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', outline: 'none',
     }}
-      onFocus={(e) => { if (!disabled) e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
+      onFocus={(e) => { if (!disabled) e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
       onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
     >{children}</button>
   );

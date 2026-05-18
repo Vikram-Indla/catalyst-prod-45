@@ -116,13 +116,13 @@ export function WikiAdminSyncTab() {
           style={{
             display: 'flex', alignItems: 'center', gap: 6,
             padding: '6px 14px', borderRadius: 4,
-            background: 'var(--cp-primary-60, #2563EB)',
+            background: 'var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))',
             color: 'var(--ds-surface, #fff)', border: 'none', cursor: (triggerSync.isPending || isRunning) ? 'not-allowed' : 'pointer',
             fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 600,
             opacity: (triggerSync.isPending || isRunning) ? 0.5 : 1,
             outline: 'none',
           }}
-          onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
+          onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))'; }}
           onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
         >
           {(triggerSync.isPending || isRunning)
@@ -159,7 +159,7 @@ export function WikiAdminSyncTab() {
           <div style={{ height: 6, borderRadius: 4, background: 'rgba(37,99,235,0.1)', marginBottom: 8, overflow: 'hidden' }}>
             <div style={{
               height: '100%', borderRadius: 4,
-              background: 'var(--cp-primary-60, #2563EB)',
+              background: 'var(--cp-primary-60, var(--cp-workstream-catalyst-primary, #2563EB))',
               width: `${progressPct}%`,
               transition: 'width 300ms ease',
             }} />

@@ -50,7 +50,7 @@ export function AIInsightsBar({ insights, onActionClick }: AIInsightsBarProps) {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg" style={{ background: '#DBEAFE' }}>
-            <SparklesIcon label="" size="small" primaryColor="var(--ds-text-brand, #2563EB)" />
+            <SparklesIcon label="" size="small" primaryColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />
           </div>
           <span className="font-semibold text-slate-800">AI Insights</span>
           {criticalCount > 0 && (
@@ -79,7 +79,7 @@ export function AIInsightsBar({ insights, onActionClick }: AIInsightsBarProps) {
               {getIcon(insight.type)}
               <span className="text-sm text-slate-700">{insight.message}</span>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => onActionClick?.(insight)} className="text-[var(--ds-text-brand,#2563EB)] hover:text-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-xs">
+            <Button variant="ghost" size="sm" onClick={() => onActionClick?.(insight)} className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] hover:text-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-xs">
               {insight.action}
               <ArrowRightIcon label="" size="small" primaryColor="currentColor" />
             </Button>

@@ -325,7 +325,7 @@ export default function TestHubDashboardPage() {
 
         {/* ── KPI STRIP — 6 cards ── */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12, flexShrink: 0 }}>
-          <KPICard label="Total test cases" value={totalTestCases} accent="var(--ds-text-brand, #2563EB)"
+          <KPICard label="Total test cases" value={totalTestCases} accent="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))"
             trend={{ direction: 'up', value: '+3', color: 'var(--quality-high, #059669)' }}
             subtitle={`${totalCycles} cycles total`} sparkData={[4, 6, 5, 8, 10, 9, 12, 14]} />
           <KPICard label="Overall pass rate" value={`${passRate}%`} accent={passRate < 60 ? "var(--ds-text-danger, #EF4444)" : "var(--ds-text-warning, var(--cp-warning, #D97706))"}
@@ -405,7 +405,7 @@ export default function TestHubDashboardPage() {
                          alignItems: 'center', height: 50, padding: '0 16px',
                          cursor: 'pointer', borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}`,
                        }}>
-                       <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>
+                       <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
                          {cycle.cycle_key}
                        </span>
                        <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -432,7 +432,7 @@ export default function TestHubDashboardPage() {
                      <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>
                        All {activeCycles.length} active cycle{activeCycles.length !== 1 ? 's' : ''} shown
                      </span>
-                     <a href="/testhub/cycles" style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', textDecoration: 'none', cursor: 'pointer' }}>
+                     <a href="/testhub/cycles" style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', textDecoration: 'none', cursor: 'pointer' }}>
                        View completed cycles →
                      </a>
                    </div>
@@ -457,7 +457,7 @@ export default function TestHubDashboardPage() {
                    {failingTests.length}
                  </span>
                </div>
-               <button onClick={() => navigate('/testhub/repository')} style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
+               <button onClick={() => navigate('/testhub/repository')} style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
                  View all <ChevronRight size={12} />
                </button>
              </div>
@@ -480,7 +480,7 @@ export default function TestHubDashboardPage() {
                            alignItems: 'center', height: 50, padding: '0 16px',
                            cursor: 'pointer', borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}`,
                          }}>
-                         <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>
+                         <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
                            {test.case_key}
                          </span>
                          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -518,7 +518,7 @@ export default function TestHubDashboardPage() {
                      {defectStats?.total_defects ?? 0}
                    </span>
                  </div>
-                 <button onClick={() => navigate('/testhub/defects')} style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
+                 <button onClick={() => navigate('/testhub/defects')} style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
                    View all <ChevronRight size={12} />
                  </button>
                </div>
@@ -611,7 +611,7 @@ export default function TestHubDashboardPage() {
                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: dotColor, marginTop: 6, flexShrink: 0 }} />
                            <div style={{ flex: 1, minWidth: 0 }}>
                              <div style={{ fontSize: 13, fontWeight: 400, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', lineHeight: 1.43 }}>
-                               <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>{a.case_key}</span>
+                               <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{a.case_key}</span>
                                {' '}<span style={{ fontWeight: 600 }}>{verb}</span> in {a.cycle_key}
                              </div>
                              <div style={{ fontSize: 11, fontWeight: 400, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
@@ -646,7 +646,7 @@ export default function TestHubDashboardPage() {
         .c10-row:hover { background: ${'var(--cp-bg-page, #F8FAFC)'}; }
         .c10-row-danger:hover { background: ${'var(--cp-danger-light, #FEF2F2)'}; }
         .c10-kpi:hover { border-color: ${'var(--cp-border-strong, #CBD5E1)'} !important; box-shadow: 0 4px 16px ${isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.08)'} !important; }
-        .c10-qbtn:hover { border-color: var(--ds-text-brand, #2563EB) !important; color: var(--ds-text-brand, #2563EB) !important; background: ${'var(--cp-primary-light, #EFF6FF)'} !important; }
+        .c10-qbtn:hover { border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) !important; color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) !important; background: ${'var(--cp-primary-light, #EFF6FF)'} !important; }
         /* Rule 3 paired .dark — brand blue is intentional in both modes;
            this selector exists so audits confirm dark pairing for the
            !important hex above. */
@@ -717,7 +717,7 @@ function Card({ title, badge, badgeDanger, badgeColor, onViewAll, children, styl
           )}
         </div>
         {onViewAll && (
-          <button onClick={onViewAll} style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
+          <button onClick={onViewAll} style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
             View all <ChevronRight size={12} />
           </button>
         )}

@@ -51,7 +51,7 @@ interface Stats {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; icon: any; color: string }> = {
-  test_cases: { label: 'Test Cases', icon: FileText, color: 'var(--ds-text-brand, #2563EB)' },
+  test_cases: { label: 'Test Cases', icon: FileText, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
   defects: { label: 'Defects', icon: Bug, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
   requirements: { label: 'Requirements', icon: FileCheck, color: 'var(--quality-high, #059669)' },
   shared_steps: { label: 'Shared Steps', icon: Layers, color: 'var(--cp-purple-60, #7C3AED)' },
@@ -63,7 +63,7 @@ const TYPE_CONFIG: Record<string, { label: string; icon: any; color: string }> =
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   pending: { label: 'Pending', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: Clock },
   validating: { label: 'Validating', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', icon: AlertTriangle },
-  processing: { label: 'Processing', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', icon: RefreshCw },
+  processing: { label: 'Processing', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', icon: RefreshCw },
   completed: { label: 'Completed', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
   failed: { label: 'Failed', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', icon: XCircle },
   cancelled: { label: 'Cancelled', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--ds-surface-sunken, #F8FAFC)', icon: XCircle },

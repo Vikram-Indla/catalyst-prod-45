@@ -190,7 +190,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
 }
 
 /* ── Avatar color palette (no purple/yellow) ── */
-const AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, #2563EB)','var(--ds-text-danger, var(--cp-danger, #DC2626))','var(--ds-text-success, var(--cp-success, #16A34A))','var(--ds-text-subtlest, var(--cp-ink-3, #64748B))','#0284C7','var(--quality-high, #059669)','#BE123C','var(--ds-background-brand-bold-hovered, #1D4ED8)','#0F766E'];
+const AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))','var(--ds-text-danger, var(--cp-danger, #DC2626))','var(--ds-text-success, var(--cp-success, #16A34A))','var(--ds-text-subtlest, var(--cp-ink-3, #64748B))','#0284C7','var(--quality-high, #059669)','#BE123C','var(--ds-background-brand-bold-hovered, #1D4ED8)','#0F766E'];
 function getAvatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -282,7 +282,7 @@ function DueDateCell({ date }: { date?: string }) {
 
 /* ── Type colors ── */
 const TYPE_COLORS: Record<string, string> = {
-  'Epic': 'var(--ds-text-brand, #2563EB)', 'Feature': 'var(--cp-teal-60, #0D9488)', 'Story': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Sub-task': 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+  'Epic': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'Feature': 'var(--cp-teal-60, #0D9488)', 'Story': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Sub-task': 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
   'Task': 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', 'Bug': 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
 };
 
@@ -876,7 +876,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
 
       <style>{`
         .hi-table-row { border-left: 3px solid transparent; transition: all 80ms ease; }
-        .hi-table-row:hover { background: ${'var(--cp-bg-page, #F8FAFC)'} !important; border-left-color: var(--ds-text-brand, #2563EB); box-shadow: ${isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)'}; }
+        .hi-table-row:hover { background: ${'var(--cp-bg-page, #F8FAFC)'} !important; border-left-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); box-shadow: ${isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)'}; }
         .hi-table-row.checked { background: ${'var(--cp-primary-light, #EFF6FF)'} !important; }
         .hi-table-row .hi-row-action { opacity: 0; transition: opacity 100ms ease; }
         .hi-table-row:hover .hi-row-action { opacity: 1; }

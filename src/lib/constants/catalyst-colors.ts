@@ -6,7 +6,7 @@
  * ⚠️ DO NOT IMPORT COLORS FROM TAILWIND DEFAULTS
  * 
  * APPROVED COLORS:
- * - Primary Blue: #2563eb (main), #3b82f6, #1d4ed8
+ * - Primary Blue: var(--cp-workstream-catalyst-primary, #2563eb) (main), #3b82f6, #1d4ed8
  * - Teal: #0d9488 (success/available/healthy)
  * - Warning: #d97706 (30-60 days contract)
  * - Danger: #ef4444 (critical/<30 days)

@@ -57,7 +57,7 @@ function PriorityCell({ priority }: { priority: string | null }) {
 }
 
 // ── Avatar colours (deterministic) ──
-const AVATAR_COLOURS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#DB2777', 'var(--cp-purple-60, #7C3AED)', 'var(--quality-high, #059669)', 'var(--ds-text-warning, var(--cp-warning, #D97706))'];
+const AVATAR_COLOURS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#DB2777', 'var(--cp-purple-60, #7C3AED)', 'var(--quality-high, #059669)', 'var(--ds-text-warning, var(--cp-warning, #D97706))'];
 
 // ── Age formatter ──
 function getRelativeAge(createdAt: string): string {
@@ -173,7 +173,7 @@ function ParentPickerCell({ defectId, currentParentKey, projectKey }: { defectId
           {currentParentKey ? (
             <div className="flex items-center gap-1.5">
               <WorkItemIcon type={currentParent?.type || 'task'} size={14} />
-              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
                 {currentParentKey}
               </span>
             </div>
@@ -423,7 +423,7 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
           <td key={colKey} style={{ width: columnWidths.key }}>
             <div className="flex items-center gap-1">
               {attCount > 0 && <span title="Attachments"><Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>}
-              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>{keyText}</span>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{keyText}</span>
               {isJira && <JiraBadge />}
               {isJira && d.external_url && (
                 <button className="opacity-0 group-hover:opacity-100 transition-opacity duration-150" style={{ marginLeft: 2, padding: 2, borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer' }} title="Open in Jira" onClick={e => { e.stopPropagation(); window.open(d.external_url!, '_blank'); }}>

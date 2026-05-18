@@ -33,7 +33,7 @@ export default function IncidentReportsPage() {
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: 'var(--ds-background-selected, #EFF6FF)' }}>
-            <FileText size={18} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
+            <FileText size={18} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
           </div>
           <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))' }}>Incident Reports</h1>
         </div>
@@ -50,7 +50,7 @@ export default function IncidentReportsPage() {
                 fontFamily: 'var(--cp-font-body)',
                 fontSize: 12,
                 fontWeight: activeTab === i ? 650 : 400,
-                color: activeTab === i ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+                color: activeTab === i ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
                 borderBottom: activeTab === i ? '2px solid #2563EB' : '2px solid transparent',
               }}
             >
@@ -96,7 +96,7 @@ export default function IncidentReportsPage() {
               {[
                 { label: 'Open', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', count: incidents?.filter(i => i.status === 'open').length || 0 },
                 { label: 'Triage', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', count: incidents?.filter(i => i.status === 'triage').length || 0 },
-                { label: 'In Progress', color: 'var(--ds-text-brand, #2563EB)', count: incidents?.filter(i => i.status === 'in_progress').length || 0 },
+                { label: 'In Progress', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', count: incidents?.filter(i => i.status === 'in_progress').length || 0 },
                 { label: 'Resolved', color: 'var(--ds-text-success, var(--cp-success, #16A34A))', count: incidents?.filter(i => i.status === 'resolved').length || 0 },
               ].map(s => (
                 <div key={s.label} className="flex items-center gap-2 p-3 flex-1" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }}>

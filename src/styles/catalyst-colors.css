@@ -11,7 +11,7 @@
   --cp-color-teal-lighter: #ccfbf1;
   --cp-color-teal-lightest: #f0fdfa;
 
-  --cp-color-blue: #2563eb;
+  --cp-color-blue: var(--cp-workstream-catalyst-primary, #2563eb);
   --cp-color-blue-hover: #1d4ed8;
   --cp-color-blue-light: #3b82f6;
   --cp-color-blue-lighter: #dbeafe;
@@ -72,8 +72,8 @@
   --cp-status-blocked-border: #d97706;
 
   --cp-status-in-progress-bg: #dbeafe;
-  --cp-status-in-progress-text: #2563eb;
-  --cp-status-in-progress-border: #2563eb;
+  --cp-status-in-progress-text: var(--cp-workstream-catalyst-primary, #2563eb);
+  --cp-status-in-progress-border: var(--cp-workstream-catalyst-primary, #2563eb);
 
   --cp-status-not-started-bg: #f1f5f9;
   --cp-status-not-started-text: #475569;
@@ -87,7 +87,7 @@
   --cp-priority-high-text: #d97706;
 
   --cp-priority-medium-bg: #dbeafe;
-  --cp-priority-medium-text: #2563eb;
+  --cp-priority-medium-text: var(--cp-workstream-catalyst-primary, #2563eb);
 
   --cp-priority-low-bg: #f1f5f9;
   --cp-priority-low-text: #475569;
@@ -95,7 +95,7 @@
   /* ============= ASSIGNMENT THEME COLORS ============= */
   --cp-theme-senaei-bau-bg: #eff6ff;
   --cp-theme-senaei-bau-text: #1e40af;
-  --cp-theme-senaei-bau-accent: #2563eb;
+  --cp-theme-senaei-bau-accent: var(--cp-workstream-catalyst-primary, #2563eb);
 
   --cp-theme-innovation-bg: #eff6ff;
   --cp-theme-innovation-text: #1e3a8a;
@@ -144,9 +144,9 @@
   --cp-severity-high-text: #d97706;
   --cp-severity-high-border: rgba(217, 119, 6, 0.19);
 
-  --cp-severity-medium-dot: #2563eb;
+  --cp-severity-medium-dot: var(--cp-workstream-catalyst-primary, #2563eb);
   --cp-severity-medium-bg: #dbeafe;
-  --cp-severity-medium-text: #2563eb;
+  --cp-severity-medium-text: var(--cp-workstream-catalyst-primary, #2563eb);
   --cp-severity-medium-border: rgba(37, 99, 235, 0.19);
 
   --cp-severity-low-dot: #94a3b8;
@@ -159,9 +159,9 @@
   --cp-severity-major-text: #d97706;
   --cp-severity-major-border: rgba(217, 119, 6, 0.19);
 
-  --cp-severity-minor-dot: #2563eb;
+  --cp-severity-minor-dot: var(--cp-workstream-catalyst-primary, #2563eb);
   --cp-severity-minor-bg: #dbeafe;
-  --cp-severity-minor-text: #2563eb;
+  --cp-severity-minor-text: var(--cp-workstream-catalyst-primary, #2563eb);
   --cp-severity-minor-border: rgba(37, 99, 235, 0.19);
 
   --cp-severity-trivial-dot: #94a3b8;
@@ -183,7 +183,7 @@
   --cp-defect-status-triaged-border: rgba(217, 119, 6, 0.19);
 
   --cp-defect-status-in-progress-bg: #eff6ff;
-  --cp-defect-status-in-progress-text: #2563eb;
+  --cp-defect-status-in-progress-text: var(--cp-workstream-catalyst-primary, #2563eb);
   --cp-defect-status-in-progress-border: rgba(37, 99, 235, 0.19);
 
   --cp-defect-status-fixed-bg: #f0fdfa;

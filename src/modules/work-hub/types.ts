@@ -159,12 +159,12 @@ export const MORE_MENU_ITEMS = [
 
 // Type icons and colors
 export const WORK_ITEM_TYPE_CONFIG: Record<WorkItemType, { label: string; color: string }> = {
-  FEATURE: { label: 'Epic', color: 'var(--ds-text-brand, #2563eb)' },
+  FEATURE: { label: 'Epic', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
   STORY: { label: 'Story', color: 'var(--ds-text-success, #16a34a)' },
-  SUBTASK: { label: 'Subtask', color: 'var(--ds-text-brand, #2563eb)' },
+  SUBTASK: { label: 'Subtask', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
   DEFECT: { label: 'Bug', color: 'var(--ds-text-danger, #dc2626)' },
   INCIDENT: { label: 'Production Incident', color: 'var(--ds-text-warning, #f59e0b)' },
-  TASK: { label: 'Task', color: 'var(--ds-text-brand, #2563eb)' },
+  TASK: { label: 'Task', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
 };
 
 // Priority config
@@ -180,7 +180,7 @@ export const PRIORITY_CONFIG: Record<Priority, { label: string; color: string; i
 // Status colors
 export const STATUS_COLORS: Record<string, string> = {
   'TODO': 'var(--ds-border, #e5e7eb)',
-  'IN PROGRESS': 'var(--ds-text-brand, #2563eb)',
+  'IN PROGRESS': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   'DONE': 'var(--ds-text-success, #16a34a)',
   'READY FOR QA': 'var(--ds-text-warning, #f59e0b)',
   'READY FOR PRODUCTION': 'var(--ds-text-success, #16a34a)',

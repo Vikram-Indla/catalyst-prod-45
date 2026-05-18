@@ -129,7 +129,7 @@ export default function IncidentDetailPage() {
             <SeverityChip severity={incident.severity} />
             <PriorityChip priority={incident.priority || 'P4'} />
             <span style={{ color: 'var(--cp-text-muted, #CBD5E1)' }}>&middot;</span>
-            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-brand, #2563EB)' }}>
+            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
               {incident.incident_key || incident.jira_key}
             </span>
             <span style={{ color: 'var(--cp-text-muted, #CBD5E1)' }}>&middot;</span>
@@ -194,7 +194,7 @@ export default function IncidentDetailPage() {
                   style={{
                     fontFamily: 'var(--cp-font-body)',
                     fontWeight: activeTab === tab ? 650 : 400,
-                    color: activeTab === tab ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'),
+                    color: activeTab === tab ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'),
                     borderBottom: activeTab === tab ? '2px solid #2563EB' : '2px solid transparent',
                     borderRadius: 0,
                   }}
@@ -215,7 +215,7 @@ export default function IncidentDetailPage() {
                     style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, minHeight: 60, borderRadius: 4 }}
                   />
                   <div className="flex items-center gap-2 mt-2">
-                    <Button size="sm" style={{ backgroundColor: 'var(--ds-text-brand, #2563EB)', borderRadius: 6 }} onClick={handleSaveComment} disabled={!commentText.trim()}>
+                    <Button size="sm" style={{ backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 6 }} onClick={handleSaveComment} disabled={!commentText.trim()}>
                       Save
                     </Button>
                     <Button variant="ghost" size="sm" style={{ borderRadius: 6 }} onClick={() => setCommentText('')}>Cancel</Button>
@@ -251,7 +251,7 @@ export default function IncidentDetailPage() {
                 )}
                 {incident.history?.map((h: any) => (
                   <div key={h.id} className="flex items-start gap-3 mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
-                    <div className="shrink-0 mt-1" style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: 'var(--ds-text-brand, #2563EB)', border: isDark ? '2px solid #0A0A0A' : '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', boxShadow: '0 0 0 1px #2563EB' }} />
+                    <div className="shrink-0 mt-1" style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: isDark ? '2px solid #0A0A0A' : '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', boxShadow: '0 0 0 1px #2563EB' }} />
                     <div>
                       <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>
                         {h.field_name} changed

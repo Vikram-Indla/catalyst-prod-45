@@ -44,7 +44,7 @@ const variantConfig: Record<CatalystToastType, {
     icon: <AlertTriangle className="w-5 h-5 text-white" />,
   },
   info: {
-    bg: 'bg-[var(--ds-text-brand,#2563eb)]', // Blue
+    bg: 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]', // Blue
     iconBg: 'bg-white/20',
     icon: <Info className="w-5 h-5 text-white" />,
   },

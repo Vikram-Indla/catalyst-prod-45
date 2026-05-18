@@ -46,8 +46,8 @@
 
   /* Brand */
   --cp-blue:            var(--ds-text-brand, #3B82F6);
-  --cp-blue-text:       var(--ds-text-brand, #2563EB);
-  --cp-blue-link:       var(--ds-text-brand, #2563EB);
+  --cp-blue-text:       var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
+  --cp-blue-link:       var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --cp-blue-wash:       rgba(59,130,246,0.08);
 
   /* Status */
@@ -62,7 +62,7 @@
   /* AI */
   --cp-ai-bg:           rgba(59,130,246,0.06);
   --cp-ai-bd:           rgba(59,130,246,0.12);
-  --cp-ai-t:            var(--ds-text-brand, #2563EB);
+  --cp-ai-t:            var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
 
   /* StatusLozenge */
   --cp-lz-gy-bg:        var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6));
@@ -89,7 +89,7 @@
   --cp-scroll:          rgba(0,0,0,0.12);
 
   /* Chart Palette */
-  --cp-chart-1: var(--ds-text-brand, #2563EB);
+  --cp-chart-1: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --cp-chart-2: var(--cp-teal-60, #0D9488);
   --cp-chart-3: var(--ds-text-warning, var(--cp-warning, #D97706));
   --cp-chart-4: var(--ds-text-danger, var(--cp-danger, #DC2626));

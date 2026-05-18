@@ -7,7 +7,7 @@ import { ComparedRelease, ComparisonInsight, CompareHealthLevel } from '../types
 
 // Catalyst V5 Colors
 export const CATALYST_COLORS = {
-  primary: 'var(--ds-text-brand, #2563eb)',
+  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   teal: '#0d9488',
   warning: 'var(--ds-text-warning, #d97706)',
   danger: 'var(--ds-text-danger, #ef4444)',

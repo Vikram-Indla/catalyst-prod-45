@@ -158,7 +158,7 @@ export default function ImportData() {
         onClick={() => { setImportSource('csv'); setSelectedModule(null); }}
         className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
           importSource === 'csv'
-            ? 'bg-[#2563EB] text-white'
+            ? 'bg-[var(--cp-workstream-catalyst-primary, #2563EB)] text-white'
             : 'bg-[var(--cp-bg-sunken, #F1F5F9)] text-muted-foreground hover:bg-[var(--cp-border, #E2E8F0)]'
         }`}
       >
@@ -168,7 +168,7 @@ export default function ImportData() {
         onClick={() => setImportSource('notion')}
         className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
           importSource === 'notion'
-            ? 'bg-[#2563EB] text-white'
+            ? 'bg-[var(--cp-workstream-catalyst-primary, #2563EB)] text-white'
             : 'bg-[var(--cp-bg-sunken, #F1F5F9)] text-muted-foreground hover:bg-[var(--cp-border, #E2E8F0)]'
         }`}
       >

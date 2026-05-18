@@ -141,7 +141,7 @@ function groupStories(items: BacklogStory[], groupBy: GroupByKey): { label: stri
 
 
 
-const AVATAR_COLOURS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#DB2777'];
+const AVATAR_COLOURS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#DB2777'];
 
 // ── V2 table feature flag ──
 // When localStorage.catalyst.table.v2 === '1', the backlog renders via the
@@ -478,7 +478,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       case 'key':
         return (
           <td key={colKey} style={{ width: columnWidths.key }}>
-            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>
+            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
               {story.story_key || '—'}
             </span>
           </td>
@@ -642,7 +642,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       header: 'KEY',
       sortingFn: (a, b) => (a.original.story_key || '').localeCompare(b.original.story_key || ''),
       cell: ({ row }) => (
-        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>
+        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
           {row.original.story_key || '—'}
         </span>
       ),
@@ -835,7 +835,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                     minWidth: 28, height: 28, borderRadius: 4, padding: '0 6px',
                     border: page === p ? '1.5px solid #2563EB' : '1px solid var(--cp-border, #E2E8F0)',
                     background: page === p ? 'rgba(37,99,235,0.06)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                    color: page === p ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtle, #475569)',
+                    color: page === p ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtle, #475569)',
                     fontWeight: page === p ? 600 : 400,
                     fontSize: 13, cursor: 'pointer',
                     fontFamily: 'var(--cp-font-body)',
@@ -1078,7 +1078,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                         minWidth: 28, height: 28, borderRadius: 4, padding: '0 6px',
                         border: page === p ? '1.5px solid #2563EB' : '1px solid var(--cp-border, #E2E8F0)',
                         background: page === p ? 'rgba(37,99,235,0.06)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                        color: page === p ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtle, #475569)',
+                        color: page === p ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtle, #475569)',
                         fontWeight: page === p ? 600 : 400,
                         fontSize: 13, cursor: 'pointer',
                         fontFamily: 'var(--cp-font-body)',

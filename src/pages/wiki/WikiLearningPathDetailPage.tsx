@@ -11,7 +11,7 @@ const F = {
   mono: "'JetBrains Mono', monospace",
 };
 
-const DIFF_COLORS: Record<string, string> = { beginner: 'var(--ds-text-success, var(--cp-success, #16A34A))', intermediate: 'var(--ds-text-brand, #2563EB)', advanced: 'var(--ds-text-warning, var(--cp-warning, #D97706))' };
+const DIFF_COLORS: Record<string, string> = { beginner: 'var(--ds-text-success, var(--cp-success, #16A34A))', intermediate: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', advanced: 'var(--ds-text-warning, var(--cp-warning, #D97706))' };
 
 export default function WikiLearningPathDetailPage() {
   const { pathId } = useParams<{ pathId: string }>();
@@ -126,16 +126,16 @@ export default function WikiLearningPathDetailPage() {
     <div style={{ fontFamily: F.inter, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, #F8FAFC)', minHeight: '100%', padding: '24px 40px 60px' }}>
       {/* Breadcrumb */}
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
-        <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}>Wiki</span>
+        <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
-        <span onClick={() => navigate('/wiki/learning-paths')} style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}>Learning Paths</span>
+        <span onClick={() => navigate('/wiki/learning-paths')} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>Learning Paths</span>
         <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
         <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 600 }}>{path.title}</span>
       </nav>
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 32 }}>
-        <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--ds-text-brand, #2563EB)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <GraduationCap size={24} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
         </div>
         <div style={{ flex: 1 }}>
@@ -155,7 +155,7 @@ export default function WikiLearningPathDetailPage() {
 
       {/* Progress bar */}
       <div style={{ height: 6, borderRadius: 4, background: isDark ? 'var(--ds-border, #292929)' : 'var(--ds-border, var(--cp-border, #E2E8F0))', marginBottom: 32 }}>
-        <div style={{ height: '100%', borderRadius: 4, background: pct === 100 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-brand, #2563EB)', width: `${pct}%`, transition: 'width 400ms' }} />
+        <div style={{ height: '100%', borderRadius: 4, background: pct === 100 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', width: `${pct}%`, transition: 'width 400ms' }} />
       </div>
 
       {/* Article list */}

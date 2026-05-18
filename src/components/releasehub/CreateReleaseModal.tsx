@@ -38,13 +38,13 @@ export function CreateReleaseModal({ onClose }: Props) {
           <div>
             <label className="block text-[12px] font-semibold text-[var(--ds-text-subtle,#475569)] mb-1">Name *</label>
             <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Q2 2026 Release v2.0"
-              className="w-full h-9 px-3 rounded-md border border-[var(--bd-default,var(--cp-border, #E2E8F0))] text-[13px] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,#2563EB)]/20 focus:border-[var(--ds-text-brand,#2563EB)]" />
+              className="w-full h-9 px-3 rounded-md border border-[var(--bd-default,var(--cp-border, #E2E8F0))] text-[13px] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />
           </div>
           <div>
             <label className="block text-[12px] font-semibold text-[var(--ds-text-subtle,#475569)] mb-1">Target Date *</label>
             <Popover>
               <PopoverTrigger asChild>
-                <button className={`w-full h-9 px-3 rounded-md border border-[var(--bd-default,var(--cp-border, #E2E8F0))] text-[13px] text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,#2563EB)]/20 focus:border-[var(--ds-text-brand,#2563EB)] ${targetDate ? 'text-[#1E293B]' : 'text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]'}`}>
+                <button className={`w-full h-9 px-3 rounded-md border border-[var(--bd-default,var(--cp-border, #E2E8F0))] text-[13px] text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] ${targetDate ? 'text-[#1E293B]' : 'text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]'}`}>
                   {targetDate ? format(targetDate, 'MMM d, yyyy') : 'Select date...'}
                   <CalendarIcon size={14} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]" />
                 </button>
@@ -57,13 +57,13 @@ export function CreateReleaseModal({ onClose }: Props) {
           <div>
             <label className="block text-[12px] font-semibold text-[var(--ds-text-subtle,#475569)] mb-1">Version</label>
             <input type="text" value={version} onChange={e => setVersion(e.target.value)} placeholder="e.g. v2.0"
-              className="w-full h-9 px-3 rounded-md border border-[var(--bd-default,var(--cp-border, #E2E8F0))] text-[13px] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,#2563EB)]/20 focus:border-[var(--ds-text-brand,#2563EB)]" />
+              className="w-full h-9 px-3 rounded-md border border-[var(--bd-default,var(--cp-border, #E2E8F0))] text-[13px] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />
           </div>
         </div>
         <div className="sticky bottom-0 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-t border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)] px-6 py-3 flex justify-end gap-2">
           <button onClick={onClose} className="h-9 px-4 rounded-md border border-[var(--bd-default,var(--cp-border, #E2E8F0))] text-[13px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[#F4F7FA]">Cancel</button>
           <button onClick={handleSubmit} disabled={!name || !targetDate || createRelease.isPending}
-            className="h-9 px-4 rounded-md bg-[var(--ds-text-brand,#2563EB)] text-white text-[13px] font-semibold hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] disabled:opacity-50">
+            className="h-9 px-4 rounded-md bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white text-[13px] font-semibold hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] disabled:opacity-50">
             {createRelease.isPending ? 'Creating...' : 'Create Release'}
           </button>
         </div>

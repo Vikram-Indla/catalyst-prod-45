@@ -130,7 +130,7 @@ export function StatusMapping() {
                 <button
                   onClick={() => { setAddingTo(addingTo === category ? null : category); setNewStatus('') }}
                   style={{
-                    marginLeft: 'auto', fontSize: 11, color: 'var(--ds-text-brand, #2563EB)', background: 'none',
+                    marginLeft: 'auto', fontSize: 11, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', background: 'none',
                     border: 'none', cursor: 'pointer', padding: '2px 6px', fontWeight: 500,
                   }}
                 >
@@ -188,7 +188,7 @@ export function StatusMapping() {
                   />
                   <button onClick={() => handleAddStatus(category)} style={{
                     padding: '5px 12px', borderRadius: 4, fontSize: 11, fontWeight: 600,
-                    background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
+                    background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
                   }}>Add</button>
                   <button onClick={() => { setAddingTo(null); setNewStatus('') }} style={{
                     padding: '5px 12px', borderRadius: 4, fontSize: 11,
@@ -206,7 +206,7 @@ export function StatusMapping() {
             disabled={updateConfig.isPending}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
+              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
               opacity: updateConfig.isPending ? 0.6 : 1,
             }}
           >

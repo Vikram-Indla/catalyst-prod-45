@@ -16,7 +16,7 @@
 
 .planhub-module {
   /* Colors - Primary */
-  --ph-primary: var(--ds-text-brand, #2563eb);
+  --ph-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --ph-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --ph-primary-active: #1e40af;
   --ph-primary-light: rgba(37, 99, 235, 0.08);

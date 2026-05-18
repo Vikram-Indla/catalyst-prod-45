@@ -86,7 +86,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
               placeholder="Search list"
               value={search}
               onChange={e => onSearchChange(e.target.value)}
-              className="h-[30px] w-[160px] pl-8 pr-7 text-[11px] rounded-md border focus:outline-none focus:ring-1 focus:ring-[var(--ds-text-brand,#2563EB)] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]"
+              className="h-[30px] w-[160px] pl-8 pr-7 text-[11px] rounded-md border focus:outline-none focus:ring-1 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]"
               style={{ borderColor: 'var(--divider)', fontFamily: 'var(--cp-font-body)' }}
             />
             {search && (
@@ -144,7 +144,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
               <FilterIconCore label="" style={{ color: 'inherit' }} />
               Filter
               {hasActiveFilters && (
-                <span className="w-4 h-4 rounded-full bg-[var(--ds-text-brand,#2563EB)] text-white text-[9px] flex items-center justify-center font-bold">
+                <span className="w-4 h-4 rounded-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white text-[9px] flex items-center justify-center font-bold">
                   {activeFilterChips.length}
                 </span>
               )}
@@ -187,7 +187,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
                     style={{ color: 'var(--fg-1)', fontWeight: groupBy === o.value ? 600 : 400 }}
                   >
                     {o.label}
-                    {groupBy === o.value && <span className="text-[var(--ds-text-brand,#2563EB)]">✓</span>}
+                    {groupBy === o.value && <span className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]">✓</span>}
                   </button>
                 ))}
               </div>
@@ -295,7 +295,7 @@ function FilterDropdown({ filters, onChange, statuses, priorities, types, assign
               name="flagged"
               checked={filters.flagged === v}
               onChange={() => onChange({ ...filters, flagged: v })}
-              className="accent-[var(--ds-text-brand,#2563EB)]"
+              className="accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
             />
             <span className="text-[11px] capitalize" style={{ color: 'var(--fg-2)' }}>{v}</span>
           </label>
@@ -315,7 +315,7 @@ function FilterDropdown({ filters, onChange, statuses, priorities, types, assign
               name="dueDate"
               checked={filters.dueDate === o.value}
               onChange={() => onChange({ ...filters, dueDate: o.value })}
-              className="accent-[var(--ds-text-brand,#2563EB)]"
+              className="accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
             />
             <span className="text-[11px]" style={{ color: 'var(--fg-2)' }}>{o.label}</span>
           </label>
@@ -339,7 +339,7 @@ function FilterSection({ title, children }: { title: string; children: React.Rea
 function CheckboxItem({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) {
   return (
     <label className="flex items-center gap-2 px-3 py-1 cursor-pointer hover:bg-[var(--ds-surface-sunken,#F8FAFC)]">
-      <input type="checkbox" checked={checked} onChange={onChange} className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,#2563EB)]" />
+      <input type="checkbox" checked={checked} onChange={onChange} className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />
       <span className="text-[11px]" style={{ color: 'var(--fg-2)' }}>{label}</span>
     </label>
   );
@@ -393,7 +393,7 @@ function ColumnSettingsDropdown({ columns, onChange }: { columns: ColumnDef[]; o
               type="checkbox"
               checked={col.visible}
               onChange={() => toggleVisibility(col.key)}
-              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,#2563EB)]"
+              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
             />
             <span className="text-[11px]" style={{ color: 'var(--fg-2)' }}>{col.label || col.key}</span>
           </label>

@@ -71,7 +71,7 @@ const Code: React.FC<{ children: React.ReactNode; isDark?: boolean }> = ({ child
   <code style={{
     fontFamily: 'var(--cp-font-mono)', fontSize: '10px',
     background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '1px 4px', borderRadius: '4px',
-    color: 'var(--cp-text-link, #2563EB)',
+    color: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))',
   }}>{children}</code>
 );
 
@@ -101,9 +101,9 @@ const PERM_COLORS: Record<string, { bg: string; color: string; bgDark: string; c
 function getEventDotColor(ev: any): string {
   if (ev.event_type === 'created') return 'var(--cp-purple-60, #7C3AED)';
   if (ev.event_type === 'deactivated' || ev.event_type === 'reactivated') return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
-  if (ev.direction === 'jira_to_catalyst') return 'var(--ds-text-brand, #2563EB)';
+  if (ev.direction === 'jira_to_catalyst') return 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
   if (ev.direction === 'catalyst_to_jira') return 'var(--cp-teal-60, #0D9488)';
-  return 'var(--ds-text-brand, #2563EB)';
+  return 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
 }
 
 function getEventText(ev: any): string {
@@ -151,7 +151,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
           <button className={xsBtnClass} style={xsBtn} onClick={selectAll}>Select All</button>
           <button className={xsBtnClass} style={xsBtn} onClick={deselectAll}>Deselect All</button>
           <button
-            style={{ ...xsBtn, background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none' }}
+            style={{ ...xsBtn, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none' }}
             onClick={() => toast.info('Project picker — Phase 2')}
           >+ Add Project</button>
         </div>
@@ -161,7 +161,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
           <div style={{ fontSize: '12px', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', marginBottom: '10px' }}>No projects assigned yet</div>
           <button
-            style={{ fontSize: '11px', fontWeight: 600, background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '4px', padding: '5px 12px', cursor: 'pointer' }}
+            style={{ fontSize: '11px', fontWeight: 600, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '4px', padding: '5px 12px', cursor: 'pointer' }}
             onClick={() => toast.info('Project picker — Phase 2')}
           >+ Add Project</button>
         </div>
@@ -175,7 +175,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                     type="checkbox"
                     checked={checkedPerms.size === perms.length && perms.length > 0}
                     onChange={() => checkedPerms.size === perms.length ? deselectAll() : selectAll()}
-                    style={{ width: '12px', height: '12px', accentColor: 'var(--ds-text-brand, #2563EB)' }}
+                    style={{ width: '12px', height: '12px', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}
                   />
                 </th>
                 <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', textAlign: 'left' }}>Project</th>
@@ -196,7 +196,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                         type="checkbox"
                         checked={checkedPerms.has(p.id)}
                         onChange={() => toggleCheck(p.id)}
-                        style={{ width: '12px', height: '12px', accentColor: 'var(--ds-text-brand, #2563EB)' }}
+                        style={{ width: '12px', height: '12px', accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}
                       />
                     </td>
                     <td style={{ padding: '6px 9px', fontWeight: 500, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', whiteSpace: 'nowrap' }} className="jus-field-val">
@@ -247,7 +247,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
           <button
             style={{
               width: '100%', marginTop: '10px', padding: '7px 0',
-              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
+              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
               borderRadius: '4px', fontSize: '11px', fontWeight: 600, cursor: 'pointer',
             }}
             onClick={() => toast.success('Assignments saved. Changes push to Jira on next sync.')}
@@ -384,7 +384,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   padding: '1px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 700,
                   letterSpacing: '0.03em', textTransform: 'uppercase',
                   background: 'var(--cp-primary-light, #EFF6FF)',
-                  color: 'var(--cp-text-link, #2563EB)',
+                  color: 'var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))',
                   border: `1px solid ${'var(--cp-primary-light, #BFDBFE)'}`,
                 }}>
                   Jira Proxy
@@ -435,10 +435,10 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
               onClick={() => setActiveTab(t.key)}
               style={{
                 padding: '8px 12px', fontSize: '12px', fontWeight: 500, cursor: 'pointer',
-                color: activeTab === t.key ? 'var(--ds-text-brand, #2563EB)' : T.text2,
+                color: activeTab === t.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.text2,
                 background: 'none', border: 'none',
                 borderBottomWidth: '2px', borderBottomStyle: 'solid',
-                borderBottomColor: activeTab === t.key ? 'var(--ds-text-brand, #2563EB)' : 'transparent',
+                borderBottomColor: activeTab === t.key ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'transparent',
                 transition: 'color 120ms, border-color 120ms',
               }}
             >
@@ -542,7 +542,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   onClick={() => setShowPwd(p => !p)}
                   style={{
                     background: 'none', border: 'none', cursor: 'pointer',
-                    fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', whiteSpace: 'nowrap',
+                    fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', whiteSpace: 'nowrap',
                   }}
                 >
                   {showPwd ? 'Hide' : 'Show'}
@@ -699,7 +699,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
       }}>
         <button style={{
           flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
+          background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
           padding: '7px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600,
           cursor: 'pointer',
         }}>

@@ -44,7 +44,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
               style={{
                 fontFamily: 'var(--cp-font-body)', fontSize: 12,
                 fontWeight: activeTab === i ? 650 : 400,
-                color: activeTab === i ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+                color: activeTab === i ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
                 borderBottom: activeTab === i ? '2px solid #2563EB' : '2px solid transparent',
               }}
             >
@@ -124,7 +124,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
             disabled={!quorumMet}
             title={!quorumMet ? 'Requires \u22653 approvals to submit decision' : ''}
             style={{
-              backgroundColor: quorumMet ? 'var(--ds-text-brand, #2563EB)' : undefined,
+              backgroundColor: quorumMet ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : undefined,
               borderRadius: 6,
               opacity: quorumMet ? 1 : 0.5,
               cursor: quorumMet ? 'pointer' : 'not-allowed',

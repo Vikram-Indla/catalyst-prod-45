@@ -27,7 +27,7 @@ export function MultiSelectDropdown({
   onChange,
   placeholder = 'Select…',
   emptyMessage = 'No options available',
-  accentColor = 'var(--ds-text-brand, #2563EB)',
+  accentColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
 }: MultiSelectDropdownProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')

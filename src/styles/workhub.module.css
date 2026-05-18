@@ -5,7 +5,7 @@
 
 :root {
   /* ── PRIMARY ── */
-  --wh-primary: var(--ds-text-brand, #2563eb);
+  --wh-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --wh-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --wh-primary-light: var(--ds-background-selected, #eff6ff);
   --wh-primary-50: #dbeafe;

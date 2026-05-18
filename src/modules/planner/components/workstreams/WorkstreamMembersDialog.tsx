@@ -26,7 +26,7 @@ interface WorkstreamMembersDialogProps {
 }
 
 const COLORS = {
-  accent: 'var(--ds-text-brand, #2563eb)',
+  accent: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   textPrimary: 'var(--ds-text, #0f172a)',
   textSecondary: 'var(--ds-text-subtlest, #64748b)',
   textMuted: 'var(--ds-text-subtlest, #94a3b8)',
@@ -36,7 +36,7 @@ const COLORS = {
 
 // Generate avatar background color from user ID
 const getAvatarColor = (userId: string): string => {
-  const colors = ['var(--ds-text-brand, #2563eb)', '#7c3aed', '#db2777', '#ea580c', 'var(--ds-text-success, #16a34a)', '#0891b2', '#4f46e5', '#be185d'];
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', '#7c3aed', '#db2777', '#ea580c', 'var(--ds-text-success, #16a34a)', '#0891b2', '#4f46e5', '#be185d'];
   const hash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return colors[hash % colors.length];
 };

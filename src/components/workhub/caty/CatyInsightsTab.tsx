@@ -200,7 +200,7 @@ export function CatyInsightsTab() {
                 low: {
                   icon: Info,
                   bgColor: '#dbeafe',
-                  color: 'var(--ds-text-brand, #2563eb)',
+                  color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
                 },
               };
 

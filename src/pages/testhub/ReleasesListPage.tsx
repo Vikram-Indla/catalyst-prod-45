@@ -17,7 +17,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
   planning: { label: 'Planning', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: Clock },
   planned: { label: 'Planned', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: Clock },
   development: { label: 'Development', color: '#8B5CF6', bg: '#F5F3FF', icon: Settings2 },
-  testing: { label: 'Testing', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', icon: Beaker },
+  testing: { label: 'Testing', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', icon: Beaker },
   uat: { label: 'UAT', color: '#EA580C', bg: '#FFF7ED', icon: Monitor },
   staging: { label: 'Staging', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', icon: Rocket },
   ready: { label: 'Ready', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
@@ -58,7 +58,7 @@ export default function ReleasesListPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Package style={{ width: 24, height: 24, color: 'var(--ds-text-brand, #2563EB)' }} />
+            <Package style={{ width: 24, height: 24, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
             Releases
           </h1>
           <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', margin: '4px 0 0' }}>
@@ -69,7 +69,7 @@ export default function ReleasesListPage() {
           onClick={() => setShowCreateModal(true)}
           style={{
             display: 'flex', alignItems: 'center', gap: 8,
-            padding: '9px 18px', backgroundColor: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #fff)',
+            padding: '9px 18px', backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)',
             border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontWeight: 600,
           }}
         >
@@ -132,7 +132,7 @@ export default function ReleasesListPage() {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 36, height: 50, border: 'none', cursor: 'pointer',
               backgroundColor: viewMode === 'table' ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface, #fff)',
-              color: viewMode === 'table' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+              color: viewMode === 'table' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
             }}
           >
             <List style={{ width: 16, height: 16 }} />
@@ -143,7 +143,7 @@ export default function ReleasesListPage() {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 36, height: 50, border: 'none', cursor: 'pointer',
               backgroundColor: viewMode === 'card' ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface, #fff)',
-              color: viewMode === 'card' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+              color: viewMode === 'card' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
               borderLeft: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))',
             }}
           >
@@ -284,7 +284,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
               padding: 20, cursor: 'pointer', transition: 'all 0.2s',
               boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
             }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,99,235,0.1)'; }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,99,235,0.1)'; }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--bd-default, var(--cp-border, #E2E8F0))'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)'; }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>

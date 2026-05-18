@@ -19,7 +19,7 @@
   --catalyst-text-secondary: var(--cp-ink-2, var(--cp-ink-2, #334155));  /* slate-700, contrast 8.6:1 — passes AAA */
   --catalyst-text-tertiary: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));   /* slate-500, contrast 5.6:1 — passes AA */
   --catalyst-text-inverse: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  --catalyst-text-link: var(--ds-text-brand, #2563EB);
+  --catalyst-text-link: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --catalyst-text-on-primary: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 
   /* ── Borders ── */
@@ -29,7 +29,7 @@
   --catalyst-border-interactive: var(--ds-text-brand, #3B82F6);
 
   /* ── Brand Colors ── */
-  --catalyst-primary: var(--ds-text-brand, #2563EB);
+  --catalyst-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --catalyst-primary-hover: var(--ds-background-brand-bold-hovered, #1D4ED8);
   --catalyst-primary-bg: var(--ds-background-selected, #EFF6FF);
   --catalyst-success: var(--cp-teal-60, #0D9488);
@@ -42,7 +42,7 @@
   --catalyst-ai-purple-bg: #F5F3FF;
 
   /* ── Theme Colors (Strategic Themes) ── */
-  --theme-digital: var(--ds-text-brand, #2563EB);
+  --theme-digital: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --theme-workforce: var(--cp-teal-60, #0D9488);
   --theme-supply-chain: var(--ds-text-warning, var(--cp-warning, #D97706));
   --theme-esg: var(--ds-text-success, var(--cp-success, #16A34A));

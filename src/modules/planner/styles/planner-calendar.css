@@ -25,7 +25,7 @@
   /* ==================== BORDERS ==================== */
   --pln-cal-border: var(--ds-border, #e2e8f0);
   --pln-cal-border-light: var(--ds-surface-sunken, #f1f5f9);
-  --pln-cal-border-focus: var(--ds-text-brand, #2563eb);
+  --pln-cal-border-focus: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   
   /* ==================== STATUS COLORS ==================== */
   --pln-cal-status-backlog: var(--ds-text-subtlest, #94a3b8);
@@ -50,7 +50,7 @@
   --pln-cal-ws-data-ai: #14b8a6;
   
   /* ==================== ACCENT ==================== */
-  --pln-cal-accent: var(--ds-text-brand, #2563eb);
+  --pln-cal-accent: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --pln-cal-accent-light: var(--ds-background-selected, #eff6ff);
   
   /* ==================== CAPACITY ==================== */

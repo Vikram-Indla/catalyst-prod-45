@@ -38,7 +38,7 @@ export function RecentActivityFeed({ activities }: Props) {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
         <div style={{ width: 36, height: 50, borderRadius: 12, backgroundColor: '#DBEAFE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Activity size={18} color="var(--ds-text-brand, #2563EB)" />
+          <Activity size={18} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />
         </div>
         <div>
           <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>Recent Activity</p>

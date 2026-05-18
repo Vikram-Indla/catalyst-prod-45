@@ -232,7 +232,7 @@ export function UserMapping() {
       {/* Stats bar */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
         {[
-          { label: 'Catalyst Profiles', value: deptFilteredProfiles.length, color: 'var(--ds-text-brand, #2563EB)', mode: 'all' as ViewMode },
+          { label: 'Catalyst Profiles', value: deptFilteredProfiles.length, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', mode: 'all' as ViewMode },
           { label: 'Jira Users', value: jiraUsers.length, color: '#8B5CF6', mode: null },
           { label: 'Mapped', value: mappedCount, color: '#10B981', mode: null },
           { label: 'Unmapped', value: unmappedCount, color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', mode: 'unmapped' as ViewMode },
@@ -339,7 +339,7 @@ export function UserMapping() {
               onClick={() => setViewMode(v.mode)}
               style={{
                 padding: '5px 12px', fontSize: 11, fontWeight: 600, border: 'none', cursor: 'pointer',
-                background: viewMode === v.mode ? 'var(--ds-text-brand, #2563EB)' : 'var(--bg-1, #F8FAFC)',
+                background: viewMode === v.mode ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--bg-1, #F8FAFC)',
                 color: viewMode === v.mode ? 'var(--ds-surface, #fff)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
                 transition: 'all .15s',
               }}
@@ -377,7 +377,7 @@ export function UserMapping() {
           </button>
           <button onClick={handleSave} disabled={batchSave.isPending} style={{
             padding: '6px 14px', borderRadius: 6, fontSize: 11, fontWeight: 600,
-            background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
+            background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
             opacity: batchSave.isPending ? 0.6 : 1,
           }}>
             {batchSave.isPending ? 'Saving…' : '💾 Save All'}
@@ -442,7 +442,7 @@ export function UserMapping() {
                           background: profile.department_name === 'Delivery' ? 'rgba(37,99,235,0.08)' :
                             profile.department_name === 'Product' ? 'rgba(139,92,246,0.08)' :
                               'rgba(148,163,184,0.08)',
-                          color: profile.department_name === 'Delivery' ? 'var(--ds-text-brand, #2563EB)' :
+                          color: profile.department_name === 'Delivery' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' :
                             profile.department_name === 'Product' ? '#8B5CF6' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
                         }}>
                           {profile.department_name}
@@ -544,7 +544,7 @@ export function UserMapping() {
                           onClick={() => handleAcceptSuggestion(profile.id, suggestedJira.jiraUser.id)}
                           style={{
                             padding: '4px 10px', borderRadius: 4, fontSize: 10, fontWeight: 600,
-                            background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
+                            background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
                           }}
                         >
                           ✓ Accept

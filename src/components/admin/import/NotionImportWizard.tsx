@@ -62,7 +62,7 @@ function smartDefault(name: string): string {
 }
 
 /* ─── Mini stat pill ─── */
-function StatPill({ icon: Icon, label, value, color = 'var(--ds-text-brand, #2563EB)' }: {
+function StatPill({ icon: Icon, label, value, color = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }: {
   icon: any; label: string; value: string | number; color?: string;
 }) {
   return (
@@ -94,13 +94,13 @@ function WizardStepper({ step }: { step: number }) {
               <div className={`
                 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-200
                 ${done ? 'bg-[var(--ds-text-success,var(--cp-success, #16A34A))] text-white' : ''}
-                ${active ? 'bg-[var(--ds-text-brand,#2563EB)] text-white ring-2 ring-[var(--ds-text-brand,#2563EB)]/30 ring-offset-1' : ''}
+                ${active ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white ring-2 ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/30 ring-offset-1' : ''}
                 ${!done && !active ? 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]' : ''}
               `}>
                 {done ? <CheckMarkIcon label="" size="small" /> : <Icon className="h-3.5 w-3.5" />}
               </div>
               <span className={`text-xs font-medium hidden sm:block ${
-                active ? 'text-[var(--ds-text-brand,#2563EB)]' : done ? 'text-[var(--ds-text,var(--cp-ink-1, #0F172A))]' : 'text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]'
+                active ? 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]' : done ? 'text-[var(--ds-text,var(--cp-ink-1, #0F172A))]' : 'text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]'
               }`}>
                 {s.label}
               </span>
@@ -241,7 +241,7 @@ export function NotionImportWizard() {
                   <p className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] mt-1.5">
                     Create at{' '}
                     <a href="https://www.notion.so/my-integrations" target="_blank" rel="noopener noreferrer"
-                       className="underline text-[var(--ds-text-brand,#2563EB)]">
+                       className="underline text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]">
                       notion.so/my-integrations
                     </a>
                     {' '}→ copy Internal Integration Secret
@@ -453,7 +453,7 @@ export function NotionImportWizard() {
                         <span className="font-mono font-semibold text-[var(--ds-text,var(--cp-ink-1, #0F172A))]">{importDone}/{notionRows.length}</span>
                       </div>
                       <div className="h-1.5 rounded-full bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] overflow-hidden">
-                        <div className="h-full rounded-full bg-[var(--ds-text-brand,#2563EB)] transition-all duration-300" style={{ width: `${(importDone / notionRows.length) * 100}%` }} />
+                        <div className="h-full rounded-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] transition-all duration-300" style={{ width: `${(importDone / notionRows.length) * 100}%` }} />
                       </div>
                     </div>
                   )}

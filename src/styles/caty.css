@@ -8,7 +8,7 @@
 
 .caty-panel {
   /* ==================== HEADER ==================== */
-  --caty-header-bg: var(--ds-text-brand, #2563eb);
+  --caty-header-bg: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --caty-header-text: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   
   /* ==================== SURFACES ==================== */
@@ -17,7 +17,7 @@
   --caty-surface-hover: var(--ds-surface-sunken, #f1f5f9);
   --caty-surface-input: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --caty-surface-skeleton: var(--ds-border, #e2e8f0);
-  --caty-surface-user: var(--ds-text-brand, #2563eb);
+  --caty-surface-user: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   
   /* ==================== TEXT ==================== */
   --caty-text-primary: var(--ds-text, #0f172a);
@@ -33,7 +33,7 @@
   --caty-status-warning-bg: #fff7ed;
   --caty-status-safe: var(--quality-high, #059669);
   --caty-status-safe-bg: #ecfdf5;
-  --caty-status-total: var(--ds-text-brand, #2563eb);
+  --caty-status-total: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --caty-status-total-bg: var(--ds-background-selected, #eff6ff);
   
   /* ==================== CAPACITY (Color-coded) ==================== */
@@ -43,7 +43,7 @@
   
   /* ==================== DEPARTMENTS ==================== */
   --caty-dept-product: #8b5cf6;
-  --caty-dept-delivery: var(--ds-text-brand, #2563eb);
+  --caty-dept-delivery: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   --caty-dept-operations: #ea580c;
   --caty-dept-support: #f97316;
   --caty-dept-governance: var(--ds-text-subtlest, #64748b);
@@ -51,7 +51,7 @@
   /* ==================== BORDERS ==================== */
   --caty-border: var(--ds-border, #e2e8f0);
   --caty-border-light: var(--ds-surface-sunken, #f1f5f9);
-  --caty-border-focus: var(--ds-text-brand, #2563eb);
+  --caty-border-focus: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   
   /* ==================== SPACING ==================== */
   --caty-space-1: 4px;
@@ -179,7 +179,7 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--ds-text-brand, #2563eb), var(--ds-background-brand-bold-hovered, #1d4ed8));
+  background: linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)), var(--ds-background-brand-bold-hovered, #1d4ed8));
   border: none;
   cursor: pointer;
   display: flex;
@@ -366,7 +366,7 @@
 }
 
 .caty-message.ai .caty-message-avatar {
-  background: linear-gradient(135deg, var(--ds-text-brand, #3b82f6), var(--ds-text-brand, #2563eb));
+  background: linear-gradient(135deg, var(--ds-text-brand, #3b82f6), var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)));
 }
 
 .caty-message.user .caty-message-avatar {
@@ -1223,7 +1223,7 @@
 
 .caty-enterprise-prose h1 {
   font-size: 15px;
-  border-bottom: 2px solid var(--ds-text-brand, #2563eb);
+  border-bottom: 2px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   padding-bottom: 6px;
   margin-bottom: 12px;
   margin-top: 16px;
@@ -1236,7 +1236,7 @@
 .caty-enterprise-prose h2 {
   font-size: 13.5px;
   color: #1e40af;
-  border-left: 3px solid var(--ds-text-brand, #2563eb);
+  border-left: 3px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   padding-left: 10px;
   margin-top: 16px;
   margin-bottom: 8px;
@@ -1278,11 +1278,11 @@
 }
 
 .caty-enterprise-prose ul li::marker {
-  color: var(--ds-text-brand, #2563eb);
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 }
 
 .caty-enterprise-prose ol li::marker {
-  color: var(--ds-text-brand, #2563eb);
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   font-weight: 600;
 }
 
@@ -1323,7 +1323,7 @@
   margin: 12px 0;
   padding: 10px 14px;
   background: var(--ds-background-selected, #eff6ff);
-  border-left: 3px solid var(--ds-text-brand, #2563eb);
+  border-left: 3px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   border-radius: 0 8px 8px 0;
   color: var(--caty-text-secondary);
   font-size: 13px;
@@ -1379,7 +1379,7 @@
 
 /* Links */
 .caty-enterprise-prose a {
-  color: var(--ds-text-brand, #2563eb);
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
   text-decoration: none;
   font-weight: 500;
   border-bottom: 1px solid transparent;
@@ -1387,5 +1387,5 @@
 }
 
 .caty-enterprise-prose a:hover {
-  border-bottom-color: var(--ds-text-brand, #2563eb);
+  border-bottom-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb));
 }

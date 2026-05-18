@@ -191,7 +191,7 @@ export function T10AISuggestionsPanel({
                   padding: '8px 14px',
                   fontSize: 13,
                   fontWeight: 500,
-                  color: 'var(--ds-text-brand, #2563eb)',
+                  color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
                   background: 'var(--ds-background-selected, #eff6ff)',
                   border: '1px solid #bfdbfe',
                   borderRadius: 6,

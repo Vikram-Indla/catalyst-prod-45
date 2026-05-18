@@ -272,7 +272,7 @@ function ActivityPanel({
                                   setEditingId(null);
                                 }
                               }}
-                              className="text-[12px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:underline"
+                              className="text-[12px] font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] hover:underline"
                             >
                               Save
                             </button>

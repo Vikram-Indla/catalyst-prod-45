@@ -69,7 +69,7 @@ export function PriorityDropdown({ currentPriority, onSelect, onClose }: Priorit
           >
             <PriorityBarsInline level={p.level} />
             <span style={{ fontSize: 12, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', flex: 1 }}>{p.name}</span>
-            {isCurrent && <Check size={14} color="var(--ds-text-brand, #2563EB)" />}
+            {isCurrent && <Check size={14} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" />}
           </div>
         );
       })}

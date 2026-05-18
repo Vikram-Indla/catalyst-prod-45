@@ -5,7 +5,7 @@
 
 export const loginColors = {
   // Primary Action - Blue (ALL interactive elements)
-  primary: 'var(--ds-text-brand, #2563eb)',
+  primary: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   primaryHover: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
   primaryDeep: '#1e40af',
   primaryLight: 'var(--ds-text-brand, #3b82f6)',

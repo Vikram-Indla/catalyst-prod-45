@@ -183,7 +183,7 @@ export function ApplyTemplateModal({
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-[var(--ds-text-brand,#2563eb)]" />
+                <Clock className="w-4 h-4 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />
                 <span className="text-slate-600">
                   {config.defaultDurationDays} days
                 </span>
@@ -217,7 +217,7 @@ export function ApplyTemplateModal({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Sparkles className="w-5 h-5 text-[var(--ds-text-brand,#2563eb)]" />
+                <Sparkles className="w-5 h-5 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />
                 <div>
                   <div className="text-sm font-medium text-slate-700">
                     Run Smart Assignment
@@ -260,7 +260,7 @@ export function ApplyTemplateModal({
           <Button
             onClick={handleApply}
             disabled={!cycleName.trim() || applyTemplate.isPending}
-            className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
+            className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
           >
             {applyTemplate.isPending ? (
               <>

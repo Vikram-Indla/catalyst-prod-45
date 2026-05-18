@@ -23,7 +23,7 @@ interface Props {
 const IDEA_TYPES = [
   { key: 'Problem', label: 'Problem', dot: 'var(--ds-text-danger, #EF4444)' },
   { key: 'Opportunity', label: 'Opportunity', dot: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
-  { key: 'Feature Request', label: 'Feature', dot: 'var(--ds-text-brand, #2563EB)' },
+  { key: 'Feature Request', label: 'Feature', dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
   { key: 'Solution', label: 'Solution', dot: 'var(--cp-purple-60, #7C3AED)' },
   { key: 'Improvement', label: 'Improvement', dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))' },
 ];
@@ -56,7 +56,7 @@ const SOURCES = [
 // inputBase/labelBase/focusHandlers are now computed inside the component for dark mode support
 const focusHandlersLight = {
   onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)';
+    e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
     e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)';
   },
   onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -66,7 +66,7 @@ const focusHandlersLight = {
 };
 const focusHandlersDark = {
   onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)';
+    e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
     e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)';
   },
   onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -410,7 +410,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                         <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <span style={{
                             width: '22px', height: '22px', borderRadius: '50%',
-                            background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFF)',
+                            background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #FFF)',
                             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: '10px', fontWeight: 700, flexShrink: 0,
                           }}>
@@ -538,7 +538,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               onClick={handleSubmit}
               disabled={createIdea.isPending}
               style={{
-                background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFF)', border: 'none',
+                background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #FFF)', border: 'none',
                 borderRadius: '8px', padding: '10px 24px', fontSize: '14px',
                 fontWeight: 600, cursor: 'pointer',
                 opacity: createIdea.isPending ? 0.7 : 1,

@@ -20,7 +20,7 @@ function deriveKeyFromName(name: string): string {
   return letters.slice(0, 3);
 }
 
-const BADGE_COLORS = ['var(--cp-teal-60, #0D9488)', 'var(--ds-text-brand, #2563EB)', '#6366F1', '#0891B2', 'var(--ds-text-subtle, #475569)', 'var(--quality-high, #059669)', '#4F46E5', '#0284C7'];
+const BADGE_COLORS = ['var(--cp-teal-60, #0D9488)', 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', '#6366F1', '#0891B2', 'var(--ds-text-subtle, #475569)', 'var(--quality-high, #059669)', '#4F46E5', '#0284C7'];
 function getRandomBadgeColor() {
   return BADGE_COLORS[Math.floor(Math.random() * BADGE_COLORS.length)];
 }
@@ -398,7 +398,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
             disabled={createProject.isPending}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6, height: 50, padding: '0 18px',
-              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer',
               boxShadow: '0 2px 8px rgba(37,99,235,0.15)',
               opacity: createProject.isPending ? 0.6 : 1,

@@ -340,7 +340,7 @@ export default function SubmitDemandRequest() {
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[var(--ds-text-brand,#2563eb)] flex items-center justify-center text-white font-bold text-sm">
+          <div className="w-8 h-8 rounded-lg bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] flex items-center justify-center text-white font-bold text-sm">
             C
           </div>
           <span className="text-lg font-semibold">
@@ -607,7 +607,7 @@ export default function SubmitDemandRequest() {
           <Button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="gap-2 bg-gradient-to-r from-[var(--ds-text-brand,#2563eb)] to-[var(--ds-background-brand-bold-hovered,#1d4ed8)] hover:from-[var(--ds-background-brand-bold-hovered,#1d4ed8)] hover:to-[#1e40af] text-white px-6"
+            className="gap-2 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] to-[var(--ds-background-brand-bold-hovered,#1d4ed8)] hover:from-[var(--ds-background-brand-bold-hovered,#1d4ed8)] hover:to-[#1e40af] text-white px-6"
           >
             {isSubmitting ? (
               <>
@@ -649,7 +649,7 @@ export default function SubmitDemandRequest() {
             {submittedData && (
               <div className="bg-[#dbeafe] rounded-lg p-4 mb-6">
                 <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Request ID</p>
-                <p className="text-2xl font-bold text-[var(--ds-text-brand,#2563eb)]">{submittedData.requestId}</p>
+                <p className="text-2xl font-bold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]">{submittedData.requestId}</p>
                 <p className="text-xs text-gray-500 mt-2">
                   Submitted: {format(submittedData.submittedAt, 'd MMMM yyyy \'at\' HH:mm')}
                 </p>
@@ -682,7 +682,7 @@ export default function SubmitDemandRequest() {
             <div className="flex flex-col gap-3">
               <Button
                 onClick={handleDownloadPDF}
-                className="w-full gap-2 bg-gradient-to-r from-[var(--ds-text-brand,#2563eb)] to-[var(--ds-background-brand-bold-hovered,#1d4ed8)] hover:from-[var(--ds-background-brand-bold-hovered,#1d4ed8)] hover:to-[#1e40af] text-white"
+                className="w-full gap-2 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] to-[var(--ds-background-brand-bold-hovered,#1d4ed8)] hover:from-[var(--ds-background-brand-bold-hovered,#1d4ed8)] hover:to-[#1e40af] text-white"
               >
                 <Download className="h-4 w-4" />
                 Download Confirmation (PDF)

@@ -45,13 +45,13 @@ const SectionHeader = React.memo(({ title, count, rightLabel, rightAction, isDar
   title: string; count?: number; rightLabel?: string; rightAction?: () => void; isDark?: boolean;
 }) => (
   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-    <div style={{ width: 3, height: 16, borderRadius: 4, background: 'var(--ds-text-brand, #2563EB)' }} />
+    <div style={{ width: 3, height: 16, borderRadius: 4, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
     <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 600, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>{title}</span>
     {count !== undefined && (
       <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{count}</span>
     )}
     {rightLabel && (
-      <span onClick={rightAction} style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 650, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
+      <span onClick={rightAction} style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 650, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
         {rightLabel} <ChevronRight size={12} />
       </span>
     )}
@@ -127,7 +127,7 @@ export default function WikiHomePage() {
       )}
       {/* ═══ HERO ═══ */}
       <div style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', position: 'relative', overflow: 'hidden', borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)' }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, var(--ds-text-brand, #2563EB), var(--cp-purple-60, #7C3AED), var(--ds-text-brand, #2563EB))' }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)), var(--cp-purple-60, #7C3AED), var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)))' }} />
         <div style={{ position: 'absolute', inset: 0, opacity: 0.03, backgroundImage: isDark ? 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)' : 'linear-gradient(rgba(15,23,42,1) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,1) 1px, transparent 1px)', backgroundSize: '48px 48px' }} />
 
         <div style={{ padding: '48px 40px 40px', display: 'flex', gap: 40, alignItems: 'flex-start', position: 'relative', zIndex: 1, flexWrap: 'wrap' }}>
@@ -142,13 +142,13 @@ export default function WikiHomePage() {
               display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', borderRadius: 8, border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', cursor: 'pointer',
               background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', transition: 'border-color 150ms, box-shadow 150ms', marginBottom: 12, height: 40,
             }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.06)'; e.currentTarget.style.boxShadow = 'none'; }}
             >
               <Search size={15} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
               <span style={{ flex: 1, fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>Search articles, regulations, permits...</span>
               <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 9999, background: 'rgba(124,58,237,0.06)', color: 'var(--cp-purple-60, #7C3AED)' }}>AI-powered</span>
-              <button style={{ fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 6, border: 'none', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer' }}>Search</button>
+              <button style={{ fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 6, border: 'none', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer' }}>Search</button>
             </div>
 
             {/* Filter chips */}
@@ -158,7 +158,7 @@ export default function WikiHomePage() {
                 return (
                   <button key={c.label} onClick={() => setActiveChip(c.label)} style={{
                     fontSize: 11, fontWeight: active ? 650 : 500, padding: '5px 12px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
-                    border: active ? '1.5px solid #2563EB' : isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', background: active ? (isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'), color: active ? 'var(--ds-text-brand, #2563EB)' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'), transition: 'all 120ms',
+                    border: active ? '1.5px solid #2563EB' : isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', background: active ? (isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'), color: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'), transition: 'all 120ms',
                   }}>{c.icon} {c.label}</button>
                 );
               })}
@@ -181,7 +181,7 @@ export default function WikiHomePage() {
               <>
                 <StatCard label="Total Articles" value={stats?.totalArticles ?? 0} isDark={isDark} />
                 <StatCard label="Documents" value={stats?.totalDocuments ?? 0} isDark={isDark} />
-                <StatCard label="Verified" value={`${stats?.verifiedPercent ?? 0}%`} valueColor="var(--ds-text-brand, #2563EB)" isDark={isDark} />
+                <StatCard label="Verified" value={`${stats?.verifiedPercent ?? 0}%`} valueColor="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" isDark={isDark} />
                 <StatCard label="Open Requests" value={stats?.openRequests ?? 0} valueColor={(stats?.openRequests ?? 0) > 0 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : undefined} isDark={isDark} />
               </>
             )}
@@ -211,16 +211,16 @@ export default function WikiHomePage() {
           background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '0.75px solid rgba(37,99,235,0.2)', marginBottom: 40, flexWrap: 'wrap',
           cursor: 'pointer', transition: 'border-color 150ms, background 150ms',
         }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#F0F5FF'; }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#F0F5FF'; }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(37,99,235,0.2)'; e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
         >
-          <HelpCircle size={16} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
+          <HelpCircle size={16} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
           <div style={{ flex: 1, minWidth: 200 }}>
             <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>Can't find what you need? </span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }} onClick={() => setKrFormOpen(true)}>Submit a Knowledge Request</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }} onClick={() => setKrFormOpen(true)}>Submit a Knowledge Request</span>
             <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}> — route to domain experts</span>
           </div>
-          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)' }}>
+          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
             {requests?.length ?? 0} open
           </span>
         </div>
@@ -275,7 +275,7 @@ export default function WikiHomePage() {
       {/* ═══ AI CHATBOT FAB — Wiki Convergence Hub Icon ═══ */}
       <div onClick={() => setChatOpen(!chatOpen)} style={{
         position: 'fixed', bottom: 24, right: 24, width: 48, height: 48, borderRadius: 14,
-        background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer', boxShadow: '0 4px 12px rgba(37,99,235,0.3)', transition: 'transform 150ms, box-shadow 150ms', zIndex: 50,
         overflow: 'hidden',
       }}
@@ -302,7 +302,7 @@ const StatCard = React.memo(({ label, value, valueColor, isDark }: { label: stri
     padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F8FAFC)', textAlign: 'center',
     border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', transition: 'all 150ms', cursor: 'default',
   }}
-    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.background = isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)'; }}
+    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.currentTarget.style.background = isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)'; }}
     onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.06)'; e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F8FAFC)'; }}
   >
     <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 28, fontWeight: 700, color: valueColor || (isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))') }}>{value}</div>
@@ -333,7 +333,7 @@ const QuickRefCard = React.memo(({ qr, onClick, isDark }: { qr: any; onClick: ()
       minWidth: 190, maxWidth: 190, padding: 16, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', cursor: 'pointer', scrollSnapAlign: 'start', transition: 'border-color 120ms, box-shadow 120ms, transform 120ms',
     }}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.08)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.08)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
       onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.06)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}
     >
       <div style={{ width: 30, height: 30, borderRadius: 6, background: isDark ? 'rgba(37,99,235,0.12)' : dc.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
@@ -341,7 +341,7 @@ const QuickRefCard = React.memo(({ qr, onClick, isDark }: { qr: any; onClick: ()
       </div>
       <div style={{ fontSize: 12, fontWeight: 600, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 8, lineHeight: 1.3 }}>{qr.title}</div>
       <div style={{ display: 'flex', gap: 12, fontSize: 10 }}>
-        <span style={{ fontFamily: 'var(--cp-font-mono)', color: 'var(--ds-text-brand, #2563EB)', fontWeight: 500 }}>{qr.steps} steps</span>
+        <span style={{ fontFamily: 'var(--cp-font-mono)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontWeight: 500 }}>{qr.steps} steps</span>
         <span style={{ fontFamily: 'var(--cp-font-mono)', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 500 }}>{formatK(qr.view_count ?? qr.views ?? 0)} views</span>
       </div>
     </div>
@@ -354,11 +354,11 @@ const DomainCard = React.memo(({ d, Icon, navigate, isDark }: { d: any; Icon: Re
   const [hovered, setHovered] = useState(false);
   const tagStyle = TAG_STYLES[d.tag] || TAG_STYLES.SUPPORT;
   const dc = DOMAIN_COLORS[d.domain_code] || { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', fg: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' };
-  const coverageColor = d.coverage_percent >= 80 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d.coverage_percent >= 60 ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
+  const coverageColor = d.coverage_percent >= 80 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d.coverage_percent >= 60 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
 
   return (
     <div onClick={() => navigate(`/wiki/domains/${d.domain_code}`)} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      style={{ display: 'flex', borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', overflow: 'hidden', transition: 'border-color 120ms, box-shadow 120ms', borderColor: hovered ? 'var(--ds-text-brand, #2563EB)' : (isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.06)'), boxShadow: hovered ? '0 2px 8px rgba(37,99,235,0.08)' : 'none' }}
+      style={{ display: 'flex', borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', overflow: 'hidden', transition: 'border-color 120ms, box-shadow 120ms', borderColor: hovered ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.06)'), boxShadow: hovered ? '0 2px 8px rgba(37,99,235,0.08)' : 'none' }}
     >
       <div style={{ width: 3, background: hovered ? dc.fg : 'transparent', transition: 'background 200ms' }} />
       <div style={{ flex: 1, padding: '16px 16px 14px' }}>
@@ -400,14 +400,14 @@ DomainCard.displayName = 'DomainCard';
 /* ── Learning Path Card ── */
 const LearningPathCard = React.memo(({ p, navigate, isDark }: { p: any; navigate: any; isDark?: boolean }) => {
   const pct = p.article_count > 0 ? Math.round((p.completedCount / p.article_count) * 100) : 0;
-  const diffColor = p.difficulty === 'beginner' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : p.difficulty === 'intermediate' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
+  const diffColor = p.difficulty === 'beginner' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : p.difficulty === 'intermediate' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
   return (
     <div onClick={() => navigate(`/wiki/learning-paths/${p.id}`)} style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', transition: 'border-color 120ms, box-shadow 120ms', cursor: 'pointer' }}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.08)'; }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.08)'; }}
       onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.06)'; e.currentTarget.style.boxShadow = 'none'; }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--ds-text-brand, #2563EB)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <GraduationCap size={16} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -417,7 +417,7 @@ const LearningPathCard = React.memo(({ p, navigate, isDark }: { p: any; navigate
       </div>
       <div style={{ fontSize: 11.5, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginBottom: 12, lineHeight: 1.4 }}>{p.description}</div>
       <div style={{ height: 4, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, var(--cp-border, #E2E8F0))', marginBottom: 8 }}>
-        <div style={{ height: '100%', borderRadius: 4, background: 'var(--ds-text-brand, #2563EB)', width: `${pct}%`, transition: 'width 600ms' }} />
+        <div style={{ height: '100%', borderRadius: 4, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', width: `${pct}%`, transition: 'width 600ms' }} />
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
         <span>{p.estimated_hours}h · {p.article_count} articles</span>
@@ -442,7 +442,7 @@ const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDa
     : { bg: isDark ? 'rgba(107,101,96,0.15)' : 'rgba(100,116,139,0.08)', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', label: 'Unverified' };
 
   const conf = Math.round((a.ai_confidence ?? 0) * 100);
-  const confColor = conf >= 90 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : conf >= 70 ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
+  const confColor = conf >= 90 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : conf >= 70 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
   const tags = (a.tags ?? []).slice(0, 3);
 
   return (
@@ -489,7 +489,7 @@ const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDa
 
       {/* Bookmark */}
       <span onClick={e => { e.stopPropagation(); onToggleBookmark(); }} style={{ cursor: 'pointer' }}>
-        <Star size={13} fill={bookmarked ? 'var(--ds-text-brand, #2563EB)' : 'none'} style={{ color: bookmarked ? 'var(--ds-text-brand, #2563EB)' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-disabled, #CBD5E1)') }} />
+        <Star size={13} fill={bookmarked ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'none'} style={{ color: bookmarked ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-disabled, #CBD5E1)') }} />
       </span>
     </div>
   );

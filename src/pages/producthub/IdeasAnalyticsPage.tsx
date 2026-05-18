@@ -107,7 +107,7 @@ export default function IdeasAnalyticsPage() {
           <StatCard label="Total Ideas" value={String(stats.total)} subtitle="in backlog pipeline" color={dk.t1} isDark={isDark} dk={dk} />
           <StatCard label="Conversion Rate" value={`${conversionRate}%`} subtitle={`${convertedCount} converted to requests`} color={dk.greenText} isDark={isDark} dk={dk} />
           <StatCard label="Avg Time to Convert" value={avgTimeToConvert !== null ? `${avgTimeToConvert}d` : '—'} subtitle={avgTimeToConvert !== null ? 'from created to converted' : 'no conversions yet'} color={dk.t1} isDark={isDark} dk={dk} />
-          <StatCard label="Pending Conversion" value={String(pendingConversion)} subtitle="approved, awaiting conversion" color="var(--ds-text-brand, #2563EB)" isDark={isDark} dk={dk} />
+          <StatCard label="Pending Conversion" value={String(pendingConversion)} subtitle="approved, awaiting conversion" color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" isDark={isDark} dk={dk} />
         </div>
 
         {/* Row 1 */}
@@ -142,7 +142,7 @@ export default function IdeasAnalyticsPage() {
               <div key={q.quarter} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                 <span style={{ width: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, borderRadius: 4, fontSize: '10px', fontWeight: 700, background: QUARTER_BADGE[q.quarter]?.bg || 'var(--ds-border, var(--cp-border, #E2E8F0))', color: QUARTER_BADGE[q.quarter]?.text || 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>{q.quarter}</span>
                 <div style={{ flex: 1, height: '28px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ width: `${(q.count / maxQuarter) * 100}%`, height: '100%', background: QUARTER_BADGE[q.quarter]?.bg || 'var(--ds-text-brand, #2563EB)', borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: '12px', fontWeight: 700 }}>{q.count}</div>
+                  <div style={{ width: `${(q.count / maxQuarter) * 100}%`, height: '100%', background: QUARTER_BADGE[q.quarter]?.bg || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: '12px', fontWeight: 700 }}>{q.count}</div>
                 </div>
               </div>
             ))}
@@ -173,7 +173,7 @@ export default function IdeasAnalyticsPage() {
               <div key={q.quarter} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                 <span style={{ width: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, borderRadius: 4, fontSize: '10px', fontWeight: 700, background: QUARTER_BADGE[q.quarter]?.bg || 'var(--ds-border, var(--cp-border, #E2E8F0))', color: QUARTER_BADGE[q.quarter]?.text || 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>{q.quarter}</span>
                 <div style={{ flex: 1, height: '28px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ width: `${q.total > 0 ? (q.total / maxConvQ) * 100 : 0}%`, height: '100%', background: QUARTER_BADGE[q.quarter]?.bg || 'var(--ds-text-brand, #2563EB)', borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: '12px', fontWeight: 700 }}>{q.converted} <span style={{ fontWeight: 500, opacity: 0.8, marginLeft: 4 }}>of {q.total}</span></div>
+                  <div style={{ width: `${q.total > 0 ? (q.total / maxConvQ) * 100 : 0}%`, height: '100%', background: QUARTER_BADGE[q.quarter]?.bg || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: '12px', fontWeight: 700 }}>{q.converted} <span style={{ fontWeight: 500, opacity: 0.8, marginLeft: 4 }}>of {q.total}</span></div>
                 </div>
               </div>
             ))}

@@ -18,7 +18,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
     <button
       onClick={onClick}
       title={collapsed ? label : undefined}
-      className={`flex items-center w-full transition-colors duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 ${
+      className={`flex items-center w-full transition-colors duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 ${
         isActive
           ? isDark ? 'bg-[#0D1526]' : 'bg-[#E9F2FF]'
           : isDark ? 'hover:bg-[var(--ds-surface-overlay,#1F1F1F)]' : 'hover:bg-[var(--ds-surface-sunken,#F4F5F7)]'

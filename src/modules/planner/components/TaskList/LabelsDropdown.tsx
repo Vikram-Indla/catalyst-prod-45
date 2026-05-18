@@ -33,7 +33,7 @@ const LABEL_COLORS = [
   { name: 'Green', value: 'var(--ds-text-success, #16a34a)' },
   { name: 'Teal', value: '#14b8a6' },
   { name: 'Cyan', value: '#06b6d4' },
-  { name: 'Blue', value: 'var(--ds-text-brand, #2563eb)' },
+  { name: 'Blue', value: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' },
   { name: 'Indigo', value: '#6366f1' },
   { name: 'Purple', value: '#8b5cf6' },
   { name: 'Pink', value: '#ec4899' },

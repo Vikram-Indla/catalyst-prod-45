@@ -112,7 +112,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
             border: 'none', borderRadius: 6,
             background: syncingAll
               ? 'var(--fg-4)'
-              : 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
+              : 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
             boxShadow: syncingAll ? 'none' : '0 1px 3px rgba(37,99,235,0.35)',
             color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             cursor: syncingAll ? 'not-allowed' : 'pointer',
@@ -121,7 +121,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
             transition: 'box-shadow 150ms ease',
           }}
           onMouseEnter={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-background-brand-bold-hovered, #1D4ED8) 0%, #1E40AF 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px rgba(37,99,235,0.45)'; } }}
-          onMouseLeave={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(37,99,235,0.35)'; } }}
+          onMouseLeave={e => { if (!syncingAll) { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(37,99,235,0.35)'; } }}
         >
           {syncingAll ? (
             <>

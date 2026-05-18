@@ -122,7 +122,7 @@ const CycleDefectsPanel = ({ cycleId, isDark }: { cycleId?: string; isDark: bool
             return (
               <tr key={d.id} style={{ height: 36, maxHeight: 36, borderBottom: `0.75px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}` }}>
                 <td style={{ padding: '0 12px' }}>
-                  <span onClick={() => navigate(`/testhub/defects/${d.id}`)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}>{d.defect_key}</span>
+                  <span onClick={() => navigate(`/testhub/defects/${d.id}`)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>{d.defect_key}</span>
                 </td>
                 <td style={{ padding: '0 12px', fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{d.title}</td>
                 <td style={{ padding: '0 12px' }}>
@@ -296,7 +296,7 @@ export default function TestCycleDetailPage() {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
         <div style={{ textAlign: 'center', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
-          <div style={{ width: 32, height: 32, border: `3px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderTopColor: 'var(--ds-text-brand, #2563EB)', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
+          <div style={{ width: 32, height: 32, border: `3px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderTopColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
           Loading cycle...
         </div>
       </div>
@@ -316,7 +316,7 @@ export default function TestCycleDetailPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '4px 10px', borderRadius: 6 }}>{cycle.cycle_key}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '4px 10px', borderRadius: 6 }}>{cycle.cycle_key}</span>
               <span style={{ fontSize: 12, fontWeight: 500, color: status.color, backgroundColor: status.bg, padding: '4px 10px', borderRadius: 6, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: status.color }} />{status.label}
               </span>
@@ -328,7 +328,7 @@ export default function TestCycleDetailPage() {
               {(cycle.environment_id || cycle.environment) && (
                 <span
                   onClick={() => cycle.environment_id ? navigate(`/testhub/environments/${cycle.environment_id}`) : undefined}
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: cycle.environment_id ? 'pointer' : 'default', padding: '2px 8px', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', borderRadius: 6, color: 'var(--ds-text-brand, #2563EB)', fontWeight: 500 }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: cycle.environment_id ? 'pointer' : 'default', padding: '2px 8px', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', borderRadius: 6, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontWeight: 500 }}
                 >
                   <Server size={14} />
                   {cycle.resolved_environment_name || (cycle.environment ? cycle.environment.charAt(0).toUpperCase() + cycle.environment.slice(1) : 'Environment')}
@@ -355,7 +355,7 @@ export default function TestCycleDetailPage() {
                 const { error } = await typedQuery('tm_test_cycles').update({ status: 'active', updated_at: new Date().toISOString() }).eq('id', cycleId);
                 if (error) { catalystToast.error(error.message); return; }
                 catalystToast.success('Cycle activated successfully'); fetchCycle();
-              }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)', border: 'none', borderRadius: 8, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)', border: 'none', borderRadius: 8, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Play size={16} /> Activate Cycle
               </button>
             )}
@@ -382,7 +382,7 @@ export default function TestCycleDetailPage() {
                 const { error } = await typedQuery('tm_test_cycles').update({ status: 'completed', updated_at: new Date().toISOString() }).eq('id', cycleId);
                 if (error) { catalystToast.error(error.message); return; }
                 catalystToast.success('Cycle completed'); fetchCycle();
-              }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)', border: 'none', borderRadius: 8, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)', border: 'none', borderRadius: 8, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 Complete
               </button>
             )}
@@ -435,9 +435,9 @@ export default function TestCycleDetailPage() {
           <div style={{ width: 100, height: 100, margin: '0 auto 16px', position: 'relative' }}>
             <svg viewBox="0 0 36 36" style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }}>
               <circle cx="18" cy="18" r="15.9155" fill="none" stroke={'var(--cp-border, var(--cp-border, #E2E8F0))'} strokeWidth="3" />
-              <circle cx="18" cy="18" r="15.9155" fill="none" stroke={pp === 100 ? 'var(--quality-high, #059669)' : 'var(--ds-text-brand, #2563EB)'} strokeWidth="3" strokeDasharray={`${pp} ${100 - pp}`} strokeLinecap="round" />
+              <circle cx="18" cy="18" r="15.9155" fill="none" stroke={pp === 100 ? 'var(--quality-high, #059669)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'} strokeWidth="3" strokeDasharray={`${pp} ${100 - pp}`} strokeLinecap="round" />
             </svg>
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 700, color: pp === 100 ? 'var(--quality-high, #059669)' : 'var(--ds-text-brand, #2563EB)' }}>
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 700, color: pp === 100 ? 'var(--quality-high, #059669)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>
               {pp}%
             </div>
           </div>
@@ -469,7 +469,7 @@ export default function TestCycleDetailPage() {
               <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{notRunCount}</span>
             </button>
             {statusFilter !== 'all' && (
-              <button onClick={() => setStatusFilter('all')} style={{ padding: '6px 12px', border: 'none', backgroundColor: 'transparent', color: 'var(--ds-text-brand, #2563EB)', fontSize: 12, fontWeight: 500, cursor: 'pointer', textAlign: 'center' }}>
+              <button onClick={() => setStatusFilter('all')} style={{ padding: '6px 12px', border: 'none', backgroundColor: 'transparent', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontSize: 12, fontWeight: 500, cursor: 'pointer', textAlign: 'center' }}>
                 Show all
               </button>
             )}
@@ -494,7 +494,7 @@ export default function TestCycleDetailPage() {
                       <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{ts.executed}/{ts.total}</span>
                     </div>
                     <div style={{ height: 6, backgroundColor: 'var(--cp-border, var(--cp-border, #E2E8F0))', borderRadius: 4, overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${pct}%`, backgroundColor: pct === 100 ? 'var(--quality-high, #059669)' : 'var(--ds-text-brand, #2563EB)', borderRadius: 4, transition: 'width 0.3s' }} />
+                      <div style={{ height: '100%', width: `${pct}%`, backgroundColor: pct === 100 ? 'var(--quality-high, #059669)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 4, transition: 'width 0.3s' }} />
                     </div>
                   </div>
                 );
@@ -534,7 +534,7 @@ export default function TestCycleDetailPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 {selectedTestCaseIds.size > 0 ? (
                   <>
-                    <span style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', fontWeight: 500 }}>
+                    <span style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', fontWeight: 500 }}>
                       {selectedTestCaseIds.size} selected
                     </span>
                     <button onClick={deselectAllTestCases} style={{ padding: '4px 8px', border: 'none', backgroundColor: 'transparent', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
@@ -589,7 +589,7 @@ export default function TestCycleDetailPage() {
             </select>
             {/* Add Test Cases Button */}
             {canEdit && (
-              <button onClick={() => setIsAddModalOpen(true)} style={{ height: 50, padding: '0 14px', background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)', border: 'none', borderRadius: 8, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button onClick={() => setIsAddModalOpen(true)} style={{ height: 50, padding: '0 14px', background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)', border: 'none', borderRadius: 8, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Plus size={16} /> Add Test Cases
               </button>
             )}
@@ -603,7 +603,7 @@ export default function TestCycleDetailPage() {
               <p style={{ fontSize: 16, fontWeight: 500, margin: '0 0 8px', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>No test cases added yet</p>
               <p style={{ fontSize: 14, margin: '0 0 16px' }}>Add test cases from the Test Repository to start planning</p>
               {canEdit && (
-                <button onClick={() => setIsAddModalOpen(true)} style={{ height: 40, padding: '0 20px', background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)', border: 'none', borderRadius: 8, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <button onClick={() => setIsAddModalOpen(true)} style={{ height: 40, padding: '0 20px', background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)', border: 'none', borderRadius: 8, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Plus size={18} /> Add Test Cases
                 </button>
               )}
@@ -620,7 +620,7 @@ export default function TestCycleDetailPage() {
                           type="checkbox"
                           checked={filteredTestCases.length > 0 && filteredTestCases.every(tc => selectedTestCaseIds.has(tc.id))}
                           onChange={(e) => { if (e.target.checked) selectAllTestCases(); else deselectAllTestCases(); }}
-                          style={{ width: 16, height: 16, accentColor: 'var(--ds-text-brand, #2563EB)' }}
+                          style={{ width: 16, height: 16, accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}
                         />
                       </th>
                     )}
@@ -646,13 +646,13 @@ export default function TestCycleDetailPage() {
                               type="checkbox"
                               checked={isSelected}
                               onChange={() => toggleTestCaseSelection(ctc.id)}
-                              style={{ width: 16, height: 16, accentColor: 'var(--ds-text-brand, #2563EB)' }}
+                              style={{ width: 16, height: 16, accentColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}
                             />
                           </td>
                         )}
                         <td style={{ padding: '14px 16px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '3px 8px', borderRadius: 4 }}>{ctc.test_case?.case_key || '—'}</span>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '3px 8px', borderRadius: 4 }}>{ctc.test_case?.case_key || '—'}</span>
                             <span style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{ctc.test_case?.title || 'Unknown'}</span>
                           </div>
                         </td>

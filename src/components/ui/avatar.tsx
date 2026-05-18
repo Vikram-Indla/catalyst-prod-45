@@ -27,7 +27,7 @@ const avatarVariants = cva(
 );
 
 const fallbackColors = [
-  "bg-[#dbeafe] text-[var(--ds-text-brand,#2563eb)]", // Blue
+  "bg-[#dbeafe] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]", // Blue
   "bg-[#ccfbf1] text-[#0d9488]", // Teal
   "bg-[#d1fae5] text-[var(--quality-high, #059669)]", // Green
   "bg-[#fee2e2] text-[var(--ds-text-danger,#dc2626)]", // Red

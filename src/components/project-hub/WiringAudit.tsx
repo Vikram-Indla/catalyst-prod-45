@@ -173,7 +173,7 @@ export function WiringAudit() {
               fontSize: 12,
               fontWeight: 600,
               fontFamily: 'var(--cp-font-body)',
-              backgroundColor: "var(--ds-text-brand, #2563EB)",
+              backgroundColor: "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))",
               color: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
               border: "none",
               borderRadius: 6,

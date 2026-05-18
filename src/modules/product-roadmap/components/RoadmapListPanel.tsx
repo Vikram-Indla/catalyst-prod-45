@@ -21,7 +21,7 @@ interface RoadmapListPanelProps {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  project: 'var(--ds-text-brand, #2563EB)',
+  project: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   enhancement: 'var(--cp-teal-60, #0D9488)',
   improvement: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
 };
@@ -55,7 +55,7 @@ export function RoadmapListPanel({
   const renderAddRow = () => (
     <button
       className="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors hover:bg-blue-50"
-      style={{ color: 'var(--ds-text-brand, #2563EB)', borderTop: '1px solid var(--cp-bg-sunken, #F1F5F9)' }}
+      style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderTop: '1px solid var(--cp-bg-sunken, #F1F5F9)' }}
     >
       <Plus className="w-4 h-4" />
       Add Business Request to Roadmap

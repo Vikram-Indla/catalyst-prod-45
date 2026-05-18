@@ -150,7 +150,7 @@ function CategoryAccordion({
         <div className="flex items-center gap-3">
           <div className="w-24 h-1.5 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] rounded-full overflow-hidden">
             <div
-              className="h-full bg-[var(--ds-text-brand,#2563EB)] rounded-full transition-all duration-300"
+              className="h-full bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] rounded-full transition-all duration-300"
               style={{ width: `${group.totalCount > 0 ? (group.enabledCount / group.totalCount) * 100 : 0}%` }}
             />
           </div>
@@ -169,7 +169,7 @@ function CategoryAccordion({
               <input
                 type="checkbox"
                 onChange={handleSelectAll}
-                className="h-3 w-3 rounded border-[var(--ds-text-disabled,#CBD5E1)] text-[var(--ds-text-brand,#2563EB)]"
+                className="h-3 w-3 rounded border-[var(--ds-text-disabled,#CBD5E1)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
                 title="Select all in group"
               />
             </div>

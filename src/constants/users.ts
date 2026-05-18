@@ -7,7 +7,7 @@
 // AVATAR COLORS (10 colors, hash-based selection)
 // ============================================================
 export const AVATAR_COLORS = [
-  'var(--ds-text-brand, #2563eb)', // Blue
+  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', // Blue
   '#0d9488', // Teal
   '#0369a1', // Sky-dark
   'var(--ds-text-warning, #d97706)', // Amber

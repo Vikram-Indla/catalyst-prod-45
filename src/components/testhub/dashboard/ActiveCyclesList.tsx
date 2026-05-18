@@ -56,7 +56,7 @@ export function ActiveCyclesList({ cycles }: Props) {
             const barGrad = pct >= 80
               ? 'linear-gradient(90deg, #10B981, var(--quality-high, #059669))'
               : pct >= 50
-              ? 'linear-gradient(90deg, var(--ds-text-brand, #3B82F6), var(--ds-text-brand, #2563EB))'
+              ? 'linear-gradient(90deg, var(--ds-text-brand, #3B82F6), var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)))'
               : 'linear-gradient(90deg, var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8)), var(--ds-text-subtlest, var(--cp-ink-3, #64748B)))';
 
             return (

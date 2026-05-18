@@ -180,7 +180,7 @@ export function T10CheckoutModalNew({
                 alignItems: 'center',
                 gap: '12px',
                 padding: '20px 24px',
-                background: 'linear-gradient(135deg, var(--ds-text-brand, #2563eb) 0%, var(--ds-background-brand-bold-hovered, #1d4ed8) 100%)',
+                background: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) 0%, var(--ds-background-brand-bold-hovered, #1d4ed8) 100%)',
                 color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               }}
             >
@@ -228,7 +228,7 @@ export function T10CheckoutModalNew({
             {/* Body */}
             <div style={{ padding: '24px' }}>
               <p style={{ fontSize: '15px', color: '#374151', marginBottom: '16px' }}>
-                <strong style={{ color: 'var(--ds-text-brand, #2563eb)' }}>{completedItems.length}</strong> items completed this week
+                <strong style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }}>{completedItems.length}</strong> items completed this week
               </p>
 
               {/* Items List */}
@@ -265,7 +265,7 @@ export function T10CheckoutModalNew({
                           height: '20px',
                           border: isSelected ? '2px solid #2563eb' : '2px solid #d1d5db',
                           borderRadius: '4px',
-                          backgroundColor: isSelected ? 'var(--ds-text-brand, #2563eb)' : 'transparent',
+                          backgroundColor: isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'transparent',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -345,7 +345,7 @@ export function T10CheckoutModalNew({
                         height: '18px',
                         border: carryOver ? '2px solid #2563eb' : '2px solid #d1d5db',
                         borderRadius: '4px',
-                        backgroundColor: carryOver ? 'var(--ds-text-brand, #2563eb)' : 'transparent',
+                        backgroundColor: carryOver ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'transparent',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -375,7 +375,7 @@ export function T10CheckoutModalNew({
                       height: '18px',
                       border: startNextWeek ? '2px solid #2563eb' : '2px solid #d1d5db',
                       borderRadius: '4px',
-                      backgroundColor: startNextWeek ? 'var(--ds-text-brand, #2563eb)' : 'transparent',
+                      backgroundColor: startNextWeek ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'transparent',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -429,7 +429,7 @@ export function T10CheckoutModalNew({
                   fontSize: '14px',
                   fontWeight: 500,
                   color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                  backgroundColor: 'var(--ds-text-brand, #2563eb)',
+                  backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
                   border: 'none',
                   borderRadius: '6px',
                   cursor: selectedIds.length === 0 ? 'not-allowed' : 'pointer',

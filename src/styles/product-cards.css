@@ -13,7 +13,7 @@
   --pc-surface-tertiary: #F4F4F5;
   --pc-border: #E4E4E7;
   --pc-border-strong: #D4D4D8;
-  --pc-primary: var(--ds-text-brand, #2563EB);
+  --pc-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --pc-primary-hover: var(--ds-background-brand-bold-hovered, #1D4ED8);
   --pc-primary-bg: var(--ds-background-selected, #EFF6FF);
   --pc-teal: var(--cp-teal-60, #0D9488);

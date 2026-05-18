@@ -127,7 +127,7 @@ const variantColors = {
   neutral: { bg: 'var(--ds-surface-sunken, #f8fafc)', border: 'var(--ds-border, #e2e8f0)', text: 'var(--ds-text-subtle, #475569)', accent: 'var(--ds-text-subtlest, #64748b)' },
   danger: { bg: 'var(--ds-background-danger, #fef2f2)', border: '#fecaca', text: 'var(--ds-text-danger, #dc2626)', accent: 'var(--ds-text-danger, #dc2626)' },
   warning: { bg: '#fffbeb', border: '#fde68a', text: 'var(--ds-text-warning, #d97706)', accent: 'var(--ds-text-warning, #f59e0b)' },
-  info: { bg: 'var(--ds-background-selected, #eff6ff)', border: '#bfdbfe', text: 'var(--ds-text-brand, #2563eb)', accent: 'var(--ds-text-brand, #3b82f6)' },
+  info: { bg: 'var(--ds-background-selected, #eff6ff)', border: '#bfdbfe', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', accent: 'var(--ds-text-brand, #3b82f6)' },
 };
 
 function MetricTile({ icon: Icon, value, label, variant, showProgress, progressPercent = 0, onClick, isClickable = false }: MetricTileProps) {

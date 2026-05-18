@@ -164,7 +164,7 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
 
       <style>{`
         .heatmap-row:hover { background: ${'var(--cp-bg-page, #FAFBFE)'}; }
-        .heatmap-cell:hover { outline: 2px solid var(--ds-text-brand, #2563EB); outline-offset: -2px; border-radius: 4px; }
+        .heatmap-cell:hover { outline: 2px solid var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); outline-offset: -2px; border-radius: 4px; }
         @media (max-width: 767px) { .heatmap-scroll { overflow-x: auto; } .heatmap-scroll > div { min-width: 700px; } }
       `}</style>
     </div>

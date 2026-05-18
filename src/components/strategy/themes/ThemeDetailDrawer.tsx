@@ -236,7 +236,7 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
                 padding: '6px 0',
               }}>
                 <p style={{ fontSize: 13, fontWeight: 700, color: isDark ? DK.t1 : '#1E40AF' }}>{f.value}</p>
-                <p style={{ fontSize: 10, color: isDark ? DK.t3 : 'var(--ds-text-brand, #2563EB)' }}>{f.label}</p>
+                <p style={{ fontSize: 10, color: isDark ? DK.t3 : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{f.label}</p>
               </div>
             ))}
           </div>
@@ -378,7 +378,7 @@ function FinancialsTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
 // ═══ MILESTONES ═══
 const MILESTONE_CATEGORIES = ['discover', 'define', 'design', 'deliver'] as const;
 const MILESTONE_STATES = ['not_started', 'in_progress', 'completed', 'missed'] as const;
-const STATE_COLORS: Record<string, string> = { not_started: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', in_progress: 'var(--ds-text-brand, #2563EB)', completed: 'var(--ds-text-success, var(--cp-success, #16A34A))', missed: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' };
+const STATE_COLORS: Record<string, string> = { not_started: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', in_progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', completed: 'var(--ds-text-success, var(--cp-success, #16A34A))', missed: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' };
 
 function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?: boolean }) {
   const d = dk(isDark);
@@ -480,7 +480,7 @@ function ActivityTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?
   const d = dk(isDark);
   const activities = [
     {
-      color: 'var(--ds-text-brand, #2563EB)',
+      color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
       title: 'Theme created',
       detail: `Created by ${theme.owner_name || 'System'}`,
       time: theme.created_at,

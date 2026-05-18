@@ -199,7 +199,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
                   autoFocus
                   value={dateInput}
                   onChange={e => setDateInput(e.target.value)}
-                  className="text-[12px] border border-[var(--ds-text-brand,#2563EB)] rounded px-1.5 py-0.5 outline-none bg-white text-[var(--ds-text,var(--cp-ink-1, #0F172A))]"
+                  className="text-[12px] border border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] rounded px-1.5 py-0.5 outline-none bg-white text-[var(--ds-text,var(--cp-ink-1, #0F172A))]"
                   style={{ fontFamily: 'inherit' }}
                 />
                 <button
@@ -218,7 +218,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
                       setEditingDate(false);
                     }
                   }}
-                  className="w-6 h-6 flex items-center justify-center rounded bg-[var(--ds-text-brand,#2563EB)] text-white hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] disabled:opacity-50"
+                  className="w-6 h-6 flex items-center justify-center rounded bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] disabled:opacity-50"
                   title="Save"
                 >
                   {savingDate ? <Loader2 size={11} className="animate-spin" /> : <Check size={11} />}
@@ -237,7 +237,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
                   setDateInput(release.target_date ? release.target_date.slice(0, 10) : '');
                   setEditingDate(true);
                 }}
-                className="group flex items-center gap-1 text-[12px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] hover:text-[var(--ds-text-brand,#2563EB)] transition-colors"
+                className="group flex items-center gap-1 text-[12px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] hover:text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] transition-colors"
                 title="Edit release date"
               >
                 <span>{release.target_date ? new Date(release.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
@@ -245,7 +245,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
               </button>
             )}
             <span className="text-[11px] font-bold text-[var(--ds-text,var(--cp-ink-1, #0F172A))] bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] px-1.5 py-0.5 rounded">{relChanges.length} CHGs</span>
-            <span className="text-[11px] font-bold text-[var(--ds-text-brand,#2563EB)] bg-[var(--ds-background-selected,#EFF6FF)] px-1.5 py-0.5 rounded">{testCycles.length} cycles</span>
+            <span className="text-[11px] font-bold text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] bg-[var(--ds-background-selected,#EFF6FF)] px-1.5 py-0.5 rounded">{testCycles.length} cycles</span>
           </div>
         </div>
 
@@ -253,10 +253,10 @@ export function ReleaseDrawer({ release, onClose }: Props) {
         <div className="border-b border-[rgba(15,23,42,0.12)] px-6 flex gap-0">
           {TABS.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
-              className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[var(--ds-text-brand,#2563EB)] text-[var(--ds-text-brand,#2563EB)]' : 'border-transparent text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] hover:text-[var(--ds-text-subtle,#475569)]'}`}>
+              className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]' : 'border-transparent text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] hover:text-[var(--ds-text-subtle,#475569)]'}`}>
               {tab}
               {tab === 'Changes' && <span className="ml-1 text-[10px] font-bold bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtle,#475569)] px-1 rounded">{relChanges.length}</span>}
-              {tab === 'Test Cycles' && <span className="ml-1 text-[10px] font-bold bg-[var(--ds-background-selected,#EFF6FF)] text-[var(--ds-text-brand,#2563EB)] px-1 rounded">{testCycles.length}</span>}
+              {tab === 'Test Cycles' && <span className="ml-1 text-[10px] font-bold bg-[var(--ds-background-selected,#EFF6FF)] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] px-1 rounded">{testCycles.length}</span>}
             </button>
           ))}
         </div>
@@ -447,7 +447,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
           <button
             onClick={generateReleaseNotes}
             disabled={notesState === 'loading'}
-            className="inline-flex items-center gap-1 bg-[var(--cp-purple-60, #7C3AED)] hover:bg-[#6D28D9] text-white text-xs px-3 py-1.5 rounded font-medium disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 outline-none"
+            className="inline-flex items-center gap-1 bg-[var(--cp-purple-60, #7C3AED)] hover:bg-[#6D28D9] text-white text-xs px-3 py-1.5 rounded font-medium disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none"
           >
             <Sparkles size={12} />
             {notesState === 'success' ? 'Regenerate' : 'Generate'}
@@ -476,14 +476,14 @@ Do not use jargon. Do not hallucinate features not listed above.`;
             <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]">
               <button
                 onClick={handleCopy}
-                className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,var(--cp-border, #E2E8F0))] text-[12px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 outline-none"
+                className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,var(--cp-border, #E2E8F0))] text-[12px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none"
               >
                 <Copy size={12} />
                 {copied ? 'Copied!' : 'Copy'}
               </button>
               <button
                 onClick={generateReleaseNotes}
-                className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] hover:text-[var(--ds-text-subtle,#475569)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 outline-none rounded"
+                className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] hover:text-[var(--ds-text-subtle,#475569)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none rounded"
               >
                 Regenerate
               </button>
@@ -497,7 +497,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
             <span className="text-[var(--ds-text-subtle,#475569)]">Could not generate notes.</span>
             <button
               onClick={generateReleaseNotes}
-              className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,var(--cp-border, #E2E8F0))] text-[12px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 outline-none"
+              className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default,var(--cp-border, #E2E8F0))] text-[12px] font-medium text-[var(--ds-text-subtle,#475569)] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2 outline-none"
             >
               <RefreshCw size={12} /> Try again
             </button>
@@ -570,12 +570,12 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
       {testCycles.length === 0 ? (
         <div className="text-center py-10">
           <p className="text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] text-[13px] mb-3">No test cycles linked</p>
-          <button onClick={openLinkModal} className="h-9 px-4 rounded-md border border-[var(--ds-text-brand,#2563EB)] text-[var(--ds-text-brand,#2563EB)] text-[13px] font-semibold hover:bg-[var(--ds-background-selected,#EFF6FF)]">Link Test Cycle</button>
+          <button onClick={openLinkModal} className="h-9 px-4 rounded-md border border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[13px] font-semibold hover:bg-[var(--ds-background-selected,#EFF6FF)]">Link Test Cycle</button>
         </div>
       ) : (
         <div className="space-y-3">
           <div className="flex justify-end mb-2">
-            <button onClick={openLinkModal} className="h-8 px-3 rounded-md border border-[var(--ds-text-brand,#2563EB)] text-[var(--ds-text-brand,#2563EB)] text-[12px] font-semibold hover:bg-[var(--ds-background-selected,#EFF6FF)]">Link Test Cycle</button>
+            <button onClick={openLinkModal} className="h-8 px-3 rounded-md border border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-[12px] font-semibold hover:bg-[var(--ds-background-selected,#EFF6FF)]">Link Test Cycle</button>
           </div>
           {testCycles.map((tc: any) => {
             const cycle = tc.tm_test_cycles;
@@ -595,7 +595,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
                 </button>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[13px] font-semibold" style={{ color: RH.ink1 }}>{cycle?.name || 'Cycle'}</span>
-                  <a href={`/testhub/cycles/${tc.test_cycle_id}`} className="text-[12px] text-[var(--ds-text-brand,#2563EB)] flex items-center gap-1 hover:underline mr-8">
+                  <a href={`/testhub/cycles/${tc.test_cycle_id}`} className="text-[12px] text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] flex items-center gap-1 hover:underline mr-8">
                     Open in TestHub <ExternalLink size={10} />
                   </a>
                 </div>
@@ -756,7 +756,7 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
       {entries.map((entry: any, idx: number) => {
         const isAI = !!entry.is_ai;
         const avatarBg = isAI ? '#F3E8FF' : 'var(--ds-background-selected, #EFF6FF)';
-        const avatarColor = isAI ? 'var(--cp-purple-60, #7C3AED)' : 'var(--ds-text-brand, #2563EB)';
+        const avatarColor = isAI ? 'var(--cp-purple-60, #7C3AED)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
         const initials = isAI ? 'AI' : (entry.actor_initials || '??');
 
         return (

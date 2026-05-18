@@ -19,11 +19,11 @@ interface Props {
 }
 
 const DOT_COLORS: Record<string, string> = {
-  'Fast-Track': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Merge': 'var(--ds-text-brand, #2563EB)', 'Investigate': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Defer': 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
+  'Fast-Track': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Merge': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'Investigate': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Defer': 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
 };
 
 const CATEGORY_TEXT_COLORS: Record<string, string> = {
-  'FAST-TRACK RECOMMENDED': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'MERGE CANDIDATES': 'var(--ds-text-brand, #2563EB)',
+  'FAST-TRACK RECOMMENDED': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'MERGE CANDIDATES': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   'NEEDS INVESTIGATION': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'RECOMMENDED TO DEFER': 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
 };
 
@@ -155,7 +155,7 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
         <div style={{ padding: '16px 20px', borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Sparkles size={18} color="var(--ds-text-brand, #2563EB)" strokeWidth={2} />
+              <Sparkles size={18} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" strokeWidth={2} />
               <span style={{ fontSize: '16px', fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>AI Intelligence — Triage Results</span>
             </div>
             <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', padding: '4px' }}><X size={18} /></button>
@@ -292,8 +292,8 @@ function TriageCard({ badge, ideaKey, title, body, aiSuggestion, primary, second
         </div>
       )}
       <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-        <button onClick={primary.onClick} style={{ background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '6px', padding: '7px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #1D4ED8)')} onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-text-brand, #2563EB)')}>
+        <button onClick={primary.onClick} style={{ background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '6px', padding: '7px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #1D4ED8)')} onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))')}>
           {primary.icon} {primary.label}
         </button>
         <button onClick={secondary.onClick} style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-secondary, #475569)', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: '6px', padding: '7px 16px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}

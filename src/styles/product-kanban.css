@@ -8,7 +8,7 @@
   --pk-surface-tertiary: #F4F4F5;
   --pk-border: #E4E4E7;
   --pk-border-strong: #D4D4D8;
-  --pk-primary: var(--ds-text-brand, #2563EB);
+  --pk-primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
   --pk-primary-hover: var(--ds-background-brand-bold-hovered, #1D4ED8);
   --pk-primary-bg: var(--ds-background-selected, #EFF6FF);
   --pk-font-heading: var(--cp-font-heading);
@@ -260,9 +260,9 @@
   border-color: #D4D4D8 !important;
 }
 .pk-chip.pk-chip--active {
-  color: var(--ds-text-brand, #2563EB) !important;
+  color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) !important;
   background: var(--ds-background-selected, #EFF6FF) !important;
-  border-color: var(--ds-text-brand, #2563EB) !important;
+  border-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) !important;
   font-weight: 600;
 }
 

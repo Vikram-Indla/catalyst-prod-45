@@ -30,7 +30,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
       >
         <div
           className="flex items-center justify-center flex-shrink-0"
-          style={{ width: 28, height: 28, backgroundColor: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 11, fontWeight: 700, fontFamily: 'var(--cp-font-heading)', borderRadius: 6 }}
+          style={{ width: 28, height: 28, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 11, fontWeight: 700, fontFamily: 'var(--cp-font-heading)', borderRadius: 6 }}
         >
           PH
         </div>
@@ -44,14 +44,14 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
         )}
         <button
           onClick={onToggle}
-          className="flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)]"
+          className="flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
           style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer' }}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {collapsed ? (
-            <ChevronsRight size={16} className="text-[var(--ds-text-brand,#2563EB)] dark:text-[#4C9AFF]" />
+            <ChevronsRight size={16} className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] dark:text-[#4C9AFF]" />
           ) : (
-            <ChevronsLeft size={16} className="text-[var(--ds-text-brand,#2563EB)] dark:text-[#4C9AFF]" />
+            <ChevronsLeft size={16} className="text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] dark:text-[#4C9AFF]" />
           )}
         </button>
       </div>

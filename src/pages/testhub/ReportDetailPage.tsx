@@ -29,7 +29,7 @@ interface Report {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
-  cycle_summary: { label: 'Cycle Summary', color: 'var(--ds-text-brand, #2563EB)' },
+  cycle_summary: { label: 'Cycle Summary', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
   plan_summary: { label: 'Plan Summary', color: 'var(--cp-purple-60, #7C3AED)' },
   coverage: { label: 'Coverage', color: '#0891B2' },
   defect: { label: 'Defect Report', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
@@ -173,7 +173,7 @@ export default function ReportDetailPage() {
           {/* Stats */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
             <div style={{ backgroundColor: surfaceBg, borderRadius: 12, padding: 20, border: `1px solid ${borderColor}`, textAlign: 'center' }}>
-              <BarChart3 size={24} style={{ color: 'var(--ds-text-brand, #2563EB)', marginBottom: 8 }} />
+              <BarChart3 size={24} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', marginBottom: 8 }} />
               <p style={{ fontSize: 28, fontWeight: 700, color: textPrimary, margin: 0 }}>{data.summary.total_cases}</p>
               <p style={{ fontSize: 12, color: textSecondary, margin: '4px 0 0' }}>Total Tests</p>
             </div>
@@ -198,7 +198,7 @@ export default function ReportDetailPage() {
           <div style={{ backgroundColor: surfaceBg, borderRadius: 12, padding: 20, border: `1px solid ${borderColor}`, marginBottom: 24 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
               <span style={{ fontSize: 14, fontWeight: 600, color: textPrimary }}>Execution Progress</span>
-              <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text-brand, #2563EB)' }}>{data.summary.progress_percent}%</span>
+              <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{data.summary.progress_percent}%</span>
             </div>
             <div style={{ height: 16, backgroundColor: 'var(--cp-bg-sunken, var(--cp-border, #E2E8F0))', borderRadius: 8, overflow: 'hidden', display: 'flex' }}>
               {data.summary.total_cases > 0 && (
@@ -258,7 +258,7 @@ export default function ReportDetailPage() {
                     {data.test_cases.map((tc: any, i: number) => (
                       <tr key={i} style={{ borderBottom: `1px solid ${borderSubtle}` }}>
                         <td style={{ padding: '12px 8px' }}>
-                          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', backgroundColor: 'var(--cp-primary-light, #EFF6FF)', padding: '2px 6px', borderRadius: 4 }}>{tc.case_key}</span>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', backgroundColor: 'var(--cp-primary-light, #EFF6FF)', padding: '2px 6px', borderRadius: 4 }}>{tc.case_key}</span>
                         </td>
                         <td style={{ padding: '12px 8px', color: textPrimary }}>{tc.title}</td>
                         <td style={{ padding: '12px 8px', textTransform: 'capitalize', color: textBody }}>{tc.priority}</td>

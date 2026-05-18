@@ -49,7 +49,7 @@
   --roadmap-type-improvement-light: rgba(22, 163, 74, 0.12);
 
   /* ─── AVATAR ──────────────────────────────────────────────────── */
-  --roadmap-avatar-bg:              var(--cp-primary-60);    /* var(--ds-text-brand, #2563EB) — always blue */
+  --roadmap-avatar-bg:              var(--cp-primary-60);    /* var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) — always blue */
   --roadmap-avatar-text:            var(--cp-text-inverse);  /* white */
   --roadmap-avatar-size:            22px;
   --roadmap-avatar-font-size:       9px;

@@ -124,7 +124,7 @@ function useResourceUtilById(id: string) {
 
 const STATUS_COLORS: Record<string, string> = {
   'To Do': 'var(--ds-text-subtlest, #94a3b8)',
-  'In Progress': 'var(--ds-text-brand, #2563eb)',
+  'In Progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
   'In Review': '#7c3aed',
   'Done': 'var(--ds-text-success, #16a34a)',
   'Blocked': 'var(--ds-text-danger, #ef4444)',

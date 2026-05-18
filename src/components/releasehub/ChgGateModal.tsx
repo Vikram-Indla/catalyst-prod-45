@@ -40,7 +40,7 @@ export function ChgGateModal({ changeId, chgNumber, onResolved }: Props) {
             <div className="space-y-3">
               <p className="text-[13px] text-[var(--ds-text-subtle,#475569)] mb-4">Resolve by linking at least one work item:</p>
               <button onClick={() => setMode('link')}
-                className="w-full h-11 rounded-md bg-[var(--ds-text-brand,#2563EB)] text-white text-[13px] font-semibold hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)]">
+                className="w-full h-11 rounded-md bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white text-[13px] font-semibold hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)]">
                 Link Work Item
               </button>
               <button onClick={onResolved}
@@ -63,7 +63,7 @@ export function ChgGateModal({ changeId, chgNumber, onResolved }: Props) {
               <div className="flex gap-2">
                 <button onClick={() => setMode('choose')} className="flex-1 h-9 rounded-md border border-[var(--bd-default,var(--cp-border, #E2E8F0))] text-[13px] font-medium text-[var(--ds-text-subtle,#475569)]">Back</button>
                 <button onClick={handleLink} disabled={!workItemKey || !workItemTitle || linkWorkItem.isPending}
-                  className="flex-1 h-9 rounded-md bg-[var(--ds-text-brand,#2563EB)] text-white text-[13px] font-semibold disabled:opacity-50">
+                  className="flex-1 h-9 rounded-md bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white text-[13px] font-semibold disabled:opacity-50">
                   {linkWorkItem.isPending ? 'Linking...' : 'Link & Continue'}
                 </button>
               </div>

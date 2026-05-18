@@ -53,7 +53,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
         title: initialData.title || '',
         vision_statement: initialData.vision_statement || '',
         description: initialData.description || '',
-        color: initialData.color || 'var(--ds-text-brand, #2563EB)',
+        color: initialData.color || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
         status: initialData.status || 'active',
         priority: initialData.priority || 'medium',
         start_date: initialData.start_date || '',

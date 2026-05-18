@@ -690,7 +690,7 @@ export default function CleanupPage() {
                 <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
                   <div style={{
                     width: 24, height: 24,
-                    border: '2.5px solid var(--cp-border, #E2E8F0)', borderTopColor: 'var(--ds-text-brand, #2563EB)',
+                    border: '2.5px solid var(--cp-border, #E2E8F0)', borderTopColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                     borderRadius: '50%', animation: 'spin 0.7s linear infinite',
                   }} />
                 </div>
@@ -752,7 +752,7 @@ export default function CleanupPage() {
                               }
                             }}
                             style={{
-                              fontSize: 12, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer',
+                              fontSize: 12, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer',
                               whiteSpace: 'nowrap', flexShrink: 0,
                             }}
                           >
@@ -783,7 +783,7 @@ export default function CleanupPage() {
                             )}
                             <span style={{
                               fontFamily: 'var(--cp-font-mono)',
-                              fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)',
+                              fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                             }}>
                               {item.issue_key}
                             </span>
@@ -985,7 +985,7 @@ export default function CleanupPage() {
                   <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
                     <div style={{
                       width: 24, height: 24,
-                      border: '2.5px solid var(--cp-border, #E2E8F0)', borderTopColor: 'var(--ds-text-brand, #2563EB)',
+                      border: '2.5px solid var(--cp-border, #E2E8F0)', borderTopColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                       borderRadius: '50%', animation: 'spin 0.7s linear infinite',
                     }} />
                   </div>
@@ -999,7 +999,7 @@ export default function CleanupPage() {
                     {(listCatFilter !== 'all' || listStatusFilter !== 'all') && (
                       <span
                         onClick={() => { setListCatFilter('all'); setListStatusFilter('all'); }}
-                        style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', textDecoration: 'underline', cursor: 'pointer' }}
+                        style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', textDecoration: 'underline', cursor: 'pointer' }}
                       >
                         Clear filters
                       </span>
@@ -1090,7 +1090,7 @@ export default function CleanupPage() {
                                 <JiraIssueTypeIcon type={item.issue_type} size={16} />
                                 <span style={{
                                   fontFamily: 'var(--cp-font-mono)', fontSize: 12,
-                                  fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)',
+                                  fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                                 }}>
                                   {item.issue_key}
                                 </span>
@@ -1140,7 +1140,7 @@ export default function CleanupPage() {
                                 {(() => {
                                   const name = item.reporter_name || 'Unknown';
                                   const ini = initials(name);
-                                  const clr = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#DB2777'][ini.charCodeAt(0) % 5];
+                                  const clr = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#DB2777'][ini.charCodeAt(0) % 5];
                                   return (
                                     <>
                                       <div style={{
@@ -1168,7 +1168,7 @@ export default function CleanupPage() {
                                 {(() => {
                                   const name = item.reporter_name || 'Unknown';
                                   const ini = initials(name);
-                                  const clr = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#DB2777'][ini.charCodeAt(0) % 5];
+                                  const clr = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', '#DB2777'][ini.charCodeAt(0) % 5];
                                   return (
                                     <>
                                       <div style={{
@@ -1276,7 +1276,7 @@ export default function CleanupPage() {
                         handleSelectAllInCategory(firstSelectedCatKey);
                       }
                     }}
-                    style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', textDecoration: 'underline', cursor: 'pointer' }}
+                    style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', textDecoration: 'underline', cursor: 'pointer' }}
                   >
                     {(catData[firstSelectedCatKey] ?? []).every(i => selected.has(i.id)) ? 'Deselect all' : `Select all ${(catData[firstSelectedCatKey] ?? []).length} in category`}
                   </span>
@@ -1349,7 +1349,7 @@ export default function CleanupPage() {
                     <td style={{ padding: '8px 12px' }}>
                       <span style={{
                         fontFamily: 'var(--cp-font-mono)',
-                        fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)',
+                        fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                       }}>
                         {entry.item_key}
                       </span>
@@ -1515,7 +1515,7 @@ export default function CleanupPage() {
           }}>
             <span
               onClick={() => { setShowForceCloseDialog(false); navigate('/audit-trail'); }}
-              style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', textDecoration: 'underline', cursor: 'pointer' }}
+              style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', textDecoration: 'underline', cursor: 'pointer' }}
             >
               Audit trail
             </span>

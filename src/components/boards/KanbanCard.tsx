@@ -125,10 +125,10 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
         }}>
           <span style={{
             width: 5, height: 5, borderRadius: '50%',
-            background: 'var(--ds-text-brand, #2563EB)', flexShrink: 0,
+            background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', flexShrink: 0,
           }} />
           <span style={{
-            fontSize: 10.5, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)',
+            fontSize: 10.5, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
             fontFamily: 'var(--cp-font-body)',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>{card.epic.title}</span>
@@ -191,7 +191,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
 }
 
 function hashColor(id: string): string {
-  const colors = ['var(--ds-text-brand, #2563EB)', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-teal-60, #0D9488)', '#0284C7', '#525252'];
+  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--ds-text-success, var(--cp-success, #16A34A))', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--cp-teal-60, #0D9488)', '#0284C7', '#525252'];
   let hash = 0;
   for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
   return colors[Math.abs(hash) % colors.length];

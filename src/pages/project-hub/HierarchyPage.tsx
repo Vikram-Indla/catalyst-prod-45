@@ -92,7 +92,7 @@ function filterTree(items: WorkItem[], search: string, filters: Filters): WorkIt
 }
 
 /* ── Avatar color palette ── */
-const FILTER_AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, #2563EB)','var(--ds-text-danger, var(--cp-danger, #DC2626))','var(--ds-text-success, var(--cp-success, #16A34A))','var(--ds-text-subtlest, var(--cp-ink-3, #64748B))','#0284C7','var(--quality-high, #059669)','#BE123C','var(--ds-background-brand-bold-hovered, #1D4ED8)','#0F766E'];
+const FILTER_AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))','var(--ds-text-danger, var(--cp-danger, #DC2626))','var(--ds-text-success, var(--cp-success, #16A34A))','var(--ds-text-subtlest, var(--cp-ink-3, #64748B))','#0284C7','var(--quality-high, #059669)','#BE123C','var(--ds-background-brand-bold-hovered, #1D4ED8)','#0F766E'];
 function getFilterAvatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -111,7 +111,7 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
       style={{
         height: 32, padding: '8px 12px', display: 'inline-flex', alignItems: 'center', gap: 6,
         fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
-        color: active ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-text-secondary)',
+        color: active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-text-secondary)',
         background: active ? 'rgba(37,99,235,0.06)' : 'var(--cp-bg-elevated)',
         border: `1px solid ${active ? 'rgba(37,99,235,0.3)' : 'var(--cp-border-default)'}`,
         borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap',
@@ -122,7 +122,7 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
       {label}
       {active && (
         <span style={{
-          fontSize: 10, fontWeight: 700, background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+          fontSize: 10, fontWeight: 700, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           borderRadius: 9999, minWidth: 16, height: 16, display: 'inline-flex',
           alignItems: 'center', justifyContent: 'center', padding: '0 4px',
         }}>{values.length}</span>
@@ -137,7 +137,7 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
           <X size={10} />
         </span>
       )}
-      <ChevronDown size={11} color={active ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))'} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 100ms' }} />
+      <ChevronDown size={11} color={active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))'} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 100ms' }} />
     </button>
   );
 }
@@ -145,7 +145,7 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
 /* ── Status color dot ── */
 const STATUS_DOT_COLORS: Record<string, string> = {
   'Done': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Closed': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Resolved': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Released': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'In Production': 'var(--ds-text-success, var(--cp-success, #16A34A))',
-  'In Development': 'var(--ds-text-brand, #2563EB)', 'In Progress': 'var(--ds-text-brand, #2563EB)', 'In Beta': 'var(--ds-text-brand, #2563EB)', 'In QA': 'var(--ds-text-brand, #2563EB)', 'UAT Ready': 'var(--ds-text-brand, #2563EB)', 'In Review': 'var(--ds-text-brand, #2563EB)',
+  'In Development': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'In Progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'In Beta': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'In QA': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'UAT Ready': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'In Review': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   'Ready for Production': 'var(--cp-teal-60, #0D9488)', 'Ready for QA': 'var(--cp-teal-60, #0D9488)',
   'Backlog': 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', 'To Do': 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', 'Open': 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
   'On Hold': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Awaiting Info': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Awaiting Information': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Blocked': 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
@@ -225,7 +225,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
 
         {/* Select all / Clear */}
         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 12px', borderBottom: `1px solid ${'var(--cp-border-default)'}` }}>
-          <button onClick={selectAll} style={{ fontSize: 11, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Select all</button>
+          <button onClick={selectAll} style={{ fontSize: 11, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Select all</button>
           <button onClick={clearAll} style={{ fontSize: 11, fontWeight: 500, color: 'var(--cp-text-tertiary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Clear</button>
         </div>
 
@@ -246,8 +246,8 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                 onMouseLeave={e => (e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.04)' : 'transparent')}
               >
                 <div style={{
-                  width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${isSelected ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-disabled, #CBD5E1)'}`,
-                  background: isSelected ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-bg-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-disabled, #CBD5E1)'}`,
+                  background: isSelected ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-bg-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0, transition: 'all 80ms',
                 }}>
                   {isSelected && (
@@ -387,7 +387,7 @@ export default function HierarchyPage() {
           padding: '0 10px', background: 'var(--cp-bg-page)', border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 6,
           transition: 'border-color 80ms, box-shadow 80ms',
         }}
-          onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
+          onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
           onBlur={e => { e.currentTarget.style.borderColor = 'var(--cp-border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
         >
           <Search size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" style={{ flexShrink: 0 }} />
@@ -411,9 +411,9 @@ export default function HierarchyPage() {
           style={{
             height: 34, padding: '0 14px', display: 'flex', alignItems: 'center', gap: 6,
             fontSize: 13, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
-            color: activeFilterCount > 0 ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-text-secondary)',
+            color: activeFilterCount > 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-text-secondary)',
             background: activeFilterCount > 0 ? 'var(--cp-interact-selected)' : 'var(--cp-bg-elevated)',
-            border: `1px solid ${activeFilterCount > 0 ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-border-default)'}`,
+            border: `1px solid ${activeFilterCount > 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-border-default)'}`,
             borderRadius: 6, cursor: 'pointer', transition: 'all 80ms ease',
           }}
         >
@@ -421,7 +421,7 @@ export default function HierarchyPage() {
           Filter
           {activeFilterCount > 0 && (
             <span style={{
-              fontSize: 10, fontWeight: 700, background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              fontSize: 10, fontWeight: 700, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               borderRadius: 9999, minWidth: 18, height: 18, display: 'inline-flex',
               alignItems: 'center', justifyContent: 'center', padding: '0 5px',
             }}>{activeFilterCount}</span>
@@ -438,7 +438,7 @@ export default function HierarchyPage() {
               background: viewMode === 'table' ? 'var(--cp-interact-selected)' : 'var(--cp-bg-elevated)', border: 'none', cursor: 'pointer',
               transition: 'background 80ms',
             }}>
-            <TableProperties size={14} color={viewMode === 'table' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'} />
+            <TableProperties size={14} color={viewMode === 'table' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'} />
           </button>
           <button onClick={() => setViewMode('tree')}
             style={{
@@ -446,7 +446,7 @@ export default function HierarchyPage() {
               background: viewMode === 'tree' ? 'var(--cp-interact-selected)' : 'var(--cp-bg-elevated)', border: 'none', cursor: 'pointer',
               borderLeft: `1px solid ${'var(--cp-border-default)'}`, transition: 'background 80ms',
             }}>
-            <GitBranch size={14} color={viewMode === 'tree' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'} />
+            <GitBranch size={14} color={viewMode === 'tree' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'} />
           </button>
         </div>
       </div>
@@ -562,7 +562,7 @@ export default function HierarchyPage() {
             <div style={{ border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 8, background: 'var(--cp-bg-elevated)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 200, gap: 12, padding: 24, textAlign: 'center' }}>
               <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: 0 }}>Failed to load work items</p>
               <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary)', margin: 0 }}>There was an error fetching the work items.</p>
-              <button onClick={() => refetch()} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600, fontFamily: 'var(--cp-font-body)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: 'var(--ds-text-brand, #2563EB)', border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button onClick={() => refetch()} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600, fontFamily: 'var(--cp-font-body)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <RefreshCw size={14} /> Retry
               </button>
             </div>

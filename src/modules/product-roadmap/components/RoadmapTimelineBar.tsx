@@ -12,13 +12,13 @@ import type { RoadmapDemand } from '../types/roadmap';
 import { format, parseISO } from 'date-fns';
 
 const TYPE_COLORS: Record<string, string> = {
-  project: 'var(--ds-text-brand, #2563EB)',
+  project: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   enhancement: 'var(--cp-teal-60, #0D9488)',
   improvement: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
 };
 
 const TYPE_HOVER_GRADIENTS: Record<string, string> = {
-  project: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-text-brand, #3B82F6) 100%)',
+  project: 'linear-gradient(135deg, var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)) 0%, var(--ds-text-brand, #3B82F6) 100%)',
   enhancement: 'linear-gradient(135deg, var(--cp-teal-60, #0D9488) 0%, #14B8A6 100%)',
   improvement: 'linear-gradient(135deg, var(--ds-text-warning, var(--cp-warning, #D97706)) 0%, var(--ds-text-warning, var(--cp-amber, #F59E0B)) 100%)',
 };
@@ -39,7 +39,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
   const tooltipTimer = useRef<ReturnType<typeof setTimeout>>();
 
   const typeKey = (item as any).initiative_type_key || 'project';
-  const barColor = TYPE_COLORS[typeKey] || 'var(--ds-text-brand, #2563EB)';
+  const barColor = TYPE_COLORS[typeKey] || 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))';
 
   // Check overdue
   const isOverdue = (() => {

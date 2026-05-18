@@ -257,7 +257,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
               "px-5 py-2.5",
               "text-[13px] font-medium",
               "text-white",
-              "bg-[var(--ds-text-brand,#2563eb)]",
+              "bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]",
               "hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]",
               "rounded-lg",
               "shadow-sm hover:shadow-md",

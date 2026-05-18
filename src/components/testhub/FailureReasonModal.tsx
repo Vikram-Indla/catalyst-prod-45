@@ -24,7 +24,7 @@ const REASON_LABELS: Record<string, string> = {
 
 const FAILURE_REASONS = [
   { id: 'bug', label: 'Bug / Defect', description: 'Application defect found', icon: Bug, color: 'var(--sem-danger)' },
-  { id: 'environment', label: 'Environment Issue', description: 'Environment or configuration problem', icon: Server, color: 'var(--ds-text-brand, #2563EB)' },
+  { id: 'environment', label: 'Environment Issue', description: 'Environment or configuration problem', icon: Server, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' },
   { id: 'test_data', label: 'Test Data Issue', description: 'Invalid or missing test data', icon: Database, color: '#0891B2' },
   { id: 'test_script', label: 'Test Script Error', description: 'Error in the test case itself', icon: FileWarning, color: '#EA580C' },
   { id: 'timeout', label: 'Timeout', description: 'Operation timed out', icon: Clock, color: '#CA8A04' },
@@ -121,7 +121,7 @@ export function FailureReasonModal({ isOpen, testCaseKey, testCaseTitle, testCas
                   onClick={() => setShowCreateDefect(true)}
                   style={{
                     height: 40, padding: '0 14px',
-                    backgroundColor: 'var(--ds-text-brand, #2563EB)',
+                    backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                     border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600,
                     color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
                     whiteSpace: 'nowrap',

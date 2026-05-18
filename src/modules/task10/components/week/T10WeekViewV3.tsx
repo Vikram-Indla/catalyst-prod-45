@@ -126,7 +126,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     fontSize: 12,
     fontWeight: 700,
     color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-    backgroundColor: 'var(--ds-text-brand, #2563eb)',
+    backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
     borderRadius: 8,
     flexShrink: 0,
   };
@@ -197,7 +197,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
   // Edit button style
   const editBtnStyle: React.CSSProperties = {
     ...actionBtnStyle,
-    color: isHovered ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-text-subtlest, #94a3b8)',
+    color: isHovered ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-text-subtlest, #94a3b8)',
     background: isHovered ? 'var(--ds-background-selected, #eff6ff)' : 'transparent',
     border: isHovered ? '1px solid #dbeafe' : '1px solid transparent',
   };
@@ -220,7 +220,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     justifyContent: 'center',
     borderRadius: '50%',
     border: isCompleted ? 'none' : '2px solid #d1d5db',
-    backgroundColor: isCompleted ? 'var(--ds-text-brand, #2563eb)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    backgroundColor: isCompleted ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     cursor: 'pointer',
     transition: 'all 0.15s',
     flexShrink: 0,
@@ -645,7 +645,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const logoBadgeStyle: React.CSSProperties = {
     fontSize: 32,
     fontWeight: 800,
-    color: 'var(--ds-text-brand, #2563eb)',
+    color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
     lineHeight: 1,
     flexShrink: 0,
   };
@@ -761,7 +761,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     fontSize: 13,
     fontWeight: 600,
     color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-    background: 'var(--ds-text-brand, #2563eb)',
+    background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
     border: 'none',
     borderRadius: 8,
     cursor: 'pointer',
@@ -918,7 +918,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     padding: '6px 12px',
     fontSize: 12,
     fontWeight: 500,
-    color: 'var(--ds-text-brand, #2563eb)',
+    color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))',
     background: '#dbeafe',
     border: 'none',
     borderRadius: 6,
@@ -1062,7 +1062,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                         fontSize: 13,
                         fontWeight: 700,
                         borderRadius: 12,
-                        background: i === 0 ? 'var(--ds-text-brand, #2563eb)' : i === 1 ? 'var(--ds-text-brand, #3b82f6)' : 'var(--ds-text-brand, #60a5fa)',
+                        background: i === 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : i === 1 ? 'var(--ds-text-brand, #3b82f6)' : 'var(--ds-text-brand, #60a5fa)',
                         color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                         flexShrink: 0,
                       }}>
@@ -1076,7 +1076,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                         </div>
                       </div>
                     </div>
-                    <span style={{ fontSize: 13, fontFamily: "'SF Mono', 'Fira Code', Consolas, monospace", fontWeight: 600, color: 'var(--ds-text-brand, #2563eb)', flexShrink: 0 }}>{suggestion.key}</span>
+                    <span style={{ fontSize: 13, fontFamily: "'SF Mono', 'Fira Code', Consolas, monospace", fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', flexShrink: 0 }}>{suggestion.key}</span>
                   </div>
                 ))
               ) : (
@@ -1090,7 +1090,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
 
         {/* ADD INPUT - Nuclear box-inside-box fix applied */}
         <div style={addWrapperStyle}>
-          <Plus size={20} strokeWidth={2.5} style={{ color: isAddDisabled ? 'var(--ds-text-subtlest, #94a3b8)' : 'var(--ds-text-brand, #2563eb)', flexShrink: 0 }} />
+          <Plus size={20} strokeWidth={2.5} style={{ color: isAddDisabled ? 'var(--ds-text-subtlest, #94a3b8)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))', flexShrink: 0 }} />
           <input 
             type="text"
             className="flex-1 min-w-0 text-[15px] font-normal text-slate-900 placeholder:text-slate-400 !bg-transparent !border-0 !p-0 !outline-none !shadow-none !ring-0 focus:!outline-none focus:!shadow-none focus:!ring-0"
@@ -1117,7 +1117,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                 alignItems: 'center', 
                 gap: 8, 
                 fontSize: 13, 
-                color: newItemText.trim() ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-text-subtlest, #94a3b8)', 
+                color: newItemText.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-text-subtlest, #94a3b8)', 
                 flexShrink: 0,
                 background: 'transparent',
                 border: 'none',
@@ -1127,9 +1127,9 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
             >
               <kbd style={{
                 ...kbdStyle,
-                background: newItemText.trim() ? 'var(--ds-text-brand, #2563eb)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                background: newItemText.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 color: newItemText.trim() ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtle, #475569)',
-                borderColor: newItemText.trim() ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-border, #e2e8f0)',
+                borderColor: newItemText.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' : 'var(--ds-border, #e2e8f0)',
               }}>Enter</kbd>
               <span>to add</span>
             </button>
@@ -1141,7 +1141,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
           <div style={sectionHeaderStyle}>
             <span style={sectionTitleStyle}>Top 10 Priorities</span>
             <span style={sectionCountStyle}>
-              <strong style={{ color: 'var(--ds-text-brand, #2563eb)' }}>{totalCount}</strong>/10 slots
+              <strong style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb))' }}>{totalCount}</strong>/10 slots
             </span>
           </div>
 

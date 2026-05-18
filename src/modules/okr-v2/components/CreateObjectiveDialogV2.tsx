@@ -111,7 +111,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
     "border-gray-300 dark:border-[#333333]",
     "text-gray-900 dark:text-[#f5f5f5]",
     "placeholder:text-gray-400 dark:placeholder:text-[#525252]",
-    "focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-[var(--ds-text-brand,#2563eb)]/30"
+    "focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/30"
   );
 
   return (
@@ -125,13 +125,13 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
         "[&>button]:hidden"
       )}>
         {/* Accent Bar */}
-        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,#2563eb)] via-[#0d9488] to-[var(--ds-text-brand,#60a5fa)] flex-shrink-0" />
+        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] via-[#0d9488] to-[var(--ds-text-brand,#60a5fa)] flex-shrink-0" />
 
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 dark:border-[#333333] flex-shrink-0 bg-white dark:bg-[#141414]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Target className="h-5 w-5 text-[var(--ds-text-brand,#2563eb)]" />
+              <Target className="h-5 w-5 text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]" />
               <h2 className="text-lg font-semibold text-gray-900 dark:text-[#f5f5f5]">
                 Create Objective
               </h2>
@@ -183,7 +183,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
                   "border-gray-300 dark:border-[#333333]",
                   "text-gray-900 dark:text-[#f5f5f5]",
                   "placeholder:text-gray-400 dark:placeholder:text-[#525252]",
-                  "focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-[var(--ds-text-brand,#2563eb)]/30",
+                  "focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/30",
                   "resize-y"
                 )}
               />
@@ -314,7 +314,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
                   "border-gray-300 dark:border-[#333333]",
                   "text-gray-900 dark:text-[#f5f5f5]",
                   "placeholder:text-gray-400 dark:placeholder:text-[#525252]",
-                  "focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-[var(--ds-text-brand,#2563eb)]/30",
+                  "focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))]/30",
                   "resize-y"
                 )}
               />
@@ -334,7 +334,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
             <Button
               type="submit"
               disabled={!isValid || createObjective.isPending}
-              className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white px-6"
+              className="bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white px-6"
             >
               {createObjective.isPending ? 'Creating...' : 'Create Objective'}
             </Button>
