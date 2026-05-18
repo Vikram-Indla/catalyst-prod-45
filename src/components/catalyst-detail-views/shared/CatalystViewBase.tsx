@@ -19,6 +19,7 @@ import CrossIcon from '@atlaskit/icon/core/close';
 import ShareIcon from '@atlaskit/icon/core/share';
 import MoreIcon from '@atlaskit/icon/core/menu';
 import LinkIcon from '@atlaskit/icon/core/link';
+import { ArrowLeft } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import Modal from '@atlaskit/modal-dialog';
 import Button, { IconButton } from '@atlaskit/button/new';
@@ -398,6 +399,20 @@ export function CatalystViewBase({
               we swap the default "+ Add parent" text link for the canonical
               AddParentPicker (Jira-parity bordered pencil chip). */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flex: 1 }}>
+            {/* Back chevron — consolidated on same line as breadcrumb (2026-05-19).
+                Allows title to move up for cleaner layout. Uses handleBack for
+                both modal/panel (closes via onClose) and fullPageMode (navigates
+                to project list). */}
+            <Tooltip content="Back">
+              <IconButton
+                appearance="subtle"
+                icon={() => <ArrowLeft size="small" />}
+                label="Back"
+                onClick={handleBack}
+                style={{ padding: '6px 8px' }}
+              />
+            </Tooltip>
+
             {projectKey ? (
               <TicketBreadcrumbs
                 projectKey={projectKey}
