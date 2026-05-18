@@ -150,46 +150,13 @@
   height: 100%;
 }
 
-/* Compact, self-contained search pill — used by the in-results
-   "Search work" row. Mirrors Jira's pattern: a small pill with the
-   search icon on the left and a subtle background so it's visually
-   bounded as one unit. The rest of the row's width is empty space,
-   not part of the field. The icon (.prefix) and input area (.field)
-   share the same background and meet edge-to-edge to form one pill,
-   so the row's gap is zeroed out in compact mode. */
-.ask-caty-row--compact {
-  justify-content: flex-start;
-  gap: 0;
-  padding-left: 8px;
-}
-
-.ask-caty-row--compact .ask-caty-row__prefix {
-  height: 28px;
-  padding: 0 4px 0 8px;
-  border-radius: 4px 0 0 4px;
-  background: var(--ds-background-neutral-subtle, #f1f2f4);
-  display: inline-flex;
-  align-items: center;
-  color: var(--ds-text-subtlest, #6b778c);
-}
-
-.ask-caty-row--compact .ask-caty-row__field {
-  flex: 0 0 auto;
-  width: 180px;
-  max-width: 100%;
-  height: 28px;
-  padding-right: 8px;
-  border-radius: 0 4px 4px 0;
-  background: var(--ds-background-neutral-subtle, #f1f2f4);
-  box-sizing: border-box;
-}
-
-/* Tighten the input padding inside the now-contained pill — the pill
-   itself supplies the left inset, so the input doesn't need its own. */
-.ask-caty-row--compact .ask-caty-row__input,
-.ask-caty-row--compact .ask-caty-row__placeholder {
-  padding-left: 4px;
-}
+/* The "Search work" row used after AI results land lives directly
+   inside the rainbow frame — no per-element background pills. Prior
+   `.ask-caty-row--compact` rules painted two separate grey rectangles
+   (around the icon and around the input) that produced a 3-zone
+   light-dark-light effect in dark mode. Removed 2026-05-18; the row
+   now uses the same chromeless input styling as the primary AI query
+   row and reads as a single continuous field. */
 
 /* The typed-text input — completely chromeless. Browser defaults
    (focus ring, autofill bg, spellcheck underline, search clear-X)

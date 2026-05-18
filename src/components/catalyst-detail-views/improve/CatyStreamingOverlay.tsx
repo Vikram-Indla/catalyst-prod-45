@@ -232,7 +232,20 @@ export function CatyStreamingOverlay({
 
         if (!res.ok || !res.body) {
           const text = await res.text().catch(() => "");
-          throw new Error(text || `AI request failed (${res.status})`);
+          // Edge function errors are returned as JSON `{ error, message }`.
+          // Extract `.message` so the UI shows the human-readable string
+          // ("Rate limits exceeded, please try again later.") instead of
+          // the raw `{"error":"rate_limited",…}` payload.
+          let humanMsg = text;
+          try {
+            const parsed = JSON.parse(text);
+            if (parsed && typeof parsed.message === "string") {
+              humanMsg = parsed.message;
+            }
+          } catch {
+            /* not JSON — keep raw text */
+          }
+          throw new Error(humanMsg || `AI request failed (${res.status})`);
         }
 
         const reader = res.body.getReader();

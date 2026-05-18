@@ -125,7 +125,20 @@ export const useCatySearch = create<CatySearchState>((set, get) => ({
       });
       if (!res.ok) {
         const text = await res.text().catch(() => "");
-        throw new Error(text || `AI search failed (${res.status})`);
+        // Edge function errors are returned as JSON `{ error, message }`.
+        // Extract `.message` so the UI shows "Rate limits exceeded, please
+        // try again later." instead of the raw `{"error":"rate_limited",…}`
+        // string. Falls back to the raw body if it isn't parseable JSON.
+        let humanMsg = text;
+        try {
+          const parsed = JSON.parse(text);
+          if (parsed && typeof parsed.message === "string") {
+            humanMsg = parsed.message;
+          }
+        } catch {
+          /* not JSON — keep raw text */
+        }
+        throw new Error(humanMsg || `AI search failed (${res.status})`);
       }
       const json = (await res.json()) as {
         filters?: CatyFilter;
