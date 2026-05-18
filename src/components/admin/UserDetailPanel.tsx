@@ -159,7 +159,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
 
       {perms.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
-          <div style={{ fontSize: '12px', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', marginBottom: '10px' }}>No projects assigned yet</div>
+          <div style={{ fontSize: '12px', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginBottom: '10px' }}>No projects assigned yet</div>
           <button
             style={{ fontSize: '11px', fontWeight: 600, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '4px', padding: '5px 12px', cursor: 'pointer' }}
             onClick={() => toast.info('Project picker — Phase 2')}
@@ -227,7 +227,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                                 padding: '3px 7px', fontSize: '9px', fontWeight: 700,
                                 textTransform: 'uppercase', cursor: active ? 'default' : 'pointer',
                                 background: active ? (isDark ? colors.bgDark : colors.bg) : 'transparent',
-                                color: active ? (isDark ? colors.colorDark : colors.color) : ('var(--cp-text-muted, var(--cp-ink-4, #94A3B8))'),
+                                color: active ? (isDark ? colors.colorDark : colors.color) : ('var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'),
                                 border: 'none',
                                 borderRight: i < 3 ? `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}` : 'none',
                               }}
@@ -269,7 +269,7 @@ const ActivityTab: React.FC<{ events: any[]; isDark?: boolean }> = ({ events, is
       {sorted.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
           <ChartTrendIcon label="" size="small" />
-          <div style={{ fontSize: '12px', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', fontWeight: 500 }}>No activity recorded yet</div>
+          <div style={{ fontSize: '12px', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontWeight: 500 }}>No activity recorded yet</div>
           <div style={{ fontSize: '11px', color: 'var(--cp-text-muted, #CBD5E1)', marginTop: '4px' }}>Events will appear here after the first sync</div>
         </div>
       ) : (
@@ -284,7 +284,7 @@ const ActivityTab: React.FC<{ events: any[]; isDark?: boolean }> = ({ events, is
             }} />
             <div style={{ flex: 1 }}>
               <div className="jus-event-text" style={{ fontSize: '11px', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{getEventText(ev)}</div>
-              <div className="jus-event-time" style={{ fontSize: '10px', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', marginTop: '1px' }}>{formatDate(ev.created_at)}</div>
+              <div className="jus-event-time" style={{ fontSize: '10px', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: '1px' }}>{formatDate(ev.created_at)}</div>
             </div>
           </div>
         ))
@@ -307,7 +307,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
     elevated: 'var(--ds-surface-raised, #1A1A1A)', inputBg: 'var(--ds-surface-raised, #1A1A1A)',
   } : {
     surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'rgba(15,23,42,0.10)', text1: 'var(--ds-text, var(--cp-ink-1, #0F172A))',
-    text2: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', text3: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', sunken: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
+    text2: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', text3: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', sunken: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
     elevated: 'var(--ds-surface-sunken, #F8FAFC)', inputBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   };
 

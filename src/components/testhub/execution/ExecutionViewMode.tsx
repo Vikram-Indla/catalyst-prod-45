@@ -83,7 +83,7 @@ export function ExecutionViewMode({
         </div>
         <h2 style={{ fontSize: 18, fontWeight: 700, color: 'hsl(var(--foreground))', margin: 0, lineHeight: 1.3 }}>{testCase.title}</h2>
         {testCase.description && <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', margin: '6px 0 0', lineHeight: 1.4 }}>{testCase.description}</p>}
-        <p style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', margin: '8px 0 0' }}>
+        <p style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', margin: '8px 0 0' }}>
           Run #{executionHistory.execution_number} · Executed {new Date(executionHistory.executed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
           {executionHistory.executor?.full_name ? ` · ${executionHistory.executor.full_name}` : ''}
         </p>
@@ -167,7 +167,7 @@ export function ExecutionViewMode({
                       <p style={{ fontSize: 12, color: 'hsl(var(--foreground))', margin: '2px 0 0' }}>{step.notes}</p>
                     </div>
                   ) : (
-                    <p style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', margin: '8px 0 0', fontStyle: 'italic' }}>No notes</p>
+                    <p style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', margin: '8px 0 0', fontStyle: 'italic' }}>No notes</p>
                   )}
                 </div>
               );

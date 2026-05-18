@@ -130,7 +130,7 @@ export default function ReleaseComparePage() {
               )}
             </div>
           ) : (
-            <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-lg border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] p-8 text-center text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] text-[13px]">
+            <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-lg border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] p-8 text-center text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] text-[13px]">
               Select at least 2 releases above to see a comparison
             </div>
           )}

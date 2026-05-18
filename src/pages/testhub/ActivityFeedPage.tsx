@@ -178,7 +178,7 @@ export default function ActivityFeedPage() {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
-          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
+          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
           <input type="text" placeholder="Search activity..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
             style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
         </div>
@@ -218,7 +218,7 @@ export default function ActivityFeedPage() {
         <div style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
           <Activity size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
           <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: 0 }}>No activity found</p>
-          <p style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', margin: '8px 0 0' }}>Activity will appear here as users make changes</p>
+          <p style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', margin: '8px 0 0' }}>Activity will appear here as users make changes</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -252,7 +252,7 @@ export default function ActivityFeedPage() {
                           {activity.entity_name}
                         </p>
                       </div>
-                      <span style={{ fontSize: 12, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', whiteSpace: 'nowrap' }}>{formatTime(activity.created_at)}</span>
+                      <span style={{ fontSize: 12, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', whiteSpace: 'nowrap' }}>{formatTime(activity.created_at)}</span>
                     </div>
                   );
                 })}

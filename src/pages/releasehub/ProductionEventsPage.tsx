@@ -185,7 +185,7 @@ export default function ProductionEventsPage() {
 
                   {/* Notes (if any) */}
                   {ev.notes && (
-                    <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', marginTop: 6 }}>{ev.notes}</p>
+                    <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: 6 }}>{ev.notes}</p>
                   )}
                 </div>
               </div>

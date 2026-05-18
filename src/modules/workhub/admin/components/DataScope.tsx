@@ -163,7 +163,7 @@ export function DataScope() {
                 <span style={{
                   width: 12, height: 12, borderRadius: '50%', background: color, flexShrink: 0,
                 }} />
-                <span style={{ fontSize: 12, fontWeight: 600, color: isOn ? 'var(--fg-1, var(--cp-ink-1, #0F172A))' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: isOn ? 'var(--fg-1, var(--cp-ink-1, #0F172A))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
                   {p.name}
                 </span>
                 <span style={{
@@ -175,7 +175,7 @@ export function DataScope() {
             )
           })}
           {accessibleProjects.length === 0 && (
-            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>No projects discovered. Test your Jira connection first.</span>
+            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No projects discovered. Test your Jira connection first.</span>
           )}
         </div>
 

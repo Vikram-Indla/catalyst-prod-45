@@ -52,7 +52,7 @@ function SeverityPill({ severity }: { severity: string }) {
 }
 
 function PriorityCell({ priority }: { priority: string | null }) {
-  if (!priority) return <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>—</span>;
+  if (!priority) return <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>—</span>;
   return <PriorityIndicator priority={priority} />;
 }
 
@@ -258,9 +258,9 @@ function AssigneeCell({ defect, nameAvatarMap }: { defect: Defect; nameAvatarMap
     return (
       <div className="flex items-center gap-2.5">
         <div style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', border: '1px solid rgba(15,23,42,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <UserRound size={14} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
+          <UserRound size={14} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
         </div>
-        <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>Unassigned</span>
+        <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Unassigned</span>
       </div>
     );
   }
@@ -422,12 +422,12 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
         return (
           <td key={colKey} style={{ width: columnWidths.key }}>
             <div className="flex items-center gap-1">
-              {attCount > 0 && <span title="Attachments"><Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>}
+              {attCount > 0 && <span title="Attachments"><Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>}
               <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{keyText}</span>
               {isJira && <JiraBadge />}
               {isJira && d.external_url && (
                 <button className="opacity-0 group-hover:opacity-100 transition-opacity duration-150" style={{ marginLeft: 2, padding: 2, borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer' }} title="Open in Jira" onClick={e => { e.stopPropagation(); window.open(d.external_url!, '_blank'); }}>
-                  <ExternalLink size={13} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
+                  <ExternalLink size={13} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
                 </button>
               )}
             </div>

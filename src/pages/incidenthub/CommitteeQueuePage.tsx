@@ -57,7 +57,7 @@ export default function CommitteeQueuePage() {
           {/* Empty */}
           {(!queue || queue.length === 0) && (
             <div className="flex items-center justify-center py-12">
-              <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>No committee members assigned.</p>
+              <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No committee members assigned.</p>
             </div>
           )}
 

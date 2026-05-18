@@ -890,7 +890,7 @@ export function TestRepositoryPage() {
                             {u.full_name}
                           </button>
                         ))}
-                        {assignableUsers.length === 0 && <div style={{ padding: 12, fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>No users found</div>}
+                        {assignableUsers.length === 0 && <div style={{ padding: 12, fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No users found</div>}
                       </div>
                     )}
                   </div>
@@ -929,7 +929,7 @@ export function TestRepositoryPage() {
                             {l.name}
                           </button>
                         ))}
-                        {availableLabels.length === 0 && <div style={{ padding: 12, fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>No labels found</div>}
+                        {availableLabels.length === 0 && <div style={{ padding: 12, fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No labels found</div>}
                       </div>
                     )}
                   </div>

@@ -968,7 +968,7 @@ export default function CleanupPage() {
                   style={{
                     height: 32, fontSize: 12, fontWeight: 700,
                     background: selected.size > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
-                    color: selected.size > 0 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
+                    color: selected.size > 0 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
                     border: selected.size > 0 ? 'none' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                     cursor: selected.size === 0 ? 'not-allowed' : 'pointer',
                   }}
@@ -1368,7 +1368,7 @@ export default function CleanupPage() {
                     <td style={{ padding: '8px 12px' }}>
                       <span style={{
                         fontFamily: 'var(--cp-font-mono)', fontSize: 13,
-                        color: deadlinePassed || alreadyRestored ? 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' : '#065F46',
+                        color: deadlinePassed || alreadyRestored ? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' : '#065F46',
                       }}>
                         {alreadyRestored ? 'Restored' : deadlinePassed ? 'Window expired' : `Expires in ${daysUntilDeadline}d`}
                       </span>

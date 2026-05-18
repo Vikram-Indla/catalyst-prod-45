@@ -492,7 +492,7 @@ function PriorityBadge({ priority }: { priority: string }) {
 }
 
 function ImpactCell({ score }: { score: number }) {
-  const textColor = score >= 4 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : score >= 3 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : score >= 2 ? 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))';
+  const textColor = score >= 4 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : score >= 3 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : score >= 2 ? 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
   return (
     <span style={{
       fontFamily: 'var(--cp-font-mono)', fontSize: '13px', fontWeight: 500,
@@ -505,10 +505,10 @@ function ImpactCell({ score }: { score: number }) {
 
 function QuarterBadge({ quarter }: { quarter?: string | null }) {
   if (!quarter) {
-    return <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>—</span>;
+    return <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>—</span>;
   }
   const qb = QUARTER_BADGE[quarter];
-  if (!qb) return <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>{quarter}</span>;
+  if (!qb) return <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{quarter}</span>;
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',

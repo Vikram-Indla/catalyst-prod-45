@@ -40,15 +40,15 @@ const STATUS_CONFIG: Record<string, { dot: string; bg: string; text: string; lab
   on_track:     { dot: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', text: '#166534', label: 'On Track' },
   at_risk:      { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', text: '#92400E', label: 'At Risk' },
   off_track:    { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)', label: 'Off Track' },
-  draft:        { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Draft' },
-  planned:      { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Planned' },
+  draft:        { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Draft' },
+  planned:      { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Planned' },
   completed:    { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E40AF', label: 'Done' },
-  cancelled:    { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Cancelled' },
+  cancelled:    { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Cancelled' },
   in_progress:  { dot: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E40AF', label: 'In Progress' },
-  not_started:  { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Not Started' },
+  not_started:  { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Not Started' },
   approved:     { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', text: '#115E59', label: 'Approved' },
-  proposed:     { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Proposed' },
-  analyzing:    { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Analyzing' },
+  proposed:     { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Proposed' },
+  analyzing:    { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Analyzing' },
 };
 
 function getProgressColor(v: number) {
@@ -89,8 +89,8 @@ function GhostNode({ label }: { label: string }) {
   return (
     <div className="flex items-center justify-center gap-1.5 border border-dashed rounded-lg"
       style={{ width: 180, padding: 12, borderColor: 'var(--ds-text-disabled, #CBD5E1)', background: 'rgba(248,250,252,0.5)' }}>
-      <Unlink size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
-      <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>No linked {label}</span>
+      <Unlink size={12} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
+      <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No linked {label}</span>
     </div>
   );
 }
@@ -171,7 +171,7 @@ function getChainHealthColor(chain: LockedChainData | null): string {
     case 'Critical': return 'var(--ds-text-danger, #EF4444)';
     case 'Broken': return 'var(--ds-text-danger, #EF4444)';
     case 'Partial': return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
-    default: return 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))';
+    default: return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
   }
 }
 

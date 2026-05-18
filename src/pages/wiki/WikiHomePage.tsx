@@ -145,8 +145,8 @@ export default function WikiHomePage() {
               onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(0,0,0,0.06)'; e.currentTarget.style.boxShadow = 'none'; }}
             >
-              <Search size={15} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
-              <span style={{ flex: 1, fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>Search articles, regulations, permits...</span>
+              <Search size={15} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
+              <span style={{ flex: 1, fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Search articles, regulations, permits...</span>
               <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 9999, background: 'rgba(124,58,237,0.06)', color: 'var(--cp-purple-60, #7C3AED)' }}>AI-powered</span>
               <button style={{ fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 6, border: 'none', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer' }}>Search</button>
             </div>
@@ -306,7 +306,7 @@ const StatCard = React.memo(({ label, value, valueColor, isDark }: { label: stri
     onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(0,0,0,0.06)'; e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F8FAFC)'; }}
   >
     <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 28, fontWeight: 700, color: valueColor || (isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))') }}>{value}</div>
-    <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', letterSpacing: '0.05em', marginTop: 4 }}>{label}</div>
+    <div style={{ fontSize: 11, fontWeight: 650, textTransform: 'uppercase', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', letterSpacing: '0.05em', marginTop: 4 }}>{label}</div>
   </div>
 ));
 StatCard.displayName = 'StatCard';
@@ -432,7 +432,7 @@ LearningPathCard.displayName = 'LearningPathCard';
 const ArticleRow = React.memo(({ a, navigate, bookmarked, onToggleBookmark, isDark }: { a: any; navigate: any; bookmarked: boolean; onToggleBookmark: () => void; isDark?: boolean }) => {
   const formatIcon = a.format === 'pdf'
     ? <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 4, background: isDark ? 'rgba(220,38,38,0.15)' : '#FEE2E2', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>PDF</span>
-    : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />;
+    : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />;
 
   const verStatus = a.verification_status || 'unverified';
   const verBadge = verStatus === 'verified'

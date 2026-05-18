@@ -47,7 +47,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
   active: { label: 'Active', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: Power },
   maintenance: { label: 'Maintenance', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', icon: Wrench },
   inactive: { label: 'Inactive', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', icon: Power },
-  deprecated: { label: 'Deprecated', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--ds-surface-sunken, #F8FAFC)', icon: XCircle },
+  deprecated: { label: 'Deprecated', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--ds-surface-sunken, #F8FAFC)', icon: XCircle },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
@@ -211,7 +211,7 @@ export default function EnvironmentsListPage() {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
-          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
+          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
           <input
             type="text"
             placeholder="Search environments..."
@@ -264,7 +264,7 @@ export default function EnvironmentsListPage() {
         <div style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
           <Server size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
           <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: 0 }}>No environments found</p>
-          <p style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', margin: '8px 0 0' }}>Add an environment to get started</p>
+          <p style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', margin: '8px 0 0' }}>Add an environment to get started</p>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 16 }}>
@@ -305,7 +305,7 @@ export default function EnvironmentsListPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: status.color }}>
                     <StatusIcon size={14} /> {status.label}
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>Checked: {formatDate(env.last_health_check)}</div>
+                  <div style={{ fontSize: 12, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Checked: {formatDate(env.last_health_check)}</div>
                 </div>
               </div>
             );

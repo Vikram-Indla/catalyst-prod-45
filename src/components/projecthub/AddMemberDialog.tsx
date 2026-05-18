@@ -101,12 +101,12 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
           </p>
 
           <div className="flex items-center gap-2 rounded-lg bg-white dark:bg-transparent border border-[var(--ds-text-disabled,#CBD5E1)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ height: 40, padding: '0 14px' }}>
-            <Search size={15} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-[#7D7D7D]" />
+            <Search size={15} className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]" />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by name, role, or email..."
-              className="flex-1 bg-transparent outline-none text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-[var(--ds-text,#EDEDED)] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:placeholder:text-[#7D7D7D]"
+              className="flex-1 bg-transparent outline-none text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-[var(--ds-text,#EDEDED)] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:placeholder:text-[#7D7D7D]"
               style={{ fontSize: 13 }}
               autoFocus
             />
@@ -119,7 +119,7 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
               <Loader2 size={20} className="animate-spin text-slate-400 dark:text-[#7D7D7D]" />
             </div>
           ) : available.length === 0 ? (
-            <div className="text-center py-10 text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-[#7D7D7D]" style={{ fontSize: 13 }}>
+            <div className="text-center py-10 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]" style={{ fontSize: 13 }}>
               {search ? `No users match "${search}"` : 'All users are already members'}
             </div>
           ) : (
@@ -143,12 +143,12 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
                     <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 11, lineHeight: '16px' }}>
                       {u.role_name || 'No role'}
                       {u.department_name && <span className="text-[var(--ds-text-disabled,#CBD5E1)] dark:text-[var(--ds-border-bold,#454545)]"> · </span>}
-                      {u.department_name && <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-[#7D7D7D]">{u.department_name}</span>}
+                      {u.department_name && <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]">{u.department_name}</span>}
                     </div>
                   </div>
 
                   {u.email && (
-                    <span className="flex-shrink-0 text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-[#7D7D7D]" style={{ fontSize: 11 }}>{u.email.split('@')[0]}</span>
+                    <span className="flex-shrink-0 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]" style={{ fontSize: 11 }}>{u.email.split('@')[0]}</span>
                   )}
 
                   <button
@@ -165,7 +165,7 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
         </div>
 
         <div className="px-5 py-3 flex items-center justify-between border-t border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
-          <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-[#7D7D7D]" style={{ fontSize: 11 }}>
+          <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]" style={{ fontSize: 11 }}>
             {available.length} user{available.length !== 1 ? 's' : ''} available
           </span>
           <button

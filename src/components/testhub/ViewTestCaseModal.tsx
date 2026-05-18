@@ -1199,7 +1199,7 @@ export function ViewTestCaseModal({
                           </div>
                           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                             <button onClick={() => { setAddingGherkin(false); setNewGherkinFeature(''); setNewGherkinScenario(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6, background: 'transparent', color: 'var(--ds-text-subtle, #475569)', cursor: 'pointer' }}>Cancel</button>
-                            <button onClick={handleAddGherkinScenario} disabled={!newGherkinScenario.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newGherkinScenario.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: newGherkinScenario.trim() ? 'pointer' : 'not-allowed' }}>Add Scenario</button>
+                            <button onClick={handleAddGherkinScenario} disabled={!newGherkinScenario.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newGherkinScenario.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: newGherkinScenario.trim() ? 'pointer' : 'not-allowed' }}>Add Scenario</button>
                           </div>
                         </div>
                       ) : (
@@ -1252,7 +1252,7 @@ export function ViewTestCaseModal({
                           />
                           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                             <button onClick={() => { setAddingFreeText(false); setNewFreeText(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6, background: 'transparent', color: 'var(--ds-text-subtle, #475569)', cursor: 'pointer' }}>Cancel</button>
-                            <button onClick={handleAddFreeTextBlock} disabled={!newFreeText.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newFreeText.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: newFreeText.trim() ? 'pointer' : 'not-allowed' }}>Add Test Step</button>
+                            <button onClick={handleAddFreeTextBlock} disabled={!newFreeText.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newFreeText.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: newFreeText.trim() ? 'pointer' : 'not-allowed' }}>Add Test Step</button>
                           </div>
                         </div>
                       ) : (
@@ -1351,7 +1351,7 @@ export function ViewTestCaseModal({
                           </div>
                           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                             <button onClick={() => { setAddingStep(false); setNewStepAction(''); setNewStepExpected(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', borderRadius: 6, background: 'transparent', color: 'var(--fg-3)', cursor: 'pointer' }}>Cancel</button>
-                            <button onClick={handleAddStep} disabled={!newStepAction.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newStepAction.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: newStepAction.trim() ? 'pointer' : 'not-allowed' }}>Add Step</button>
+                            <button onClick={handleAddStep} disabled={!newStepAction.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newStepAction.trim() ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: newStepAction.trim() ? 'pointer' : 'not-allowed' }}>Add Step</button>
                           </div>
                         </div>
                       ) : (

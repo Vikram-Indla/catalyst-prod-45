@@ -138,7 +138,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
   const T = {
     text1: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
     text2: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
-    text3: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))',
+    text3: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
     hover: 'var(--cp-interact-hover, rgba(15,23,42,0.04))',
     press: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
     borderStrong: isDark ? 'var(--ds-border-bold, #454545)' : 'rgba(15,23,42,0.2)',
@@ -162,7 +162,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0,
         }}>
-          <UserCheck size={16} color={'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))'} />
+          <UserCheck size={16} color={'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'} />
         </div>
       );
     }
@@ -246,7 +246,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
             </span>
             {/* M-05: timestamp + unread indicator cluster (right-aligned) */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-              <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontWeight: 400, whiteSpace: 'nowrap', fontFamily: 'var(--cp-font-body)' }}>
+              <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontWeight: 400, whiteSpace: 'nowrap', fontFamily: 'var(--cp-font-body)' }}>
                 {formatTimestamp(notification.created_at)}
               </span>
               {/* C-01: unread dot OR mark-read button — inline, no overlap */}

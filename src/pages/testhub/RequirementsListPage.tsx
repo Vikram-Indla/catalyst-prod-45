@@ -181,7 +181,7 @@ export default function RequirementsListPage() {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
-          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
+          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
           <input
             type="text"
             placeholder="Search requirements..."
@@ -238,7 +238,7 @@ export default function RequirementsListPage() {
         <div style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }}>
           <FileCheck size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
           <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: 0 }}>No requirements found</p>
-          <p style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', margin: '8px 0 0' }}>Add requirements to track test coverage</p>
+          <p style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', margin: '8px 0 0' }}>Add requirements to track test coverage</p>
         </div>
       ) : (
         <div style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 8, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', overflow: 'hidden' }}>

@@ -68,7 +68,7 @@ function StatPill({ icon: Icon, label, value, color = 'var(--ds-text-brand, var(
   return (
     <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-[var(--ds-surface-sunken,#F8FAFC)] border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]">
       <Icon className="h-3.5 w-3.5 shrink-0" style={{ color }} />
-      <span className="text-[10px] uppercase tracking-wider font-semibold text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]">{label}</span>
+      <span className="text-[10px] uppercase tracking-wider font-semibold text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]">{label}</span>
       <span className="text-[13px] font-semibold text-[var(--ds-text,var(--cp-ink-1, #0F172A))]">{value}</span>
     </div>
   );
@@ -95,12 +95,12 @@ function WizardStepper({ step }: { step: number }) {
                 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-200
                 ${done ? 'bg-[var(--ds-text-success,var(--cp-success, #16A34A))] text-white' : ''}
                 ${active ? 'bg-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] text-white ring-2 ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/30 ring-offset-1' : ''}
-                ${!done && !active ? 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]' : ''}
+                ${!done && !active ? 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]' : ''}
               `}>
                 {done ? <CheckMarkIcon label="" size="small" /> : <Icon className="h-3.5 w-3.5" />}
               </div>
               <span className={`text-xs font-medium hidden sm:block ${
-                active ? 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]' : done ? 'text-[var(--ds-text,var(--cp-ink-1, #0F172A))]' : 'text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]'
+                active ? 'text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]' : done ? 'text-[var(--ds-text,var(--cp-ink-1, #0F172A))]' : 'text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]'
               }`}>
                 {s.label}
               </span>
@@ -238,7 +238,7 @@ export function NotionImportWizard() {
                     value={token}
                     onChange={e => setToken((e.target as HTMLInputElement).value)}
                   />
-                  <p className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] mt-1.5">
+                  <p className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] mt-1.5">
                     Create at{' '}
                     <a href="https://www.notion.so/my-integrations" target="_blank" rel="noopener noreferrer"
                        className="underline text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]">
@@ -260,7 +260,7 @@ export function NotionImportWizard() {
                     value={dbUrl}
                     onChange={e => setDbUrl((e.target as HTMLInputElement).value)}
                   />
-                  <p className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] mt-1.5">
+                  <p className="text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] mt-1.5">
                     Open your database in Notion, copy the full URL from the browser bar
                   </p>
                 </div>
@@ -338,7 +338,7 @@ export function NotionImportWizard() {
                     <tbody>
                       {notionRows.slice(0, 8).map((row, idx) => (
                         <tr key={row.notionPageId} className="border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] hover:bg-[var(--ds-surface-sunken,#F8FAFC)]">
-                          <td className="px-3 py-1.5 text-[11px] font-mono text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]">{idx + 1}</td>
+                          <td className="px-3 py-1.5 text-[11px] font-mono text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]">{idx + 1}</td>
                           {notionProps.map(p => (
                             <td key={p.id} className="px-3 py-1.5 whitespace-nowrap text-[var(--ds-text,var(--cp-ink-1, #0F172A))] max-w-[200px] truncate text-[13px]">
                               {row.properties[p.name] || <span className="text-[var(--ds-text-disabled,#CBD5E1)]">—</span>}
@@ -350,7 +350,7 @@ export function NotionImportWizard() {
                   </table>
                 </div>
                 {notionRows.length > 8 && (
-                  <div className="px-3 py-2 text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] bg-[var(--ds-surface-sunken,#FAFBFC)] border-t border-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]">
+                  <div className="px-3 py-2 text-[11px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] bg-[var(--ds-surface-sunken,#FAFBFC)] border-t border-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]">
                     + {notionRows.length - 8} more rows
                   </div>
                 )}
@@ -370,7 +370,7 @@ export function NotionImportWizard() {
                 </div>
                 <div className="flex gap-2 text-[11px]">
                   <span className="px-2 py-1 rounded bg-[var(--ds-background-success,#DCFCE7)] text-[var(--ds-text-success,var(--cp-success, #16A34A))] font-semibold">{mappedCount} mapped</span>
-                  <span className="px-2 py-1 rounded bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] font-semibold">{skippedCount} skipped</span>
+                  <span className="px-2 py-1 rounded bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] font-semibold">{skippedCount} skipped</span>
                 </div>
               </div>
 
@@ -387,8 +387,8 @@ export function NotionImportWizard() {
                   return (
                     <div key={p.id} className={`flex items-center px-4 py-2 gap-2 border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] last:border-b-0 ${isSkip ? 'bg-[var(--ds-surface-sunken,#FAFBFC)]' : ''}`}>
                       <div className="flex-1 flex items-center gap-2 min-w-0">
-                        <span className={`text-[13px] font-medium truncate ${isSkip ? 'text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]' : 'text-[var(--ds-text,var(--cp-ink-1, #0F172A))]'}`}>{p.name}</span>
-                        <span className="shrink-0 text-[9px] uppercase tracking-wider font-bold px-1 py-px rounded bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]">{p.type}</span>
+                        <span className={`text-[13px] font-medium truncate ${isSkip ? 'text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]' : 'text-[var(--ds-text,var(--cp-ink-1, #0F172A))]'}`}>{p.name}</span>
+                        <span className="shrink-0 text-[9px] uppercase tracking-wider font-bold px-1 py-px rounded bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]">{p.type}</span>
                       </div>
                       <ArrowRightIcon label="" size="small" />
                       <div className="w-44 shrink-0">
@@ -431,7 +431,7 @@ export function NotionImportWizard() {
                     ].map((row, i) => (
                       <div key={row.label} className={`flex items-center justify-between px-4 py-2.5 ${i < 4 ? 'border-b border-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))]' : ''}`}>
                         <div className="flex items-center gap-2">
-                          <row.icon className="h-3.5 w-3.5 text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]" />
+                          <row.icon className="h-3.5 w-3.5 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
                           <span className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))]">{row.label}</span>
                         </div>
                         <span className="text-[13px] font-semibold text-[var(--ds-text,var(--cp-ink-1, #0F172A))]">{row.value}</span>

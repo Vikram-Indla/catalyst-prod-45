@@ -68,7 +68,7 @@ const HEALTH_STYLES: Record<string, { bg: string; color: string; dot: string }> 
 };
 
 export function HealthBadge({ health }: { health: string | null }) {
-  if (!health) return <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>—</span>;
+  if (!health) return <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>—</span>;
   const s = HEALTH_STYLES[health] || HEALTH_STYLES.on_track;
   const label = health.split('_').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
   return (
@@ -111,7 +111,7 @@ function hashName(name: string): number {
 }
 
 export function AvatarStack({ names }: { names: string[] }) {
-  if (names.length === 0) return <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>—</span>;
+  if (names.length === 0) return <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>—</span>;
 
   const show = Math.min(names.length, 4);
   const overflow = names.length - show;

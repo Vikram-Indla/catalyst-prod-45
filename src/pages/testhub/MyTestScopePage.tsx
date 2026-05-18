@@ -177,11 +177,11 @@ export default function MyTestScopePage() {
           textAlign: 'center', padding: 60, backgroundColor: 'var(--ds-surface, #FFF)',
           borderRadius: 12, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
         }}>
-          <UserCheck size={48} style={{ marginBottom: 16, opacity: 0.3, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
+          <UserCheck size={48} style={{ marginBottom: 16, opacity: 0.3, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
           <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', margin: '0 0 8px' }}>
             No active assignments
           </h3>
-          <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', margin: 0 }}>
+          <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', margin: 0 }}>
             Contact your Test Manager to get test cases assigned.
           </p>
         </div>
@@ -190,8 +190,8 @@ export default function MyTestScopePage() {
           textAlign: 'center', padding: 40, backgroundColor: 'var(--ds-surface, #FFF)',
           borderRadius: 12, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
         }}>
-          <Filter size={32} style={{ marginBottom: 12, opacity: 0.3, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
-          <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', margin: 0 }}>
+          <Filter size={32} style={{ marginBottom: 12, opacity: 0.3, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
+          <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', margin: 0 }}>
             No items match the current filter.
           </p>
         </div>

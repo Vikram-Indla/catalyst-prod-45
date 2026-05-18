@@ -352,7 +352,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
     if (!column.sortable) return null;
     const isActive = sortConfig.column === column.key;
     return (
-      <span className={cn("inline-flex ml-1", isActive ? "text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" : "text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]")}>
+      <span className={cn("inline-flex ml-1", isActive ? "text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" : "text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]")}>
         {isActive && sortConfig.direction === 'asc' ? (
           <ChevronUp className="h-3 w-3" />
         ) : (

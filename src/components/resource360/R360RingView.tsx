@@ -168,7 +168,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
           const cy = SPOTS[i].y + 9;
           return (
             <line key={`spoke-${i}`} x1="50%" y1={`${centerTopPct}%`} x2={`${cx}%`} y2={`${cy}%`}
-              stroke="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" strokeWidth="2" strokeDasharray="8 5" strokeLinecap="round" />
+              stroke="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" strokeWidth="2" strokeDasharray="8 5" strokeLinecap="round" />
           );
         })}
       </svg>

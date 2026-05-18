@@ -132,12 +132,12 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
           onClick={e => { e.stopPropagation(); onClear(); }}
           style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: 9999, cursor: 'pointer', color: 'var(--cp-text-tertiary)' }}
           onMouseEnter={e => (e.currentTarget.style.color = 'var(--ds-text-danger, var(--cp-danger, #DC2626))')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))')}
         >
           <X size={10} />
         </span>
       )}
-      <ChevronDown size={11} color={active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))'} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 100ms' }} />
+      <ChevronDown size={11} color={active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 100ms' }} />
     </button>
   );
 }
@@ -147,11 +147,11 @@ const STATUS_DOT_COLORS: Record<string, string> = {
   'Done': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Closed': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Resolved': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'Released': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'In Production': 'var(--ds-text-success, var(--cp-success, #16A34A))',
   'In Development': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'In Progress': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'In Beta': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'In QA': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'UAT Ready': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'In Review': 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
   'Ready for Production': 'var(--cp-teal-60, #0D9488)', 'Ready for QA': 'var(--cp-teal-60, #0D9488)',
-  'Backlog': 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', 'To Do': 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', 'Open': 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
+  'Backlog': 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', 'To Do': 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', 'Open': 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
   'On Hold': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Awaiting Info': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Awaiting Information': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'Blocked': 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
 };
 function getStatusDotColor(status: string): string {
-  return STATUS_DOT_COLORS[status] || 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))';
+  return STATUS_DOT_COLORS[status] || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
 }
 
 /* ── Priority icon (4 bars) ── */
@@ -209,7 +209,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
               height: 32, background: 'var(--cp-bg-page)', borderRadius: 6, border: '1px solid transparent',
               transition: 'border-color 80ms',
             }}>
-              <Search size={13} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" />
+              <Search size={13} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
               <input
                 value={q} onChange={e => setQ(e.target.value)}
                 placeholder="Search..."
@@ -390,7 +390,7 @@ export default function HierarchyPage() {
           onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
           onBlur={e => { e.currentTarget.style.borderColor = 'var(--cp-border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
         >
-          <Search size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" style={{ flexShrink: 0 }} />
+          <Search size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" style={{ flexShrink: 0 }} />
           <input
             value={searchInput}
             onChange={e => handleSearchChange(e.target.value)}
@@ -569,7 +569,7 @@ export default function HierarchyPage() {
           ) : filteredItems.length === 0 ? (
             <div style={{ border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 8, background: 'var(--cp-bg-elevated)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300, gap: 12, textAlign: 'center', padding: 48 }}>
               <div style={{ width: 48, height: 48, borderRadius: 12, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Search size={20} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" />
+                <Search size={20} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
               </div>
               <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary)', margin: 0 }}>
                 {search || activeFilterCount > 0 ? 'No items match your filters' : 'No work items found'}

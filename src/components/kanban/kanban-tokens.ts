@@ -48,7 +48,7 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     textPrimary: '#292A2E',    /* Jira primary text */
     textSecondary: '#42526E',
     textMuted: '#505258',      /* Jira muted (column name, issue key) */
-    textDisabled: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
+    textDisabled: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
     badgeBg: 'transparent',    /* Jira: count badge is plain text, no pill */
     cardBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     cardBorder: 'transparent', /* Jira cards are shadow-only, no border */

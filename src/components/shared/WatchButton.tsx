@@ -26,7 +26,7 @@ export default function WatchButton({ issueId, size = "sm", showCount = false, c
     await toggleWatch();
     if (isWatching) {
       toast("Unwatched", {
-        icon: <EyeOff size={16} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" />,
+        icon: <EyeOff size={16} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />,
         duration: 2000,
       });
     } else {
@@ -57,7 +57,7 @@ export default function WatchButton({ issueId, size = "sm", showCount = false, c
           borderRadius: 4,
           border: "none",
           background: isWatching ? "rgba(37,99,235,0.08)" : "transparent",
-          color: isWatching ? "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" : "var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))",
+          color: isWatching ? "var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" : "var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))",
           cursor: isLoading ? "not-allowed" : "pointer",
           opacity: isLoading ? 0.5 : 1,
           transition: "background 120ms, color 120ms",
@@ -72,7 +72,7 @@ export default function WatchButton({ issueId, size = "sm", showCount = false, c
         onMouseLeave={(e) => {
           if (!isWatching) {
             e.currentTarget.style.background = "transparent";
-            e.currentTarget.style.color = "var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))";
+            e.currentTarget.style.color = "var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))";
           }
         }}
       >
@@ -83,7 +83,7 @@ export default function WatchButton({ issueId, size = "sm", showCount = false, c
           style={{
             fontFamily: 'var(--cp-font-mono)',
             fontSize: 10,
-            color: "var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))",
+            color: "var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))",
             minWidth: 12,
           }}
         >

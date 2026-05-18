@@ -92,7 +92,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
             background: 'transparent', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <CloseIcon label="Close" size="small" primaryColor="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" />
+            <CloseIcon label="Close" size="small" primaryColor="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
           </button>
         </div>
 

@@ -287,7 +287,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
           >
             <div className="p-2 border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
               <div className="relative">
-                <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]" />
+                <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]" />
                 <input
                   autoFocus
                   value={leadFilter}

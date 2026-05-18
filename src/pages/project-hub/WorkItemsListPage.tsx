@@ -267,9 +267,9 @@ export default function WorkItemsListPage() {
       <div className="px-6 py-4 max-w-[1400px] mx-auto">
         {/* Breadcrumb */}
         <div className="flex items-center gap-1 mb-3">
-          <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>ProjectHub</span>
+          <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>ProjectHub</span>
           <span style={{ fontSize: 10, color: 'var(--ds-text-disabled, #CBD5E1)' }}>/</span>
-          <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>{project?.key ?? key?.toUpperCase()} — {project?.name ?? 'Loading…'}</span>
+          <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{project?.key ?? key?.toUpperCase()} — {project?.name ?? 'Loading…'}</span>
           <span style={{ fontSize: 10, color: 'var(--ds-text-disabled, #CBD5E1)' }}>/</span>
           <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>List</span>
         </div>

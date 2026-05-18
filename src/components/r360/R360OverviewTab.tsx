@@ -336,7 +336,7 @@ export function OverviewTab({
         <SectionTitle>WORK MIX</SectionTitle>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {workMix.map(row => {
-            const tc = TYPE_COLORS[row.type] || { color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', opacity: 0.6 };
+            const tc = TYPE_COLORS[row.type] || { color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', opacity: 0.6 };
             return (
               <div
                 key={row.type}

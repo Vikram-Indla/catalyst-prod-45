@@ -82,7 +82,7 @@ function useTokens(dk: boolean) {
     borderFocus:  'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
     text1:        dk ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))',
     text2:        dk ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #475569)',
-    text3:        dk ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
+    text3:        dk ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
     textMuted:    dk ? 'var(--ds-text-subtlest, #878787)' : '#9ca3af',
     textDim:      dk ? 'var(--ds-text-subtlest, #878787)' : '#d1d5db',
     inputBg:      dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',

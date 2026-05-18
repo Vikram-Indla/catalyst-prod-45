@@ -17,7 +17,7 @@ function getStatusStyle(category: string) {
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  Highest: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', High: '#EA580C', Medium: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', Low: 'var(--ds-text-brand, #3B82F6)', Lowest: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
+  Highest: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', High: '#EA580C', Medium: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', Low: 'var(--ds-text-brand, #3B82F6)', Lowest: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
 };
 
 interface Props {

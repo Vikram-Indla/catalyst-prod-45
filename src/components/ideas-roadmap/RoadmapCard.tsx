@@ -79,7 +79,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
                 opacity: 0, transition: 'opacity 150ms',
               }}
             >
-              <Move size={10} color={'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))'} />
+              <Move size={10} color={'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'} />
             </button>
             {moveOpen && (
               <div style={{

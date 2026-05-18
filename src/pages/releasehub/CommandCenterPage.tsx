@@ -273,7 +273,7 @@ export default function CommandCenterPage() {
               </div>
             </div>
           ) : (
-            <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]">No deployed changes yet</p>
+            <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]">No deployed changes yet</p>
           )}
 
           {/* AI Post-Deployment Summary */}
@@ -296,7 +296,7 @@ export default function CommandCenterPage() {
             <SectionHeader title="Release Status" isDark={isDark} action={<button onClick={() => navigate('/release-hub/releases')} className="text-[12px] font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] hover:underline">View all</button>} />
           </div>
           {relLoading ? <SkeletonRows count={3} /> : activeRels.length === 0 ? (
-            <div className="px-5 py-8 text-center text-[13px]" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>No active releases</div>
+            <div className="px-5 py-8 text-center text-[13px]" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No active releases</div>
           ) : (
             <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
               <thead>
@@ -426,7 +426,7 @@ export default function CommandCenterPage() {
                   const pass = !gate.noData && Math.round(gate.rate * 100) >= gate.threshold;
                   const borderColor = gate.noData ? 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' : pass ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
                   const GateIcon = gate.noData ? Minus : pass ? CheckCircle2 : XCircle;
-                  const iconColor = gate.noData ? 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' : pass ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
+                  const iconColor = gate.noData ? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' : pass ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
 
                   return (
                     <div
@@ -501,13 +501,13 @@ export default function CommandCenterPage() {
             <SectionHeader title="Recent Production Events" isDark={isDark} action={<button onClick={() => navigate('/release-hub/production-events')} className="text-[12px] font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] hover:underline">View all</button>} />
           </div>
           {prodEvents.length === 0 ? (
-            <div className="px-5 py-8 text-center text-[13px]" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>No production events</div>
+            <div className="px-5 py-8 text-center text-[13px]" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No production events</div>
           ) : (
             <div className="px-5 pb-4 space-y-3">
               {prodEvents.slice(0, 4).map((ev: any) => (
                 <div key={ev.id} className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{
-                    border: `2px solid ${ev.deployment_result === 'SUCCESS' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : ev.deployment_result === 'ROLLED_BACK' ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))'}`,
+                    border: `2px solid ${ev.deployment_result === 'SUCCESS' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : ev.deployment_result === 'ROLLED_BACK' ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'}`,
                     background: isDark ? 'var(--cp-bg-surface, #242528)' : 'white',
                   }} />
                   <div className="flex-1 min-w-0">

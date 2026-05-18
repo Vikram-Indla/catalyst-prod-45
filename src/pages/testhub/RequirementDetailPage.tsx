@@ -87,12 +87,12 @@ const RequirementDefectsPanel = ({ requirementId }: { requirementId?: string }) 
   const { data: defects = [], isLoading } = useDefectsByRequirementId(requirementId);
 
   if (isLoading) {
-    return <div style={{ padding: 24, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', textAlign: 'center' }}>Loading defects...</div>;
+    return <div style={{ padding: 24, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textAlign: 'center' }}>Loading defects...</div>;
   }
 
   if (defects.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: 40, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>
+      <div style={{ textAlign: 'center', padding: 40, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
         <Bug size={40} style={{ marginBottom: 12, opacity: 0.5 }} />
         <p style={{ margin: 0 }}>No defects linked to this requirement.</p>
       </div>
@@ -314,7 +314,7 @@ export default function RequirementDetailPage() {
         </div>
 
         {linkedTests.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: 40, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>
+          <div style={{ textAlign: 'center', padding: 40, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
             <Link2 size={40} style={{ marginBottom: 12, opacity: 0.5 }} />
             <p style={{ margin: 0 }}>No test cases linked</p>
             <p style={{ margin: '8px 0 0', fontSize: 13 }}>Link test cases to track coverage</p>
@@ -347,7 +347,7 @@ export default function RequirementDetailPage() {
                     View <ChevronRight size={14} />
                   </button>
                   <button onClick={() => unlinkTest(test.link_id)}
-                    style={{ width: 32, height: 32, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    style={{ width: 32, height: 32, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Unlink size={14} />
                   </button>
                 </div>

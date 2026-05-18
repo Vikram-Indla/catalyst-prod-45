@@ -362,7 +362,7 @@ export default function ReqAssistGenerate() {
                   paddingBottom: i < genResult.sections.length - 1 ? 20 : 0,
                   borderBottom: i < genResult.sections.length - 1 ? '0.75px solid rgba(0,0,0,0.06)' : 'none',
                 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', textTransform: 'uppercase' as const, letterSpacing: '0.06em', fontFamily: 'var(--cp-font-body)' }}>SECTION {section.sectionNumber}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textTransform: 'uppercase' as const, letterSpacing: '0.06em', fontFamily: 'var(--cp-font-body)' }}>SECTION {section.sectionNumber}</span>
                   <h4 style={{ fontSize: 15, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '4px 0 8px', fontFamily: 'var(--cp-font-heading)' }}>{section.title}</h4>
                   <div className="ra-brd-markdown">
                     <ReactMarkdown components={{

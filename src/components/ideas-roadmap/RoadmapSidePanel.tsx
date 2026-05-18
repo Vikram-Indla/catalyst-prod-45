@@ -81,7 +81,7 @@ export function RoadmapSidePanel({
   }
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', textTransform: 'uppercase',
+    fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textTransform: 'uppercase',
     letterSpacing: '0.05em', fontFamily: 'var(--cp-font-body)',
   };
 

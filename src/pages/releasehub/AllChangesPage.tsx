@@ -116,7 +116,7 @@ export default function AllChangesPage() {
       <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
         <div className="flex items-center gap-2">
           <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }} />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
             <input type="text" placeholder="Search changes..." value={search} onChange={e => setSearch(e.target.value)}
               className="h-9 w-[280px] pl-9 pr-3 rounded text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
               style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }} />
@@ -127,12 +127,12 @@ export default function AllChangesPage() {
         <div className="flex items-center gap-1 rounded-md p-0.5" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
           <button onClick={() => setParam('view', 'list')}
             className="h-7 px-2.5 rounded flex items-center gap-1 text-[11px] font-medium"
-            style={view === 'list' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' } : { color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>
+            style={view === 'list' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' } : { color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
             <List size={12} /> List
           </button>
           <button onClick={() => setParam('view', 'kanban')}
             className="h-7 px-2.5 rounded flex items-center gap-1 text-[11px] font-medium"
-            style={view === 'kanban' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' } : { color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>
+            style={view === 'kanban' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' } : { color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
             <Columns size={12} /> Kanban
           </button>
         </div>
@@ -186,7 +186,7 @@ export default function AllChangesPage() {
                     <td className="px-3 py-0"><StatusLozenge status={c.status} /></td>
                     <td className="px-3 py-0"><RiskBadge risk={mapRisk(c.risk_level)} /></td>
                     <td className="px-3 py-0">
-                      {relName ? <span className="text-[12px] font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]">{relName}</span> : <span style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>—</span>}
+                      {relName ? <span className="text-[12px] font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]">{relName}</span> : <span style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>—</span>}
                     </td>
                     <td className="px-3 py-0"><SourceBadge source={c.source} /></td>
                     <td className="px-3 py-0">
@@ -224,7 +224,7 @@ function KanbanView({ changes, onSelect, isDark }: { changes: any[]; onSelect: (
           <div key={col.key} className="rounded-lg" style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', minHeight: 200 }}>
             <div className="px-3 py-2 flex items-center gap-2">
               <span className="text-[11px] font-bold uppercase tracking-[0.06em]" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{col.label}</span>
-              <span className="text-[10px] font-bold rounded-full px-1.5" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>{items.length}</span>
+              <span className="text-[10px] font-bold rounded-full px-1.5" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>{items.length}</span>
             </div>
             <div className="px-2 pb-2 space-y-2">
               {items.map((c: any) => (

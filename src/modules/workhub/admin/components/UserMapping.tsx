@@ -252,7 +252,7 @@ export function UserMapping() {
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: s.color, flexShrink: 0 }} />
             <div>
               <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))' }}>{s.value}</div>
-              <div style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', textTransform: 'uppercase', letterSpacing: '.3px' }}>{s.label}</div>
+              <div style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textTransform: 'uppercase', letterSpacing: '.3px' }}>{s.label}</div>
             </div>
           </div>
         ))}
@@ -397,7 +397,7 @@ export function UserMapping() {
                 {['#', 'CATALYST RESOURCE', 'DEPT', 'JIRA ACCOUNT (MAPPED)', 'SUGGESTED MATCH', 'ACTION'].map(h => (
                   <th key={h} style={{
                     fontFamily: 'var(--cp-font-heading)', fontSize: 9, textTransform: 'uppercase',
-                    color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', padding: '10px 12px', textAlign: 'left', fontWeight: 600,
+                    color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', padding: '10px 12px', textAlign: 'left', fontWeight: 600,
                     letterSpacing: '.4px', borderBottom: `1px solid ${borderColor}`,
                   }}>
                     {h}
@@ -415,7 +415,7 @@ export function UserMapping() {
                     background: isMapped ? 'var(--ds-surface, #fff)' : '#FEFCE8',
                   }}>
                     {/* # */}
-                    <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', width: 36, fontSize: 11 }}>
+                    <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', width: 36, fontSize: 11 }}>
                       {idx + 1}
                     </td>
 
@@ -427,7 +427,7 @@ export function UserMapping() {
                           <div style={{ fontWeight: 600, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', fontSize: 12 }}>
                             {profile.full_name || 'Unnamed'}
                           </div>
-                          <div style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>
+                          <div style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
                             {profile.email || '—'}
                           </div>
                         </div>
@@ -556,7 +556,7 @@ export function UserMapping() {
               })}
               {visibleRows.length === 0 && (
                 <tr>
-                  <td colSpan={6} style={{ padding: 40, textAlign: 'center', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontSize: 12 }}>
+                  <td colSpan={6} style={{ padding: 40, textAlign: 'center', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontSize: 12 }}>
                     {viewMode === 'unmapped' ? 'All resources in this department are mapped! 🎉' : 'No resources found for the selected filters.'}
                   </td>
                 </tr>

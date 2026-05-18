@@ -81,7 +81,7 @@ export const ISSUE_TYPE_CONFIG: Record<IssueType, { icon: string; color: string;
   story:   { icon: '●', color: 'var(--cp-teal-60, #0D9488)', label: 'Story' },
   bug:     { icon: '⬡', color: 'var(--cp-danger, #DC2626)', label: 'Bug' },
   task:    { icon: '■', color: 'var(--cp-warning, #D97706)', label: 'Task' },
-  subtask: { icon: '○', color: 'var(--cp-ink-4, #94A3B8)', label: 'Subtask' },
+  subtask: { icon: '○', color: 'var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))', label: 'Subtask' },
 };
 
 /** Default board columns */

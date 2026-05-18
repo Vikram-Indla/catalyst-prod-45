@@ -159,7 +159,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
                 </button>
               }
             />
-            <span style={{ fontSize: '10px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', marginTop: '2px', display: 'block' }}>
+            <span style={{ fontSize: '10px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: '2px', display: 'block' }}>
               Min 8 characters. Stored securely in Catalyst (bcrypt).
             </span>
             {errors.password && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', marginTop: '1px', display: 'block' }}>{errors.password}</span>}

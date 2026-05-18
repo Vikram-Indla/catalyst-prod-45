@@ -245,7 +245,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
             <div className="p-5 space-y-5">
               {/* Description */}
               <div>
-                <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
                   Description
                 </div>
                 <p className="text-[13px] text-muted-foreground italic leading-relaxed">

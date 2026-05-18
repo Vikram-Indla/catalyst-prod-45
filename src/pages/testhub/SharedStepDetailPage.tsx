@@ -132,17 +132,17 @@ export default function SharedStepDetailPage() {
           <h2 style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px' }}>Step Details</h2>
           {step.description && (
             <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', display: 'block', marginBottom: 4 }}>Description</label>
+              <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', display: 'block', marginBottom: 4 }}>Description</label>
               <p style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', margin: 0 }}>{step.description}</p>
             </div>
           )}
           <div style={{ marginBottom: 16 }}>
-            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', display: 'block', marginBottom: 4 }}>Action</label>
+            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', display: 'block', marginBottom: 4 }}>Action</label>
             <p style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', margin: 0, whiteSpace: 'pre-wrap' }}>{step.action}</p>
           </div>
           {step.expected_result && (
             <div>
-              <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', display: 'block', marginBottom: 4 }}>Expected Result</label>
+              <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', display: 'block', marginBottom: 4 }}>Expected Result</label>
               <p style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', margin: 0, whiteSpace: 'pre-wrap' }}>{step.expected_result}</p>
             </div>
           )}
@@ -156,7 +156,7 @@ export default function SharedStepDetailPage() {
             </h2>
           </div>
           {linkedCases.length === 0 ? (
-            <div style={{ padding: 32, textAlign: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>
+            <div style={{ padding: 32, textAlign: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
               <FileText size={36} style={{ marginBottom: 12, opacity: 0.4 }} />
               <p style={{ fontSize: 14, margin: 0 }}>No test cases reference this shared step.</p>
             </div>

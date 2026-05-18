@@ -212,7 +212,7 @@ export function TicketBreadcrumbs({
         /* Separator — lighter, smaller, recede into chrome */
         .tk-breadcrumbs [aria-hidden="true"],
         .tk-breadcrumbs span[role="presentation"] {
-          color: var(--cp-text-muted, var(--cp-ink-4, #94A3B8));
+          color: var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)));
           font-size: 12px;
           font-weight: 400;
           margin: 0 6px;

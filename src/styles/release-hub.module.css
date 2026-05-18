@@ -40,7 +40,7 @@
   --rh-text-primary: var(--ds-text, var(--cp-ink-1, #0F172A));
   --rh-text-secondary: var(--cp-ink-2, var(--cp-ink-2, #334155));
   --rh-text-tertiary: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
-  --rh-text-muted: var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8));
+  --rh-text-muted: var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)));
 
   /* Borders */
   --rh-border-subtle: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
@@ -488,7 +488,7 @@
   border-radius: var(--rh-radius-full);
 }
 .statusPlanned { background: var(--rh-bg-muted); color: var(--rh-text-tertiary); }
-.statusPlanned .statusDot { background: var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8)); }
+.statusPlanned .statusDot { background: var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))); }
 .statusDevelopment { background: var(--ds-background-selected, #EFF6FF); color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); }
 .statusDevelopment .statusDot { background: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB)); }
 .statusStaging { background: var(--rh-teal-bg); color: var(--cp-teal-60, #0D9488); }

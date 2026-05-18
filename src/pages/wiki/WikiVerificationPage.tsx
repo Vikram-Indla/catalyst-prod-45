@@ -53,7 +53,7 @@ export default function WikiVerificationPage() {
     <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, #F8FAFC)', minHeight: '100%', padding: '24px 40px 48px' }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>Wiki</span>
-        <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
+        <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
         <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontWeight: 600 }}>Verification Queue</span>
       </nav>
 

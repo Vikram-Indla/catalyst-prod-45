@@ -82,7 +82,7 @@ export default function IncidentDetailPage() {
   if (!incident) {
     return (
       <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
-        <p style={{ fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>Incident not found</p>
+        <p style={{ fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Incident not found</p>
       </div>
     );
   }
@@ -223,7 +223,7 @@ export default function IncidentDetailPage() {
                 </div>
                 {/* Comments List */}
                 {(!incident.comments || incident.comments.length === 0) && (
-                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>No comments yet. Be the first to comment.</p>
+                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No comments yet. Be the first to comment.</p>
                 )}
                 {incident.comments?.map((c: any) => (
                   <div key={c.id} className="mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
@@ -234,7 +234,7 @@ export default function IncidentDetailPage() {
                       <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>
                         {c.author?.full_name || c.author_name || 'User'}
                       </span>
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
                         {c.created_at ? formatDistanceToNow(new Date(c.created_at), { addSuffix: true }) : ''}
                       </span>
                     </div>
@@ -247,7 +247,7 @@ export default function IncidentDetailPage() {
             {activeTab === 'history' && (
               <div>
                 {(!incident.history || incident.history.length === 0) && (
-                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>No history entries.</p>
+                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No history entries.</p>
                 )}
                 {incident.history?.map((h: any) => (
                   <div key={h.id} className="flex items-start gap-3 mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
@@ -257,11 +257,11 @@ export default function IncidentDetailPage() {
                         {h.field_name} changed
                       </div>
                       <div className="flex items-center gap-1 mt-0.5">
-                        {h.old_value && (h.field_name === 'status' ? <StatusLozenge status={h.old_value} /> : <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>{h.old_value}</span>)}
-                        <span style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', fontSize: 11 }}>&rarr;</span>
+                        {h.old_value && (h.field_name === 'status' ? <StatusLozenge status={h.old_value} /> : <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{h.old_value}</span>)}
+                        <span style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontSize: 11 }}>&rarr;</span>
                         {h.new_value && (h.field_name === 'status' ? <StatusLozenge status={h.new_value} /> : <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{h.new_value}</span>)}
                       </div>
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
                         {h.changed_at ? formatDistanceToNow(new Date(h.changed_at), { addSuffix: true }) : ''}
                       </span>
                     </div>

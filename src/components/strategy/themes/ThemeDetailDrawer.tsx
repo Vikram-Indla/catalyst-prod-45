@@ -378,7 +378,7 @@ function FinancialsTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
 // ═══ MILESTONES ═══
 const MILESTONE_CATEGORIES = ['discover', 'define', 'design', 'deliver'] as const;
 const MILESTONE_STATES = ['not_started', 'in_progress', 'completed', 'missed'] as const;
-const STATE_COLORS: Record<string, string> = { not_started: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', in_progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', completed: 'var(--ds-text-success, var(--cp-success, #16A34A))', missed: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' };
+const STATE_COLORS: Record<string, string> = { not_started: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', in_progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', completed: 'var(--ds-text-success, var(--cp-success, #16A34A))', missed: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' };
 
 function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?: boolean }) {
   const d = dk(isDark);

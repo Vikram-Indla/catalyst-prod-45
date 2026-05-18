@@ -11,7 +11,7 @@ export function DistributionBar({ todo, inProgress, done, showNumbers = false }:
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <div className="bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ flex: 1, height: 4, borderRadius: 4, minWidth: 50 }} />
-        {showNumbers && <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 10, fontFamily: 'var(--cp-font-mono)', whiteSpace: 'nowrap' }}>—</span>}
+        {showNumbers && <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 10, fontFamily: 'var(--cp-font-mono)', whiteSpace: 'nowrap' }}>—</span>}
       </div>
     );
   }

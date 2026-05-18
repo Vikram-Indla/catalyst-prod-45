@@ -91,7 +91,7 @@ export default function IncidentListPage() {
   const borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';
   const textPrimary = 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))';
   const textSecondary = 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
-  const textMuted = 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))';
+  const textMuted = 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
 
   // ── Column schema (the canonical's value props per row) ─────────────────
   // The order here is the visual order. Widths are fractions out of 100;

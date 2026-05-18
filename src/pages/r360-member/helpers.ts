@@ -40,7 +40,7 @@ export function priorityDotColor(p: string) {
   if (l === 'highest' || l === 'critical') return 'var(--ds-text-danger, #EF4444)';
   if (l === 'high') return '#F97316';
   if (l === 'medium') return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
-  return 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))';
+  return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
 }
 
 // ── Priority border color for board/ring cards (D-R7) ──
@@ -48,7 +48,7 @@ export function priorityBorderColor(p: string): string {
   const l = (p || '').toLowerCase();
   if (l === 'highest' || l === 'critical' || l === 'high') return 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
   if (l === 'medium') return 'var(--ds-text-warning, var(--cp-warning, #D97706))';
-  return 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))';
+  return 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
 }
 
 // ── Mini Avatar color hashing ──

@@ -179,7 +179,7 @@ export function SyncLogs() {
 
       {/* Health Strip */}
       <div className="grid grid-cols-5 gap-3">
-        <HealthBox label="SYNC STATUS" value={syncStatus === 'healthy' ? '● Healthy' : syncStatus === 'syncing' ? '● Syncing' : syncStatus === 'error' ? '● Error' : '● Waiting'} valueColor={syncStatus === 'healthy' ? '#10B981' : syncStatus === 'syncing' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : syncStatus === 'error' ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))'} loading={healthLoading} spinning={syncStatus === 'syncing'} />
+        <HealthBox label="SYNC STATUS" value={syncStatus === 'healthy' ? '● Healthy' : syncStatus === 'syncing' ? '● Syncing' : syncStatus === 'error' ? '● Error' : '● Waiting'} valueColor={syncStatus === 'healthy' ? '#10B981' : syncStatus === 'syncing' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : syncStatus === 'error' ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'} loading={healthLoading} spinning={syncStatus === 'syncing'} />
         <HealthBox label="LAST SYNC" value={health?.lastSync ? formatDistanceToNow(new Date(health.lastSync.started_at), { addSuffix: true }) : '—'} valueColor="var(--ds-text, var(--cp-ink-1, #0F172A))" loading={healthLoading} />
         <HealthBox label="ISSUES CACHED" value={formatNumber(health?.issueCachedCount || 0)} valueColor="var(--ds-text, var(--cp-ink-1, #0F172A))" loading={healthLoading} />
         <HealthBox label="VERSIONS CACHED" value={formatNumber(health?.versionCachedCount || 0)} valueColor="var(--ds-text, var(--cp-ink-1, #0F172A))" loading={healthLoading} />
@@ -218,8 +218,8 @@ export function SyncLogs() {
             )}
           </div>
           {filtersOpen
-            ? <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', display: 'inline-flex' }}><ChevronDownIcon label="" size="small" /></span>
-            : <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', display: 'inline-flex' }}><ChevronRightIcon label="" size="small" /></span>
+            ? <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', display: 'inline-flex' }}><ChevronDownIcon label="" size="small" /></span>
+            : <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', display: 'inline-flex' }}><ChevronRightIcon label="" size="small" /></span>
           }
         </button>
 
@@ -321,7 +321,7 @@ export function SyncLogs() {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: '6px',
             padding: '8px 16px', borderRadius: '6px', border: 'none',
-            background: isSyncing ? 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' : !hasFilters ? 'var(--ds-text-disabled, #CBD5E1)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)',
+            background: isSyncing ? 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' : !hasFilters ? 'var(--ds-text-disabled, #CBD5E1)' : 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--ds-surface, #fff)',
             fontSize: '12px', fontWeight: 600, cursor: isSyncing || !hasFilters ? 'not-allowed' : 'pointer',
             fontFamily: 'var(--cp-font-body)',
           }}
@@ -408,7 +408,7 @@ export function SyncLogs() {
               <option value={30}>30 minutes</option>
               <option value={60}>60 minutes</option>
             </select>
-            <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>Fetches recently updated issues</span>
+            <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Fetches recently updated issues</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <label style={{ width: '180px', fontSize: '12px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontFamily: 'var(--cp-font-body)' }}>Full sync daily at:</label>
@@ -417,7 +417,7 @@ export function SyncLogs() {
               <option value="06:00">06:00 UTC</option>
               <option value="12:00">12:00 UTC</option>
             </select>
-            <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>Complete re-sync with pruning</span>
+            <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Complete re-sync with pruning</span>
           </div>
           <div style={{ marginTop: '8px' }}>
             <button onClick={handleSaveSchedule} disabled={updateSchedule.isPending} style={{ padding: '7px 16px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', background: 'var(--bg-app, #fff)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>
@@ -436,13 +436,13 @@ export function SyncLogs() {
         <div style={{ maxHeight: '340px', overflowY: 'auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '140px 90px 80px 1fr 100px 70px', padding: '8px 20px', background: 'var(--bg-1, #F8FAFC)', borderBottom: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', position: 'sticky', top: 0, zIndex: 1 }}>
             {['TIMESTAMP', 'TYPE', 'STATUS', 'DETAILS', 'PROJECTS', 'DURATION'].map(h => (
-              <span key={h} style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '10px', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', letterSpacing: '.5px', textTransform: 'uppercase', textAlign: h === 'DURATION' ? 'right' : 'left' }}>{h}</span>
+              <span key={h} style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '10px', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', letterSpacing: '.5px', textTransform: 'uppercase', textAlign: h === 'DURATION' ? 'right' : 'left' }}>{h}</span>
             ))}
           </div>
           {logsLoading ? (
             <div style={{ padding: '40px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}><Spinner size="medium" /></div>
           ) : !logs || logs.length === 0 ? (
-            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontSize: '13px' }}>
+            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontSize: '13px' }}>
               <span style={{ display: 'flex', justifyContent: 'center', marginBottom: 8, color: 'var(--ds-text-disabled, #CBD5E1)' }}><ClockIcon label="" size="medium" /></span>
               No sync runs yet. Click "Force Sync Now" to run the first sync.
             </div>
@@ -466,7 +466,7 @@ function HealthBox({ label, value, valueColor, loading, spinning }: { label: str
           {value}
         </div>
       )}
-      <div style={{ fontSize: '9px', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', letterSpacing: '.3px', marginTop: '4px', fontFamily: 'var(--cp-font-body)', fontWeight: 600 }}>{label}</div>
+      <div style={{ fontSize: '9px', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', letterSpacing: '.3px', marginTop: '4px', fontFamily: 'var(--cp-font-body)', fontWeight: 600 }}>{label}</div>
     </div>
   )
 }
@@ -519,7 +519,7 @@ function LogRow({ log, formatDuration }: { log: SyncLogEntry; formatDuration: (m
           <span style={{ fontSize: '9px', color: 'var(--ds-text-disabled, #CBD5E1)' }}>All</span>
         )}
       </span>
-      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', textAlign: 'right' }}>{log.duration_ms ? formatDuration(log.duration_ms) : '—'}</span>
+      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textAlign: 'right' }}>{log.duration_ms ? formatDuration(log.duration_ms) : '—'}</span>
     </div>
   )
 }

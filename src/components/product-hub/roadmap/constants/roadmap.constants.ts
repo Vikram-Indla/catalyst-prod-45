@@ -30,7 +30,7 @@ export const PRIORITY_COLORS: Record<string, { color: string; bg: string; label:
 // ── Status Colors ──
 export const STATUS_COLORS: Record<string, { color: string; bg: string; label: string }> = {
   Active:    { color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', label: 'Active' },
-  Planned:   { color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--bg-1, #F8FAFC)', label: 'Planned' },
+  Planned:   { color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, #F8FAFC)', label: 'Planned' },
   Completed: { color: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', label: 'Completed' },
   Cancelled: { color: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', label: 'Cancelled' },
 };
@@ -40,7 +40,7 @@ export const INK = {
   1: 'var(--fg-1, var(--cp-ink-1, #0F172A))',  // primary text
   2: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',  // secondary text (AUDIT #17: not muted)
   3: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',  // tertiary
-  4: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',  // muted
+  4: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',  // muted
 };
 
 export const SURFACE = {

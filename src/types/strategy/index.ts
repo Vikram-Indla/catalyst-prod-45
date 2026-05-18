@@ -66,7 +66,7 @@ export const STATUS_COLORS: Record<OkrStatus, string> = {
   on_track: 'var(--catalyst-success, var(--cp-teal-60, #0D9488))',
   at_risk: 'var(--catalyst-warning, var(--cp-warning, #D97706))',
   off_track: 'var(--catalyst-danger, #EF4444)',
-  not_started: 'var(--catalyst-text-tertiary, var(--cp-ink-4, #94A3B8))',
+  not_started: 'var(--catalyst-text-tertiary, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
   completed: 'var(--catalyst-success, var(--cp-teal-60, #0D9488))',
 };
 

@@ -23,14 +23,14 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
   ready: { label: 'Ready', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
   released: { label: 'Released', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
   shipped: { label: 'Shipped', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
-  archived: { label: 'Archived', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--bg-1, #F8FAFC)', icon: Archive },
+  archived: { label: 'Archived', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--bg-1, #F8FAFC)', icon: Archive },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; dot: string }> = {
   healthy: { label: 'Healthy', color: 'var(--quality-high, #059669)', dot: 'var(--ds-text-success, #22C55E)' },
   at_risk: { label: 'At Risk', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', dot: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' },
   critical: { label: 'Critical', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', dot: 'var(--ds-text-danger, #EF4444)' },
-  none: { label: '—', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', dot: 'var(--ds-text-disabled, #CBD5E1)' },
+  none: { label: '—', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', dot: 'var(--ds-text-disabled, #CBD5E1)' },
 };
 
 export default function ReleasesListPage() {
@@ -81,7 +81,7 @@ export default function ReleasesListPage() {
       <div style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'center', flexWrap: 'wrap' }}>
         {/* Search */}
         <div style={{ position: 'relative', flex: '0 1 280px' }}>
-          <Search style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', width: 16, height: 16, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
+          <Search style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', width: 16, height: 16, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
           <input
             value={filters.search}
             onChange={e => setFilters(f => ({ ...f, search: e.target.value }))}
@@ -92,7 +92,7 @@ export default function ReleasesListPage() {
             }}
           />
           {filters.search && (
-            <button onClick={() => setFilters(f => ({ ...f, search: '' }))} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>
+            <button onClick={() => setFilters(f => ({ ...f, search: '' }))} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
               <X style={{ width: 14, height: 14 }} />
             </button>
           )}
@@ -154,11 +154,11 @@ export default function ReleasesListPage() {
 
       {/* Content */}
       {isLoading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: 60, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 60, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
           Loading releases...
         </div>
       ) : releases.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: 60, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>
+        <div style={{ textAlign: 'center', padding: 60, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
           <Package style={{ width: 48, height: 48, margin: '0 auto 12px', opacity: 0.3 }} />
           <p style={{ fontSize: 15, fontWeight: 500 }}>No releases found</p>
           <p style={{ fontSize: 13 }}>Create your first release to get started</p>
@@ -169,7 +169,7 @@ export default function ReleasesListPage() {
         <CardView releases={releases} navigate={navigate} getExecPercent={getExecPercent} getPassRate={getPassRate} />
       )}
 
-      <div style={{ marginTop: 16, fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>
+      <div style={{ marginTop: 16, fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
         Showing {releases.length} release{releases.length !== 1 ? 's' : ''}
       </div>
 
@@ -289,7 +289,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
               <div>
-                <span style={{ fontFamily: 'monospace', fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontWeight: 600 }}>{r.version}</span>
+                <span style={{ fontFamily: 'monospace', fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontWeight: 600 }}>{r.version}</span>
                 <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', margin: '2px 0 0' }}>{r.name}</h3>
               </div>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, width: 8, height: 8, borderRadius: '50%', backgroundColor: hc.dot }} />
@@ -326,7 +326,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
             </div>
 
             {/* Date */}
-            <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>
+            <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
               <Calendar style={{ width: 12, height: 12 }} />
               {r.target_date ? format(new Date(r.target_date), 'MMM dd, yyyy') : 'No target date'}
             </div>

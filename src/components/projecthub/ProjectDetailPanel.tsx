@@ -19,7 +19,7 @@ interface Props {
   onToggleFav: () => void;
 }
 
-const CAT_DOT: Record<string, string> = { todo: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', in_progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', done: 'var(--ds-text-success, var(--cp-success, #16A34A))' };
+const CAT_DOT: Record<string, string> = { todo: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', in_progress: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', done: 'var(--ds-text-success, var(--cp-success, #16A34A))' };
 
 function getAvatarGradient(key: string) {
   const letter = (key[0] || '').toUpperCase();

@@ -69,7 +69,7 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
           {labelText}
         </span>
       ) : (
-        <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontSize: 13 }}>—</span>
+        <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontSize: 13 }}>—</span>
       )}
     </div>
   );

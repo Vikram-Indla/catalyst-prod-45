@@ -110,7 +110,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     surfaceBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     text1: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
     text2: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
-    text3: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))',
+    text3: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
     border: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
     borderStrong: 'var(--cp-border-default, rgba(15,23,42,0.12))',
     hover: 'var(--cp-interact-hover, rgba(15,23,42,0.04))',

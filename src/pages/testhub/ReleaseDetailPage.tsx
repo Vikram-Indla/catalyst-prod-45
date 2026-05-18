@@ -24,14 +24,14 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
   ready: { label: 'Ready', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
   released: { label: 'Released', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
   shipped: { label: 'Shipped', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
-  archived: { label: 'Archived', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--ds-surface-sunken, #F8FAFC)', icon: Archive },
+  archived: { label: 'Archived', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--ds-surface-sunken, #F8FAFC)', icon: Archive },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; dot: string }> = {
   healthy: { label: 'Healthy', color: 'var(--quality-high, #059669)', dot: 'var(--ds-text-success, #22C55E)' },
   at_risk: { label: 'At Risk', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', dot: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' },
   critical: { label: 'Critical', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', dot: 'var(--ds-text-danger, #EF4444)' },
-  none: { label: '—', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', dot: 'var(--ds-text-disabled, #CBD5E1)' },
+  none: { label: '—', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', dot: 'var(--ds-text-disabled, #CBD5E1)' },
 };
 
 export default function ReleaseDetailPage() {
@@ -43,11 +43,11 @@ export default function ReleaseDetailPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'cycles' | 'defects' | 'milestones'>('overview');
 
   if (isLoading) {
-    return <div style={{ padding: 60, textAlign: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>Loading release...</div>;
+    return <div style={{ padding: 60, textAlign: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Loading release...</div>;
   }
 
   if (!release) {
-    return <div style={{ padding: 60, textAlign: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>Release not found</div>;
+    return <div style={{ padding: 60, textAlign: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Release not found</div>;
   }
 
   const sc = STATUS_CONFIG[release.status] || STATUS_CONFIG.planned;
@@ -84,7 +84,7 @@ export default function ReleaseDetailPage() {
           >
             <ArrowLeft style={{ width: 18, height: 18 }} />
           </button>
-          <span style={{ fontFamily: 'monospace', fontSize: 13, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', fontWeight: 600 }}>{release.version}</span>
+          <span style={{ fontFamily: 'monospace', fontSize: 13, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontWeight: 600 }}>{release.version}</span>
           <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0, flex: 1 }}>{release.name}</h1>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
@@ -210,11 +210,11 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 }
 
 function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isLoading: boolean; navigate: any; isDark: boolean }) {
-  if (isLoading) return <div style={{ padding: 40, textAlign: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>Loading cycles...</div>;
+  if (isLoading) return <div style={{ padding: 40, textAlign: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Loading cycles...</div>;
 
   if (cycles.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: 48, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>
+      <div style={{ textAlign: 'center', padding: 48, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
         <RefreshCw style={{ width: 40, height: 40, margin: '0 auto 12px', opacity: 0.3 }} />
         <p style={{ fontSize: 14, fontWeight: 500 }}>No test cycles linked to this release</p>
         <p style={{ fontSize: 13 }}>Link test cycles from the Test Cycles module</p>
@@ -264,7 +264,7 @@ function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isL
 
 function DefectsTab({ release, isDark }: { release: any; isDark: boolean }) {
   return (
-    <div style={{ textAlign: 'center', padding: 48, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>
+    <div style={{ textAlign: 'center', padding: 48, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
       <Bug style={{ width: 40, height: 40, margin: '0 auto 12px', opacity: 0.3 }} />
       <p style={{ fontSize: 14, fontWeight: 500 }}>Defects linked to this release</p>
       <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 16 }}>
@@ -283,7 +283,7 @@ function DefectsTab({ release, isDark }: { release: any; isDark: boolean }) {
 
 function MilestonesTab({ releaseId, isDark }: { releaseId: string; isDark: boolean }) {
   return (
-    <div style={{ textAlign: 'center', padding: 48, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>
+    <div style={{ textAlign: 'center', padding: 48, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
       <Calendar style={{ width: 40, height: 40, margin: '0 auto 12px', opacity: 0.3 }} />
       <p style={{ fontSize: 14, fontWeight: 500 }}>Release milestones</p>
       <p style={{ fontSize: 13 }}>Milestone management will be available in the next update</p>

@@ -374,7 +374,7 @@ export default function RequestListingPage() {
       quarterOptions.push({
         id,
         label: offset === 0 ? `${id} (Current)` : id,
-        iconNode: <Calendar size={15} color={offset === 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))'} strokeWidth={2} />,
+        iconNode: <Calendar size={15} color={offset === 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'} strokeWidth={2} />,
       });
     }
 
@@ -397,10 +397,10 @@ export default function RequestListingPage() {
         label: 'Not on Roadmap',
         iconNode: (
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M2 3.5C2 3.22 2.22 3 2.5 3H5.5C5.78 3 6 3.22 6 3.5V6.5C6 6.78 5.78 7 5.5 7H2.5C2.22 7 2 6.78 2 6.5V3.5Z" stroke="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" strokeWidth="1" fill="none"/>
-            <path d="M7 4.5C7 4.22 7.22 4 7.5 4H13.5C13.78 4 14 4.22 14 4.5V5.5C14 5.78 13.78 6 13.5 6H7.5C7.22 6 7 5.78 7 5.5V4.5Z" stroke="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" strokeWidth="1" fill="none" strokeDasharray="2 2"/>
-            <path d="M2 9.5C2 9.22 2.22 9 2.5 9H5.5C5.78 9 6 9.22 6 9.5V12.5C6 12.78 5.78 13 5.5 13H2.5C2.22 13 2 12.78 2 12.5V9.5Z" stroke="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" strokeWidth="1" fill="none"/>
-            <path d="M7 10.5C7 10.22 7.22 10 7.5 10H11.5C11.78 10 12 10.22 12 10.5V11.5C12 11.78 11.78 12 11.5 12H7.5C7.22 12 7 11.78 7 11.5V10.5Z" stroke="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" strokeWidth="1" fill="none" strokeDasharray="2 2"/>
+            <path d="M2 3.5C2 3.22 2.22 3 2.5 3H5.5C5.78 3 6 3.22 6 3.5V6.5C6 6.78 5.78 7 5.5 7H2.5C2.22 7 2 6.78 2 6.5V3.5Z" stroke="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" strokeWidth="1" fill="none"/>
+            <path d="M7 4.5C7 4.22 7.22 4 7.5 4H13.5C13.78 4 14 4.22 14 4.5V5.5C14 5.78 13.78 6 13.5 6H7.5C7.22 6 7 5.78 7 5.5V4.5Z" stroke="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" strokeWidth="1" fill="none" strokeDasharray="2 2"/>
+            <path d="M2 9.5C2 9.22 2.22 9 2.5 9H5.5C5.78 9 6 9.22 6 9.5V12.5C6 12.78 5.78 13 5.5 13H2.5C2.22 13 2 12.78 2 12.5V9.5Z" stroke="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" strokeWidth="1" fill="none"/>
+            <path d="M7 10.5C7 10.22 7.22 10 7.5 10H11.5C11.78 10 12 10.22 12 10.5V11.5C12 11.78 11.78 12 11.5 12H7.5C7.22 12 7 11.78 7 11.5V10.5Z" stroke="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" strokeWidth="1" fill="none" strokeDasharray="2 2"/>
           </svg>
         ),
       },
@@ -761,9 +761,9 @@ export default function RequestListingPage() {
         <div className="flex-1 flex flex-col items-center justify-center" style={{ padding: '80px 32px' }}>
           {overdueActive ? (
             <>
-              <Clock size={40} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" strokeWidth={1.5} />
+              <Clock size={40} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" strokeWidth={1.5} />
               <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginTop: 16 }}>No overdue business requests</p>
-              <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', marginTop: 4 }}>All business requests are on track with their target dates</p>
+              <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: 4 }}>All business requests are on track with their target dates</p>
               <button
                 onClick={() => { setOverdueActive(false); setPage(1); }}
                 style={{ marginTop: 16, fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer', background: 'none', border: 'none', padding: '6px 12px', borderRadius: 6 }}
@@ -773,9 +773,9 @@ export default function RequestListingPage() {
             </>
           ) : (
             <>
-              <LayoutGrid size={40} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" strokeWidth={1.5} />
+              <LayoutGrid size={40} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" strokeWidth={1.5} />
               <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginTop: 16 }}>No business requests match your filters</p>
-              <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', marginTop: 4 }}>Try adjusting your search or filter criteria</p>
+              <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: 4 }}>Try adjusting your search or filter criteria</p>
             </>
           )}
         </div>

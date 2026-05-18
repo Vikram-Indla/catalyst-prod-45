@@ -57,7 +57,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
           {activeTab === 0 && (
             <div className="space-y-3">
               {members.length === 0 && (
-                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>No committee members assigned.</p>
+                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No committee members assigned.</p>
               )}
               {members.map((m: any) => {
                 const vote = m.vote;
@@ -95,7 +95,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                               : 'transparent',
                             color: voteStatus === v
                               ? (v === 'approved' ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : v === 'rejected' ? 'var(--ds-text-danger, #991B1B)' : '#42526E')
-                              : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
+                              : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
                             border: voteStatus === v ? 'none' : '1px solid rgba(15,23,42,0.08)',
                           }}
                         >
@@ -110,11 +110,11 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
           )}
 
           {activeTab === 1 && (
-            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>Approver management coming soon.</p>
+            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Approver management coming soon.</p>
           )}
 
           {activeTab === 2 && (
-            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>Activity log coming soon.</p>
+            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Activity log coming soon.</p>
           )}
         </div>
 

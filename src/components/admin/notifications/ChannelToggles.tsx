@@ -68,7 +68,7 @@ export const InlineChannelToggles = memo(function InlineChannelToggles({
       {CHANNEL_DEFS.map(({ key, label, Icon }) => (
         <Tooltip key={key} delay={200} content={`${label}: ${channels[key] ? 'Enabled' : 'Disabled'}`}>
           <div className="flex items-center gap-1">
-            <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', display: 'flex' }}>
+            <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', display: 'flex' }}>
               <Icon label="" size="small" />
             </span>
             <Toggle
@@ -104,7 +104,7 @@ export function ChannelToggleCard({
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-[var(--ds-text,var(--cp-ink-1, #0F172A))]">Delivery Channels</span>
-        <span className="text-[10px] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]">
+        <span className="text-[10px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]">
           {enabledCount}/{CHANNEL_DEFS.length} active
         </span>
       </div>
@@ -122,7 +122,7 @@ export function ChannelToggleCard({
           >
             <span
               style={{
-                color: channels[key] ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
+                color: channels[key] ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
                 display: 'flex',
                 flexShrink: 0,
               }}
@@ -157,7 +157,7 @@ export function ChannelBadges({ channels }: ChannelBadgesProps) {
   const active = CHANNEL_DEFS.filter((d) => channels[d.key]);
 
   if (active.length === 0) {
-    return <span className="text-[10px] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]">No channels</span>;
+    return <span className="text-[10px] text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))]">No channels</span>;
   }
 
   return (

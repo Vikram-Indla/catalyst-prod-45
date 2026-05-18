@@ -96,7 +96,7 @@ export function ProductScopedPageHeader({ product, activeView, stats }: Props) {
       label: 'Overdue',
       value: stats.overdue,
       icon: AlertTriangle,
-      color: overdueDanger ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
+      color: overdueDanger ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
       bg: overdueDanger ? 'var(--ds-background-danger, #FEF2F2)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
       accent: '',
     },

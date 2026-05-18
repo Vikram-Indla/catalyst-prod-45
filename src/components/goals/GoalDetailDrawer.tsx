@@ -1,6 +1,6 @@
 /**
  * GoalDetailDrawer — Fix 2: Complete redesign 520px, sticky header/tabs, modern cards
- * Fix 3: Field labels var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8)) 10px uppercase, Fix 4: circular avatars
+ * Fix 3: Field labels var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))) 10px uppercase, Fix 4: circular avatars
  */
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { X, Sparkles, Rocket, Clock, Activity, Trash2, Pencil, BarChart3, Plus, Save, Search, Link2, Unlink } from '@/lib/atlaskit-icons';
@@ -37,9 +37,9 @@ function statusBadge(status: string) {
     achieved:    { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Achieved' },
     at_risk:     { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', label: 'At Risk' },
     off_track:   { dot: 'var(--sem-danger)', bg: 'rgba(239,68,68,0.08)',  text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Off Track' },
-    draft:       { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Draft' },
-    not_started: { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Not Started' },
-    cancelled:   { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Cancelled' },
+    draft:       { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Draft' },
+    not_started: { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Not Started' },
+    cancelled:   { dot: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Cancelled' },
   };
   const s = map[status] || map.draft;
   return (
@@ -146,8 +146,8 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
   // Status dot color
   const statusDotColor = goal ? ({
     active: 'var(--ds-text-success, var(--cp-success, #16A34A))', on_track: 'var(--ds-text-success, var(--cp-success, #16A34A))', completed: '#4F46E5',
-    at_risk: 'var(--ds-text-warning, var(--cp-warning, #D97706))', off_track: 'var(--sem-danger)', draft: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
-  }[goal.status] || 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))') : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))';
+    at_risk: 'var(--ds-text-warning, var(--cp-warning, #D97706))', off_track: 'var(--sem-danger)', draft: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
+  }[goal.status] || 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))') : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
 
   return (
     <>
@@ -597,7 +597,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
       {showSearch && (
         <div style={{ marginTop: links.length > 0 ? 12 : 0, border: '1px solid var(--divider)', borderRadius: 8, padding: 12, background: 'var(--bg-1)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-            <Search size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" />
+            <Search size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
             <input
               autoFocus
               value={searchQuery}
@@ -636,7 +636,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
       <style>{`
         .init-card:hover { border-color: var(--ds-text-disabled, #CBD5E1); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
         .unlink-btn:hover { color: var(--ds-text-danger, #EF4444) !important; }
-        .link-init-btn:hover { border-color: var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8)); background: var(--ds-surface-sunken, #F8FAFC); }
+        .link-init-btn:hover { border-color: var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8))); background: var(--ds-surface-sunken, #F8FAFC); }
         /* Rule 3 paired .dark — brand red stays; neutral surfaces flip to ADS dark. */
         .dark .unlink-btn:hover { color: #F87171 !important; }
         .dark .init-card:hover { border-color: var(--ds-border-bold, #5C6F82); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }

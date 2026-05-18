@@ -71,7 +71,7 @@ function SimpleDateInput({ label, value, onChange, helperText, isDark }: {
           }}
         />
       </div>
-      <div style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', marginTop: 4 }}>{helperText}</div>
+      <div style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: 4 }}>{helperText}</div>
     </div>
   );
 }
@@ -176,7 +176,7 @@ export default function WikiTemplatesPage() {
     }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', cursor: 'pointer' }}>Wiki</span>
-        <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
+        <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
         <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontWeight: 600 }}>Templates</span>
       </nav>
 
@@ -213,7 +213,7 @@ export default function WikiTemplatesPage() {
         }}>
           <CalendarIcon size={14} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
           Content Scheduling
-          <span style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontWeight: 500, marginLeft: 'auto' }}>
+          <span style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontWeight: 500, marginLeft: 'auto' }}>
             {showScheduling ? '▾' : '▸'} {publishAt || archiveAt ? '(configured)' : '(optional)'}
           </span>
         </button>
@@ -284,7 +284,7 @@ export default function WikiTemplatesPage() {
                     color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                   }}>{s.title}</span>
                 ))}
-                {sections.length > 4 && <span style={{ fontSize: 9, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>+{sections.length - 4} more</span>}
+                {sections.length > 4 && <span style={{ fontSize: 9, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>+{sections.length - 4} more</span>}
               </div>
               <button
                 onClick={() => handleUseTemplate(t)}

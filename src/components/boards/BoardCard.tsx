@@ -150,7 +150,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           }}>
             {board.isStarred
               ? <StarStarredIcon label="Starred" size="small" primaryColor="var(--ds-text-warning, var(--cp-warning, #D97706))" />
-              : <StarUnstarredIcon label="Star board" size="small" primaryColor="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" />
+              : <StarUnstarredIcon label="Star board" size="small" primaryColor="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
             }
           </button>
 

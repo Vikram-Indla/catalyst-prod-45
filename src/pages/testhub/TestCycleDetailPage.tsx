@@ -67,7 +67,7 @@ const executionStatusConfig: Record<string, { label: string; color: string; bg: 
   passed: { label: 'Passed', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', Icon: CheckCircle2 },
   failed: { label: 'Failed', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', Icon: XCircle },
   blocked: { label: 'Blocked', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', Icon: AlertTriangle },
-  skipped: { label: 'Skipped', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: 'var(--ds-surface-sunken, #F8FAFC)', Icon: Clock },
+  skipped: { label: 'Skipped', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: 'var(--ds-surface-sunken, #F8FAFC)', Icon: Clock },
 };
 
 const priorityConfig: Record<string, { color: string; bg: string }> = {
@@ -99,7 +99,7 @@ const CycleDefectsPanel = ({ cycleId, isDark }: { cycleId?: string; isDark: bool
 
   if (defects.length === 0) {
     return (
-      <div style={{ padding: '32px', textAlign: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>
+      <div style={{ padding: '32px', textAlign: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
         <Bug size={36} style={{ marginBottom: 12, opacity: 0.4 }} />
         <p style={{ fontSize: 14, margin: 0 }}>No defects linked to this cycle.</p>
       </div>
@@ -482,7 +482,7 @@ export default function TestCycleDetailPage() {
             <Users size={14} /> By Tester
           </p>
           {testerStats.length === 0 ? (
-            <p style={{ fontSize: 13, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', textAlign: 'center', padding: 20, margin: 0 }}>No test cases assigned</p>
+            <p style={{ fontSize: 13, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textAlign: 'center', padding: 20, margin: 0 }}>No test cases assigned</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {testerStats.map((ts, i) => {
@@ -598,7 +598,7 @@ export default function TestCycleDetailPage() {
 
         <div style={{ flex: 1, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 12, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
           {testCases.length === 0 ? (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', padding: 40 }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', padding: 40 }}>
               <Clock size={48} style={{ marginBottom: 16, opacity: 0.5 }} />
               <p style={{ fontSize: 16, fontWeight: 500, margin: '0 0 8px', color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>No test cases added yet</p>
               <p style={{ fontSize: 14, margin: '0 0 16px' }}>Add test cases from the Test Repository to start planning</p>
@@ -669,7 +669,7 @@ export default function TestCycleDetailPage() {
                             style={{
                               display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px',
                               border: 'none', borderRadius: 4, backgroundColor: 'transparent',
-                              cursor: 'pointer', fontSize: 13, color: ctc.assignee ? ('var(--cp-ink-2, var(--cp-ink-2, #334155))') : ('var(--cp-text-muted, var(--cp-ink-4, #94A3B8))'),
+                              cursor: 'pointer', fontSize: 13, color: ctc.assignee ? ('var(--cp-ink-2, var(--cp-ink-2, #334155))') : ('var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))'),
                             }}
                           >
                             {ctc.assignee ? (

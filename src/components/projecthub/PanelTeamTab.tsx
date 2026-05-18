@@ -148,12 +148,12 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
       {/* Search + Add button */}
       <div className="flex items-center gap-2 mx-4 mt-3 mb-2">
         <div className="flex items-center gap-2 flex-1 rounded-lg bg-white dark:bg-transparent border border-[var(--ds-text-disabled,#CBD5E1)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" style={{ height: 38, padding: '8px 12px' }}>
-          <Search size={14} className="shrink-0 text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-[#7D7D7D]" />
+          <Search size={14} className="shrink-0 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search by name, role, or email..."
-            className="flex-1 bg-transparent p-0 m-0 appearance-none text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-[var(--ds-text,#EDEDED)] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:placeholder:text-[#7D7D7D]"
+            className="flex-1 bg-transparent p-0 m-0 appearance-none text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-[var(--ds-text,#EDEDED)] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:placeholder:text-[#7D7D7D]"
             style={{ fontSize: 13, border: 'none', boxShadow: 'none', outline: 'none', WebkitAppearance: 'none', MozAppearance: 'none', background: 'transparent', borderRadius: 0 }}
           />
         </div>
@@ -190,7 +190,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
                 <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, var(--cp-text-secondary, #64748B)))] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 11 }}>
                   {u.role_name || 'No role'}
                   {u.department_name && <span className="text-[var(--ds-text-disabled,#CBD5E1)] dark:text-[var(--ds-border-bold,#454545)]"> · </span>}
-                  {u.department_name && <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-[#7D7D7D]">{u.department_name}</span>}
+                  {u.department_name && <span className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]">{u.department_name}</span>}
                 </div>
               </div>
               <button
@@ -207,7 +207,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
 
       {/* Existing team members */}
       {grouped.length === 0 && searchSuggestions.length === 0 ? (
-        <div className="text-center py-8 text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-[#7D7D7D]" style={{ fontSize: 13 }}>
+        <div className="text-center py-8 text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]" style={{ fontSize: 13 }}>
           {search ? `No team members match "${search}"` : 'No team members assigned'}
           {!search && (
             <div className="mt-3">
@@ -243,7 +243,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
                       <div style={{ fontSize: 12, color: ROLE_COLOR[m.project_role] || 'var(--cp-blue)', fontWeight: 500, lineHeight: '18px' }}>
                         {m.project_role || 'member'}
                       </div>
-                      <div className="text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-[#7D7D7D]" style={{ fontSize: 11, lineHeight: '16px' }}>
+                      <div className="text-[var(--ds-text-subtlest,var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))] dark:text-[#7D7D7D]" style={{ fontSize: 11, lineHeight: '16px' }}>
                         {resourceRoleMap.get(m.user_id) || m.job_role || 'Unassigned'}
                       </div>
                     </div>

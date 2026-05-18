@@ -245,7 +245,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
         </div>
         <div
           className="truncate"
-          style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', maxWidth: 120 }}
+          style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', maxWidth: 120 }}
           title={updatedByName}
         >
           {updatedByName}
@@ -299,9 +299,9 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
       aria-expanded={!isCollapsed}
     >
       {isCollapsed ? (
-        <span style={{ display: 'inline-flex', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}><ChevronRightIcon label="" size="small" /></span>
+        <span style={{ display: 'inline-flex', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}><ChevronRightIcon label="" size="small" /></span>
       ) : (
-        <span style={{ display: 'inline-flex', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}><ChevronDownIcon label="" size="small" /></span>
+        <span style={{ display: 'inline-flex', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}><ChevronDownIcon label="" size="small" /></span>
       )}
       <span style={{
         fontFamily: 'var(--cp-font-body)',
@@ -542,8 +542,8 @@ export default function FeatureFlagsPage() {
             <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', fontVariantNumeric: 'tabular-nums' }}>
               {stats.enabled}
             </span>
-            <span style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>/</span>
-            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>/</span>
+            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontVariantNumeric: 'tabular-nums' }}>
               {stats.total}
             </span>
             <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, #71717A)', marginLeft: 2 }}>modules enabled</span>
@@ -630,7 +630,7 @@ export default function FeatureFlagsPage() {
             value={searchInput}
             onChange={(e) => setSearchInput((e.target as HTMLInputElement).value)}
             aria-label="Search feature flags"
-            elemBeforeInput={<span style={{ display: 'inline-flex', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', marginLeft: 8 }}><SearchIcon label="" size="small" /></span>}
+            elemBeforeInput={<span style={{ display: 'inline-flex', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginLeft: 8 }}><SearchIcon label="" size="small" /></span>}
           />
         </div>
 

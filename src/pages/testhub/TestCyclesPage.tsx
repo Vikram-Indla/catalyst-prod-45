@@ -75,7 +75,7 @@ export default function TestCyclesPage() {
   const textPrimary = 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))';
   const textBody = 'var(--cp-ink-2, var(--cp-ink-2, #334155))';
   const textSecondary = 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
-  const textMuted = 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))';
+  const textMuted = 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
 
   const fetchCycles = async () => {
     setIsLoading(true);

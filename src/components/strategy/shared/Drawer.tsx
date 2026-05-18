@@ -95,7 +95,7 @@ export function Drawer({ isOpen, onClose, title, width = 480, children }: Drawer
               background: 'transparent',
               border: 'none',
               cursor: 'pointer',
-              color: 'var(--catalyst-text-tertiary, var(--cp-ink-4, #94A3B8))',
+              color: 'var(--catalyst-text-tertiary, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
               transition: 'background 150ms',
             }}
             onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--catalyst-bg-hover, var(--cp-bg-sunken, #F1F5F9))'; }}

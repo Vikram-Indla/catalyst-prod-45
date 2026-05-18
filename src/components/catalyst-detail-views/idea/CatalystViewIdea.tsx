@@ -521,7 +521,7 @@ export default function CatalystViewIdea({
                       <span style={{
                         fontFamily: 'var(--cp-font-mono, ui-monospace)',
                         fontSize: 13, fontWeight: 600,
-                        color: dim.value > 0 ? 'inherit' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
+                        color: dim.value > 0 ? 'inherit' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
                         minWidth: 28, textAlign: 'right',
                       }}>{dim.value.toFixed(1)}</span>
                     </div>

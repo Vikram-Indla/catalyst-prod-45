@@ -51,7 +51,7 @@ export default function ReportDetailPage() {
   const borderSubtle = 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))';
   const textPrimary = 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))';
   const textSecondary = 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
-  const textMuted = 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))';
+  const textMuted = 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
   const textBody = 'var(--cp-ink-2, var(--cp-ink-2, #334155))';
 
   const fetchReport = async () => {
@@ -206,7 +206,7 @@ export default function ReportDetailPage() {
                   <div style={{ width: `${(data.summary.passed / data.summary.total_cases) * 100}%`, backgroundColor: '#10B981' }} />
                   <div style={{ width: `${(data.summary.failed / data.summary.total_cases) * 100}%`, backgroundColor: 'var(--ds-text-danger, #EF4444)' }} />
                   <div style={{ width: `${(data.summary.blocked / data.summary.total_cases) * 100}%`, backgroundColor: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' }} />
-                  <div style={{ width: `${(data.summary.skipped / data.summary.total_cases) * 100}%`, backgroundColor: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
+                  <div style={{ width: `${(data.summary.skipped / data.summary.total_cases) * 100}%`, backgroundColor: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />
                 </>
               )}
             </div>
@@ -214,7 +214,7 @@ export default function ReportDetailPage() {
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#10B981', borderRadius: 4, display: 'inline-block' }} /> Passed ({data.summary.passed})</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: 'var(--ds-text-danger, #EF4444)', borderRadius: 4, display: 'inline-block' }} /> Failed ({data.summary.failed})</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))', borderRadius: 4, display: 'inline-block' }} /> Blocked ({data.summary.blocked})</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', borderRadius: 4, display: 'inline-block' }} /> Not Run ({data.summary.not_run})</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', borderRadius: 4, display: 'inline-block' }} /> Not Run ({data.summary.not_run})</span>
             </div>
           </div>
 

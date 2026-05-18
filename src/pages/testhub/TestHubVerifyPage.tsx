@@ -232,7 +232,7 @@ export default function TestHubVerifyPage() {
         subtitle="20 automated integrity checks — runs on page load"
       >
         {lastRun && (
-          <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontFamily: 'var(--cp-font-body)' }}>
+          <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontFamily: 'var(--cp-font-body)' }}>
             Last run: {lastRun}
           </span>
         )}
@@ -330,7 +330,7 @@ export default function TestHubVerifyPage() {
                         {ci === 0 ? group : ''}
                       </td>
                       <td style={{ padding: '8px 12px', fontSize: 13, color: '#1E293B' }}>
-                        <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontFamily: 'var(--cp-font-mono)', fontSize: 11, marginRight: 8 }}>{check.id}</span>
+                        <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontFamily: 'var(--cp-font-mono)', fontSize: 11, marginRight: 8 }}>{check.id}</span>
                         {check.label}
                       </td>
                       <td style={{ padding: '8px 12px', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontFamily: 'var(--cp-font-mono)' }}>
@@ -373,7 +373,7 @@ export default function TestHubVerifyPage() {
                           padding: '2px 12px 6px',
                           fontSize: 12,
                           fontStyle: 'italic',
-                          color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
+                          color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))',
                         }}>
                           {check.note}
                         </td>
@@ -528,7 +528,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
               <div style={{ fontSize: 14, fontWeight: 600, color: '#1E293B', marginBottom: 4 }}>
                 {mod.name}
               </div>
-              <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', marginBottom: 8 }}>
+              <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginBottom: 8 }}>
                 {s.passed}/{s.total} checks · {s.pct}%
               </div>
               {/* Progress bar */}
@@ -549,7 +549,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
                 </div>
               )}
               {mod.note && s.pct < 100 && (
-                <div style={{ marginTop: 6, fontSize: 11, fontStyle: 'italic', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>
+                <div style={{ marginTop: 6, fontSize: 11, fontStyle: 'italic', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>
                   {mod.note}
                 </div>
               )}
@@ -574,8 +574,8 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
             {overallPct}%
           </span>
         </div>
-        <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', marginTop: 8 }}>Overall score</span>
-        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>{overallPassed}/20 checks passed</span>
+        <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: 8 }}>Overall score</span>
+        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{overallPassed}/20 checks passed</span>
       </div>
     </>
   );

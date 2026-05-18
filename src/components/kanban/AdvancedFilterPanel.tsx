@@ -334,7 +334,7 @@ function MultiSelectFilterSection({
         <div style={{ padding: '0 16px 10px' }}>
           {options.length > 5 && (
             <div className="relative" style={{ marginBottom: 8 }}>
-              <Search size={13} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search size={13} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text" value={search} onChange={e => setSearch(e.target.value)}
                 placeholder={placeholder}

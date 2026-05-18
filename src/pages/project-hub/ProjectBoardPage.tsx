@@ -100,7 +100,7 @@ export default function ProjectBoardPage() {
     { label: 'Total Issues', value: stats.total, icon: BarChart3, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', accent: '' },
     { label: 'Completed', value: stats.completed, icon: CheckCircle2, color: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: 'var(--ds-background-success, #DCFCE7)', accent: '' },
     { label: 'In Progress', value: stats.inProgress, icon: Clock, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', bg: 'var(--ds-background-selected, #EFF6FF)', accent: '' },
-    { label: 'Overdue', value: stats.overdue, icon: AlertTriangle, color: stats.overdue > 0 ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', bg: stats.overdue > 0 ? 'var(--ds-background-danger, #FEF2F2)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', accent: '' },
+    { label: 'Overdue', value: stats.overdue, icon: AlertTriangle, color: stats.overdue > 0 ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', bg: stats.overdue > 0 ? 'var(--ds-background-danger, #FEF2F2)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', accent: '' },
     { label: 'AI Features', value: '0%', icon: Sparkles, color: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', accent: 'var(--cp-purple-60, #7C3AED)' },
   ];
 
@@ -195,7 +195,7 @@ export default function ProjectBoardPage() {
 
         {/* Search */}
         <div className="relative">
-          <Search size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" className="absolute left-2.5 top-1/2 -translate-y-1/2" />
+          <Search size={14} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" className="absolute left-2.5 top-1/2 -translate-y-1/2" />
           <input
             value={searchText}
             onChange={e => setSearchText(e.target.value)}
@@ -360,7 +360,7 @@ export default function ProjectBoardPage() {
           className="flex flex-col items-center justify-center rounded-xl border"
           style={{ padding: '80px 40px', background: 'var(--cp-bg-elevated)', borderColor: 'var(--cp-border-default)' }}
         >
-          <GanttChart size={36} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" strokeWidth={1.5} />
+          <GanttChart size={36} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" strokeWidth={1.5} />
           <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary)', marginTop: 12, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             Timeline View
           </span>
@@ -410,7 +410,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
 
   return (
     <div className="flex flex-col gap-1 relative" data-filter-dropdown>
-      <label style={{ fontSize: 10, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      <label style={{ fontSize: 10, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
         {label}
       </label>
       <button
@@ -423,7 +423,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
         }}
       >
         <span className="truncate">{selectedLabel}</span>
-        <ChevronDown size={12} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" />
+        <ChevronDown size={12} color="var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))" />
       </button>
       {isOpen && (
         <div

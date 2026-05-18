@@ -26,7 +26,7 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
   const getTagStyle = (isRequired: boolean, isTypeSpecific: boolean) => {
     if (isRequired) return { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', label: 'Required' };
     if (isTypeSpecific) return { bg: '#FFFBEB', text: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'Type-specific' };
-    return { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', label: 'Optional' };
+    return { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', text: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', label: 'Optional' };
   };
 
   return (

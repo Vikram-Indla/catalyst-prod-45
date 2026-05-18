@@ -161,7 +161,7 @@ export function HierarchyContextMenu({
           <div data-ctx-menu style={{
             ...menuStyle, position: 'absolute', top: -4, left: 218, width: 200, maxHeight: 240, overflowY: 'auto',
           }}>
-            <button style={{ ...itemStyle, fontStyle: 'italic', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}
+            <button style={{ ...itemStyle, fontStyle: 'italic', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}
               onClick={() => { onChangeAssignee(null); onClose(); }}
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-1)')}
               onMouseLeave={e => (e.currentTarget.style.background = '')}>

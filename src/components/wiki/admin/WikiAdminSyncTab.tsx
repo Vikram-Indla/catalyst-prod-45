@@ -315,7 +315,7 @@ export function WikiAdminSyncTab() {
                     }}>Failed</span>
                   )}
                   {!isActive && !isDone && !isStepFailed && (
-                    <span style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-4, #94A3B8))', fontSize: 11 }}>Waiting</span>
+                    <span style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', fontSize: 11 }}>Waiting</span>
                   )}
                 </span>
                 <span style={{
