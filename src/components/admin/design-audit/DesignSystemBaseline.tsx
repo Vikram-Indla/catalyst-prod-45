@@ -84,7 +84,7 @@ export function DesignSystemBaseline() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Token Categories */}
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
           <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
             <h3 className="text-base flex items-center gap-2" style={{ fontWeight: 500, margin: 0 }}>
               <PaintPaletteIcon label="" size="small" />
@@ -163,7 +163,7 @@ export function DesignSystemBaseline() {
         </div>
 
         {/* Component Specifications */}
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
           <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
             <h3 className="text-base flex items-center gap-2" style={{ fontWeight: 500, margin: 0 }}>
               <BoardIcon label="" size="small" />
@@ -197,7 +197,7 @@ export function DesignSystemBaseline() {
       </div>
 
       {/* Color Swatches Preview */}
-      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+      <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
         <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
           <h3 className="text-base" style={{ fontWeight: 500, margin: 0 }}>Golden Hour Chart Palette</h3>
           <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #626F86)', margin: '4px 0 0' }}>Mandatory palette for all charts, graphs, and data visualizations</p>

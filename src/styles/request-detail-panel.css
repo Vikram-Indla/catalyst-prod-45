@@ -12,7 +12,7 @@
   --idp-ink-muted-strong: #6F6F78;
 
   /* BACKGROUNDS — V11 Carbon Precision */
-  --idp-surface: var(--ds-surface, #FFFFFF);
+  --idp-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --idp-surface-secondary: var(--ds-surface-sunken, #F8FAFC);
   --idp-surface-tertiary: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
 

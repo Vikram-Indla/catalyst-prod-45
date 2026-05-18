@@ -91,7 +91,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             style={{
               position: 'absolute', top: '14px', right: '16px',
               width: '26px', height: '26px', borderRadius: '50%',
-              border: '1px solid rgba(15,23,42,0.10)', background: 'var(--bg-app, #FFFFFF)',
+              border: '1px solid rgba(15,23,42,0.10)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
             }}
@@ -208,7 +208,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             disabled={isPending}
             style={{
               flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
-              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
+              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
               padding: '8px 14px', borderRadius: '6px', fontSize: '13px', fontWeight: 600,
               cursor: isPending ? 'not-allowed' : 'pointer', opacity: isPending ? 0.7 : 1,
             }}
@@ -220,7 +220,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             onClick={onClose}
             style={{
               padding: '8px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: 500,
-              border: '1px solid rgba(15,23,42,0.10)', background: 'var(--bg-app, #FFFFFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+              border: '1px solid rgba(15,23,42,0.10)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
               cursor: 'pointer',
             }}
           >

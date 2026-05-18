@@ -64,7 +64,7 @@ export default function IdeasRoadmapPage() {
       <div style={{ background: dk.pageBg, borderBottom: `1px solid ${dk.border}`, padding: '10px 28px', display: 'flex', alignItems: 'center', gap: '10px' }}>
         {TEAMS.map(t => (
           <button key={t} onClick={() => setTeamFilter(t)} style={{
-            background: teamFilter === t ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-bg-elevated, #FFFFFF)'), color: teamFilter === t ? 'var(--ds-text-inverse, #FFFFFF)' : dk.t2,
+            background: teamFilter === t ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'), color: teamFilter === t ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : dk.t2,
             border: `1px solid ${teamFilter === t ? 'var(--ds-text-brand, #2563EB)' : dk.border}`,
             borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 500, cursor: 'pointer',
           }}>{t}</button>
@@ -111,7 +111,7 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
   const isConverted = idea.status === 'Converted to Request';
   return (
     <div onClick={onClick} style={{
-      background: 'var(--cp-bg-elevated, #FFFFFF)',
+      background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       border: `1px solid ${isDark ? 'var(--ds-border-bold, #454545)' : dk.border}`,
       borderLeft: isConverted ? '3px solid var(--cp-success, #16A34A)' : `1px solid ${dk.border}`,
       borderRadius: '6px',
@@ -145,7 +145,7 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
       </div>
       <div style={{ borderTop: `1px solid ${dk.divider}`, paddingTop: '8px' }}>
         <span style={{ fontSize: '11px', fontWeight: 700, color: idea.impact_total > 0 ? dk.t2 : dk.t3, fontFamily: 'var(--cp-font-mono)' }}>IMPACT {idea.impact_total.toFixed(2)}</span>
-        {idea.is_committed && <span style={{ marginLeft: '8px', fontSize: '10px', fontWeight: 700, color: 'var(--ds-text-inverse, #FFFFFF)', background: 'var(--cp-success, var(--cp-lozenge-green-bg, #1B7F37))', padding: '1px 6px', borderRadius: '4px' }}>COMMITTED</span>}
+        {idea.is_committed && <span style={{ marginLeft: '8px', fontSize: '10px', fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: 'var(--cp-success, var(--cp-lozenge-green-bg, #1B7F37))', padding: '1px 6px', borderRadius: '4px' }}>COMMITTED</span>}
       </div>
       {isConverted && idea.linked_initiative_key && (
         <div style={{ marginTop: '6px', fontSize: '11px', fontWeight: 600, color: dk.greenText, fontFamily: 'var(--cp-font-mono)' }}>

@@ -21,24 +21,24 @@ const F = {
 
 /* ── V12 Status Lozenge Detection ── */
 const STATUS_PATTERNS: Record<string, { bg: string; color: string }> = {
-  'done': { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)' },
+  'done': { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   'to do': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' },
   'todo': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' },
-  'available': { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)' },
+  'available': { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   'open': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' },
-  'ready': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  'fixed': { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)' },
-  'in progress': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  're-open': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  'reopen': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  're-opened': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
+  'ready': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'fixed': { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'in progress': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  're-open': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'reopen': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  're-opened': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   'blocked': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' },
-  'under review': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  'in review': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  'analysis': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
+  'under review': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'in review': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'analysis': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   'deferred': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' },
   'closed': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' },
-  'resolved': { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)' },
+  'resolved': { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   'at capacity': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' },
   'critical': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' },
   'high': { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' },
@@ -199,7 +199,7 @@ function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendH
           }}
           onMouseLeave={e => {
             e.currentTarget.style.borderColor = 'rgba(15,23,42,0.08)';
-            e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)';
+            e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
             e.currentTarget.style.boxShadow = 'none';
           }}
         >

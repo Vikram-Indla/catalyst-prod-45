@@ -39,7 +39,7 @@ export function BulkActionBar({
       padding: '0 16px', fontFamily: 'var(--cp-font-body)', position: 'sticky', top: 0, zIndex: 50,
       borderRadius: '8px 8px 0 0',
     }}>
-      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-surface, #FFFFFF)' }}>
+      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
         {selectedCount} item{selectedCount > 1 ? 's' : ''} selected
       </span>
 
@@ -101,7 +101,7 @@ export function BulkActionBar({
           <span style={{ fontSize: 12, color: 'var(--ds-border-danger, #FCA5A5)' }}>Delete {selectedCount} items?</span>
           <button onClick={() => { onBulkDelete(); setConfirmDelete(false); }} style={{
             fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 4,
-            background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', color: 'var(--ds-surface, #FFFFFF)', border: 'none', cursor: 'pointer',
+            background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', cursor: 'pointer',
           }}>Yes, delete</button>
           <button onClick={() => setConfirmDelete(false)} style={{
             fontSize: 11, padding: '4px 10px', borderRadius: 4,

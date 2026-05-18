@@ -83,7 +83,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
     border: `1px solid ${'var(--cp-border-strong, var(--cp-border, #E2E8F0))'}`,
     borderRadius: '8px', padding: '0 14px', fontSize: '14px',
     color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
-    background: 'var(--cp-bg-elevated, #FFFFFF)', outline: 'none',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', outline: 'none',
   };
   const labelBase: React.CSSProperties = {
     display: 'block', fontSize: '13px', fontWeight: 600,
@@ -235,7 +235,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
         <div
           onClick={e => e.stopPropagation()}
           style={{
-            background: 'var(--cp-bg-elevated, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             borderRadius: '16px',
             width: '720px',
             maxHeight: '90vh',
@@ -482,7 +482,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               <div style={{
                 display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px',
                 minHeight: '44px', border: `1px solid ${'var(--cp-border-strong, var(--cp-border, #E2E8F0))'}`, borderRadius: '8px',
-                padding: '6px 10px', background: 'var(--cp-bg-elevated, #FFFFFF)',
+                padding: '6px 10px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               }}>
                 {tags.map(tag => (
                   <span key={tag} style={{

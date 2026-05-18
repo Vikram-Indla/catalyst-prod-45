@@ -15,7 +15,7 @@ export default function SwimlaneRow({ id, name, count, children }: Props) {
 
   return (
     <div style={{
-      background: 'var(--bg-app, #FFFFFF)',
+      background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       border: '0.75px solid var(--cp-border-subtle)',
       borderRadius: 8,
       marginBottom: 10,

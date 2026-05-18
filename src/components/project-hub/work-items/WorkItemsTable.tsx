@@ -356,7 +356,7 @@ export function WorkItemsTable({
                         <button
                           onClick={onCreateClick}
                           className="bg-[var(--cp-blue)]"
-                          style={{ padding: '6px 16px', fontSize: 12, fontWeight: 600, borderRadius: 4, color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', cursor: 'pointer' }}
+                          style={{ padding: '6px 16px', fontSize: 12, fontWeight: 600, borderRadius: 4, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', cursor: 'pointer' }}
                         >
                           Create work item
                         </button>

@@ -218,7 +218,7 @@ export function UWVToolbar({
           alignItems: 'center',
           padding: '0 16px',
           borderBottom: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
-          background: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           flexShrink: 0,
         }}
       >
@@ -269,7 +269,7 @@ export function UWVToolbar({
               padding: '8px 16px',
               display: 'flex',
               gap: 6,
-              background: 'var(--ds-surface, #FFFFFF)',
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               borderBottom: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
               flexShrink: 0,
               flexWrap: 'wrap',
@@ -290,7 +290,7 @@ export function UWVToolbar({
                     padding: '0 10px',
                     borderRadius: 13,
                     border: `1px solid ${active ? '#0C66E4' : 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))'}`,
-                    background: active ? '#E9F2FF' : 'var(--ds-surface, #FFFFFF)',
+                    background: active ? '#E9F2FF' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     color: active ? '#0C66E4' : 'var(--ds-text-subtle, #505258)',
                     fontSize: 12,
                     fontWeight: 600,

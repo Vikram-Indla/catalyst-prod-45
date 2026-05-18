@@ -148,7 +148,7 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.40)', zIndex: 250 }} />
       <div style={{
-        position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: 'var(--cp-bg-elevated, #FFFFFF)', zIndex: 251,
+        position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', zIndex: 251,
         boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)', display: 'flex', flexDirection: 'column',
         animation: 'slideInRight 0.25s ease forwards',
       }}>
@@ -172,7 +172,7 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
               {visibleFastTrack.map(item => (
                 <TriageCard key={item.ideaKey} badge="Fast-Track" ideaKey={item.ideaKey} title={item.title}
                   body={item.body} aiSuggestion={item.aiSuggestion}
-                  primary={{ label: 'Fast-Track to Approved', icon: <Zap size={14} color="var(--ds-text-inverse, #FFFFFF)" />, onClick: () => handleFastTrack(item.ideaKey) }}
+                  primary={{ label: 'Fast-Track to Approved', icon: <Zap size={14} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />, onClick: () => handleFastTrack(item.ideaKey) }}
                   secondary={{ label: 'Review First', icon: <Eye size={14} />, onClick: () => dismiss(item.ideaKey) }}
                 />
               ))}
@@ -185,7 +185,7 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
               {visibleMerge.map(item => (
                 <TriageCard key={item.ideaKey} badge="Merge" ideaKey={item.ideaKey} title={item.title}
                   body={item.body} aiSuggestion={item.aiSuggestion}
-                  primary={{ label: 'Merge & Consolidate', icon: <GitMerge size={14} color="var(--ds-text-inverse, #FFFFFF)" />, onClick: () => handleMerge(item.ideaKey, (item as any).mergeKey) }}
+                  primary={{ label: 'Merge & Consolidate', icon: <GitMerge size={14} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />, onClick: () => handleMerge(item.ideaKey, (item as any).mergeKey) }}
                   secondary={{ label: 'Keep Separate', icon: <X size={14} />, onClick: () => dismiss(item.ideaKey) }}
                 />
               ))}
@@ -198,7 +198,7 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
               {visibleInvestigate.map(item => (
                 <TriageCard key={item.ideaKey} badge="Investigate" ideaKey={item.ideaKey} title={item.title}
                   body={item.body} aiSuggestion={item.aiSuggestion}
-                  primary={{ label: 'Request Business Case', icon: <FileSearch size={14} color="var(--ds-text-inverse, #FFFFFF)" />, onClick: () => dismiss(item.ideaKey) }}
+                  primary={{ label: 'Request Business Case', icon: <FileSearch size={14} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />, onClick: () => dismiss(item.ideaKey) }}
                   secondary={{ label: 'Defer 30 Days', icon: <Clock size={14} />, onClick: () => dismiss(item.ideaKey) }}
                 />
               ))}
@@ -211,7 +211,7 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
               {visibleDefer.map(item => (
                 <TriageCard key={item.ideaKey} badge="Defer" ideaKey={item.ideaKey} title={item.title}
                   body={item.body} aiSuggestion={item.aiSuggestion}
-                  primary={{ label: 'Defer to Next Cycle', icon: <Clock size={14} color="var(--ds-text-inverse, #FFFFFF)" />, onClick: () => dismiss(item.ideaKey) }}
+                  primary={{ label: 'Defer to Next Cycle', icon: <Clock size={14} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />, onClick: () => dismiss(item.ideaKey) }}
                   secondary={{ label: 'Reject', icon: <X size={14} />, onClick: () => dismiss(item.ideaKey) }}
                 />
               ))}
@@ -276,7 +276,7 @@ function TriageCard({ badge, ideaKey, title, body, aiSuggestion, primary, second
   const { isDark } = useTheme();
   const dotColor = DOT_COLORS[badge] || 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))';
   return (
-    <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: '12px', padding: '16px', marginBottom: '10px', boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.04)' }}>
+    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: '12px', padding: '16px', marginBottom: '10px', boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', color: 'var(--cp-text-secondary, #475569)', padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
           <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
@@ -292,12 +292,12 @@ function TriageCard({ badge, ideaKey, title, body, aiSuggestion, primary, second
         </div>
       )}
       <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-        <button onClick={primary.onClick} style={{ background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: '6px', padding: '7px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+        <button onClick={primary.onClick} style={{ background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '6px', padding: '7px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
           onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #1D4ED8)')} onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-text-brand, #2563EB)')}>
           {primary.icon} {primary.label}
         </button>
-        <button onClick={secondary.onClick} style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #475569)', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: '6px', padding: '7px 16px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-bg-page, #F8FAFC)'; }} onMouseLeave={e => { e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)'; }}>
+        <button onClick={secondary.onClick} style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-secondary, #475569)', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: '6px', padding: '7px 16px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-bg-page, #F8FAFC)'; }} onMouseLeave={e => { e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}>
           {secondary.icon} {secondary.label}
         </button>
       </div>

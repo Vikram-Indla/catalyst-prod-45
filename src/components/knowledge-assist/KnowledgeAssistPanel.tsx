@@ -230,7 +230,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                       <div style={{
                         maxWidth: '85%', padding: '10px 16px',
                         borderRadius: '8px 8px 3px 8px', background: 'var(--cp-blue)',
-                        color: 'var(--ds-surface, #FFFFFF)', fontSize: 13, fontWeight: 500, lineHeight: 1.5,
+                        color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 13, fontWeight: 500, lineHeight: 1.5,
                         fontFamily: F.inter,
                       }}>{msg.text}</div>
                     </div>
@@ -316,7 +316,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 transition: 'background 80ms',
               }}
             >
-              <Send size={18} strokeWidth={2} color={input.trim() ? 'var(--ds-surface, #FFFFFF)' : '#8B8FA3'} />
+              <Send size={18} strokeWidth={2} color={input.trim() ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : '#8B8FA3'} />
             </button>
           </div>
         </div>

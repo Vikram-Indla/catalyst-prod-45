@@ -29,7 +29,7 @@ export function ProjectToolbar({
   }, [localSearch, onSearchChange]);
 
   const borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))';
-  const surfaceBg = 'var(--cp-bg-elevated, #FFFFFF)';
+  const surfaceBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
   const textColor = 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))';
   const mutedColor = 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))';
   const subtleColor = 'var(--cp-text-tertiary, #6B778C)';

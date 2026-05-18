@@ -174,7 +174,7 @@ export function WiringAudit() {
               fontWeight: 600,
               fontFamily: 'var(--cp-font-body)',
               backgroundColor: "var(--ds-text-brand, #2563EB)",
-              color: "var(--ds-text-inverse, #FFFFFF)",
+              color: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
               border: "none",
               borderRadius: 6,
               cursor: running ? "not-allowed" : "pointer",
@@ -210,7 +210,7 @@ export function WiringAudit() {
               justifyContent: "center",
               fontSize: 11,
               fontWeight: 700,
-              color: "var(--ds-text-inverse, #FFFFFF)",
+              color: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))",
               backgroundColor: r.status === "pass" ? "#006644" : "var(--ds-text-danger, var(--cp-danger, #DC2626))",
               flexShrink: 0,
             }}

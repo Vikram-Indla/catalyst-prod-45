@@ -20,7 +20,7 @@ function KPICard({ label, value, delta, deltaLabel, color, icon: Icon, loading, 
   label: string; value: number | string; delta?: string; deltaLabel?: string; color: string; icon: any; loading?: boolean; onClick?: () => void; isDark?: boolean;
 }) {
   return (
-    <button onClick={onClick} className="rounded-[6px] p-5 text-left transition-all hover:shadow-md" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, cursor: onClick ? 'pointer' : 'default' }}
+    <button onClick={onClick} className="rounded-[6px] p-5 text-left transition-all hover:shadow-md" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, cursor: onClick ? 'pointer' : 'default' }}
       onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border-strong, #CBD5E1)'; }}
       onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))'; }}
     >
@@ -237,7 +237,7 @@ export default function CommandCenterPage() {
     : computed.alertSeverity === 'warning' ? '#FFFBEB' : '#F0FDF4';
 
   return (
-    <div className="p-6" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)' }}>
+    <div className="p-6" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -257,7 +257,7 @@ export default function CommandCenterPage() {
       {/* Row 2: Latest Deployed + Release Status */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         {/* Latest Approved Change */}
-        <div className="rounded-[6px] p-5" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
+        <div className="rounded-[6px] p-5" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <SectionHeader title="Latest Deployed Change" isDark={isDark} />
           {latestDeployed ? (
             <div className="cursor-pointer" onClick={() => setSelectedChange(latestDeployed)}>
@@ -291,7 +291,7 @@ export default function CommandCenterPage() {
         </div>
 
         {/* Release Status Table */}
-        <div className="rounded-[6px] overflow-hidden" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
+        <div className="rounded-[6px] overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <div className="px-5 py-3.5">
             <SectionHeader title="Release Status" isDark={isDark} action={<button onClick={() => navigate('/release-hub/releases')} className="text-[12px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:underline">View all</button>} />
           </div>
@@ -334,7 +334,7 @@ export default function CommandCenterPage() {
       {/* Row 3: Change Pipeline + AI Release Readiness */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         {/* Change Pipeline Funnel */}
-        <div className="rounded-[6px] p-5" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
+        <div className="rounded-[6px] p-5" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <SectionHeader title="Change Pipeline" isDark={isDark} action={<button onClick={() => navigate('/release-hub/changes')} className="text-[12px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:underline">View all</button>} />
           <div className="flex items-center gap-0 mt-4">
             {pipelineCols.map((col, i) => (
@@ -371,7 +371,7 @@ export default function CommandCenterPage() {
         </div>
 
         {/* AI Release Readiness — computed */}
-        <div className="rounded-[6px] p-5" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
+        <div className="rounded-[6px] p-5" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <div className="flex items-center gap-2 mb-4">
             <Sparkles size={14} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
             <h2 className="text-[14px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>AI Release Readiness</h2>
@@ -457,7 +457,7 @@ export default function CommandCenterPage() {
       {/* Row 4: Signoff Queue + Production Events */}
       <div className="grid grid-cols-2 gap-4">
         {/* Signoff Queue Widget */}
-        <div className="rounded-[6px] overflow-hidden" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
+        <div className="rounded-[6px] overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <div className="px-5 py-3.5 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <h2 className="text-[14px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>Signoff Queue</h2>
@@ -496,7 +496,7 @@ export default function CommandCenterPage() {
         </div>
 
         {/* Recent Production Events */}
-        <div className="rounded-[6px] overflow-hidden" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
+        <div className="rounded-[6px] overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <div className="px-5 py-3.5">
             <SectionHeader title="Recent Production Events" isDark={isDark} action={<button onClick={() => navigate('/release-hub/production-events')} className="text-[12px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:underline">View all</button>} />
           </div>

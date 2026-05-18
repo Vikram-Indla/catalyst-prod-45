@@ -56,7 +56,7 @@ export default function SignOffQueuePage() {
   };
 
   return (
-    <div className="p-6" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)' }}>
+    <div className="p-6" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
       <div className="mb-5">
         <h1 className="text-[24px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>Signoff Queue</h1>
         <p className="text-[13px] mt-1" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>All pending approvals — notifications sent to approver's For You homepage</p>
@@ -68,7 +68,7 @@ export default function SignOffQueuePage() {
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }} />
           <input type="text" placeholder="Search changes or approvers..." value={search} onChange={e => setSearch(e.target.value)}
             className="h-9 w-72 pl-9 pr-3 rounded-[4px] text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,#2563EB)]/20"
-            style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', fontFamily: RH.fontBody, background: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
+            style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', fontFamily: RH.fontBody, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
         </div>
       </div>
 
@@ -78,7 +78,7 @@ export default function SignOffQueuePage() {
       ) : signoffs.length === 0 ? (
         <EmptyState icon={CheckSquare} title="No pending sign-offs" subtitle="All approvals are up to date" />
       ) : (
-        <div className="rounded-[6px] overflow-hidden" style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: 'var(--cp-bg-elevated, #FFFFFF)' }}>
+        <div className="rounded-[6px] overflow-hidden" style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
             <thead>
               <tr style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
@@ -127,7 +127,7 @@ export default function SignOffQueuePage() {
 
       {/* Approve/Reject Modal */}
       <Dialog open={!!actionModal} onOpenChange={() => { setActionModal(null); setComment(''); }}>
-        <DialogContent className="sm:max-w-[520px]" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)' }}>
+        <DialogContent className="sm:max-w-[520px]" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
           <DialogHeader>
             <DialogTitle style={{ fontFamily: RH.fontDisplay, fontWeight: 650 }}>
               {actionModal?.action === 'approve' ? 'Approve Sign-off' : 'Reject Sign-off'}

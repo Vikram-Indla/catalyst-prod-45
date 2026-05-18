@@ -158,7 +158,7 @@ export function BulkMoveModal({ items, selectedKeys, onConfirm, onClose }: BulkM
             disabled={!selected}
             style={{
               height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600,
-              color: 'var(--ds-surface, #FFFFFF)', background: selected ? 'var(--cp-blue)' : 'var(--fg-4)',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: selected ? 'var(--cp-blue)' : 'var(--fg-4)',
               border: 'none', borderRadius: 6, cursor: selected ? 'pointer' : 'not-allowed',
             }}>
             Move here

@@ -164,7 +164,7 @@ export default function BacklogDetailPage() {
         )}
         <button
           onClick={handleClose}
-          style={{ marginTop: 8, padding: '8px 16px', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}
+          style={{ marginTop: 8, padding: '8px 16px', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}
         >
           Back to backlog
         </button>
@@ -175,7 +175,7 @@ export default function BacklogDetailPage() {
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Jira-parity: plain "← Back" link above the detail view, navigates back to backlog list */}
-      <div style={{ flexShrink: 0, padding: '8px 24px', background: 'var(--ds-surface, #FFFFFF)' }}>
+      <div style={{ flexShrink: 0, padding: '8px 24px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
         <button
           onClick={handleClose}
           style={{

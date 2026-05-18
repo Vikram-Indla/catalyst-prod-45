@@ -64,7 +64,7 @@ export function Drawer({ isOpen, onClose, title, width = 480, children }: Drawer
           width,
           maxWidth: '90vw',
           height: '100vh',
-          background: 'var(--catalyst-bg-surface-0, #FFFFFF)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           borderLeft: '1px solid var(--catalyst-border-default, var(--bd-default, var(--cp-border, #E2E8F0)))',
           boxShadow: '-8px 0 30px rgba(0,0,0,0.12)',
           zIndex: 400,

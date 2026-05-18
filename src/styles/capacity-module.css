@@ -52,7 +52,7 @@
 
   /* Neutral Colors */
   --ct-bg: var(--ds-surface-sunken, #f8fafc);
-  --ct-surface: var(--ds-surface, #ffffff);
+  --ct-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --ct-surface-hover: var(--ds-surface-sunken, #f1f5f9);
   --ct-text: var(--ds-text, #0f172a);
   --ct-text-secondary: var(--ds-text-subtle, #475569);
@@ -886,7 +886,7 @@
 .analytics-dept-pill.active {
   background: var(--ct-primary);
   border-color: var(--ct-primary);
-  color: var(--ds-surface, #ffffff);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
 }
@@ -894,5 +894,5 @@
 .analytics-dept-pill.active:hover {
   background: var(--ct-primary-hover);
   border-color: var(--ct-primary-hover);
-  color: var(--ds-surface, #ffffff);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }

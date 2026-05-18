@@ -47,8 +47,8 @@
   
   --boards-bg-page: var(--ds-surface-sunken, #f8fafc);
   --boards-bg-column: transparent;
-  --boards-bg-card: var(--ds-surface, #ffffff);
-  --boards-bg-card-hover: var(--ds-surface, #ffffff);
+  --boards-bg-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --boards-bg-card-hover: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --boards-bg-empty: var(--ds-surface-sunken, #f8fafc);
   
   /* ========================================
@@ -584,7 +584,7 @@
   justify-content: center;
   font-size: 10px;
   font-weight: 600;
-  color: var(--ds-surface, #ffffff);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   flex-shrink: 0;
 }
 

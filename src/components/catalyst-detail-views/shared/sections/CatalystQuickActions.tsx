@@ -111,7 +111,7 @@ export function CatalystQuickActions({
             role="menu"
             aria-label="Add options"
             style={{
-            position: 'absolute', left: 0, top: 34, background: 'var(--ds-surface, #FFFFFF)', borderRadius: 4,
+            position: 'absolute', left: 0, top: 34, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4,
             boxShadow: 'rgba(30,31,33,0.15) 0px 8px 12px, rgba(30,31,33,0.31) 0px 0px 1px',
             width: 266, zIndex: 400, padding: 0,
             animation: 'cv-slide-down 0.15s ease-out',

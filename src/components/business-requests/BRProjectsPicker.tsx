@@ -9,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { FolderKanban } from '@/lib/atlaskit-icons';
 
 const ATLASSIAN_DROPDOWN: React.CSSProperties = {
-  background: 'var(--ds-surface, #FFFFFF)', borderRadius: 4, border: 'none',
+  background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4, border: 'none',
   boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
   padding: '4px 0', zIndex: 9999,
 };

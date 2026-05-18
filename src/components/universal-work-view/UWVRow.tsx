@@ -354,7 +354,7 @@ export const UWVRow = React.memo(function UWVRow({
         gridTemplateColumns: gridTemplate,
         height: JIRA_ROW_HEIGHT,
         boxShadow: isSelected ? selectedShadow : restShadow,
-        backgroundColor: isSelected ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--ds-surface, #FFFFFF)',
+        backgroundColor: isSelected ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         cursor: 'pointer',
         transition: 'background-color 80ms ease',
       }}
@@ -365,7 +365,7 @@ export const UWVRow = React.memo(function UWVRow({
       }}
       onMouseLeave={(e) => {
         if (!isSelected) {
-          (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--ds-surface, #FFFFFF)';
+          (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
         }
       }}
     >

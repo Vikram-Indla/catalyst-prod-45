@@ -133,7 +133,7 @@ export function TestHubCasesTable({ cases, projectId, onRefresh }: TestHubCasesT
                           flexShrink: 0,
                         }}
                       >
-                        <Sparkles style={{ width: 11, height: 11, color: 'var(--ds-text-inverse, #FFFFFF)' }} />
+                        <Sparkles style={{ width: 11, height: 11, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
                       </span>
                     )}
                   </span>

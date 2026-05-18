@@ -74,7 +74,7 @@ export function ExecutionViewMode({
             <button onClick={onRerun} style={{
               height: 34, padding: '0 14px', border: 'none', borderRadius: 6,
               background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
-              color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 12, fontWeight: 600, cursor: 'pointer',
               display: 'flex', alignItems: 'center', gap: 5,
             }}>
               <Play size={13} /> Re-run
@@ -141,7 +141,7 @@ export function ExecutionViewMode({
               const colors = stepColors[step.status] || stepColors.not_run;
               return (
                 <div key={i} style={{
-                  padding: '12px 16px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
+                  padding: '12px 16px', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   border: `0.75px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 6,
                   borderLeft: `3px solid ${colors.border}`,
                 }}>
@@ -192,7 +192,7 @@ export function ExecutionViewMode({
         <button onClick={onRerun} style={{
           height: 50, padding: '0 16px', border: 'none', borderRadius: 6,
           background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
-          color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 13, fontWeight: 600, cursor: 'pointer',
           display: 'flex', alignItems: 'center', gap: 6,
         }}>
           <Play size={14} /> Re-run

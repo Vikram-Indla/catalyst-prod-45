@@ -4,9 +4,9 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  *
  * GUARDRAIL: 3 colours only. Zero exceptions. Zero overrides.
- *   GREY  → bg:#42526E  text:#FFFFFF  → To Do / Backlog / On Hold
- *   BLUE  → bg:#0C66E4  text:#FFFFFF  → In Progress / In Review / Active
- *   GREEN → bg:var(--cp-lozenge-green-bg, #1B7F37)  text:#FFFFFF  → Done / Approved / Completed
+ *   GREY  → bg:#42526E  text:var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))  → To Do / Backlog / On Hold
+ *   BLUE  → bg:#0C66E4  text:var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))  → In Progress / In Review / Active
+ *   GREEN → bg:var(--cp-lozenge-green-bg, #1B7F37)  text:var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))  → Done / Approved / Completed
  *
  * Usage: import { deriveStatusCategory, STATUS_LOZENGE } from '@/lib/status-colors';
  */

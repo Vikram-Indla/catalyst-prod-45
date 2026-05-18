@@ -133,7 +133,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
               zIndex: 1,
               fontSize: 12,
               fontWeight: 600,
-              color: 'var(--ds-surface, #FFFFFF)',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               paddingLeft: 10,
               paddingRight: 10,
               lineHeight: '32px',
@@ -153,7 +153,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
             style={{
               fontSize: 10,
               fontWeight: 700,
-              color: 'var(--ds-surface, #FFFFFF)',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               background: 'rgba(255,255,255,0.2)',
               borderRadius: 4,
               padding: '1px 6px',
@@ -182,7 +182,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
       {showTooltip && createPortal(
         <div style={{
           position: 'fixed', left: tooltipPos.x, top: tooltipPos.y, zIndex: 9999,
-          background: 'var(--bg-app, #FFFFFF)', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 12,
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 12,
           boxShadow: '0 20px 60px rgba(0,0,0,0.12)', pointerEvents: 'none',
           maxWidth: 320, minWidth: 260, padding: 12,
         }}>

@@ -126,7 +126,7 @@ export default function WikiHomePage() {
         </div>
       )}
       {/* ═══ HERO ═══ */}
-      <div style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', position: 'relative', overflow: 'hidden', borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)' }}>
+      <div style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', position: 'relative', overflow: 'hidden', borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)' }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, var(--ds-text-brand, #2563EB), var(--cp-purple-60, #7C3AED), var(--ds-text-brand, #2563EB))' }} />
         <div style={{ position: 'absolute', inset: 0, opacity: 0.03, backgroundImage: isDark ? 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)' : 'linear-gradient(rgba(15,23,42,1) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,1) 1px, transparent 1px)', backgroundSize: '48px 48px' }} />
 
@@ -140,7 +140,7 @@ export default function WikiHomePage() {
             {/* Search bar */}
             <div onClick={() => setCmdOpen(true)} tabIndex={0} onKeyDown={e => { if (e.key === 'Enter') setCmdOpen(true); }} style={{
               display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', borderRadius: 8, border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', cursor: 'pointer',
-              background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', transition: 'border-color 150ms, box-shadow 150ms', marginBottom: 12, height: 40,
+              background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', transition: 'border-color 150ms, box-shadow 150ms', marginBottom: 12, height: 40,
             }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.06)'; e.currentTarget.style.boxShadow = 'none'; }}
@@ -148,7 +148,7 @@ export default function WikiHomePage() {
               <Search size={15} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
               <span style={{ flex: 1, fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>Search articles, regulations, permits...</span>
               <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 9999, background: 'rgba(124,58,237,0.06)', color: 'var(--cp-purple-60, #7C3AED)' }}>AI-powered</span>
-              <button style={{ fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 6, border: 'none', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer' }}>Search</button>
+              <button style={{ fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 6, border: 'none', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer' }}>Search</button>
             </div>
 
             {/* Filter chips */}
@@ -158,14 +158,14 @@ export default function WikiHomePage() {
                 return (
                   <button key={c.label} onClick={() => setActiveChip(c.label)} style={{
                     fontSize: 11, fontWeight: active ? 650 : 500, padding: '5px 12px', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
-                    border: active ? '1.5px solid #2563EB' : isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', background: active ? (isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)'), color: active ? 'var(--ds-text-brand, #2563EB)' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'), transition: 'all 120ms',
+                    border: active ? '1.5px solid #2563EB' : isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', background: active ? (isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'), color: active ? 'var(--ds-text-brand, #2563EB)' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'), transition: 'all 120ms',
                   }}>{c.icon} {c.label}</button>
                 );
               })}
             </div>
 
             <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={() => setUploadOpen(true)} style={{ fontSize: 12, fontWeight: 650, padding: '8px 16px', borderRadius: 6, cursor: 'pointer', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button onClick={() => setUploadOpen(true)} style={{ fontSize: 12, fontWeight: 650, padding: '8px 16px', borderRadius: 6, cursor: 'pointer', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Upload size={14} /> Upload Document
               </button>
             </div>
@@ -195,7 +195,7 @@ export default function WikiHomePage() {
         <SectionHeader title="Quick Reference" count={quickRefs?.length ?? 0} rightLabel="View All" rightAction={() => {}} isDark={isDark} />
         <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 8, marginBottom: 40, scrollSnapType: 'x mandatory' }}>
           {qrLoading ? Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} style={{ minWidth: 190, maxWidth: 190, padding: 16, borderRadius: 8, border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)' }}>
+            <div key={i} style={{ minWidth: 190, maxWidth: 190, padding: 16, borderRadius: 8, border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
               <Skeleton w="80%" h={14} style={{ marginBottom: 12 }} isDark={isDark} /><Skeleton w="60%" h={12} isDark={isDark} />
             </div>
           )) : (quickRefs ?? []).length > 0 ? (quickRefs ?? []).map((qr: any) => (
@@ -208,11 +208,11 @@ export default function WikiHomePage() {
         {/* ═══ KNOWLEDGE REQUEST BANNER ═══ */}
         <div onClick={() => setKrFormOpen(true)} style={{
           display: 'flex', alignItems: 'center', gap: 16, padding: '16px 20px', borderRadius: 8,
-          background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', border: '0.75px solid rgba(37,99,235,0.2)', marginBottom: 40, flexWrap: 'wrap',
+          background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '0.75px solid rgba(37,99,235,0.2)', marginBottom: 40, flexWrap: 'wrap',
           cursor: 'pointer', transition: 'border-color 150ms, background 150ms',
         }}
           onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#F0F5FF'; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(37,99,235,0.2)'; e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(37,99,235,0.2)'; e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
         >
           <HelpCircle size={16} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
           <div style={{ flex: 1, minWidth: 200 }}>
@@ -229,7 +229,7 @@ export default function WikiHomePage() {
         <SectionHeader title="Domain Knowledge Hub" count={9} rightLabel="All 9 Domains" rightAction={() => navigate('/wiki/domains')} isDark={isDark} />
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 10, marginBottom: 40 }}>
           {domainsLoading ? Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)' }}>
+            <div key={i} style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)' }}>
               <Skeleton w={160} h={16} style={{ marginBottom: 12 }} isDark={isDark} /><Skeleton w="100%" h={3} style={{ marginBottom: 8 }} isDark={isDark} /><Skeleton w="60%" h={12} isDark={isDark} />
             </div>
           )) : (domains ?? []).slice(0, 6).map((d: any) => {
@@ -242,7 +242,7 @@ export default function WikiHomePage() {
         <SectionHeader title="Learning Paths" count={paths?.length ?? 0} rightLabel="View All" rightAction={() => navigate('/wiki/learning-paths')} isDark={isDark} />
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 10, marginBottom: 40 }}>
           {pathsLoading ? Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)' }}>
+            <div key={i} style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)' }}>
               <Skeleton w={140} h={16} style={{ marginBottom: 12 }} isDark={isDark} /><Skeleton w="100%" h={4} style={{ marginBottom: 8 }} isDark={isDark} /><Skeleton w="60%" h={12} isDark={isDark} />
             </div>
           )) : (paths ?? []).length > 0 ? (paths ?? []).map((p: any) => <LearningPathCard key={p.id} p={p} navigate={navigate} isDark={isDark} />) : (
@@ -252,7 +252,7 @@ export default function WikiHomePage() {
 
         {/* ═══ RECENTLY UPDATED TABLE ═══ */}
         <SectionHeader title="Recent Articles" count={articles?.length ?? 0} rightLabel="View All Articles" rightAction={() => navigate('/wiki/articles')} isDark={isDark} />
-        <div style={{ borderRadius: 8, border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', overflow: 'hidden', marginBottom: 40 }}>
+        <div style={{ borderRadius: 8, border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', overflow: 'hidden', marginBottom: 40 }}>
           <div style={{
             display: 'grid', gridTemplateColumns: '3% 34% 8% 12% 8% 8% 14% 5% 3%',
             background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', padding: '8px 12px', height: 50, alignItems: 'center', borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)',
@@ -275,7 +275,7 @@ export default function WikiHomePage() {
       {/* ═══ AI CHATBOT FAB — Wiki Convergence Hub Icon ═══ */}
       <div onClick={() => setChatOpen(!chatOpen)} style={{
         position: 'fixed', bottom: 24, right: 24, width: 48, height: 48, borderRadius: 14,
-        background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer', boxShadow: '0 4px 12px rgba(37,99,235,0.3)', transition: 'transform 150ms, box-shadow 150ms', zIndex: 50,
         overflow: 'hidden',
       }}
@@ -330,7 +330,7 @@ const QuickRefCard = React.memo(({ qr, onClick, isDark }: { qr: any; onClick: ()
   const Icon = DOMAIN_ICONS[qr.domain_code] || FileText;
   return (
     <div onClick={onClick} style={{
-      minWidth: 190, maxWidth: 190, padding: 16, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)',
+      minWidth: 190, maxWidth: 190, padding: 16, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', cursor: 'pointer', scrollSnapAlign: 'start', transition: 'border-color 120ms, box-shadow 120ms, transform 120ms',
     }}
       onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.08)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
@@ -358,7 +358,7 @@ const DomainCard = React.memo(({ d, Icon, navigate, isDark }: { d: any; Icon: Re
 
   return (
     <div onClick={() => navigate(`/wiki/domains/${d.domain_code}`)} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      style={{ display: 'flex', borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', cursor: 'pointer', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', overflow: 'hidden', transition: 'border-color 120ms, box-shadow 120ms', borderColor: hovered ? 'var(--ds-text-brand, #2563EB)' : (isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.06)'), boxShadow: hovered ? '0 2px 8px rgba(37,99,235,0.08)' : 'none' }}
+      style={{ display: 'flex', borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', overflow: 'hidden', transition: 'border-color 120ms, box-shadow 120ms', borderColor: hovered ? 'var(--ds-text-brand, #2563EB)' : (isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.06)'), boxShadow: hovered ? '0 2px 8px rgba(37,99,235,0.08)' : 'none' }}
     >
       <div style={{ width: 3, background: hovered ? dc.fg : 'transparent', transition: 'background 200ms' }} />
       <div style={{ flex: 1, padding: '16px 16px 14px' }}>
@@ -402,13 +402,13 @@ const LearningPathCard = React.memo(({ p, navigate, isDark }: { p: any; navigate
   const pct = p.article_count > 0 ? Math.round((p.completedCount / p.article_count) * 100) : 0;
   const diffColor = p.difficulty === 'beginner' ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : p.difficulty === 'intermediate' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
   return (
-    <div onClick={() => navigate(`/wiki/learning-paths/${p.id}`)} style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', transition: 'border-color 120ms, box-shadow 120ms', cursor: 'pointer' }}
+    <div onClick={() => navigate(`/wiki/learning-paths/${p.id}`)} style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', transition: 'border-color 120ms, box-shadow 120ms', cursor: 'pointer' }}
       onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.08)'; }}
       onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.06)'; e.currentTarget.style.boxShadow = 'none'; }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
         <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--ds-text-brand, #2563EB)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <GraduationCap size={16} style={{ color: 'var(--ds-surface, #FFFFFF)' }} />
+          <GraduationCap size={16} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 12.5, fontWeight: 600, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>{p.title}</div>

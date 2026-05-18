@@ -8,7 +8,7 @@
    ═══════════════════════════════════════════════════════════ */
 .clmp-root {
   font-family: var(--ds-font-family-body, 'Atlassian Sans', ui-sans-serif, system-ui, sans-serif);
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   color: var(--ds-text, var(--cp-text-primary, #172B4D));
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -35,8 +35,8 @@
   --clmp-text3: var(--ds-text-subtlest, #5E6C84);
   --clmp-mute:  var(--ds-text-subtlest, #6B778C);
 
-  --clmp-bg:         var(--ds-surface, #FFFFFF);
-  --clmp-bg-surface: var(--ds-surface, #FFFFFF);
+  --clmp-bg:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --clmp-bg-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --clmp-bg-subtle:  var(--ds-surface-sunken, #F7F8F9);
   --clmp-bg-band:    var(--ds-background-neutral, #F4F5F7);
   --clmp-bg-tint:    #F0F5FF;
@@ -419,7 +419,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--ds-text-inverse, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   font-size: 9px;
   font-weight: 700;
   flex-shrink: 0;
@@ -1088,7 +1088,7 @@
   align-items: center;
   gap: 12px;
   padding: 10px 12px;
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--ds-border, rgba(11,18,14,0.14));
   border-radius: 6px;
   transition: box-shadow 150ms cubic-bezier(0.15,1,0.3,1), border-color 150ms cubic-bezier(0.15,1,0.3,1);
@@ -1192,7 +1192,7 @@
 }
 
 .clmp-arch-mod-v2 {
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--ds-border, rgba(11,18,14,0.14));
   border-radius: 3px;
   padding: 5px 4px;
@@ -1215,7 +1215,7 @@
   align-items: flex-start;
   gap: 12px;
   padding: 12px 14px;
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--ds-border, rgba(11,18,14,0.14));
   border-radius: 6px;
   transition: box-shadow 150ms cubic-bezier(0.15,1,0.3,1), border-color 150ms cubic-bezier(0.15,1,0.3,1);

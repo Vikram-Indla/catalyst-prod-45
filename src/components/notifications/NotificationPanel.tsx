@@ -106,8 +106,8 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
 
   // Dark mode tokens
   const T = {
-    panelBg: 'var(--cp-bg-elevated, #FFFFFF)',
-    surfaceBg: 'var(--cp-bg-elevated, #FFFFFF)',
+    panelBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    surfaceBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     text1: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
     text2: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
     text3: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))',
@@ -118,7 +118,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     shadow: isDark
       ? '0 8px 24px rgba(0,0,0,0.4), 0 0 1px rgba(0,0,0,0.5)'
       : '0 8px 24px rgba(15,23,42,0.12), 0 0 1px rgba(15,23,42,0.08)',
-    menuBg: 'var(--cp-bg-elevated, #FFFFFF)',
+    menuBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     divider: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
   };
 
@@ -402,7 +402,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
             >
               <span style={{
                 position: 'absolute', top: 2, left: unreadOnly ? 18 : 2,
-                width: 16, height: 16, borderRadius: '50%', background: 'var(--ds-text-inverse, #FFFFFF)',
+                width: 16, height: 16, borderRadius: '50%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 transition: 'left 200ms cubic-bezier(0.16,1,0.3,1)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>

@@ -191,12 +191,12 @@ export function ProjectIcon({
           alignItems: 'center',
           justifyContent: 'center',
           flexShrink: 0,
-          color: isGhost ? color : 'var(--ds-surface, #FFFFFF)',
+          color: isGhost ? color : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         }}
       >
         <LucideIcon
           size={iconPx}
-          color={isGhost ? color : 'var(--ds-surface, #FFFFFF)'}
+          color={isGhost ? color : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'}
           strokeWidth={2}
         />
       </span>

@@ -87,7 +87,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
       {/* Chart — V12: border-only, NO box-shadow */}
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         <div style={{
-          width: '100%', height: '520px', background: 'var(--cp-bg-elevated, #FFFFFF)', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
+          width: '100%', height: '520px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
           borderRadius: '6px', position: 'relative', overflow: 'hidden',
         }}>
           {/* Grid area */}
@@ -128,7 +128,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
                   borderRadius: '50%', background: dot.color,
                   border: '2px solid white', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '10px', fontWeight: 800, color: 'var(--ds-text-inverse, #FFFFFF)',
+                  fontSize: '10px', fontWeight: 800, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   fontFamily: 'var(--cp-font-mono)',
                   textShadow: '0 1px 2px rgba(0,0,0,0.3)',
                   boxShadow: hoveredDot === dot.key ? '0 4px 14px rgba(0,0,0,0.25)' : '0 2px 6px rgba(0,0,0,0.15)',
@@ -142,7 +142,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
                 {hoveredDot === dot.key && (
                   <div style={{
                     position: 'absolute', bottom: `${dot.size + 8}px`, left: '50%', transform: 'translateX(-50%)',
-                    background: 'var(--ds-text, var(--cp-ink-1, #0F172A))', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: '12px', borderRadius: '8px',
+                    background: 'var(--ds-text, var(--cp-ink-1, #0F172A))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: '12px', borderRadius: '8px',
                     padding: '8px 12px', whiteSpace: 'nowrap', zIndex: 20,
                     boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
                   }}>

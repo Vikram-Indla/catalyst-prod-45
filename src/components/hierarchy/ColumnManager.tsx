@@ -118,7 +118,7 @@ export function ColumnManagerDropdown({ visibleColumns, onChange }: ColumnManage
                   background: isVisible ? 'var(--cp-blue)' : 'transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>
-                  {isVisible && <Check size={10} color="var(--ds-surface, #FFFFFF)" strokeWidth={3} />}
+                  {isVisible && <Check size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" strokeWidth={3} />}
                 </div>
                 {col.label}
               </button>

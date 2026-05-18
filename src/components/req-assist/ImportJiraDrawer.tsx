@@ -40,11 +40,11 @@ const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   'Open':        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' },
   'To Do':       { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' },
   'Backlog':     { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' },
-  'In Progress': { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  'In Review':   { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
-  'Done':        { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)' },
-  'Resolved':    { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)' },
-  'Closed':      { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)' },
+  'In Progress': { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'In Review':   { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Done':        { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Resolved':    { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Closed':      { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
 };
 
 function Lozenge({ label, styles }: { label: string; styles: Record<string, { bg: string; color: string }> }) {
@@ -376,7 +376,7 @@ function Step1({
                   transition: 'background 0.1s',
                 }}
                 onMouseEnter={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.02)'; }}
-                onMouseLeave={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface, #FFFFFF)'; }}
+                onMouseLeave={e => { if (!selected) (e.currentTarget as HTMLElement).style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
               >
                 {/* Avatar */}
                 <div style={{

@@ -191,7 +191,7 @@ export function SidebarBase({
   const chevronHoverColor = 'var(--cp-text-primary, var(--cp-text-primary, #172B4D))';
   // ADS canonical: side-nav uses --ds-surface (rail surface lifts above
   // page bg --ds-background-neutral). Was incorrectly using page bg token.
-  const sidebarBg = 'var(--cp-bg-elevated, #FFFFFF)';
+  const sidebarBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
   // ADS canonical: --ds-border is translucent (#a6c5e229 dark / #0b120e24 light)
   const sidebarBorder = 'var(--cp-border, var(--cp-lozenge-grey-bg, #DFE1E6))';
   const dividerColor = 'var(--cp-border, var(--cp-lozenge-grey-bg, #DFE1E6))';
@@ -613,7 +613,7 @@ function renderMenuItem(
               : 'hsl(var(--brand-primary))',
             color: item.textBadge === 'AI'
               ? 'var(--cp-purple-60, #7C3AED)'
-              : 'var(--ds-surface, #ffffff)',
+              : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: item.textBadge === 'AI' ? '1px solid rgba(124, 58, 237, 0.12)' : 'none',
             position: expanded ? 'relative' : 'absolute',
             top: expanded ? 'auto' : '4px',

@@ -22,7 +22,7 @@ export const loginColors = {
   successLight: '#2dd4bf',
 
   // Text Colors (WCAG AA Compliant)
-  textPrimary: 'var(--ds-surface, #ffffff)',
+  textPrimary: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   textSecondary: '#d1d5db',
   textMuted: '#9ca3af',
   

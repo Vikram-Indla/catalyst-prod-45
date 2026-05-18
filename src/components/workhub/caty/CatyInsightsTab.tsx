@@ -212,7 +212,7 @@ export function CatyInsightsTab() {
                   key={idx}
                   className="p-3 rounded-lg border"
                   style={{
-                    backgroundColor: 'var(--ds-text-inverse, #ffffff)',
+                    backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     borderColor: 'var(--wh-border-light)',
                   }}
                 >

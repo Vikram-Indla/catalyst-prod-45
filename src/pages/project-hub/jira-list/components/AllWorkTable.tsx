@@ -43,7 +43,7 @@ const T = {
   textPrimary: 'var(--cp-text-primary, #292A2E)',
   textSecondary: 'var(--cp-text-secondary, #505258)',
   textMuted: 'var(--cp-text-tertiary, #6B6E76)',
-  white: 'var(--cp-bg-elevated, #FFFFFF)',
+  white: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
 };
 
 interface AllWorkTableProps {
@@ -431,7 +431,7 @@ function PaginationBtn({ children, disabled, active, onClick }: {
         borderRadius: 3,
         fontSize: 12, fontWeight: active ? 600 : 400,
         color: disabled ? 'var(--cp-text-muted, #C1C7CD)' : active ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))',
-        background: active ? 'rgba(37,99,235,0.06)' : 'var(--cp-bg-elevated, #FFFFFF)',
+        background: active ? 'rgba(37,99,235,0.06)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         cursor: disabled ? 'default' : 'pointer',
         fontFamily: 'var(--cp-font-body)',
         opacity: disabled ? 0.5 : 1,

@@ -3,8 +3,8 @@
 
 export const RH = {
   // Backgrounds
-  pageBg: 'var(--ds-surface, #FFFFFF)',
-  cardBg: 'var(--ds-surface, #FFFFFF)',
+  pageBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+  cardBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   surfaceBg: 'var(--bg-1, #F8FAFC)',
   sunkenBg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
 
@@ -54,8 +54,8 @@ export const RH = {
 
 export const LOZENGE = {
   grey:  { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: '#42526E' },
-  blue:  { bg: '#0C66E4', text: 'var(--ds-surface, #FFFFFF)' },
-  green: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--ds-surface, #FFFFFF)' },
+  blue:  { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  green: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
 } as const;
 
 type LozengeStyle = { bg: string; text: string };
@@ -106,14 +106,14 @@ export const RISK_BADGE: Record<string, { bg: string; text: string }> = {
 // Source badges
 export const SOURCE_BADGE: Record<string, { bg: string; text: string }> = {
   jira: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: '#42526E' },
-  catalyst: { bg: '#0C66E4', text: 'var(--ds-surface, #FFFFFF)' },
+  catalyst: { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
 };
 
 // Deployment result badges (only shown when status=IN_PRODUCTION)
 export const DEPLOY_RESULT_BADGE: Record<string, { bg: string; text: string }> = {
-  success: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--ds-surface, #FFFFFF)' },
+  success: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   rolled_back: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)' },
-  monitoring: { bg: '#0C66E4', text: 'var(--ds-surface, #FFFFFF)' },
+  monitoring: { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
 };
 
 // Sign-off decision lozenges

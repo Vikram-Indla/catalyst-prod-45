@@ -164,7 +164,7 @@ const AssigneeItem: React.FC<{
           height: '28px',
           borderRadius: '50%',
           backgroundColor: assignee.color,
-          color: 'var(--ds-surface, #ffffff)',
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           fontSize: '11px',
           fontWeight: 600
         }}

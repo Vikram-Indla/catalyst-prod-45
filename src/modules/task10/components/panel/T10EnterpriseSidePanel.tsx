@@ -24,7 +24,7 @@ interface T10EnterpriseSidePanelProps {
 // CONSTANTS
 // ═══════════════════════════════════════════════════════════════════════════
 const COLORS = {
-  white: 'var(--ds-surface, #ffffff)',
+  white: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   gray50: 'var(--ds-surface-sunken, #f8fafc)',
   gray100: 'var(--ds-surface-sunken, #f1f5f9)',
   gray200: 'var(--ds-border, #e2e8f0)',

@@ -262,7 +262,7 @@ export function WikiAdminSyncTab() {
                   flexShrink: 0, fontSize: 11, fontWeight: 700,
                   fontFamily: 'var(--cp-font-mono)',
                   background: isDone ? 'var(--cp-lozenge-green-bg, #1B7F37)' : isStepFailed ? 'rgba(220,38,38,0.08)' : isActive ? '#0C66E4' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'),
-                  color: isDone ? 'var(--ds-surface, #FFFFFF)' : isStepFailed ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : isActive ? 'var(--ds-surface, #FFFFFF)' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'),
+                  color: isDone ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : isStepFailed ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'),
                   ...(isActive ? { boxShadow: '0 0 0 3px rgba(37,99,235,0.2)' } : {}),
                 }}>
                   {isDone
@@ -293,7 +293,7 @@ export function WikiAdminSyncTab() {
                     <span style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4,
                       padding: '2px 8px', borderRadius: 4,
-                      background: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)',
+                      background: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                       fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
                     }}>
                       <Loader2 style={{ width: 10, height: 10, animation: 'spin 1s linear infinite' }} />
@@ -303,7 +303,7 @@ export function WikiAdminSyncTab() {
                   {isDone && (
                     <span style={{
                       padding: '2px 8px', borderRadius: 4,
-                      background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)',
+                      background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                       fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em',
                     }}>Complete</span>
                   )}
@@ -400,7 +400,7 @@ export function EmptyState({ icon, message, sub }: { icon: React.ReactNode; mess
 export function StatusLoz({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
     complete: { bg: '#E3FCEF', color: '#006644' },
-    running: { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
+    running: { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
     failed: { bg: 'rgba(220,38,38,0.08)', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' },
     partial: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--cp-text-secondary, #44546F)' },
   };

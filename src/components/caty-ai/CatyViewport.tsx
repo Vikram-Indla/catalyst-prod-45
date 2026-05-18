@@ -254,7 +254,7 @@ function IssueTile({ question, accentColor, onClick }: IssueTileProps) {
         e.currentTarget.style.borderColor = 'var(--ds-text-disabled, #cbd5e1)';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.background = 'var(--ds-surface, #ffffff)';
+        e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
         e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)';
       }}
     >
@@ -388,7 +388,7 @@ const styles: Record<string, React.CSSProperties> = {
   
   // Issues Container
   issuesContainer: {
-    background: 'var(--ds-surface, #ffffff)',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     borderRadius: 12,
     border: '1px solid #e2e8f0',
     padding: 16,
@@ -456,7 +456,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: 12,
     padding: '10px 12px',
-    background: 'var(--ds-surface, #ffffff)',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     border: '1px solid #e2e8f0',
     borderRadius: 8,
     cursor: 'pointer',
@@ -512,7 +512,7 @@ const styles: Record<string, React.CSSProperties> = {
     height: 40,
     borderRadius: '50%',
     background: 'var(--ds-text-success, #22c55e)',
-    color: 'var(--ds-surface, #ffffff)',
+    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

@@ -17,7 +17,7 @@ interface Props {
 const C = {
   primary: 'var(--ds-text-brand, #2563eb)', success: '#0d9488', warning: 'var(--ds-text-warning, #d97706)', danger: 'var(--ds-text-danger, #ef4444)',
   textPrimary: 'var(--ds-text, #0f172a)', textSecondary: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', textTertiary: 'var(--ds-text-subtle, #475569)',
-  surface: 'var(--ds-surface-sunken, #f8fafc)', surfaceAlt: 'var(--ds-surface-sunken, #f1f5f9)', border: 'var(--ds-border, #e2e8f0)', bg: 'var(--ds-text-inverse, #ffffff)',
+  surface: 'var(--ds-surface-sunken, #f8fafc)', surfaceAlt: 'var(--ds-surface-sunken, #f1f5f9)', border: 'var(--ds-border, #e2e8f0)', bg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   insightBg: 'var(--ds-background-selected, #eff6ff)', insightText: '#1e40af', insightBorder: 'var(--ds-text-brand, #2563eb)',
   gapBg: 'var(--ds-background-danger, #fef2f2)', gapText: 'var(--ds-text-danger, #991b1b)', gapBody: '#7f1d1d', gapBorder: 'var(--ds-text-danger, #ef4444)',
 } as const;
@@ -113,7 +113,7 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
           <div style={{
             width: '36px', height: '50px', borderRadius: '50%', background: 'var(--cp-purple-60, #7C3AED)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '16px', color: 'var(--ds-text-inverse, #FFFFFF)',
+            fontSize: '16px', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           }}>✦</div>
           <div>
             <div style={{ fontSize: '20px', fontWeight: 800, color: C.textPrimary }}>AI Ideas Hub</div>
@@ -300,7 +300,7 @@ function DuplicatePair({ match, idea1, idea2, signals, onMerge }: {
       </div>
       <div style={{ display: 'flex', gap: '8px' }}>
         <button onClick={() => { if (onMerge) onMerge(); else toast.success('Merge initiated'); }}
-          style={{ background: C.primary, color: 'var(--ds-text-inverse, #ffffff)', border: 'none', borderRadius: '6px', padding: '6px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
+          style={{ background: C.primary, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '6px', padding: '6px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
           Merge Ideas
         </button>
         <button onClick={() => toast('Kept separate')}

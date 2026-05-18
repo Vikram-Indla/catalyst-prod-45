@@ -74,7 +74,7 @@ export const adsTokens = {
      * hubPage — outer page background for <AtlaskitPageShell>.
      *
      * Apr 19, 2026 (V3 — White Canvas):
-     *   Light mode moved from Jira-blue #E9F2FE to #FFFFFF on Vikram's
+     *   Light mode moved from Jira-blue #E9F2FE to var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)) on Vikram's
      *   decision (dashboard read as a "grey/blue tint" next to backlog;
      *   backlog's mostly-white content had been masking the same frame).
      *   Decision: flatten project-hub surfaces to a single white canvas.

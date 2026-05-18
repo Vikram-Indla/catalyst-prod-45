@@ -13,12 +13,12 @@ interface CheckResult {
 }
 
 const statusColors: Record<string, { bg: string; fg: string; label: string }> = {
-  pass: { bg: "var(--cp-lozenge-green-bg, #1B7F37)", fg: "var(--ds-surface, #FFFFFF)", label: "PASS" },
+  pass: { bg: "var(--cp-lozenge-green-bg, #1B7F37)", fg: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))", label: "PASS" },
   fail: { bg: "#FFEBE6", fg: "#BF2600", label: "FAIL" },
   warn: { bg: "#FFFAE6", fg: "#974F0C", label: "WARN" },
-  info: { bg: "#0C66E4", fg: "var(--ds-surface, #FFFFFF)", label: "INFO" },
+  info: { bg: "#0C66E4", fg: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))", label: "INFO" },
   pending: { bg: "var(--ds-surface-sunken, #F4F5F7)", fg: "var(--ds-text-subtlest, #6B778C)", label: "PENDING" },
-  running: { bg: "#0C66E4", fg: "var(--ds-surface, #FFFFFF)", label: "RUNNING" },
+  running: { bg: "#0C66E4", fg: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))", label: "RUNNING" },
 };
 
 const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
@@ -59,7 +59,7 @@ function StatusBadge({ status }: { status: CheckStatus }) {
 
 function CheckCard({ result }: { result: CheckResult }) {
   return (
-    <div style={{ border: "0.75px solid var(--bd-default, var(--cp-border, #E2E8F0))", borderRadius: 6, background: "var(--ds-surface, #FFFFFF)", padding: 16, marginBottom: 12 }}>
+    <div style={{ border: "0.75px solid var(--bd-default, var(--cp-border, #E2E8F0))", borderRadius: 6, background: "var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))", padding: 16, marginBottom: 12 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
         <span style={{ fontWeight: 600, fontSize: 13 }}>{result.id} · {result.title}</span>
         <StatusBadge status={result.status} />

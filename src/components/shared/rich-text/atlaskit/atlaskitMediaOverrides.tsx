@@ -249,7 +249,7 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
             background: 'rgba(9, 30, 66, 0.54)',
             border: 'none', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: 'var(--ds-surface, #FFFFFF)', transition: 'background 0.15s',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', transition: 'background 0.15s',
             zIndex: 2,
           }}
           onMouseEnter={e => { e.currentTarget.style.background = 'rgba(9, 30, 66, 0.71)'; }}

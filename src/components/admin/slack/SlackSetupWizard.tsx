@@ -142,7 +142,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
   return (
     <div className="space-y-6">
       {/* Progress Steps */}
-      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '24px' }}>
+      <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '24px' }}>
         <div className="flex items-center justify-between">
           {STEPS.map((step, index) => {
             const Icon = step.icon;
@@ -190,7 +190,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
       </div>
 
       {/* Step Content */}
-      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '32px' }}>
+      <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '32px' }}>
           {/* Step 1: Create Slack App */}
           {currentStep === 1 && (
             <div className="max-w-2xl mx-auto space-y-6">

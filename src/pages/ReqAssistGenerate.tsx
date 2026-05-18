@@ -268,7 +268,7 @@ export default function ReqAssistGenerate() {
         </div>
 
         {/* INPUT CARD */}
-        <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 6, padding: 24, marginBottom: 20 }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 6, padding: 24, marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
             <FileText size={15} color="var(--cp-purple-60, #7C3AED)" />
             <span style={{ fontSize: 13, fontWeight: 650, color: 'var(--cp-text-primary, #111827)', fontFamily: 'var(--cp-font-body)' }}>Requirements Input</span>
@@ -335,7 +335,7 @@ export default function ReqAssistGenerate() {
 
         {/* Generating spinner */}
         {generating && !genResult && (
-          <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 6, padding: '40px 24px', textAlign: 'center' }}>
+          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 6, padding: '40px 24px', textAlign: 'center' }}>
             <Loader2 size={24} color="var(--cp-purple-60, #7C3AED)" style={{ animation: 'ra-spin 1s linear infinite', margin: '0 auto 12px', display: 'block' }} />
             <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-secondary, #374151)', margin: '0 0 4px', fontFamily: 'var(--cp-font-body)' }}>Generating BRD sections from your input…</p>
             <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #6B7280)', margin: 0, fontFamily: 'var(--cp-font-body)' }}>This typically takes 15–30 seconds</p>
@@ -344,11 +344,11 @@ export default function ReqAssistGenerate() {
 
         {/* GENERATED BRD */}
         {genResult && genResult.sections.length > 0 && (
-          <div style={{ border: `0.75px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 6, overflow: 'hidden', background: 'var(--cp-bg-elevated, #FFFFFF)' }}>
+          <div style={{ border: `0.75px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 6, overflow: 'hidden', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
             {/* Header */}
             <div style={{ padding: '12px 16px', borderBottom: `0.75px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', fontFamily: 'var(--cp-font-heading)' }}>Generated BRD</span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', padding: '0 6px', height: 20, borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)' }}>QUALIFIED</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', padding: '0 6px', height: 20, borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>QUALIFIED</span>
               <span style={{ fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginLeft: 'auto', fontFamily: 'var(--cp-font-mono)' }}>
                 {genResult.section_count} sections · {genResult.language.toUpperCase()} · {genResult.total_requirements} requirements
               </span>
@@ -396,7 +396,7 @@ export default function ReqAssistGenerate() {
             )}
 
             {/* ACTION BAR */}
-            <div style={{ padding: '12px 16px', background: 'var(--cp-bg-elevated, #FFFFFF)', borderTop: `0.75px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ padding: '12px 16px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderTop: `0.75px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, display: 'flex', gap: 8, alignItems: 'center' }}>
               {brdState === 'generated' && (
                 <>
                   <BtnPrimary onClick={() => doSave()} disabled={saving}>
@@ -431,7 +431,7 @@ export default function ReqAssistGenerate() {
                     </BtnOutline>
                   )}
                   {wikiState === 'success' && (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '8px 16px', borderRadius: 6, background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)', fontSize: 14, fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '8px 16px', borderRadius: 6, background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
                       <Check size={14} /> In WikiHub
                     </span>
                   )}
@@ -473,7 +473,7 @@ export default function ReqAssistGenerate() {
       {/* DUPLICATE MODAL */}
       {dupModalOpen && duplicateDoc && (
         <ModalOverlay>
-          <div style={{ width: 480, background: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
+          <div style={{ width: 480, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
               <AlertTriangle size={20} color="var(--ds-text-subtlest, var(--cp-ink-3, #64748B))" />
               <span style={{ fontSize: 16, fontWeight: 650, color: 'var(--cp-text-primary, #111827)', fontFamily: 'var(--cp-font-heading)' }}>Document Already Exists</span>
@@ -525,7 +525,7 @@ export default function ReqAssistGenerate() {
       {/* OVERWRITE CONFIRM */}
       {overwriteConfirmOpen && (
         <ModalOverlay>
-          <div style={{ width: 440, background: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
+          <div style={{ width: 440, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
             <p style={{ fontSize: 14, color: 'var(--cp-text-secondary, #374151)', lineHeight: 1.6, margin: '0 0 16px' }}>
               Are you sure? This will replace the existing BRD and clear any generated Epics for that document.
             </p>
@@ -542,7 +542,7 @@ export default function ReqAssistGenerate() {
                 } catch (err: any) { setGenError(err.message); } finally { setGenerating(false); setOverwriteConfirmOpen(false); }
               }} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
-                border: 'none', borderRadius: 6, background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
+                border: 'none', borderRadius: 6, background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>Yes, Overwrite</button>
               <BtnGhost onClick={() => setOverwriteConfirmOpen(false)}>Go Back</BtnGhost>
             </div>
@@ -553,7 +553,7 @@ export default function ReqAssistGenerate() {
       {/* REGEN EPICS CONFIRM */}
       {regenConfirmOpen && (
         <ModalOverlay>
-          <div style={{ width: 440, background: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
+          <div style={{ width: 440, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
             <p style={{ fontSize: 14, color: 'var(--cp-text-secondary, #374151)', lineHeight: 1.6, margin: '0 0 16px' }}>
               Regenerating will replace all {epicCount} existing epics for this document. This cannot be undone.
             </p>
@@ -585,7 +585,7 @@ function BtnPrimary({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
       border: 'none', borderRadius: 4, cursor: props.disabled ? 'not-allowed' : 'pointer',
-      background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)', color: 'var(--ds-surface, #FFFFFF)',
+      background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       fontFamily: 'var(--cp-font-body)',
       opacity: props.disabled ? 0.6 : 1, transition: 'filter 120ms',
       ...props.style,
@@ -598,7 +598,7 @@ function BtnAI({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElem
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
       border: 'none', borderRadius: 4, cursor: props.disabled ? 'not-allowed' : 'pointer',
-      background: 'var(--cp-purple-60, #7C3AED)', color: 'var(--ds-surface, #FFFFFF)',
+      background: 'var(--cp-purple-60, #7C3AED)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       fontFamily: 'var(--cp-font-body)',
       opacity: props.disabled ? 0.6 : 1, transition: 'background 120ms',
       ...props.style,
@@ -612,7 +612,7 @@ function BtnOutline({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
       border: `0.75px solid ${'var(--cp-border-strong, #CBD5E1)'}`, borderRadius: 6, cursor: props.disabled ? 'not-allowed' : 'pointer',
-      background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #374151)', fontFamily: 'var(--cp-font-body)',
+      background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-secondary, #374151)', fontFamily: 'var(--cp-font-body)',
       transition: 'background 120ms',
       ...props.style,
     }}>{children}</button>
@@ -667,7 +667,7 @@ function CatalystTopNav() {
     { label: 'WikiHub', path: '/wikihub' },
   ];
   return (
-    <nav style={{ height: 48, display: 'flex', alignItems: 'center', gap: 0, background: 'var(--cp-bg-elevated, #FFFFFF)', borderBottom: `0.75px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, padding: '0 24px', fontFamily: 'var(--cp-font-body)' }}>
+    <nav style={{ height: 48, display: 'flex', alignItems: 'center', gap: 0, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderBottom: `0.75px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, padding: '0 24px', fontFamily: 'var(--cp-font-body)' }}>
       {HUBS.map(h => {
         const isActive = h.label === 'ProductHub';
         return (

@@ -134,7 +134,7 @@ export default function ImportExportPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
       <CatalystPageHeader title="Import / Export" actions={
-        <button onClick={fetchData} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 16px', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+        <button onClick={fetchData} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 16px', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
           <RefreshCw size={16} /> Refresh
         </button>
       } />
@@ -189,7 +189,7 @@ export default function ImportExportPage() {
           style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '10px 20px', border: 'none', borderRadius: 8,
-            backgroundColor: activeTab === 'import' ? ('var(--cp-bg-elevated, #FFFFFF)') : 'transparent',
+            backgroundColor: activeTab === 'import' ? ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))') : 'transparent',
             color: activeTab === 'import' ? ('var(--cp-text-primary, var(--cp-ink-1, #0F172A))') : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'),
             fontSize: 14, fontWeight: 500, cursor: 'pointer',
             boxShadow: activeTab === 'import' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
@@ -202,7 +202,7 @@ export default function ImportExportPage() {
           style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '10px 20px', border: 'none', borderRadius: 8,
-            backgroundColor: activeTab === 'export' ? ('var(--cp-bg-elevated, #FFFFFF)') : 'transparent',
+            backgroundColor: activeTab === 'export' ? ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))') : 'transparent',
             color: activeTab === 'export' ? ('var(--cp-text-primary, var(--cp-ink-1, #0F172A))') : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'),
             fontSize: 14, fontWeight: 500, cursor: 'pointer',
             boxShadow: activeTab === 'export' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',

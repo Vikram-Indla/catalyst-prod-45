@@ -1,7 +1,7 @@
 /**
  * CleanupPage — AI Cleanup Governance
  * Full page for managing stale work items.
- * Light mode only. Page bg var(--ds-surface-sunken, #F8FAFC), cards #ffffff.
+ * Light mode only. Page bg var(--ds-surface-sunken, #F8FAFC), cards var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)).
  */
 import React, { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -547,7 +547,7 @@ export default function CleanupPage() {
     }}>
       {/* ═══ PAGE HEADER ═══ */}
       <div style={{
-        background: 'var(--ds-surface, #ffffff)', borderBottom: '1px solid var(--cp-border, #E2E8F0)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderBottom: '1px solid var(--cp-border, #E2E8F0)',
         padding: '12px 24px', display: 'flex', alignItems: 'center', gap: 12,
         flexShrink: 0,
       }}>
@@ -589,7 +589,7 @@ export default function CleanupPage() {
       {/* ═══ TABS + VIEW TOGGLE ═══ */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        background: 'var(--ds-surface, #ffffff)', borderBottom: '1px solid var(--cp-border, #E2E8F0)', flexShrink: 0,
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderBottom: '1px solid var(--cp-border, #E2E8F0)', flexShrink: 0,
         padding: '0 16px 0 0',
       }}>
         <div style={{ display: 'flex', gap: 0 }}>
@@ -626,8 +626,8 @@ export default function CleanupPage() {
                   display: 'flex', alignItems: 'center', gap: 4,
                   height: 32, padding: '0 12px', border: 'none', cursor: 'pointer',
                   fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 500,
-                  background: viewMode === v.key ? 'var(--ds-text, var(--cp-ink-1, #0F172A))' : 'var(--ds-surface, #ffffff)',
-                  color: viewMode === v.key ? 'var(--ds-surface, #ffffff)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
+                  background: viewMode === v.key ? 'var(--ds-text, var(--cp-ink-1, #0F172A))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                  color: viewMode === v.key ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
                   transition: 'background 100ms, color 100ms',
                 }}
               >
@@ -644,7 +644,7 @@ export default function CleanupPage() {
           {/* ═══ STATS ROW ═══ */}
           <div style={{
             display: 'flex', gap: 32, padding: '16px 24px',
-            borderBottom: '1px solid var(--cp-border, #E2E8F0)', background: 'var(--ds-surface, #ffffff)', flexShrink: 0,
+            borderBottom: '1px solid var(--cp-border, #E2E8F0)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', flexShrink: 0,
           }}>
             {[
               { label: 'AI FLAGGED', value: stats.aiFlagged },
@@ -767,10 +767,10 @@ export default function CleanupPage() {
                           key={item.id}
                           style={{
                             padding: '12px 16px', borderBottom: '0.75px solid var(--cp-bg-sunken, #F1F5F9)',
-                            background: 'var(--ds-surface, #ffffff)', transition: 'background 150ms',
+                            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', transition: 'background 150ms',
                           }}
                           onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F8FAFC)')}
-                          onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface, #ffffff)')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))')}
                         >
                           {/* LINE 1 */}
                           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -795,10 +795,10 @@ export default function CleanupPage() {
                                   onOpenChange={(open) => { if (!open) setEditingStatusId(null); }}
                                   defaultOpen
                                 >
-                                  <SelectTrigger style={{ height: 24, fontSize: 11, border: '1px solid #2563EB', borderRadius: 4, background: 'var(--ds-surface, #ffffff)' }}>
+                                  <SelectTrigger style={{ height: 24, fontSize: 11, border: '1px solid #2563EB', borderRadius: 4, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                                     <SelectValue />
                                   </SelectTrigger>
-                                  <SelectContent style={{ background: 'var(--ds-surface, #ffffff)', zIndex: 100 }}>
+                                  <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', zIndex: 100 }}>
                                     {distinctStatuses.map(s => (
                                       <SelectItem key={s} value={s} style={{ fontSize: 11 }}>{s}</SelectItem>
                                     ))}
@@ -899,7 +899,7 @@ export default function CleanupPage() {
                       {isOpen && items.length === 0 && (
                         <div style={{
                           padding: '16px', textAlign: 'center',
-                          fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', background: 'var(--ds-surface, #ffffff)',
+                          fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                           borderBottom: '0.75px solid var(--cp-bg-sunken, #F1F5F9)',
                         }}>
                           No items in this category
@@ -918,7 +918,7 @@ export default function CleanupPage() {
               {/* Toolbar */}
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 12, padding: '8px 16px',
-                background: 'var(--ds-surface, #ffffff)', borderBottom: '1px solid var(--cp-border, #E2E8F0)', flexShrink: 0,
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderBottom: '1px solid var(--cp-border, #E2E8F0)', flexShrink: 0,
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Checkbox
@@ -936,10 +936,10 @@ export default function CleanupPage() {
                 </div>
 
                 <Select value={listCatFilter} onValueChange={setListCatFilter}>
-                  <SelectTrigger style={{ height: 32, width: 180, fontSize: 12, border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6, background: 'var(--ds-surface, #ffffff)' }}>
+                  <SelectTrigger style={{ height: 32, width: 180, fontSize: 12, border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                     <SelectValue placeholder="All categories" />
                   </SelectTrigger>
-                  <SelectContent style={{ background: 'var(--ds-surface, #ffffff)' }}>
+                  <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                     <SelectItem value="all" style={{ fontSize: 12 }}>All categories</SelectItem>
                     {CATEGORIES.map(c => (
                       <SelectItem key={c.key} value={String(c.key)} style={{ fontSize: 12 }}>{c.name}</SelectItem>
@@ -948,10 +948,10 @@ export default function CleanupPage() {
                 </Select>
 
                 <Select value={listStatusFilter} onValueChange={setListStatusFilter}>
-                  <SelectTrigger style={{ height: 32, width: 160, fontSize: 12, border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6, background: 'var(--ds-surface, #ffffff)' }}>
+                  <SelectTrigger style={{ height: 32, width: 160, fontSize: 12, border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                     <SelectValue placeholder="All statuses" />
                   </SelectTrigger>
-                  <SelectContent style={{ background: 'var(--ds-surface, #ffffff)' }}>
+                  <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                     <SelectItem value="all" style={{ fontSize: 12 }}>All statuses</SelectItem>
                     {distinctStatuses.map(s => (
                       <SelectItem key={s} value={s} style={{ fontSize: 12 }}>{s}</SelectItem>
@@ -968,7 +968,7 @@ export default function CleanupPage() {
                   style={{
                     height: 32, fontSize: 12, fontWeight: 700,
                     background: selected.size > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
-                    color: selected.size > 0 ? 'var(--ds-surface, #ffffff)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
+                    color: selected.size > 0 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
                     border: selected.size > 0 ? 'none' : '1px solid var(--cp-border, #E2E8F0)',
                     cursor: selected.size === 0 ? 'not-allowed' : 'pointer',
                   }}
@@ -1064,12 +1064,12 @@ export default function CleanupPage() {
                             onClick={() => handleOpenDetailList(item, idx)}
                             style={{
                               height: 44, borderBottom: '1px solid var(--cp-bg-sunken, #F1F5F9)', cursor: 'pointer',
-                              background: isSelected ? 'rgba(37,99,235,0.04)' : 'var(--ds-surface, #ffffff)',
+                              background: isSelected ? 'rgba(37,99,235,0.04)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                               borderLeft: isSelected ? '2px solid #2563EB' : '2px solid transparent',
                               transition: 'background .1s',
                             }}
                             onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F8FAFC)'; }}
-                            onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface, #ffffff)'; }}
+                            onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
                           >
                             {/* Checkbox */}
                             <td style={{ padding: '8px 12px', width: 36 }} onClick={e => e.stopPropagation()}>
@@ -1145,7 +1145,7 @@ export default function CleanupPage() {
                                     <>
                                       <div style={{
                                         width: 24, height: 24, borderRadius: '50%', background: clr,
-                                        color: 'var(--ds-surface, #ffffff)', display: 'flex', alignItems: 'center',
+                                        color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', display: 'flex', alignItems: 'center',
                                         justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0,
                                       }}>
                                         {ini}
@@ -1173,7 +1173,7 @@ export default function CleanupPage() {
                                     <>
                                       <div style={{
                                         width: 24, height: 24, borderRadius: '50%', background: clr,
-                                        color: 'var(--ds-surface, #ffffff)', display: 'flex', alignItems: 'center',
+                                        color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', display: 'flex', alignItems: 'center',
                                         justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0,
                                       }}>
                                         {ini}
@@ -1199,10 +1199,10 @@ export default function CleanupPage() {
                                   onOpenChange={(open) => { if (!open) setEditingStatusId(null); }}
                                   defaultOpen
                                 >
-                                  <SelectTrigger style={{ height: 28, fontSize: 11, border: '1px solid #2563EB', borderRadius: 4, background: 'var(--ds-surface, #ffffff)', minWidth: 100 }}>
+                                  <SelectTrigger style={{ height: 28, fontSize: 11, border: '1px solid #2563EB', borderRadius: 4, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', minWidth: 100 }}>
                                     <SelectValue />
                                   </SelectTrigger>
-                                  <SelectContent style={{ background: 'var(--ds-surface, #ffffff)', zIndex: 100 }}>
+                                  <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', zIndex: 100 }}>
                                     {distinctStatuses.map(s => (
                                       <SelectItem key={s} value={s} style={{ fontSize: 11 }}>{s}</SelectItem>
                                     ))}
@@ -1258,7 +1258,7 @@ export default function CleanupPage() {
           {selected.size > 0 && (
             <div style={{
               position: 'fixed', bottom: 0, left: 0, right: 0,
-              background: 'var(--ds-surface, #ffffff)', borderTop: '1px solid var(--cp-border, #E2E8F0)',
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderTop: '1px solid var(--cp-border, #E2E8F0)',
               padding: '12px 24px', display: 'flex', alignItems: 'center',
               justifyContent: 'space-between', zIndex: 50,
             }}>
@@ -1292,7 +1292,7 @@ export default function CleanupPage() {
                 </Button>
                 <Button
                   variant="outline"
-                  style={{ height: 36, fontSize: 14, background: 'var(--ds-surface, #ffffff)', border: '1px solid var(--cp-border, #E2E8F0)', color: 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}
+                  style={{ height: 36, fontSize: 14, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--cp-border, #E2E8F0)', color: 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}
                   onClick={() => toast.info('Force Close via workflow — coming soon')}
                 >
                   Force Close (via workflow)
@@ -1300,7 +1300,7 @@ export default function CleanupPage() {
                 <Button
                   style={{
                     height: 36, fontSize: 14, fontWeight: 700,
-                    background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', color: 'var(--ds-surface, #ffffff)', border: 'none',
+                    background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
                   }}
                   onClick={() => setShowForceCloseDialog(true)}
                   onMouseEnter={e => (e.currentTarget.style.background = '#B91C1C')}
@@ -1314,7 +1314,7 @@ export default function CleanupPage() {
         </>
       ) : (
         /* ═══ RESTORE TAB ═══ */
-        <div style={{ flex: 1, overflowY: 'auto', background: 'var(--ds-surface, #ffffff)' }}>
+        <div style={{ flex: 1, overflowY: 'auto', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: 'var(--ds-surface-sunken, #F8FAFC)', borderBottom: '1px solid var(--cp-border, #E2E8F0)' }}>
@@ -1400,7 +1400,7 @@ export default function CleanupPage() {
         <DialogContent
           style={{
             maxWidth: 680, width: '90vw', borderRadius: 8,
-            backgroundColor: 'var(--ds-surface, #ffffff)', border: 'none',
+            backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
             boxShadow: '0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10)',
             padding: 0,
           }}
@@ -1496,11 +1496,11 @@ export default function CleanupPage() {
               <SelectTrigger style={{
                 width: '100%', height: 40, border: '1px solid var(--cp-border, #E2E8F0)',
                 borderRadius: 6, fontSize: 14, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))',
-                background: 'var(--ds-surface, #ffffff)', padding: '0 12px',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', padding: '0 12px',
               }}>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent style={{ background: 'var(--ds-surface, #ffffff)' }}>
+              <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                 {CLOSURE_REASONS.map(r => (
                   <SelectItem key={r} value={r} style={{ fontSize: 14 }}>{r}</SelectItem>
                 ))}
@@ -1535,7 +1535,7 @@ export default function CleanupPage() {
                 style={{
                   height: 36, padding: '0 24px', borderRadius: 6,
                   background: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', border: 'none',
-                  color: 'var(--ds-surface, #ffffff)', fontSize: 14, fontWeight: 700, cursor: 'pointer',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 700, cursor: 'pointer',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = '#B91C1C')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-text-danger, var(--cp-danger, #DC2626))')}

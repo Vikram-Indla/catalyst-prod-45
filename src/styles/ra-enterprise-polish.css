@@ -271,7 +271,7 @@
   letter-spacing: 0.75px !important;
   color: var(--ds-text-brand, #2563eb) !important;
   padding: 16px 16px 10px !important;
-  background: linear-gradient(180deg, var(--ds-surface, #ffffff) 0%, var(--ds-surface-sunken, #f8fafc) 100%) !important;
+  background: linear-gradient(180deg, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) 0%, var(--ds-surface-sunken, #f8fafc) 100%) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────

@@ -206,7 +206,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           <button onClick={e => { e.stopPropagation(); handleOpen(); }} style={{
             display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '8px 12px',
             background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: 'pointer',
-            fontSize: 11.5, fontWeight: 600, color: 'var(--ds-surface, #FFFFFF)', fontFamily: 'var(--cp-font-body)',
+            fontSize: 11.5, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontFamily: 'var(--cp-font-body)',
           }}>
             Open Board <ArrowRightIcon label="" size="small" />
           </button>
@@ -253,7 +253,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
                   padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
                   border: 'none',
                   background: deleteConfirm === board.name ? 'var(--sem-danger)' : 'var(--divider)',
-                  color: deleteConfirm === board.name ? 'var(--ds-surface, #FFFFFF)' : 'var(--fg-4)',
+                  color: deleteConfirm === board.name ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--fg-4)',
                   cursor: deleteConfirm === board.name ? 'pointer' : 'not-allowed',
                   fontFamily: 'var(--cp-font-body)',
                 }}>

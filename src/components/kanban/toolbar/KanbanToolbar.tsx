@@ -83,7 +83,7 @@ function BoardMenuItem({
       <span style={{ flex: 1 }}>{label}</span>
       {badge !== undefined && badge > 0 && (
         <span style={{
-          fontSize: 11, fontWeight: 700, color: 'var(--ds-surface, #FFFFFF)',
+          fontSize: 11, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           background: 'var(--cp-primary-60, #0052CC)', borderRadius: 10, padding: '1px 8px',
           lineHeight: '18px',
         }}>{badge}</span>

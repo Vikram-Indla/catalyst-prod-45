@@ -79,7 +79,7 @@ const pageContainerStyle: React.CSSProperties = {
 };
 
 const listContainerStyle: React.CSSProperties = {
-  background: 'var(--ds-surface, #FFFFFF)',
+  background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   border: '1px solid var(--ds-border, #DCDFE4)',
   borderRadius: 6,
   overflow: 'hidden',

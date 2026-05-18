@@ -51,7 +51,7 @@ export default function TriageQueuePage() {
   };
 
   return (
-    <div style={{ background: 'var(--bg-app, #FFFFFF)', minHeight: '100%', padding: '24px' }}>
+    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', minHeight: '100%', padding: '24px' }}>
       <div className="mb-5">
         <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>Triage Queue</h1>
         <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]" style={{ fontFamily: RH.fontBody }}>
@@ -80,7 +80,7 @@ export default function TriageQueuePage() {
               {unlinked.map((c: any) => {
                 const rec = getAIRecommendation(c, releases);
                 return (
-                  <tr key={c.id} className="border-b border-[rgba(15,23,42,0.06)]" style={{ background: 'var(--bg-app, #FFFFFF)' }}>
+                  <tr key={c.id} className="border-b border-[rgba(15,23,42,0.06)]" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                     <td className="px-3 py-2">
                       <span className="text-[13px] font-medium text-[var(--ds-text-brand,#2563EB)]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
                     </td>

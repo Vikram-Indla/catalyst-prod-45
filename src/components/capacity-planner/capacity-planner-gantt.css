@@ -66,7 +66,7 @@
 .capacity-gantt-container .analytics-dept-pill.active {
   background: var(--ct-primary) !important;
   border-color: var(--ct-primary) !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   font-weight: 600 !important;
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25) !important;
 }
@@ -74,7 +74,7 @@
 .capacity-gantt-container .analytics-dept-pill.active:hover {
   background: var(--ct-primary-hover) !important;
   border-color: var(--ct-primary-hover) !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
 }
 
 /* ==================== DESIGN TOKENS ==================== */
@@ -119,7 +119,7 @@
   font-size: 14px !important;
   line-height: 1.5 !important;
   color: var(--cpg-slate-900) !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border-radius: 16px !important;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06) !important;
   border: 1px solid var(--cpg-slate-200) !important;
@@ -135,7 +135,7 @@
   justify-content: space-between !important;
   padding: 16px 24px !important;
   border-bottom: 1px solid var(--cpg-slate-200) !important;
-  background: linear-gradient(to bottom, var(--ds-surface, #ffffff), var(--cpg-slate-50)) !important;
+  background: linear-gradient(to bottom, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))), var(--cpg-slate-50)) !important;
 }
 
 .cpg-toolbar-left {
@@ -174,7 +174,7 @@
   width: 28px !important;
   height: 28px !important;
   border: none !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border-radius: 6px !important;
   cursor: pointer !important;
   display: flex !important;
@@ -187,7 +187,7 @@
 
 .cpg-nav-btn:hover {
   background: var(--cpg-primary-600) !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
 }
 
 .cpg-nav-btn svg {
@@ -231,7 +231,7 @@
 }
 
 .cpg-view-btn.active {
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   color: var(--cpg-slate-900) !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
 }
@@ -241,7 +241,7 @@
   align-items: center !important;
   gap: 6px !important;
   padding: 8px 14px !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid var(--cpg-slate-200) !important;
   border-radius: 8px !important;
   font-family: var(--cpg-font-sans) !important;
@@ -277,7 +277,7 @@
   gap: 10px !important;
   padding: 16px 24px !important;
   border-bottom: 1px solid var(--cpg-slate-200) !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   flex-wrap: wrap !important;
 }
 
@@ -290,7 +290,7 @@
   font-size: 14px !important;
   font-weight: 500 !important;
   color: var(--cpg-slate-700) !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid var(--cpg-slate-300) !important;
   border-radius: 8px !important;
   cursor: pointer !important;
@@ -307,7 +307,7 @@
 .cpg-dept-pill.active {
   background: var(--cpg-primary-600) !important;
   border-color: var(--cpg-primary-600) !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   font-weight: 600 !important;
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25) !important;
 }
@@ -315,7 +315,7 @@
 .cpg-dept-pill.active:hover {
   background: var(--cpg-primary-700) !important;
   border-color: var(--cpg-primary-700) !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
 }
 
 /* ==================== LEGEND ==================== */
@@ -432,7 +432,7 @@
   position: sticky !important;
   left: 0 !important;
   z-index: 30 !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   padding: 0 16px !important;
   display: flex !important;
   align-items: flex-end !important;
@@ -498,7 +498,7 @@
   align-items: center !important;
   gap: 4px !important;
   background: var(--cpg-danger) !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   font-family: var(--cpg-font-sans) !important;
   font-size: 9px !important;
   font-weight: 700 !important;
@@ -548,7 +548,7 @@
   position: sticky !important;
   left: 0 !important;
   z-index: 20 !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   padding: 12px 16px !important;
   border-right: 1px solid var(--cpg-slate-200) !important;
   border-bottom: 1px solid var(--cpg-slate-200) !important;
@@ -568,7 +568,7 @@
   font-family: var(--cpg-font-sans) !important;
   font-size: 14px !important;
   font-weight: 600 !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   flex-shrink: 0 !important;
 }
 
@@ -690,7 +690,7 @@
   position: relative !important;
   border-bottom: 1px solid var(--cpg-slate-200) !important;
   min-height: 72px !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   transition: background 0.15s ease !important;
 }
 
@@ -753,7 +753,7 @@
   font-size: 10px !important;
   font-weight: 500 !important;
   color: var(--cpg-slate-500) !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   padding: 3px 8px !important;
   border-radius: 4px !important;
   border: 1px solid var(--cpg-slate-200) !important;
@@ -794,7 +794,7 @@
 .cpg-pill.committed {
   background: linear-gradient(135deg, var(--ds-text-brand, #2563eb) 0%, var(--ds-background-brand-bold-hovered, #1d4ed8) 100%) !important;
   border-left: 4px solid #1e40af !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25) !important;
 }
 
@@ -837,7 +837,7 @@
 
 .cpg-pill.committed .cpg-pill-allocation {
   background: rgba(255, 255, 255, 0.2) !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
 }
 
 .cpg-pill.forecast .cpg-pill-allocation {
@@ -865,7 +865,7 @@
   font-family: var(--cpg-font-sans) !important;
   font-size: 9px !important;
   font-weight: 700 !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   background: var(--cpg-danger) !important;
   padding: 2px 6px !important;
   border-radius: 4px !important;
@@ -920,7 +920,7 @@
   align-items: center !important;
   gap: 6px !important;
   padding: 8px 14px !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid var(--cpg-slate-200) !important;
   border-radius: 8px !important;
   font-family: var(--cpg-font-sans) !important;
@@ -945,7 +945,7 @@
 .cpg-tooltip {
   position: fixed !important;
   background: var(--cpg-slate-800) !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   padding: 10px 14px !important;
   border-radius: 8px !important;
   font-family: var(--cpg-font-sans) !important;
@@ -1033,7 +1033,7 @@ html.dark .cpg-nav-btn , [data-theme="dark"] .cpg-nav-btn {
 html.dark .cpg-nav-btn:hover,
 html.dark .cpg-nav-btn:hover , [data-theme="dark"] .cpg-nav-btn:hover {
   background: var(--ds-text-brand, #2563eb) !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
 }
 
 html.dark .cpg-date-range,

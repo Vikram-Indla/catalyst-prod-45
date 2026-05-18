@@ -52,7 +52,7 @@
   --ct-text-disabled: var(--ds-text-subtlest, #94a3b8);   /* 3.0:1  — disabled, placeholders ONLY */
 
   --ct-bg-page: var(--ds-surface-sunken, #f8fafc);
-  --ct-bg-surface: var(--ds-surface, #ffffff);
+  --ct-bg-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --ct-bg-hover: var(--ds-surface-sunken, #f8fafc);
   --ct-bg-active: var(--ds-surface-sunken, #f1f5f9);
   --ct-bg-muted: var(--ds-surface-sunken, #f1f5f9);
@@ -1607,7 +1607,7 @@
 
 /* Individual Widget Card */
 .ct-runrate-card {
-  background: var(--ct-bg-surface, #ffffff);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--ct-border, #e2e8f0);
   border-radius: var(--ct-radius-xl, 12px);
   padding: var(--ct-space-5, 20px);
@@ -1778,7 +1778,7 @@
    LICENSES RUN RATE WIDGET (Inline with grid cards)
    ================================================================ */
 .ct-licenses-widget {
-  background: var(--ct-bg-surface, #ffffff);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--ct-border, #e2e8f0);
   border-radius: var(--ct-radius-xl, 12px);
   padding: var(--ct-space-5, 20px);

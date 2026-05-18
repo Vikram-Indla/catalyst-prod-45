@@ -65,7 +65,7 @@ export function RoadmapListPanel({
   // Grouped view
   if (groups && groups.length > 0) {
     return (
-      <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', background: 'var(--bg-app, #FFFFFF)' }}>
+      <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
         {renderHeader()}
         <ScrollArea className="flex-1">
           <div role="table">
@@ -110,7 +110,7 @@ export function RoadmapListPanel({
 
   // Flat list with DnD
   return (
-    <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', background: 'var(--bg-app, #FFFFFF)' }}>
+    <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
       {renderHeader()}
       <ScrollArea className="flex-1">
         <Droppable droppableId="roadmap-list">

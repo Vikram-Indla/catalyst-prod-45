@@ -163,7 +163,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
         left: position.left,
         width: position.width,
         zIndex: 100001,
-        background: 'var(--ds-surface, #ffffff)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         borderRadius: '8px',
         boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15), 0 4px 6px -2px rgba(0,0,0,0.08)',
         border: '1px solid #e5e7eb',

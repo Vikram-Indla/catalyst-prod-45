@@ -136,7 +136,7 @@ export default function WikiLearningPathDetailPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 32 }}>
         <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--ds-text-brand, #2563EB)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <GraduationCap size={24} style={{ color: 'var(--ds-surface, #FFFFFF)' }} />
+          <GraduationCap size={24} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
         </div>
         <div style={{ flex: 1 }}>
           <h1 style={{ fontFamily: F.sora, fontSize: 20, fontWeight: 700, marginBottom: 4 }}>{path.title}</h1>
@@ -159,7 +159,7 @@ export default function WikiLearningPathDetailPage() {
       </div>
 
       {/* Article list */}
-      <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', overflow: 'hidden' }}>
+      <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', overflow: 'hidden' }}>
         {/* Header */}
         <div style={{
           display: 'grid', gridTemplateColumns: '40px 1fr 80px 80px 48px',

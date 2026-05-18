@@ -24,7 +24,7 @@ export function RoadmapTimelineHeader({ periods, zoom }: RoadmapTimelineHeaderPr
             style={{
               minWidth: periodMinWidth,
               width: `${100 / periods.length}%`,
-              background: period.isCurrent ? 'rgba(37,99,235,0.06)' : index % 2 === 0 ? 'var(--ds-surface-sunken, #FAFBFC)' : 'var(--ds-surface, #FFFFFF)',
+              background: period.isCurrent ? 'rgba(37,99,235,0.06)' : index % 2 === 0 ? 'var(--ds-surface-sunken, #FAFBFC)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               borderRight: `1px solid ${isQuarterStart ? 'var(--bd-default, var(--cp-border, #E2E8F0))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))'}`,
             }}
           >

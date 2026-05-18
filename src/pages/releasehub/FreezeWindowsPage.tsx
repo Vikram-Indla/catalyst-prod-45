@@ -102,7 +102,7 @@ export default function FreezeWindowsPage() {
   const monthLabel = calMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   return (
-    <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', minHeight: '100%', padding: '24px' }}>
+    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', minHeight: '100%', padding: '24px' }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
@@ -118,7 +118,7 @@ export default function FreezeWindowsPage() {
       </div>
 
       {/* Calendar Strip */}
-      <div className="mb-6 rounded-lg p-4" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
+      <div className="mb-6 rounded-lg p-4" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
         <div className="flex items-center justify-between mb-3">
           <button onClick={() => setCalMonth(new Date(calMonth.getFullYear(), calMonth.getMonth() - 1))}
             className="h-7 w-7 rounded flex items-center justify-center" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
@@ -169,7 +169,7 @@ export default function FreezeWindowsPage() {
           <p className="text-[13px] max-w-md" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Add one to protect critical periods.</p>
         </div>
       ) : (
-        <div className="rounded-lg overflow-hidden" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
+        <div className="rounded-lg overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
             <thead>
               <tr style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
@@ -183,7 +183,7 @@ export default function FreezeWindowsPage() {
                 <tr key={fw.id} className="group"
                   style={{ height: 50, transition: 'background 120ms', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}
                   onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)')}>
+                  onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))')}>
                   <td className="px-3 py-0 font-medium" style={{ color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', fontWeight: 650 }}>{fw.name}</td>
                   <td className="px-3 py-0" style={{ fontFamily: RH.fontMono, fontSize: 12, color: 'var(--cp-text-secondary, #475569)' }}>{formatDate(fw.start_date)}</td>
                   <td className="px-3 py-0" style={{ fontFamily: RH.fontMono, fontSize: 12, color: 'var(--cp-text-secondary, #475569)' }}>{formatDate(fw.end_date)}</td>

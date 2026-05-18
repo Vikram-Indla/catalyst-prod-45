@@ -296,7 +296,7 @@ function BusinessRequestParentPicker({
           data-cv-parent-picker="true"
           style={{
             position: 'fixed', top: pickerPos.top, left: pickerPos.left, width: pickerPos.width,
-            background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderRadius: 6,
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderRadius: 6,
             boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 1000, maxHeight: 400, display: 'flex', flexDirection: 'column',
           }}
         >
@@ -519,7 +519,7 @@ function SingleParentPicker({
           data-cv-parent-picker="true"
           style={{
             position: 'fixed', top: pickerPos.top, left: pickerPos.left, width: pickerPos.width,
-            background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderRadius: 6,
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderRadius: 6,
             boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 1000, maxHeight: 400, display: 'flex', flexDirection: 'column',
           }}
         >
@@ -709,7 +709,7 @@ function MultiLinkPicker({
             data-cv-parent-picker="true"
             style={{
               position: 'fixed', top: pickerPos.top, left: pickerPos.left, width: pickerPos.width,
-              background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderRadius: 6,
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderRadius: 6,
               boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 1000, maxHeight: 400, display: 'flex', flexDirection: 'column',
             }}
           >

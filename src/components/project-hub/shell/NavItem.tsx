@@ -56,7 +56,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
               style={{
                 fontSize: 9,
                 fontWeight: 700,
-                color: 'var(--ds-text-inverse, #FFFFFF)',
+                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 backgroundColor: 'var(--cp-purple-60, #7C3AED)',
                 borderRadius: 4,
                 padding: '2px 6px',

@@ -178,7 +178,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
               width: 22, height: 22, borderRadius: '50%',
               background: hashColor(card.assignee.id),
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 9, fontWeight: 700, color: 'var(--ds-surface, #FFFFFF)',
+              fontSize: 9, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               fontFamily: 'var(--cp-font-heading)',
             }} title={card.assignee.displayName}>
               {card.assignee.initials}

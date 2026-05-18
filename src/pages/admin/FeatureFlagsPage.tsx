@@ -74,17 +74,17 @@ const ICON_MAP: Record<string, React.ElementType> = {
 const resolveIcon = (name: string): React.ElementType => ICON_MAP[name] || ArchiveBoxIcon;
 
 const ICON_COLOR_MAP: Record<string, { bg: string; text: string }> = {
-  blue:    { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
-  teal:    { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  blue:    { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  teal:    { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   red:     { bg: '#FFEBE6', text: '#BF2600' },
   neutral: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: '#42526E' },
 };
 
 // V12 StatusLozenge: LIVE=Green, DRAFT=Grey, BETA=Blue
 const STATUS_LOZENGE: Record<string, { bg: string; text: string }> = {
-  live:  { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  live:  { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   draft: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: '#42526E' },
-  beta:  { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  beta:  { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
 };
 
 // D03: Category badges with distinct colors per MARAM V3.1.1
@@ -144,7 +144,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
         ...(isSelected ? { backgroundColor: 'rgba(37,99,235,0.08)' } : {}),
       }}
       onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--cp-interact-hover, rgba(15,23,42,0.04))'; }}
-      onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--cp-bg-elevated, #FFFFFF)'; }}
+      onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
     >
       {/* Checkbox */}
       <div className="flex items-center justify-center">
@@ -670,7 +670,7 @@ export default function FeatureFlagsPage() {
             fontSize: 12,
             border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.14))'}`,
             borderRadius: 4,
-            background: 'var(--cp-bg-elevated, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
           }}
         >

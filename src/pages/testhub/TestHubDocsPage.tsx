@@ -420,7 +420,7 @@ export default function TestHubDocsPage() {
       {/* Header */}
       <div style={{
         padding: '24px 32px',
-        backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
+        backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
         display: 'flex',
         alignItems: 'center',
@@ -442,7 +442,7 @@ export default function TestHubDocsPage() {
             gap: 8,
             padding: '10px 20px',
             backgroundColor: 'var(--ds-text, var(--cp-ink-1, #0F172A))',
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: 'none',
             borderRadius: 8,
             fontSize: 14,
@@ -460,7 +460,7 @@ export default function TestHubDocsPage() {
       <div style={{ flex: 1, overflow: 'auto', padding: '24px 32px' }}>
         {/* Dependency Flow Visual */}
         <div style={{
-          backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
+          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           borderRadius: 12,
           border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
           padding: 24,
@@ -508,7 +508,7 @@ export default function TestHubDocsPage() {
               <div
                 key={section.id}
                 style={{
-                  backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
+                  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   borderRadius: 12,
                   border: `1px solid ${isOpen ? section.color + '40' : 'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
                   overflow: 'hidden',
@@ -591,7 +591,7 @@ export default function TestHubDocsPage() {
           justifyContent: 'space-between',
         }}>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: 'var(--cp-font-body)' }}>
+            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontFamily: 'var(--cp-font-body)' }}>
               Download the full guide as Markdown
             </div>
             <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', fontFamily: 'var(--cp-font-body)', marginTop: 4 }}>
@@ -605,7 +605,7 @@ export default function TestHubDocsPage() {
               alignItems: 'center',
               gap: 8,
               padding: '10px 20px',
-              backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
+              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
               border: 'none',
               borderRadius: 8,

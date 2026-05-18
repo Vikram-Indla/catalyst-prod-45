@@ -45,7 +45,7 @@ export interface IssueNavChevronsProps {
 const BTN_BASE: React.CSSProperties = {
   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
   width: 28, height: 28, padding: 0,
-  background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderRadius: 4,
+  background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderRadius: 4,
   transition: 'background 0.15s, border-color 0.15s',
 };
 
@@ -81,7 +81,7 @@ function ChevronButton({
         }
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)';
+        e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
         e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))';
       }}
     >

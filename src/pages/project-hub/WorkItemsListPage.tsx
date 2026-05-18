@@ -252,7 +252,7 @@ export default function WorkItemsListPage() {
   }, [items]);
 
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', background: 'var(--bg-app, #FFFFFF)', minHeight: '100%' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', minHeight: '100%' }}>
       {/* Sync Banner — conflictCount from real DB */}
       {!bannerDismissed && (
         <SyncBanner

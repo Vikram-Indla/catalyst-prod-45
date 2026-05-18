@@ -179,14 +179,14 @@ export default function IdeasRoadmapPage() {
     return (
       <div style={{
         height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
-        justifyContent: 'center', gap: 12, background: 'var(--cp-bg-elevated, #FFFFFF)', fontFamily: 'var(--cp-font-body)',
+        justifyContent: 'center', gap: 12, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontFamily: 'var(--cp-font-body)',
       }}>
         <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>Failed to load roadmap</div>
         <button
           onClick={() => refetch()}
           style={{
             height: 50, padding: '0 16px', borderRadius: 6, border: 'none',
-            background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)', fontSize: 13, fontWeight: 600,
+            background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 13, fontWeight: 600,
             cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
           }}
         >
@@ -201,7 +201,7 @@ export default function IdeasRoadmapPage() {
     return (
       <div style={{
         height: '100%', display: 'flex', flexDirection: 'column',
-        background: 'var(--cp-bg-elevated, #FFFFFF)', fontFamily: 'var(--cp-font-body)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontFamily: 'var(--cp-font-body)',
       }}>
         <RoadmapToolbar view={view} onViewChange={setView} committedOnly={committedOnly}
           onCommittedOnlyChange={setCommittedOnly} totalCount={0} committedCount={0}
@@ -229,7 +229,7 @@ export default function IdeasRoadmapPage() {
   return (
     <div style={{
       height: '100%', display: 'flex', flexDirection: 'column',
-      background: 'var(--cp-bg-elevated, #FFFFFF)', fontFamily: 'var(--cp-font-body)',
+      background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontFamily: 'var(--cp-font-body)',
     }}>
       <RoadmapToolbar
         view={view} onViewChange={setView}
@@ -316,7 +316,7 @@ export default function IdeasRoadmapPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmConvert} style={{ background: 'var(--cp-teal-60, #0D9488)', color: 'var(--ds-surface, #FFFFFF)' }}>
+            <AlertDialogAction onClick={handleConfirmConvert} style={{ background: 'var(--cp-teal-60, #0D9488)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
               Convert
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -326,7 +326,7 @@ export default function IdeasRoadmapPage() {
       {toast && (
         <div style={{
           position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-          background: '#1E293B', color: 'var(--ds-surface, #FFFFFF)', padding: '8px 20px',
+          background: '#1E293B', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', padding: '8px 20px',
           borderRadius: 8, fontSize: 13, fontWeight: 600, zIndex: 100,
           boxShadow: '0 4px 12px rgba(0,0,0,.15)',
           animation: 'fadeInUp 250ms ease',

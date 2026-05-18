@@ -103,7 +103,7 @@ export function T10LabelsFieldNew({
         top: position.top,
         left: position.left,
         width: position.width,
-        backgroundColor: 'var(--ds-surface, #ffffff)',
+        backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         border: '1px solid #e5e7eb',
         borderRadius: '8px',
         boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15), 0 4px 6px -2px rgba(0,0,0,0.08)',
@@ -147,7 +147,7 @@ export function T10LabelsFieldNew({
                   position: 'absolute',
                   top: 'calc(100% + 4px)',
                   left: 0,
-                  backgroundColor: 'var(--ds-surface, #ffffff)',
+                  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   border: '1px solid #e5e7eb',
                   borderRadius: '8px',
                   boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15)',
@@ -221,7 +221,7 @@ export function T10LabelsFieldNew({
               padding: '8px 12px',
               fontSize: '13px',
               fontWeight: 500,
-              color: 'var(--ds-surface, #ffffff)',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               backgroundColor: 'var(--ds-text-brand, #2563eb)',
               border: 'none',
               borderRadius: '6px',
@@ -299,7 +299,7 @@ export function T10LabelsFieldNew({
                     justifyContent: 'center',
                   }}
                 >
-                  {isSelected && <Check size={10} color="var(--ds-surface, #ffffff)" />}
+                  {isSelected && <Check size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />}
                 </div>
                 <span
                   style={{

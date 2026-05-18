@@ -270,9 +270,9 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
 
   const getStageLozenge = () => {
     if (!stage) return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E', label: 'PENDING' };
-    if (stage === 'complete') return { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-text-inverse, #FFFFFF)', label: 'COMPLETE' };
+    if (stage === 'complete') return { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'COMPLETE' };
     if (stage === 'failed') return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E', label: 'FAILED' };
-    return { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)', label: stage.toUpperCase() };
+    return { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: stage.toUpperCase() };
   };
   const lozenge = getStageLozenge();
 
@@ -824,7 +824,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   ) : (
                     uatScenarios.map((s, i) => {
                       const uatStatusStyle = s.status === 'pass'
-                        ? { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-text-inverse, #FFFFFF)' }
+                        ? { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }
                         : s.status === 'fail'
                           ? { bg: '#FFEBE6', color: '#BF2600' }
                           : { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' };
@@ -863,7 +863,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
           {epicCount === 0 ? (
             <button onClick={() => onGenerate('epics')} style={{
               width: '100%', height: 40, fontSize: 14, fontWeight: 600, borderRadius: 6,
-              border: 'none', background: 'var(--cp-blue)', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer',
+              border: 'none', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)', boxShadow: '0 1px 3px rgba(37,99,235,0.35)',
             }}>
               Generate Epics for this BRD

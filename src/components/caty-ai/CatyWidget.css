@@ -60,7 +60,7 @@
   --caty-info-bg: #dbeafe;
   
   /* Backgrounds */
-  --caty-bg-panel: var(--ds-surface, #ffffff);
+  --caty-bg-panel: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --caty-bg-muted: var(--ds-surface-sunken, #f1f5f9);
   --caty-bg-subtle: var(--ds-surface-sunken, #f8fafc);
   
@@ -124,9 +124,9 @@
   display: flex !important;
   align-items: center !important;
   padding: 20px 24px !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   background-image: none !important;
-  background-color: var(--ds-surface, #ffffff) !important;
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border-bottom: 1px solid var(--ds-border, #e2e8f0) !important;
   flex-shrink: 0;
 }
@@ -195,9 +195,9 @@
 [class*="caty-header"],
 [class*="caty"] header,
 .caty-widget header {
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   background-image: none !important;
-  background-color: var(--ds-surface, #ffffff) !important;
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════

@@ -239,7 +239,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, parentItem }: Cr
                 </button>
               )}
               <button onClick={handleCreate} disabled={!title.trim() || createMutation.isPending}
-                style={{ height: 32, padding: '0 16px', fontSize: 13, fontWeight: 600, color: 'var(--ds-surface, #FFFFFF)', background: !title.trim() ? 'var(--fg-4)' : 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: !title.trim() ? 'not-allowed' : 'pointer', fontFamily: 'var(--cp-font-body)', opacity: createMutation.isPending ? 0.7 : 1 }}>
+                style={{ height: 32, padding: '0 16px', fontSize: 13, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: !title.trim() ? 'var(--fg-4)' : 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: !title.trim() ? 'not-allowed' : 'pointer', fontFamily: 'var(--cp-font-body)', opacity: createMutation.isPending ? 0.7 : 1 }}>
                 {createMutation.isPending ? 'Creating…' : 'Create'}
               </button>
             </div>

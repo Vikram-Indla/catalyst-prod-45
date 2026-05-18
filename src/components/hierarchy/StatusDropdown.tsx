@@ -35,7 +35,7 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
         left: 0,
         marginTop: 4,
         width: 200,
-        background: 'var(--cp-bg-elevated, #FFFFFF)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
         borderRadius: 6,
         boxShadow: isDark ? '0 4px 16px rgba(0,0,0,0.30)' : '0 4px 16px rgba(0,0,0,0.10)',

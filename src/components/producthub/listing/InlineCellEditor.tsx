@@ -41,7 +41,7 @@ const editorStyles: React.CSSProperties = {
   fontFamily: 'var(--cp-font-body)',
   fontSize: 13,
   color: '#18181b',
-  background: 'var(--ds-text-inverse, #ffffff)',
+  background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
 };
 
 export function InlineCellEditor({ type, value, cellRect, onSave, onCancel, onTab }: InlineCellEditorProps) {

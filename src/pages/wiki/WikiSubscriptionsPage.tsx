@@ -121,7 +121,7 @@ export default function WikiSubscriptionsPage() {
               onClick={() => toggleSub.mutate({ entityType: 'domain', entityId: d.code })}
               style={{
                 display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px',
-                borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', border: `0.75px solid ${active ? 'var(--ds-text-brand, #2563EB)' : border}`,
+                borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `0.75px solid ${active ? 'var(--ds-text-brand, #2563EB)' : border}`,
                 cursor: 'pointer', transition: 'all 120ms', textAlign: 'left',
               }}
             >
@@ -133,7 +133,7 @@ export default function WikiSubscriptionsPage() {
                 position: 'relative', transition: 'background 150ms',
               }}>
                 <div style={{
-                  width: 16, height: 16, borderRadius: '50%', background: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-surface, #FFFFFF)',
+                  width: 16, height: 16, borderRadius: '50%', background: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   position: 'absolute', top: 2,
                   left: active ? 18 : 2, transition: 'left 150ms',
                   boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
@@ -167,13 +167,13 @@ export default function WikiSubscriptionsPage() {
           placeholder="Add a tag..."
           style={{
             height: 32, padding: '8px 12px', fontSize: 12, borderRadius: 6,
-            border: `0.75px solid ${isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.1)'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)',
+            border: `0.75px solid ${isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(0,0,0,0.1)'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             outline: 'none', width: 180, color: isDark ? 'var(--ds-text, #EDEDED)' : undefined,
           }}
         />
         <button onClick={addTag} style={{
           height: 32, padding: '0 14px', borderRadius: 6, background: 'var(--ds-text-brand, #2563EB)',
-          color: 'var(--ds-surface, #FFFFFF)', border: 'none', fontSize: 11, fontWeight: 600,
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', fontSize: 11, fontWeight: 600,
           cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
         }}>
           <Plus size={12} /> Add
@@ -182,7 +182,7 @@ export default function WikiSubscriptionsPage() {
 
       {/* ═══ ARTICLE SUBSCRIPTIONS ═══ */}
       <SectionLabel icon={<FileText size={14} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />} label="Article Subscriptions" isDark={isDark} />
-      <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', overflow: 'hidden' }}>
+      <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', overflow: 'hidden' }}>
         {subArticles.length > 0 ? subArticles.map((a: any) => (
           <div key={a.id} style={{
             display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px',

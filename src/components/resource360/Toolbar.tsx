@@ -60,7 +60,7 @@ function FilterDropdown({ label, value, options, onChange }: {
         onClick={() => setOpen(!open)}
         style={{
           padding: '5px 12px', fontSize: 11.5, fontWeight: 600,
-          color: 'var(--r360-text-3, #3D3D56)', background: 'var(--r360-surface, #FFFFFF)',
+          color: 'var(--r360-text-3, #3D3D56)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           border: '1px solid var(--r360-border, #C5BDB3)', borderRadius: 6, cursor: 'pointer',
           whiteSpace: 'nowrap',
         }}
@@ -106,7 +106,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
 }) => {
   const tabStyle = (active: boolean): React.CSSProperties => ({
     padding: '6px 14px', fontSize: 12, fontWeight: active ? 700 : 600,
-    color: active ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--r360-text-3, #3D3D56)',
+    color: active ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--r360-text-3, #3D3D56)',
     background: active ? '#1A1A2E' : 'transparent',
     border: 'none', borderRadius: 6, cursor: 'pointer',
     boxShadow: active ? '0 1px 3px rgba(0,0,0,.15)' : 'none',
@@ -129,7 +129,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
       aria-label="Resource 360 toolbar"
       style={{
         display: 'flex', alignItems: 'center', gap: 12,
-        padding: '8px 20px', background: 'var(--r360-surface, #FFFFFF)',
+        padding: '8px 20px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         borderBottom: '1px solid var(--r360-border, #C5BDB3)',
         position: 'sticky', top: 48, zIndex: 80,
         fontFamily: 'var(--cp-font-body)',
@@ -171,7 +171,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
       <button
         style={{
           padding: '5px 12px', fontSize: 11.5, fontWeight: 600,
-          color: 'var(--r360-text-3, #3D3D56)', background: 'var(--r360-surface, #FFFFFF)',
+          color: 'var(--r360-text-3, #3D3D56)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           border: '1px solid var(--r360-border, #C5BDB3)', borderRadius: 6, cursor: 'pointer',
         }}
         aria-label="Hub filter"
@@ -181,7 +181,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
       <button
         style={{
           padding: '5px 12px', fontSize: 11.5, fontWeight: 600,
-          color: 'var(--r360-text-3, #3D3D56)', background: 'var(--r360-surface, #FFFFFF)',
+          color: 'var(--r360-text-3, #3D3D56)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           border: '1px solid var(--r360-border, #C5BDB3)', borderRadius: 6, cursor: 'pointer',
         }}
         aria-label="Group by toggle"
@@ -218,7 +218,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         aria-label="Open AI Intelligence overlay"
         style={{
           background: 'var(--cp-blue)',
-          color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: 20,
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: 20,
           padding: '0 16px', height: 32, fontSize: 12, fontWeight: 600,
           letterSpacing: '0.3px', cursor: 'pointer',
           display: 'inline-flex', alignItems: 'center', gap: 6,

@@ -32,7 +32,7 @@
   --t10-purple-100: #ede9fe;
 
   /* Neutrals */
-  --t10-white: var(--ds-surface, #ffffff);
+  --t10-white: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --t10-gray-50: #f9fafb;
   --t10-gray-100: #f3f4f6;
   --t10-gray-200: var(--ds-border, #e5e7eb);
@@ -1843,7 +1843,7 @@
   height: 100% !important;
   width: 420px !important;
   max-width: 100% !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15) !important;
   z-index: 9999 !important;
   display: flex !important;
@@ -2188,7 +2188,7 @@
   font-size: 16px !important;
   font-weight: 600 !important;
   color: #111827 !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 2px solid var(--ds-text-brand, #2563eb) !important;
   border-radius: 6px !important;
   outline: none !important;
@@ -2219,7 +2219,7 @@
   top: calc(100% + 4px) !important;
   left: 0 !important;
   right: 0 !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid var(--ds-border, #e5e7eb) !important;
   border-radius: 8px !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
@@ -2281,7 +2281,7 @@
   top: calc(100% + 4px) !important;
   left: 0 !important;
   right: 0 !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid var(--ds-border, #e5e7eb) !important;
   border-radius: 8px !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
@@ -2356,7 +2356,7 @@
   flex: 1 !important;
   text-align: center !important;
   padding: 16px !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border-radius: 8px !important;
 }
 
@@ -2415,7 +2415,7 @@
 
 .t10-checkout-item {
   padding: 14px !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid var(--ds-border, #e5e7eb) !important;
   border-radius: 12px !important;
 }
@@ -2437,7 +2437,7 @@
   justify-content: center !important;
   font-size: 12px !important;
   font-weight: 700 !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   flex-shrink: 0 !important;
 }
 
@@ -3166,7 +3166,7 @@
 .t10-assignee-dropdown {
   width: 320px !important;
   max-height: 400px !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid var(--ds-border, #e5e7eb) !important;
   border-radius: 12px !important;
   box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.15) !important;
@@ -3366,7 +3366,7 @@
   align-items: center !important;
   gap: 14px !important;
   padding: 16px !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border-radius: 8px !important;
   border: 1px solid var(--ds-border, #e5e7eb) !important;
 }
@@ -3490,7 +3490,7 @@
   font-size: 14px !important;
   font-weight: 500 !important;
   color: var(--t10-gray-600) !important;
-  background-color: var(--ds-surface, #ffffff) !important;
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid var(--t10-gray-200) !important;
   border-radius: var(--t10-radius-md) !important;
   cursor: pointer !important;
@@ -3543,7 +3543,7 @@
   padding: 0 5px !important;
   font-size: 11px !important;
   font-weight: 600 !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   background-color: var(--t10-blue) !important;
   border-radius: 9999px !important;
 }
@@ -3558,7 +3558,7 @@
   left: 0 !important;
   min-width: 280px !important;
   max-width: 320px !important;
-  background-color: var(--ds-surface, #ffffff) !important;
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid var(--t10-gray-200) !important;
   border-radius: var(--t10-radius-lg) !important;
   box-shadow: var(--t10-shadow-lg) !important;
@@ -3616,7 +3616,7 @@
 
 .t10-module .t10-dropdown-search-input:focus {
   outline: none !important;
-  background-color: var(--ds-surface, #ffffff) !important;
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border-color: var(--t10-blue) !important;
 }
 
@@ -3672,7 +3672,7 @@
 .t10-module .t10-dropdown-option-checkbox svg {
   width: 12px !important;
   height: 12px !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   opacity: 0 !important;
 }
 
@@ -3760,7 +3760,7 @@
 }
 
 .t10-module .t10-dropdown-footer-btn-apply {
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   background-color: var(--t10-blue) !important;
   border: none !important;
 }
@@ -3791,7 +3791,7 @@
   font-family: var(--t10-font) !important;
   font-size: 13px !important;
   color: var(--t10-gray-900) !important;
-  background-color: var(--ds-surface, #ffffff) !important;
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid var(--t10-gray-300) !important;
   border-radius: var(--t10-radius-md) !important;
 }
@@ -3883,7 +3883,7 @@
   align-items: center !important;
   justify-content: center !important;
   padding: 64px 24px !important;
-  background-color: var(--ds-surface, #ffffff) !important;
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 2px dashed var(--t10-gray-200) !important;
   border-radius: var(--t10-radius-xl) !important;
   text-align: center !important;
@@ -4000,7 +4000,7 @@
   top: calc(100% + 4px) !important;
   right: 0 !important;
   min-width: 160px !important;
-  background-color: var(--ds-surface, #ffffff) !important;
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid var(--t10-gray-200) !important;
   border-radius: var(--t10-radius-lg) !important;
   box-shadow: var(--t10-shadow-lg) !important;
@@ -4361,7 +4361,7 @@
 
 /* Week Header V2 */
 .t10-module .t10-week-header-v2 {
-  background-color: var(--ds-surface, #ffffff) !important;
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border-bottom: 1px solid var(--t10-gray-200) !important;
   padding: 16px 24px 20px !important;
   position: sticky !important;
@@ -4475,7 +4475,7 @@
   font-size: 13px !important;
   font-weight: 500 !important;
   color: var(--t10-gray-600) !important;
-  background-color: var(--ds-surface, #ffffff) !important;
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid var(--t10-gray-200) !important;
   border-radius: var(--t10-radius-md) !important;
   cursor: pointer !important;
@@ -4510,7 +4510,7 @@
 /* Checkout Button */
 .t10-module .t10-btn-checkout {
   background-color: var(--t10-teal) !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
 }
 
 .t10-module .t10-btn-checkout:hover:not(:disabled) {
@@ -4567,7 +4567,7 @@
   height: 36px !important;
   background-color: #8b5cf6 !important;
   border-radius: var(--t10-radius-lg) !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
 }
 
 .t10-module .t10-ai-banner-v2-icon svg {
@@ -4603,7 +4603,7 @@
   font-size: 13px !important;
   font-weight: 500 !important;
   color: #7c3aed !important;
-  background-color: var(--ds-surface, #ffffff) !important;
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid #ddd6fe !important;
   border-radius: var(--t10-radius-md) !important;
   cursor: pointer !important;
@@ -4660,7 +4660,7 @@
   align-items: flex-start !important;
   gap: 12px !important;
   padding: 12px 16px !important;
-  background-color: var(--ds-surface, #ffffff) !important;
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid #ede9fe !important;
   border-radius: var(--t10-radius-lg) !important;
   transition: all 0.15s !important;

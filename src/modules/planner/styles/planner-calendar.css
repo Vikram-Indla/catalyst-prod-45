@@ -7,8 +7,8 @@
 
 .planner-calendar-content {
   /* ==================== SURFACES ==================== */
-  --pln-cal-surface-page: var(--ds-surface, #ffffff);
-  --pln-cal-surface-card: var(--ds-surface, #ffffff);
+  --pln-cal-surface-page: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --pln-cal-surface-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --pln-cal-surface-hover: var(--ds-surface-sunken, #f8fafc);
   --pln-cal-surface-selected: var(--ds-background-selected, #eff6ff);
   --pln-cal-surface-today: #dbeafe;

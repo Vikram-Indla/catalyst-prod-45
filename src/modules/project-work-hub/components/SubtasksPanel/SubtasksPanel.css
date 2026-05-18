@@ -155,7 +155,7 @@
   margin-top: 0;
   padding: 4px 8px 4px;
   border-top: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6));
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }
 
 /* Jira-parity: table header cells in subtasks panel — compact padding + muted label color.
@@ -276,7 +276,7 @@
   height: 6px;
   border-radius: 50%;
   background: var(--cp-primary-60, #0052CC);
-  box-shadow: 0 0 0 1.5px var(--ds-text-inverse, #FFFFFF);
+  box-shadow: 0 0 0 1.5px var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }
 
 .sp-inline-summary-input {
@@ -289,7 +289,7 @@
   outline: none;
   font-size: 14px;
   color: var(--ds-text, var(--cp-text-primary, #172B4D));
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   font-family: inherit;
 }
 
@@ -336,7 +336,7 @@
   justify-content: center;
   font-size: 10px;
   font-weight: 700;
-  color: var(--ds-text-inverse, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   flex-shrink: 0;
 }
 
@@ -458,7 +458,7 @@
   height: 16px;
   border-radius: 3px;
   border: 1.5px solid var(--ds-border, rgba(9,30,66,0.3));
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -476,7 +476,7 @@
   background: var(--ds-link, var(--cp-primary-60, #0052CC));
   border-radius: 1px;
 }
-.sp-row--selected .sp-checkbox-dash { background: var(--ds-text-inverse, #FFFFFF); }
+.sp-row--selected .sp-checkbox-dash { background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); }
 
 /* ══════════════════════════════════════════════
    Popover (@atlaskit/popup content)
@@ -485,7 +485,7 @@
   border: 1px solid var(--ds-border, rgba(9,30,66,0.24));
   border-radius: 6px;
   box-shadow: var(--ds-shadow-overlay, 0 6px 16px rgba(9,30,66,0.15));
-  background: var(--ds-surface-overlay, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   color: var(--ds-text, var(--cp-text-primary, #172B4D));
   font-family: var(--cp-font-body);
 }
@@ -568,7 +568,7 @@
   top: calc(100% + 4px);
   right: 0;
   width: 220px;
-  background: var(--ds-surface-overlay, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--ds-border, rgba(9,30,66,0.24));
   border-radius: 6px;
   box-shadow: var(--ds-shadow-overlay, 0 6px 16px rgba(9,30,66,0.15));
@@ -625,7 +625,7 @@
   padding: 0 8px;
   border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6));
   border-radius: 3px;
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   cursor: pointer;
   font-size: 13px;
   color: var(--ds-text, var(--cp-text-primary, #172B4D));
@@ -639,7 +639,7 @@
   top: calc(100% + 2px);
   left: 0;
   min-width: 180px;
-  background: var(--ds-surface-overlay, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6));
   border-radius: 4px;
   box-shadow: var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.25));
@@ -679,7 +679,7 @@
      a visible double-border. */
   border: 1px solid transparent;
   border-radius: 3px;
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }
 .sp-create-wrap:focus-within .sp-create-row {
   border-color: var(--ds-border-focused, #4C9AFF);
@@ -723,7 +723,7 @@
   top: calc(100% - 18px);
   left: 0;
   right: 0;
-  background: var(--ds-surface-overlay, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--ds-border, rgba(9,30,66,0.24));
   border-radius: 4px;
   box-shadow: var(--ds-shadow-overlay, 0 6px 16px rgba(9,30,66,0.15));
@@ -861,7 +861,7 @@
   font-size: 11px;
   font-weight: 700;
   color: var(--ds-text-subtlest, #6B778C);
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   padding: 1px 8px;
   border-radius: 9px;
 }
@@ -878,7 +878,7 @@
   text-align: center;
 }
 .sp-board-card {
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--ds-border, rgba(9,30,66,0.1));
   border-radius: 4px;
   padding: 8px 10px;
@@ -929,7 +929,7 @@
   padding: 8px 12px;
   background: #0C2340;
   border-radius: 6px;
-  color: var(--ds-text-inverse, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   box-shadow: 0 4px 12px rgba(9,30,66,0.25);
 }
 .sp-bulkbar-count {
@@ -948,7 +948,7 @@
   border: 1px solid rgba(255,255,255,0.3);
   border-radius: 3px;
   background: transparent;
-  color: var(--ds-text-inverse, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   cursor: pointer;
   font-size: 13px;
   font-family: inherit;
@@ -986,7 +986,7 @@
 }
 .sp-bulkbar-cancel:hover {
   background: rgba(255,255,255,0.12);
-  color: var(--ds-text-inverse, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }
 
 /* ══════════════════════════════════════════════
@@ -1012,7 +1012,7 @@
   border-left: 0.556px solid var(--ds-surface-pressed, #DDDEE1);
 }
 .adf-editor-content table td {
-  background: var(--ds-text-inverse, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   color: var(--ds-text, #292A2E);
   font-size: 14px;
   font-weight: 400;

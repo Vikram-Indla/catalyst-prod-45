@@ -467,7 +467,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
         {/* ============================================================
             TOP BAR - Title, Today, Date Nav, View Mode Toggle
             ============================================================ */}
-        {/* M5: Container background var(--ds-surface, #ffffff) */}
+        {/* M5: Container background var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ds-border,#e2e8f0)] dark:border-slate-800 bg-white dark:bg-slate-950 flex-shrink-0">
           {/* Left: Title */}
           <div>

@@ -34,7 +34,7 @@ if (typeof document !== 'undefined' && !document.getElementById('cv-priority-sel
 
 /** Atlassian-spec dropdown container styles */
 const ATLASSIAN_DROPDOWN: React.CSSProperties = {
-  background: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 4, border: 'none',
+  background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4, border: 'none',
   boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
   padding: '4px 0', zIndex: 9999,
 };
@@ -91,7 +91,7 @@ export function AvatarCircle({ userId, name, avatarUrl, size = 28 }: { userId: s
   const fontSize = Math.max(10, Math.round(size * 0.35));
   return (
     <div style={{ width: size, height: size, borderRadius: '50%', background: getAvatarColor(userId), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-      <span style={{ fontSize, fontWeight: 700, color: 'var(--ds-text-inverse, #FFFFFF)' }}>{initials}</span>
+      <span style={{ fontSize, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>{initials}</span>
     </div>
   );
 }
@@ -520,7 +520,7 @@ export function EditableLabels({ issueId, issueKey, currentLabels, onUpdate }: {
           multiValue: (base, state) => ({
             ...base,
             border: `1px solid ${getLabelColor((state.data as LabelOption).value)}`,
-            background: 'var(--ds-text-inverse, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             borderRadius: 3,
           }),
           multiValueLabel: (base) => ({

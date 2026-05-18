@@ -246,7 +246,7 @@ export default function TestHubVerifyPage() {
             borderRadius: 6,
             fontSize: 13,
             fontWeight: 600,
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             cursor: 'pointer',
             display: 'inline-flex',
             alignItems: 'center',
@@ -520,7 +520,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
           const fill = barColor(s.pct);
           return (
             <div key={mod.key} style={{
-              backgroundColor: 'var(--bg-app, #FFFFFF)',
+              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               border: '0.75px solid var(--bd-default, var(--cp-border, #E2E8F0))',
               borderRadius: 8,
               padding: 16,

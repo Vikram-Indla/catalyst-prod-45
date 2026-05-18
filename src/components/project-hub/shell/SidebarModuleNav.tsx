@@ -30,7 +30,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
       >
         <div
           className="flex items-center justify-center flex-shrink-0"
-          style={{ width: 28, height: 28, backgroundColor: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 11, fontWeight: 700, fontFamily: 'var(--cp-font-heading)', borderRadius: 6 }}
+          style={{ width: 28, height: 28, backgroundColor: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 11, fontWeight: 700, fontFamily: 'var(--cp-font-heading)', borderRadius: 6 }}
         >
           PH
         </div>

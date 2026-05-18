@@ -52,7 +52,7 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
                 style={{
                   borderRadius: 6,
                   border: `1.5px solid ${selected === t.key ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-border-default, rgba(15,23,42,0.12))')}`,
-                  backgroundColor: selected === t.key ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, #FFFFFF)'),
+                  backgroundColor: selected === t.key ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
                 }}
               >
                 {/* Type icon circle */}

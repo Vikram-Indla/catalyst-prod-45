@@ -144,7 +144,7 @@ export default function EnvironmentsListPage() {
               background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <Server size={24} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
+              <Server size={24} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
             </div>
             <div>
               <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>Test Environments</h1>
@@ -158,7 +158,7 @@ export default function EnvironmentsListPage() {
             display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 20px',
             border: 'none', borderRadius: 12,
             background: 'var(--ds-text-brand, #2563EB)',
-            color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 600, cursor: 'pointer',
             boxShadow: 'none',
           }}
         >
@@ -219,7 +219,7 @@ export default function EnvironmentsListPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
               width: '100%', height: 44, padding: '0 14px 0 44px',
-              border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined,
+              border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined,
             }}
           />
         </div>
@@ -261,7 +261,7 @@ export default function EnvironmentsListPage() {
           <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#6366F1' }} />
         </div>
       ) : filteredEnvironments.length === 0 ? (
-        <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
+        <div style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
           <Server size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
           <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0 }}>No environments found</p>
           <p style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', margin: '8px 0 0' }}>Add an environment to get started</p>
@@ -280,7 +280,7 @@ export default function EnvironmentsListPage() {
                 key={env.id}
                 onClick={() => navigate(`/testhub/environments/${env.id}`)}
                 style={{
-                  backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, padding: 20,
+                  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, padding: 20,
                   border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, cursor: 'pointer', transition: 'all 0.15s',
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border-strong, #CBD5E1)'; e.currentTarget.style.boxShadow = isDark ? 'none' : '0 4px 12px rgba(0,0,0,0.05)'; }}

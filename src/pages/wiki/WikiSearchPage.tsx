@@ -93,7 +93,7 @@ export default function WikiSearchPage() {
   const aiAnswer = aiResults?.answer;
   const aiSources = aiResults?.sources ?? [];
 
-  const confColor = (c: number) => c >= 90 ? 'var(--ds-surface, #FFFFFF)' : c >= 70 ? 'var(--ds-surface, #FFFFFF)' : isDark ? '#FCD34D' : '#9A5402';
+  const confColor = (c: number) => c >= 90 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : c >= 70 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : isDark ? '#FCD34D' : '#9A5402';
   const confBg = (c: number) => c >= 90 ? 'var(--cp-lozenge-green-bg, #1B7F37)' : c >= 70 ? '#0C66E4' : isDark ? 'rgba(251,191,36,0.12)' : '#FEF3C7';
 
   const borderColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(15,23,42,0.12)';
@@ -112,7 +112,7 @@ export default function WikiSearchPage() {
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px',
           borderRadius: 12, border: `1.5px solid ${borderColor}`,
-          background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', marginBottom: 16,
+          background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', marginBottom: 16,
           transition: 'border-color 150ms, box-shadow 150ms',
         }}
           onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
@@ -150,16 +150,16 @@ export default function WikiSearchPage() {
             <button onClick={() => { setMode('keyword'); setPage(0); }} style={{
               fontSize: 11, fontWeight: 650, padding: '6px 14px', cursor: 'pointer',
               border: 'none', display: 'flex', alignItems: 'center', gap: 4,
-              background: mode === 'keyword' ? 'var(--ds-text-brand, #2563EB)' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)'),
-              color: mode === 'keyword' ? 'var(--ds-surface, #FFFFFF)' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'),
+              background: mode === 'keyword' ? 'var(--ds-text-brand, #2563EB)' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
+              color: mode === 'keyword' ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'),
               transition: 'all 120ms',
             }}><Zap size={11} /> Keyword</button>
             <button onClick={() => { setMode('ai'); setPage(0); }} style={{
               fontSize: 11, fontWeight: 650, padding: '6px 14px', cursor: 'pointer',
               border: 'none', borderLeft: `1px solid ${borderColor}`,
               display: 'flex', alignItems: 'center', gap: 4,
-              background: mode === 'ai' ? 'var(--cp-purple-60, #7C3AED)' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)'),
-              color: mode === 'ai' ? 'var(--ds-surface, #FFFFFF)' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'),
+              background: mode === 'ai' ? 'var(--cp-purple-60, #7C3AED)' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
+              color: mode === 'ai' ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'),
               transition: 'all 120ms',
             }}><Sparkles size={11} /> AI Search</button>
           </div>
@@ -292,9 +292,9 @@ export default function WikiSearchPage() {
                     ? <Video size={14} style={{ color: 'var(--cp-purple-60, #7C3AED)', flexShrink: 0 }} />
                     : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', flexShrink: 0 }} />;
                   const verBadge = r.verification_status === 'verified'
-                    ? { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)', label: 'Verified' }
+                    ? { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'Verified' }
                     : r.verification_status === 'needs_review'
-                    ? { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)', label: 'Review' }
+                    ? { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'Review' }
                     : null;
 
                   return (
@@ -320,7 +320,7 @@ export default function WikiSearchPage() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
                         <span style={{
                           fontSize: 10, fontWeight: 650, padding: '1px 6px', borderRadius: 4,
-                          background: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)',
+                          background: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                         }}>{r.domain_code || '—'}</span>
                         {r.read_time_minutes && (
                           <span style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
@@ -380,7 +380,7 @@ export default function WikiSearchPage() {
                       onClick={() => setPage(p => p - 1)}
                       style={{
                         fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 4,
-                        border: `1px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)',
+                        border: `1px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                         color: page === 0 ? (isDark ? 'var(--ds-border, #292929)' : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))'), cursor: page === 0 ? 'default' : 'pointer',
                       }}
                     >← Previous</button>
@@ -392,7 +392,7 @@ export default function WikiSearchPage() {
                       onClick={() => setPage(p => p + 1)}
                       style={{
                         fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 4,
-                        border: `1px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)',
+                        border: `1px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                         color: page >= totalPages - 1 ? (isDark ? 'var(--ds-border, #292929)' : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))'), cursor: page >= totalPages - 1 ? 'default' : 'pointer',
                       }}
                     >Next →</button>

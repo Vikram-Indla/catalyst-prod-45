@@ -48,11 +48,11 @@ export default function IncidentAnalyticsPage() {
   };
 
   if (isLoading) {
-    return <div className="flex-1 p-6" style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}><Skeleton className="h-8 w-48 mb-6" /><Skeleton className="h-64 w-full" /></div>;
+    return <div className="flex-1 p-6" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}><Skeleton className="h-8 w-48 mb-6" /><Skeleton className="h-64 w-full" /></div>;
   }
 
   return (
-    <div className="flex-1 overflow-auto" style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}>
+    <div className="flex-1 overflow-auto" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
       <div className="px-6 pt-6 pb-4">
         <div className="flex items-center gap-3 mb-6">
           <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: 'var(--ds-background-selected, #EFF6FF)' }}>
@@ -72,7 +72,7 @@ export default function IncidentAnalyticsPage() {
             { label: 'Total Incidents', value: stats.total, accent: 'var(--ds-text, var(--cp-ink-1, #0F172A))' },
             { label: 'MTTR', value: '\u2014', accent: 'var(--ds-text-success, var(--cp-success, #16A34A))' },
           ].map(s => (
-            <div key={s.label} className="p-3" style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
+            <div key={s.label} className="p-3" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', borderRadius: 6 }}>
               <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginBottom: 4 }}>{s.label}</div>
               <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 22, fontWeight: 700, color: s.accent }}>{s.value}</div>
             </div>

@@ -304,7 +304,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                 {item.assignee ? (
                   <>
                     <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #FFFFFF)' }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                         {item.assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                       </span>
                     </div>
@@ -392,7 +392,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                   <StatusBadge status={child.status.name} mini />
                   {child.assignee && (
                     <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <span style={{ fontSize: 8, fontWeight: 700, color: 'var(--ds-surface, #FFFFFF)' }}>
+                      <span style={{ fontSize: 8, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                         {child.assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
                       </span>
                     </div>

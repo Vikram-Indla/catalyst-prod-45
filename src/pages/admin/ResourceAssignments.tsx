@@ -235,7 +235,7 @@ function SortableRow({
               className="h-8 w-[130px] flex items-center justify-start text-left font-normal text-xs px-2 rounded border"
               style={{
                 borderColor: 'var(--ds-border, #DCDFE4)',
-                background: 'var(--ds-surface, #FFFFFF)',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 color: assignment.start_date ? 'var(--ds-text, var(--cp-text-primary, #172B4D))' : 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
               }}
             >
@@ -261,7 +261,7 @@ function SortableRow({
               className="h-8 w-[130px] flex items-center justify-start text-left font-normal text-xs px-2 rounded border"
               style={{
                 borderColor: 'var(--ds-border, #DCDFE4)',
-                background: 'var(--ds-surface, #FFFFFF)',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 color: assignment.end_date ? 'var(--ds-text, var(--cp-text-primary, #172B4D))' : 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
               }}
             >
@@ -794,7 +794,7 @@ export default function ResourceAssignmentsPage() {
           const typeAppearance = ASSIGNMENT_TYPE_APPEARANCES[group.type] || ASSIGNMENT_TYPE_APPEARANCES.Unspecified;
 
           return (
-            <div key={group.type} className="rounded-xl overflow-hidden" style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)' }}>
+            <div key={group.type} className="rounded-xl overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)' }}>
               {/* Group Header */}
               <button
                 onClick={() => toggleGroup(group.type)}
@@ -882,7 +882,7 @@ export default function ResourceAssignmentsPage() {
         })}
 
         {groupedAssignments.length === 0 && (
-          <div className="rounded-xl px-4 py-8 text-center" style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
+          <div className="rounded-xl px-4 py-8 text-center" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
             No assignments configured. Click "Add Assignment" to create one.
           </div>
         )}
@@ -1179,9 +1179,9 @@ export default function ResourceAssignmentsPage() {
                       <div
                         key={resource.id}
                         className="flex items-center px-4 py-3 rounded-lg transition-colors"
-                        style={{ border: '1px solid var(--ds-border, #DCDFE4)', background: 'var(--ds-surface, #FFFFFF)' }}
+                        style={{ border: '1px solid var(--ds-border, #DCDFE4)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}
                         onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)')}
-                        onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface, #FFFFFF)')}
+                        onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))')}
                       >
                         <div className="w-16">
                           <span className="text-xs font-mono font-medium px-2 py-1 rounded" style={{ color: 'var(--ds-text-brand, #0C66E4)', background: 'var(--ds-background-selected, #E9F2FF)' }}>

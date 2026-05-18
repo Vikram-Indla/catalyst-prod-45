@@ -51,7 +51,7 @@
   --ws-slate-900: var(--ds-text, #0f172a);
   
   /* Semantic Mappings - Light Mode */
-  --ws-bg-primary: var(--ds-surface, #ffffff);
+  --ws-bg-primary: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --ws-bg-secondary: var(--ws-slate-50);
   --ws-bg-tertiary: var(--ws-slate-100);
   --ws-text-primary: var(--ws-slate-900);

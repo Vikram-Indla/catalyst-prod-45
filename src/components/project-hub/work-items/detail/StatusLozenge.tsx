@@ -9,13 +9,13 @@ interface StatusLozengeProps {
 /**
  * V12 StatusLozenge — DUAL-INTENSITY 3-COLOR GUARDRAIL
  * Grey:  bg:var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))  text:#42526E  → Backlog, To Do, On Hold, New, Waiting, Blocked
- * Blue:  bg:#0C66E4  text:var(--ds-surface, #FFFFFF)  → In Progress, In Dev, In Review, In QA, Active, In Beta
- * Green: bg:var(--cp-lozenge-green-bg, #1B7F37)  text:var(--ds-surface, #FFFFFF)  → Done, Completed, Production, Prod Ready, Approved, Resolved
+ * Blue:  bg:#0C66E4  text:var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))  → In Progress, In Dev, In Review, In QA, Active, In Beta
+ * Green: bg:var(--cp-lozenge-green-bg, #1B7F37)  text:var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))  → Done, Completed, Production, Prod Ready, Approved, Resolved
  */
 function getStatusStyle(category: string): { bg: string; color: string } {
   switch (category) {
-    case 'in_progress': return { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)' };
-    case 'done': return { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-text-inverse, #FFFFFF)' };
+    case 'in_progress': return { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' };
+    case 'done': return { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' };
     // terminal, todo, backlog, blocked, on_hold — ALL grey
     default: return { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E' };
   }

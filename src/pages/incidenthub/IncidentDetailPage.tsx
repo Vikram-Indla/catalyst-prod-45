@@ -71,7 +71,7 @@ export default function IncidentDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 p-6" style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}>
+      <div className="flex-1 p-6" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
         <Skeleton className="h-6 w-48 mb-4" />
         <Skeleton className="h-8 w-96 mb-2" />
         <Skeleton className="h-4 w-64" />
@@ -81,7 +81,7 @@ export default function IncidentDetailPage() {
 
   if (!incident) {
     return (
-      <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}>
+      <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
         <p style={{ fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }}>Incident not found</p>
       </div>
     );
@@ -92,7 +92,7 @@ export default function IncidentDetailPage() {
     (new Date(incident.sla.resolution_due_at).getTime() - Date.now()) <= 3600000;
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}>
+    <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
       {/* Breadcrumb */}
       <div className="flex items-center justify-between px-6 shrink-0" style={{
         height: 50,
@@ -105,7 +105,7 @@ export default function IncidentDetailPage() {
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" style={{ borderRadius: 6, fontSize: 12 }} onClick={() => setShowConvert(true)}>Convert</Button>
-          <Button size="sm" style={{ backgroundColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', color: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 6, fontSize: 12 }} onClick={handleResolve}>Resolve</Button>
+          <Button size="sm" style={{ backgroundColor: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 6, fontSize: 12 }} onClick={handleResolve}>Resolve</Button>
         </div>
       </div>
 
@@ -251,7 +251,7 @@ export default function IncidentDetailPage() {
                 )}
                 {incident.history?.map((h: any) => (
                   <div key={h.id} className="flex items-start gap-3 mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
-                    <div className="shrink-0 mt-1" style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: 'var(--ds-text-brand, #2563EB)', border: isDark ? '2px solid #0A0A0A' : '2px solid var(--ds-text-inverse, #FFFFFF)', boxShadow: '0 0 0 1px #2563EB' }} />
+                    <div className="shrink-0 mt-1" style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: 'var(--ds-text-brand, #2563EB)', border: isDark ? '2px solid #0A0A0A' : '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', boxShadow: '0 0 0 1px #2563EB' }} />
                     <div>
                       <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>
                         {h.field_name} changed
@@ -277,7 +277,7 @@ export default function IncidentDetailPage() {
           width: 300,
           borderLeft: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)',
           padding: 16,
-          backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
+          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         }}>
           {/* Metadata Grid */}
           <div className="space-y-3">

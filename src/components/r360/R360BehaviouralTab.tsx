@@ -155,7 +155,7 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
                 cursor: tile.onClick ? 'pointer' : 'default', transition: 'background 150ms',
               }}
               onMouseEnter={e => { if (tile.onClick) e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
-              onMouseLeave={e => { if (tile.onClick) e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)'; }}
+              onMouseLeave={e => { if (tile.onClick) e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
             >
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginBottom: 6 }}>{tile.label}</div>
               <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 28, fontWeight: 650, color: (tile as any).valueColor || INK1 }}>{tile.value}</div>

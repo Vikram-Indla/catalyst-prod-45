@@ -49,10 +49,10 @@ export const ideas: Idea[] = [];
 export const STATUS_CONFIG: Record<IdeaStatus, { bg: string; text: string; label: string }> = {
   draft:        { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: '#42526E', label: 'Draft' },
   submitted:    { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: '#42526E', label: 'Submitted' },
-  under_review: { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)', label: 'Under Review' },
-  approved:     { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)', label: 'Approved' },
+  under_review: { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'Under Review' },
+  approved:     { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'Approved' },
   rejected:     { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: '#42526E', label: 'Rejected' },
-  converted:    { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--ds-text-inverse, #FFFFFF)', label: 'Converted' },
+  converted:    { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'Converted' },
 };
 
 // ─── TYPE CONFIG — ALL NEUTRAL GREY ─────────────────────────────
@@ -94,10 +94,10 @@ export const FILTER_PILLS: { key: StatusFilter; label: string }[] = [
 
 // ─── Quarter badge — HIGH CONTRAST (AAA) ────────────────────────
 export const QUARTER_BADGE: Record<string, { bg: string; text: string }> = {
-  Q1: { bg: 'var(--ds-text-danger, #991B1B)', text: 'var(--ds-text-inverse, #FFFFFF)' },
-  Q2: { bg: '#1E40AF', text: 'var(--ds-text-inverse, #FFFFFF)' },
-  Q3: { bg: '#115E59', text: 'var(--ds-text-inverse, #FFFFFF)' },
-  Q4: { bg: '#78350F', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  Q1: { bg: 'var(--ds-text-danger, #991B1B)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  Q2: { bg: '#1E40AF', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  Q3: { bg: '#115E59', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  Q4: { bg: '#78350F', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
 };
 
 // ─── Helpers ────────────────────────────────────────────────────
@@ -124,9 +124,9 @@ export const STATUS_DB_TO_UI: Record<string, IdeaStatus> = {
 export const STATUS_LOZENGE_COLORS: Record<string, { bg: string; text: string }> = {
   'Draft':                    { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: '#42526E' },
   'Submitted':                { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: '#42526E' },
-  'Under Review':             { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
-  'Approved':                 { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  'Under Review':             { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Approved':                 { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   'Rejected':                 { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', text: '#42526E' },
-  'Converted':                { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--ds-text-inverse, #FFFFFF)' },
-  'Converted to Request':  { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  'Converted':                { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Converted to Request':  { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
 };

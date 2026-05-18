@@ -143,7 +143,7 @@ export const EditableAssignee = memo(function EditableAssignee({
           >
             <div
               style={{
-                background: 'var(--ds-surface, #FFFFFF)',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 borderRadius: 8,
                 border: '1px solid var(--ds-border, #EBECF0)',
                 boxShadow: '0 8px 24px rgba(9,30,66,0.15)',
@@ -196,7 +196,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                     background:
                       currentAssignee === null
                         ? 'var(--ds-surface-sunken, #F4F5F7)'
-                        : 'var(--ds-surface, #FFFFFF)',
+                        : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     textAlign: 'left',
                     fontFamily: 'var(--cp-font-body)',
                     fontSize: 14,
@@ -212,7 +212,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                     e.currentTarget.style.background =
                       currentAssignee === null
                         ? 'var(--ds-surface-sunken, #F4F5F7)'
-                        : 'var(--ds-surface, #FFFFFF)';
+                        : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
                   }}
                 >
                   Unassigned
@@ -238,7 +238,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                         cursor: 'pointer',
                         background: isActive
                           ? 'var(--ds-surface-sunken, #F4F5F7)'
-                          : 'var(--ds-surface, #FFFFFF)',
+                          : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                         textAlign: 'left',
                         fontFamily: 'var(--cp-font-body)',
                         fontSize: 14,
@@ -253,7 +253,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                       onMouseLeave={e => {
                         e.currentTarget.style.background = isActive
                           ? 'var(--ds-surface-sunken, #F4F5F7)'
-                          : 'var(--ds-surface, #FFFFFF)';
+                          : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
                       }}
                     >
                       <div style={{ marginBottom: 2 }}>

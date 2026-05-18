@@ -250,7 +250,7 @@ export default function ProjectListPage() {
               <button
                 onClick={onNewProject}
                 className="flex items-center gap-1.5 mt-6 rounded-md transition-all"
-                style={{ height: 50, padding: '0 16px', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                style={{ height: 50, padding: '0 16px', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #1D4ED8)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-text-brand, #2563EB)'; }}
               >

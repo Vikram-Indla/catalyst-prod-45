@@ -539,7 +539,7 @@ export default function AllReleasesPage() {
   return (
     <div className="all-releases-page flex flex-col overflow-hidden" style={{ height: 'calc(100vh - 52px)' }}>
       {/* ═══ PAGE HEADER (52px) ═══ */}
-      <header className="flex items-center justify-between px-6 border-b" style={{ height: '52px', flexShrink: 0, borderColor: 'var(--ds-border, #e2e8f0)', background: 'var(--ds-surface, #ffffff)' }}>
+      <header className="flex items-center justify-between px-6 border-b" style={{ height: '52px', flexShrink: 0, borderColor: 'var(--ds-border, #e2e8f0)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
         <div className="flex items-center gap-3">
           <CatalystPageHeader title="All Releases" />
           <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--ds-text-subtlest, #94a3b8)' }}>{releases.length} releases</span>
@@ -701,7 +701,7 @@ export default function AllReleasesPage() {
               style={{
                 padding: '4px 12px', fontSize: '13px', fontWeight: 500,
                 background: activeView === v.key ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-surface, #fff)',
-                color: activeView === v.key ? 'var(--ds-surface, #ffffff)' : 'var(--ds-text-subtlest, #64748b)',
+                color: activeView === v.key ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtlest, #64748b)',
                 border: 'none', cursor: 'pointer',
               }}
             >

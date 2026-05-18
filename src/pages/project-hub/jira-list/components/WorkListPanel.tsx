@@ -181,7 +181,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
                 //   - 2px margin between cards (was 8px)
                 width: '100%', textAlign: 'left', display: 'block',
                 border: 'none',
-                background: selected ? 'var(--cp-interact-selected, #E9F2FE)' : 'var(--cp-bg-elevated, #FFFFFF)',
+                background: selected ? 'var(--cp-interact-selected, #E9F2FE)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 borderRadius: 4,
                 padding: 12,
                 margin: '2px 0',
@@ -192,7 +192,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
                 transition: 'background 80ms, box-shadow 80ms',
               }}
               onMouseEnter={e => { if (!selected) { e.currentTarget.style.background = 'var(--cp-interact-hover, #F8F9FA)'; } }}
-              onMouseLeave={e => { if (!selected) { e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)'; } }}
+              onMouseLeave={e => { if (!selected) { e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; } }}
             >
               <div
                 dir={rtl ? 'rtl' : 'ltr'}

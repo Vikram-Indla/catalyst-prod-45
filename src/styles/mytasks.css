@@ -58,8 +58,8 @@
      ======================================== */
   
   --mytasks-bg-page: var(--ds-surface-sunken, #f8fafc);
-  --mytasks-bg-card: var(--ds-surface, #ffffff);
-  --mytasks-bg-row: var(--ds-surface, #ffffff);
+  --mytasks-bg-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --mytasks-bg-row: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --mytasks-bg-row-hover: #f9fafb;       /* Very subtle — Linear style */
   --mytasks-bg-row-overdue: #fffbfb;     /* Barely tinted pink */
   --mytasks-bg-row-overdue-hover: var(--ds-background-danger, #fef2f2);
@@ -243,7 +243,7 @@
   align-items: center;
   gap: 10px;
   padding: 10px 14px;
-  background-color: var(--ds-surface, #ffffff);
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--mytasks-border-default);
   border-radius: 12px;
   width: 260px;
@@ -282,7 +282,7 @@
   align-items: center;
   gap: 6px;
   padding: 10px 14px;
-  background-color: var(--ds-surface, #ffffff);
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--mytasks-border-default);
   border-radius: 12px;
   font-size: 14px;
@@ -312,7 +312,7 @@
   border-radius: 12px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--ds-surface, #ffffff);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   cursor: pointer;
   font-family: inherit;
   transition: background-color var(--mytasks-transition-fast);
@@ -468,7 +468,7 @@
 }
 
 .mytasks-checkbox--checked svg {
-  color: var(--ds-surface, #ffffff);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   width: 10px;
   height: 10px;
 }
@@ -813,7 +813,7 @@
 }
 
 .mytasks-completed-list {
-  background-color: var(--ds-surface, #ffffff);  /* White, NOT green tint */
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));  /* White, NOT green tint */
 }
 
 /* 60% opacity per spec */

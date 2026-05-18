@@ -33,7 +33,7 @@
 
   /* Backgrounds */
   --rh-bg-page: var(--ds-surface-sunken, #F8FAFC);
-  --rh-bg-card: var(--ds-surface, #FFFFFF);
+  --rh-bg-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --rh-bg-muted: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
 
   /* Text */
@@ -254,7 +254,7 @@
   padding: 0 14px;
   font-size: var(--rh-type-body-sm);
   font-weight: 600;
-  color: var(--ds-surface, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   background: linear-gradient(135deg, var(--rh-primary), var(--rh-primary-hover));
   border: none;
   border-radius: var(--rh-radius-md);
@@ -293,7 +293,7 @@
   padding: 0 14px;
   font-size: var(--rh-type-body-sm);
   font-weight: 600;
-  color: var(--ds-surface, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   background: linear-gradient(135deg, var(--rh-success), var(--ds-text-success, var(--cp-success, #16A34A)));
   border: none;
   border-radius: var(--rh-radius-md);
@@ -643,7 +643,7 @@
   font-family: var(--rh-font-mono);
   font-size: var(--rh-type-micro);
   font-weight: 600;
-  color: var(--ds-surface, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   overflow: hidden;
   cursor: pointer;
   transition: opacity var(--rh-duration) var(--rh-ease);
@@ -688,7 +688,7 @@
   left: 50%;
   transform: translateX(-50%);
   background: var(--rh-text-primary);
-  color: var(--ds-surface, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   padding: 6px 10px;
   border-radius: var(--rh-radius-md);
   font-size: var(--rh-type-caption);

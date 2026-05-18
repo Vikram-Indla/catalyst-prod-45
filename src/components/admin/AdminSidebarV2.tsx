@@ -160,7 +160,7 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
         width: 240,
         minWidth: 240,
         height: '100%',
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         borderRight: '1px solid var(--ds-border-layout, #EBECF0)',
         display: 'flex',
         flexDirection: 'column',

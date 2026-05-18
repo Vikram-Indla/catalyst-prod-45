@@ -34,8 +34,8 @@
 
   /* ── SURFACES ── */
   --wh-bg: var(--ds-surface-sunken, #f8fafc);
-  --wh-surface: var(--ds-surface, #ffffff);
-  --wh-surface-elevated: var(--ds-surface, #ffffff);
+  --wh-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --wh-surface-elevated: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --wh-border: var(--ds-border, #e2e8f0);
   --wh-border-light: var(--ds-surface-sunken, #f1f5f9);
   --wh-border-focus: var(--wh-primary);
@@ -44,7 +44,7 @@
   --wh-text-primary: var(--ds-text, #0f172a);
   --wh-text-secondary: var(--ds-text-subtle, #475569);
   --wh-text-tertiary: var(--ds-text-subtlest, #94a3b8);
-  --wh-text-inverse: var(--ds-surface, #ffffff);
+  --wh-text-inverse: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 
   /* ── TYPOGRAPHY ── */
   --wh-font-sans: var(--cp-font-body);

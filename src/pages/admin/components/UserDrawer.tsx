@@ -593,7 +593,7 @@ const drawerCSS = `
   bottom: 0;
   width: 520px;
   max-width: 90vw;
-  background: var(--ds-text-inverse, #ffffff);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   z-index: 101;
   transform: translateX(100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -700,7 +700,7 @@ const drawerCSS = `
   border: 1px solid var(--ds-border, #e2e8f0);
   border-radius: 8px;
   transition: all 0.15s;
-  background: var(--ds-text-inverse, #ffffff);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   color: var(--ds-text, #0f172a);
 }
 .um-form-group input:focus,
@@ -727,7 +727,7 @@ const drawerCSS = `
   font-weight: 500;
   border-radius: 6px;
   border: 1px solid var(--ds-border, #e2e8f0);
-  background: var(--ds-text-inverse, #ffffff);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   color: var(--ds-text, #0f172a);
   cursor: pointer;
   transition: all 0.15s;

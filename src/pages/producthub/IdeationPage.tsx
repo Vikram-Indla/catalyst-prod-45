@@ -144,7 +144,7 @@ export default function IdeationPage() {
           <>
             <AIIntelligenceButton label="Intelligence" onClick={() => setIntelligenceOpen(true)} />
             <button style={{
-              background: 'var(--cp-bg-elevated, #FFFFFF)', color: dk.t2, border: `1px solid ${dk.border}`,
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: dk.t2, border: `1px solid ${dk.border}`,
               borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 500,
               cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
               fontFamily: 'var(--cp-font-body)',
@@ -154,7 +154,7 @@ export default function IdeationPage() {
             <button
               onClick={() => setWizardOpen(true)}
               style={{
-                background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
+                background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
                 borderRadius: '6px', padding: '8px 16px', fontSize: '13px', fontWeight: 600,
                 cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px',
                 fontFamily: 'var(--cp-font-body)',
@@ -270,8 +270,8 @@ export default function IdeationPage() {
               key={pill.key}
               onClick={() => setActiveFilter(pill.key)}
               style={{
-                background: isActive ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-bg-elevated, #FFFFFF)'),
-                color: isActive ? 'var(--ds-text-inverse, #FFFFFF)' : dk.t2,
+                background: isActive ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
+                color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : dk.t2,
                 border: `1px solid ${isActive ? 'var(--ds-text-brand, #2563EB)' : dk.border}`,
                 borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 500,
                 cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
@@ -352,7 +352,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
 }) {
   return (
     <div style={{
-      background: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: '6px', border: `1px solid ${dk.border}`,
+      background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: '6px', border: `1px solid ${dk.border}`,
       overflow: 'hidden',
     }}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>

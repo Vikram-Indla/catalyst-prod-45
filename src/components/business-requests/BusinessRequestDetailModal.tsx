@@ -144,7 +144,7 @@ function BRTextareaEditor({ initialValue, placeholder, minHeight = 120, onSave, 
           padding: '10px 12px',
           border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
           borderRadius: 3,
-          background: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
           fontSize: 14,
           lineHeight: 1.5,
@@ -161,7 +161,7 @@ function BRTextareaEditor({ initialValue, placeholder, minHeight = 120, onSave, 
           onClick={() => onSave(value)}
           style={{
             padding: '6px 16px', borderRadius: 3, border: 'none', cursor: 'pointer',
-            background: 'var(--cp-primary-60, #0052CC)', color: 'var(--ds-surface, #FFFFFF)', fontSize: 14, fontWeight: 600,
+            background: 'var(--cp-primary-60, #0052CC)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 14, fontWeight: 600,
           }}
         >Save</button>
         <button
@@ -445,7 +445,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
           style={{
             width: 1024, maxWidth: '92vw',
             height: 'min(720px, calc(100vh - 120px))',
-            background: 'var(--ds-surface, #FFFFFF)', borderRadius: 8,
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 8,
             display: 'flex', flexDirection: 'column',
             boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
             overflow: 'hidden',
@@ -564,7 +564,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                   fontSize: 22, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', lineHeight: 1.3,
                   margin: '0 0 12px', outline: 'none', cursor: 'text', borderRadius: 3,
                   padding: '4px 6px', wordBreak: 'break-word', transition: 'background 0.15s, box-shadow 0.15s',
-                  background: titleFocused ? 'var(--ds-surface, #FFFFFF)' : 'transparent',
+                  background: titleFocused ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'transparent',
                   boxShadow: titleFocused ? '0 0 0 2px #4C9AFF' : 'none',
                 }}
                 onMouseEnter={e => { if (!titleFocused) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
@@ -826,7 +826,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
             {/* RIGHT PANEL — Sidebar */}
             <div style={{
               width: rightPanelWidth, minWidth: 220, maxWidth: 480,
-              background: 'var(--ds-surface, #FFFFFF)', overflowY: 'auto', overflowX: 'hidden',
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', overflowY: 'auto', overflowX: 'hidden',
               display: 'flex', flexDirection: 'column', padding: '16px 16px 32px 16px',
             }}>
               {/* Status */}
@@ -850,7 +850,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                   {showStatusDropdown && (
                     <div style={{
                       position: 'absolute', left: 0, top: '100%', marginTop: 4,
-                      background: 'var(--ds-surface, #FFFFFF)', borderRadius: 4, border: 'none',
+                      background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4, border: 'none',
                       boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
                       padding: '4px 0', zIndex: 9999, minWidth: 220, maxHeight: 340, overflowY: 'auto',
                       animation: 'brm-slide-down 0.15s ease-out',
@@ -907,7 +907,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                     {showPriorityDropdown && (
                       <div style={{
                         position: 'absolute', left: 0, top: '100%', marginTop: 4,
-                        background: 'var(--ds-surface, #FFFFFF)', borderRadius: 4, border: 'none',
+                        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4, border: 'none',
                         boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
                         padding: '4px 0', zIndex: 9999, minWidth: 180,
                       }}>

@@ -98,7 +98,7 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
             onError={e => { (e.target as HTMLImageElement).style.display = 'none'; (e.target as HTMLImageElement).nextElementSibling?.removeAttribute('style'); }} />
         ) : null}
         <span style={{
-          fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 800, color: 'var(--ds-text-inverse, #FFFFFF)',
+          fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 800, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           ...(summary.avatar_url ? { display: 'none' } : {}),
         }}>{initials}</span>
       </div>

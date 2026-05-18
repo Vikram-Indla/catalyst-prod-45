@@ -5,16 +5,16 @@
 
 [data-module="product-backlog"] {
   /* ─── V12 Design Tokens ─── */
-  --cp-bg-page: var(--ds-surface, #FFFFFF);
+  --cp-bg-page: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --cp-bg-surface: var(--ds-surface-sunken, #F8FAFC);
   --cp-bg-sunken: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
-  --cp-bg-elevated: var(--ds-surface, #FFFFFF);
+  --cp-bg-elevated: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 
   --cp-text-primary: var(--ds-text, var(--cp-text-primary, #172B4D));
   --cp-text-secondary: var(--ds-text-subtle, var(--cp-text-secondary, #44546F));
   --cp-text-tertiary: var(--ds-text-subtlest, #626F86);
   --cp-text-muted: var(--ds-text-subtlest, #626F86);
-  --cp-text-inverse: var(--ds-surface, #FFFFFF);
+  --cp-text-inverse: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --cp-text-link: var(--ds-text-brand, var(--cp-primary-60, #0052CC));
 
   --cp-primary-60: var(--ds-text-brand, #2563EB);
@@ -46,7 +46,7 @@
   --cp-toolbar-bg-press: rgba(15, 23, 42, 0.16);
   --cp-toolbar-bg-active: rgba(37, 99, 235, 0.10);
 
-  --cp-input-bg: var(--ds-surface, #FFFFFF);
+  --cp-input-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --cp-input-border: rgba(15, 23, 42, 0.14);
   --cp-input-border-hover: rgba(15, 23, 42, 0.22);
   --cp-input-border-focus: var(--ds-text-brand, #2563EB);

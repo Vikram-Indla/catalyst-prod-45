@@ -157,7 +157,7 @@ export function WorkCardAssigneePicker({
           onClick={(e) => e.stopPropagation()}
           style={{
             position: 'fixed', top, left, width, zIndex: 10000,
-            background: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 4,
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4,
             boxShadow: '0 4px 24px rgba(30,31,33,0.16), 0 0 1px rgba(30,31,33,0.31)',
             overflow: 'hidden',
             fontFamily: 'var(--cp-font-body)',
@@ -171,7 +171,7 @@ export function WorkCardAssigneePicker({
                 width: '100%', height: 36, padding: '0 10px',
                 border: '1px solid var(--cp-border-default, rgba(9,30,66,0.14))', borderRadius: 4,
                 fontSize: 14, fontFamily: 'inherit', outline: 'none',
-                background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-primary, var(--cp-text-primary, #172B4D))',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-primary, var(--cp-text-primary, #172B4D))',
               }}
               onFocus={e => (e.target.style.border = '2px solid #2563EB')}
               onBlur={e => (e.target.style.border = '1px solid var(--cp-border-default, rgba(9,30,66,0.14))')}

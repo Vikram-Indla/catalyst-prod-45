@@ -304,7 +304,7 @@ export default function TestHubDashboardPage() {
           <button onClick={fetchDashboardData} style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 32, padding: '8px 12px', fontSize: 13, fontWeight: 500,
-            color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
+            color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
             borderRadius: 6, cursor: 'pointer',
           }}>
             <RefreshCw size={13} /> Refresh
@@ -312,7 +312,7 @@ export default function TestHubDashboardPage() {
           <button style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 32, padding: '8px 12px', fontSize: 13, fontWeight: 500,
-            color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
+            color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
             borderRadius: 6, cursor: 'pointer',
           }}>
             <Download size={13} /> Export
@@ -351,7 +351,7 @@ export default function TestHubDashboardPage() {
 
         {/* ── EXECUTION STATUS BAR — 48px ── */}
         <div style={{
-          background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
           padding: '10px 16px', flexShrink: 0,
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
@@ -444,7 +444,7 @@ export default function TestHubDashboardPage() {
            {/* ═ MIDDLE: Failing Tests + Defects (Merged) ═ */}
            <div style={{
              display: 'flex', flexDirection: 'column', minHeight: 0,
-             background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, overflow: 'hidden',
+             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, overflow: 'hidden',
            }}>
              {/* Header: Top Failing Tests */}
              <div style={{
@@ -545,7 +545,7 @@ export default function TestHubDashboardPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minHeight: 0 }}>
             {/* Needs Attention */}
             <div style={{
-              background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
               borderLeft: '3px solid #EF4444', overflow: 'hidden', flexShrink: 0,
             }}>
               <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -581,7 +581,7 @@ export default function TestHubDashboardPage() {
 
             {/* Activity Feed + Quick Actions */}
             <div style={{
-              background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
               flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden',
             }}>
               <div style={{ padding: '12px 16px', borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}`, flexShrink: 0 }}>
@@ -671,7 +671,7 @@ function KPICard({ label, value, accent, trend, subtitle, sparkData, valueColor,
   const { isDark } = useTheme();
   return (
     <div className="c10-kpi" style={{
-      background: isDanger ? (isDark ? 'rgba(248,113,113,0.08)' : 'rgba(254, 242, 242, 0.6)') : ('var(--cp-bg-elevated, #FFFFFF)'),
+      background: isDanger ? (isDark ? 'rgba(248,113,113,0.08)' : 'rgba(254, 242, 242, 0.6)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
       border: isDanger ? `1px solid ${'var(--cp-danger-light, #FECACA)'}` : `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
       borderRadius: 8,
       borderLeft: `3px solid ${accent}`,
@@ -706,7 +706,7 @@ function Card({ title, badge, badgeDanger, badgeColor, onViewAll, children, styl
   const bg = badgeDanger ? ('var(--cp-danger-light, #FEF2F2)') : ('var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))');
   const color = badgeDanger ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : badgeColor || ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))');
   return (
-    <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0, ...style }}>
+    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0, ...style }}>
       <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))'}`, flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{title}</span>
@@ -744,7 +744,7 @@ function QuickBtn({ label, onClick }: { label: string; onClick: () => void }) {
   return (
     <button className="c10-qbtn" onClick={onClick} style={{
       flex: 1, height: 32, fontSize: 13, fontWeight: 500,
-      color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
+      color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
       borderRadius: 6, cursor: 'pointer', transition: 'all 150ms',
     }}>
       {label}

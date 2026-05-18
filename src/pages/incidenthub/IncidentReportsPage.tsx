@@ -24,11 +24,11 @@ export default function IncidentReportsPage() {
     : 0;
 
   if (isLoading) {
-    return <div className="flex-1 p-6" style={{ backgroundColor: 'var(--bg-app, #FFFFFF)' }}><Skeleton className="h-8 w-48 mb-6" /></div>;
+    return <div className="flex-1 p-6" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}><Skeleton className="h-8 w-48 mb-6" /></div>;
   }
 
   return (
-    <div className="flex-1 overflow-auto" style={{ backgroundColor: 'var(--bg-app, #FFFFFF)' }}>
+    <div className="flex-1 overflow-auto" style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
       <div className="px-6 pt-6 pb-4">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">

@@ -27,23 +27,23 @@ export const projectColors = [
 
 // FILLED project colors for Timeline bars — Catalyst V5 compliant
 export const TIMELINE_PROJECT_COLORS: Record<string, { bg: string; text: string }> = {
-  'Senaei BAU': { bg: 'var(--ds-text-brand, #2563eb)', text: 'var(--ds-surface, #ffffff)' },
-  'Senaei': { bg: 'var(--ds-text-brand, #2563eb)', text: 'var(--ds-surface, #ffffff)' },
-  'Innovation Platform': { bg: 'var(--ds-background-brand-bold-hovered, #1d4ed8)', text: 'var(--ds-surface, #ffffff)' },
-  'Innovation': { bg: 'var(--ds-background-brand-bold-hovered, #1d4ed8)', text: 'var(--ds-surface, #ffffff)' },
-  'Inspection Project': { bg: '#0d9488', text: 'var(--ds-surface, #ffffff)' },
-  'Inspection': { bg: '#0d9488', text: 'var(--ds-surface, #ffffff)' },
-  'International Relations': { bg: '#0f766e', text: 'var(--ds-surface, #ffffff)' },
-  'International': { bg: '#0f766e', text: 'var(--ds-surface, #ffffff)' },
-  'MIM Website': { bg: '#14b8a6', text: 'var(--ds-surface, #ffffff)' },
-  'MIM': { bg: '#14b8a6', text: 'var(--ds-surface, #ffffff)' },
-  'Senaei OPS': { bg: 'var(--ds-text-brand, #3b82f6)', text: 'var(--ds-surface, #ffffff)' },
-  'Sectorial Services': { bg: 'var(--ds-text-subtlest, #64748b)', text: 'var(--ds-surface, #ffffff)' },
-  'Sectorial': { bg: 'var(--ds-text-subtlest, #64748b)', text: 'var(--ds-surface, #ffffff)' },
-  'Tahommena': { bg: '#0d9488', text: 'var(--ds-surface, #ffffff)' },
-  'Data Platform': { bg: 'var(--ds-text-brand, #3b82f6)', text: 'var(--ds-surface, #ffffff)' },
-  'Data': { bg: 'var(--ds-text-brand, #3b82f6)', text: 'var(--ds-surface, #ffffff)' },
-  'ICP': { bg: 'var(--ds-text-brand, #2563eb)', text: 'var(--ds-surface, #ffffff)' },
+  'Senaei BAU': { bg: 'var(--ds-text-brand, #2563eb)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Senaei': { bg: 'var(--ds-text-brand, #2563eb)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Innovation Platform': { bg: 'var(--ds-background-brand-bold-hovered, #1d4ed8)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Innovation': { bg: 'var(--ds-background-brand-bold-hovered, #1d4ed8)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Inspection Project': { bg: '#0d9488', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Inspection': { bg: '#0d9488', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'International Relations': { bg: '#0f766e', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'International': { bg: '#0f766e', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'MIM Website': { bg: '#14b8a6', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'MIM': { bg: '#14b8a6', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Senaei OPS': { bg: 'var(--ds-text-brand, #3b82f6)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Sectorial Services': { bg: 'var(--ds-text-subtlest, #64748b)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Sectorial': { bg: 'var(--ds-text-subtlest, #64748b)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Tahommena': { bg: '#0d9488', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Data Platform': { bg: 'var(--ds-text-brand, #3b82f6)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'Data': { bg: 'var(--ds-text-brand, #3b82f6)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  'ICP': { bg: 'var(--ds-text-brand, #2563eb)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
 };
 
 // Get project color with fallback
@@ -55,7 +55,7 @@ export const getTimelineProjectColor = (name: string) => {
     k.toLowerCase().includes(name.toLowerCase())
   );
 
-  return key ? TIMELINE_PROJECT_COLORS[key] : { bg: 'var(--ds-text-subtlest, #64748b)', text: 'var(--ds-surface, #ffffff)' };
+  return key ? TIMELINE_PROJECT_COLORS[key] : { bg: 'var(--ds-text-subtlest, #64748b)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' };
 };
 
 // Short form names for project display in timeline cells

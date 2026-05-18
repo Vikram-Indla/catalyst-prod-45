@@ -24,7 +24,7 @@ export function RolesList({ roles, selectedRoleId, onSelectRole, isLoading }: Ro
 
   if (isLoading) {
     return (
-      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+      <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
         <div style={{ padding: '12px 16px' }}>
           <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Product Roles</h2>
         </div>
@@ -38,7 +38,7 @@ export function RolesList({ roles, selectedRoleId, onSelectRole, isLoading }: Ro
   }
 
   return (
-    <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
       <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
         <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Product Roles</h2>
       </div>

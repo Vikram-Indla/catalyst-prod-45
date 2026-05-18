@@ -128,12 +128,12 @@ export default function ModulesPackages() {
 
   return (
     <AdminGuard>
-      <div className="h-full flex flex-col" style={{ background: 'var(--ds-surface, #FFFFFF)' }}>
+      <div className="h-full flex flex-col" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
         <div
           className="h-[72px] flex items-center justify-between px-6"
           style={{
             borderBottom: '1px solid var(--ds-border-layout, #EBECF0)',
-            background: 'var(--ds-surface, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           }}
         >
           <div className="min-w-0">
@@ -160,19 +160,19 @@ export default function ModulesPackages() {
 
         {/* Summary Cards */}
         <div className="grid gap-4 md:grid-cols-3">
-          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between pb-2">
               <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Enabled Modules</p>
             </div>
             <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{enabledCount}</div>
           </div>
-          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between pb-2">
               <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Available Modules</p>
             </div>
             <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{totalCount}</div>
           </div>
-          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between pb-2">
               <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Active Package</p>
             </div>
@@ -181,7 +181,7 @@ export default function ModulesPackages() {
         </div>
 
         {/* Package Selector */}
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <h2 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
             Assigned Package
           </h2>
@@ -204,7 +204,7 @@ export default function ModulesPackages() {
         </div>
 
         {/* Modules List */}
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <h2 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
             Module Configuration
           </h2>

@@ -13,7 +13,7 @@ export function TableSkeleton({ rows = 10 }: { rows?: number }) {
   const shimmerStrong = dk ? 'var(--ds-border, #2E2E2E)' : 'var(--bd-default, var(--cp-border, #E2E8F0))';
   const shimmerLight = dk ? 'var(--ds-border, #292929)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))';
   const headerBg = dk ? 'var(--ds-surface-overlay, #1F1F1F)' : '#FAFAFA';
-  const containerBg = dk ? 'var(--ds-surface, #0A0A0A)' : 'var(--ds-surface, #FFFFFF)';
+  const containerBg = dk ? 'var(--ds-surface, #0A0A0A)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
 
   return (
     <div style={{ border: `1px solid ${borderColor}`, borderRadius: 8, overflow: 'hidden', background: containerBg }}>

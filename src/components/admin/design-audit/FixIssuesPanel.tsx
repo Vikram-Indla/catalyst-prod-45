@@ -114,7 +114,7 @@ export function FixIssuesPanel() {
     <div className="space-y-6">
       {/* Fix Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center">
               <AutomationIcon label="" size="small" />
@@ -126,7 +126,7 @@ export function FixIssuesPanel() {
           </div>
         </div>
 
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-warning/10 flex items-center justify-center">
               <ToolsIcon label="" size="small" />
@@ -138,7 +138,7 @@ export function FixIssuesPanel() {
           </div>
         </div>
 
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-brand-primary/10 flex items-center justify-center">
               <CheckCircleIcon label="" size="small" />
@@ -152,7 +152,7 @@ export function FixIssuesPanel() {
       </div>
 
       {/* Fix Controls */}
-      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+      <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
         <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
           <div className="flex items-center justify-between">
             <div>
@@ -259,7 +259,7 @@ export function FixIssuesPanel() {
 
       {/* Manual Fixes Required */}
       {manualGaps.length > 0 && (
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
           <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
             <h3 className="text-base flex items-center gap-2" style={{ fontWeight: 500, margin: 0 }}>
               <WarningIcon label="" size="small" />

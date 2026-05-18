@@ -24,7 +24,7 @@ function BugTypeIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="1" y="1" width="14" height="14" rx="3" fill="#FF5630" />
-      <circle cx="8" cy="8" r="3" fill="var(--ds-surface, #FFFFFF)" />
+      <circle cx="8" cy="8" r="3" fill="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />
     </svg>
   );
 }
@@ -276,7 +276,7 @@ function AssigneeCell({ defect, nameAvatarMap }: { defect: Defect; nameAvatarMap
           style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid rgba(15,23,42,0.08)' }}
         />
       ) : (
-        <div style={{ width: 28, height: 28, borderRadius: '50%', background: clr, color: 'var(--ds-surface, #FFFFFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
+        <div style={{ width: 28, height: 28, borderRadius: '50%', background: clr, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
           {ini}
         </div>
       )}

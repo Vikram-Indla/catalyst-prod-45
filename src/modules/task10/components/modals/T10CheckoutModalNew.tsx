@@ -126,7 +126,7 @@ export function T10CheckoutModalNew({
           transform: 'translate(-50%, -50%)',
           width: '100%',
           maxWidth: '520px',
-          backgroundColor: 'var(--ds-surface, #ffffff)',
+          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           borderRadius: '12px',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
           zIndex: 601,
@@ -181,7 +181,7 @@ export function T10CheckoutModalNew({
                 gap: '12px',
                 padding: '20px 24px',
                 background: 'linear-gradient(135deg, var(--ds-text-brand, #2563eb) 0%, var(--ds-background-brand-bold-hovered, #1d4ed8) 100%)',
-                color: 'var(--ds-surface, #ffffff)',
+                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               }}
             >
               <div
@@ -271,7 +271,7 @@ export function T10CheckoutModalNew({
                           justifyContent: 'center',
                         }}
                       >
-                        {isSelected && <Check size={12} color="var(--ds-surface, #ffffff)" />}
+                        {isSelected && <Check size={12} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />}
                       </div>
                       <div
                         style={{
@@ -351,7 +351,7 @@ export function T10CheckoutModalNew({
                         justifyContent: 'center',
                       }}
                     >
-                      {carryOver && <Check size={10} color="var(--ds-surface, #ffffff)" />}
+                      {carryOver && <Check size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />}
                     </div>
                     <span style={{ fontSize: '14px', color: '#374151' }}>
                       Carry over incomplete items to next week{' '}
@@ -381,7 +381,7 @@ export function T10CheckoutModalNew({
                       justifyContent: 'center',
                     }}
                   >
-                    {startNextWeek && <Check size={10} color="var(--ds-surface, #ffffff)" />}
+                    {startNextWeek && <Check size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />}
                   </div>
                   <span style={{ fontSize: '14px', color: '#374151' }}>
                     Start next week after checkout
@@ -409,7 +409,7 @@ export function T10CheckoutModalNew({
                   fontSize: '14px',
                   fontWeight: 500,
                   color: '#374151',
-                  backgroundColor: 'var(--ds-surface, #ffffff)',
+                  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   border: '1px solid #d1d5db',
                   borderRadius: '6px',
                   cursor: 'pointer',
@@ -428,7 +428,7 @@ export function T10CheckoutModalNew({
                   padding: '10px 20px',
                   fontSize: '14px',
                   fontWeight: 500,
-                  color: 'var(--ds-surface, #ffffff)',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   backgroundColor: 'var(--ds-text-brand, #2563eb)',
                   border: 'none',
                   borderRadius: '6px',

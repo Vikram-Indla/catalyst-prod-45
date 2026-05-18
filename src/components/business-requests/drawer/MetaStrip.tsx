@@ -75,7 +75,7 @@ export function MetaStrip({
   const scoreChipStyle = {
     background: 'var(--ds-text-brand, #2563eb)',
     borderColor: 'rgba(37, 99, 235, 0.3)',
-    color: 'var(--ds-surface, #ffffff)',
+    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   };
 
   return (

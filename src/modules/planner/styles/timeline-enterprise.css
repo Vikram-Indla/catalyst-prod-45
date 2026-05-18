@@ -522,7 +522,7 @@
 }
 
 .timeline-enterprise .container-bg {
-  background-color: var(--ds-surface, #ffffff) !important;
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
 }
 
 .dark .timeline-enterprise .container-bg {

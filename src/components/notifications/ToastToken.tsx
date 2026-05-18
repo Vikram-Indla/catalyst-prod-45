@@ -43,7 +43,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
       tabIndex={-1}
       style={{
         width: TOAST_WIDTH,
-        background: 'var(--bg-app, #FFFFFF)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         border: '0.5px solid rgba(15,23,42,.08)',
         borderRadius: 6,
         borderLeft: `3px solid ${accentColor}`,
@@ -74,9 +74,9 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
           width: 36, height: 50, borderRadius: '50%', flexShrink: 0,
           background: isSystemAssign ? '#6B7280' : getAvatarColor(actorId),
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 700,
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 700,
         }}>
-          {isSystemAssign ? <UserCheck size={18} color="var(--ds-text-inverse, #FFFFFF)" /> : getUserInitials(actorName)}
+          {isSystemAssign ? <UserCheck size={18} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" /> : getUserInitials(actorName)}
         </div>
 
         {/* Body */}

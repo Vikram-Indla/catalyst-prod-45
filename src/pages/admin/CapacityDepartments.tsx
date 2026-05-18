@@ -128,7 +128,7 @@ export default function CapacityDepartmentsPage() {
       </div>
 
       {/* Departments List */}
-      <div className="rounded-xl overflow-hidden" style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)' }}>
+      <div className="rounded-xl overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)' }}>
           <table className="w-full">
             <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
               <tr>

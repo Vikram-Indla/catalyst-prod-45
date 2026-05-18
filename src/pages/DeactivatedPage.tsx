@@ -14,7 +14,7 @@ export default function DeactivatedPage() {
       background: 'var(--ds-surface, #F4F5F7)',
     }}>
       <div style={{
-        background: 'var(--ds-surface-raised, #FFFFFF)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         borderRadius: 8,
         padding: '40px 48px',
         maxWidth: 480,
@@ -53,7 +53,7 @@ export default function DeactivatedPage() {
             padding: '8px 20px',
             fontSize: 14,
             fontWeight: 500,
-            color: 'var(--ds-text-inverse, #FFFFFF)',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             background: 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))',
             border: 'none',
             borderRadius: 4,

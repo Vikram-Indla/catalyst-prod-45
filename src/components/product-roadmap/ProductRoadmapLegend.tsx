@@ -134,7 +134,7 @@ export function ProductRoadmapLegend({ isVisible, showMilestones }: ProductRoadm
                         <div 
                           className="w-3 h-3 rotate-45 border-2"
                           style={{ 
-                            backgroundColor: item.filled ? item.color : ('fillColor' in item ? item.fillColor : 'var(--ds-surface, #ffffff)'),
+                            backgroundColor: item.filled ? item.color : ('fillColor' in item ? item.fillColor : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
                             borderColor: item.color
                           }}
                         />

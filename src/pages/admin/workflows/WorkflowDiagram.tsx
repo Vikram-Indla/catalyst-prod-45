@@ -106,7 +106,7 @@ function StartNode() {
         boxShadow: '0 0 0 4px rgba(23,43,77,0.18)',
       }}
     >
-      <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--ds-surface,#ffffff)' }} />
+      <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
       <Handle
         type="source"
         position={Position.Right}
@@ -171,14 +171,14 @@ function StatusNode({ data, selected }: { data: any; selected: boolean }) {
         {data.is_initial && (
           <span style={{
             fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
-            background: 'var(--ds-text-brand,#0C66E4)', color: 'var(--ds-surface,#ffffff)',
+            background: 'var(--ds-text-brand,#0C66E4)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             borderRadius: 3, padding: '1px 5px',
           }}>START</span>
         )}
         {data.is_final && (
           <span style={{
             fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
-            background: 'var(--ds-border-success,#22A06B)', color: 'var(--ds-surface,#ffffff)',
+            background: 'var(--ds-border-success,#22A06B)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             borderRadius: 3, padding: '1px 5px',
           }}>END</span>
         )}
@@ -552,7 +552,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
       <div style={{
         position: 'absolute', top: 12, left: 12, right: 12, zIndex: 10,
         display: 'flex', alignItems: 'center', gap: 8,
-        background: 'var(--ds-surface,#ffffff)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))',
         borderRadius: 8, padding: '8px 12px',
         boxShadow: '0 1px 4px rgba(9,30,66,0.08)',
@@ -621,7 +621,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
       {showAddStatus && (
         <div style={{
           position: 'absolute', top: 64, right: 12, zIndex: 20,
-          background: 'var(--ds-surface,#ffffff)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))',
           borderRadius: 8,
           boxShadow: '0 4px 16px rgba(9,30,66,0.12)',
@@ -666,7 +666,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
                       ? cat === 'done'
                         ? 'var(--ds-background-success,#DCFFF1)'
                         : 'var(--ds-background-information,#E9F2FF)'
-                      : 'var(--ds-surface,#ffffff)',
+                      : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     color: isActive ? strokeColor[cat] : 'var(--ds-text-subtle,#42526E)',
                     fontSize: 10, fontWeight: 600, cursor: 'pointer', transition: 'all 0.1s',
                   }}
@@ -683,7 +683,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
               style={{
                 flex: 1, padding: '7px 0', borderRadius: 4,
                 border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))',
-                background: 'var(--ds-surface,#ffffff)',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 color: 'var(--ds-text-subtle,#42526E)',
                 fontSize: 12, cursor: 'pointer',
               }}
@@ -696,7 +696,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
                 background: newStatusName.trim()
                   ? 'var(--ds-background-brand-bold,#0C66E4)'
                   : 'var(--ds-background-brand-hovered,#579DFF)',
-                color: 'var(--ds-text-inverse,#ffffff)',
+                color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 fontSize: 12, fontWeight: 600,
                 cursor: newStatusName.trim() ? 'pointer' : 'not-allowed',
                 opacity: newStatusName.trim() ? 1 : 0.6,
@@ -790,7 +790,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
       {/* ─── Legend ─── */}
       <div style={{
         position: 'absolute', top: 64, left: 12, zIndex: 10,
-        background: 'var(--ds-surface,#ffffff)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))',
         borderRadius: 8,
         padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 6,

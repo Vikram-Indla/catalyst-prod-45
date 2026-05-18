@@ -324,7 +324,7 @@ export function HubSwitcher() {
         className="z-[1000] p-0"
         style={{
           width: 343,
-          background: 'var(--ds-surface-overlay, #FFFFFF)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           borderRadius: 8,
           padding: 0,
           maxHeight: 'none',

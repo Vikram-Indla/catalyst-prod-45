@@ -199,7 +199,7 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
       theme: 'grid',
       headStyles: {
         fillColor: BRAND_COLORS.primary,
-        textColor: 'var(--ds-surface, #ffffff)',
+        textColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         fontSize: 9,
         fontStyle: 'bold',
         halign: 'left',

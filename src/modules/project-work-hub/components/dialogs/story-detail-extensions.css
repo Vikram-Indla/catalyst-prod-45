@@ -311,7 +311,7 @@
   justify-content: center;
   font-size: 10px;
   font-weight: 700;
-  color: var(--ds-text-inverse, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   flex-shrink: 0;
   cursor: pointer;
   transition: transform 0.12s;
@@ -396,7 +396,7 @@
   padding: 0 8px;
   border: 1px solid #BFDBFE;
   border-radius: 4px;
-  background: var(--ds-text-inverse, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   font-family: var(--cp-font-body);
   font-size: 13px;
   color: var(--ds-text, var(--cp-text-primary, #172B4D));
@@ -421,7 +421,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ds-text-inverse, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   font-size: 14px;
   flex-shrink: 0;
   padding: 0;
@@ -482,7 +482,7 @@
   padding: 0 12px;
   border: 1px solid rgba(9, 30, 66, 0.14);
   border-radius: 4px;
-  background: var(--ds-text-inverse, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   color: #42526E;
   font-size: 13px;
   font-family: var(--cp-font-body);
@@ -579,7 +579,7 @@
 [data-sdm-scope] .sdm-parent-popover {
   position: fixed;
   width: 360px;
-  background: var(--ds-text-inverse, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid rgba(9, 30, 66, 0.24);
   border-radius: 6px;
   box-shadow: 0 8px 24px rgba(9, 30, 66, 0.18);
@@ -748,7 +748,7 @@
   padding: 0 28px 0 8px;
   border: 1px solid rgba(9, 30, 66, 0.14);
   border-radius: 4px;
-  background: var(--ds-text-inverse, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   font-family: var(--cp-font-body);
   font-size: 13px;
   color: var(--ds-text, var(--cp-text-primary, #172B4D));
@@ -783,7 +783,7 @@
 
 [data-sdm-scope] .sdm-ai-context-box {
   padding: 8px 10px;
-  background: var(--ds-text-inverse, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid rgba(9, 30, 66, 0.14);
   border-radius: 4px;
   font-size: 12px;
@@ -803,7 +803,7 @@
   background: var(--sdm-ai-btn);
   border: none;
   border-radius: 4px;
-  color: var(--ds-text-inverse, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   font-size: 13px;
   font-weight: 500;
   font-family: var(--cp-font-body);
@@ -833,7 +833,7 @@
   color: var(--ds-text, var(--cp-text-primary, #172B4D));
   max-height: 200px;
   overflow-y: auto;
-  background: var(--ds-text-inverse, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   font-family: var(--cp-font-mono);
 }
 
@@ -891,7 +891,7 @@
 [data-sdm-scope] .sdm-ai-action-btn--apply-both {
   border: none;
   background: var(--ds-text-brand, #2563EB);
-  color: var(--ds-text-inverse, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }
 [data-sdm-scope] .sdm-ai-action-btn--apply-both:hover {
   background: var(--ds-background-brand-bold-hovered, #1D4ED8);
@@ -1019,7 +1019,7 @@
 
 [data-sdm-scope] .adf-editor-content table td,
 [data-sdm-scope] .ProseMirror table td {
-  background: var(--ds-text-inverse, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   color: var(--ds-text, #292A2E);
 }
 

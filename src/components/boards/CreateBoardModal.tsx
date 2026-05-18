@@ -221,7 +221,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
               height: 34, padding: '0 18px', borderRadius: 6, border: 'none',
               background: name.trim() ? 'var(--cp-blue)' : 'var(--divider)',
               fontSize: 12.5, fontWeight: 600,
-              color: name.trim() ? 'var(--ds-surface, #FFFFFF)' : 'var(--fg-4)',
+              color: name.trim() ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--fg-4)',
               fontFamily: 'var(--cp-font-body)',
               cursor: name.trim() ? 'pointer' : 'not-allowed',
             }}>
@@ -254,7 +254,7 @@ function RadioCircle({ selected }: { selected: boolean }) {
       background: selected ? 'var(--cp-blue)' : 'var(--bg-app)',
       transition: 'all 100ms',
     }}>
-      {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--bg-app, #FFFFFF)' }} />}
+      {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />}
     </div>
   );
 }

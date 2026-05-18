@@ -63,13 +63,13 @@ export function WeekStripCollapsible({
           {isLive ? 'Live' : 'Snapshot'}
         </span>
 
-        <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))'}`, borderRadius: '4px', background: isDark ? 'var(--ds-surface, #FFFFFF)' : 'var(--ds-surface, #FFF)', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background 120ms ease' }} onClick={() => onNavigatePeriod(-1)}
+        <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-surface, #FFF)', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background 120ms ease' }} onClick={() => onNavigatePeriod(-1)}
           onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--ds-surface, #FFFFFF)' : 'var(--ds-surface, #FFF)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-surface, #FFF)'; }}
         >{'\u2039'}</button>
-        <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))'}`, borderRadius: '4px', background: isDark ? 'var(--ds-surface, #FFFFFF)' : 'var(--ds-surface, #FFF)', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background 120ms ease' }} onClick={() => onNavigatePeriod(1)}
+        <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-surface, #FFF)', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background 120ms ease' }} onClick={() => onNavigatePeriod(1)}
           onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--ds-surface, #FFFFFF)' : 'var(--ds-surface, #FFF)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-surface, #FFF)'; }}
         >{'\u203A'}</button>
 
         <div style={{ width: '1px', height: '20px', background: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', margin: '0 4px' }} />

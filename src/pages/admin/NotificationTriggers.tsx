@@ -199,7 +199,7 @@ export default function NotificationTriggers() {
       </div>
 
       {/* ── Filters Row ──────────────────────────────────────────── */}
-      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+      <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
         <div className="flex items-center gap-3 flex-wrap">
           {/* Search */}
           <div className="relative flex-1 min-w-[240px]">
@@ -324,7 +324,7 @@ export default function NotificationTriggers() {
           ))}
         </div>
       ) : groups.length === 0 ? (
-        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '48px 16px', textAlign: 'center' }}>
+        <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '48px 16px', textAlign: 'center' }}>
           <span style={{ display: 'flex', justifyContent: 'center', color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 12 }}><NotificationIcon label="" size="large" /></span>
           <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>No triggers match your filters.</p>
         </div>
@@ -334,7 +334,7 @@ export default function NotificationTriggers() {
             <div
               key={group.key}
               className="overflow-hidden"
-              style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}
+              style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}
             >
               {/* Category Header */}
               <button
@@ -437,7 +437,7 @@ function StatsCard({
   };
 
   return (
-    <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px', textAlign: 'center' }}>
+    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px', textAlign: 'center' }}>
       <p
         className="text-xl font-semibold"
         style={{ color: colorMap[variant], fontFamily: 'var(--cp-font-mono)' }}

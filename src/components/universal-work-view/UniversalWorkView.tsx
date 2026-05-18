@@ -136,7 +136,7 @@ export function UniversalWorkView({ params, onClose }: Props) {
         position: 'fixed',
         inset: 0,
         zIndex: 510,
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         display: 'flex',
         flexDirection: 'column',
         fontFamily:
@@ -189,7 +189,7 @@ export function UniversalWorkView({ params, onClose }: Props) {
                 alignItems: 'center',
                 gap: 4,
                 padding: '2px 8px',
-                background: 'var(--ds-surface, #FFFFFF)',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 border: '1px solid var(--cp-border, #E2E8F0)',
                 borderRadius: 3,
                 color: 'var(--ds-text, var(--cp-ink-1, #0F172A))',

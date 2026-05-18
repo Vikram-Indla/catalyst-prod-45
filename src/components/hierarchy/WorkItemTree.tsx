@@ -95,7 +95,7 @@ function AssigneeAvatar({ assignee }: { assignee?: WorkItem['assignee'] }) {
   const bgColor = getAvatarColor(assignee.displayName);
   return (
     <div style={{ width: 24, height: 24, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-      <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #FFFFFF)', fontFamily: 'var(--cp-font-body)' }}>{initials}</span>
+      <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontFamily: 'var(--cp-font-body)' }}>{initials}</span>
     </div>
   );
 }

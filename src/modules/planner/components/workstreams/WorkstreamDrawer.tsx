@@ -505,7 +505,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
           width: '420px',
           maxWidth: '100vw',
           height: '100vh',
-          backgroundColor: 'var(--ds-surface, #ffffff)',
+          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           boxShadow: '-8px 0 30px rgba(0, 0, 0, 0.12)',
           zIndex: 999,
           display: 'flex',
@@ -593,7 +593,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
               top: 0,
               zIndex: 20,
               padding: '16px 20px',
-              backgroundColor: 'var(--ds-surface, #ffffff)',
+              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               borderTop: '1px solid #e2e8f0',
               borderBottom: '1px solid #e2e8f0',
             }}
@@ -890,7 +890,7 @@ export function WorkstreamDrawer({ workstream, isOpen, onClose }: WorkstreamDraw
             display: 'flex',
             gap: '8px',
             padding: '12px 20px',
-            backgroundColor: 'var(--ds-surface, #ffffff)',
+            backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             borderTop: '1px solid #e2e8f0'
           }}
         >
@@ -975,7 +975,7 @@ const primaryButtonStyle: React.CSSProperties = {
   gap: '6px',
   padding: '8px 16px',
   backgroundColor: 'var(--ds-text-brand, #2563eb)',
-  color: 'var(--ds-surface, #ffffff)',
+  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   border: 'none',
   borderRadius: '6px',
   fontSize: '13px',
@@ -1004,7 +1004,7 @@ const avatarStyle = (color: string, size = 32): React.CSSProperties => ({
   justifyContent: 'center',
   fontSize: size > 32 ? '14px' : '12px',
   fontWeight: 600,
-  color: 'var(--ds-surface, #ffffff)',
+  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   flexShrink: 0
 });
 
@@ -1032,7 +1032,7 @@ const dropdownStyle: React.CSSProperties = {
   left: 0,
   right: 0,
   marginTop: '4px',
-  backgroundColor: 'var(--ds-surface, #ffffff)',
+  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   border: '1px solid #e2e8f0',
   borderRadius: '12px',
   boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
@@ -1069,8 +1069,8 @@ const navTabStyle = (isActive: boolean): React.CSSProperties => ({
   justifyContent: 'center',
   gap: '6px',
   padding: '10px 16px',
-  backgroundColor: isActive ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-surface, #ffffff)',
-  color: isActive ? 'var(--ds-surface, #ffffff)' : 'var(--ds-text-subtle, #475569)',
+  backgroundColor: isActive ? 'var(--ds-text-brand, #2563eb)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+  color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtle, #475569)',
   border: isActive ? 'none' : '1px solid #e2e8f0',
   borderRadius: '8px',
   fontSize: '13px',

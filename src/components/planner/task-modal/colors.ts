@@ -12,7 +12,7 @@ export const COLORS = {
   
   // Surfaces
   surfacePage: 'var(--ds-surface-sunken, #f8fafc)',
-  surfaceCard: 'var(--ds-surface, #ffffff)',
+  surfaceCard: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   surfaceHover: 'var(--ds-surface-sunken, #f1f5f9)',
   
   // Borders

@@ -157,7 +157,7 @@ export default function IssueFullPage() {
         <button
           onClick={handleClose}
           style={{
-            marginTop: 8, padding: '8px 16px', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)',
+            marginTop: 8, padding: '8px 16px', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer',
             fontFamily: 'var(--cp-font-body)',
           }}

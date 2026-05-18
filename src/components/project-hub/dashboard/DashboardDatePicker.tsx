@@ -91,7 +91,7 @@ export default function DashboardDatePicker() {
         className="p-0"
         style={{
           width: 280,
-          background: 'var(--ds-text-inverse, #FFFFFF)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
           borderRadius: 4,
           boxShadow: '0 8px 24px rgba(9,30,66,.18)',
@@ -335,7 +335,7 @@ function CustomRangePanel({
               padding: '0 10px',
               border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
               borderRadius: 3,
-              background: 'var(--ds-text-inverse, #FFFFFF)',
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               fontSize: 12,
               cursor: 'pointer',
               color: '#42526E',
@@ -352,7 +352,7 @@ function CustomRangePanel({
               border: 0,
               borderRadius: 3,
               background: 'var(--cp-primary-60, #0052CC)',
-              color: 'var(--ds-text-inverse, #FFFFFF)',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               fontSize: 12,
               fontWeight: 600,
               cursor: 'pointer',
@@ -510,7 +510,7 @@ function MonthGrid({
           let radius = '3px';
           if (isStart || isEnd) {
             bg = 'var(--cp-primary-60, #0052CC)';
-            color = 'var(--ds-text-inverse, #FFFFFF)';
+            color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
             if (isStart && !isEnd) radius = '3px 0 0 3px';
             if (isEnd && !isStart) radius = '0 3px 3px 0';
           } else if (inRange) {

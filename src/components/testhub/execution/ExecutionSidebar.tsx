@@ -160,7 +160,7 @@ export function ExecutionSidebar({
                 style={{
                   width: '100%', padding: '10px 14px', marginBottom: 16,
                   background: 'linear-gradient(135deg, var(--sem-danger) 0%, #B91C1C 100%)',
-                  border: 'none', borderRadius: 8, color: 'var(--ds-text-inverse, #FFFFFF)',
+                  border: 'none', borderRadius: 8, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   fontSize: 13, fontWeight: 600, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 }}
@@ -225,7 +225,7 @@ export function ExecutionSidebar({
                 const colors = STEP_COLORS[step.status] || STEP_COLORS.not_run;
                 return (
                   <div key={i} style={{
-                    padding: '8px 10px', backgroundColor: 'var(--bg-app, #FFFFFF)',
+                    padding: '8px 10px', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     border: '0.75px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 6,
                     borderLeft: `3px solid ${colors.border}`,
                   }}>

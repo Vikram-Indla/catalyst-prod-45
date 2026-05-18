@@ -25,7 +25,7 @@
 .task-modal-enterprise {
   /* Surfaces */
   --tm-surface-page: var(--ds-surface-sunken, #f8fafc);
-  --tm-surface-card: var(--ds-surface, #ffffff);
+  --tm-surface-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --tm-surface-muted: var(--ds-surface-sunken, #f8fafc);
   --tm-surface-hover: var(--ds-surface-sunken, #f1f5f9);
   --tm-surface-selected: var(--ds-background-selected, #eff6ff);
@@ -817,7 +817,7 @@
   min-height: 600px;
   height: auto;
   max-height: 85vh;
-  background: var(--tm-surface-card, #ffffff);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border-radius: 12px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   overflow: hidden;
@@ -934,7 +934,7 @@
 }
 
 .task-modal-v3__title:focus {
-  background: var(--ds-surface, #ffffff);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border-color: var(--ds-text-brand, #2563eb);
   box-shadow: 0 0 0 3px #dbeafe;
 }
@@ -1066,7 +1066,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: var(--ds-surface, #ffffff);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--ds-border, #e2e8f0);
   border-radius: 6px;
   font-size: 14px;
@@ -1130,7 +1130,7 @@
   justify-content: center;
   gap: 6px;
   padding: 8px 12px;
-  background: var(--ds-surface, #ffffff);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--ds-border, #e2e8f0);
   border-radius: 6px;
   font-size: 13px;

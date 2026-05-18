@@ -37,11 +37,11 @@ function StatusLozenge({ status }: { status: string }) {
 
   // Blue: in-progress family
   if (['inprogress','indev','inreview','inqa','active','inbeta','processing','testing','review'].includes(s)) {
-    bg = '#0C66E4'; color = 'var(--ds-surface, #FFFFFF)';
+    bg = '#0C66E4'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
   }
   // Green: done family
   else if (['done','completed','production','prodready','approved','resolved','passed','closed'].includes(s)) {
-    bg = 'var(--cp-lozenge-green-bg, #1B7F37)'; color = 'var(--ds-surface, #FFFFFF)';
+    bg = 'var(--cp-lozenge-green-bg, #1B7F37)'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
   }
   // Grey: everything else (backlog, todo, onhold, new, waiting, blocked)
   // Blocked gets a red left border accent on grey lozenge

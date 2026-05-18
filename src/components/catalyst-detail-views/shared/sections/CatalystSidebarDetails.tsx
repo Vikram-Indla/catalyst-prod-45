@@ -379,7 +379,7 @@ export function CatalystSidebarDetails({
         {showStatusDropdown && (
           <div className="cv-status-listbox" style={{
             position: 'absolute', left: 0, top: '100%', marginTop: 4,
-            background: 'var(--ds-surface, #FFFFFF)', borderRadius: 8,
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 8,
             boxShadow: '0 4px 24px rgba(30,31,33,0.16), 0 0 1px rgba(30,31,33,0.31)',
             padding: '6px 0', zIndex: 9999, minWidth: 240, maxHeight: 420, overflowY: 'auto',
             animation: 'cv-slide-down 0.15s ease-out',

@@ -4,7 +4,7 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 :root {
-  --aw-bg: var(--ds-surface, #ffffff);
+  --aw-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --aw-bg-subtle: #F7F8F9;
   --aw-hover: var(--ds-surface-sunken, #F4F5F7);
   --aw-text: var(--ds-text, var(--cp-text-primary, #172B4D));
@@ -574,7 +574,7 @@
   flex: 1 1 0%;
   min-height: 0 !important;
   overflow: hidden !important;
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }
 .awIssueContent {
   flex: 1 1 0%;
@@ -583,7 +583,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden !important;         /* header pinned; only awBody scrolls */
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }
 .awIssueContent > .awBody {
   flex: 1 1 0%;
@@ -661,7 +661,7 @@
   overflow-y: scroll;
   overscroll-behavior: contain;
   padding: 0 0 24px 0;
-  background: var(--ds-surface, #FFFFFF) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   scrollbar-gutter: stable;
 }
 .awDetailsSidebar::-webkit-scrollbar { width: 12px; }
@@ -1426,7 +1426,7 @@
 
 /* ── Table row ── */
 .sp-row {
-  height: 40px; background: var(--ds-surface, #FFFFFF); cursor: pointer; transition: background 0.1s;
+  height: 40px; background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); cursor: pointer; transition: background 0.1s;
 }
 .sp-row:hover { background: var(--ds-surface-sunken, #F4F5F7); }
 .sp-row--create { background: #FFFDE7; }
@@ -1480,7 +1480,7 @@
 .sp-avatar-fallback {
   width: 24px; height: 24px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700; color: var(--ds-surface, #FFFFFF); flex-shrink: 0;
+  font-size: 10px; font-weight: 700; color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); flex-shrink: 0;
 }
 .sp-assignee-name {
   font-size: 14px; color: var(--cp-text-secondary, #44546F);
@@ -1503,7 +1503,7 @@
 
 .sp-status-dropdown {
   position: absolute; top: calc(100% + 4px); right: 0; min-width: 160px;
-  background: var(--ds-surface, #FFFFFF); border: 1px solid rgba(9, 30, 66, 0.24);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); border: 1px solid rgba(9, 30, 66, 0.24);
   border-radius: 6px; box-shadow: 0 6px 16px rgba(9, 30, 66, 0.15);
   z-index: 60; overflow: hidden; padding: 4px;
 }
@@ -1518,7 +1518,7 @@
 /* ── Column picker ── */
 .sp-colpicker-dropdown {
   position: absolute; top: calc(100% + 4px); right: 0; width: 220px;
-  background: var(--ds-surface, #FFFFFF); border: 1px solid rgba(9, 30, 66, 0.24);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); border: 1px solid rgba(9, 30, 66, 0.24);
   border-radius: 6px; box-shadow: 0 6px 16px rgba(9, 30, 66, 0.15);
   z-index: 60; overflow: hidden; padding-bottom: 4px;
 }
@@ -1581,7 +1581,7 @@
 .sp-empty-cta {
   margin-top: 8px; padding: 6px 16px;
   border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6)); border-radius: 3px;
-  background: var(--ds-surface, #FFFFFF); font-size: 13px; color: var(--ds-text, var(--cp-text-primary, #172B4D));
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); font-size: 13px; color: var(--ds-text, var(--cp-text-primary, #172B4D));
   cursor: pointer; font-family: inherit; transition: background 0.12s;
 }
 .sp-empty-cta:hover { background: var(--ds-surface-sunken, #F4F5F7); }

@@ -98,7 +98,7 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
       {open && createPortal(
         <div ref={panelRef} style={panelStyle} onClick={e => e.stopPropagation()}>
           <div style={{
-            background: 'var(--ds-surface, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             borderRadius: 8,
             border: '2px solid #2563EB',
             boxShadow: '0 8px 24px rgba(9,30,66,0.25)',
@@ -139,11 +139,11 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
                 style={{
                   width: '100%', display: 'flex', alignItems: 'center', gap: 10,
                   padding: '10px 12px', border: 'none', cursor: 'pointer',
-                  background: currentAssignee === null ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--ds-surface, #FFFFFF)',
+                  background: currentAssignee === null ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   textAlign: 'left', fontFamily: 'var(--cp-font-body)',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = currentAssignee === null ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--ds-surface, #FFFFFF)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = currentAssignee === null ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
               >
                 <span style={{
                   width: 32, height: 32, borderRadius: '50%', background: 'var(--ds-surface-sunken, #F4F5F7)',
@@ -164,11 +164,11 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
                     style={{
                       width: '100%', display: 'flex', alignItems: 'center', gap: 10,
                       padding: '10px 12px', border: 'none', cursor: 'pointer',
-                      background: isActive ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--ds-surface, #FFFFFF)',
+                      background: isActive ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                       textAlign: 'left', fontFamily: 'var(--cp-font-body)',
                     }}
                     onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = isActive ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--ds-surface, #FFFFFF)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = isActive ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
                   >
                     <KanbanAvatar
                       name={person.name}

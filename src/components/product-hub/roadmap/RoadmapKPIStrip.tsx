@@ -18,7 +18,7 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
   const surface = isDark ? SURFACE_DARK : SURFACE;
 
   const cardStyle: React.CSSProperties = {
-    background: 'var(--cp-bg-elevated, #FFFFFF)',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
     borderRadius: 12,
     padding: '14px 18px',

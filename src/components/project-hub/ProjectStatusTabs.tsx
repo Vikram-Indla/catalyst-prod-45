@@ -70,7 +70,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
                 fontSize: 11,
                 fontWeight: 600,
                 backgroundColor: isActive ? 'var(--cp-primary-60, #0052CC)' : ('var(--cp-border, #EBECF0)'),
-                color: isActive ? 'var(--ds-text-inverse, #FFFFFF)' : ('var(--cp-text-tertiary, #6B778C)'),
+                color: isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : ('var(--cp-text-tertiary, #6B778C)'),
                 fontFamily: 'var(--cp-font-body)',
               }}
             >

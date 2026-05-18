@@ -212,7 +212,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                       disabled={deleteConfirm !== board.name || deleteBoard.isPending} style={{
                       height: 28, padding: '8px 12px', borderRadius: 6, border: 'none',
                       background: deleteConfirm === board.name ? 'var(--sem-danger)' : 'var(--divider)',
-                      color: deleteConfirm === board.name ? 'var(--ds-surface, #FFFFFF)' : 'var(--fg-4)',
+                      color: deleteConfirm === board.name ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--fg-4)',
                       fontSize: 11.5, fontWeight: 600, cursor: deleteConfirm === board.name ? 'pointer' : 'not-allowed',
                       fontFamily: 'var(--cp-font-body)',
                     }}>{deleteBoard.isPending ? 'Deleting…' : 'Delete'}</button>
@@ -297,7 +297,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
               <button style={{
                 display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '8px 12px',
                 background: 'var(--cp-blue)', border: 'none', borderRadius: 6,
-                cursor: 'pointer', fontSize: 11.5, fontWeight: 600, color: 'var(--ds-surface, #FFFFFF)',
+                cursor: 'pointer', fontSize: 11.5, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 fontFamily: 'var(--cp-font-body)',
               }}>
                 <Plus size={13} /> Add Member
@@ -321,7 +321,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
             height: 30, padding: '0 14px', borderRadius: 6, border: 'none',
             background: isDirty ? 'var(--cp-blue)' : 'var(--divider)',
             fontSize: 11.5, fontWeight: 600,
-            color: isDirty ? 'var(--ds-surface, #FFFFFF)' : 'var(--fg-4)',
+            color: isDirty ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--fg-4)',
             fontFamily: 'var(--cp-font-body)',
             cursor: isDirty ? 'pointer' : 'not-allowed',
           }}>{updateBoard.isPending ? 'Saving…' : 'Save'}</button>
@@ -370,7 +370,7 @@ function RadioCircle({ selected }: { selected: boolean }) {
       background: selected ? 'var(--cp-blue)' : 'var(--bg-app)',
       transition: 'all 100ms',
     }}>
-      {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--bg-app, #FFFFFF)' }} />}
+      {selected && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />}
     </div>
   );
 }

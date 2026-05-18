@@ -264,7 +264,7 @@ export default function SharedStepsPage() {
       <TestHubPageHeader title="Shared Steps Library" subtitle="Reusable test steps for consistency across test cases">
             <button onClick={handleRefresh} title="Refresh" style={{
               width: 40, height: 40, padding: 0, border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
-              backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer',
+              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <RefreshCw size={18} />
@@ -272,7 +272,7 @@ export default function SharedStepsPage() {
             <button onClick={() => setCreateModalOpen(true)} style={{
               height: 40, padding: '0 20px',
               background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
-              border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)',
+              border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8,
               boxShadow: '0 2px 8px rgba(37,99,235,0.25)', fontFamily: 'var(--cp-font-body)',
             }}>
@@ -285,7 +285,7 @@ export default function SharedStepsPage() {
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
         {/* Category Sidebar */}
         <div style={{
-          width: 260, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRight: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
+          width: 260, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRight: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
         }}>
           {/* Sidebar Header */}
@@ -299,7 +299,7 @@ export default function SharedStepsPage() {
             }}>Categories</h2>
             <button onClick={() => setIsCreateCategoryModalOpen(true)} title="Add category" style={{
               width: 28, height: 28, padding: 0, border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 6,
-              backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer',
+              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <Plus size={14} />
@@ -345,7 +345,7 @@ export default function SharedStepsPage() {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           {/* Toolbar */}
           <div style={{
-            padding: '16px 24px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
+            padding: '16px 24px', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
             display: 'flex', alignItems: 'center', gap: 12,
           }}>
             <div style={{ position: 'relative', flex: 1, maxWidth: 400 }}>
@@ -356,7 +356,7 @@ export default function SharedStepsPage() {
                 style={{
                   width: '100%', height: 40, paddingLeft: 40, paddingRight: 12,
                   border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, fontSize: 14,
-                  color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', fontFamily: 'var(--cp-font-body)',
+                  color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontFamily: 'var(--cp-font-body)',
                 }}
               />
             </div>
@@ -369,7 +369,7 @@ export default function SharedStepsPage() {
                   height: 40, padding: '0 14px',
                   border: `1.5px solid ${activeFilters.length > 0 ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-border, var(--cp-border, #E2E8F0))')}`,
                   borderRadius: 8,
-                  backgroundColor: activeFilters.length > 0 ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, #FFFFFF)'),
+                  backgroundColor: activeFilters.length > 0 ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
                   color: activeFilters.length > 0 ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-ink-2, var(--cp-ink-2, #334155))'),
                   fontSize: 14, fontWeight: 500, cursor: 'pointer',
                   display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'var(--cp-font-body)',
@@ -380,7 +380,7 @@ export default function SharedStepsPage() {
                 {activeFilters.length > 0 && (
                   <span style={{
                     width: 20, height: 20, borderRadius: '50%', backgroundColor: 'var(--ds-text-brand, #2563EB)',
-                    color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 11, fontWeight: 700,
+                    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 11, fontWeight: 700,
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   }}>
                     {activeFilters.length}
@@ -394,7 +394,7 @@ export default function SharedStepsPage() {
                   onClick={(e) => e.stopPropagation()}
                   style={{
                     position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 280,
-                    backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
+                    backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
                     boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.4)' : '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, overflow: 'hidden',
                   }}
                 >
@@ -441,7 +441,7 @@ export default function SharedStepsPage() {
                     <button onClick={() => setIsFilterOpen(false)} style={{
                       width: '100%', height: 50,
                       background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
-                      border: 'none', borderRadius: 8, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 13,
+                      border: 'none', borderRadius: 8, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 13,
                       fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
                     }}>
                       Apply Filter
@@ -457,7 +457,7 @@ export default function SharedStepsPage() {
                 onClick={(e) => { e.stopPropagation(); setIsSortOpen(!isSortOpen); setIsFilterOpen(false); }}
                 style={{
                   height: 40, padding: '0 14px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
-                  backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 14, fontWeight: 500,
+                  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 14, fontWeight: 500,
                   cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'var(--cp-font-body)',
                 }}
               >
@@ -471,7 +471,7 @@ export default function SharedStepsPage() {
                   onClick={(e) => e.stopPropagation()}
                   style={{
                     position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 220,
-                    backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
+                    backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
                     boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.4)' : '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 8,
                   }}
                 >
@@ -519,7 +519,7 @@ export default function SharedStepsPage() {
             <div style={{ display: 'flex', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, overflow: 'hidden' }}>
               <button onClick={() => setViewMode('list')} title="List view" style={{
                 width: 40, height: 38, padding: 0, border: 'none',
-                backgroundColor: viewMode === 'list' ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, #FFFFFF)'),
+                backgroundColor: viewMode === 'list' ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
                 color: viewMode === 'list' ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'), cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
@@ -528,7 +528,7 @@ export default function SharedStepsPage() {
               <button onClick={() => setViewMode('card')} title="Card view" style={{
                 width: 40, height: 38, padding: 0, border: 'none',
                 borderLeft: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
-                backgroundColor: viewMode === 'card' ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, #FFFFFF)'),
+                backgroundColor: viewMode === 'card' ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
                 color: viewMode === 'card' ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'), cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
@@ -564,7 +564,7 @@ export default function SharedStepsPage() {
                 </p>
               </div>
             ) : viewMode === 'list' ? (
-              <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 12, overflow: 'hidden' }}>
+              <div style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 12, overflow: 'hidden' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--cp-font-body)' }}>
                   <thead>
                     <tr style={{ borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
@@ -785,7 +785,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
   return (
     <div
       style={{
-        backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
+        backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
         padding: 16, cursor: 'pointer', transition: 'border-color 0.15s, box-shadow 0.15s', display: 'flex', flexDirection: 'column' as const,
       }}
       onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border-strong, #CBD5E1)'; e.currentTarget.style.boxShadow = isDark ? '0 4px 12px rgba(0,0,0,0.2)' : '0 4px 12px rgba(0,0,0,0.08)'; }}
@@ -828,7 +828,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
             <div
               onClick={(e) => e.stopPropagation()}
               style={{
-                position: 'absolute', right: 0, top: 36, width: 160, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
+                position: 'absolute', right: 0, top: 36, width: 160, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 borderRadius: 8, border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.4)' : '0 8px 24px rgba(0,0,0,0.12)',
                 padding: 4, zIndex: 50,
               }}

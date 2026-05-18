@@ -39,7 +39,7 @@ export function DrawerMetadataChips({
         style={{
           background: 'var(--ds-text-brand, #2563eb)',
           border: '1px solid rgba(37, 99, 235, 0.3)',
-          color: 'var(--ds-surface, #ffffff)',
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         }}
       >
         <Star className="h-3.5 w-3.5" />

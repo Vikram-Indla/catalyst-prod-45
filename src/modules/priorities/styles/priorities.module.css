@@ -68,9 +68,9 @@
   --pri-label-q1: var(--ds-text-success, #22c55e);
 
   /* Surfaces */
-  --pri-bg: var(--ds-surface, #ffffff);
+  --pri-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --pri-bg-page: var(--ds-surface-sunken, #f8fafc);
-  --pri-bg-elevated: var(--ds-surface, #ffffff);
+  --pri-bg-elevated: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --pri-border: var(--ds-border, #e5e7eb);
   --pri-border-light: #f3f4f6;
 

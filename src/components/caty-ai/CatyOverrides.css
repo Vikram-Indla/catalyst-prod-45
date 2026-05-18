@@ -19,7 +19,7 @@
 .caty-panel,
 [class*="caty-panel"],
 .caty-widget > div {
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid var(--ds-border, #e2e8f0) !important;
   border-radius: 20px !important;
   box-shadow: 0 16px 48px rgba(0,0,0,0.12) !important;
@@ -42,9 +42,9 @@ header.caty-header-fixed,
   justify-content: space-between !important;
   gap: 16px !important;
   padding: 20px 24px !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   background-image: none !important;
-  background-color: var(--ds-surface, #ffffff) !important;
+  background-color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border-bottom: 1px solid var(--ds-border, #e2e8f0) !important;
   flex-shrink: 0 !important;
   min-height: 92px !important;
@@ -306,7 +306,7 @@ button.caty-header-btn:hover {
 button.caty-department-pill,
 .caty-department-pill {
   padding: 8px 16px !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 2px solid var(--ds-border, #e2e8f0) !important;
   border-radius: 20px !important;
   font-family: var(--cp-font-body);
@@ -328,7 +328,7 @@ button.caty-department-pill,
 .caty-department-pill.active {
   background: var(--ds-text-subtle, #475569) !important;
   border-color: var(--ds-text-subtle, #475569) !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   font-weight: 600 !important;
 }
 
@@ -343,7 +343,7 @@ button.caty-department-pill,
 /* MESSAGES */
 .caty-messages {
   padding: 24px !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   /* Fix: allow inner scrolling inside a flex column panel (otherwise content can be clipped with no scroll) */
   min-height: 0 !important;
   overflow-y: auto !important;
@@ -378,7 +378,7 @@ button.caty-department-pill,
 /* USER BUBBLE */
 .caty-message.user .caty-bubble {
   background: var(--ds-text-brand, #2563eb) !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border-radius: 14px !important;
   border-bottom-right-radius: 4px !important;
   border-bottom-left-radius: 14px !important;
@@ -466,7 +466,7 @@ button.caty-department-pill,
 
 /* DATA CARD */
 .caty-data-card {
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid var(--ds-border, #e2e8f0) !important;
   border-radius: 12px !important;
   overflow: hidden !important;
@@ -576,7 +576,7 @@ button.caty-department-pill,
   width: 52px !important;
   height: 52px !important;
   min-width: 52px !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 2px solid var(--ds-border, #e2e8f0) !important;
   border-radius: 14px !important;
   display: flex !important;
@@ -668,7 +668,7 @@ button.caty-department-pill,
 
 /* ========== PROFILE CARD (Individual Resource) ========== */
 .caty-profile-card {
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border-radius: 16px !important;
   border: 1px solid var(--ds-border, #e2e8f0) !important;
   box-shadow: 0 4px 16px -4px rgba(0,0,0,0.08) !important;
@@ -689,7 +689,7 @@ button.caty-department-pill,
   width: 64px !important;
   height: 64px !important;
   min-width: 64px !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 2px solid var(--ds-text-brand, #3b82f6) !important;
   border-radius: 16px !important;
   display: flex !important;
@@ -813,7 +813,7 @@ button.caty-department-pill,
 
 .caty-action-btn.primary {
   background: var(--ds-text-brand, #2563eb) !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
 }
 
 .caty-action-btn.primary:hover {
@@ -835,7 +835,7 @@ button.caty-department-pill,
   display: flex !important;
   gap: 10px !important;
   padding: 16px 24px !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border-top: 1px solid var(--ds-border, #e2e8f0) !important;
   overflow-x: auto !important;
 }
@@ -866,7 +866,7 @@ button.caty-department-pill,
 /* INPUT — SINGLE CLEAN BOX (no inner border) */
 .caty-input-area {
   padding: 18px 24px 22px !important;
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border-top: 1px solid var(--ds-border, #e2e8f0) !important;
 }
 
@@ -914,7 +914,7 @@ button.caty-department-pill,
   width: 48px !important;
   height: 48px !important;
   background: var(--ds-text-brand, #2563eb) !important;
-  color: var(--ds-surface, #ffffff) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: none !important;
   border-radius: 12px !important;
 }
@@ -1354,7 +1354,7 @@ button.caty-fab {
 }
 
 .caty-viewport__tag--date {
-  background: var(--ds-surface, #ffffff) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   color: var(--ds-text-danger, #dc2626) !important;
   border-color: #fecaca !important;
 }

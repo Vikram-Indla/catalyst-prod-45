@@ -99,7 +99,7 @@ export function ArchivedWorkstreamsView({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '16px 24px',
-          backgroundColor: 'var(--ds-surface, #ffffff)',
+          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           borderBottom: '1px solid #e2e8f0',
         }}
       >

@@ -1,7 +1,7 @@
 /**
  * AuditTrailPage — Governance Audit Trail
  * Read-only log of all AI Cleanup force close and restore events.
- * Light mode only. Page bg var(--ds-surface-sunken, #F8FAFC), cards #ffffff.
+ * Light mode only. Page bg var(--ds-surface-sunken, #F8FAFC), cards var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)).
  */
 import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -150,7 +150,7 @@ export default function AuditTrailPage() {
     }}>
       {/* PAGE HEADER */}
       <div style={{
-        background: 'var(--ds-surface, #ffffff)', borderBottom: '1px solid var(--cp-border, #E2E8F0)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderBottom: '1px solid var(--cp-border, #E2E8F0)',
         padding: '16px 24px', display: 'flex', alignItems: 'center',
         justifyContent: 'space-between', flexShrink: 0,
       }}>
@@ -186,7 +186,7 @@ export default function AuditTrailPage() {
 
       {/* FILTER BAR */}
       <div style={{
-        background: 'var(--ds-surface, #ffffff)', borderBottom: '1px solid var(--cp-border, #E2E8F0)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderBottom: '1px solid var(--cp-border, #E2E8F0)',
         padding: '12px 24px', display: 'flex', gap: 12, alignItems: 'center',
         flexShrink: 0, flexWrap: 'wrap',
       }}>
@@ -194,10 +194,10 @@ export default function AuditTrailPage() {
           value={statusFilter}
           onValueChange={(v) => { setStatusFilter(v as any); setPage(0); }}
         >
-          <SelectTrigger style={{ width: 160, height: 36, fontSize: 13, border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6, background: 'var(--ds-surface, #ffffff)' }}>
+          <SelectTrigger style={{ width: 160, height: 36, fontSize: 13, border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
             <SelectValue />
           </SelectTrigger>
-          <SelectContent style={{ background: 'var(--ds-surface, #ffffff)' }}>
+          <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
             <SelectItem value="all" style={{ fontSize: 13 }}>All events</SelectItem>
             <SelectItem value="closed" style={{ fontSize: 13 }}>Force closed</SelectItem>
             <SelectItem value="restored" style={{ fontSize: 13 }}>Restored</SelectItem>
@@ -208,10 +208,10 @@ export default function AuditTrailPage() {
           value={categoryFilter !== null ? String(categoryFilter) : 'all'}
           onValueChange={(v) => { setCategoryFilter(v === 'all' ? null : Number(v)); setPage(0); }}
         >
-          <SelectTrigger style={{ width: 180, height: 36, fontSize: 13, border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6, background: 'var(--ds-surface, #ffffff)' }}>
+          <SelectTrigger style={{ width: 180, height: 36, fontSize: 13, border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
             <SelectValue />
           </SelectTrigger>
-          <SelectContent style={{ background: 'var(--ds-surface, #ffffff)' }}>
+          <SelectContent style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
             {CATEGORY_OPTIONS.map(o => (
               <SelectItem key={o.value} value={o.value} style={{ fontSize: 13 }}>{o.label}</SelectItem>
             ))}
@@ -226,7 +226,7 @@ export default function AuditTrailPage() {
             onChange={e => { setDateFrom(e.target.value); setPage(0); }}
             style={{
               height: 36, fontSize: 13, border: '1px solid var(--cp-border, #E2E8F0)',
-              borderRadius: 6, padding: '0 10px', background: 'var(--ds-surface, #ffffff)',
+              borderRadius: 6, padding: '0 10px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', fontFamily: 'var(--cp-font-body)',
             }}
           />
@@ -237,7 +237,7 @@ export default function AuditTrailPage() {
             onChange={e => { setDateTo(e.target.value); setPage(0); }}
             style={{
               height: 36, fontSize: 13, border: '1px solid var(--cp-border, #E2E8F0)',
-              borderRadius: 6, padding: '0 10px', background: 'var(--ds-surface, #ffffff)',
+              borderRadius: 6, padding: '0 10px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', fontFamily: 'var(--cp-font-body)',
             }}
           />
@@ -256,7 +256,7 @@ export default function AuditTrailPage() {
       {/* STATS STRIP */}
       <div style={{
         display: 'flex', gap: 32, padding: '12px 24px',
-        borderBottom: '1px solid var(--cp-border, #E2E8F0)', background: 'var(--ds-surface, #ffffff)', flexShrink: 0,
+        borderBottom: '1px solid var(--cp-border, #E2E8F0)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', flexShrink: 0,
       }}>
         {[
           { label: 'TOTAL CLOSED', value: stats.totalClosed },
@@ -284,7 +284,7 @@ export default function AuditTrailPage() {
       {/* TABLE */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px 0' }}>
         <div style={{
-          background: 'var(--ds-surface, #ffffff)', border: '1px solid var(--cp-border, #E2E8F0)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--cp-border, #E2E8F0)',
           borderRadius: 6, overflow: 'hidden',
         }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -322,7 +322,7 @@ export default function AuditTrailPage() {
                     key={entry.id}
                     style={{ borderBottom: '0.75px solid var(--cp-bg-sunken, #F1F5F9)', height: 52 }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F8FAFC)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface, #ffffff)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))')}
                   >
                     {/* ITEM */}
                     <td style={{ padding: '8px 12px', minWidth: 200, verticalAlign: 'top' }}>
@@ -439,7 +439,7 @@ export default function AuditTrailPage() {
       {/* PAGINATION */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '12px 24px', background: 'var(--ds-surface, #ffffff)', borderTop: '1px solid var(--cp-border, #E2E8F0)',
+        padding: '12px 24px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderTop: '1px solid var(--cp-border, #E2E8F0)',
         flexShrink: 0,
       }}>
         <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>

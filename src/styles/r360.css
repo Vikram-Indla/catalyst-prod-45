@@ -654,6 +654,10 @@
 }
 
 /* Generic fallbacks */
+.dark #r360-root [style*="background: var(--cp-bg-elevated, #FFFFFF)"],
+.dark #r360-root [style*="background:var(--cp-bg-elevated, #FFFFFF)"],
+.dark #r360-root [style*="background: var(--cp-bg-elevated, #ffffff)"],
+.dark #r360-root [style*="background:var(--cp-bg-elevated, #ffffff)"],
 .dark #r360-root [style*="background: #FFFFFF"],
 .dark #r360-root [style*="background:#FFFFFF"],
 .dark #r360-root [style*="background: #fff"],

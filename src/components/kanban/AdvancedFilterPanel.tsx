@@ -178,7 +178,7 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
       ref={panelRef}
       style={{
         position: 'absolute', top: '100%', right: 0, marginTop: 4,
-        width: 400, background: 'var(--ds-surface, #FFFFFF)',
+        width: 400, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         border: '1px solid #DDDEE1', borderRadius: 10,
         boxShadow: '0 12px 36px rgba(9,30,66,0.15), 0 2px 8px rgba(9,30,66,0.08)',
         zIndex: 60, fontFamily: 'var(--cp-font-body)',

@@ -29,8 +29,8 @@ function StatusLozenge({ status }: { status: string | null }) {
   const s = status || 'draft';
   const map: Record<string, { bg: string; color: string; label: string }> = {
     draft:     { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: '#42526E', label: 'DRAFT' },
-    reviewed:  { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)', label: 'REVIEWED' },
-    published: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-text-inverse, #FFFFFF)', label: 'PUBLISHED' },
+    reviewed:  { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'REVIEWED' },
+    published: { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'PUBLISHED' },
   };
   const m = map[s] ?? map.draft;
   return (
@@ -185,7 +185,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
         {isStale && (
           <div style={{
             margin: '12px 20px 0', background: '#0C66E4', border: '1px solid #B3D4FF',
-            color: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 6, padding: '8px 12px',
+            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 6, padding: '8px 12px',
             display: 'flex', alignItems: 'center', gap: 8, fontSize: 12,
             fontFamily: 'var(--cp-font-body)',
           }}>
@@ -278,7 +278,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                         }}>Cancel</button>
                         <button onClick={saveEdit} disabled={savingEdit} style={{
                           padding: '4px 12px', fontSize: 12, fontWeight: 600, borderRadius: 6,
-                          border: 'none', background: 'var(--cp-blue)', color: 'var(--ds-text-inverse, #FFFFFF)',
+                          border: 'none', background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                           cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
                         }}>{savingEdit ? 'Saving…' : 'Save'}</button>
                       </div>
@@ -310,7 +310,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                           <button onClick={() => setArchiveConfirmId(null)} style={{
                             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
                             borderRadius: 6, border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.15)',
-                            background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--fg-2)', cursor: 'pointer',
+                            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--fg-2)', cursor: 'pointer',
                             fontFamily: 'var(--cp-font-body)',
                           }}>Cancel</button>
                           <button onClick={() => handleArchiveEpic(epic.id)} style={{
@@ -329,7 +329,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                               display: 'inline-flex', alignItems: 'center', gap: 4,
                               fontSize: 12, fontWeight: 500, color: 'var(--fg-2)',
                               border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 6,
-                              background: 'var(--cp-bg-elevated, #FFFFFF)', cursor: 'pointer',
+                              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
                               fontFamily: 'var(--cp-font-body)',
                             }}
                             onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(37,99,235,0.04)')}
@@ -402,7 +402,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
               style={{
                 flex: 1, height: 50, fontSize: 13, fontWeight: 600,
                 borderRadius: 6, border: 'none',
-                background: 'var(--cp-blue)', color: 'var(--ds-text-inverse, #FFFFFF)',
+                background: 'var(--cp-blue)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #1D4ED8)')}

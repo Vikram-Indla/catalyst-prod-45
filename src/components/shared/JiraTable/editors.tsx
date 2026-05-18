@@ -915,7 +915,7 @@ export interface ParentChoice {
 // Measured directly from Jira's production list view on
 // digital-transformation.atlassian.net on 2026-04-18:
 //   background: rgb(34, 125, 155)  // #227D9B — Jira's "epic parent" teal
-//   color:      var(--ds-surface, #FFFFFF)
+//   color:      var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))
 //   padding:    2px 4px
 //   border-radius: 3px
 //   font-size:  14px (we use 13 to match our compact row density)

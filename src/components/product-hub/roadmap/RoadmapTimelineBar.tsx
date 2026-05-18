@@ -60,7 +60,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
     if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
   }, []);
 
-  const tooltipBg = 'var(--cp-bg-elevated, #FFFFFF)';
+  const tooltipBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
   const tooltipShadow = isDark ? '0 20px 60px rgba(0,0,0,0.4)' : '0 20px 60px rgba(0,0,0,0.12)';
   const progressTrackBg = isDark ? 'var(--ds-border, #2E2E2E)' : surface.borderLight;
 
@@ -118,7 +118,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
             className="relative truncate"
             style={{
               zIndex: 1, fontSize: 11, fontWeight: 600,
-              color: 'var(--ds-text-inverse, #FFFFFF)',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               paddingLeft: 8, paddingRight: 4, lineHeight: '26px',
               flex: 1,
               textShadow: '0 1px 2px rgba(0,0,0,0.15)',
@@ -172,8 +172,8 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
               style={{
                 left: `${mPos}%`, top: '50%',
                 width: 7, height: 7, marginTop: -3.5, marginLeft: -3.5,
-                background: m.completed ? 'var(--ds-text-inverse, #FFFFFF)' : barColor,
-                border: '2px solid var(--ds-text-inverse, #FFFFFF)', borderRadius: 1,
+                background: m.completed ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : barColor,
+                border: '2px solid var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 1,
                 transform: 'rotate(45deg)', zIndex: 3,
                 boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
               }}

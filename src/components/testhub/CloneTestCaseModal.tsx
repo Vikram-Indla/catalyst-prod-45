@@ -350,7 +350,7 @@ export function CloneTestCaseModal({
               fontFamily: 'var(--cp-font-body)',
               fontSize: 14,
               fontWeight: 600,
-              color: 'var(--ds-text-inverse, #FFFFFF)',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               cursor: !newTitle.trim() || isSaving ? 'not-allowed' : 'pointer',
               boxShadow: !newTitle.trim() || isSaving ? 'none' : '0 2px 8px rgba(37,99,235,0.18)',
             }}

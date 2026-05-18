@@ -89,7 +89,7 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
         style={{
           position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
           width: 640, maxWidth: '90vw', maxHeight: '80vh',
-          background: 'var(--bg-app, #FFFFFF)', borderRadius: 12, border: `1px solid ${SURFACE.border}`,
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, border: `1px solid ${SURFACE.border}`,
           boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', zIndex: 301,
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
           fontFamily: FONT.body,

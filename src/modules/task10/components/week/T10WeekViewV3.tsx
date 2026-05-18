@@ -82,7 +82,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     alignItems: 'center',
     gap: 12,
     padding: '12px 16px',
-    background: isCompleted ? '#fafafa' : 'var(--ds-surface, #ffffff)',
+    background: isCompleted ? '#fafafa' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     border: isDragging ? '2px solid #2563eb' : '1px solid #e2e8f0',
     borderRadius: 12,
     cursor: 'default',
@@ -125,7 +125,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     justifyContent: 'center',
     fontSize: 12,
     fontWeight: 700,
-    color: 'var(--ds-surface, #ffffff)',
+    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     backgroundColor: 'var(--ds-text-brand, #2563eb)',
     borderRadius: 8,
     flexShrink: 0,
@@ -220,7 +220,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     justifyContent: 'center',
     borderRadius: '50%',
     border: isCompleted ? 'none' : '2px solid #d1d5db',
-    backgroundColor: isCompleted ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-surface, #ffffff)',
+    backgroundColor: isCompleted ? 'var(--ds-text-brand, #2563eb)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     cursor: 'pointer',
     transition: 'all 0.15s',
     flexShrink: 0,
@@ -241,7 +241,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
           onToggleStatus();
         }}
       >
-        {isCompleted && <Check size={14} color="var(--ds-surface, #ffffff)" strokeWidth={3} />}
+        {isCompleted && <Check size={14} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" strokeWidth={3} />}
       </div>
 
       {/* DRAG HANDLE - 6 dots (2x3 grid) */}
@@ -637,7 +637,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     alignItems: 'center',
     height: 60,
     padding: '0 24px',
-    background: 'var(--ds-surface, #ffffff)',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     borderBottom: '1px solid #e2e8f0',
     gap: 20,
   };
@@ -691,7 +691,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: 'var(--ds-surface, #ffffff)',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     border: '1px solid #e2e8f0',
     borderRadius: 6,
     cursor: 'pointer',
@@ -718,7 +718,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     fontSize: 11,
     fontWeight: 700,
     background: isCurrentWeek ? '#10b981' : 'var(--ds-text-subtlest, #64748b)',
-    color: 'var(--ds-surface, #ffffff)',
+    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     borderRadius: 4,
     textTransform: 'uppercase',
     letterSpacing: 0.3,
@@ -760,7 +760,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     padding: '8px 18px',
     fontSize: 13,
     fontWeight: 600,
-    color: 'var(--ds-surface, #ffffff)',
+    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     background: 'var(--ds-text-brand, #2563eb)',
     border: 'none',
     borderRadius: 8,
@@ -777,7 +777,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
 
   const aiSectionStyle: React.CSSProperties = {
     marginBottom: 20,
-    background: 'var(--ds-surface, #ffffff)',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     border: '1px dashed #cbd5e1',
     borderRadius: 16,
     overflow: 'hidden',
@@ -810,7 +810,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     fontSize: 13,
     fontWeight: 500,
     color: 'var(--ds-text-subtle, #475569)',
-    background: 'var(--ds-surface, #ffffff)',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     border: '1px solid #e2e8f0',
     borderRadius: 8,
     cursor: 'pointer',
@@ -822,7 +822,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     gap: 14,
     padding: '16px 20px',
     marginBottom: 24,
-    background: 'var(--ds-surface, #ffffff)',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     border: '1px dashed #cbd5e1',
     borderRadius: 16,
     opacity: isAddDisabled ? 0.6 : 1,
@@ -845,7 +845,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     fontSize: 12,
     fontWeight: 500,
     color: 'var(--ds-text-subtle, #475569)',
-    background: 'var(--ds-surface, #ffffff)',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     border: '1px solid #e2e8f0',
     borderRadius: 6,
   };
@@ -930,7 +930,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     padding: '6px 14px',
     fontSize: 12,
     fontWeight: 600,
-    color: 'var(--ds-surface, #ffffff)',
+    color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     background: 'var(--ds-text-brand, #3b82f6)',
     border: 'none',
     borderRadius: 6,
@@ -1063,7 +1063,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                         fontWeight: 700,
                         borderRadius: 12,
                         background: i === 0 ? 'var(--ds-text-brand, #2563eb)' : i === 1 ? 'var(--ds-text-brand, #3b82f6)' : 'var(--ds-text-brand, #60a5fa)',
-                        color: 'var(--ds-surface, #ffffff)',
+                        color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                         flexShrink: 0,
                       }}>
                         P{i + 1}
@@ -1127,8 +1127,8 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
             >
               <kbd style={{
                 ...kbdStyle,
-                background: newItemText.trim() ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-surface, #ffffff)',
-                color: newItemText.trim() ? 'var(--ds-surface, #ffffff)' : 'var(--ds-text-subtle, #475569)',
+                background: newItemText.trim() ? 'var(--ds-text-brand, #2563eb)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                color: newItemText.trim() ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--ds-text-subtle, #475569)',
                 borderColor: newItemText.trim() ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-border, #e2e8f0)',
               }}>Enter</kbd>
               <span>to add</span>

@@ -15,7 +15,7 @@ export const COLORS = {
   textLight: 'var(--ds-text-subtlest, #94a3b8)',
 
   // Surfaces
-  surfaceWhite: 'var(--ds-surface, #ffffff)',
+  surfaceWhite: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   surfacePage: 'var(--ds-surface-sunken, #f8fafc)',
   surfaceHover: 'var(--ds-surface-sunken, #f1f5f9)',
   surfaceSelected: '#dbeafe',

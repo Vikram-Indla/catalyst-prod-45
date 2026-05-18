@@ -50,13 +50,13 @@ export const DK: DarkTokens = {
 } as const;
 
 export const LK: DarkTokens = {
-  pageBg:        'var(--cp-bg-page, #FFFFFF)',
-  cardBg:        'var(--cp-bg-elevated, #FFFFFF)',
-  headerBg:      'var(--cp-bg-elevated, #FFFFFF)',
+  pageBg:        'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+  cardBg:        'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+  headerBg:      'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   tableHeaderBg: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
   hoverBg:       'var(--cp-interact-hover, rgba(15,23,42,0.04))',
   selectedBg:    'var(--cp-interact-selected, #F0F4FF)',
-  floatBg:       'var(--cp-float, #FFFFFF)',
+  floatBg:       'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   chipBg:        'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
   progressTrack: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',
   iconBg:        'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))',

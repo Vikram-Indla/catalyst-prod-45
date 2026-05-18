@@ -114,7 +114,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
           bottom: 0,
           width: '480px',
           maxWidth: '90vw',
-          backgroundColor: 'var(--ds-surface, #ffffff)',
+          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           borderLeft: '1px solid #e4e4e7',
           boxShadow: '-8px 0 30px rgba(0,0,0,0.08)',
           zIndex: 201,

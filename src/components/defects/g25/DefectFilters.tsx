@@ -244,7 +244,7 @@ export function DefectFilters({ filters, onChange, users, projects }: Props) {
                       {u.avatar_url ? (
                         <img src={u.avatar_url} alt={u.full_name} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid rgba(15,23,42,0.12)' }} />
                       ) : (
-                        <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: 'var(--ds-surface, #FFFFFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                        <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
                       )}
                       {u.full_name}
                     </div>

@@ -71,10 +71,10 @@ const hashColor = (name: string) => {
 /* ── Dark mode token map ── */
 function useTokens(dk: boolean) {
   return useMemo(() => ({
-    pageBg:       dk ? 'var(--ds-surface, #0A0A0A)' : 'var(--ds-surface, #FFFFFF)',
-    surfaceBg:    dk ? 'var(--ds-surface, #0A0A0A)' : 'var(--ds-surface, #FFFFFF)',
-    elevatedBg:   dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-surface, #FFFFFF)',
-    headerBg:     dk ? '#111111' : 'var(--ds-surface, #FFFFFF)',
+    pageBg:       dk ? 'var(--ds-surface, #0A0A0A)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    surfaceBg:    dk ? 'var(--ds-surface, #0A0A0A)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    elevatedBg:   dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    headerBg:     dk ? '#111111' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     hoverBg:      dk ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--ds-surface-sunken, #F8FAFC)',
     border:       dk ? 'var(--ds-border, #2E2E2E)' : 'var(--ds-border, var(--cp-border, #E2E8F0))',
     borderSubtle: dk ? 'var(--ds-border, #292929)' : '#f3f4f6',
@@ -85,10 +85,10 @@ function useTokens(dk: boolean) {
     text3:        dk ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
     textMuted:    dk ? 'var(--ds-text-subtlest, #878787)' : '#9ca3af',
     textDim:      dk ? 'var(--ds-text-subtlest, #878787)' : '#d1d5db',
-    inputBg:      dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-surface, #FFFFFF)',
+    inputBg:      dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     badgeBg:      dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
     badgeText:    dk ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #475569)',
-    pillBg:       dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-surface, #FFFFFF)',
+    pillBg:       dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     pillBorder:   dk ? 'var(--ds-border-bold, #454545)' : '#DDDEE1',
     pillActiveBorder: dk ? 'var(--ds-text, #EDEDED)' : '#111',
     pillActiveText:   dk ? 'var(--ds-text, #EDEDED)' : '#111',
@@ -96,7 +96,7 @@ function useTokens(dk: boolean) {
     pillHoverBg:  dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
     pillHoverText: dk ? 'var(--ds-text, #EDEDED)' : '#1E293B',
     typePillBg:       dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-surface-sunken, #F8FAFC)',
-    typePillActiveBg: dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-surface, #FFFFFF)',
+    typePillActiveBg: dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     shimmerFrom:  dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
     shimmerMid:   dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-border, var(--cp-border, #E2E8F0))',
     tooltipBg:    dk ? 'var(--ds-surface-raised, #1A1A1A)' : '#1e293b',
@@ -548,7 +548,7 @@ export default function ResourceListingPage() {
                       width: 28, height: 28, borderRadius: 4,
                       border: `1px solid ${safePage === n ? 'var(--ds-text-brand, #2563EB)' : t.border}`,
                       background: safePage === n ? 'var(--ds-text-brand, #2563EB)' : 'transparent',
-                      color: safePage === n ? 'var(--ds-surface, #FFFFFF)' : t.text2,
+                      color: safePage === n ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : t.text2,
                       fontWeight: safePage === n ? 600 : 400,
                       cursor: 'pointer', fontSize: 12,
                     }}
@@ -654,7 +654,7 @@ function ResourceAvatar({ name, avatarUrl }: { name: string; avatarUrl: string |
   return (
     <div style={{
       width: 28, height: 28, borderRadius: '50%',
-      background: hashColor(name), color: 'var(--ds-surface, #ffffff)',
+      background: hashColor(name), color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontSize: '11px', fontWeight: 600, flexShrink: 0,
     }}>
@@ -688,7 +688,7 @@ function ActionBtn({
         }}
         onMouseEnter={e => {
           e.currentTarget.style.background = bg;
-          e.currentTarget.style.color = 'var(--ds-surface, #ffffff)';
+          e.currentTarget.style.color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
           e.currentTarget.style.boxShadow = `0 2px 8px ${shadowColor || 'rgba(0,0,0,0.12)'}`;
           e.currentTarget.style.transform = 'translateY(-1px)';
         }}

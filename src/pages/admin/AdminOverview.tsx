@@ -41,7 +41,7 @@ import { formatDistanceToNow } from 'date-fns';
 
 /** ADS token map — all colors via var(--ds-*) with light-mode fallbacks. */
 const T = {
-  surface:        'var(--ds-surface, #FFFFFF)',
+  surface:        'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   border:         'var(--ds-border, #DCDFE4)',
   borderLayout:   'var(--ds-border-layout, #EBECF0)',
   borderSelected: 'var(--ds-border-selected, #0C66E4)',

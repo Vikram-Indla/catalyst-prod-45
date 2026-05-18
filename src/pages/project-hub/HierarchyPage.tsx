@@ -122,7 +122,7 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
       {label}
       {active && (
         <span style={{
-          fontSize: 10, fontWeight: 700, background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)',
+          fontSize: 10, fontWeight: 700, background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           borderRadius: 9999, minWidth: 16, height: 16, display: 'inline-flex',
           alignItems: 'center', justifyContent: 'center', padding: '0 4px',
         }}>{values.length}</span>
@@ -251,7 +251,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                   flexShrink: 0, transition: 'all 80ms',
                 }}>
                   {isSelected && (
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5L4.2 7.5L8 3" stroke="var(--ds-surface, #FFFFFF)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5L4.2 7.5L8 3" stroke="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   )}
                 </div>
                 <input type="checkbox" checked={isSelected}
@@ -271,7 +271,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                         <img src={avatarUrl} alt={opt} loading="lazy" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                       ) : (
                         <div style={{ width: 24, height: 24, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--ds-surface, #FFFFFF)' }}>{initials}</span>
+                          <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>{initials}</span>
                         </div>
                       )}
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt}</span>
@@ -421,7 +421,7 @@ export default function HierarchyPage() {
           Filter
           {activeFilterCount > 0 && (
             <span style={{
-              fontSize: 10, fontWeight: 700, background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)',
+              fontSize: 10, fontWeight: 700, background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               borderRadius: 9999, minWidth: 18, height: 18, display: 'inline-flex',
               alignItems: 'center', justifyContent: 'center', padding: '0 5px',
             }}>{activeFilterCount}</span>
@@ -562,7 +562,7 @@ export default function HierarchyPage() {
             <div style={{ border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 8, background: 'var(--cp-bg-elevated)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 200, gap: 12, padding: 24, textAlign: 'center' }}>
               <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', margin: 0 }}>Failed to load work items</p>
               <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary)', margin: 0 }}>There was an error fetching the work items.</p>
-              <button onClick={() => refetch()} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600, fontFamily: 'var(--cp-font-body)', color: 'var(--ds-surface, #FFFFFF)', background: 'var(--ds-text-brand, #2563EB)', border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button onClick={() => refetch()} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600, fontFamily: 'var(--cp-font-body)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: 'var(--ds-text-brand, #2563EB)', border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <RefreshCw size={14} /> Retry
               </button>
             </div>

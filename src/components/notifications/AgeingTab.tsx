@@ -38,7 +38,7 @@ import { useAuth } from '@/hooks/useAuth';
    documented default of that token on a light theme. */
 const ADS = {
   // backgrounds / surfaces
-  surface:       'var(--ds-surface, #FFFFFF)',
+  surface:       'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   surfaceSunken: 'var(--ds-surface-sunken, #F7F8F9)',
   neutralSubtle: 'var(--ds-background-neutral-subtle, #F1F2F4)',
   neutralHover:  'var(--ds-background-neutral-subtle-hovered, #DCDFE4)',
@@ -58,7 +58,7 @@ const ADS = {
   textInfo:      'var(--ds-text-information, #0055CC)',
   textSuccess:   'var(--ds-text-success, #216E4E)',
   textSelected:  'var(--ds-text-selected, #0C66E4)',
-  textInverse:   'var(--ds-text-inverse, #FFFFFF)',
+  textInverse:   'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   // borders
   border:        'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
   borderBold:    'var(--ds-border-bold, #8590A2)',

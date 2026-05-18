@@ -144,7 +144,7 @@ export function RoleModuleAccessGrid({ roleId, roleName }: RoleModuleAccessGridP
 
   if (isLoading) {
     return (
-      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+      <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
         <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
           <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Module Access</h2>
         </div>
@@ -163,7 +163,7 @@ export function RoleModuleAccessGrid({ roleId, roleName }: RoleModuleAccessGridP
   const hideCount = PERMISSION_GROUPS.filter(g => !permissionLookup[g] || permissionLookup[g] === 'None').length;
 
   return (
-    <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
       <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Module Access</h2>

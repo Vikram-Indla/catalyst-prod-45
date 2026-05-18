@@ -252,7 +252,7 @@ const JiraUserSync: React.FC = () => {
       {/* Layer 2 — Main content surface */}
       <div className="jira-surface flex flex-col flex-1 overflow-hidden mx-5 my-4 rounded-lg"
         style={{
-          background: 'var(--cp-bg-elevated, #FFFFFF)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           border: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`,
         }}>
 
@@ -277,7 +277,7 @@ const JiraUserSync: React.FC = () => {
                   display: 'inline-flex', alignItems: 'center', gap: '4px',
                   padding: '5px 11px', borderRadius: '6px', fontSize: '12px', fontWeight: 500,
                   cursor: 'pointer', lineHeight: 1,
-                  background: 'var(--cp-bg-elevated, #FFFFFF)',
+                  background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
                   border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                 }}>
@@ -288,7 +288,7 @@ const JiraUserSync: React.FC = () => {
                 disabled={isSyncing}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: '5px',
-                  background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
+                  background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
                   padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 600,
                   cursor: isSyncing ? 'not-allowed' : 'pointer', opacity: isSyncing ? 0.7 : 1, lineHeight: 1,
                 }}>
@@ -307,7 +307,7 @@ const JiraUserSync: React.FC = () => {
               className="jira-card"
               style={{
                 flex: 1, minWidth: '140px', padding: '16px 20px', borderRadius: '8px',
-                background: 'var(--cp-bg-elevated, #FFFFFF)',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 border: `1px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.08))'}`,
               }}
             >
@@ -332,7 +332,7 @@ const JiraUserSync: React.FC = () => {
 
         {/* ══ Toolbar ══ */}
         <div className="jira-toolbar shrink-0 flex items-center gap-[7px] flex-wrap"
-          style={{ padding: '9px 18px', background: 'var(--cp-bg-elevated, #FFFFFF)', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}>
+          style={{ padding: '9px 18px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}>
           <div className="relative w-[220px]">
             <span className="absolute left-2 top-1/2 -translate-y-1/2" style={{ display: 'inline-flex', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}><SearchIcon label="" size="small" /></span>
             <input
@@ -342,7 +342,7 @@ const JiraUserSync: React.FC = () => {
               placeholder="Name, email, Jira ID, project…"
               style={{
                 padding: '5px 10px 5px 26px', borderRadius: '4px', fontSize: '12px', outline: 'none',
-                background: 'var(--cp-bg-elevated, #FFFFFF)',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}
@@ -359,7 +359,7 @@ const JiraUserSync: React.FC = () => {
                   transition: 'all 120ms ease',
                   background: filter === f.value
                     ? ('var(--cp-primary-light, #EFF6FF)')
-                    : ('var(--cp-bg-elevated, #FFFFFF)'),
+                    : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
                   color: filter === f.value
                     ? ('var(--cp-text-link, #2563EB)')
                     : ('var(--cp-ink-2, var(--cp-ink-2, #334155))'),
@@ -378,7 +378,7 @@ const JiraUserSync: React.FC = () => {
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: '4px',
                   padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                  background: 'var(--cp-bg-elevated, #FFFFFF)',
+                  background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
                   border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                 }}>
@@ -390,7 +390,7 @@ const JiraUserSync: React.FC = () => {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                background: 'var(--cp-bg-elevated, #FFFFFF)',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}>
@@ -419,7 +419,7 @@ const JiraUserSync: React.FC = () => {
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: '4px',
                     padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600,
-                    cursor: 'pointer', border: 'none', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)',
+                    cursor: 'pointer', border: 'none', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   }}>
                   <AddIcon label="" size="small" /> Assign to Project ▾
                 </button>
@@ -428,7 +428,7 @@ const JiraUserSync: React.FC = () => {
                 className="jira-popover-surface"
                 style={{
                   width: '360px', padding: 0,
-                  background: 'var(--cp-bg-elevated, #FFFFFF)',
+                  background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`,
                 }}
                 align="start"
@@ -529,7 +529,7 @@ const JiraUserSync: React.FC = () => {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                background: 'var(--cp-bg-elevated, #FFFFFF)',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}>
@@ -539,7 +539,7 @@ const JiraUserSync: React.FC = () => {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                background: 'var(--cp-bg-elevated, #FFFFFF)',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}>
@@ -632,7 +632,7 @@ const JiraUserSync: React.FC = () => {
                         <span style={{ display: 'flex', justifyContent: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', marginBottom: 10 }}><PeopleGroupIcon label="" size="large" /></span>
                         <div className="jira-text-primary" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>No synced users yet</div>
                         <button onClick={handleSync} disabled={isSyncing}
-                          style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: '5px', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: isSyncing ? 'not-allowed' : 'pointer' }}>
+                          style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: '5px', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: isSyncing ? 'not-allowed' : 'pointer' }}>
                           {isSyncing ? <Spinner size="small" /> : <RefreshIcon label="" size="small" />}
                           Sync Now to pull users from Jira
                         </button>
@@ -774,7 +774,7 @@ const JiraUserSync: React.FC = () => {
                         style={{
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
                           padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500,
-                          background: 'var(--cp-bg-elevated, #FFFFFF)',
+                          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                           border: `1px solid ${user.is_active_in_catalyst ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-success, var(--cp-success, #16A34A))'}`,
                           color: user.is_active_in_catalyst ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-success, var(--cp-success, #16A34A))',
                           cursor: togglingId === user.id ? 'not-allowed' : 'pointer',
@@ -806,7 +806,7 @@ const JiraUserSync: React.FC = () => {
                 width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 borderRadius: '4px', cursor: page <= 1 ? 'not-allowed' : 'pointer',
                 opacity: page <= 1 ? 0.4 : 1,
-                background: 'var(--cp-bg-elevated, #FFFFFF)',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                 color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
               }}
@@ -823,8 +823,8 @@ const JiraUserSync: React.FC = () => {
                   style={{
                     width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                    background: page === p ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-bg-elevated, #FFFFFF)'),
-                    color: page === p ? 'var(--ds-text-inverse, #FFFFFF)' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'),
+                    background: page === p ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
+                    color: page === p ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'),
                     border: page === p ? 'none' : `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                   }}
                 >
@@ -840,7 +840,7 @@ const JiraUserSync: React.FC = () => {
                 width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 borderRadius: '4px', cursor: page >= totalPages ? 'not-allowed' : 'pointer',
                 opacity: page >= totalPages ? 0.4 : 1,
-                background: 'var(--cp-bg-elevated, #FFFFFF)',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                 color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
               }}

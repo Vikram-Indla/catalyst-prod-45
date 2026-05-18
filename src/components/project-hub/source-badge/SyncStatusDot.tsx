@@ -102,7 +102,7 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
             sideOffset={4}
             style={{
               backgroundColor: 'var(--fg-1)',
-              color: 'var(--ds-text-inverse, #FFFFFF)',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               padding: '4px 8px',
               borderRadius: 4,
               fontSize: 11,

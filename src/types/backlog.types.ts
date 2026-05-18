@@ -47,14 +47,14 @@ export const STATUS_COLORS: Record<EpicStatus, string> = {
 };
 
 export const LABEL_COLORS: Record<LabelColor, { bg: string; text: string }> = {
-  orange: { bg: '#f59e0b', text: '#FFFFFF' },
-  teal: { bg: '#0d9488', text: '#FFFFFF' },
-  purple: { bg: '#6b7280', text: '#FFFFFF' },
-  blue: { bg: '#2563eb', text: '#FFFFFF' },
-  red: { bg: '#dc2626', text: '#FFFFFF' },
-  gray: { bg: '#6b7280', text: '#FFFFFF' },
-  green: { bg: '#0d9488', text: '#FFFFFF' },
-  pink: { bg: '#2563eb', text: '#FFFFFF' },
+  orange: { bg: '#f59e0b', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
+  teal: { bg: '#0d9488', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
+  purple: { bg: '#6b7280', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
+  blue: { bg: '#2563eb', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
+  red: { bg: '#dc2626', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
+  gray: { bg: '#6b7280', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
+  green: { bg: '#0d9488', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
+  pink: { bg: '#2563eb', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))' },
 };
 
 // ============================================

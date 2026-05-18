@@ -178,7 +178,7 @@ export function GoalsEmptyState({ onCreateGoal, isDark = false }: { onCreateGoal
       </div>
       <div style={{ fontSize: 15, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-2)', marginBottom: 4 }}>No goals yet</div>
       <div style={{ fontSize: 12.5, color: isDark ? DK.t3 : 'var(--fg-4)', marginBottom: 20, textAlign: 'center', maxWidth: 320 }}>Create your first goal to start tracking progress.</div>
-      <button onClick={onCreateGoal} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', fontSize: 13, fontWeight: 600, color: 'var(--ds-surface, #FFFFFF)', background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
+      <button onClick={onCreateGoal} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', fontSize: 13, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
         + Create Goal
       </button>
     </div>

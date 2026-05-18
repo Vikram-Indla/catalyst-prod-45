@@ -266,7 +266,7 @@ export default function JiraActivitySyncPage() {
   ];
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--cp-bg, #FFFFFF)' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
       {/* ── Header ─────────────────────────────────── */}
       <div style={{
         height: 52, minHeight: 52, display: 'flex', alignItems: 'center',
@@ -286,7 +286,7 @@ export default function JiraActivitySyncPage() {
             display: 'inline-flex', alignItems: 'center', gap: 6,
             padding: '6px 14px', borderRadius: 6, fontSize: 13, fontWeight: 600,
             border: '1px solid var(--cp-bd, var(--cp-border, #E2E8F0))',
-            background: 'var(--cp-bg, #FFFFFF)', color: 'var(--cp-t1, var(--cp-ink-1, #0F172A))',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-t1, var(--cp-ink-1, #0F172A))',
             cursor: 'pointer',
           }}
         >

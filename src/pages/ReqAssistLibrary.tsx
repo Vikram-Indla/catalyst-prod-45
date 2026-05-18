@@ -253,12 +253,12 @@ export default function ReqAssistLibrary() {
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '0 14px', height: 50, fontSize: 13, fontWeight: 500,
               border: `1px solid ${isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(15,23,42,0.18)'}`, borderRadius: 6,
-              background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #374151)', cursor: 'pointer',
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-secondary, #374151)', cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)',
               transition: 'background 80ms ease',
             }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))')}
           >
             <Download size={14} color="#374151" /> Import from Jira
           </button>
@@ -270,7 +270,7 @@ export default function ReqAssistLibrary() {
               border: 'none', borderRadius: 6,
               background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
               boxShadow: '0 1px 3px rgba(37,99,235,0.35)',
-              color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)',
               transition: 'box-shadow 150ms ease',
             }}
@@ -299,7 +299,7 @@ export default function ReqAssistLibrary() {
           /* Empty state */
           <div style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            padding: '80px 0', background: 'var(--cp-bg-elevated, #FFFFFF)',
+            padding: '80px 0', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`, borderRadius: 8,
           }}>
             <FileText size={32} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" style={{ marginBottom: 12 }} />
@@ -309,7 +309,7 @@ export default function ReqAssistLibrary() {
               <button onClick={() => setImportOpen(true)} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 50,
                 fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 6,
-                background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
+                background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>
                 <Download size={14} /> Import from Jira
               </button>
@@ -318,7 +318,7 @@ export default function ReqAssistLibrary() {
         ) : (
           /* Table container */
           <div style={{
-            background: 'var(--cp-bg-elevated, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
             borderRadius: 8,
             overflow: 'hidden',
@@ -341,7 +341,7 @@ export default function ReqAssistLibrary() {
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 8,
                 padding: '8px 28px', fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
-                background: 'var(--cp-bg-elevated, #FFFFFF)', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.08))'}`,
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.08))'}`,
                 fontFamily: 'var(--cp-font-body)',
               }}>
                 Showing {documents?.length ?? 0} of {totalCount} documents
@@ -635,7 +635,7 @@ export default function ReqAssistLibrary() {
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.30)', zIndex: 80 }} onClick={() => setRegenConfirm(null)} />
           <div style={{
             position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-            width: 420, background: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 8, zIndex: 90,
+            width: 420, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 8, zIndex: 90,
             padding: 24, border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
             fontFamily: 'var(--cp-font-body)',
           }}>
@@ -661,11 +661,11 @@ export default function ReqAssistLibrary() {
                 setDraftDrawer({ brdId, docTitle: doc.title, jiraKey: (doc as any).jira_ticket_key || null });
               }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: `0.75px solid ${'var(--cp-border-strong, rgba(15,23,42,0.15))'}`, background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', cursor: 'pointer',
+                border: `0.75px solid ${'var(--cp-border-strong, rgba(15,23,42,0.15))'}`, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', cursor: 'pointer',
               }}>View Drafts</button>
               <button onClick={() => { const d = regenConfirm.doc; setRegenConfirm(null); setBgModal({ type: 'epics', doc: d }); }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
-                border: 'none', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer',
+                border: 'none', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer',
               }}>Regenerate</button>
             </div>
           </div>
@@ -797,12 +797,12 @@ function StatusBadge({ status, epicCount, pipelineStage }: { status: string; epi
     bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))'; color = '#42526E'; label = 'FAILED';
   } else if (epicCount > 0) {
     // Having epics = document is usable regardless of pipeline_stage
-    bg = 'var(--cp-lozenge-green-bg, #1B7F37)'; color = 'var(--ds-surface, #FFFFFF)'; label = 'READY';
+    bg = 'var(--cp-lozenge-green-bg, #1B7F37)'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; label = 'READY';
   } else if (ps === 'complete') {
     // pipeline complete but no epics yet → still READY
-    bg = 'var(--cp-lozenge-green-bg, #1B7F37)'; color = 'var(--ds-surface, #FFFFFF)'; label = 'READY';
+    bg = 'var(--cp-lozenge-green-bg, #1B7F37)'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; label = 'READY';
   } else if (['extract', 'process', 'validate', 'distribute', 'processing'].includes(ps)) {
-    bg = '#0C66E4'; color = 'var(--ds-surface, #FFFFFF)'; label = 'PROCESSING';
+    bg = '#0C66E4'; color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; label = 'PROCESSING';
   } else {
     // intake, pending, or unknown
     bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))'; color = '#42526E'; label = 'PENDING';
@@ -858,7 +858,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         <span style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           width: 18, height: 18, borderRadius: 8,
-          background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           fontSize: 11, fontWeight: 700,
           fontFamily: 'var(--cp-font-body)',
         }}>{epicCount}</span>
@@ -875,7 +875,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           padding: '0 6px', height: 20, borderRadius: 4,
           fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
           letterSpacing: '0.03em', whiteSpace: 'nowrap',
-          background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           fontFamily: 'var(--cp-font-body)',
         }}>AI INDEXED</span>
         <button
@@ -884,7 +884,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
             borderRadius: 6, border: `0.75px solid ${'var(--cp-border-strong, rgba(15,23,42,0.15))'}`,
-            background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #374151)', cursor: 'pointer',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-secondary, #374151)', cursor: 'pointer',
             fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
           }}
         >
@@ -903,7 +903,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
           borderRadius: 6, border: 'none', cursor: 'pointer',
-          background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
         }}
       >
@@ -953,7 +953,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         display: 'inline-flex', alignItems: 'center', gap: 4,
         height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
         borderRadius: 6, border: `0.75px solid ${'var(--cp-border-strong, rgba(15,23,42,0.15))'}`,
-        background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #374151)', cursor: 'pointer',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-secondary, #374151)', cursor: 'pointer',
         fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
         transition: 'all 80ms ease',
       }}
@@ -963,7 +963,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         e.currentTarget.style.color = 'var(--ds-background-brand-bold-hovered, #1D4ED8)';
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)';
+        e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
         e.currentTarget.style.borderColor = 'rgba(15,23,42,0.15)';
         e.currentTarget.style.color = '#374151';
       }}

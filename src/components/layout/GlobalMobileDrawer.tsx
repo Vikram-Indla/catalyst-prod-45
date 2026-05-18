@@ -97,7 +97,7 @@ export function GlobalMobileDrawer({
           left: 0,
           height: '100dvh',
           width: 'var(--cp-drawer-width, min(320px, 86vw))',
-          background: 'var(--ds-surface-overlay, var(--cp-bg, #FFFFFF))',
+          background: 'var(--ds-surface-overlay, var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))))',
           borderRight: '1px solid var(--ds-border, var(--cp-bd, var(--cp-lozenge-grey-bg, #DFE1E6)))',
           boxShadow: 'var(--ds-shadow-overlay, 0 8px 24px rgba(9, 30, 66, 0.25))',
           display: 'flex',

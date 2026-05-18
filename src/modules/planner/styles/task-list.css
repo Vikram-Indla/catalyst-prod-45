@@ -7,7 +7,7 @@
 .planner-task-list-content {
   /* === Surfaces (N4, N5) === */
   --tl-surface-page: var(--ds-surface-sunken, #f8fafc);       /* gray-50 */
-  --tl-surface-card: var(--ds-surface, #ffffff);
+  --tl-surface-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --tl-surface-header: var(--ds-surface-sunken, #f8fafc);
   --tl-surface-hover: var(--ds-surface-sunken, #f1f5f9);      /* I1: row hover */
   --tl-surface-selected: var(--ds-background-selected, #eff6ff);   /* I3: selected row */

@@ -82,7 +82,7 @@ export function CatalystMdtRefField({ issue, onUpdate }: Props) {
           fontSize: 14, color: 'var(--ds-text, #292A2E)', fontFamily: 'inherit',
           border: '1px solid var(--ds-border-focused, #4C9AFF)', borderRadius: 3,
           padding: '4px 6px', width: '100%', outline: 'none',
-          background: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         }}
       />
     );

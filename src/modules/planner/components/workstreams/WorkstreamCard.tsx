@@ -22,7 +22,7 @@ const COLORS = {
   textMuted: 'var(--ds-text-subtlest, #64748b)',
   textLight: 'var(--ds-text-subtlest, #94a3b8)',
   
-  surfaceCard: 'var(--ds-surface, #ffffff)',
+  surfaceCard: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   surfaceHover: 'var(--ds-surface-sunken, #f8fafc)',
   
   borderLight: 'var(--ds-border, #e2e8f0)',

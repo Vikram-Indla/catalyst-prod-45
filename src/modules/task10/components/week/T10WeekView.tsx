@@ -125,7 +125,7 @@ export function T10WeekView() {
           {/* Priority Cards will be added in Prompt 7 */}
           <div style={{ 
             padding: '32px', 
-            backgroundColor: 'var(--ds-surface, #ffffff)', 
+            backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', 
             borderRadius: '12px', 
             border: '1px solid #e2e8f0',
             textAlign: 'center',
@@ -151,7 +151,7 @@ export function T10WeekView() {
             </div>
             <div style={{ 
               padding: '24px', 
-              backgroundColor: 'var(--ds-surface, #ffffff)', 
+              backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', 
               borderRadius: '12px', 
               border: '2px dashed #e2e8f0',
               textAlign: 'center',

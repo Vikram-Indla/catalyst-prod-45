@@ -12,7 +12,7 @@ import { useActiveUsers } from '@/hooks/useActiveUsers';
 import { getAvatarColor } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
 
 const ATLASSIAN_DROPDOWN: React.CSSProperties = {
-  background: 'var(--ds-surface, #FFFFFF)', borderRadius: 4, border: 'none',
+  background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4, border: 'none',
   boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
   padding: '4px 0', zIndex: 9999,
 };
@@ -29,7 +29,7 @@ function AvatarCircle({ userId, name, avatarUrl, size = 28 }: { userId: string; 
   }
   return (
     <div style={{ width: size, height: size, borderRadius: '50%', background: getAvatarColor(userId), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-      <CircleUser size={size * 0.7} color="var(--ds-surface, #FFFFFF)" strokeWidth={1.5} />
+      <CircleUser size={size * 0.7} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" strokeWidth={1.5} />
     </div>
   );
 }

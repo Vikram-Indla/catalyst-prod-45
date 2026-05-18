@@ -14,8 +14,8 @@ export default function IncidentInsightsPage() {
   const breachedCount = incidents?.filter(i => i.resolution_breached).length || 0;
 
   // DARK MODE tokens
-  const pageBg = 'var(--cp-bg-elevated, #FFFFFF)';
-  const surfaceBg = 'var(--cp-bg-elevated, #FFFFFF)';
+  const pageBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
+  const surfaceBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
   const textPrimary = 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))';
   const textSecondary = 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))';
   const textBody = 'var(--cp-ink-2, var(--cp-ink-2, #334155))';
@@ -43,7 +43,7 @@ export default function IncidentInsightsPage() {
               width: 36, height: 50,
               background: 'linear-gradient(135deg, var(--cp-purple-60, #7C3AED), var(--cp-teal-60, #0D9488))',
             }}>
-              <Sparkles size={18} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
+              <Sparkles size={18} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
             </div>
             <div>
               <h3 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 650, color: textPrimary, marginBottom: 4 }}>

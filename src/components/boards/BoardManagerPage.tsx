@@ -115,7 +115,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
             <button onClick={() => setCreateOpen(true)} style={{
               display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 14px',
               background: 'var(--cp-blue)', border: 'none', borderRadius: 6,
-              cursor: 'pointer', fontSize: 12.5, fontWeight: 600, color: 'var(--ds-surface, #FFFFFF)',
+              cursor: 'pointer', fontSize: 12.5, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               fontFamily: 'var(--cp-font-body)',
             }}>
               <Plus size={14} strokeWidth={2.5} /> Create Board

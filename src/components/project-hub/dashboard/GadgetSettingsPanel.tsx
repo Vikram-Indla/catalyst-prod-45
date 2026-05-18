@@ -596,7 +596,7 @@ export default function GadgetSettingsPanel({
               padding: '0 10px',
               border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
               borderRadius: 3,
-              background: 'var(--ds-text-inverse, #FFFFFF)',
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               fontSize: 12,
               cursor: 'pointer',
               color: '#42526E',
@@ -625,7 +625,7 @@ export default function GadgetSettingsPanel({
               border: 0,
               borderRadius: 3,
               background: 'var(--cp-primary-60, #0052CC)',
-              color: 'var(--ds-text-inverse, #FFFFFF)',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               fontSize: 12,
               fontWeight: 600,
               cursor: 'pointer',
@@ -752,7 +752,7 @@ function MultiSelectGeneric({
             left: 0,
             right: 0,
             zIndex: 50,
-            background: 'var(--ds-text-inverse, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
             borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,.18)',
@@ -796,14 +796,14 @@ function MultiSelectGeneric({
                     height: 14,
                     borderRadius: 3,
                     border: '1px solid #B3BAC5',
-                    background: sel ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text-inverse, #FFFFFF)',
+                    background: sel ? 'var(--cp-primary-60, #0052CC)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
                   }}
                 >
-                  {sel && <Check size={10} color="var(--ds-text-inverse, #FFFFFF)" />}
+                  {sel && <Check size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />}
                 </span>
                 {opt.icon}
                 <span style={{ flex: 1 }}>{opt.label}</span>
@@ -916,7 +916,7 @@ function MultiSelectStatus({
             left: 0,
             right: 0,
             zIndex: 50,
-            background: 'var(--ds-text-inverse, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
             borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,.18)',
@@ -989,14 +989,14 @@ function MultiSelectStatus({
                         height: 14,
                         borderRadius: 3,
                         border: '1px solid #B3BAC5',
-                        background: sel ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text-inverse, #FFFFFF)',
+                        background: sel ? 'var(--cp-primary-60, #0052CC)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         flexShrink: 0,
                       }}
                     >
-                      {sel && <Check size={10} color="var(--ds-text-inverse, #FFFFFF)" />}
+                      {sel && <Check size={10} color="var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))" />}
                     </span>
                     <span style={{ flex: 1 }}>{s}</span>
                   </button>
@@ -1101,8 +1101,8 @@ function GadgetSpecific({
                   fontSize: 11,
                   borderRadius: 3,
                   border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
-                  background: on ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text-inverse, #FFFFFF)',
-                  color: on ? 'var(--ds-text-inverse, #FFFFFF)' : '#42526E',
+                  background: on ? 'var(--cp-primary-60, #0052CC)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                  color: on ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : '#42526E',
                   cursor: 'pointer',
                 }}
               >
@@ -1139,8 +1139,8 @@ function GadgetSpecific({
                   fontSize: 11,
                   borderRadius: 3,
                   border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
-                  background: on ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text-inverse, #FFFFFF)',
-                  color: on ? 'var(--ds-text-inverse, #FFFFFF)' : '#42526E',
+                  background: on ? 'var(--cp-primary-60, #0052CC)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                  color: on ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : '#42526E',
                   cursor: 'pointer',
                 }}
               >
@@ -1168,7 +1168,7 @@ function GadgetSpecific({
             borderRadius: 3,
             padding: '0 8px',
             fontSize: 12,
-            background: 'var(--ds-text-inverse, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
           }}
         >
@@ -1190,7 +1190,7 @@ function GadgetSpecific({
 
     const numInput: React.CSSProperties = {
       height: 28, width: '100%', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderRadius: 3,
-      padding: '0 8px', fontSize: 12, background: 'var(--ds-text-inverse, #FFFFFF)', color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
+      padding: '0 8px', fontSize: 12, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
     };
 
     return (

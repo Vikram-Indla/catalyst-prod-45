@@ -72,7 +72,7 @@ export const catalystTokens = {
     },
     surface: {
       bg: '#fafafa',
-      card: 'var(--ds-surface, #ffffff)',
+      card: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       hover: '#f0f0f0',
       active: 'rgba(37, 99, 235, 0.12)',
     },

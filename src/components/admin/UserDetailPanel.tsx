@@ -136,7 +136,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
     fontSize: '9px', fontWeight: 700, textTransform: 'uppercase',
     padding: '3px 7px', borderRadius: '4px', cursor: 'pointer',
     border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
-    background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
+    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
   };
   const xsBtnClass = 'jus-action-btn';
 
@@ -151,7 +151,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
           <button className={xsBtnClass} style={xsBtn} onClick={selectAll}>Select All</button>
           <button className={xsBtnClass} style={xsBtn} onClick={deselectAll}>Deselect All</button>
           <button
-            style={{ ...xsBtn, background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none' }}
+            style={{ ...xsBtn, background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none' }}
             onClick={() => toast.info('Project picker — Phase 2')}
           >+ Add Project</button>
         </div>
@@ -161,7 +161,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
           <div style={{ fontSize: '12px', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', marginBottom: '10px' }}>No projects assigned yet</div>
           <button
-            style={{ fontSize: '11px', fontWeight: 600, background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: '4px', padding: '5px 12px', cursor: 'pointer' }}
+            style={{ fontSize: '11px', fontWeight: 600, background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', borderRadius: '4px', padding: '5px 12px', cursor: 'pointer' }}
             onClick={() => toast.info('Project picker — Phase 2')}
           >+ Add Project</button>
         </div>
@@ -247,7 +247,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
           <button
             style={{
               width: '100%', marginTop: '10px', padding: '7px 0',
-              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
+              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
               borderRadius: '4px', fontSize: '11px', fontWeight: 600, cursor: 'pointer',
             }}
             onClick={() => toast.success('Assignments saved. Changes push to Jira on next sync.')}
@@ -306,9 +306,9 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
     text2: 'var(--ds-text-subtlest, #A1A1A1)', text3: 'var(--ds-text-subtlest, #878787)', sunken: 'var(--ds-surface, #0A0A0A)',
     elevated: 'var(--ds-surface-raised, #1A1A1A)', inputBg: 'var(--ds-surface-raised, #1A1A1A)',
   } : {
-    surface: 'var(--ds-text-inverse, #FFFFFF)', border: 'rgba(15,23,42,0.10)', text1: 'var(--ds-text, var(--cp-ink-1, #0F172A))',
+    surface: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'rgba(15,23,42,0.10)', text1: 'var(--ds-text, var(--cp-ink-1, #0F172A))',
     text2: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', text3: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', sunken: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
-    elevated: 'var(--ds-surface-sunken, #F8FAFC)', inputBg: 'var(--ds-text-inverse, #FFFFFF)',
+    elevated: 'var(--ds-surface-sunken, #F8FAFC)', inputBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   };
 
   if (isLoading || !user) {
@@ -699,7 +699,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
       }}>
         <button style={{
           flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
+          background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none',
           padding: '7px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600,
           cursor: 'pointer',
         }}>

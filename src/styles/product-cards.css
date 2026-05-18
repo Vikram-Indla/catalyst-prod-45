@@ -8,7 +8,7 @@
   --pc-ink-secondary: #18181B;
   --pc-ink-tertiary: #3F3F46;
   --pc-ink-muted: #71717A;
-  --pc-surface: var(--ds-surface, #FFFFFF);
+  --pc-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --pc-surface-secondary: #FAFAFA;
   --pc-surface-tertiary: #F4F4F5;
   --pc-border: #E4E4E7;

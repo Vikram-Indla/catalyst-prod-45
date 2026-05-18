@@ -113,7 +113,7 @@ export function T10AddItemModal({
           transform: 'translate(-50%, -50%)',
           width: '100%',
           maxWidth: '480px',
-          backgroundColor: 'var(--ds-surface, #ffffff)',
+          backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           borderRadius: '12px',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
           zIndex: 601,
@@ -361,7 +361,7 @@ export function T10AddItemModal({
                     border: '1px solid #d1d5db',
                     borderRadius: '8px',
                     outline: 'none',
-                    backgroundColor: 'var(--ds-surface, #ffffff)',
+                    backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   }}
                 >
                   <option value="">Unassigned</option>
@@ -425,7 +425,7 @@ export function T10AddItemModal({
                   fontSize: '14px',
                   fontWeight: 500,
                   color: '#374151',
-                  backgroundColor: 'var(--ds-surface, #ffffff)',
+                  backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   border: '1px solid #d1d5db',
                   borderRadius: '6px',
                   cursor: 'pointer',
@@ -440,7 +440,7 @@ export function T10AddItemModal({
                   padding: '10px 20px',
                   fontSize: '14px',
                   fontWeight: 500,
-                  color: 'var(--ds-surface, #ffffff)',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   backgroundColor: 'var(--ds-text-brand, #2563eb)',
                   border: 'none',
                   borderRadius: '6px',

@@ -117,12 +117,12 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
 
   return (
     <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 24 }}>
-      <div style={{ width: '100%', maxWidth: 600, maxHeight: '90vh', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ width: '100%', maxWidth: 600, maxHeight: '90vh', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {/* Header */}
         <div style={{ padding: '20px 24px', borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: 'var(--ds-text-brand, #2563EB)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <FileCheck size={22} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
+              <FileCheck size={22} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>Add Requirement</h2>
           </div>
@@ -149,13 +149,13 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
             <div>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: 6 }}>Type</label>
-              <select value={type} onChange={(e) => setType(e.target.value)} style={{ ...inputStyle(), backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}>
+              <select value={type} onChange={(e) => setType(e.target.value)} style={{ ...inputStyle(), backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                 {TYPE_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: 6 }}>Priority</label>
-              <select value={priority} onChange={(e) => setPriority(e.target.value)} style={{ ...inputStyle(), backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}>
+              <select value={priority} onChange={(e) => setPriority(e.target.value)} style={{ ...inputStyle(), backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                 {PRIORITY_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
             </div>
@@ -185,7 +185,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: 6 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><User size={14} /> Owner</span>
               </label>
-              <select value={ownerId} onChange={(e) => setOwnerId(e.target.value)} style={{ ...inputStyle(), backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}>
+              <select value={ownerId} onChange={(e) => setOwnerId(e.target.value)} style={{ ...inputStyle(), backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                 <option value="">Select owner</option>
                 {users.map((u) => <option key={u.id} value={u.id}>{u.full_name}</option>)}
               </select>
@@ -205,11 +205,11 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
         {/* Footer */}
         <div style={{ padding: '16px 24px', borderTop: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={onClose} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 20px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 12, fontSize: 14, fontWeight: 500, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer' }}>
+            style={{ height: 44, padding: '0 20px', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 12, fontSize: 14, fontWeight: 500, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer' }}>
             Cancel
           </button>
           <button onClick={handleSubmit} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 24px', backgroundColor: 'var(--ds-text-brand, #2563EB)', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
+            style={{ height: 44, padding: '0 24px', backgroundColor: 'var(--ds-text-brand, #2563EB)', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
             <FileCheck size={16} /> {isSubmitting ? 'Creating...' : 'Add Requirement'}
           </button>
         </div>

@@ -51,12 +51,12 @@
   border: none !important;
   cursor: pointer !important;
   transition: all var(--cp-duration-fast) ease !important;
-  background: var(--ds-text-inverse, #FFFFFF) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   color: var(--cp-ink-2, var(--cp-ink-2, #334155)) !important;
 }
 #r360-root .r3-period-toggle button.active {
   background: var(--ds-text-brand, #2563EB) !important;
-  color: var(--ds-text-inverse, #FFFFFF) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   font-weight: 600 !important;
 }
 #r360-root .r3-period-toggle button:hover:not(.active) {
@@ -75,7 +75,7 @@
 }
 #r360-root .r3-mode-badge.live {
   background: var(--ds-background-information-bold, #0055CC) !important;
-  color: var(--ds-text-inverse, #FFFFFF) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
 }
 #r360-root .r3-mode-badge.snapshot {
   background: var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6)) !important;
@@ -189,7 +189,7 @@
   padding: 0 8px !important;
   cursor: pointer !important;
   transition: all var(--cp-duration-fast) ease !important;
-  background: var(--ds-text-inverse, #FFFFFF) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
 }
 #r360-root .r3-day-cell:hover {
   background: var(--cp-interact-hover) !important;
@@ -262,7 +262,7 @@
 
 /* ─── PROFILE HEADER ─── */
 #r360-root .r3-profile-card {
-  background: var(--ds-text-inverse, #FFFFFF) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   border-radius: 12px !important;
   padding: 20px 24px !important;
@@ -284,7 +284,7 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  color: var(--ds-text-inverse, #FFFFFF) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   font-size: 16px !important;
   font-weight: 700 !important;
 }
@@ -361,7 +361,7 @@
 /* Intelligence button — BLUE, not purple */
 #r360-root .r3-btn-intel {
   background: var(--ds-text-brand, #2563EB) !important;
-  color: var(--ds-text-inverse, #FFFFFF) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   font-size: 12px !important;
   font-weight: 600 !important;
   padding: 6px 14px !important;
@@ -379,7 +379,7 @@
 
 /* Quarter outline button */
 #r360-root .r3-btn-outline {
-  background: var(--ds-text-inverse, #FFFFFF) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   color: var(--cp-ink-2, var(--cp-ink-2, #334155)) !important;
   font-size: 12px !important;
   font-weight: 500 !important;
@@ -400,7 +400,7 @@
   align-items: center !important;
   justify-content: space-between !important;
   padding: 10px 20px !important;
-  background: var(--ds-text-inverse, #FFFFFF) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   border-radius: 12px !important;
 }
@@ -413,7 +413,7 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  background: var(--ds-text-inverse, #FFFFFF) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   cursor: pointer !important;
   color: var(--cp-ink-2, var(--cp-ink-2, #334155)) !important;
   transition: all 0.15s !important;
@@ -430,13 +430,13 @@
   border-radius: 6px !important;
   cursor: pointer !important;
   border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
-  background: var(--ds-text-inverse, #FFFFFF) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   color: var(--ds-text-subtlest, var(--cp-ink-3, #64748B)) !important;
   transition: all 0.15s !important;
 }
 #r360-root .r3-filter-pill.active {
   background: var(--ds-text-brand, #2563EB) !important;
-  color: var(--ds-text-inverse, #FFFFFF) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border-color: var(--ds-text-brand, #2563EB) !important;
 }
 
@@ -473,7 +473,7 @@
   height: 10px !important;
   border-radius: 50% !important;
   border: 2px solid var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8)) !important;
-  background: var(--ds-text-inverse, #FFFFFF) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   position: relative !important;
   z-index: 2 !important;
   flex-shrink: 0 !important;
@@ -488,7 +488,7 @@
 }
 
 #r360-root .r3-chrono-card {
-  background: var(--ds-text-inverse, #FFFFFF) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   border-radius: 8px !important;
   padding: 10px 14px !important;
@@ -526,7 +526,7 @@
   font-weight: 700 !important;
   padding: 1px 6px !important;
   border-radius: 4px !important;
-  color: var(--ds-text-inverse, #FFFFFF) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   letter-spacing: 0.02em !important;
   max-width: 80px !important;
   overflow: hidden !important;
@@ -539,7 +539,7 @@
   position: relative !important;
   height: 620px !important;
   min-width: 1100px !important;
-  background: var(--ds-text-inverse, #FFFFFF) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border-radius: 12px !important;
   border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   overflow: visible !important;
@@ -573,7 +573,7 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  color: var(--ds-text-inverse, #FFFFFF) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   font-family: var(--cp-font-heading);
   font-size: 24px !important;
   font-weight: 800 !important;
@@ -583,7 +583,7 @@
   position: absolute !important;
   width: 228px !important;
   height: 145px !important;
-  background: var(--ds-text-inverse, #FFFFFF) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid rgba(15,23,42,0.08) !important;
   border-radius: 6px !important;
   padding: 8px 10px !important;
@@ -670,11 +670,11 @@
   justify-content: center !important;
   font-size: 11px !important;
   font-weight: 700 !important;
-  color: var(--ds-text-inverse, #FFFFFF) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
 }
 
 #r360-root .r3-board-card {
-  background: var(--ds-text-inverse, #FFFFFF) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   border-radius: 8px !important;
   padding: 12px !important;
@@ -711,7 +711,7 @@
 #r360-root .r3-panel-header {
   padding: 16px 20px !important;
   border-bottom: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
-  background: var(--ds-text-inverse, #FFFFFF) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   position: sticky !important;
   top: 0 !important;
   z-index: 10 !important;
@@ -775,7 +775,7 @@
   padding: 8px 12px !important;
   border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0)) !important;
   border-radius: 8px !important;
-  background: var(--ds-text-inverse, #FFFFFF) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   font-size: 12px !important;
 }
 #r360-root .r3-hierarchy-item.current {
@@ -859,7 +859,7 @@
   height: 32px !important;
   border-radius: 50% !important;
   background: var(--cp-lozenge-green-bg, #1B7F37) !important;
-  color: var(--ds-text-inverse, #FFFFFF) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -879,7 +879,7 @@
   font-weight: 700 !important;
   letter-spacing: 0.05em !important;
   text-transform: none !important;
-  color: var(--ds-text-inverse, #FFFFFF) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
 }
 #r360-root .r3-completed-text.empty {
   color: var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8)) !important;
@@ -891,7 +891,7 @@
   top: 50% !important;
   transform: translateY(-50%) !important;
   width: 340px !important;
-  background: var(--ds-text-inverse, #FFFFFF) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid #D4D4D8 !important;
   border-radius: 8px !important;
   box-shadow: var(--cp-shadow-overlay) !important;
@@ -1028,7 +1028,7 @@
 #r360-root .item-drawer {
   position: fixed !important;
   top: 48px !important; right: 0 !important; bottom: 0 !important; width: 420px !important;
-  background: var(--ds-text-inverse, #FFFFFF) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border-left: 0.75px solid rgba(15,23,42,0.08) !important;
   box-shadow: -4px 0 24px rgba(15,23,42,0.10) !important;
   z-index: 210 !important;
@@ -1263,7 +1263,7 @@
 }
 .dark #r360-root .r3-period-toggle button.active {
   background: var(--ds-text-brand, #2563EB) !important;
-  color: var(--ds-text-inverse, #FFFFFF) !important;
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
 }
 
 /* Header / strip surfaces */
@@ -1533,8 +1533,8 @@
    ═══════════════════════════════════════════════════════════════ */
 
 /* Page-level backgrounds — force var(--ds-surface, #0A0A0A) */
-.dark #r360-root [style*="background: var(--ds-text-inverse, #FFFFFF)"],
-.dark #r360-root [style*="background:var(--ds-text-inverse, #FFFFFF)"],
+.dark #r360-root [style*="background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))"],
+.dark #r360-root [style*="background:var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))"],
 
 .dark #r360-root [style*="background: #fff"],
 .dark #r360-root [style*="background:#fff"],

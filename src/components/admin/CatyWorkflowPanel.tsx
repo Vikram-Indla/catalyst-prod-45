@@ -253,7 +253,7 @@ export function CatyWorkflowPanel({
         zIndex: 50,
         display: 'flex',
         flexDirection: 'column',
-        background: 'var(--ds-surface,#ffffff)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         borderLeft: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, #DFE1E6))',
         boxShadow: '-4px 0 20px rgba(9,30,66,0.12)',
       }}

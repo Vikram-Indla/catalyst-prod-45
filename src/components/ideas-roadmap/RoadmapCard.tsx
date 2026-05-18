@@ -214,11 +214,11 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
           }}
           onMouseEnter={e => {
             e.currentTarget.style.background = 'var(--cp-teal-60, #0D9488)';
-            e.currentTarget.style.color = 'var(--ds-surface, #FFFFFF)';
+            e.currentTarget.style.color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
             e.currentTarget.style.borderColor = 'var(--cp-teal-60, #0D9488)';
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)';
+            e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
             e.currentTarget.style.color = 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))';
             e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))';
           }}

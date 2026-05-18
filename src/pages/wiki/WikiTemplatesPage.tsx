@@ -66,7 +66,7 @@ function SimpleDateInput({ label, value, onChange, helperText, isDark }: {
           style={{
             width: '100%', padding: '7px 10px', fontSize: 12, borderRadius: 4,
             border: `0.75px solid ${isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(15,23,42,0.12)'}`,
-            background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)',
+            background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', fontFamily: 'var(--cp-font-body)',
           }}
         />
@@ -204,7 +204,7 @@ export default function WikiTemplatesPage() {
       {/* ── Content Scheduling Section ── */}
       <div style={{
         marginBottom: 20, padding: '14px 16px', borderRadius: 6,
-        background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)',
+        background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         border: `0.75px solid ${isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(15,23,42,0.08)'}`,
       }}>
         <button onClick={() => setShowScheduling(!showScheduling)} style={{
@@ -248,7 +248,7 @@ export default function WikiTemplatesPage() {
         {isLoading ? Array.from({ length: 5 }).map((_, i) => (
           <div key={i} style={{
             padding: 20, borderRadius: 8,
-            background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)',
+            background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: `0.75px solid ${borderColor}`, height: 140,
           }} />
         )) : (templates ?? []).map((t: any) => {
@@ -256,7 +256,7 @@ export default function WikiTemplatesPage() {
           return (
             <div key={t.id} style={{
               padding: 20, borderRadius: 8,
-              background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)',
+              background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               border: `0.75px solid ${borderColor}`,
               transition: 'border-color 120ms',
             }}
@@ -291,7 +291,7 @@ export default function WikiTemplatesPage() {
                 disabled={creatingSlug !== null}
                 style={{
                   fontSize: 11, fontWeight: 650, padding: '6px 16px', borderRadius: 4,
-                  border: 'none', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer', width: '100%',
+                  border: 'none', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', cursor: 'pointer', width: '100%',
                   opacity: creatingSlug ? 0.6 : 1,
                 }}
               >{creatingSlug ? 'Creating…' : 'Use Template'}</button>

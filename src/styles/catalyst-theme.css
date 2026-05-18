@@ -4,17 +4,17 @@
    ═══════════════════════════════════════════════════════ */
 
 :root, [data-theme="light"] {
-  --bg-page: var(--ds-surface, #FFFFFF);
+  --bg-page: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --bg-surface: var(--ds-surface-sunken, #F8FAFC);
   --bg-sunken: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
-  --bg-elevated: var(--ds-surface, #FFFFFF);
-  --bg-float: var(--ds-surface, #FFFFFF);
+  --bg-elevated: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
+  --bg-float: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --bg-overlay: rgba(0,0,0,0.5);
   --text-1: var(--ds-text, var(--cp-ink-1, #0F172A));
   --text-2: var(--cp-ink-2, var(--cp-ink-2, #334155));
   --text-3: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
   --text-4: var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8));
-  --text-inv: var(--ds-surface, #FFFFFF);
+  --text-inv: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --text-link: var(--ds-text-brand, #2563EB);
   --bd-subtle: rgba(15,23,42,0.06);
   --bd-default: rgba(15,23,42,0.12);
@@ -35,7 +35,7 @@
   --loz-bl-tx: #0747A6;
   --loz-gn-bg: #E3FCEF;
   --loz-gn-tx: #006644;
-  --pop-bg: var(--ds-surface, #FFFFFF);
+  --pop-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --pop-border: var(--ds-border, var(--cp-border, #E2E8F0));
   --pop-hover: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
   --shadow-pop: 0 8px 24px rgba(0,0,0,0.12), 0 0 1px rgba(0,0,0,0.2);
@@ -52,7 +52,7 @@
   --text-2: var(--ds-text-subtlest, #A1A1A1);
   --text-3: var(--ds-text-subtlest, #878787);
   --text-4: #444444;
-  --text-inv: var(--ds-surface, #FFFFFF);
+  --text-inv: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --text-link: var(--ds-text-brand, #60A5FA);
   --bd-subtle: var(--ds-border, #292929);
   --bd-default: var(--ds-border, #2E2E2E);

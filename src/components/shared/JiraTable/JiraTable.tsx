@@ -56,7 +56,7 @@ const pageBtnStyle = (disabled: boolean): React.CSSProperties => ({
   fontSize: 13,
   border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
   borderRadius: 3,
-  background: disabled ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--ds-surface, #FFFFFF)',
+  background: disabled ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   color: disabled ? '#A5ADBA' : '#42526E',
   cursor: disabled ? 'default' : 'pointer',
   fontFamily: 'inherit',
@@ -683,7 +683,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         /* Phase 12 (2026-04-29): reverted to Atlaskit elevation.surface
            token via --ds-surface CSS variable. Phase 11 unblocked Atlaskit's
            bundled dark theme so --ds-surface flips natively. */
-        background: var(--ds-surface, #FFFFFF);
+        background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
         /* Apr 27, 2026 (L60): explicit typography baseline per Jira-parity
            spec — 14/20/400 with primary text color. Cells with their own
            cell-renderers (Lozenge, Avatar, dates, etc.) override locally;
@@ -1588,7 +1588,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         fontSize: d.cellFontSize,
         color: '#292A2E',
         outline: 'none',
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
         // Apr 27, 2026 — jira-compare audit P2 #10: Jira's outer table
         // card uses 8px border-radius; Catalyst was 6px. Bumped to
@@ -1889,7 +1889,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                 <td
                   colSpan={head.cells.length}
                   style={{
-                    background: 'var(--ds-surface, #FFFFFF)',
+                    background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     boxShadow: 'inset 0 1px 0 0 var(--ds-border, rgba(11,18,14,0.14))',
                     padding: 0,
                     height: 40,
@@ -1950,7 +1950,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             borderTop: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
             fontSize: 13,
             color: '#42526E',
-            background: 'var(--ds-surface, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           }}>
             <button
               type="button"
@@ -1990,7 +1990,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               borderTop: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
               fontSize: 12,
               color: 'var(--ds-text-subtle, #505258)',
-              background: 'var(--ds-surface, #FFFFFF)',
+              background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             }}
           >
             {label}
@@ -2010,7 +2010,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             top: filterMenu.top,
             left: filterMenu.left,
             zIndex: 9999,
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
             borderRadius: 4,
             boxShadow: '0 8px 16px rgba(9,30,66,0.15)',
@@ -2040,7 +2040,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             left: ctxMenu.x,
             zIndex: 1100,
             minWidth: 200,
-            background: 'var(--ds-surface, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
             borderRadius: 4,
             boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18)',
@@ -2228,7 +2228,7 @@ function ColumnManagerTrigger<TRow>({
             right: anchor.right,
             zIndex: 1000,
             minWidth: 260,
-            background: 'var(--ds-surface, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
             borderRadius: 4,
             boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18)',

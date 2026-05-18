@@ -66,7 +66,7 @@ export const WorkCard = memo(function WorkCard({
         cursor: 'pointer',
         background: isSelected
           ? 'var(--ds-background-selected, #DEEBFF)'
-          : 'var(--ds-surface, #FFFFFF)',
+          : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         borderBottom: '1px solid var(--ds-border, #EBECF0)',
         textAlign: 'left',
         transition: 'background 150ms',
@@ -79,7 +79,7 @@ export const WorkCard = memo(function WorkCard({
       onMouseLeave={e => {
         e.currentTarget.style.background = isSelected
           ? 'var(--ds-background-selected, #DEEBFF)'
-          : 'var(--ds-surface, #FFFFFF)';
+          : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
       }}
     >
       {/* First line: Type icon + Key + Status */}

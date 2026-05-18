@@ -35,7 +35,7 @@
   --ph-purple-light: rgba(139, 92, 246, 0.1);
 
   /* Colors - Gray Scale */
-  --ph-white: var(--ds-surface, #ffffff);
+  --ph-white: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --ph-gray-50: #f9fafb;
   --ph-gray-100: #f3f4f6;
   --ph-gray-200: var(--ds-border, #e5e7eb);
@@ -49,7 +49,7 @@
 
   /* Surfaces */
   --ph-bg: #f9fafb;
-  --ph-surface: var(--ds-surface, #ffffff);
+  --ph-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --ph-surface-hover: #f3f4f6;
   --ph-border: var(--ds-border, #e5e7eb);
   --ph-border-dark: #d1d5db;

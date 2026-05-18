@@ -65,7 +65,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
     <div key="step1">
       <div style={{ textAlign: 'center', marginBottom: 24 }}>
         <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--cp-blue)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-          <Sparkles size={28} style={{ color: 'var(--ds-surface, #FFFFFF)' }} />
+          <Sparkles size={28} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
         </div>
         <h2 style={{ fontFamily: F.sora, fontSize: 18, fontWeight: 700, marginBottom: 6, color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }}>Welcome to WikiHub</h2>
         <p style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)', lineHeight: 1.5 }}>Let's personalize your experience. What's your role?</p>
@@ -176,7 +176,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
           {step < 2 ? (
             <button onClick={() => setStep(s => s + 1)} disabled={!canNext} style={{
               padding: '8px 20px', borderRadius: 8, background: canNext ? 'var(--cp-blue)' : 'var(--fg-4)',
-              color: 'var(--ds-surface, #FFFFFF)', border: 'none', fontSize: 12, fontWeight: 600,
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', fontSize: 12, fontWeight: 600,
               cursor: canNext ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 4,
             }}>
               Next <ChevronRight size={13} />
@@ -184,7 +184,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
           ) : (
             <button onClick={() => completeOnboarding.mutate()} style={{
               padding: '8px 24px', borderRadius: 8, background: 'var(--cp-blue)',
-              color: 'var(--ds-surface, #FFFFFF)', border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+              color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer',
             }}>
               Get Started
             </button>

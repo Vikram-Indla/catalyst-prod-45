@@ -183,7 +183,7 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
     <span style={{
       fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
       padding: '1px 4px', borderRadius: 4,
-      background: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)',
+      background: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       textTransform: 'uppercase', flexShrink: 0,
     }}>JIRA</span>
   );
@@ -216,7 +216,7 @@ function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; 
         <img src={avatarUrl} alt={assignee.displayName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
       ) : (
         <div style={{ width: 24, height: 24, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #FFFFFF)' }}>{initials}</span>
+          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>{initials}</span>
         </div>
       )}
       <span className="hi-assignee-name" style={{ fontSize: 12, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>{assignee.displayName}</span>

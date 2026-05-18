@@ -17,7 +17,7 @@
    ───────────────────────────────────────────────────────────── */
 .ra-enterprise-clean {
   /* NEUTRAL FOUNDATION */
-  --ra-white: var(--ds-surface, #ffffff);
+  --ra-white: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --ra-slate-50: var(--ds-surface-sunken, #f8fafc);
   --ra-slate-100: var(--ds-surface-sunken, #f1f5f9);
   --ra-slate-200: var(--ds-border, #e2e8f0);

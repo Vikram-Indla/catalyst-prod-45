@@ -9,13 +9,13 @@
 .caty-panel {
   /* ==================== HEADER ==================== */
   --caty-header-bg: var(--ds-text-brand, #2563eb);
-  --caty-header-text: var(--ds-surface, #ffffff);
+  --caty-header-text: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   
   /* ==================== SURFACES ==================== */
   --caty-surface-page: var(--ds-surface-sunken, #f8fafc);
-  --caty-surface-card: var(--ds-surface, #ffffff);
+  --caty-surface-card: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --caty-surface-hover: var(--ds-surface-sunken, #f1f5f9);
-  --caty-surface-input: var(--ds-surface, #ffffff);
+  --caty-surface-input: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --caty-surface-skeleton: var(--ds-border, #e2e8f0);
   --caty-surface-user: var(--ds-text-brand, #2563eb);
   
@@ -24,7 +24,7 @@
   --caty-text-secondary: var(--cp-ink-2, var(--cp-ink-2, #334155));
   --caty-text-muted: var(--ds-text-subtlest, #64748b);
   --caty-text-light: var(--ds-text-subtlest, #94a3b8);
-  --caty-text-inverse: var(--ds-surface, #ffffff);
+  --caty-text-inverse: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   
   /* ==================== STATUS ==================== */
   --caty-status-critical: var(--ds-text-danger, #dc2626);

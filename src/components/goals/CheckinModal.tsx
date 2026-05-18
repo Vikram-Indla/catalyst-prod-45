@@ -162,7 +162,7 @@ export function CheckinModal({ krId, isOpen, onClose }: CheckinModalProps) {
             onClick={handleSubmit}
             disabled={createCheckin.isPending}
             style={{
-              padding: '7px 16px', fontSize: 13, fontWeight: 600, color: 'var(--ds-surface, #FFFFFF)',
+              padding: '7px 16px', fontSize: 13, fontWeight: 600, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               background: createCheckin.isPending ? '#93C5FD' : 'var(--cp-blue)',
               border: 'none', borderRadius: 6, cursor: createCheckin.isPending ? 'not-allowed' : 'pointer',
             }}

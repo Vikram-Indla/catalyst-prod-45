@@ -19,7 +19,7 @@ const COLORS = {
   textSecondary: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
   textMuted: 'var(--ds-text-subtlest, #64748b)',
   textLight: 'var(--ds-text-subtlest, #94a3b8)',
-  surfaceCard: 'var(--ds-surface, #ffffff)',
+  surfaceCard: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   surfacePage: 'var(--ds-surface-sunken, #f8fafc)',
   surfaceHover: 'var(--ds-surface-sunken, #f1f5f9)',
   borderLight: 'var(--ds-border, #e2e8f0)',
@@ -285,7 +285,7 @@ export const LabelsManager: React.FC<LabelsManagerProps> = ({
                       borderRadius: '8px',
                       fontSize: '13px',
                       fontWeight: 500,
-                      color: newLabelName.trim() ? 'var(--ds-surface, #ffffff)' : COLORS.textMuted,
+                      color: newLabelName.trim() ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : COLORS.textMuted,
                       cursor: newLabelName.trim() ? 'pointer' : 'not-allowed',
                       fontFamily: 'inherit'
                     }}

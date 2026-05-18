@@ -78,7 +78,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
   return (
     <div style={{
       position: 'fixed', top: 0, right: 0, bottom: 0, width: 400, zIndex: 200,
-      background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', borderLeft: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
+      background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderLeft: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
       boxShadow: isDark ? '-8px 0 24px rgba(0,0,0,0.3)' : '-8px 0 24px rgba(15,23,42,0.08)',
       display: 'flex', flexDirection: 'column', fontFamily: 'var(--cp-font-body)',
     }}>
@@ -170,7 +170,7 @@ function ExportDropdown({ onClose }: { onClose: () => void }) {
   return (
     <div style={{
       position: 'absolute', top: '100%', right: 0, marginTop: 4, zIndex: 50,
-      background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', borderRadius: 6, border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
+      background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 6, border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
       boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(15,23,42,0.08)', minWidth: 160, overflow: 'hidden',
     }}>
       <button onClick={handlePdf} style={{
@@ -204,7 +204,7 @@ function CrossModuleLinks({ links }: { links: any[] }) {
   return (
     <div style={{
       marginTop: 32, padding: 16, borderRadius: 6,
-      border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)',
+      border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     }}>
       <div style={{
         fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
@@ -349,7 +349,7 @@ export default function WikiArticlePage() {
         <div style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginBottom: 16 }}>The article you're looking for doesn't exist or has been removed.</div>
         <button onClick={() => navigate('/wiki')} style={{
           fontSize: 12, fontWeight: 650, padding: '8px 20px', borderRadius: 6,
-          background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)', border: 'none', cursor: 'pointer',
+          background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', cursor: 'pointer',
         }}>Return to Wiki</button>
       </div>
     );
@@ -360,12 +360,12 @@ export default function WikiArticlePage() {
   const refs = page.references || [];
   const title = page.title || pageSlug?.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) || 'Article';
   const conf = Math.round((page.ai_confidence ?? 0) * 100);
-  const confColor = conf >= 90 ? 'var(--ds-surface, #FFFFFF)' : conf >= 70 ? 'var(--ds-surface, #FFFFFF)' : '#9A5402';
+  const confColor = conf >= 90 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : conf >= 70 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : '#9A5402';
   const verStatus = (page as any).verification_status || 'unverified';
   const verBadge = verStatus === 'verified'
-    ? { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)', label: 'Verified', icon: <ShieldCheck size={10} /> }
+    ? { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'Verified', icon: <ShieldCheck size={10} /> }
     : verStatus === 'needs_review'
-    ? { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)', label: 'Needs Review', icon: null }
+    ? { bg: '#0C66E4', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', label: 'Needs Review', icon: null }
     : { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))', color: 'var(--cp-text-secondary, #44546F)', label: 'Unverified', icon: null };
   const tags = ((page as any).tags ?? []) as string[];
   const tldr = (page as any).tldr as string | null;
@@ -399,7 +399,7 @@ export default function WikiArticlePage() {
       </div>
     ) : null, show: !!info.totalStories },
     { label: 'Done %', value: info.donePercent != null ? (
-      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: info.donePercent >= 80 ? 'var(--ds-surface, #FFFFFF)' : 'var(--ds-surface, #FFFFFF)' }}>{info.donePercent}%</span>
+      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: info.donePercent >= 80 ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>{info.donePercent}%</span>
     ) : null, show: info.donePercent != null },
     { label: 'Open Defects', value: info.openDefects != null ? (
       <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: info.openDefects > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))') }}>{info.openDefects}</span>
@@ -618,7 +618,7 @@ export default function WikiArticlePage() {
             {/* ── Feedback footer ── */}
             <div style={{
               marginTop: 32, padding: 20, borderRadius: 6,
-              border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)',
+              border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16,
             }}>
               <div>
@@ -660,7 +660,7 @@ export default function WikiArticlePage() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
                   {(related ?? []).map((r: any) => (
                     <div key={r.id} onClick={() => navigate(`/wiki/${r.slug}`)} style={{
-                      padding: 16, borderRadius: 6, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)',
+                      padding: 16, borderRadius: 6, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                       border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', cursor: 'pointer',
                       transition: 'border-color 120ms',
                     }}
@@ -683,11 +683,11 @@ export default function WikiArticlePage() {
           {/* ── Infobox sidebar ── */}
           <aside style={{
             position: 'sticky', top: 80, borderRadius: 6,
-            border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)',
+            border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             overflow: 'hidden', fontSize: 12,
           }}>
             <div style={{
-              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)', padding: '10px 14px',
+              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', padding: '10px 14px',
               fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.04em',
             }}>Article Info</div>
 

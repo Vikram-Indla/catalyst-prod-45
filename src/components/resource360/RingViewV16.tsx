@@ -36,9 +36,9 @@ const STATUS_CG05: Record<StatusCat, { dot: string; bg: string; text: string }> 
 };
 
 const STATUS_SOLID: Record<StatusCat, { bg: string; text: string }> = {
-  todo:     { bg: 'var(--ds-text-warning, var(--cp-warning, #D97706))', text: 'var(--ds-text-inverse, #FFFFFF)' },
-  progress: { bg: 'var(--ds-text-brand, #2563EB)', text: 'var(--ds-text-inverse, #FFFFFF)' },
-  done:     { bg: 'var(--ds-text-success, var(--cp-success, #16A34A))', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  todo:     { bg: 'var(--ds-text-warning, var(--cp-warning, #D97706))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  progress: { bg: 'var(--ds-text-brand, #2563EB)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  done:     { bg: 'var(--ds-text-success, var(--cp-success, #16A34A))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
 };
 
 // ─── JIRA ICON HELPER — delegates to canonical guardrail ───
@@ -241,7 +241,7 @@ const HubBadge: React.FC<{ hub: string }> = ({ hub }) => {
     <span style={{
       display: 'inline-block', padding: '1px 5px', borderRadius: 4,
       fontSize: 8.5, fontWeight: 800, letterSpacing: '0.06em',
-      background: color, color: 'var(--ds-text-inverse, #FFFFFF)', lineHeight: 1.5,
+      background: color, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', lineHeight: 1.5,
     }}>{hub}</span>
   );
 };
@@ -594,7 +594,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   border: `1px solid ${isSelected ? 'var(--ds-background-brand-bold-hovered, #1D4ED8)' : 'var(--divider)'}`,
                   borderRadius: 12, padding: '2px 8px',
                   fontSize: 9.5, fontWeight: 600, fontFamily: T.mono,
-                  color: isSelected ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--fg-2)',
+                  color: isSelected ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--fg-2)',
                   opacity: hasSel && !isSelected ? 0.3 : 1,
                   whiteSpace: 'nowrap',
                 }}>
@@ -615,7 +615,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 boxShadow: '0 0 0 4px var(--ds-surface, #fff), 0 0 0 6px var(--cp-blue), 0 0 20px rgba(37,99,235,.2)',
               }}>
-                <span style={{ fontFamily: T.sora, fontSize: 24, fontWeight: 800, color: 'var(--ds-text-inverse, #FFFFFF)' }}>{initials}</span>
+                <span style={{ fontFamily: T.sora, fontSize: 24, fontWeight: 800, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>{initials}</span>
               </div>
               <div style={{ fontFamily: T.sora, fontSize: 12, fontWeight: 700, color: 'var(--fg-1)', marginTop: 6 }}>{resourceName}</div>
               <div style={{ fontSize: 10, color: 'var(--fg-3)', fontWeight: 500 }}>{resourceRole}</div>
@@ -677,7 +677,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                       {item.projectKey && (
                         <span style={{
                           fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4,
-                          background: projColor, color: 'var(--ds-text-inverse, #FFFFFF)', letterSpacing: '0.02em',
+                          background: projColor, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', letterSpacing: '0.02em',
                         }}>{item.projectKey}</span>
                       )}
                       <span style={{ fontFamily: T.mono, fontSize: 9, color: ageHeatColor(age), fontWeight: 700, marginLeft: 'auto' }}>{age}d</span>
@@ -716,7 +716,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                 }}>
                 <div style={{
                   width: 48, height: 48, borderRadius: '50%',
-                  background: 'var(--sem-success)', color: 'var(--ds-text-inverse, #FFFFFF)',
+                  background: 'var(--sem-success)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontFamily: T.mono, fontSize: 18, fontWeight: 700,
                   boxShadow: '0 2px 8px rgba(22,163,74,.3)',
@@ -748,7 +748,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   minWidth: 20, height: 18, borderRadius: 8, background: T.done,
-                  color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 9, fontWeight: 800, padding: '0 5px',
+                  color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontSize: 9, fontWeight: 800, padding: '0 5px',
                 }}>{doneCount}</span>
                 <div style={{ flex: 1 }} />
                 <button onClick={closePanel} style={{
@@ -821,7 +821,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   {selectedItem.projectKey && (
                     <span style={{
                       fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4,
-                      background: getProjectColor(selectedItem), color: 'var(--ds-text-inverse, #FFFFFF)',
+                      background: getProjectColor(selectedItem), color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     }}>
                       {selectedItem.projectKey}
                     </span>

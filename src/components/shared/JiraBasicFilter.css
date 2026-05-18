@@ -54,7 +54,7 @@
   height: 18px;
   padding: 0 4px;
   background-color: var(--ds-text-brand, #2563EB);
-  color: var(--ds-surface, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border-radius: 9px;
   font-size: 10px;
   font-weight: 700;
@@ -68,7 +68,7 @@
   left: 0;
   margin-top: 6px;
   width: 520px;
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border-radius: 10px;
   border: 1px solid var(--ds-border, var(--cp-border, #E2E8F0));
   box-shadow:
@@ -264,7 +264,7 @@
   height: 18px;
   padding: 0 5px;
   background-color: var(--ds-text-brand, #2563EB);
-  color: var(--ds-surface, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border-radius: 9px;
   font-size: 10px;
   font-weight: 700;
@@ -330,7 +330,7 @@
   transition: border-color 100ms, background-color 100ms;
 }
 .jf-search-box:focus-within {
-  background: var(--ds-background-input-pressed, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border-color: var(--ds-border-focused, #4C9AFF);
 }
 .jf-search-icon-wrap {
@@ -562,7 +562,7 @@
 }
 .dark .jf-tab--active {
   background-color: var(--ds-text-brand, #2563EB);
-  color: var(--ds-surface, #FFFFFF);
+  color: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 }
 
 .dark .jf-left-pane::after {

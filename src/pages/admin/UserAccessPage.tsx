@@ -389,10 +389,10 @@ export default function UserAccessPage() {
       </div>
 
       {/* Table */}
-      <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--ds-border, #DCDFE4)', background: 'var(--ds-surface, #FFFFFF)' }}>
+      <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--ds-border, #DCDFE4)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
         <div className="overflow-auto h-[calc(100vh-280px)]">
           <table className="min-w-full" style={{ borderCollapse: 'collapse' }}>
-            <thead className="sticky top-0 z-10" style={{ background: 'var(--ds-surface, #FFFFFF)', borderBottom: '1px solid var(--ds-border, #DCDFE4)' }}>
+            <thead className="sticky top-0 z-10" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderBottom: '1px solid var(--ds-border, #DCDFE4)' }}>
               <tr>
                 <th className="w-[80px] px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>RID</th>
                 <th className="min-w-[150px] px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Name</th>

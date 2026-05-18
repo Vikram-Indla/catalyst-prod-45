@@ -430,7 +430,7 @@ function FilterTriggerAndPopup({
     <>
       <span ref={triggerRef} style={{
         display: 'inline-flex',
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
         borderRadius: 3,
       }}>
@@ -469,7 +469,7 @@ function FilterTriggerAndPopup({
             top: pos.top,
             left: pos.left,
             zIndex: 510, // above Atlaskit content layer (400) but below modals (700+)
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
             borderRadius: 4,
             boxShadow: '0 4px 8px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31)',
@@ -647,7 +647,7 @@ function FilterChip({
     <>
       <span ref={triggerRef} style={{
         display: 'inline-flex',
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
         borderRadius: 3,
       }}>
@@ -672,7 +672,7 @@ function FilterChip({
             }}>
               <ChevronDownIcon
                 label=""
-                primaryColor={isActive ? 'var(--ds-text-inverse, #FFFFFF)' : SUBTLE}
+                primaryColor={isActive ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : SUBTLE}
                 size="small"
               />
             </span>
@@ -696,7 +696,7 @@ function FilterChip({
             width: 320,
             maxHeight: 380,
             display: 'flex', flexDirection: 'column',
-            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
             borderRadius: 4,
             boxShadow: '0 4px 8px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31)',
@@ -721,7 +721,7 @@ function FilterChip({
                 border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, #DFE1E6))',
                 borderRadius: 3,
                 fontFamily: 'inherit',
-                background: 'var(--ds-surface, #FFFFFF)',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 color: 'var(--ds-text, #292A2E)',
               }}
             />
@@ -1118,7 +1118,7 @@ export function AllWorkToolbar({
       >
         <div style={{
           flex: 1, display: 'flex', alignItems: 'center', gap: 8,
-          background: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           border: '2px solid var(--ds-border-focused, #388BFF)',
           borderRadius: 8, padding: '0 12px', height: 40, boxSizing: 'border-box',
         }}>

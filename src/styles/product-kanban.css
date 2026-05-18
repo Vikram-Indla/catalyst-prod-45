@@ -3,7 +3,7 @@
   --pk-ink-secondary: #18181B;
   --pk-ink-tertiary: #3F3F46;
   --pk-ink-muted: #71717A;
-  --pk-surface: var(--ds-surface, #FFFFFF);
+  --pk-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --pk-surface-column: var(--ds-surface-sunken, #F8FAFC);
   --pk-surface-tertiary: #F4F4F5;
   --pk-border: #E4E4E7;
@@ -246,7 +246,7 @@
   font-weight: 500;
   font-family: var(--pk-font-body);
   color: #3F3F46 !important;
-  background: var(--ds-surface, #FFFFFF) !important;
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   border: 1px solid #E4E4E7 !important;
   border-radius: 9999px;
   cursor: pointer;
@@ -498,7 +498,7 @@
   left: 0;
   z-index: 50;
   min-width: 160px;
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--pk-border);
   border-radius: var(--pk-r-lg);
   padding: 4px;
@@ -530,7 +530,7 @@
   position: fixed;
   z-index: 100;
   min-width: 180px;
-  background: var(--ds-surface, #FFFFFF);
+  background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1px solid var(--pk-border);
   border-radius: var(--pk-r-lg);
   padding: 4px;

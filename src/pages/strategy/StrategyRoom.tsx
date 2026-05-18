@@ -18,7 +18,7 @@ import { RoomContentShell } from '@/components/layout/RoomContentShell';
 /* Helper: read current theme for overlay print bg */
 const getOverlayBg = () => {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  return 'var(--cp-bg-elevated, #FFFFFF)';
+  return 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
 };
 
 const OVERLAY_TOKENS = `
@@ -151,7 +151,7 @@ export default function StrategyRoom() {
       <a
         href="#dashboard-main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[9999] focus:px-4 focus:py-2 focus:rounded-md focus:text-sm focus:font-medium"
-        style={{ background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)' }}
+        style={{ background: 'var(--ds-text-brand, #2563EB)', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}
       >
         Skip to dashboard content
       </a>

@@ -109,6 +109,8 @@
 
 /* White backgrounds on buttons/inputs/containers → transparent */
 [data-theme="dark"] [data-goals-page] button[style*="background: rgb(255, 255, 255)"],
+.dark [data-goals-page] button[style*="background: var(--cp-bg-elevated, #FFFFFF)"],
+[data-theme="dark"] [data-goals-page] button[style*="background: var(--cp-bg-elevated, #FFFFFF)"],
 .dark [data-goals-page] button[style*="background: #FFFFFF"] , [data-theme="dark"] [data-goals-page] button[style*="background: #FFFFFF"] {
   background: transparent !important;
   border-color: var(--ds-border, #2E2E2E) !important;
@@ -274,6 +276,7 @@
 
 /* Drawer overlay background handled by radix/shadcn */
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="width: 520px"],
+[data-theme="dark"] [data-goals-page] div[style*="background: var(--cp-bg-elevated, #FFFFFF)"][style*="width: 520px"],
 [data-theme="dark"] [data-goals-page] div[style*="background: #FFFFFF"][style*="width: 520px"],
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="position: fixed"] {
   background: var(--cp-bg-surface, #242528) !important;

@@ -8,7 +8,7 @@
   --rai-ink-secondary: #18181B;
   --rai-ink-tertiary: #3F3F46;
   --rai-ink-muted: #71717A;
-  --rai-surface: var(--ds-surface, #FFFFFF);
+  --rai-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --rai-surface-secondary: #FAFAFA;
   --rai-surface-tertiary: #F4F4F5;
   --rai-border: #E4E4E7;

@@ -234,7 +234,7 @@ function ReleaseRow({
           alignItems: 'center',
           height: 44,
           padding: '0 16px',
-          background: 'var(--ds-text-inverse, #FFFFFF)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           borderBottom: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
           cursor: 'pointer',
         }}
@@ -367,7 +367,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
         position: 'fixed',
         inset: 0,
         zIndex: 1000,
-        background: 'var(--ds-text-inverse, #FFFFFF)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         display: 'flex',
         flexDirection: 'column',
         fontFamily: FONT_STACK,
@@ -381,7 +381,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
           justifyContent: 'space-between',
           padding: '16px 24px',
           borderBottom: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)',
-          background: 'var(--ds-text-inverse, #FFFFFF)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         }}
       >
         <div>

@@ -37,9 +37,9 @@ export interface KanbanThemeTokens {
 
 export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens } = {
   light: {
-    /* Jira parity: page transparent, column surface #F8F8F8, card var(--ds-surface, #FFFFFF) */
-    pageBg: 'var(--ds-surface, #FFFFFF)',
-    surfaceBg: 'var(--ds-surface, #FFFFFF)',
+    /* Jira parity: page transparent, column surface #F8F8F8, card var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) */
+    pageBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+    surfaceBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     surfaceHover: '#F1F2F4',
     surfaceAlt: '#F8F8F8',     /* column surface (Jira: rgb(248,248,248)) */
     headerBg: 'rgba(5,21,36,0.06)',  /* column header — Jira tint over #F8F8F8 */
@@ -50,9 +50,9 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     textMuted: '#505258',      /* Jira muted (column name, issue key) */
     textDisabled: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',
     badgeBg: 'transparent',    /* Jira: count badge is plain text, no pill */
-    cardBg: 'var(--ds-surface, #FFFFFF)',
+    cardBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     cardBorder: 'transparent', /* Jira cards are shadow-only, no border */
-    cardHoverBg: 'var(--ds-surface, #FFFFFF)',
+    cardHoverBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     /* jira-compare 2026-05-08 — Jira card shadow: very subtle elevation 1
        (0 1px 2px rgba(9,30,66,0.25) rest, 0 2px 4px on hover). The prior
        8px/12px value was 4× too heavy and made cards look like floating modals. */

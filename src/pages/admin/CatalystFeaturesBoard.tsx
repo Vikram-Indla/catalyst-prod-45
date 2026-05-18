@@ -69,7 +69,7 @@ const STALE_MS = 7 * 24 * 60 * 60 * 1000;
 
 // ADS tokens as CSS vars (fallback hex for non-ADS environments)
 const T = {
-  surface:       'var(--ds-surface,#FFFFFF)',
+  surface:       'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   text:          'var(--ds-text,#292A2E)',
   textSubtle:    'var(--ds-text-subtle,var(--cp-text-secondary, #44546F))',
   textSubtlest:  'var(--ds-text-subtlest,#626F86)',
@@ -363,7 +363,7 @@ function FeatureCardView({ card }: { card: FeatureCard }) {
       onKeyDown={e => e.key === 'Enter' && setExpanded(v => !v)}
       aria-expanded={expanded}
       style={{
-        background: 'var(--ds-surface-raised,#FFFFFF)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         border: `1px solid ${isStale ? 'var(--ds-border-warning,#F5A623)' : 'var(--ds-border,rgba(11,18,14,.14))'}`,
         borderLeft: isStale ? '3px solid var(--ds-border-warning,#F5A623)' : undefined,
         borderRadius: 6, padding: '8px 10px', cursor: 'pointer',

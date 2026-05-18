@@ -140,7 +140,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
       ctx.arc(x, y, 4, 0, 2 * Math.PI);
       ctx.fillStyle = 'var(--ds-text-brand, #2563EB)';
       ctx.fill();
-      ctx.strokeStyle = 'var(--ds-surface, #ffffff)';
+      ctx.strokeStyle = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
       ctx.lineWidth = 2;
       ctx.stroke();
     });
@@ -232,7 +232,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
           width: '100%',
           height: '50px',
           backgroundColor: saveMutation.isPending ? '#93c5fd' : 'var(--ds-text-brand, #2563eb)',
-          color: 'var(--ds-surface, #ffffff)',
+          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           fontSize: '14px',
           fontWeight: 600,
           borderRadius: '8px',

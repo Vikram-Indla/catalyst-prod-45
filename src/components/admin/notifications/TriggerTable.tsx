@@ -108,7 +108,7 @@ function CategoryAccordion({
   );
 
   return (
-    <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', overflow: 'hidden' }}>
+    <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', overflow: 'hidden' }}>
       {/* ── Category Header ──────────────────────────────────────── */}
       <button
         onClick={onToggle}

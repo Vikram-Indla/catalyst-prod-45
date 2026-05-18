@@ -189,7 +189,7 @@ export function WorkstreamMembersDialog({
                           justifyContent: 'center',
                           fontSize: '12px',
                           fontWeight: 600,
-                          color: 'var(--ds-surface, #ffffff)',
+                          color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                           flexShrink: 0,
                         }}
                       >

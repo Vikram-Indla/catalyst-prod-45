@@ -65,7 +65,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         gap: '8px',
         padding: '8px 12px',
         borderBottom: '1px solid var(--ds-border, #EBECF0)',
-        background: 'var(--ds-surface, #FFFFFF)',
+        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
       }}
     >
       {/* Search input */}
@@ -164,7 +164,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           alignItems: 'center',
           borderRadius: '4px',
           border: '1px solid var(--ds-border, #EBECF0)',
-          background: 'var(--ds-surface, #FFFFFF)',
+          background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
           overflow: 'hidden',
         }}
       >

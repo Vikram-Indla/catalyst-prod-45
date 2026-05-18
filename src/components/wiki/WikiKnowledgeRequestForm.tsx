@@ -161,7 +161,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
           }}>Cancel</button>
           <button onClick={handleSubmit} disabled={!canSubmit || submitting} style={{
             fontSize: 12, fontWeight: 650, padding: '8px 20px', borderRadius: 6, cursor: canSubmit ? 'pointer' : 'not-allowed',
-            border: 'none', background: canSubmit ? 'var(--cp-blue)' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-4)'), color: 'var(--ds-surface, #FFFFFF)',
+            border: 'none', background: canSubmit ? 'var(--cp-blue)' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-4)'), color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             display: 'flex', alignItems: 'center', gap: 6, opacity: submitting ? 0.7 : 1,
           }}>
             <Send size={12} /> {submitting ? 'Submitting...' : 'Submit Request'}

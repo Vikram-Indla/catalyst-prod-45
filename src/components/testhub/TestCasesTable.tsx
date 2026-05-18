@@ -335,7 +335,7 @@ export function TestCasesTable({
                             height: 24,
                             borderRadius: '50%',
                             backgroundColor: getAvatarColor(tc.ownerInitials),
-                            color: 'var(--ds-text-inverse, #FFFFFF)',
+                            color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                             fontSize: 9,
                             fontWeight: 600,
                             flexShrink: 0,

@@ -114,7 +114,7 @@ function StatusPill({ status, statusCategory, issueId, onStatusChange }: { statu
   const ref = useRef<HTMLDivElement>(null);
   const cat = (statusCategory ?? '').toLowerCase();
   let bg = 'var(--cp-text-secondary, #44546F)';
-  const color = 'var(--ds-text-inverse, #FFFFFF)';
+  const color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
   if (cat.includes('done') || cat === 'complete') { bg = '#1B845D'; }
   else if (cat.includes('progress') || cat === 'indeterminate') { bg = '#0C66E4'; }
   else if (status.toLowerCase().includes('beta')) { bg = '#1B845D'; }
@@ -503,7 +503,7 @@ export function IssueContentView({
               const primary = filtered.filter(i => i.section === 'primary');
               const secondary = filtered.filter(i => i.section === 'secondary');
               return (
-                <div style={{ position: 'absolute', left: 0, top: 34, background: 'var(--ds-text-inverse, #ffffff)', borderRadius: 4, boxShadow: '0px 8px 12px rgba(30,31,33,0.15), 0px 0px 1px rgba(30,31,33,0.31)', width: 266, zIndex: 400, padding: 0 }}>
+                <div style={{ position: 'absolute', left: 0, top: 34, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4, boxShadow: '0px 8px 12px rgba(30,31,33,0.15), 0px 0px 1px rgba(30,31,33,0.31)', width: 266, zIndex: 400, padding: 0 }}>
                   <div style={{ margin: '4px 8px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', background: 'var(--ds-surface, #fff)', border: '2px solid #85B8FF', borderRadius: 3, padding: '1px 0' }}>
                       <Search size={14} color="#626F86" style={{ marginLeft: 8, flexShrink: 0 }} />
@@ -653,7 +653,7 @@ export function IssueContentView({
                      surfaced in the console for a fix, rather than
                      silently downgrading to an editor whose ADF
                      emission shape this app no longer accepts. */
-                  <div style={{ position: 'relative', borderRadius: 3, backgroundColor: 'var(--ds-text-inverse, #FFFFFF)' }}>
+                  <div style={{ position: 'relative', borderRadius: 3, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
                     <Suspense
                       fallback={
                         <div
@@ -960,7 +960,7 @@ export function IssueContentView({
                     padding: '4px 8px', borderRadius: 4, cursor: 'pointer',
                     minHeight: 32, transition: 'background 0.12s',
                     border: showFixVersionDropdown ? '2px solid #4C9AFF' : '2px solid transparent',
-                    background: showFixVersionDropdown ? 'var(--ds-text-inverse, #FFFFFF)' : 'transparent',
+                    background: showFixVersionDropdown ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'transparent',
                   }}
                   onMouseEnter={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
                   onMouseLeave={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = 'transparent'; }}
@@ -979,7 +979,7 @@ export function IssueContentView({
                   )}
                 </div>
                 {showFixVersionDropdown && (
-                  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--ds-text-inverse, #FFFFFF)', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderRadius: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', zIndex: 100, maxHeight: 320, overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderRadius: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', zIndex: 100, maxHeight: 320, overflow: 'hidden' }}>
                     <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
                       <input autoFocus value={fixVersionSearch} onChange={e => setFixVersionSearch(e.target.value)} placeholder="Search versions..."
                         style={{ width: '100%', border: '1px solid var(--cp-lozenge-grey-bg, #DFE1E6)', borderRadius: 4, padding: '6px 10px', fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', outline: 'none', fontFamily: 'inherit' }}

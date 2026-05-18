@@ -36,7 +36,7 @@ export const surface = {
   // App backgrounds (FIX A: Surface hierarchy)
   app: 'hsl(var(--background))',
   sunken: 'hsl(var(--surface-sunken))',         // #F9FAFB - sunken containers
-  raised: 'hsl(var(--surface-raised))',         // #FFFFFF - raised cards
+  raised: 'hsl(var(--surface-raised))',         // var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)) - raised cards
   backdrop: 'hsl(var(--surface-backdrop))',     // #F3F4F6 - dense container backdrop
   overlay: 'hsl(var(--popover))',
   

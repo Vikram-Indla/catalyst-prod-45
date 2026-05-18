@@ -6,7 +6,7 @@
 .strategy-room {
   /* ── Surfaces ── */
   --catalyst-bg-app: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
-  --catalyst-bg-surface-0: var(--ds-surface, #FFFFFF);
+  --catalyst-bg-surface-0: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --catalyst-bg-surface-1: var(--ds-surface-sunken, #F8FAFC);
   --catalyst-bg-surface-2: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
   --catalyst-bg-surface-3: var(--ds-border, var(--cp-border, #E2E8F0));
@@ -18,9 +18,9 @@
   --catalyst-text-primary: var(--ds-text, var(--cp-ink-1, #0F172A));
   --catalyst-text-secondary: var(--cp-ink-2, var(--cp-ink-2, #334155));  /* slate-700, contrast 8.6:1 — passes AAA */
   --catalyst-text-tertiary: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));   /* slate-500, contrast 5.6:1 — passes AA */
-  --catalyst-text-inverse: var(--ds-surface, #FFFFFF);
+  --catalyst-text-inverse: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --catalyst-text-link: var(--ds-text-brand, #2563EB);
-  --catalyst-text-on-primary: var(--ds-surface, #FFFFFF);
+  --catalyst-text-on-primary: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 
   /* ── Borders ── */
   --catalyst-border-default: var(--ds-border, var(--cp-border, #E2E8F0));
@@ -111,7 +111,7 @@
   --catalyst-text-tertiary: var(--ds-text-subtlest, #878787);
   --catalyst-text-inverse: var(--cp-bg-page, #1F1F21);
   --catalyst-text-link: #7DB8FC;
-  --catalyst-text-on-primary: var(--ds-surface, #FFFFFF);
+  --catalyst-text-on-primary: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 
   --catalyst-border-default: var(--ds-border, #2E2E2E);
   --catalyst-border-strong: var(--ds-border-bold, #454545);
