@@ -40,7 +40,7 @@ describe('FieldRow (F3.2)', () => {
   it('styles label correctly', () => {
     const { container } = render(<FieldRow label="Priority" value="High" />);
     const label = container.querySelector('[data-testid="field-label"]');
-    expect(label).toHaveStyle({ fontSize: '11px', fontWeight: '600' });
+    expect(label).toHaveStyle({ fontSize: 'var(--cp-font-size-status, 11px)', fontWeight: '600' });
   });
 
   it('renders children when provided', () => {

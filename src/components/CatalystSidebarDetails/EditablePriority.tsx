@@ -36,7 +36,7 @@ export const EditablePriority = memo(function EditablePriority({
           ))}
         </ul>
       )}
-      <div data-testid="priority-bar" style={{ height: '2px', background: '#999' }} />
+      <div data-testid="priority-bar" style={{ height: '2px', background: 'var(--ds-border)' }} />
     </div>
   );
 });

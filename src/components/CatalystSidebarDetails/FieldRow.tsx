@@ -23,7 +23,7 @@ export const FieldRow = memo(function FieldRow({
         gap: '4px',
       }}
     >
-      <label data-testid="field-label" style={{ fontSize: '11px', fontWeight: '600' }}>
+      <label data-testid="field-label" style={{ fontSize: 'var(--cp-font-size-status, 11px)', fontWeight: '600' }}>
         {label}
       </label>
       {children || <div>{value}</div>}
