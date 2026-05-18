@@ -166,10 +166,10 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
                 display: 'inline-flex', alignItems: 'center', gap: 4,
                 height: 18, padding: '0 8px', borderRadius: 8,
                 background: isDark ? 'rgba(0,82,204,0.15)' : 'rgba(0,82,204,0.06)', border: isDark ? '0.75px solid rgba(0,82,204,0.30)' : '0.75px solid rgba(0,82,204,0.18)',
-                fontSize: 10.5, fontWeight: 600, color: '#0052CC',
+                fontSize: 10.5, fontWeight: 600, color: 'var(--cp-primary-60, #0052CC)',
                 fontFamily: 'var(--cp-font-body)',
               }}>
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#0052CC' }} />
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--cp-primary-60, #0052CC)' }} />
                 Jira Sync
               </span>
             )}

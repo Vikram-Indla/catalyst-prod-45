@@ -210,7 +210,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
                   fontSize: 13,
                   fontWeight: isCurrent ? 600 : 400,
                   color: isCurrent
-                    ? 'var(--cp-text-link, #0052CC)'
+                    ? 'var(--cp-text-link, var(--cp-primary-60, #0052CC))'
                     : isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, #172B4D)',
                   textAlign: 'left',
                 }}
@@ -227,7 +227,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
                     width: 24,
                     height: 24,
                     borderRadius: 4,
-                    background: p.color || 'var(--cp-blue, #0052CC)',
+                    background: p.color || 'var(--cp-blue, var(--cp-primary-60, #0052CC))',
                     color: '#fff',
                     fontSize: 10,
                     fontWeight: 700,
@@ -248,7 +248,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
                   </span>
                 </span>
                 {isCurrent && (
-                  <span style={{ fontSize: 10, color: 'var(--cp-text-link, #0052CC)', fontWeight: 600 }}>✓</span>
+                  <span style={{ fontSize: 10, color: 'var(--cp-text-link, var(--cp-primary-60, #0052CC))', fontWeight: 600 }}>✓</span>
                 )}
               </button>
             );

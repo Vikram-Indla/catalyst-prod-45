@@ -331,7 +331,7 @@ export const ACTIVE_CYCLE_STATUSES: CycleStatus[] = [
 ];
 
 export const CYCLE_ROLE_CONFIG: Record<CycleRole, { label: string; color: string }> = {
-  lead: { label: 'Lead', color: '#0052CC' },       // information
+  lead: { label: 'Lead', color: 'var(--cp-primary-60, #0052CC)' },       // information
   tester: { label: 'Tester', color: '#006644' },   // success
   reviewer: { label: 'Reviewer', color: '#974F0C' }, // warning
 };

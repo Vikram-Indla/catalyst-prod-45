@@ -30,7 +30,7 @@ const ACTIVITY_TABS: { id: ActivityTab; label: string }[] = [
 ];
 
 function avatarColor(name: string) {
-  const colors = ['bg-[var(--ds-text-brand,#2563eb)]', 'bg-[#5243AA]', 'bg-[#00A3BF]', 'bg-[#FF8800]', 'bg-[#0052CC]'];
+  const colors = ['bg-[var(--ds-text-brand,#2563eb)]', 'bg-[#5243AA]', 'bg-[#00A3BF]', 'bg-[#FF8800]', 'bg-[var(--cp-primary-60, #0052CC)]'];
   return colors[(name?.charCodeAt(0) ?? 0) % colors.length];
 }
 
@@ -180,7 +180,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
             className={cn(
               'px-3 py-1.5 rounded text-sm transition-colors border',
               activeTab === tab.id
-                ? 'bg-[#E9F2FF] text-[#0052CC] border-[#0052CC]'
+                ? 'bg-[#E9F2FF] text-[var(--cp-primary-60, #0052CC)] border-[var(--cp-primary-60, #0052CC)]'
                 : 'text-[#42526E] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] border-transparent',
             )}
             onClick={() => setActiveTab(tab.id)}
@@ -214,7 +214,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
               />
               <div className="flex gap-2 mt-2 justify-end">
                 <button
-                  className="px-3 h-8 rounded text-sm font-medium bg-[#0052CC] text-white hover:bg-[#0747A6] disabled:opacity-50"
+                  className="px-3 h-8 rounded text-sm font-medium bg-[var(--cp-primary-60, #0052CC)] text-white hover:bg-[#0747A6] disabled:opacity-50"
                   onClick={handleSaveComment}
                   disabled={isSaving || !comment.trim()}
                 >

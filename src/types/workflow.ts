@@ -12,7 +12,7 @@ export interface WorkflowStatus {
 export const WORKFLOW_STATUSES: WorkflowStatus[] = [
   { id: 'backlog', name: 'Backlog', color: '#42526E', bgColor: '#DFE1E6', description: 'Awaiting prioritization' },
   { id: 'design', name: 'Design', color: '#5243AA', bgColor: '#EAE6FF', description: 'In design phase' },
-  { id: 'ready_dev', name: 'Ready for Development', color: '#0052CC', bgColor: '#DEEBFF', description: 'Ready to be picked up' },
+  { id: 'ready_dev', name: 'Ready for Development', color: 'var(--cp-primary-60, #0052CC)', bgColor: '#DEEBFF', description: 'Ready to be picked up' },
   { id: 'in_dev', name: 'In Development', color: '#FF991F', bgColor: '#FFF0B3', description: 'Actively being developed' },
   { id: 'qa', name: 'QA Testing', color: '#FFAB00', bgColor: '#FFF0B3', description: 'Ready for quality assurance' },
   { id: 'uat', name: 'UAT Testing', color: '#FF991F', bgColor: '#FFF0B3', description: 'User acceptance testing' },

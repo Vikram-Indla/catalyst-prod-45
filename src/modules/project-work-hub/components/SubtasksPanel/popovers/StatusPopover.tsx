@@ -142,7 +142,7 @@ export function StatusPopover({ status, onChange, children, showActive = true }:
                       <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
                         <Lozenge appearance={appearance}>{s}</Lozenge>
                       </span>
-                      {active && <Check size={14} color="#0052CC" />}
+                      {active && <Check size={14} color="var(--cp-primary-60, #0052CC)" />}
                     </button>
                   );
                 })}

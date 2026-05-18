@@ -105,7 +105,7 @@ export function PriorityPopover({ priority, onChange, children, showActive = tru
                   onClick={() => { onChange(value); setIsOpen(false); }}
                 >
                   <PriorityIndicator priority={value} showLabel fontSize={13} />
-                  {active && <Check size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}
+                  {active && <Check size={14} color="var(--cp-primary-60, #0052CC)" style={{ marginLeft: 'auto' }} />}
                 </button>
               );
             })}

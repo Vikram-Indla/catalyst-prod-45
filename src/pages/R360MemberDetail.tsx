@@ -609,7 +609,7 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '6px',
                       padding: '7px 18px', borderRadius: '6px', fontSize: '12.5px', fontWeight: 600,
-                      border: 'none', background: token('color.background.brand.subtlest', '#E9F2FF'), color: token('color.text.brand', '#0052CC'),
+                      border: 'none', background: token('color.background.brand.subtlest', '#E9F2FF'), color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)'),
                       cursor: 'pointer', transition: 'all 80ms ease',
                     }}
                     onMouseOver={e => { (e.target as HTMLButtonElement).style.background = token('color.background.brand.subtlest.hovered', '#CCE0FF'); }}

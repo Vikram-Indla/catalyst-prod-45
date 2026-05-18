@@ -584,7 +584,7 @@ export function makeStatusEditCell<T>(opts: {
                   <span style={{ flex: 1 }}>{s}</span>
                   {/* Checkmark on selected item */}
                   {isActive && (
-                    <span style={{ marginLeft: 4, color: token('color.icon.brand', '#0052CC') }}>✓</span>
+                    <span style={{ marginLeft: 4, color: token('color.icon.brand', 'var(--cp-primary-60, #0052CC)') }}>✓</span>
                   )}
                 </button>
               );

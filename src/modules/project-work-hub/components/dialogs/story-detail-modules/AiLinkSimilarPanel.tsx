@@ -63,7 +63,7 @@ function LinkAsDropdown({ value, onChange }: { value: string; onChange: (v: stri
         }}
       >
         Link as {value}
-        <ChevronDown size={14} color={open ? '#0052CC' : 'var(--ds-text-subtlest, #6B778C)'} />
+        <ChevronDown size={14} color={open ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text-subtlest, #6B778C)'} />
       </button>
       {open && (
         <div style={{
@@ -100,7 +100,7 @@ function Checkbox({ checked, onChange }: { checked: boolean; onChange: (v: boole
       onClick={(e) => { e.stopPropagation(); onChange(!checked); }}
       style={{
         width: 18, height: 18, borderRadius: 3, border: checked ? 'none' : '2px solid var(--ds-border, #C1C7D0)',
-        background: checked ? '#0052CC' : 'var(--ds-surface, #fff)', display: 'flex', alignItems: 'center',
+        background: checked ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-surface, #fff)', display: 'flex', alignItems: 'center',
         justifyContent: 'center', cursor: 'pointer', flexShrink: 0, padding: 0,
       }}
       aria-checked={checked}
@@ -320,7 +320,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
                 </div>
                 <button
                   onClick={e => { e.stopPropagation(); setFeedback('up'); }}
-                  style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 2, color: feedback === 'up' ? '#0052CC' : 'var(--ds-text-subtlest, #6B778C)' }}
+                  style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 2, color: feedback === 'up' ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text-subtlest, #6B778C)' }}
                   title="Helpful"
                 >
                   <ThumbsUp size={14} />
@@ -344,7 +344,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
                   disabled={linkMutation.isPending}
                   style={{
                     height: 32, padding: '0 16px', border: 'none', borderRadius: 3,
-                    background: 'var(--ds-background-brand-bold, #0052CC)', color: 'var(--ds-surface, #fff)', fontSize: 14, fontWeight: 500,
+                    background: 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))', color: 'var(--ds-surface, #fff)', fontSize: 14, fontWeight: 500,
                     cursor: linkMutation.isPending ? 'not-allowed' : 'pointer',
                     fontFamily: 'inherit', opacity: linkMutation.isPending ? 0.7 : 1,
                   }}

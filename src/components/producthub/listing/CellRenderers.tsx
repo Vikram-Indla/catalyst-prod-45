@@ -161,7 +161,7 @@ export const AssigneeCell = React.memo(function AssigneeCell({
           onClick={e => e.stopPropagation()}
           style={{
             width: '100%', boxSizing: 'border-box',
-            padding: '6px 8px', fontSize: 13, border: '2px solid var(--ds-border-focused, #0052CC)',
+            padding: '6px 8px', fontSize: 13, border: '2px solid var(--ds-border-focused, var(--cp-primary-60, #0052CC))',
             borderRadius: 3, outline: 'none', background: 'var(--ds-background-input, #fff)',
             color: 'var(--ds-text, #172B4D)',
           }}
@@ -291,7 +291,7 @@ export const ParentCell = React.memo(function ParentCell({ parentKey }: { parent
   return (
     <span
       className="pb-id"
-      style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-link, #0052CC)' }}
+      style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-link, var(--cp-primary-60, #0052CC))' }}
       title={`Parent: ${parentKey}`}
     >
       {parentKey}

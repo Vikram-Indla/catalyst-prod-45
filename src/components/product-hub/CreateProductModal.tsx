@@ -38,7 +38,7 @@ interface CreateProductModalProps {
 const PRESET_COLORS = [
   '#6554C0', // purple
   '#00875A', // green
-  '#0052CC', // blue
+  'var(--cp-primary-60, #0052CC)', // blue
   '#FF8B00', // orange
   '#DE350B', // red
   '#5243AA', // indigo

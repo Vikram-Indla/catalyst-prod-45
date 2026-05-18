@@ -81,8 +81,8 @@ export function HeaderOverflowMenu({
           elemBefore={
             sort.field
               ? (sort.dir === 'asc'
-                  ? <ArrowUp size={14} color="#0052CC" />
-                  : <ArrowDown size={14} color="#0052CC" />)
+                  ? <ArrowUp size={14} color="var(--cp-primary-60, #0052CC)" />
+                  : <ArrowDown size={14} color="var(--cp-primary-60, #0052CC)" />)
               : undefined
           }
           elemAfter={<ChevronRight size={14} color="var(--ds-text-subtlest, #6B778C)" />}
@@ -132,7 +132,7 @@ export function HeaderOverflowMenu({
                   onClick={() => onCycleSort(field)}
                 >
                   <span className="sp-pop-label">{label}</span>
-                  {active && <Arrow size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}
+                  {active && <Arrow size={14} color="var(--cp-primary-60, #0052CC)" style={{ marginLeft: 'auto' }} />}
                 </button>
               );
             })}

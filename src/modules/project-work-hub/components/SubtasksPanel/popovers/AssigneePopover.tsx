@@ -163,7 +163,7 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
                   <UserX size={12} />
                 </span>
                 <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>Unassigned</span>
-                {showActive && !currentAccountId && <Check size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}
+                {showActive && !currentAccountId && <Check size={14} color="var(--cp-primary-60, #0052CC)" style={{ marginLeft: 'auto' }} />}
               </button>
 
               {isLoading && <div style={{ padding: 12, fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>Loading…</div>}
@@ -190,7 +190,7 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
                     <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {p.display_name}
                     </span>
-                    {active && <Check size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}
+                    {active && <Check size={14} color="var(--cp-primary-60, #0052CC)" style={{ marginLeft: 'auto' }} />}
                   </button>
                 );
               })}

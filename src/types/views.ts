@@ -68,7 +68,7 @@ export const STATUS_CONFIG: Record<WorkflowStatus, {
   ready_for_dev: {
     // information / StatusLozenge blue (§5)
     label: 'Ready for Dev',
-    color: '#0052CC',
+    color: 'var(--cp-primary-60, #0052CC)',
     bgColor: '#DEEBFF',
     textColor: '#0747A6',
     wipLimit: 5
@@ -189,7 +189,7 @@ export const WORK_ITEM_CONFIG: Record<WorkItemType, {
   feature: {
     // information
     label: 'Feature',
-    color: '#0052CC',
+    color: 'var(--cp-primary-60, #0052CC)',
     bgColor: '#DEEBFF',
     icon: 'Package'
   },
@@ -243,7 +243,7 @@ export const LINK_TYPE_CONFIG: Record<LinkType, {
     // information
     label: 'Relates To',
     description: 'Related work item',
-    color: '#0052CC',
+    color: 'var(--cp-primary-60, #0052CC)',
     bgColor: '#DEEBFF',
     icon: 'Link2',
     inverse: 'relates_to'

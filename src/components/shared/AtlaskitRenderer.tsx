@@ -40,7 +40,7 @@ function PlainSmartLink({ url, data }: { url?: string; data?: any }) {
       target="_blank"
       rel="noopener noreferrer"
       style={{
-        color: '#0052CC', textDecoration: 'none',
+        color: 'var(--cp-primary-60, #0052CC)', textDecoration: 'none',
         display: 'inline-flex', alignItems: 'center', gap: 4,
       }}
       onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}

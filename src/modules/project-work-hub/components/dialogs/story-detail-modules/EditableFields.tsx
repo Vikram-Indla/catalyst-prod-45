@@ -41,7 +41,7 @@ const ATLASSIAN_DROPDOWN: React.CSSProperties = {
 
 /** Atlassian checkmark icon — uses ADS tokens */
 const CheckmarkIcon = () => (
-  <CheckIcon size="small" primaryColor="var(--ds-icon-selected, #0052CC)" />
+  <CheckIcon size="small" primaryColor="var(--ds-icon-selected, var(--cp-primary-60, #0052CC))" />
 );
 
 /** Jira-native priority SVG icons — exact parity */
@@ -856,7 +856,7 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
             <div style={{ padding: '6px 12px', borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>
                 <input type="checkbox" checked={showDone} onChange={e => setShowDone(e.target.checked)}
-                  style={{ width: 16, height: 16, accentColor: 'var(--ds-background-brand-bold, #0052CC)', cursor: 'pointer' }} />
+                  style={{ width: 16, height: 16, accentColor: 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))', cursor: 'pointer' }} />
                 Show done work items
               </label>
             </div>

@@ -54,7 +54,7 @@ export default function DeactivatedPage() {
             fontSize: 14,
             fontWeight: 500,
             color: 'var(--ds-text-inverse, #FFFFFF)',
-            background: 'var(--ds-background-brand-bold, #0052CC)',
+            background: 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))',
             border: 'none',
             borderRadius: 4,
             cursor: 'pointer',

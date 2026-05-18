@@ -175,7 +175,7 @@ export function SidebarProjectNav({
                 style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: 'pointer' }}
                 title="Collapse sidebar"
               >
-                <ChevronsLeft size={16} className="text-[#0052CC] dark:text-[#4C9AFF]" />
+                <ChevronsLeft size={16} className="text-[var(--cp-primary-60, #0052CC)] dark:text-[#4C9AFF]" />
               </button>
             </>
           )}
@@ -186,7 +186,7 @@ export function SidebarProjectNav({
               className="absolute top-2 right-1 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
               style={{ width: 20, height: 20, border: 'none', background: 'transparent', cursor: 'pointer' }}
             >
-              <ChevronsRight size={14} className="text-[#0052CC] dark:text-[#4C9AFF]" />
+              <ChevronsRight size={14} className="text-[var(--cp-primary-60, #0052CC)] dark:text-[#4C9AFF]" />
             </button>
           )}
         </div>

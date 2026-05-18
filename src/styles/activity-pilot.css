@@ -39,8 +39,8 @@
 }
 .ap-tab:hover { color: var(--ds-text, #172B4D); }
 .ap-tab.active {
-  color: #0052CC;
-  border-bottom-color: #0052CC;
+  color: var(--cp-primary-60, #0052CC);
+  border-bottom-color: var(--cp-primary-60, #0052CC);
 }
 .ap-sort-btn {
   display: flex;
@@ -138,7 +138,7 @@
   padding: 6px 16px;
   border: none;
   border-radius: 3px;
-  background: #0052CC;
+  background: var(--cp-primary-60, #0052CC);
   font: 500 14px/20px system-ui, -apple-system, sans-serif;
   color: var(--ds-surface, #fff);
   cursor: pointer;
@@ -175,7 +175,7 @@
   cursor: pointer;
   transition: color 150ms;
 }
-.ap-quick-link:hover { color: #0052CC; }
+.ap-quick-link:hover { color: var(--cp-primary-60, #0052CC); }
 .ap-pro-tip {
   font: 400 12px/16px system-ui, -apple-system, sans-serif;
   color: var(--ds-text-subtlest, #6B778C);

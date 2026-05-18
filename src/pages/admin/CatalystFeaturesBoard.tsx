@@ -73,7 +73,7 @@ const T = {
   text:          'var(--ds-text,#292A2E)',
   textSubtle:    'var(--ds-text-subtle,#44546F)',
   textSubtlest:  'var(--ds-text-subtlest,#626F86)',
-  textBrand:     'var(--ds-text-brand,#0052CC)',
+  textBrand:     'var(--ds-text-brand,var(--cp-primary-60, #0052CC))',
   border:        'var(--ds-border,rgba(11,18,14,.14))',
   borderLayout:  'var(--ds-border-layout,#EBECF0)',
   borderBrand:   'var(--ds-border-brand,#0C66E4)',
@@ -436,7 +436,7 @@ function FeatureCardView({ card }: { card: FeatureCard }) {
           onClick={e => e.stopPropagation()}
           style={{
             display: 'flex', alignItems: 'center', gap: 4,
-            fontSize: 10, color: 'var(--ds-text-brand,#0052CC)', textDecoration: 'none',
+            fontSize: 10, color: 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))', textDecoration: 'none',
             marginBottom: 3,
           }}
         >

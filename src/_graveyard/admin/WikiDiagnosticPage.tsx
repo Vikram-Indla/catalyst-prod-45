@@ -170,7 +170,7 @@ export default function WikiDiagnosticPage() {
         <button
           onClick={runDiagnostics}
           disabled={loading}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded bg-[#0747A6] text-white hover:bg-[#0052CC] disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded bg-[#0747A6] text-white hover:bg-[var(--cp-primary-60, #0052CC)] disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           {loading ? 'Running…' : 'Re-run Diagnostics'}
@@ -324,7 +324,7 @@ export default function WikiDiagnosticPage() {
         <div className="flex items-center gap-3 pt-2">
           <button
             onClick={handleRetrySync}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded bg-[#0747A6] text-white hover:bg-[#0052CC]"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded bg-[#0747A6] text-white hover:bg-[var(--cp-primary-60, #0052CC)]"
           >
             <Play className="w-4 h-4" /> Retry Sync
           </button>

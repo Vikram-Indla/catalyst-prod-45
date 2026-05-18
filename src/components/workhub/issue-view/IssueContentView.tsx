@@ -426,7 +426,7 @@ export function IssueContentView({
                   href={`/project-hub/${projectKey}/allwork`}
                   onClick={e => { e.preventDefault(); e.stopPropagation(); window.location.href = `/project-hub/${projectKey}/allwork`; }}
                   style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtlest, #6B778C)', textDecoration: 'none', cursor: 'pointer' }}
-                  onMouseEnter={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'underline'; }}
+                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--cp-primary-60, #0052CC)'; e.currentTarget.style.textDecoration = 'underline'; }}
                   onMouseLeave={e => { e.currentTarget.style.color = 'var(--ds-text-subtlest, #6B778C)'; e.currentTarget.style.textDecoration = 'none'; }}
                 >
                   {projectKey}
@@ -444,7 +444,7 @@ export function IssueContentView({
             />
             <span style={{ color: 'var(--aw-text-subtle)' }}>/</span>
             {item && <JiraIssueTypeIcon type={item.issue_type} size={14} />}
-            <IssueKeyLink issueKey={issueKey ?? ''} style={{ color: '#0052CC', textDecoration: 'none', fontSize: 13 }} />
+            <IssueKeyLink issueKey={issueKey ?? ''} style={{ color: 'var(--cp-primary-60, #0052CC)', textDecoration: 'none', fontSize: 13 }} />
             {/* #12: Prev/Next navigation arrows — canonical IssueNavChevrons
                 (shared component, Jira-parity 28×28 / 1px var(--ds-border, #DFE1E6) / 4px). */}
             <span style={{ marginLeft: 'auto', display: 'inline-flex' }}>

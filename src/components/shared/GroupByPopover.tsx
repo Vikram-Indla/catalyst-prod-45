@@ -116,7 +116,7 @@ const ADS = {
   surfaceBg:     '#FFFFFF',
   surfaceHover:  'rgba(9,30,66,0.06)',        /* --ds-background-neutral-subtle-hovered */
   selected:      'var(--ds-background-selected, #DEEBFF)',
-  selectedText:  'var(--ds-link, #0052CC)',
+  selectedText:  'var(--ds-link, var(--cp-primary-60, #0052CC))',
   shadow:        'rgba(9,30,66,0.08) 0 0 0 1px, rgba(9,30,66,0.08) 0 4px 8px -2px',
   shadowDark:    '0 4px 24px rgba(0,0,0,0.5)',
 };
@@ -225,7 +225,7 @@ export function GroupByPopover<K extends string>({
           <span style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             minWidth: 18, height: 18,
-            background: 'var(--ds-link, #0052CC)', color: '#FFFFFF',
+            background: 'var(--ds-link, var(--cp-primary-60, #0052CC))', color: '#FFFFFF',
             fontSize: 10, fontWeight: 700, borderRadius: 9,
           }}>1</span>
         )}

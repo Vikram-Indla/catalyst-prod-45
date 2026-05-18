@@ -13,7 +13,7 @@ import { useAuth } from '@/hooks/useAuth';
  * 2026-04-24 — AgeingTab Atlaskit retune
  * ──────────────────────────────────────
  * This file was originally painted with Tailwind-style literal hexes
- * (var(--ds-text-danger, #EF4444), var(--ds-text-warning, #F59E0B), #0052CC, #1E293B, #FEF3C7, #92400E …) and 13px Inter
+ * (var(--ds-text-danger, #EF4444), var(--ds-text-warning, #F59E0B), var(--cp-primary-60, #0052CC), #1E293B, #FEF3C7, #92400E …) and 13px Inter
  * body. None of those values are in the Atlassian Design System. After the
  * /design-critique pass we routed every surface through @atlaskit/tokens
  * with hex fallbacks:
@@ -886,7 +886,7 @@ function GroupSection({ groupKey, items, totalCount, isOpen, onToggle }: {
    /design-critique callout ⑤: consumers pass a semantic `intent` instead of
    a raw hex. This ensures every numeric colour in the summary strip resolves
    to an Atlaskit `color.text.{intent}` token — no off-palette slate, no
-   #0052CC legacy brand blue, no bespoke amber.
+   var(--cp-primary-60, #0052CC) legacy brand blue, no bespoke amber.
 */
 type StatIntent = 'neutral' | 'danger' | 'warning' | 'info' | 'success';
 function StatChip({ label, value, intent }: { label: string; value: string | number; intent: StatIntent }) {

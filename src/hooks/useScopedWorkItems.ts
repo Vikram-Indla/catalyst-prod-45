@@ -61,7 +61,7 @@ function mapRequestRow(r: Record<string, any>): WorkItemRow {
     status_changed_at: null,
     resolution: null,
     type_name: 'Business Request',
-    type_color: '#0052CC',
+    type_color: 'var(--cp-primary-60, #0052CC)',
     type_icon: 'briefcase',
     type_level: 'work',
     status_name: r.status ?? 'New',

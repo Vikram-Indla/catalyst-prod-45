@@ -86,7 +86,7 @@ export const APPROVAL_STATUS_CONFIG = {
 export const WORKFLOW_STATUSES = [
   { id: 'backlog', name: 'Backlog', color: '#42526E' },           // neutral.bold
   { id: 'design', name: 'Design', color: '#5243AA' },              // purple.bolder
-  { id: 'ready_dev', name: 'Ready for Development', color: '#0052CC' }, // brand.bold (info)
+  { id: 'ready_dev', name: 'Ready for Development', color: 'var(--cp-primary-60, #0052CC)' }, // brand.bold (info)
   { id: 'in_dev', name: 'In Development', color: '#FF991F' },      // warning.bold (yellow)
   { id: 'qa', name: 'QA Testing', color: '#FFAB00' },              // warning.bold.hovered
   { id: 'uat', name: 'UAT Testing', color: '#FF991F' },            // warning.bold

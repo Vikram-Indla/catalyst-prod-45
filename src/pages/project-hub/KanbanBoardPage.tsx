@@ -975,7 +975,7 @@ export default function KanbanBoardPage() {
                     width: '100%', textAlign: 'left', padding: '8px 14px',
                     background: b.id === resolvedBoardId ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent',
                     border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500,
-                    color: b.id === resolvedBoardId ? 'var(--ds-link, #0052CC)' : tk.textPrimary,
+                    color: b.id === resolvedBoardId ? 'var(--ds-link, var(--cp-primary-60, #0052CC))' : tk.textPrimary,
                     fontFamily: 'var(--cp-font-body)',
                   }}
                   onMouseEnter={e => { if (b.id !== resolvedBoardId) e.currentTarget.style.background = tk.surfaceHover; }}
@@ -991,7 +991,7 @@ export default function KanbanBoardPage() {
                   width: '100%', textAlign: 'left', padding: '8px 14px',
                   background: 'transparent', border: 'none', cursor: 'pointer',
                   fontSize: 13, fontWeight: 500,
-                  color: 'var(--ds-link, #0052CC)', fontFamily: 'var(--cp-font-body)',
+                  color: 'var(--ds-link, var(--cp-primary-60, #0052CC))', fontFamily: 'var(--cp-font-body)',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -1138,7 +1138,7 @@ export default function KanbanBoardPage() {
                 style={{
                   height: 32, padding: '0 16px', borderRadius: 3,
                   border: 'none',
-                  background: newBoardName.trim() ? 'var(--ds-background-brand-bold, #0052CC)' : tk.chipBg,
+                  background: newBoardName.trim() ? 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))' : tk.chipBg,
                   fontSize: 14, cursor: newBoardName.trim() ? 'pointer' : 'not-allowed',
                   color: newBoardName.trim() ? '#FFFFFF' : tk.textMuted,
                   fontFamily: 'var(--cp-font-body)',

@@ -426,7 +426,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
                       href={data.scope_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#0052CC] hover:underline truncate"
+                      className="text-[var(--cp-primary-60, #0052CC)] hover:underline truncate"
                     >
                       {data.scope_url}
                     </a>
@@ -486,7 +486,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
                 <div className="flex items-center gap-2">
                   <div
                     className="w-4 h-4 rounded flex items-center justify-center"
-                    style={{ background: '#0052CC' }}
+                    style={{ background: 'var(--cp-primary-60, #0052CC)' }}
                   >
                     <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
                       <path d="M1 4l3 3 5-6" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>

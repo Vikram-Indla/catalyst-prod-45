@@ -5,7 +5,7 @@
  * styling is never touched.
  *
  * Tokens follow Jira/Atlaskit colours already used throughout sp-*:
- *   #0052CC focus blue · var(--ds-border, #DFE1E6) border · var(--ds-text, #172B4D) ink · var(--ds-text-subtlest, #6B778C) muted ·
+ *   var(--cp-primary-60, #0052CC) focus blue · var(--ds-border, #DFE1E6) border · var(--ds-text, #172B4D) ink · var(--ds-text-subtlest, #6B778C) muted ·
  *   var(--ds-surface-sunken, #F4F5F7) subtle surface.
  */
 
@@ -15,7 +15,7 @@
 }
 .sp-panel--v2 .sp-row--v2:focus-visible,
 .sp-panel--v2 .sp-row--focused {
-  box-shadow: inset 2px 0 0 #0052CC;
+  box-shadow: inset 2px 0 0 var(--cp-primary-60, #0052CC);
   background: var(--ds-surface-sunken, #F4F5F7);
 }
 
@@ -61,7 +61,7 @@
 
 .sp-panel--v2 .sp-desc-trigger:focus-visible {
   outline: none;
-  border-color: #0052CC;
+  border-color: var(--cp-primary-60, #0052CC);
   box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25);
   opacity: 1;
 }
@@ -79,7 +79,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #0052CC;
+  background: var(--cp-primary-60, #0052CC);
   box-shadow: 0 0 0 1.5px var(--ds-text-inverse, #FFFFFF);
 }
 

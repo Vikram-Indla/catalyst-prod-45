@@ -80,7 +80,7 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
             >
               <span style={{ display: 'flex', width: 16, height: 16 }}>{opt.icon}</span>
               <span>{opt.label}</span>
-              {opt.key === value && <CheckMarkIcon label="" color="var(--ds-background-brand-bold, #0052CC)" />}
+              {opt.key === value && <CheckMarkIcon label="" color="var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))" />}
             </div>
           ))}
         </div>
@@ -149,7 +149,7 @@ function InlineStatusDropdown({ item, onUpdate }: { item: PhIssueRow; onUpdate: 
                     onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                   >
                     <span style={{ flex: 1 }}>{s}</span>
-                    {isActive && <CheckMarkIcon label="" color="var(--ds-background-brand-bold, #0052CC)" />}
+                    {isActive && <CheckMarkIcon label="" color="var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))" />}
                   </div>
                 );
               })}

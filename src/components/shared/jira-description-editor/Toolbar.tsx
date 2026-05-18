@@ -19,7 +19,7 @@ const TEXT_COLORS = [
   { label: 'Yellow', value: '#FF991F' },
   { label: 'Green', value: '#00875A' },
   { label: 'Teal', value: '#00B8D9' },
-  { label: 'Blue', value: '#0052CC' },
+  { label: 'Blue', value: 'var(--cp-primary-60, #0052CC)' },
   { label: 'Purple', value: '#6554C0' },
   { label: 'Pink', value: '#FF5630' },
 ];
@@ -378,7 +378,7 @@ const INSERT_ITEMS = [
   // Jira-parity: Action item, Mention, Decision at top
   {
     label: 'Action item',
-    icon: <CheckSquare size={14} style={{ color: '#0052CC' }} />,
+    icon: <CheckSquare size={14} style={{ color: 'var(--cp-primary-60, #0052CC)' }} />,
     cmd: (e: Editor) => e.chain().focus().toggleTaskList().run(),
   },
   {
@@ -399,7 +399,7 @@ const INSERT_ITEMS = [
   },
   {
     label: 'Info panel',
-    icon: <Info size={14} style={{ color: '#0052CC' }} />,
+    icon: <Info size={14} style={{ color: 'var(--cp-primary-60, #0052CC)' }} />,
     cmd: (e: Editor) => e.chain().focus().insertContent({ type: 'panel', attrs: { panelType: 'info' }, content: [{ type: 'paragraph' }] }).run(),
   },
   {

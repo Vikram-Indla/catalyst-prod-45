@@ -83,7 +83,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
         <span style={{
           fontSize: 11, fontWeight: 600, padding: '1px 5px', borderRadius: 4,
           background: source === 'JIRA' ? '#E3F0FF' : 'var(--cp-bd-zone)',
-          color: source === 'JIRA' ? '#0052CC' : 'var(--fg-3)',
+          color: source === 'JIRA' ? 'var(--cp-primary-60, #0052CC)' : 'var(--fg-3)',
           fontFamily: 'var(--cp-font-body)',
           lineHeight: 1.4,
         }}>{source}</span>

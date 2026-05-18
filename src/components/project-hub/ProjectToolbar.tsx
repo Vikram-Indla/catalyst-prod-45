@@ -75,7 +75,7 @@ export function ProjectToolbar({
               width: 32,
               height: 32,
               backgroundColor: view === 'table' ? ('var(--cp-primary-light, #DEEBFF)') : surfaceBg,
-              color: view === 'table' ? ('var(--cp-text-link, #0052CC)') : subtleColor,
+              color: view === 'table' ? ('var(--cp-text-link, var(--cp-primary-60, #0052CC))') : subtleColor,
               border: 'none',
               cursor: 'pointer',
             }}
@@ -90,7 +90,7 @@ export function ProjectToolbar({
               width: 32,
               height: 32,
               backgroundColor: view === 'card' ? ('var(--cp-primary-light, #DEEBFF)') : surfaceBg,
-              color: view === 'card' ? ('var(--cp-text-link, #0052CC)') : subtleColor,
+              color: view === 'card' ? ('var(--cp-text-link, var(--cp-primary-60, #0052CC))') : subtleColor,
               border: 'none',
               borderLeft: `1px solid ${borderColor}`,
               cursor: 'pointer',

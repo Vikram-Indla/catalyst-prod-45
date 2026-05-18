@@ -57,7 +57,7 @@
 
 .jde-tb-btn--active {
   background: rgba(76, 154, 255, 0.15) !important;
-  color: #0052CC !important;
+  color: var(--cp-primary-60, #0052CC) !important;
 }
 
 .jde-tb-btn--disabled {
@@ -177,7 +177,7 @@
 
 .jde-dropdown-item--active {
   background: #DEEBFF;
-  color: #0052CC;
+  color: var(--cp-primary-60, #0052CC);
 }
 
 .jde-dropdown-item--row {
@@ -246,7 +246,7 @@
 .jde-btn-primary {
   height: 28px;
   padding: 0 10px;
-  background: #0052CC;
+  background: var(--cp-primary-60, #0052CC);
   color: #fff;
   border: none;
   border-radius: 3px;
@@ -394,7 +394,7 @@
 
 /* Link */
 .jde-content .ProseMirror a.jde-link {
-  color: #0052CC;
+  color: var(--cp-primary-60, #0052CC);
   text-decoration: underline;
 }
 
@@ -464,7 +464,7 @@
   margin-top: 1px;
 }
 
-.jde-content .ProseMirror .jde-panel--info    { background: #DEEBFF; border-left: 4px solid #0052CC; }
+.jde-content .ProseMirror .jde-panel--info    { background: #DEEBFF; border-left: 4px solid var(--cp-primary-60, #0052CC); }
 .jde-content .ProseMirror .jde-panel--info::before { content: 'ℹ️'; }
 .jde-content .ProseMirror .jde-panel--note    { background: #EAE6FF; border-left: 4px solid #6554C0; }
 .jde-content .ProseMirror .jde-panel--note::before { content: '📝'; }

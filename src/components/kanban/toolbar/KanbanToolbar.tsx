@@ -84,7 +84,7 @@ function BoardMenuItem({
       {badge !== undefined && badge > 0 && (
         <span style={{
           fontSize: 11, fontWeight: 700, color: 'var(--ds-surface, #FFFFFF)',
-          background: '#0052CC', borderRadius: 10, padding: '1px 8px',
+          background: 'var(--cp-primary-60, #0052CC)', borderRadius: 10, padding: '1px 8px',
           lineHeight: '18px',
         }}>{badge}</span>
       )}
@@ -305,7 +305,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
               height: 32, padding: '0 10px',
               border: 'none', borderRadius: 3,
               fontSize: 14, fontWeight: 500,
-              color: active ? 'var(--ds-link, #0052CC)' : tk.textPrimary,
+              color: active ? 'var(--ds-link, var(--cp-primary-60, #0052CC))' : tk.textPrimary,
               background: active ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent',
               cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               transition: 'background 100ms',
@@ -404,7 +404,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
               <>
                 <div style={{ height: 1, background: tk.borderSubtle, margin: '6px 12px' }} />
                 <BoardMenuItem
-                  icon={<ArchiveBoxIcon label="" size="small" primaryColor={showArchived ? '#0052CC' : tk.textSecondary} />}
+                  icon={<ArchiveBoxIcon label="" size="small" primaryColor={showArchived ? 'var(--cp-primary-60, #0052CC)' : tk.textSecondary} />}
                   label={showArchived ? 'Hide archived issues' : 'Show archived issues'}
                   onClick={() => { onShowBoardMenuChange(false); onShowArchivedChange?.(v => !v); }}
                 />

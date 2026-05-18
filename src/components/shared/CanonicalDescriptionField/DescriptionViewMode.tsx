@@ -72,12 +72,12 @@ function renderMarkdown(
     if (mention.type === 'url') {
       rendered = rendered.replace(
         mention.reference,
-        `<a href="${mention.reference}" target="_blank" rel="noopener noreferrer" style="color: #0052CC; text-decoration: none;">${mention.display}</a>`
+        `<a href="${mention.reference}" target="_blank" rel="noopener noreferrer" style="color: var(--cp-primary-60, #0052CC); text-decoration: none;">${mention.display}</a>`
       );
     } else if (mention.type === 'user') {
       rendered = rendered.replace(
         mention.display,
-        `<span style="color: #0052CC; font-weight: 500;">${mention.display}</span>`
+        `<span style="color: var(--cp-primary-60, #0052CC); font-weight: 500;">${mention.display}</span>`
       );
     }
   });

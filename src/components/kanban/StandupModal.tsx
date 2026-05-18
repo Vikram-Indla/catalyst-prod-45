@@ -229,7 +229,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
   const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
   const ss = String(seconds % 60).padStart(2, '0');
   const timerPct = 1 - seconds / timerDuration;
-  const timerColor = seconds <= 15 ? '#E5493A' : seconds <= 30 ? '#FF8B00' : 'var(--ds-text-brand,#0052CC)';
+  const timerColor = seconds <= 15 ? '#E5493A' : seconds <= 30 ? '#FF8B00' : 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))';
   const total = order.length;
   const isLast = step === total - 1;
 
@@ -283,7 +283,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
               tk={tk}
               active={running}
             >
-              {running ? <IcPause size={13} color="var(--ds-text-brand,#0052CC)" /> : <IcPlay size={13} color="var(--ds-text-brand,#0052CC)" />}
+              {running ? <IcPause size={13} color="var(--ds-text-brand,var(--cp-primary-60, #0052CC))" /> : <IcPlay size={13} color="var(--ds-text-brand,var(--cp-primary-60, #0052CC))" />}
             </IconBtn>
             {/* Mute */}
             <IconBtn onClick={() => setMuted(m => !m)} title={muted ? 'Unmute' : 'Mute'} tk={tk}>
@@ -315,10 +315,10 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
                       <button key={m}
                         onClick={() => { const s = m * 60; setTimerDuration(s); setSeconds(s); setShowSettings(false); }}
                         style={{
-                          flex: 1, height: 28, borderRadius: 4, border: `1px solid ${timerDuration === m * 60 ? 'var(--ds-text-brand,#0052CC)' : tk.border}`,
+                          flex: 1, height: 28, borderRadius: 4, border: `1px solid ${timerDuration === m * 60 ? 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))' : tk.border}`,
                           background: timerDuration === m * 60 ? 'var(--ds-background-selected,#DEEBFF)' : 'transparent',
                           fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                          color: timerDuration === m * 60 ? 'var(--ds-link,#0052CC)' : tk.textSecondary,
+                          color: timerDuration === m * 60 ? 'var(--ds-link,var(--cp-primary-60, #0052CC))' : tk.textSecondary,
                         }}>
                         {m}
                       </button>
@@ -338,7 +338,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
           <div style={{
             height: '100%', borderRadius: 2,
             width: `${((step + 1) / total) * 100}%`,
-            background: 'var(--ds-text-brand,#0052CC)',
+            background: 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))',
             transition: 'width 250ms ease',
           }} />
         </div>
@@ -362,7 +362,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
                 display: 'flex', alignItems: 'center', gap: 10,
                 border: 'none', cursor: 'pointer',
                 background: isSelected ? 'var(--ds-background-selected,#DEEBFF)' : 'transparent',
-                borderLeft: isSelected ? '3px solid var(--ds-text-brand,#0052CC)' : '3px solid transparent',
+                borderLeft: isSelected ? '3px solid var(--ds-text-brand,var(--cp-primary-60, #0052CC))' : '3px solid transparent',
                 fontFamily: 'var(--cp-font-body)',
                 transition: 'background 80ms',
               }}
@@ -373,7 +373,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{
                   fontSize: 14, fontWeight: isSelected ? 600 : 500,
-                  color: isSelected ? 'var(--ds-link,#0052CC)' : tk.textPrimary,
+                  color: isSelected ? 'var(--ds-link,var(--cp-primary-60, #0052CC))' : tk.textPrimary,
                   whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                 }}>
                   {b.name}
@@ -408,7 +408,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
             <span key={lp} style={{
               width: lp === step ? 16 : 6, height: 6, borderRadius: 3,
               background: lp === step
-                ? 'var(--ds-text-brand,#0052CC)'
+                ? 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))'
                 : visited.has(buckets[bIdx]?.name ?? '') ? '#36B37E' : tk.chipBg,
               transition: 'width 200ms ease',
               flexShrink: 0,
@@ -470,7 +470,7 @@ function IconBtn({ onClick, title, children, tk, active }: {
       title={title}
       style={{
         width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        borderRadius: 4, border: `1px solid ${active ? 'var(--ds-text-brand,#0052CC)' : 'transparent'}`,
+        borderRadius: 4, border: `1px solid ${active ? 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))' : 'transparent'}`,
         background: active ? 'var(--ds-background-selected,#DEEBFF)' : 'transparent',
         cursor: 'pointer', flexShrink: 0,
       }}
@@ -504,7 +504,7 @@ function navBtnStyle(tk: KanbanThemeTokens, primary: boolean, disabled: boolean)
     cursor: disabled ? 'default' : 'pointer',
     fontSize: 13, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
     color: disabled ? tk.textDisabled : primary ? '#FFFFFF' : tk.textPrimary,
-    background: disabled ? tk.chipBg : primary ? 'var(--ds-text-brand,#0052CC)' : tk.surfaceHover,
+    background: disabled ? tk.chipBg : primary ? 'var(--ds-text-brand,var(--cp-primary-60, #0052CC))' : tk.surfaceHover,
     opacity: disabled ? 0.4 : 1,
     whiteSpace: 'nowrap',
   };

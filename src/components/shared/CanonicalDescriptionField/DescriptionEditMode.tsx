@@ -63,7 +63,7 @@ export function DescriptionEditMode({
         aria-invalid={!!error}
         aria-describedby={error ? 'description-error' : undefined}
         onFocus={(e) => {
-          e.currentTarget.style.borderColor = '#0052CC';
+          e.currentTarget.style.borderColor = 'var(--cp-primary-60, #0052CC)';
         }}
         onBlur={(e) => {
           e.currentTarget.style.borderColor = error ? '#AE2A19' : isNearLimit ? '#974F0C' : '#DFE1E6';

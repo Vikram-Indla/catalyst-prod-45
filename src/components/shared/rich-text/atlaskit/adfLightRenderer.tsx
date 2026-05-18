@@ -71,7 +71,7 @@ function renderMark(
       return (
         <a key={key} href={href}
           target="_blank" rel="noopener noreferrer"
-          style={{ color: token('color.text.brand', '#0052CC'), textDecoration: 'none' }}
+          style={{ color: token('color.text.brand', 'var(--cp-primary-60, #0052CC)'), textDecoration: 'none' }}
         >
           {children}
         </a>

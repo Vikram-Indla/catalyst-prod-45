@@ -1031,7 +1031,7 @@
 /* ── Links ── */
 [data-sdm-scope] .adf-editor-content a,
 [data-sdm-scope] .ProseMirror a {
-  color: #0052CC;
+  color: var(--cp-primary-60, #0052CC);
   text-decoration: none;
   cursor: pointer;
   border-bottom: 1px solid transparent;
@@ -1044,13 +1044,13 @@
 }
 [data-sdm-scope] .adf-editor-content a:visited,
 [data-sdm-scope] .ProseMirror a:visited {
-  color: #0052CC;
+  color: var(--cp-primary-60, #0052CC);
 }
 
 /* ── Inline cards (Jira smart links) ── */
 [data-sdm-scope] .adf-inline-card,
 [data-sdm-scope] .adf-block-card {
-  color: #0052CC;
+  color: var(--cp-primary-60, #0052CC);
   text-decoration: none;
   padding: 2px 4px;
   border-radius: 3px;
@@ -1158,7 +1158,7 @@
 [data-sdm-scope] .adf-panel-content { flex: 1; min-width: 0; }
 [data-sdm-scope] .adf-panel-content p { margin: 0; }
 
-[data-sdm-scope] .adf-panel--info    { background: #DEEBFF; border-left: 3px solid #0052CC; }
+[data-sdm-scope] .adf-panel--info    { background: #DEEBFF; border-left: 3px solid var(--cp-primary-60, #0052CC); }
 [data-sdm-scope] .adf-panel--note    { background: #EAE6FF; border-left: 3px solid #6554C0; }
 [data-sdm-scope] .adf-panel--warning { background: #FFFAE6; border-left: 3px solid #FF8B00; }
 [data-sdm-scope] .adf-panel--success { background: #E3FCEF; border-left: 3px solid #00875A; }
@@ -1199,7 +1199,7 @@
   margin-top: 4px;
   width: 14px;
   height: 14px;
-  accent-color: #0052CC;
+  accent-color: var(--cp-primary-60, #0052CC);
   flex-shrink: 0;
 }
 
@@ -1227,7 +1227,7 @@
 
 /* ── Mentions ── */
 [data-sdm-scope] .adf-mention {
-  color: #0052CC;
+  color: var(--cp-primary-60, #0052CC);
   background: #DEEBFF;
   padding: 1px 4px;
   border-radius: 3px;

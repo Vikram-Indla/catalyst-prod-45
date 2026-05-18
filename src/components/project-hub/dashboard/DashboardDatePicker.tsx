@@ -60,7 +60,7 @@ export default function DashboardDatePicker() {
       background: 'var(--ds-surface-sunken, #FAFBFC)',
       fontSize: 13,
       fontWeight: 500,
-      color: open ? '#0052CC' : 'var(--ds-text, #172B4D)',
+      color: open ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text, #172B4D)',
       cursor: 'pointer',
     }) as React.CSSProperties,
     [open],
@@ -243,7 +243,7 @@ function Row({
         border: 0,
         cursor: 'pointer',
         fontSize: 13,
-        color: active ? '#0052CC' : 'var(--ds-text, #172B4D)',
+        color: active ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-text, #172B4D)',
         fontWeight: active ? 600 : 400,
         textAlign: 'left',
       }}
@@ -251,7 +251,7 @@ function Row({
       onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
     >
       <span style={{ width: 14, display: 'inline-flex' }}>
-        {active && <Check size={14} color="#0052CC" />}
+        {active && <Check size={14} color="var(--cp-primary-60, #0052CC)" />}
       </span>
       <span style={{ flex: 1 }}>{label}</span>
       {sub && <span style={{ fontSize: 11, color: '#7A869A' }}>{sub}</span>}
@@ -351,7 +351,7 @@ function CustomRangePanel({
               padding: '0 12px',
               border: 0,
               borderRadius: 3,
-              background: '#0052CC',
+              background: 'var(--cp-primary-60, #0052CC)',
               color: 'var(--ds-text-inverse, #FFFFFF)',
               fontSize: 12,
               fontWeight: 600,
@@ -509,17 +509,17 @@ function MonthGrid({
           let color = isOtherMonth ? 'var(--ds-border-disabled, #C1C7D0)' : 'var(--ds-text, #172B4D)';
           let radius = '3px';
           if (isStart || isEnd) {
-            bg = '#0052CC';
+            bg = 'var(--cp-primary-60, #0052CC)';
             color = 'var(--ds-text-inverse, #FFFFFF)';
             if (isStart && !isEnd) radius = '3px 0 0 3px';
             if (isEnd && !isStart) radius = '0 3px 3px 0';
           } else if (inRange) {
             bg = '#DEEBFF';
-            color = '#0052CC';
+            color = 'var(--cp-primary-60, #0052CC)';
             radius = '0';
           }
           if (isToday && !isStart && !isEnd) {
-            color = '#0052CC';
+            color = 'var(--cp-primary-60, #0052CC)';
           }
 
           return (

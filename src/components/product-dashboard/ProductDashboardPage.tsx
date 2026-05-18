@@ -33,7 +33,7 @@ function AkBtn({
           ? `1px solid ${token('color.link', '#0C66E4')}`
           : `1px solid ${token('color.border', '#DFE1E6')}`,
         background: primary
-          ? hover ? '#0052CC' : token('color.link', '#0C66E4')
+          ? hover ? 'var(--cp-primary-60, #0052CC)' : token('color.link', '#0C66E4')
           : hover ? token('color.background.neutral.hovered', '#F1F2F4') : token('elevation.surface', '#FFFFFF'),
         fontSize: 14,
         fontWeight: 500,

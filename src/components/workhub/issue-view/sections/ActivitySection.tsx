@@ -223,7 +223,7 @@ export function ActivitySection({
             className={cn(
               'p-2 rounded-md transition-colors shrink-0',
               commentText.trim()
-                ? 'bg-[#0C66E4] text-white hover:bg-[#0052CC]'
+                ? 'bg-[#0C66E4] text-white hover:bg-[var(--cp-primary-60, #0052CC)]'
                 : isDark ? 'bg-[var(--ds-border,#292929)] text-[var(--ds-text-subtlest,#878787)]' : 'bg-[var(--ds-surface-sunken,#F4F5F7)] text-[var(--ds-text-subtlest,#6B6E76)]',
             )}
           >

@@ -182,7 +182,7 @@ export function DefectsSection({
                     onClick={() => setCreating(true)}
                     style={{
                       background: 'none', border: 'none', padding: 0,
-                      fontSize: 14, color: 'var(--ds-text-brand, #0052CC)',
+                      fontSize: 14, color: 'var(--ds-text-brand, var(--cp-primary-60, #0052CC))',
                       cursor: 'pointer', fontFamily: 'inherit',
                     }}
                     onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}

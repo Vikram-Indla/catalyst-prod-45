@@ -15,7 +15,7 @@ const ATLASSIAN_DROPDOWN: React.CSSProperties = {
 };
 
 const CheckmarkSVG = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052CC" strokeWidth="2.5" style={{ flexShrink: 0 }}>
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--cp-primary-60, #0052CC)" strokeWidth="2.5" style={{ flexShrink: 0 }}>
     <polyline points="20 6 9 17 4 12" />
   </svg>
 );

@@ -37,7 +37,7 @@ import { ProjectIcon } from '@/components/shared/ProjectIcon';
 // ── Utilities ──────────────────────────────────────────
 // ADS tokens only — no raw hex (CLAUDE.md ADS ring-fence rule 2026-05-09)
 const BADGE_COLORS = [
-  'var(--ds-text-brand, #0052CC)',
+  'var(--ds-text-brand, var(--cp-primary-60, #0052CC))',
   'var(--ds-text-accent-purple, #5243AA)',
   'var(--ds-text-accent-teal, #0C7E6A)',
   'var(--ds-text-subtle, #44546F)',

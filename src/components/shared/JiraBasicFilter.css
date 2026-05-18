@@ -38,7 +38,7 @@
 }
 .jf-trigger-btn--active {
   background-color: var(--ds-background-selected, #DEEBFF);
-  color: var(--ds-link, #0052CC);
+  color: var(--ds-link, var(--cp-primary-60, #0052CC));
 }
 .jf-trigger-icon { flex-shrink: 0; }
 .jf-trigger-text {
@@ -146,7 +146,7 @@
   background: transparent;
   color: var(--ds-text-selected, #172B4D);
   font-weight: 500;
-  border-bottom: 2px solid var(--ds-text-brand, #0052CC);
+  border-bottom: 2px solid var(--ds-text-brand, var(--cp-primary-60, #0052CC));
 }
 .jf-tab:disabled { opacity: 0.4; cursor: default; }
 
@@ -226,7 +226,7 @@
 }
 .jf-category-item--active {
   background-color: var(--ds-background-selected, #DEEBFF);
-  color: var(--ds-text-brand, #0052CC);
+  color: var(--ds-text-brand, var(--cp-primary-60, #0052CC));
   font-weight: 500;
 }
 .jf-category-item--active::before {
@@ -238,7 +238,7 @@
   bottom: 4px;
   width: 2px;
   border-radius: 0 2px 2px 0;
-  background-color: var(--ds-text-brand, #0052CC);
+  background-color: var(--ds-text-brand, var(--cp-primary-60, #0052CC));
 }
 .jf-category-label { display: flex; flex: 1 1 auto; color: inherit; font-size: inherit; }
 .jf-category-text {
@@ -433,7 +433,7 @@
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
-  color: var(--ds-text-brand, #0052CC);
+  color: var(--ds-text-brand, var(--cp-primary-60, #0052CC));
 }
 .jf-avatar-wrap { width: 28px; height: 28px; display: flex; align-items: center; flex-shrink: 0; }
 .jf-avatar {

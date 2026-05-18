@@ -114,14 +114,14 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
           <div className="flex items-center gap-1.5 text-[11px] text-[#42526E]">
             {parentIncidentId && (
               <>
-                <a href="#" className="flex items-center gap-1 hover:text-[#0052CC] hover:underline">
+                <a href="#" className="flex items-center gap-1 hover:text-[var(--cp-primary-60, #0052CC)] hover:underline">
                   <span className="text-sm">◇</span>
                   <span>{parentIncidentId}</span>
                 </a>
                 <span className="text-[#A5ADBA]">/</span>
               </>
             )}
-            <a href="#" className="flex items-center gap-1 hover:text-[#0052CC] hover:underline">
+            <a href="#" className="flex items-center gap-1 hover:text-[var(--cp-primary-60, #0052CC)] hover:underline">
               <span className="text-sm">▢</span>
               <span>{incident.id}</span>
             </a>

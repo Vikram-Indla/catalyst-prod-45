@@ -280,7 +280,7 @@ function BusinessRequestParentPicker({
         >
           <IssueIcon type="Business Request" size={16} />
           <span
-            style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: 'var(--ds-link, #0052CC)', flexShrink: 0 }}
+            style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: 'var(--ds-link, var(--cp-primary-60, #0052CC))', flexShrink: 0 }}
           >{currentParent.request_key}</span>
           <span style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
           >{currentParent.title}</span>
@@ -366,7 +366,7 @@ function renderBrGroup(
             <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-subtle, #5E6C84)', flexShrink: 0 }}>{item.request_key || '—'}</span>
             <span style={{ fontSize: 13, color: 'var(--ds-text, #292A2E)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</span>
             <StatusLozenge status={item.process_step} category={statusCat} />
-            {isSelected && <CheckIcon size="small" primaryColor="var(--ds-background-brand-bold, #0052CC)" />}
+            {isSelected && <CheckIcon size="small" primaryColor="var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))" />}
           </div>
         );
       })}
@@ -685,7 +685,7 @@ function MultiLinkPicker({
               <div key={link.id} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <IssueIcon type={link.issue_type} size={16} />
                 <span
-                  style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: 'var(--ds-link, #0052CC)', cursor: 'pointer', flexShrink: 0 }}
+                  style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: 'var(--ds-link, var(--cp-primary-60, #0052CC))', cursor: 'pointer', flexShrink: 0 }}
                   onClick={() => setShowPicker(!showPicker)}
                 >{link.issue_key}</span>
                 <span style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
@@ -762,7 +762,7 @@ function renderGroup(
             <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-subtle, #5E6C84)', flexShrink: 0 }}>{item.issue_key}</span>
             <span style={{ fontSize: 13, color: 'var(--ds-text, #292A2E)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.summary}</span>
             <StatusLozenge status={item.status} category={item.status_category} />
-            {isSelected && <CheckIcon size="small" primaryColor="var(--ds-background-brand-bold, #0052CC)" />}
+            {isSelected && <CheckIcon size="small" primaryColor="var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))" />}
           </div>
         );
       })}

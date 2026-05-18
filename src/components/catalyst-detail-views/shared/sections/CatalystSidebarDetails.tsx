@@ -414,7 +414,7 @@ export function CatalystSidebarDetails({
                         <Lozenge appearance={optionAppearance} isBold>{st}</Lozenge>
                       </span>
                       {isActive && (
-                        <CheckIcon size="small" primaryColor="var(--ds-icon-selected, #0052CC)" />
+                        <CheckIcon size="small" primaryColor="var(--ds-icon-selected, var(--cp-primary-60, #0052CC))" />
                       )}
                     </div>
                   );

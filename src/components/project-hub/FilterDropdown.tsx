@@ -45,7 +45,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
         onClick={() => setOpen(!open)}
         className={`flex items-center gap-1.5 rounded-[6px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] ${
           hasFilters
-            ? dark ? 'bg-[#0D1526] border-[#1E3A5F] text-[#4C9AFF]' : 'bg-[#DEEBFF] border-[#B3D4FF] text-[#0052CC]'
+            ? dark ? 'bg-[#0D1526] border-[#1E3A5F] text-[#4C9AFF]' : 'bg-[#DEEBFF] border-[#B3D4FF] text-[var(--cp-primary-60, #0052CC)]'
             : dark ? 'bg-transparent border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text-subtlest,#A1A1A1)]' : 'bg-white border-[var(--ds-border,#E2E8F0)] text-[#42526E]'
         }`}
         style={{
@@ -64,7 +64,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
         {hasFilters && (
           <span
             className="flex items-center justify-center rounded-full"
-            style={{ width: 18, height: 18, backgroundColor: '#0052CC', color: 'var(--ds-surface, #FFF)', fontSize: 10, fontWeight: 600 }}
+            style={{ width: 18, height: 18, backgroundColor: 'var(--cp-primary-60, #0052CC)', color: 'var(--ds-surface, #FFF)', fontSize: 10, fontWeight: 600 }}
           >
             {filters.statuses.length + filters.healths.length}
           </span>
@@ -115,7 +115,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
                 height: 28,
                 padding: '0 12px',
                 color: 'var(--ds-surface, #FFF)',
-                backgroundColor: '#0052CC',
+                backgroundColor: 'var(--cp-primary-60, #0052CC)',
                 border: 'none',
                 borderRadius: 6,
                 fontSize: 12,
@@ -177,7 +177,7 @@ function FilterSection({
                 height: 16,
                 borderRadius: 3,
                 border: checked ? 'none' : `1.5px solid ${dark ? 'var(--ds-border-bold, #454545)' : 'var(--ds-border-disabled, #C1C7D0)'}`,
-                backgroundColor: checked ? '#0052CC' : 'transparent',
+                backgroundColor: checked ? 'var(--cp-primary-60, #0052CC)' : 'transparent',
               }}
             >
               {checked && <Check size={11} color="var(--ds-text-inverse, #FFFFFF)" strokeWidth={3} />}
@@ -228,7 +228,7 @@ export function FilterChips({
       {chips.map((c, i) => (
         <span
           key={i}
-          className={`inline-flex items-center gap-1 rounded-full ${dark ? 'bg-[#0D1526] text-[#4C9AFF]' : 'bg-[#DEEBFF] text-[#0052CC]'}`}
+          className={`inline-flex items-center gap-1 rounded-full ${dark ? 'bg-[#0D1526] text-[#4C9AFF]' : 'bg-[#DEEBFF] text-[var(--cp-primary-60, #0052CC)]'}`}
           style={{
             fontSize: 11,
             fontWeight: 500,
@@ -240,7 +240,7 @@ export function FilterChips({
             onClick={c.remove}
             style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex' }}
           >
-            <X size={12} color={dark ? '#4C9AFF' : '#0052CC'} />
+            <X size={12} color={dark ? '#4C9AFF' : 'var(--cp-primary-60, #0052CC)'} />
           </button>
         </span>
       ))}

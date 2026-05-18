@@ -1051,7 +1051,7 @@
   cursor: pointer;
   transition: background 150ms ease;
 }
-.awCommentSaveBtn:hover { background: #0052CC; }
+.awCommentSaveBtn:hover { background: var(--cp-primary-60, #0052CC); }
 .awCommentSaveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 .awCommentCancelBtn {
   padding: 6px 16px;
@@ -1255,7 +1255,7 @@
   color: var(--ds-surface, #fff);
   cursor: pointer;
 }
-.awLogWorkSubmit:hover { background: #0052CC; }
+.awLogWorkSubmit:hover { background: var(--cp-primary-60, #0052CC); }
 .awLogWorkSubmit:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ── Details sidebar sections ── */

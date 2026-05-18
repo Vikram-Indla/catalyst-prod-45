@@ -264,7 +264,7 @@
 }
 .sp-panel .sp-desc-trigger:focus-visible {
   outline: none;
-  border-color: #0052CC;
+  border-color: var(--cp-primary-60, #0052CC);
   box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25);
   opacity: 1;
 }
@@ -275,7 +275,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #0052CC;
+  background: var(--cp-primary-60, #0052CC);
   box-shadow: 0 0 0 1.5px var(--ds-text-inverse, #FFFFFF);
 }
 
@@ -464,16 +464,16 @@
   justify-content: center;
   transition: background 0.12s, border-color 0.12s;
 }
-.sp-checkbox:hover .sp-checkbox-box { border-color: var(--ds-link, #0052CC); }
+.sp-checkbox:hover .sp-checkbox-box { border-color: var(--ds-link, var(--cp-primary-60, #0052CC)); }
 .sp-checkbox input:checked + .sp-checkbox-box,
 .sp-row--selected .sp-checkbox-box {
-  background: var(--ds-background-brand-bold, #0052CC);
-  border-color: var(--ds-background-brand-bold, #0052CC);
+  background: var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC));
+  border-color: var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC));
 }
 .sp-checkbox-dash {
   width: 8px;
   height: 2px;
-  background: var(--ds-link, #0052CC);
+  background: var(--ds-link, var(--cp-primary-60, #0052CC));
   border-radius: 1px;
 }
 .sp-row--selected .sp-checkbox-dash { background: var(--ds-text-inverse, #FFFFFF); }

@@ -223,7 +223,7 @@ function InviteUserModal({ onClose }: { onClose: () => void }) {
                     checked={!!moduleAccess[m.key]}
                     disabled={!!m.default}
                     onChange={() => !m.default && toggleModule(m.key)}
-                    style={{ accentColor: token('color.background.brand.bold', '#0052CC'), cursor: m.default ? 'default' : 'pointer' }}
+                    style={{ accentColor: token('color.background.brand.bold', 'var(--cp-primary-60, #0052CC)'), cursor: m.default ? 'default' : 'pointer' }}
                   />
                   {m.label}
                   {m.default && <span style={{ fontSize: 11, color: token('color.text.subtlest', '#97A0AF') }}>(default)</span>}
@@ -510,7 +510,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                     checked={moduleAccess[m.key] === true}
                     disabled={!!m.default || saving}
                     onChange={() => toggleModule(m.key)}
-                    style={{ width: 16, height: 16, accentColor: 'var(--ds-background-brand-bold, #0052CC)', cursor: (m.default || saving) ? 'default' : 'pointer' }}
+                    style={{ width: 16, height: 16, accentColor: 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))', cursor: (m.default || saving) ? 'default' : 'pointer' }}
                   />
                   {m.label}
                   {m.default && <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #97A0AF)' }}>(default)</span>}

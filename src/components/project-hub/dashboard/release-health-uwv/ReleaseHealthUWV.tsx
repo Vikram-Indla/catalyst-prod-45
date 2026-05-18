@@ -159,7 +159,7 @@ function ReleaseItemsRows({
               fontFamily: MONO_STACK,
               fontSize: 12,
               fontWeight: 600,
-              color: '#0052CC',
+              color: 'var(--cp-primary-60, #0052CC)',
               textAlign: 'left',
               textDecoration: 'none',
             }}
@@ -223,7 +223,7 @@ function ReleaseRow({
 }) {
   const pct = rel.completionPct ?? 0;
   const isDone = pct >= 100;
-  const fillColor = isDone ? '#006644' : '#0052CC';
+  const fillColor = isDone ? '#006644' : 'var(--cp-primary-60, #0052CC)';
 
   return (
     <>

@@ -161,7 +161,7 @@ function BRTextareaEditor({ initialValue, placeholder, minHeight = 120, onSave, 
           onClick={() => onSave(value)}
           style={{
             padding: '6px 16px', borderRadius: 3, border: 'none', cursor: 'pointer',
-            background: '#0052CC', color: 'var(--ds-surface, #FFFFFF)', fontSize: 14, fontWeight: 600,
+            background: 'var(--cp-primary-60, #0052CC)', color: 'var(--ds-surface, #FFFFFF)', fontSize: 14, fontWeight: 600,
           }}
         >Save</button>
         <button
@@ -414,7 +414,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
   if (isLoading || !request) {
     return (
       <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(9, 30, 66, 0.54)' }} onClick={onClose}>
-        <div style={{ width: 48, height: 48, border: '3px solid #DFE1E6', borderTopColor: '#0052CC', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <div style={{ width: 48, height: 48, border: '3px solid #DFE1E6', borderTopColor: 'var(--cp-primary-60, #0052CC)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       </div>
     );
   }
@@ -469,7 +469,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                 <rect x="6.25" y="11.5" width="3.5" height="0.75" rx="0.375" fill="white"/>
                 <rect x="6.75" y="12.75" width="2.5" height="0.75" rx="0.375" fill="white"/>
               </svg>
-              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, fontWeight: 600, color: '#0052CC' }}>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, fontWeight: 600, color: 'var(--cp-primary-60, #0052CC)' }}>
                 {request.request_key || '—'}
               </span>
             </div>
@@ -782,7 +782,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                     {auditLog.map((e: any) => (
                       <div key={e.id} style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
                         <div style={{
-                          width: 36, height: 36, borderRadius: '50%', background: '#0052CC',
+                          width: 36, height: 36, borderRadius: '50%', background: 'var(--cp-primary-60, #0052CC)',
                           color: 'var(--ds-surface, #FFF)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                           flexShrink: 0,
                         }}>
@@ -871,7 +871,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                             onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                           >
                             <span style={{ background: bg, color, display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{step.label}</span>
-                            {isActive && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052CC" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
+                            {isActive && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--cp-primary-60, #0052CC)" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
                           </div>
                         );
                       })}
@@ -926,7 +926,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                             >
                               {PRIORITY_SVG[p]}
                               <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>{p}</span>
-                              {isActive && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052CC" strokeWidth="2.5" style={{ marginLeft: 'auto' }}><polyline points="20 6 9 17 4 12"/></svg>}
+                              {isActive && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--cp-primary-60, #0052CC)" strokeWidth="2.5" style={{ marginLeft: 'auto' }}><polyline points="20 6 9 17 4 12"/></svg>}
                             </div>
                           );
                         })}

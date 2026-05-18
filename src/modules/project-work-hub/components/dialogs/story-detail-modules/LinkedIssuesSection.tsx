@@ -310,7 +310,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
             disabled={!selectedItems.length || linkMutation.isPending}
             style={{
               height: 32, padding: '0 16px', border: 'none', borderRadius: 3,
-              background: selectedItems.length ? '#0052CC' : 'var(--ds-surface-sunken, #F4F5F7)',
+              background: selectedItems.length ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-surface-sunken, #F4F5F7)',
               color: selectedItems.length ? 'var(--ds-surface, #fff)' : '#A5ADBA', fontSize: 14, fontWeight: 500,
               cursor: selectedItems.length ? 'pointer' : 'not-allowed', fontFamily: 'inherit',
             }}
@@ -534,7 +534,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                         navigate(`/issue/${target.issue_key}`);
                       }
                     }}
-                    style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 12, fontWeight: 600, color: 'var(--ds-link, #0052CC)', flexShrink: 0, cursor: 'pointer', textDecoration: 'none' }}
+                    style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 12, fontWeight: 600, color: 'var(--ds-link, var(--cp-primary-60, #0052CC))', flexShrink: 0, cursor: 'pointer', textDecoration: 'none' }}
                     onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                     onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                   >{target.issue_key}</span>

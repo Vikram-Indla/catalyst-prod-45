@@ -39,7 +39,7 @@ import { useTheme } from '@/hooks/useTheme';
 const HUB_ITEMS = [
   { label: 'Home',         href: '/for-you',                    Icon: HomeIcon,            tone: '#42526E' },
   { label: 'Strategy Hub', href: '/strategyhub',                Icon: OfficeBuildingIcon,  tone: '#8270DB' },
-  { label: 'Product Hub',  href: '/product-hub',                Icon: PortfolioIcon,       tone: '#0052CC' },
+  { label: 'Product Hub',  href: '/product-hub',                Icon: PortfolioIcon,       tone: 'var(--cp-primary-60, #0052CC)' },
   { label: 'Project Hub',  href: '/project-hub',                Icon: FolderIcon,          tone: '#00A3BF' },
   { label: 'Release Hub',  href: '/release-hub/command-center', Icon: ShipIcon,            tone: '#FF8B00' },
   { label: 'Test Hub',     href: '/testhub/dashboard',          Icon: CheckCircleIcon,     tone: '#36B37E' },
@@ -173,7 +173,7 @@ export function SidebarBase({
   const tokens: DarkTokens = {
     isDark,
     itemText: 'var(--cp-text-secondary, #42526E)',
-    activeText: 'var(--cp-text-link, #0052CC)',
+    activeText: 'var(--cp-text-link, var(--cp-primary-60, #0052CC))',
     activeBg: isDark ? 'var(--ds-background-selected, #1C2B41)' : '#E9F2FF',
     hoverBg: isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : 'var(--ds-surface-sunken, #F4F5F7)',
     hoverText: 'var(--cp-text-primary, #172B4D)',
@@ -182,7 +182,7 @@ export function SidebarBase({
     badgeText: 'var(--cp-text-tertiary, #6B778C)',
   };
 
-  // Chevron critique (2026-04-19): brand-blue (#0052CC / --cp-blue) violated
+  // Chevron critique (2026-04-19): brand-blue (var(--cp-primary-60, #0052CC) / --cp-blue) violated
   // the CLAUDE.md colour reservation — blue is reserved for the +Create CTA
   // only. Pulled the toggle to neutral muted tokens so the primary blue cue
   // stays unique to the primary action. Hover lifts to text-primary for an

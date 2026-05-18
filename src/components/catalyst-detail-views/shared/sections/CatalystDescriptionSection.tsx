@@ -198,7 +198,7 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
       padding-left: 0 !important;
       margin-left: 0 !important;
     }
-    .cv-desc-body a, .adf-description-content a { color: var(--ds-link, #0052CC); text-decoration: none; }
+    .cv-desc-body a, .adf-description-content a { color: var(--ds-link, var(--cp-primary-60, #0052CC)); text-decoration: none; }
     .cv-desc-body a:hover, .adf-description-content a:hover { text-decoration: underline; }
     .cv-desc-body hr, .adf-description-content hr { border: none; border-top: 1px solid var(--ds-border, #DFE1E6); margin: 16px 0; }
     .cv-desc-body img, .adf-description-content img { max-width: 100%; border-radius: 4px; cursor: pointer; }
