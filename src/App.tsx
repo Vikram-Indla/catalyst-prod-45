@@ -33,11 +33,8 @@ const HotToaster = lazy(() => import('react-hot-toast').then(m => ({ default: m.
 // issues surface during the visual audit loop (P7).
 const ForYouPage = lazy(() => import("./pages/ForYouPage.atlaskit"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-const AdminLayout = lazy(() => import("./pages/admin/AdminLayout").then(m => ({ default: m.AdminLayout })));
-const FeatureFlagsPage = lazy(() => import("./pages/admin/FeatureFlagsPage").then(m => ({ default: m.default })));
-const WorkflowsAdminPage = lazy(() => import("./pages/admin/workflows/WorkflowAdminPage").then(m => ({ default: m.default })));
-const AdminOverview = lazy(() => import("./pages/admin/AdminOverview"));
-const DesignSystemAdmin = lazy(() => import("./pages/admin/design-system/DesignSystemAdmin"));
+// Admin routes are owned by FullAppRoutes (single source of truth) —
+// no admin lazy imports here. See RCA 2026-05-19 in CLAUDE.md.
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const InviteAcceptPage = lazy(() => import("./pages/InviteAcceptPage"));
 const DeactivatedPage = lazy(() => import("./pages/DeactivatedPage"));
@@ -45,7 +42,6 @@ const SubmitDemandRequest = lazy(() => import("./pages/SubmitDemandRequest"));
 const SlackOAuthCallback = lazy(() => import("./pages/SlackOAuthCallback"));
 const CleanupPage = lazy(() => import("./pages/CleanupPage"));
 const AuditTrailPage = lazy(() => import("./pages/AuditTrailPage"));
-const CatalystFeaturesBoard = lazy(() => import("./pages/admin/CatalystFeaturesBoard"));
 const IssueFullPage = lazy(() => import("./pages/IssueFullPage"));
 
 // Full app routes — only imported when ENABLE_FULL_APP=true
@@ -187,15 +183,12 @@ function App() {
                   <Route path="for-you/:tab" element={<S><ForYouPage /></S>} />
                   <Route path="home" element={<Navigate to="/" replace />} />
 
-                  {/* Admin routes — always available for incremental publishing control */}
-                  <Route path="/admin" element={<S><AdminLayout /></S>}>
-                    <Route index element={<Navigate to="/admin/overview" replace />} />
-                    <Route path="overview" element={<S><AdminOverview /></S>} />
-                    <Route path="design-system" element={<S><DesignSystemAdmin /></S>} />
-                    <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
-                    <Route path="catalyst-features" element={<S><CatalystFeaturesBoard /></S>} />
-                    <Route path="workflows" element={<S><WorkflowsAdminPage /></S>} />
-                  </Route>
+                  {/* Admin routes — ALL registered in FullAppRoutes' single
+                      <Route path="/admin" element={<AdminLayout/>}> block.
+                      Do NOT duplicate the AdminLayout wrapper here — two
+                      nested AdminLayouts produce a double sidebar
+                      (RCA 2026-05-19). FullAppRoutes is the single source
+                      of truth for every /admin/* route. */}
 
                   {/* AI Cleanup route */}
                   <Route path="/cleanup" element={<S><CleanupPage /></S>} />
