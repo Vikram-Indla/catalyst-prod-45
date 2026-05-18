@@ -16,7 +16,7 @@
  *   - ADS tokens only (2026-05-04)
  *   - Modals use isOpen guard pattern (no ModalTransition — portal renders empty)
  */
-import React, { useMemo, useState } from 'react';
+import React, { createContext, useContext, useMemo, useState } from 'react';
 import Heading from '@atlaskit/heading';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import {
@@ -47,6 +47,19 @@ import { adsViolationsStats } from '@/registry/ads-violations.generated';
 import ComponentSpecCard from './ComponentSpecCard';
 import ADSViolationsPanel from './ADSViolationsPanel';
 import CascadeImpactPanel from './CascadeImpactPanel';
+import PublishTab from './PublishTab';
+import HistoryTab from './HistoryTab';
+
+// ─── Publish context — lets HubBreakdownPanel switch to Publish tab + pre-fill ─
+
+interface PublishContextValue {
+  /** Switch to the Publish tab and pre-fill with this component + route. */
+  activatePublish: (componentId: string, route: string) => void;
+}
+const PublishContext = createContext<PublishContextValue>({ activatePublish: () => {} });
+
+/** Publish tab index (0-indexed). Must stay in sync with TabList order below. */
+const PUBLISH_TAB_IDX = 5;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -602,6 +615,7 @@ function ActionBar({ entry }: { entry: UnifiedEntry }) {
 // has a "Publish to X →" action.
 
 function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
+  const { activatePublish } = useContext(PublishContext);
   const [openHub, setOpenHub] = useState<string | null>(null);
   const byHub = useMemo(() => getConsumersByHub(entry.consumers), [entry.consumers]);
 
@@ -829,6 +843,27 @@ function HubBreakdownPanel({ entry }: { entry: UnifiedEntry }) {
                     >
                       Copy test plan
                     </button>
+                    {entry.registryEntry && (
+                      <button
+                        type="button"
+                        style={{
+                          padding: '4px 12px',
+                          borderRadius: 3,
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontSize: 12,
+                          fontWeight: 600,
+                          background: `${color}22`,
+                          color,
+                        }}
+                        onClick={() => {
+                          activatePublish(entry.id, route);
+                          setOpenHub(null);
+                        }}
+                      >
+                        Publish to {hub} tab →
+                      </button>
+                    )}
                     <a
                       href={`http://localhost:8080${route}`}
                       target="_blank"
@@ -1698,7 +1733,19 @@ function AiRecommendationsPane() {
 // ─── Root page ────────────────────────────────────────────────────────────────
 
 export default function ComponentsAdminPage() {
+  // ── Controlled tab state ──────────────────────────────────────────────────
+  const [selectedTab, setSelectedTab] = useState(0);
+
+  // ── Publish draft — set by HubBreakdownPanel "Publish to [Hub] tab →" ────
+  const [publishDraft, setPublishDraft] = useState<{ componentId: string; route: string } | null>(null);
+
+  const activatePublish = React.useCallback((componentId: string, route: string) => {
+    setPublishDraft({ componentId, route });
+    setSelectedTab(PUBLISH_TAB_IDX);
+  }, []);
+
   return (
+    <PublishContext.Provider value={{ activatePublish }}>
     <AdminGuard>
       <div style={{ padding: `${token('space.300', '24px')} ${token('space.400', '32px')}` }}>
         <Heading size="xlarge">Components</Heading>
@@ -1718,7 +1765,11 @@ export default function ComponentsAdminPage() {
 
         <StatsStrip />
 
-        <Tabs id="components-admin-tabs">
+        <Tabs
+          id="components-admin-tabs"
+          selected={selectedTab}
+          onChange={(idx) => setSelectedTab(idx)}
+        >
           <TabList>
             <Tab>Inventory ({TOTAL_UNIFIED.toLocaleString()})</Tab>
             <Tab>Banned ({registryStats.banned})</Tab>
@@ -1759,38 +1810,21 @@ export default function ComponentsAdminPage() {
             </div>
           </TabPanel>
 
+          {/* Tab index 5 — PUBLISH_TAB_IDX */}
           <TabPanel>
-            <div
-              style={{
-                paddingTop: token('space.400', '32px'),
-                textAlign: 'center',
-                color: token('color.text.subtle', '#44546F'),
-              }}
-            >
-              <Heading size="medium">Publish — coming in v3</Heading>
-              <p style={{ marginTop: token('space.100', '8px'), fontSize: 14 }}>
-                Feature-flag toggle publishing will be automated here. For now, edit feature_flags
-                in components.registry.ts directly.
-              </p>
-            </div>
+            <PublishTab
+              initialDraft={publishDraft}
+              onDraftConsumed={() => setPublishDraft(null)}
+            />
           </TabPanel>
 
+          {/* Tab index 6 */}
           <TabPanel>
-            <div
-              style={{
-                paddingTop: token('space.400', '32px'),
-                textAlign: 'center',
-                color: token('color.text.subtle', '#44546F'),
-              }}
-            >
-              <Heading size="medium">History — coming in v3</Heading>
-              <p style={{ marginTop: token('space.100', '8px'), fontSize: 14 }}>
-                Audit trail of all registry changes will appear here.
-              </p>
-            </div>
+            <HistoryTab />
           </TabPanel>
         </Tabs>
       </div>
     </AdminGuard>
+    </PublishContext.Provider>
   );
 }

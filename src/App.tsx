@@ -37,6 +37,7 @@ const AdminLayout = lazy(() => import("./pages/admin/AdminLayout").then(m => ({ 
 const FeatureFlagsPage = lazy(() => import("./pages/admin/FeatureFlagsPage").then(m => ({ default: m.default })));
 const WorkflowsAdminPage = lazy(() => import("./pages/admin/workflows/WorkflowAdminPage").then(m => ({ default: m.default })));
 const AdminOverview = lazy(() => import("./pages/admin/AdminOverview"));
+const DesignSystemAdmin = lazy(() => import("./pages/admin/design-system/DesignSystemAdmin"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const InviteAcceptPage = lazy(() => import("./pages/InviteAcceptPage"));
 const DeactivatedPage = lazy(() => import("./pages/DeactivatedPage"));
@@ -190,6 +191,7 @@ function App() {
                   <Route path="/admin" element={<S><AdminLayout /></S>}>
                     <Route index element={<Navigate to="/admin/overview" replace />} />
                     <Route path="overview" element={<S><AdminOverview /></S>} />
+                    <Route path="design-system" element={<S><DesignSystemAdmin /></S>} />
                     <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
                     <Route path="catalyst-features" element={<S><CatalystFeaturesBoard /></S>} />
                     <Route path="workflows" element={<S><WorkflowsAdminPage /></S>} />

@@ -53,7 +53,30 @@ function flagDefaults(entry: ComponentRegistryEntry): FlagDraft {
   return out;
 }
 
-export default function PublishTab() {
+// ─── Hub quick-select presets ─────────────────────────────────────────────────
+
+const HUB_PRESETS: Array<{ label: string; route: string; color: string }> = [
+  { label: 'Projects',  route: '/project-hub', color: '#0C66E4' },
+  { label: 'Products',  route: '/product-hub',  color: '#6E5DC6' },
+  { label: 'Home',      route: '/for-you',      color: '#1F845A' },
+  { label: 'Incidents', route: '/incidents',    color: '#AE2A19' },
+  { label: 'Admin',     route: '/admin',        color: '#626F86' },
+  { label: 'Global (all routes)', route: '', color: '#44546F' },
+];
+
+// ─── PublishTab ───────────────────────────────────────────────────────────────
+
+export interface PublishTabProps {
+  /**
+   * Pre-filled draft set by "Publish to [Hub] tab →" in HubBreakdownPanel.
+   * When non-null, the tab switches its form to match componentId + route.
+   */
+  initialDraft?: { componentId: string; route: string } | null;
+  /** Called after the draft has been consumed so the parent can clear it. */
+  onDraftConsumed?: () => void;
+}
+
+export default function PublishTab({ initialDraft, onDraftConsumed }: PublishTabProps) {
   const queryClient = useQueryClient();
   const { data: configs, isLoading } = useAllComponentConfigs();
 
@@ -82,6 +105,18 @@ export default function PublishTab() {
     setFlagsDraft({ ...flagDefaults(entry), ...(liveConfig?.feature_flags ?? {}) });
     setNotes('');
   }, [entry?.id, routeDraft, liveConfig?.applied_at]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Consume an initialDraft injected by "Publish to [Hub] tab →" in HubBreakdownPanel.
+  // Runs whenever the parent passes a fresh draft object; calls onDraftConsumed so
+  // the parent can null it out and avoid re-triggering on subsequent renders.
+  useEffect(() => {
+    if (!initialDraft) return;
+    const match = auditable.find(e => e.id === initialDraft.componentId);
+    if (match) setSelectedId(match.id);
+    setRouteDraft(initialDraft.route);
+    setRouteIsCustom(false);
+    onDraftConsumed?.();
+  }, [initialDraft]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const componentOptions = auditable.map(e => ({
     label: `${e.name} (registry v${e.version})`,
@@ -251,6 +286,57 @@ export default function PublishTab() {
               onChange={opt => opt && setSelectedId((opt as { value: string }).value)}
               isDisabled={submitting}
             />
+          </div>
+
+          {/* ── Hub quick-select ────────────────────────────────────────── */}
+          <div>
+            <label
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+                color: token('color.text.subtle', '#44546F'),
+                display: 'block',
+                marginBottom: token('space.075', '6px'),
+              }}
+            >
+              Hub target
+            </label>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {HUB_PRESETS.map(hub => {
+                const isActive = routeDraft === hub.route && !routeIsCustom;
+                return (
+                  <button
+                    key={hub.route || '__global__'}
+                    onClick={() => { setRouteDraft(hub.route); setRouteIsCustom(false); }}
+                    disabled={submitting}
+                    style={{
+                      padding: '4px 12px',
+                      borderRadius: 3,
+                      background: isActive ? hub.color : `${hub.color}22`,
+                      color: isActive ? '#fff' : hub.color,
+                      border: 'none',
+                      cursor: submitting ? 'not-allowed' : 'pointer',
+                      fontSize: 12,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {hub.label}
+                  </button>
+                );
+              })}
+            </div>
+            <div
+              style={{
+                marginTop: token('space.050', '4px'),
+                fontSize: 11,
+                color: token('color.text.subtle', '#44546F'),
+              }}
+            >
+              Click a hub to pre-fill the route scope below. Or use the
+              route picker for a more specific path.
+            </div>
           </div>
 
           <div>
