@@ -4,7 +4,7 @@
 .testhub {
   font-family: var(--cp-font-body);
   font-size: 14px;
-  color: var(--cp-ink-2, var(--cp-ink-2, #334155));
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   background: var(--ds-surface-sunken, #F8FAFC);
   min-height: 100vh;
 }
@@ -93,7 +93,7 @@
   font-family: var(--cp-font-body);
   font-size: 14px;
   font-weight: 500;
-  color: var(--cp-ink-2, var(--cp-ink-2, #334155));
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1.5px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   border-radius: 8px;
@@ -490,7 +490,7 @@
   font-family: var(--cp-font-body);
   font-size: 14px;
   font-weight: 500;
-  color: var(--cp-ink-2, var(--cp-ink-2, #334155));
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   border: 1.5px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   border-radius: 8px;
@@ -634,7 +634,7 @@
   height: 36px;
   padding: 0 12px;
   font-size: 13.5px;
-  color: var(--cp-ink-2, var(--cp-ink-2, #334155));
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   border-bottom: 1px solid var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
 }
 

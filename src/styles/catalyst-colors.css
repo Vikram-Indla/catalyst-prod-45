@@ -32,7 +32,7 @@
   /* ============= CATALYST SLATE SYSTEM ============= */
   --cp-color-slate-900: #0f172a;
   --cp-color-slate-800: #1e293b;
-  --cp-color-slate-700: var(--cp-ink-2, #334155);
+  --cp-color-slate-700: var(--cp-ink-2, var(--cp-ink-2, #334155));
   --cp-color-slate-600: #475569;
   --cp-color-slate-500: #64748b;
   --cp-color-slate-400: #94a3b8;
@@ -254,7 +254,7 @@
   --cp-workstream-mim-light: var(--cp-bg-sunken, #e2e8f0);
   --cp-workstream-mim-border: #94a3b8;
   --cp-workstream-mim-text-primary: #475569;
-  --cp-workstream-mim-text-dark: var(--cp-ink-2, #334155);
+  --cp-workstream-mim-text-dark: var(--cp-ink-2, var(--cp-ink-2, #334155));
 
   /* Senaei — Teal */
   --cp-workstream-senaei-primary: #14b8a6;

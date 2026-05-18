@@ -150,7 +150,7 @@ export function StatusMapping() {
                       padding: '4px 10px', borderRadius: 4,
                       background: 'var(--bg-1, #F8FAFC)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
                       fontSize: 12, fontFamily: 'var(--cp-font-mono)',
-                      color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontWeight: 500, cursor: 'grab',
+                      color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontWeight: 500, cursor: 'grab',
                     }}
                   >
                     <span style={{
@@ -216,7 +216,7 @@ export function StatusMapping() {
             onClick={handleReset}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-              background: 'var(--bg-1, #F8FAFC)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', cursor: 'pointer',
+              background: 'var(--bg-1, #F8FAFC)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', cursor: 'pointer',
             }}
           >
             Reset to Default

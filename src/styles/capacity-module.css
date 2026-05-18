@@ -81,11 +81,11 @@
 .dark {
   --ct-bg: var(--ds-text, #0f172a);
   --ct-surface: #1e293b;
-  --ct-surface-hover: var(--cp-ink-2, var(--cp-ink-2, #334155));
+  --ct-surface-hover: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   --ct-text: var(--ds-surface-sunken, #f8fafc);
   --ct-text-secondary: var(--ds-text-disabled, #cbd5e1);
   --ct-text-muted: var(--ds-text-subtlest, #94a3b8);
-  --ct-border: var(--cp-ink-2, var(--cp-ink-2, #334155));
+  --ct-border: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   --ct-border-light: #1e293b;
 }
 

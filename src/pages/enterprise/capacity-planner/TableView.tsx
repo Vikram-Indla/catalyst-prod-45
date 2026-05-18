@@ -193,7 +193,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
           return <span className="text-[13px] text-[var(--ds-text-subtle,#475569)]">-</span>;
         }
         return (
-          <span className="text-[13px] font-medium text-[var(--cp-ink-2, var(--cp-ink-2, #334155))]">{vendor}</span>
+          <span className="text-[13px] font-medium text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]">{vendor}</span>
         );
       },
     },
@@ -241,7 +241,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
               return (
                 <span
                   key={idx}
-                  className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded bg-white text-[13px] font-medium text-[var(--cp-ink-2, var(--cp-ink-2, #334155))]"
+                  className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded bg-white text-[13px] font-medium text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]"
                   style={{
                     border: '1px solid #e2e8f0',
                     borderLeftWidth: '3px',
@@ -269,7 +269,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
       width: '130px',
       sortable: true,
       render: (value: string) => (
-        <span className="text-[13px] font-medium text-[var(--cp-ink-2, var(--cp-ink-2, #334155))] dark:text-slate-300">{value || '-'}</span>
+        <span className="text-[13px] font-medium text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))] dark:text-slate-300">{value || '-'}</span>
       ),
     },
     {
@@ -320,7 +320,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
         const endDate = row.contract_end_date;
 
         if (!endDate) {
-          return <span className="text-[13px] text-[var(--cp-ink-2, var(--cp-ink-2, #334155))]">Permanent</span>;
+          return <span className="text-[13px] text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]">Permanent</span>;
         }
 
         const endDateObj = new Date(endDate);
@@ -341,12 +341,12 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
             : `Expired ${Math.abs(daysRemaining)} days ago`;
 
         // Calculate status based on days remaining - Catalyst V1 style guide
-        // Critical: < 30 days (#b91c1c), Warning: 30-90 days (#92400e), Safe: > 90 days (var(--cp-ink-2, var(--cp-ink-2, #334155)))
+        // Critical: < 30 days (#b91c1c), Warning: 30-90 days (#92400e), Safe: > 90 days (var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))))
         const status = daysRemaining <= 0 ? 'expired' : daysRemaining < 30 ? 'critical' : daysRemaining < 90 ? 'warning' : 'safe';
         const textColors: Record<string, string> = {
           critical: '#b91c1c',
           warning: '#92400e',
-          safe: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+          safe: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
           expired: 'var(--ds-text-subtlest, #64748b)',
         };
 

@@ -314,7 +314,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
           <button onClick={onClose} style={{
             height: 30, padding: '8px 12px', borderRadius: 6,
             border: '0.75px solid rgba(15,23,42,0.12)', background: 'var(--bg-app)',
-            fontSize: 11.5, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+            fontSize: 11.5, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
             fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
           }}>Cancel</button>
           <button onClick={handleSave} disabled={!isDirty || updateBoard.isPending} style={{

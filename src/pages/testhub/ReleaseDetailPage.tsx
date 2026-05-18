@@ -102,7 +102,7 @@ export default function ReleaseDetailPage() {
         {/* Stat cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 }}>
           <StatCard label="Days Left" value={daysLeft !== null ? String(daysLeft) : '—'} color="var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))" isDark={isDark} />
-          <StatCard label="Total Tests" value={String(release.test_cases_total || 0)} color={'var(--cp-ink-2, var(--cp-ink-2, #334155))'} isDark={isDark} />
+          <StatCard label="Total Tests" value={String(release.test_cases_total || 0)} color={'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'} isDark={isDark} />
           <StatCard label="Execution" value={`${execRate}%`} color={execRate >= 80 ? 'var(--quality-high, #059669)' : 'var(--ds-text-warning, var(--cp-warning, #D97706))'} isDark={isDark} />
           <StatCard label="Pass Rate" value={`${passRate}%`} color={passRate >= 80 ? 'var(--quality-high, #059669)' : 'var(--ds-text-danger, var(--cp-danger, #DC2626))'} isDark={isDark} />
           <StatCard label="Open Defects" value={String(release.defects_open || 0)} color={release.defects_open > 0 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--quality-high, #059669)'} isDark={isDark} />
@@ -158,7 +158,7 @@ function OverviewTab({ release, isDark }: { release: any; isDark: boolean }) {
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 24 }}>
       <div>
         <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', marginBottom: 12 }}>Description</h3>
-        <p style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', lineHeight: 1.7 }}>
+        <p style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', lineHeight: 1.7 }}>
           {release.description || 'No description provided.'}
         </p>
 

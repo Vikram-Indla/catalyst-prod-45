@@ -503,7 +503,7 @@ export default function WikiArticlePage() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 10, fontWeight: 700, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
                   }}>{authorName.charAt(0).toUpperCase()}</div>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{authorName}</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>{authorName}</span>
                 </>
               ) : (
                 <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>No author</span>
@@ -537,7 +537,7 @@ export default function WikiArticlePage() {
                 marginBottom: 8,
               }}><Sparkles size={10} /> TL;DR</span>
               {tldr ? (
-                <div style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))', lineHeight: 1.7, marginTop: 8 }}>{tldr}</div>
+                <div style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', lineHeight: 1.7, marginTop: 8 }}>{tldr}</div>
               ) : (
                 <div style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginTop: 8, fontStyle: 'italic' }}>AI summary not yet generated</div>
               )}
@@ -547,7 +547,7 @@ export default function WikiArticlePage() {
             {page.lead_content && (
               <div style={{
                 fontFamily: 'Georgia, serif', fontSize: 15, lineHeight: 1.85,
-                color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))', marginBottom: 24, paddingBottom: 20,
+                color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', marginBottom: 24, paddingBottom: 20,
                 borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.08)',
               }}>
                 {page.lead_content}
@@ -599,7 +599,7 @@ export default function WikiArticlePage() {
                   <ReferencesSection refs={refs} />
                 ) : (
                   <div style={{
-                    fontSize: 15, lineHeight: 1.7, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+                    fontSize: 15, lineHeight: 1.7, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                     ...(i === 0 && !page.lead_content ? { fontFamily: 'Georgia, serif' } : {}),
                   }}>{s.content}</div>
                 )}
@@ -736,7 +736,7 @@ function DeliveryStatusSection({ content }: { content: string | null }) {
     <div style={{
       borderRadius: 6, border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', overflow: 'hidden',
     }}>
-      <div style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))', padding: 16, lineHeight: 1.7 }}>{content}</div>
+      <div style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', padding: 16, lineHeight: 1.7 }}>{content}</div>
     </div>
   );
 }
@@ -755,7 +755,7 @@ function ReferencesSection({ refs }: { refs: any[] }) {
           ) : r.source_type === 'document' ? (
             <span style={{ fontSize: 11, fontWeight: 650, padding: '2px 6px', borderRadius: 4, background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', color: 'var(--cp-purple-60, #7C3AED)' }}>{r.source_key}</span>
           ) : (
-            <span style={{ fontSize: 11, fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{r.source_key}</span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>{r.source_key}</span>
           )}
           <span style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{r.description || '—'}</span>
         </div>

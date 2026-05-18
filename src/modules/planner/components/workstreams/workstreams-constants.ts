@@ -10,7 +10,7 @@
 export const COLORS = {
   // Text
   textPrimary: 'var(--ds-text, #0f172a)',
-  textSecondary: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+  textSecondary: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
   textMuted: 'var(--ds-text-subtlest, #64748b)',
   textLight: 'var(--ds-text-subtlest, #94a3b8)',
 

@@ -297,7 +297,7 @@ export default function RequirementDetailPage() {
           <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
             <FileText size={18} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} /> Description
           </h3>
-          <p style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', margin: 0, whiteSpace: 'pre-wrap' }}>{requirement.description}</p>
+          <p style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', margin: 0, whiteSpace: 'pre-wrap' }}>{requirement.description}</p>
         </div>
       )}
 
@@ -343,7 +343,7 @@ export default function RequirementDetailPage() {
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '8px 12px', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 12, cursor: 'pointer' }}>
+                    style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '8px 12px', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontSize: 12, cursor: 'pointer' }}>
                     View <ChevronRight size={14} />
                   </button>
                   <button onClick={() => unlinkTest(test.link_id)}

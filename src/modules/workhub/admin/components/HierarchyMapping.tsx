@@ -184,7 +184,7 @@ export function HierarchyMapping() {
                       cursor: 'pointer', transition: 'all .15s', fontWeight: isOn ? 600 : 400,
                       background: isOn ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface, #fff)',
                       borderColor: isOn ? '#BFDBFE' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
-                      color: isOn ? 'var(--ds-background-brand-bold-hovered, #1D4ED8)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+                      color: isOn ? 'var(--ds-background-brand-bold-hovered, #1D4ED8)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                     }}
                   >
                     {chip}
@@ -211,7 +211,7 @@ export function HierarchyMapping() {
             onClick={handleReset}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-              background: 'var(--bg-1, #F8FAFC)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', cursor: 'pointer',
+              background: 'var(--bg-1, #F8FAFC)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', cursor: 'pointer',
             }}
           >
             Reset to Default

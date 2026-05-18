@@ -29,7 +29,7 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'Blocked':              { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: 'Blocked' },
   'Rejected':             { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: 'Rejected' },
 };
-const SCD = { dot: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', tx: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', label: 'Unknown' };
+const SCD = { dot: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', tx: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', label: 'Unknown' };
 
 function resolveStatus(item: any) {
   if (item.status_name && SC[item.status_name]) return SC[item.status_name];

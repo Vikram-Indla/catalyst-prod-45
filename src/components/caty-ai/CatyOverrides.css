@@ -1311,7 +1311,7 @@ button.caty-fab {
   font-family: var(--cp-font-body);
   font-size: 0.8125rem !important;
   font-weight: 500 !important;
-  color: var(--cp-ink-2, var(--cp-ink-2, #334155)) !important;
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
   line-height: 1.45 !important;
 }
 

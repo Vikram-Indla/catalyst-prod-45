@@ -151,7 +151,7 @@ export default function WikiSubscriptionsPage() {
           <span key={tag} style={{
             display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px',
             borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', border: `0.75px solid ${border}`,
-            fontSize: 11, fontWeight: 500, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+            fontSize: 11, fontWeight: 500, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
           }}>
             {tag}
             <X size={11} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', cursor: 'pointer' }} onClick={() => toggleSub.mutate({ entityType: 'tag', entityId: tag })} />

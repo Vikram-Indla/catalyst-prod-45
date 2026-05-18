@@ -66,7 +66,7 @@ export default function WikiVerificationPage() {
         </div>
         <button onClick={handleRefreshFreshness} disabled={refreshing} style={{
           fontSize: 11, fontWeight: 650, padding: '6px 14px', borderRadius: 6,
-          border: `0.75px solid ${isDark ? 'var(--ds-border-bold, #454545)' : 'rgba(0,0,0,0.12)'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+          border: `0.75px solid ${isDark ? 'var(--ds-border-bold, #454545)' : 'rgba(0,0,0,0.12)'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
           cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
           opacity: refreshing ? 0.6 : 1,
         }}>

@@ -13,7 +13,7 @@ import type { RoadmapDemand, TimelineConfig } from '../types/roadmap';
 import { addMonths } from 'date-fns';
 import { User } from '@/lib/atlaskit-icons';
 
-const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', '#6366F1', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-success, var(--cp-success, #16A34A))', '#0891B2', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--cp-ink-2, var(--cp-ink-2, #334155))'];
+const AVATAR_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', '#6366F1', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-success, var(--cp-success, #16A34A))', '#0891B2', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'];
 
 function hashColor(name: string): string {
   let hash = 0;
@@ -137,7 +137,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                     >
                       {isUnassigned ? <User className="w-3 h-3" /> : initials}
                     </div>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>
                       {lane.name}
                     </span>
                     <span

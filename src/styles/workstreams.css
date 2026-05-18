@@ -46,7 +46,7 @@
   --ws-slate-400: var(--ds-text-subtlest, #94a3b8);
   --ws-slate-500: var(--ds-text-subtlest, #64748b);
   --ws-slate-600: var(--ds-text-subtle, #475569);
-  --ws-slate-700: var(--cp-ink-2, var(--cp-ink-2, #334155));
+  --ws-slate-700: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   --ws-slate-800: #1e293b;
   --ws-slate-900: var(--ds-text, #0f172a);
   

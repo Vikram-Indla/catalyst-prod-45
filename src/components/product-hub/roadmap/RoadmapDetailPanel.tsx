@@ -68,7 +68,7 @@ const STATUS_PILL: Record<string, { color: string; bg: string }> = {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1" style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
+      <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1" style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>
         {label}
       </div>
       <div className="text-[13px] text-foreground">{children}</div>
@@ -141,7 +141,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
 
   if (!item) return null;
 
-  const statusInfo = STATUS_PILL[item.status] || { color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' };
+  const statusInfo = STATUS_PILL[item.status] || { color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))' };
   const ownerProfile = approvedProfiles?.find(p => p.id === item.rawAssigneeId);
 
   return createPortal(

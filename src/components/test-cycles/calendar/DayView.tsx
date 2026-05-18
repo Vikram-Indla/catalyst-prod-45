@@ -120,7 +120,7 @@ export function DayView({
           <div className="space-y-2">
             {Object.entries(eventsByStatus).map(([status, statusEvents]) => (
               <div key={status} className="flex items-center justify-between">
-                <span className="text-sm text-[var(--cp-ink-2, var(--cp-ink-2, #334155))]">
+                <span className="text-sm text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]">
                   {STATUS_LABELS[status as CalendarEventStatus]}
                 </span>
                 <span className="text-sm font-medium text-[var(--ds-text,#0f172a)]">
@@ -141,7 +141,7 @@ export function DayView({
               <div key={id} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Avatar name={name} size="xsmall" />
-                  <span className="text-sm text-[var(--cp-ink-2, var(--cp-ink-2, #334155))]">{name}</span>
+                  <span className="text-sm text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]">{name}</span>
                 </div>
                 <span className="text-sm font-medium text-[var(--ds-text,#0f172a)]">
                   {assigneeEvents.length}

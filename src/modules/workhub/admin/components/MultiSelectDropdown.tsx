@@ -143,7 +143,7 @@ export function MultiSelectDropdown({
                 placeholder="Search…"
                 style={{
                   border: 'none', outline: 'none', width: '100%',
-                  fontSize: '12px', fontFamily: 'var(--cp-font-body)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+                  fontSize: '12px', fontFamily: 'var(--cp-font-body)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                   background: 'transparent',
                 }}
               />
@@ -204,7 +204,7 @@ export function MultiSelectDropdown({
                         )}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <span style={{ fontSize: '12px', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontFamily: 'var(--cp-font-body)', fontWeight: isSelected ? 600 : 400 }}>
+                        <span style={{ fontSize: '12px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontFamily: 'var(--cp-font-body)', fontWeight: isSelected ? 600 : 400 }}>
                           {opt.label}
                         </span>
                         {opt.sublabel && (

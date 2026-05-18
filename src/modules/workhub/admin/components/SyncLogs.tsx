@@ -192,7 +192,7 @@ export function SyncLogs() {
           <span style={{ flexShrink: 0, marginTop: 2, display: 'flex', color: 'var(--ds-text-danger, #EF4444)' }}><CrossCircleIcon label="" size="small" /></span>
           <div>
             <div style={{ fontFamily: 'var(--cp-font-heading)', fontWeight: 600, fontSize: '13px', color: 'var(--ds-text-danger, #EF4444)' }}>Sync Failed</div>
-            <div style={{ fontSize: '12px', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', marginTop: '4px' }}>{lastError.error_message || 'An unknown error occurred.'}</div>
+            <div style={{ fontSize: '12px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', marginTop: '4px' }}>{lastError.error_message || 'An unknown error occurred.'}</div>
           </div>
         </div>
       )}
@@ -246,7 +246,7 @@ export function SyncLogs() {
                       fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
                       border: lookbackMonths === opt.value ? '1px solid #2563EB' : '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
                       background: lookbackMonths === opt.value ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface, #fff)',
-                      color: lookbackMonths === opt.value ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+                      color: lookbackMonths === opt.value ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                     }}
                   >
                     {opt.label}
@@ -300,7 +300,7 @@ export function SyncLogs() {
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: '6px',
                   padding: '7px 16px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
-                  background: 'var(--bg-app, #fff)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: '12px', fontWeight: 600,
+                  background: 'var(--bg-app, #fff)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontSize: '12px', fontWeight: 600,
                   cursor: saveFilters.isPending ? 'not-allowed' : 'pointer', fontFamily: 'var(--cp-font-body)',
                 }}
               >
@@ -402,8 +402,8 @@ export function SyncLogs() {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <label style={{ width: '180px', fontSize: '12px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontFamily: 'var(--cp-font-body)' }}>Incremental sync every:</label>
-            <select value={intervalMin} onChange={(e) => setIntervalMin(Number(e.target.value))} style={{ height: '50px', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', fontSize: '12px', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontFamily: 'var(--cp-font-body)', background: 'var(--bg-app, #fff)' }}>
+            <label style={{ width: '180px', fontSize: '12px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontFamily: 'var(--cp-font-body)' }}>Incremental sync every:</label>
+            <select value={intervalMin} onChange={(e) => setIntervalMin(Number(e.target.value))} style={{ height: '50px', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', fontSize: '12px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontFamily: 'var(--cp-font-body)', background: 'var(--bg-app, #fff)' }}>
               <option value={15}>15 minutes</option>
               <option value={30}>30 minutes</option>
               <option value={60}>60 minutes</option>
@@ -411,8 +411,8 @@ export function SyncLogs() {
             <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Fetches recently updated issues</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <label style={{ width: '180px', fontSize: '12px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontFamily: 'var(--cp-font-body)' }}>Full sync daily at:</label>
-            <select value={fullSyncTime} onChange={(e) => setFullSyncTime(e.target.value)} style={{ height: '50px', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', fontSize: '12px', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontFamily: 'var(--cp-font-body)', background: 'var(--bg-app, #fff)' }}>
+            <label style={{ width: '180px', fontSize: '12px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontFamily: 'var(--cp-font-body)' }}>Full sync daily at:</label>
+            <select value={fullSyncTime} onChange={(e) => setFullSyncTime(e.target.value)} style={{ height: '50px', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', fontSize: '12px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontFamily: 'var(--cp-font-body)', background: 'var(--bg-app, #fff)' }}>
               <option value="02:00">02:00 UTC</option>
               <option value="06:00">06:00 UTC</option>
               <option value="12:00">12:00 UTC</option>
@@ -420,7 +420,7 @@ export function SyncLogs() {
             <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>Complete re-sync with pruning</span>
           </div>
           <div style={{ marginTop: '8px' }}>
-            <button onClick={handleSaveSchedule} disabled={updateSchedule.isPending} style={{ padding: '7px 16px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', background: 'var(--bg-app, #fff)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>
+            <button onClick={handleSaveSchedule} disabled={updateSchedule.isPending} style={{ padding: '7px 16px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', background: 'var(--bg-app, #fff)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>
               {updateSchedule.isPending ? 'Saving…' : 'Save Schedule'}
             </button>
           </div>
@@ -505,7 +505,7 @@ function LogRow({ log, formatDuration }: { log: SyncLogEntry; formatDuration: (m
       <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>{timestamp}</span>
       <span><span style={{ fontSize: '9px', padding: '2px 8px', borderRadius: '4px', background: tc.bg, color: tc.text, fontWeight: 600, textTransform: 'capitalize', fontFamily: 'var(--cp-font-body)' }}>{log.sync_type}</span></span>
       <span><span style={{ fontSize: '10px', padding: '2px 10px', borderRadius: '12px', background: sc.bg, color: sc.text, fontWeight: 600, textTransform: 'capitalize', fontFamily: 'var(--cp-font-body)' }}>{log.status}</span></span>
-      <span style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: '12px', fontFamily: 'var(--cp-font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{details}</span>
+      <span style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontSize: '12px', fontFamily: 'var(--cp-font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{details}</span>
       <span style={{ display: 'flex', gap: '3px', flexWrap: 'wrap' }}>
         {projectChips ? (
           projectChips.length <= 3 ? (

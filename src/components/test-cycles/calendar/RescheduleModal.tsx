@@ -176,7 +176,7 @@ export function RescheduleModal({
           {mode === 'shift' && shiftDays !== 0 && (
             <div className="p-3 bg-[var(--ds-surface-sunken,#f1f5f9)] rounded-lg">
               <div className="text-xs font-medium text-[var(--ds-text-subtlest,#64748b)] mb-1">Preview</div>
-              <div className="text-sm text-[var(--cp-ink-2, var(--cp-ink-2, #334155))]">
+              <div className="text-sm text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))]">
                 {totalTests} tests will be moved{' '}
                 <strong>{Math.abs(shiftDays)} days {shiftDays > 0 ? 'forward' : 'backward'}</strong>
               </div>

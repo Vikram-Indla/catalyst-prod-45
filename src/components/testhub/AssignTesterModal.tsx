@@ -170,7 +170,7 @@ export function AssignTesterModal({
               style={{
                 width: '100%', height: 50, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 6,
                 padding: '0 32px 0 36px', fontFamily: 'var(--cp-font-body)', fontSize: 14,
-                color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', backgroundColor: 'transparent', outline: 'none',
+                color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', backgroundColor: 'transparent', outline: 'none',
                 boxSizing: 'border-box',
               }}
               onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'; }}

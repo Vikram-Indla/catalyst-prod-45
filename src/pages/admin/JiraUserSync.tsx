@@ -278,7 +278,7 @@ const JiraUserSync: React.FC = () => {
                   padding: '5px 11px', borderRadius: '6px', fontSize: '12px', fontWeight: 500,
                   cursor: 'pointer', lineHeight: 1,
                   background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                  color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+                  color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                   border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                 }}>
                 <AddIcon label="" size="small" /> Create User
@@ -362,7 +362,7 @@ const JiraUserSync: React.FC = () => {
                     : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
                   color: filter === f.value
                     ? ('var(--cp-text-link, var(--cp-workstream-catalyst-primary, #2563EB))')
-                    : ('var(--cp-ink-2, var(--cp-ink-2, #334155))'),
+                    : ('var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'),
                   border: filter === f.value
                     ? `1px solid ${'var(--cp-primary-light, #BFDBFE)'}`
                     : `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
@@ -379,7 +379,7 @@ const JiraUserSync: React.FC = () => {
                   display: 'inline-flex', alignItems: 'center', gap: '4px',
                   padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
                   background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                  color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+                  color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                   border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                 }}>
                 <CopyIcon label="" size="small" /> Copy Permissions
@@ -391,7 +391,7 @@ const JiraUserSync: React.FC = () => {
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
                 background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+                color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}>
               <DownloadIcon label="" size="small" /> Export
@@ -510,7 +510,7 @@ const JiraUserSync: React.FC = () => {
                           }}>
                           {proj.project_key}
                         </span>
-                        <span style={{ fontSize: '11px', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
+                        <span style={{ fontSize: '11px', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>
                           {proj.project_name || proj.project_key}
                         </span>
                         <CheckMarkIcon label="" size="small" />
@@ -540,7 +540,7 @@ const JiraUserSync: React.FC = () => {
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
                 background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+                color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}>
               <Copy size={11} /> Copy Permissions
@@ -614,14 +614,14 @@ const JiraUserSync: React.FC = () => {
                     {debouncedSearch ? (
                       <>
                         <span style={{ display: 'flex', justifyContent: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginBottom: 10 }}><SearchIcon label="" size="large" /></span>
-                        <div className="jira-text-primary" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>No users match '{debouncedSearch}'</div>
+                        <div className="jira-text-primary" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>No users match '{debouncedSearch}'</div>
                         <button onClick={() => setSearch('')}
                           style={{ marginTop: 8, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>Clear search</button>
                       </>
                     ) : filter !== 'all' ? (
                       <>
                         <span style={{ display: 'flex', justifyContent: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginBottom: 10 }}><SearchIcon label="" size="large" /></span>
-                        <div className="jira-text-primary" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
+                        <div className="jira-text-primary" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>
                           {filter === 'conflict' ? 'No conflicts found' : filter === 'inactive' ? 'No inactive users' : `No ${filter} users found`}
                         </div>
                         <button onClick={() => setFilter('all')}
@@ -630,7 +630,7 @@ const JiraUserSync: React.FC = () => {
                     ) : (
                       <>
                         <span style={{ display: 'flex', justifyContent: 'center', color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginBottom: 10 }}><PeopleGroupIcon label="" size="large" /></span>
-                        <div className="jira-text-primary" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>No synced users yet</div>
+                        <div className="jira-text-primary" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>No synced users yet</div>
                         <button onClick={handleSync} disabled={isSyncing}
                           style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: '5px', background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: 'none', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: isSyncing ? 'not-allowed' : 'pointer' }}>
                           {isSyncing ? <Spinner size="small" /> : <RefreshIcon label="" size="small" />}
@@ -808,7 +808,7 @@ const JiraUserSync: React.FC = () => {
                 opacity: page <= 1 ? 0.4 : 1,
                 background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
-                color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+                color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
               }}
             >
               <ChevronLeftIcon label="" size="small" />
@@ -842,7 +842,7 @@ const JiraUserSync: React.FC = () => {
                 opacity: page >= totalPages ? 0.4 : 1,
                 background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
-                color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+                color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
               }}
             >
               <ChevronRightIcon label="" size="small" />

@@ -16,7 +16,7 @@ export const AVATAR_COLORS = [
   '#b45309', // Amber-dark
   '#0f766e', // Teal-dark
   'var(--ds-text-subtle, #475569)', // Slate
-  'var(--cp-ink-2, var(--cp-ink-2, #334155))'  // Slate-dark
+  'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'  // Slate-dark
 ];
 
 // ============================================================

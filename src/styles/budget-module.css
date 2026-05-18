@@ -7,7 +7,7 @@
  * - Primary: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)) (buttons, active states)
  * - Insourced: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563eb)), Cosourced: #0d9488, Outsourced: var(--ds-text-warning, #d97706)
  * - Licenses: #7c3aed
- * - Text: var(--ds-text, #0f172a) primary, var(--cp-ink-2, var(--cp-ink-2, #334155)) secondary, var(--ds-text-subtlest, #64748b) muted
+ * - Text: var(--ds-text, #0f172a) primary, var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) secondary, var(--ds-text-subtlest, #64748b) muted
  * - 5px solid top borders on cards, font-mono for values
  */
 
@@ -55,7 +55,7 @@
      ============================================ */
   --slate-900: var(--ds-text, #0f172a);
   --slate-800: #1e293b;
-  --slate-700: var(--cp-ink-2, var(--cp-ink-2, #334155));
+  --slate-700: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   --slate-600: var(--ds-text-subtle, #475569);
   --slate-500: var(--ds-text-subtlest, #64748b);
   --slate-400: var(--ds-text-subtlest, #94a3b8);
@@ -68,7 +68,7 @@
   --budget-bg-page: var(--ds-surface-sunken, #f8fafc);
   --budget-bg-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --budget-text-primary: var(--ds-text, #0f172a);
-  --budget-text-secondary: var(--cp-ink-2, var(--cp-ink-2, #334155));
+  --budget-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   --budget-text-muted: var(--ds-text-subtlest, #64748b);
   --budget-border: var(--ds-border, var(--cp-bg-sunken, #e2e8f0));
   --budget-border-strong: var(--ds-text-disabled, #cbd5e1);

@@ -15,7 +15,7 @@
   
   /* === Text Colors (E, K) === */
   --tl-text-primary: var(--ds-text, #0f172a);       /* E1.3: page title */
-  --tl-text-secondary: var(--cp-ink-2, var(--cp-ink-2, #334155));     /* gray-700 */
+  --tl-text-secondary: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));     /* gray-700 */
   --tl-text-tertiary: var(--ds-text-subtlest, #64748b);      /* E1.5, E2.4: subtitle, headers */
   --tl-text-muted: var(--ds-text-subtlest, #94a3b8);         /* gray-400 */
   
@@ -343,7 +343,7 @@
 }
 
 .planner-task-list-content .tl-task-id:hover {
-  color: var(--cp-ink-2, var(--cp-ink-2, #334155)) !important;          /* B4: gray-700 */
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;          /* B4: gray-700 */
   text-decoration: underline;  /* B5 */
 }
 
@@ -538,10 +538,10 @@
   flex-shrink: 0;
 }
 
-/* K4: Assignee name var(--cp-ink-2, var(--cp-ink-2, #334155)) */
+/* K4: Assignee name var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) */
 .planner-task-list-content .tl-assignee-name {
   font-size: 0.8125rem;
-  color: var(--cp-ink-2, var(--cp-ink-2, #334155));
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -575,11 +575,11 @@
   background: var(--tl-surface-hover);
 }
 
-/* J1: Normal due date var(--cp-ink-2, var(--cp-ink-2, #334155)) */
+/* J1: Normal due date var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) */
 .planner-task-list-content .tl-date-value {
   font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--cp-ink-2, var(--cp-ink-2, #334155));
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
 }
 
 /* J2, J3: Overdue var(--ds-text-danger, #dc2626), font-weight 500 */
@@ -907,5 +907,5 @@
 }
 
 .planner-task-list-content td .tl-task-id:hover {
-  color: var(--cp-ink-2, var(--cp-ink-2, #334155)) !important;
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
 }

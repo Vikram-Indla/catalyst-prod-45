@@ -154,7 +154,7 @@ export default function IdeationDrivesView() {
             <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', margin: '0 0 12px', lineHeight: 1.5 }}>{drive.description}</p>
 
             {/* Stats row */}
-            <div style={{ display: 'flex', gap: '24px', fontSize: '12px', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontWeight: 500, marginBottom: '10px' }}>
+            <div style={{ display: 'flex', gap: '24px', fontSize: '12px', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontWeight: 500, marginBottom: '10px' }}>
               <span><strong>{submitted}</strong> {submitted === 1 ? 'idea' : 'ideas'} submitted</span>
               <span>Deadline: <strong>{drive.deadline ? new Date(drive.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'No deadline'}</strong></span>
               <span>Target: <strong>{drive.target_count}</strong> ideas</span>

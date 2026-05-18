@@ -9,7 +9,7 @@
 
   /* Text */
   --wh-tx: var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)));
-  --wh-tx2: var(--cp-ink-2, var(--cp-ink-2, #334155));
+  --wh-tx2: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   --wh-tx3: var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)));
   --wh-tx4: var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)));
 

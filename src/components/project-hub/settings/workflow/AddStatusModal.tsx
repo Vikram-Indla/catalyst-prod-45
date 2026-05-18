@@ -81,7 +81,7 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
 
         <div className="flex justify-end gap-2 mt-6">
           <button onClick={onClose}
-            className="bg-white dark:bg-transparent border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--cp-ink-2, var(--cp-ink-2, #334155))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]"
+            className="bg-white dark:bg-transparent border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))] dark:text-[var(--ds-text-subtlest,#A1A1A1)]"
             style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500, borderRadius: 6, cursor: 'pointer' }}
           >Cancel</button>
           <button

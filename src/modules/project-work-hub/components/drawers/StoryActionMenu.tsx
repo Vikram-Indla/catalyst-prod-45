@@ -118,7 +118,7 @@ export function StoryActionMenu({ storyId, storyKey, onClose }: StoryActionMenuP
               border: 'none',
               background: 'transparent',
               cursor: 'pointer',
-              color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+              color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
             }}
           >
             <MoreIcon label="More actions" size="small" />

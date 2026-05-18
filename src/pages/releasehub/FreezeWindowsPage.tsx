@@ -142,7 +142,7 @@ export default function FreezeWindowsPage() {
                 <div className={`h-9 w-full flex items-center justify-center text-[12px] rounded cursor-default
                   ${todayRing ? 'ring-2 ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]' : ''}
                 `} style={{
-                  color: !cd.inMonth ? ('var(--cp-bg-sunken, #CBD5E1)') : ('var(--cp-ink-2, var(--cp-ink-2, #334155))'),
+                  color: !cd.inMonth ? ('var(--cp-bg-sunken, #CBD5E1)') : ('var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'),
                   ...(fw ? { background: 'var(--cp-warning-light, #FEF3C7)', border: `1px solid ${isDark ? 'rgba(217,119,6,0.3)' : '#FCD34D'}` } : {}),
                 }}>
                   {cd.date.getDate()}

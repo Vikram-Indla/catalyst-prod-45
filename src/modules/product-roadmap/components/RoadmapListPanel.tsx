@@ -81,7 +81,7 @@ export function RoadmapListPanel({
                   >
                     {group.isExpanded ? <ChevronDown className="w-3.5 h-3.5" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} /> : <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }} />}
                     <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: color }} />
-                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{group.label}</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>{group.label}</span>
                     <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', marginLeft: 'auto' }}>{group.items.length}</span>
                   </button>
                   {group.isExpanded && group.items.map(item => {

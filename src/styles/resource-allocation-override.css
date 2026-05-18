@@ -24,7 +24,7 @@ td[data-ra-processed] {
   text-align: center !important;
   vertical-align: middle !important;
   font-size: 12px !important;
-  color: var(--cp-ink-2, var(--cp-ink-2, #334155)) !important;
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155))) !important;
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))) !important;
   overflow: visible !important;
 }

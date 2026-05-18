@@ -133,17 +133,17 @@ export default function SharedStepDetailPage() {
           {step.description && (
             <div style={{ marginBottom: 16 }}>
               <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', display: 'block', marginBottom: 4 }}>Description</label>
-              <p style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', margin: 0 }}>{step.description}</p>
+              <p style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', margin: 0 }}>{step.description}</p>
             </div>
           )}
           <div style={{ marginBottom: 16 }}>
             <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', display: 'block', marginBottom: 4 }}>Action</label>
-            <p style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', margin: 0, whiteSpace: 'pre-wrap' }}>{step.action}</p>
+            <p style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', margin: 0, whiteSpace: 'pre-wrap' }}>{step.action}</p>
           </div>
           {step.expected_result && (
             <div>
               <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))', display: 'block', marginBottom: 4 }}>Expected Result</label>
-              <p style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', margin: 0, whiteSpace: 'pre-wrap' }}>{step.expected_result}</p>
+              <p style={{ fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', margin: 0, whiteSpace: 'pre-wrap' }}>{step.expected_result}</p>
             </div>
           )}
         </div>
@@ -180,7 +180,7 @@ export default function SharedStepDetailPage() {
                     <td style={{ padding: '0 16px' }}>
                       <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{tc.case_key}</span>
                     </td>
-                    <td style={{ padding: '0 16px', fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{tc.title}</td>
+                    <td style={{ padding: '0 16px', fontSize: 14, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>{tc.title}</td>
                   </tr>
                 ))}
               </tbody>

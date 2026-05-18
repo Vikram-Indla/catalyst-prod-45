@@ -355,7 +355,7 @@ export default function TestHubDashboardPage() {
           padding: '10px 16px', flexShrink: 0,
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>Execution status</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>Execution status</span>
             <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{totalAll} total</span>
           </div>
           <div style={{ display: 'flex', height: 8, borderRadius: 4, background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', gap: 1, overflow: 'hidden' }}>
@@ -372,7 +372,7 @@ export default function TestHubDashboardPage() {
             {execSegments.map(seg => (
               <span key={seg.label} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                 <span style={{ width: 7, height: 7, borderRadius: '50%', background: seg.color, display: 'inline-block' }} />
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>{seg.label}</span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>{seg.label}</span>
                 <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))' }}>{seg.count}</span>
               </span>
             ))}
@@ -678,7 +678,7 @@ function KPICard({ label, value, accent, trend, subtitle, sparkData, valueColor,
       padding: 16, cursor: 'pointer',
       transition: 'border-color 150ms, box-shadow 150ms',
     }}>
-      <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', marginBottom: 4 }}>{label}</div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
         <span style={{ fontSize: 36, fontWeight: 700, color: valueColor || ('var(--cp-text-primary, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))'), letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
           {value}
@@ -744,7 +744,7 @@ function QuickBtn({ label, onClick }: { label: string; onClick: () => void }) {
   return (
     <button className="c10-qbtn" onClick={onClick} style={{
       flex: 1, height: 32, fontSize: 13, fontWeight: 500,
-      color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
+      color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
       borderRadius: 6, cursor: 'pointer', transition: 'all 150ms',
     }}>
       {label}

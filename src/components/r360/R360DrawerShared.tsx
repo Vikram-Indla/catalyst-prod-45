@@ -10,7 +10,7 @@ import { fetchItemDetail, calcDaysSitting } from '@/lib/r360/fetchItemDetail';
 
 // ── Colour tokens ──
 export const INK1 = 'var(--ds-text, var(--cp-ink-1, var(--cp-ink-1, #0F172A)))';
-export const INK2 = 'var(--cp-ink-2, var(--cp-ink-2, #334155))';
+export const INK2 = 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))';
 export const INK4 = 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))';
 export const MUTED = 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))';
 export const SUCCESS = 'var(--ds-text-success, var(--cp-success, #16A34A))';

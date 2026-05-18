@@ -287,7 +287,7 @@
   border-radius: 12px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--cp-ink-2, var(--cp-ink-2, #334155));
+  color: var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)));
   cursor: pointer;
   font-family: inherit;
   transition: var(--mytasks-transition-fast);

@@ -143,7 +143,7 @@ export default function ActivityFeedPage() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
       <CatalystPageHeader title="Activity Feed" actions={
         <button onClick={fetchActivities}
-          style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 20px', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 8, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 20px', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 8, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
           <RefreshCw size={16} /> Refresh
         </button>
       } />
@@ -246,7 +246,7 @@ export default function ActivityFeedPage() {
                             <EntityIcon size={12} /> {entity.label}
                           </span>
                         </div>
-                        <p style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', margin: '4px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <p style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', margin: '4px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {activity.entity_key && <span style={{ fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{activity.entity_key}</span>}
                           {activity.entity_key && activity.entity_name && ' - '}
                           {activity.entity_name}

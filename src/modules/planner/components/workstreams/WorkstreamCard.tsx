@@ -18,7 +18,7 @@ interface WorkstreamCardProps {
 
 const COLORS = {
   textPrimary: 'var(--ds-text, #0f172a)',
-  textSecondary: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+  textSecondary: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
   textMuted: 'var(--ds-text-subtlest, #64748b)',
   textLight: 'var(--ds-text-subtlest, #94a3b8)',
   
@@ -338,7 +338,7 @@ const MenuOption: React.FC<{
         border: 'none',
         borderRadius: '6px',
         fontSize: '14px',
-        color: disabled ? 'var(--ds-text-subtlest, #94a3b8)' : (danger ? 'var(--ds-text-danger, #dc2626)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))'),
+        color: disabled ? 'var(--ds-text-subtlest, #94a3b8)' : (danger ? 'var(--ds-text-danger, #dc2626)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))'),
         cursor: disabled ? 'not-allowed' : 'pointer',
         fontFamily: 'inherit',
         textAlign: 'left',

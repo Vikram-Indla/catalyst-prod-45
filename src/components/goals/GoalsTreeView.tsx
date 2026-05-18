@@ -413,7 +413,7 @@ export function GoalsTreeView({
                           background: krRowBg,
                           borderBottom: `1px solid ${isDark ? DK.borderSubtle : 'var(--bg-1)'}`, fontSize: 13, position: 'relative',
                           transition: 'background 150ms',
-                          color: isDark ? DK.t2 : 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+                          color: isDark ? DK.t2 : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                         }}
                         onMouseEnter={e => (e.currentTarget.style.background = krRowHover)}
                         onMouseLeave={e => (e.currentTarget.style.background = krRowBg)}

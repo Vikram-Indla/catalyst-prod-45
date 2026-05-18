@@ -134,7 +134,7 @@ export default function WikiKnowledgeGraphPage() {
       .text(d => d.title.length > 20 ? d.title.slice(0, 18) + '…' : d.title)
       .attr('font-size', 9)
       .attr('font-family', 'Inter, sans-serif')
-      .attr('fill', isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))')
+      .attr('fill', isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))')
       .attr('text-anchor', 'middle')
       .attr('dy', d => radiusScale(d.view_count ?? 1) + 12)
       .attr('pointer-events', 'none');

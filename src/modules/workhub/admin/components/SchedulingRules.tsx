@@ -126,7 +126,7 @@ export function SchedulingRules() {
           Multi-FixVersion Strategy
         </h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <label style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', width: 260 }}>
+          <label style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', width: 260 }}>
             When an issue has multiple FixVersions, use:
           </label>
           <select
@@ -134,7 +134,7 @@ export function SchedulingRules() {
             onChange={(e) => setMultiVersionStrategy(e.target.value)}
             style={{
               width: 200, padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
-              fontSize: 12, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', background: 'var(--bg-app, #fff)',
+              fontSize: 12, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', background: 'var(--bg-app, #fff)',
             }}
           >
             <option value="earliest">Earliest release date</option>
@@ -184,7 +184,7 @@ export function SchedulingRules() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <Toggle checked={versionNameParsing} onChange={setVersionNameParsing} />
-          <span style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
+          <span style={{ fontSize: 13, color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>
             Enable version name date parsing as fallback when no releaseDate exists
           </span>
         </div>
@@ -205,7 +205,7 @@ export function SchedulingRules() {
             onClick={handleReset}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-              background: 'var(--bg-1, #F8FAFC)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', cursor: 'pointer',
+              background: 'var(--bg-1, #F8FAFC)', color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', cursor: 'pointer',
             }}
           >
             Reset to Default

@@ -28,7 +28,7 @@ export function RoadmapTimelineHeader({ periods, zoom }: RoadmapTimelineHeaderPr
               borderRight: `1px solid ${isQuarterStart ? 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))'}`,
             }}
           >
-            <div style={{ fontSize: 12, fontWeight: 600, color: period.isCurrent ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: period.isCurrent ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>
               {period.label}
             </div>
             {period.sublabel && (

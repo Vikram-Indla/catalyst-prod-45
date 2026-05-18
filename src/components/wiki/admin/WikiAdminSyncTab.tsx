@@ -101,7 +101,7 @@ export function WikiAdminSyncTab() {
         border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
       }}>
         <div style={{ display: 'flex', gap: 24, fontFamily: 'var(--cp-font-body)', fontSize: 13 }}>
-          <span style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))' }}>
+          <span style={{ color: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))' }}>
             <strong>Last Sync:</strong>{' '}
             {stats?.last_sync ? format(new Date(stats.last_sync), 'MMM d, yyyy HH:mm') : 'Never'}
           </span>

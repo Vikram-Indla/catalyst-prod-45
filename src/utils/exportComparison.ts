@@ -119,7 +119,7 @@ async function exportAsPdf(releases: ComparedRelease[], generatedAt: string): Pr
         .health-critical { background: #fee2e2; color: #991b1b; }
         .metric-label { font-weight: 600; color: #475569; }
         .section { margin-top: 30px; }
-        .section-title { font-size: 16px; font-weight: 600; color: var(--cp-ink-2, #334155); margin-bottom: 10px; }
+        .section-title { font-size: 16px; font-weight: 600; color: var(--cp-ink-2, var(--cp-ink-2, #334155)); margin-bottom: 10px; }
       </style>
     </head>
     <body>

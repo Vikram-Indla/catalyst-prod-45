@@ -57,19 +57,19 @@ export const STATUS_CONFIG: Record<IdeaStatus, { bg: string; text: string; label
 
 // ─── TYPE CONFIG — ALL NEUTRAL GREY ─────────────────────────────
 export const TYPE_CONFIG: Record<IdeaType, { bg: string; text: string; label: string }> = {
-  opportunity:  { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', label: 'Opportunity' },
-  solution:     { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', label: 'Solution' },
-  feature:      { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', label: 'Feature' },
-  improvement:  { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', label: 'Improvement' },
-  problem:      { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', label: 'Problem' },
+  opportunity:  { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', label: 'Opportunity' },
+  solution:     { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', label: 'Solution' },
+  feature:      { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', label: 'Feature' },
+  improvement:  { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', label: 'Improvement' },
+  problem:      { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', label: 'Problem' },
 };
 
 // ─── V12 PRIORITY BADGES — ALL NEUTRAL GREY ─────────────────────
 export const PRIORITY_CONFIG: Record<string, { bg: string; text: string; border: string }> = {
-  P1: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' },
-  P2: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' },
-  P3: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' },
-  P4: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' },
+  P1: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' },
+  P2: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' },
+  P3: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' },
+  P4: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))', text: 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' },
 };
 
 export const VIEW_TITLES: Record<IdeationView, string> = {

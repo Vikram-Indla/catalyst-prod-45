@@ -153,7 +153,7 @@ const Resource360MemberDetail: React.FC = () => {
                 style={{
                   fontSize: 11, padding: '3px 10px', borderRadius: 6, textDecoration: 'none',
                   background: m.id === memberId ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9)))',
-                  color: m.id === memberId ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
+                  color: m.id === memberId ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'var(--cp-ink-2, var(--cp-ink-2, var(--cp-ink-2, #334155)))',
                   fontWeight: m.id === memberId ? 600 : 400,
                 }}
                 aria-current={m.id === memberId ? 'page' : undefined}
