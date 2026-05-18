@@ -59,10 +59,10 @@ function ToolbarButton({ icon, title, onClick, active }: ToolbarButtonProps) {
       onClick={onClick}
       className={cn(
         'h-7 w-7 flex items-center justify-center rounded',
-        'text-[var(--ds-text-subtlest,#6B778C)] hover:bg-[#EBECF0] hover:text-[var(--ds-text,var(--cp-text-primary, #172B4D))]',
+        'text-[var(--ds-text-subtlest,#6B778C)] hover:bg-[#EBECF0] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]',
         'dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-border,#292929)] dark:hover:text-[var(--ds-text,#EDEDED)]',
         'transition-colors duration-100',
-        active && 'bg-[#EBECF0] text-[var(--ds-text,var(--cp-text-primary, #172B4D))] dark:bg-[var(--ds-border,#292929)] dark:text-[var(--ds-text,#EDEDED)]',
+        active && 'bg-[#EBECF0] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:bg-[var(--ds-border,#292929)] dark:text-[var(--ds-text,#EDEDED)]',
         '[&_svg]:h-4 [&_svg]:w-4'
       )}
     >
@@ -213,7 +213,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                           type="button"
                           className={cn(
                             'h-7 w-7 flex items-center justify-center rounded',
-                            'text-[var(--ds-text-subtlest,#6B778C)] hover:bg-[#EBECF0] hover:text-[var(--ds-text,var(--cp-text-primary, #172B4D))]',
+                            'text-[var(--ds-text-subtlest,#6B778C)] hover:bg-[#EBECF0] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]',
                             'dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-border,#292929)] dark:hover:text-[var(--ds-text,#EDEDED)]',
                             '[&_svg]:h-4 [&_svg]:w-4'
                           )}
@@ -316,7 +316,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                     <button
                       type="button"
                       onClick={onCancel}
-                      className="text-[13px] font-medium text-[var(--ds-text-subtlest,#6B778C)] hover:text-[var(--ds-text,var(--cp-text-primary, #172B4D))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:text-[var(--ds-text,#EDEDED)] transition-colors"
+                      className="text-[13px] font-medium text-[var(--ds-text-subtlest,#6B778C)] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:text-[var(--ds-text,#EDEDED)] transition-colors"
                     >
                       Cancel
                     </button>
@@ -332,7 +332,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                         onClick={() => handleQuickReply(qr.template)}
                         className={cn(
                           'text-[12px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]',
-                          'hover:text-[var(--ds-text,var(--cp-text-primary, #172B4D))] dark:hover:text-[var(--ds-text,#EDEDED)]',
+                          'hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:hover:text-[var(--ds-text,#EDEDED)]',
                           'hover:underline transition-colors cursor-pointer'
                         )}
                       >
@@ -346,7 +346,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                   <p className="text-[12px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)] mt-1.5">
                     {shortcutHint.split(/(\*\*[^*]+\*\*)/).map((part, i) =>
                       part.startsWith('**') ? (
-                        <span key={i} className="font-semibold text-[var(--ds-text,var(--cp-text-primary, #172B4D))] dark:text-[var(--ds-text,#EDEDED)]">
+                        <span key={i} className="font-semibold text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,#EDEDED)]">
                           {part.replace(/\*\*/g, '')}
                         </span>
                       ) : (

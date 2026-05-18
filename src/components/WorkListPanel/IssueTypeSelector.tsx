@@ -129,7 +129,7 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
                   alignItems: 'center',
                   gap: '8px',
                   fontSize: '14px',
-                  color: 'var(--cp-text-primary, #172B4D)',
+                  color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
                   transition: 'background-color 150ms',
                 }}
                 onMouseEnter={(e) => {

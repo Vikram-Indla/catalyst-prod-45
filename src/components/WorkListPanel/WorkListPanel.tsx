@@ -97,7 +97,7 @@ export const WorkListPanel: React.FC<WorkListPanelProps> = ({
                 margin: '0 0 12px 0',
                 fontSize: '14px',
                 fontWeight: 500,
-                color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
+                color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
               }}
             >
               No issues found

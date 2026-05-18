@@ -189,7 +189,7 @@ export function ProfileMenu() {
               style={{
                 fontSize: 14,
                 fontWeight: 600,
-                color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
+                color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',

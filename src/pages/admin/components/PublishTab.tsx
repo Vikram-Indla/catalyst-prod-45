@@ -409,7 +409,7 @@ export default function PublishTab() {
                           style={{
                             fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
                             fontSize: 12,
-                            color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
+                            color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                           }}
                         >
                           {flag.name}

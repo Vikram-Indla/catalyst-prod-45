@@ -17,7 +17,7 @@ export const BacklogBreadcrumb = memo(function BacklogBreadcrumb() {
           padding: 0,
           margin: 0,
           fontSize: '14px',
-          color: 'var(--cp-text-primary, #172B4D)',
+          color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
         }}
       >
         <li>

@@ -228,7 +228,7 @@ export function DefectsSection({
                   style={{
                     flex: 1, height: 36, padding: '0 12px',
                     border: 'none', outline: 'none', fontSize: 14,
-                    color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontFamily: 'inherit', background: 'transparent',
+                    color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'inherit', background: 'transparent',
                   }}
                 />
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0 8px', borderLeft: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }}>

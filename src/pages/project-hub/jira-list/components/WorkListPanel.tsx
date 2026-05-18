@@ -109,7 +109,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
             style={{
               border: 'none', outline: 'none', boxShadow: 'none', width: '100%', fontSize: 14,
               fontFamily: 'var(--cp-font-body)',
-              background: 'transparent', color: 'var(--cp-text-primary, var(--cp-text-primary, #172B4D))',
+              background: 'transparent', color: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
             }}
           />
         </div>
@@ -137,7 +137,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
           style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           background: 'transparent', border: 'none', cursor: 'pointer',
-          fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-text-primary, #172B4D))', fontSize: 14,
+          fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontSize: 14,
           fontFamily: 'var(--cp-font-body)',
         }}>
           Created

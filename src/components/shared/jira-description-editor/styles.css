@@ -52,7 +52,7 @@
 
 .jde-tb-btn:hover:not(.jde-tb-btn--disabled) {
   background: rgba(9, 30, 66, 0.08);
-  color: var(--cp-text-primary, #172B4D);
+  color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
 }
 
 .jde-tb-btn--active {
@@ -93,7 +93,7 @@
 
 .jde-tb-style-btn:hover {
   background: rgba(9, 30, 66, 0.08);
-  color: var(--cp-text-primary, #172B4D);
+  color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
 }
 
 .jde-tb-style-label {
@@ -163,7 +163,7 @@
   border: none;
   border-radius: 3px;
   background: transparent;
-  color: var(--cp-text-primary, #172B4D);
+  color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
   font-size: 13px;
   text-align: left;
   cursor: pointer;
@@ -172,7 +172,7 @@
 
 .jde-dropdown-item:hover {
   background: #F4F5F7;
-  color: var(--cp-text-primary, #172B4D);
+  color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
 }
 
 .jde-dropdown-item--active {
@@ -234,7 +234,7 @@
   border: 2px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6));
   border-radius: 3px;
   font-size: 13px;
-  color: var(--cp-text-primary, #172B4D);
+  color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
   outline: none;
   box-sizing: border-box;
 }
@@ -314,7 +314,7 @@
   outline: none;
   font-size: 14px;
   line-height: 1.714;
-  color: var(--cp-text-primary, #172B4D);
+  color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
   min-height: inherit;
 }
 
@@ -328,11 +328,11 @@
 }
 
 /* Headings — Atlassian sizing */
-.jde-content .ProseMirror h1 { font-size: 24px; font-weight: 600; line-height: 1.333; margin: 16px 0 8px; color: var(--cp-text-primary, #172B4D); }
-.jde-content .ProseMirror h2 { font-size: 20px; font-weight: 600; line-height: 1.4; margin: 14px 0 6px; color: var(--cp-text-primary, #172B4D); }
-.jde-content .ProseMirror h3 { font-size: 16px; font-weight: 600; line-height: 1.5; margin: 12px 0 4px; color: var(--cp-text-primary, #172B4D); }
-.jde-content .ProseMirror h4 { font-size: 14px; font-weight: 600; line-height: 1.571; margin: 10px 0 4px; color: var(--cp-text-primary, #172B4D); }
-.jde-content .ProseMirror h5 { font-size: 12px; font-weight: 600; line-height: 1.667; margin: 10px 0 4px; color: var(--cp-text-primary, #172B4D); }
+.jde-content .ProseMirror h1 { font-size: 24px; font-weight: 600; line-height: 1.333; margin: 16px 0 8px; color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D)); }
+.jde-content .ProseMirror h2 { font-size: 20px; font-weight: 600; line-height: 1.4; margin: 14px 0 6px; color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D)); }
+.jde-content .ProseMirror h3 { font-size: 16px; font-weight: 600; line-height: 1.5; margin: 12px 0 4px; color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D)); }
+.jde-content .ProseMirror h4 { font-size: 14px; font-weight: 600; line-height: 1.571; margin: 10px 0 4px; color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D)); }
+.jde-content .ProseMirror h5 { font-size: 12px; font-weight: 600; line-height: 1.667; margin: 10px 0 4px; color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D)); }
 .jde-content .ProseMirror h6 { font-size: 11px; font-weight: 700; line-height: 1.455; margin: 10px 0 4px; color: #5E6C84; text-transform: uppercase; }
 
 /* Paragraph */
@@ -366,7 +366,7 @@
   padding: 1px 5px;
   font-family: 'SFMono-Medium', 'SF Mono', 'Segoe UI Mono', Menlo, monospace;
   font-size: 0.875em;
-  color: var(--cp-text-primary, #172B4D);
+  color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
 }
 
 /* Code block */
@@ -382,7 +382,7 @@
   background: transparent;
   padding: 0;
   font-size: 13px;
-  color: var(--cp-text-primary, #172B4D);
+  color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
 }
 
 /* HR */
@@ -486,7 +486,7 @@
   padding: 8px 12px;
   font-weight: 600;
   font-size: 14px;
-  color: var(--cp-text-primary, #172B4D);
+  color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
   cursor: pointer;
   background: #F4F5F7;
   border-radius: 2px 2px 0 0;

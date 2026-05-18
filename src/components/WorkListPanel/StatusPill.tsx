@@ -25,7 +25,7 @@ const categoryColors: Record<
 > = {
   todo: {
     bg: 'rgba(5,21,36,0.06)',
-    text: 'var(--cp-text-primary, #172B4D)',
+    text: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
   },
   inprogress: {
     // Jira DOM probe 2026-05-16: rgb(143,184,246) = #8FB8F6
@@ -35,11 +35,11 @@ const categoryColors: Record<
   done: {
     // Jira DOM probe 2026-05-16: rgb(179,223,114) = #B3DF72
     bg: '#B3DF72',
-    text: 'var(--cp-text-primary, #172B4D)',
+    text: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
   },
   default: {
     bg: 'rgba(5,21,36,0.06)',
-    text: 'var(--cp-text-primary, #172B4D)',
+    text: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
   },
 };
 

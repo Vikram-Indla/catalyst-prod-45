@@ -50,7 +50,7 @@ const ADS = {
   successBg:     'var(--ds-background-success, #DCFFF1)',
   selectedBg:    'var(--ds-background-selected, #E9F2FF)',
   // text
-  text:          'var(--ds-text, var(--cp-text-primary, #172B4D))',
+  text:          'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
   textSubtle:    'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
   textMuted:     'var(--ds-text-subtlest, #626F86)',
   textDanger:    'var(--ds-text-danger, #AE2E24)',
@@ -175,7 +175,7 @@ function StatusLozenge({ status }: { status: StatusType }) {
   // their fg ink) and also the Atlaskit lozenge tokens for inprogress /
   // default, so no new palette is introduced.
   const bg = isActive ? 'var(--ds-background-information, #CCE0FF)' : 'var(--ds-background-neutral, #DCDFE4)';
-  const fg = isActive ? 'var(--ds-text-information, #0055CC)' : 'var(--ds-text, var(--cp-text-primary, #172B4D))';
+  const fg = isActive ? 'var(--ds-text-information, #0055CC)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))';
   return (
     <span style={{
       display: 'inline-block', height: 20, lineHeight: '20px',

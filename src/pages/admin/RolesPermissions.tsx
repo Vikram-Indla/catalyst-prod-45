@@ -64,7 +64,7 @@ export default function RolesPermissions() {
         {/* Page Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Roles & Permissions</h1>
+            <h1 className="text-2xl font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Roles & Permissions</h1>
             <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
               Manage roles, permissions, and access for the Product module.
             </p>

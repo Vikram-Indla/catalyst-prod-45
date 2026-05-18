@@ -45,7 +45,7 @@ const T = {
   border:         'var(--ds-border, #DCDFE4)',
   borderLayout:   'var(--ds-border-layout, #EBECF0)',
   borderSelected: 'var(--ds-border-selected, #0C66E4)',
-  text:           'var(--ds-text, var(--cp-text-primary, #172B4D))',
+  text:           'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
   textSubtle:     'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
   textSubtlest:   'var(--ds-text-subtlest, #626F86)',
   textBrand:      'var(--ds-text-brand, #0C66E4)',

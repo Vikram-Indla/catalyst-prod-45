@@ -121,7 +121,7 @@ const Comment = React.forwardRef<HTMLDivElement, CommentProps>(
                 'text-[13px] font-semibold',
                 isSystem
                   ? 'text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]'
-                  : 'text-[var(--ds-text,var(--cp-text-primary, #172B4D))] dark:text-[var(--ds-text,#EDEDED)]'
+                  : 'text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,#EDEDED)]'
               )}
             >
               {author.name}
@@ -136,7 +136,7 @@ const Comment = React.forwardRef<HTMLDivElement, CommentProps>(
             )}
           </div>
 
-          <div className="text-[13px] text-[var(--ds-text,var(--cp-text-primary, #172B4D))] dark:text-[var(--ds-text,#EDEDED)] whitespace-pre-wrap leading-relaxed">
+          <div className="text-[13px] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,#EDEDED)] whitespace-pre-wrap leading-relaxed">
             {renderContent(content)}
           </div>
 

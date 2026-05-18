@@ -98,7 +98,7 @@ function FeatureFlagsTable({ flags }: { flags: NonNullable<ComponentRegistryEntr
                     padding: token('space.100', '8px'),
                     fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
                     fontSize: 12,
-                    color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
+                    color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                     verticalAlign: 'top',
                   }}
                 >
@@ -116,7 +116,7 @@ function FeatureFlagsTable({ flags }: { flags: NonNullable<ComponentRegistryEntr
                 <td
                   style={{
                     padding: token('space.100', '8px'),
-                    color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
+                    color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                     verticalAlign: 'top',
                   }}
                 >
@@ -269,7 +269,7 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
               marginTop: token('space.200', '16px'),
               fontSize: 14,
               lineHeight: '20px',
-              color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
+              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
             }}
           >
             {entry.jsdoc_excerpt}

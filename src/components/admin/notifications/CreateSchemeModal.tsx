@@ -103,7 +103,7 @@ export function CreateSchemeModal({ scheme, open, onClose, onCreated }: CreateSc
         <div className="space-y-4 py-2">
           {/* Name */}
           <div className="space-y-1.5">
-            <label htmlFor="scheme-name" style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
+            <label htmlFor="scheme-name" style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
               Scheme Name
             </label>
             <Textfield
@@ -116,7 +116,7 @@ export function CreateSchemeModal({ scheme, open, onClose, onCreated }: CreateSc
 
           {/* Description */}
           <div className="space-y-1.5">
-            <label htmlFor="scheme-desc" style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
+            <label htmlFor="scheme-desc" style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
               Description
             </label>
             <TextArea
@@ -131,7 +131,7 @@ export function CreateSchemeModal({ scheme, open, onClose, onCreated }: CreateSc
           {/* Default toggle */}
           <div className="flex items-center justify-between rounded-md border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] px-3 py-2.5">
             <div>
-              <p className="text-xs font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Set as Default Scheme</p>
+              <p className="text-xs font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Set as Default Scheme</p>
               <p className="text-[11px] mt-0.5" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
                 New projects will automatically use this scheme.
               </p>

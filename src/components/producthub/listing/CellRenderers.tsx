@@ -134,7 +134,7 @@ export const AssigneeCell = React.memo(function AssigneeCell({
         size="small"
         appearance="circle"
       />
-      <span style={{ fontSize: 13, color: name ? 'var(--ds-text, var(--cp-text-primary, #172B4D))' : 'var(--cp-text-muted)' }}>
+      <span style={{ fontSize: 13, color: name ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' : 'var(--cp-text-muted)' }}>
         {name || 'Unassigned'}
       </span>
     </button>
@@ -163,7 +163,7 @@ export const AssigneeCell = React.memo(function AssigneeCell({
             width: '100%', boxSizing: 'border-box',
             padding: '6px 8px', fontSize: 13, border: '2px solid var(--ds-border-focused, var(--cp-primary-60, #0052CC))',
             borderRadius: 3, outline: 'none', background: 'var(--ds-background-input, #fff)',
-            color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
+            color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
           }}
         />
       </div>
@@ -180,7 +180,7 @@ export const AssigneeCell = React.memo(function AssigneeCell({
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none'; }}
         >
           <Avatar src={u.avatar_url || undefined} name={u.full_name || u.email} size="xsmall" />
-          <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {u.full_name || u.email}
           </span>
         </button>

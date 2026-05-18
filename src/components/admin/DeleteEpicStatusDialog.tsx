@@ -105,7 +105,7 @@ export function DeleteEpicStatusDialog({
 
               {/* Linked epics list */}
               <div className="space-y-2">
-                <span className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
+                <span className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                   Linked Epics ({linkedData?.count})
                 </span>
                 <ScrollArea className="h-32 border rounded-md p-2">
@@ -134,7 +134,7 @@ export function DeleteEpicStatusDialog({
 
               {/* Reassign section */}
               <div className="space-y-2 pt-2 border-t">
-                <label htmlFor="new-status-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
+                <label htmlFor="new-status-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                   Reassign all epics to:
                 </label>
                 <div className="flex gap-2">

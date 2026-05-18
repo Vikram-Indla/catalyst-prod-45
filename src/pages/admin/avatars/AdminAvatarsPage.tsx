@@ -190,7 +190,7 @@ function ResourceRow({ profile, overrideUrl, overrideStoragePath, isLast }: Reso
           gap: 8,
           fontSize: 14,
           fontWeight: 500,
-          color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
+          color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',

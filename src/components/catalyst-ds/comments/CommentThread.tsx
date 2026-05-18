@@ -105,7 +105,7 @@ function CommentThread({
                         onChange={(e) => setEditValue(e.target.value)}
                         className={cn(
                           'w-full resize-none border-0 bg-transparent',
-                          'text-[13px] text-[var(--ds-text,var(--cp-text-primary, #172B4D))] dark:text-[var(--ds-text,#EDEDED)]',
+                          'text-[13px] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,#EDEDED)]',
                           'focus:outline-none focus:ring-0',
                           'min-h-[60px]'
                         )}
@@ -126,7 +126,7 @@ function CommentThread({
                         <button
                           type="button"
                           onClick={cancelEdit}
-                          className="text-[12px] font-medium text-[var(--ds-text-subtlest,#6B778C)] hover:text-[var(--ds-text,var(--cp-text-primary, #172B4D))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:text-[var(--ds-text,#EDEDED)]"
+                          className="text-[12px] font-medium text-[var(--ds-text-subtlest,#6B778C)] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:text-[var(--ds-text,#EDEDED)]"
                         >
                           Cancel
                         </button>

@@ -198,7 +198,7 @@ export function ColumnPicker({ columns, onChange }: { columns: ColumnConfig; onC
               <div style={{ width: 14, height: 14, borderRadius: 3, border: `1.5px solid ${columns[col.key] ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'rgba(9,30,66,.24)'}`, background: columns[col.key] ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-surface, #fff)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background .12s, border-color .12s' }}>
                 {columns[col.key] && <CheckMarkIcon label="" color="var(--ds-surface, #fff)" />}
               </div>
-              <span style={{ fontSize: 12, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{col.label}</span>
+              <span style={{ fontSize: 12, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{col.label}</span>
             </div>
           ))}
         </div>

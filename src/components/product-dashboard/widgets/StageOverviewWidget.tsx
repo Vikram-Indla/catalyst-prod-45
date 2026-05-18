@@ -277,7 +277,7 @@ export function StageOverviewWidget({ onStageClick }: StageOverviewWidgetProps) 
                   style={{
                     fontSize: 20,
                     fontWeight: 700,
-                    color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
+                    color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                     marginTop: 6,
                     fontVariantNumeric: 'tabular-nums',
                   }}

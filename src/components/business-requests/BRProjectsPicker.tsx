@@ -148,7 +148,7 @@ export function BRProjectsPicker({ businessRequestId }: Props) {
                       <FolderKanban size={14} color="#0747A6" />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
+                      <div style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
                       {p.key && <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>{p.key}</div>}
                     </div>
                     {isActive && <CheckmarkSVG />}

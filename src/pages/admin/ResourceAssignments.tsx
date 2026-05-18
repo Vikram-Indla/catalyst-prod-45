@@ -167,7 +167,7 @@ function SortableRow({
             <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><BriefcaseIcon label="" size="small" /></span>
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{assignment.name}</span>
+            <span className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{assignment.name}</span>
             {assignment.project?.name && (
               <span className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>{assignment.project.name}</span>
             )}
@@ -211,7 +211,7 @@ function SortableRow({
           <Tooltip content={<p>Sum of {resourceCount} linked resources' CTC (auto-calculated)</p>}>
             <div className="flex items-center gap-1 px-2 py-1 -mx-2 rounded min-w-[80px] cursor-help" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
               <span className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>﷼</span>
-              <span className="text-sm" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{totalBudget.toLocaleString()}</span>
+              <span className="text-sm" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{totalBudget.toLocaleString()}</span>
             </div>
           </Tooltip>
         ) : (
@@ -236,7 +236,7 @@ function SortableRow({
               style={{
                 borderColor: 'var(--ds-border, #DCDFE4)',
                 background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                color: assignment.start_date ? 'var(--ds-text, var(--cp-text-primary, #172B4D))' : 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
+                color: assignment.start_date ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' : 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
               }}
             >
               <span style={{ display: 'inline-flex', marginRight: 8 }}><CalendarIcon label="" size="small" /></span>
@@ -262,7 +262,7 @@ function SortableRow({
               style={{
                 borderColor: 'var(--ds-border, #DCDFE4)',
                 background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                color: assignment.end_date ? 'var(--ds-text, var(--cp-text-primary, #172B4D))' : 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
+                color: assignment.end_date ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' : 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
               }}
             >
               <span style={{ display: 'inline-flex', marginRight: 8 }}><CalendarIcon label="" size="small" /></span>
@@ -361,7 +361,7 @@ function SortableRow({
             onClick={() => onEdit(assignment)}
             className="w-8 h-8 rounded flex items-center justify-center transition-colors"
             style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, #172B4D))'; }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))'; }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))'; }}
           >
             <EditIcon label="" size="small" />
@@ -757,7 +757,7 @@ export default function ResourceAssignmentsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Resource Assignments</h1>
+          <h1 className="text-2xl font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Resource Assignments</h1>
           <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
             Configure assignment values for capacity planning resources.
           </p>
@@ -896,7 +896,7 @@ export default function ResourceAssignmentsPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Name *</label>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Name *</label>
               <Textfield
                 value={formData.name}
                 onChange={(e) => setFormData(f => ({ ...f, name: (e.target as HTMLInputElement).value }))}
@@ -904,7 +904,7 @@ export default function ResourceAssignmentsPage() {
               />
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Description</label>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Description</label>
               <Textfield
                 value={formData.description}
                 onChange={(e) => setFormData(f => ({ ...f, description: (e.target as HTMLInputElement).value }))}
@@ -912,7 +912,7 @@ export default function ResourceAssignmentsPage() {
               />
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Assignment Type</label>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Assignment Type</label>
               {(() => {
                 const typeOpts = [
                   { label: 'Not specified', value: '__none__' },
@@ -952,7 +952,7 @@ export default function ResourceAssignmentsPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Name *</label>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Name *</label>
               <Textfield
                 value={formData.name}
                 onChange={(e) => setFormData(f => ({ ...f, name: (e.target as HTMLInputElement).value }))}
@@ -960,7 +960,7 @@ export default function ResourceAssignmentsPage() {
               />
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Project</label>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Project</label>
               {(() => {
                 const projectOpts = [
                   { label: 'No project', value: '__none__' },
@@ -977,7 +977,7 @@ export default function ResourceAssignmentsPage() {
               })()}
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Assignment Status</label>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Assignment Status</label>
               {(() => {
                 const statusOpts = [
                   { label: 'Yet to Start', value: 'yet_to_start' },
@@ -996,7 +996,7 @@ export default function ResourceAssignmentsPage() {
               })()}
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Budget</label>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Budget</label>
               <Textfield
                 type="number"
                 value={formData.budget}
@@ -1005,7 +1005,7 @@ export default function ResourceAssignmentsPage() {
               />
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Vendor</label>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Vendor</label>
               {(() => {
                 const vendorOpts = [
                   { label: 'Not specified', value: '__none__' },
@@ -1022,7 +1022,7 @@ export default function ResourceAssignmentsPage() {
               })()}
             </div>
             <div className="space-y-2">
-              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Assignment Type</label>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Assignment Type</label>
               {(() => {
                 const typeOpts = [
                   { label: 'Not specified', value: '__none__' },
@@ -1192,7 +1192,7 @@ export default function ResourceAssignmentsPage() {
                           <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
                             <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}><PersonIcon label="" size="small" /></span>
                           </div>
-                          <span className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{resource.name}</span>
+                          <span className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{resource.name}</span>
                         </div>
                       </div>
                     ))}

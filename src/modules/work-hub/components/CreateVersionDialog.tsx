@@ -103,7 +103,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
       >
         {/* Header */}
         <DialogHeader className="px-6 pt-6 pb-4">
-          <DialogTitle className="text-[20px] font-semibold text-[var(--ds-text,var(--cp-text-primary, #172B4D))]">
+          <DialogTitle className="text-[20px] font-semibold text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]">
             Create version
           </DialogTitle>
         </DialogHeader>
@@ -117,7 +117,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
 
           {/* Name Field */}
           <div className="space-y-1.5">
-            <Label className="text-[13px] font-medium text-[var(--ds-text,var(--cp-text-primary, #172B4D))]">
+            <Label className="text-[13px] font-medium text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]">
               Name <span className="text-red-500">*</span>
             </Label>
             <Input
@@ -141,7 +141,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
           <div className="grid grid-cols-2 gap-4">
             {/* Start Date */}
             <div className="space-y-1.5">
-              <Label className="text-[13px] font-medium text-[var(--ds-text,var(--cp-text-primary, #172B4D))]">
+              <Label className="text-[13px] font-medium text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]">
                 Start Date
               </Label>
               <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
@@ -174,7 +174,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
 
             {/* Release Date */}
             <div className="space-y-1.5">
-              <Label className="text-[13px] font-medium text-[var(--ds-text,var(--cp-text-primary, #172B4D))]">
+              <Label className="text-[13px] font-medium text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]">
                 Release date
               </Label>
               <Popover open={releaseDateOpen} onOpenChange={setReleaseDateOpen}>
@@ -208,7 +208,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
 
           {/* Driver Field */}
           <div className="space-y-1.5">
-            <Label className="text-[13px] font-medium text-[var(--ds-text,var(--cp-text-primary, #172B4D))]">
+            <Label className="text-[13px] font-medium text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]">
               Driver
             </Label>
             <Select value={driver} onValueChange={setDriver}>
@@ -237,7 +237,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
 
           {/* Description Field */}
           <div className="space-y-1.5">
-            <Label className="text-[13px] font-medium text-[var(--ds-text,var(--cp-text-primary, #172B4D))]">
+            <Label className="text-[13px] font-medium text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]">
               Description
             </Label>
             <Textarea

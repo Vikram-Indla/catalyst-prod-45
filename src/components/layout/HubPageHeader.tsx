@@ -17,7 +17,7 @@
  *   container padding:   16px 16px 4px
  *   h1 font-size:        20px
  *   h1 font-weight:      600
- *   h1 color:            var(--ds-text, var(--cp-text-primary, #172B4D))   (Atlaskit 'color.text', light mode)
+ *   h1 color:            var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))   (Atlaskit 'color.text', light mode)
  *   h1 letter-spacing:  -0.003em
  *   h1 margin:           0
  *
@@ -81,7 +81,7 @@ export function HubPageHeader({
           margin: 0,
           fontSize: 20,
           fontWeight: 600,
-          color: 'var(--cp-text-primary, var(--cp-text-primary, #172B4D))',
+          color: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
           letterSpacing: '-0.003em',
           fontFamily: '"Atlassian Sans", Inter, system-ui, -apple-system, sans-serif',
           lineHeight: 1.2,

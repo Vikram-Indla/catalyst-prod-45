@@ -73,7 +73,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
               margin: 0,
               fontSize: 16,
               fontWeight: 600,
-              color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
+              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
             }}
           >
             {brTitle}
@@ -161,7 +161,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
                 >
                   Summary
                 </h3>
-                <p style={{ margin: 0, fontSize: 14, color: token('color.text', 'var(--cp-text-primary, #172B4D)'), lineHeight: 1.6 }}>
+                <p style={{ margin: 0, fontSize: 14, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), lineHeight: 1.6 }}>
                   {data.summary}
                 </p>
               </section>
@@ -179,7 +179,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
                 >
                   Timeline
                 </h3>
-                <p style={{ margin: 0, fontSize: 14, color: token('color.text', 'var(--cp-text-primary, #172B4D)'), lineHeight: 1.6 }}>
+                <p style={{ margin: 0, fontSize: 14, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), lineHeight: 1.6 }}>
                   {data.timeline}
                 </p>
               </section>
@@ -202,7 +202,7 @@ export function BrPostMortemModal({ brId, brTitle, onClose }: BrPostMortemModalP
                     {data.lessons.map((lesson, i) => (
                       <li
                         key={i}
-                        style={{ fontSize: 14, color: token('color.text', 'var(--cp-text-primary, #172B4D)'), lineHeight: 1.6 }}
+                        style={{ fontSize: 14, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), lineHeight: 1.6 }}
                       >
                         {lesson}
                       </li>

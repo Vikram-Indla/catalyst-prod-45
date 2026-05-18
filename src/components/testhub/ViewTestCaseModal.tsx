@@ -1006,7 +1006,7 @@ export function ViewTestCaseModal({
               <span style={{ fontSize: 12, fontFamily: 'var(--cp-font-mono)', color: '#5E6C84', fontWeight: 500 }}>
                 {testCase.case_key}
               </span>
-              <span style={{ fontSize: 13, fontFamily: 'var(--cp-font-body)', color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontWeight: 500, maxWidth: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 13, fontFamily: 'var(--cp-font-body)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 500, maxWidth: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {testCase.title}
               </span>
             </div>
@@ -1206,7 +1206,7 @@ export function ViewTestCaseModal({
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
                           <button
                             onClick={() => setAddingGherkin(true)}
-                            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontFamily: 'var(--cp-font-body)' }}>
+                            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'var(--cp-font-body)' }}>
                             <Plus style={{ width: 14, height: 14 }} />
                             Add Scenario
                           </button>
@@ -1259,7 +1259,7 @@ export function ViewTestCaseModal({
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
                           <button
                             onClick={() => setAddingFreeText(true)}
-                            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontFamily: 'var(--cp-font-body)' }}>
+                            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'var(--cp-font-body)' }}>
                             <Plus style={{ width: 14, height: 14 }} />
                             Add Test Step
                           </button>
@@ -1361,7 +1361,7 @@ export function ViewTestCaseModal({
                           <div style={{ position: 'relative' }} data-add-step-menu>
                             <button
                               onClick={() => setIsAddStepMenuOpen(p => !p)}
-                              style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontFamily: 'var(--cp-font-body)' }}>
+                              style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'var(--cp-font-body)' }}>
                               <Plus style={{ width: 14, height: 14 }} />
                               Add Step
                             </button>
@@ -1369,7 +1369,7 @@ export function ViewTestCaseModal({
                               <div style={{ position: 'absolute', right: 0, top: 36, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6, boxShadow: '0 4px 16px rgba(9,30,66,0.15)', zIndex: 100, minWidth: 180, overflow: 'hidden' }}>
                                 <button
                                   onClick={() => { setIsAddStepMenuOpen(false); setAddingStep(true); }}
-                                  style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 13, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontFamily: 'var(--cp-font-body)' }}
+                                  style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 13, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'var(--cp-font-body)' }}
                                   onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
                                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                                 >
@@ -1377,7 +1377,7 @@ export function ViewTestCaseModal({
                                 </button>
                                 <button
                                   onClick={() => { setIsAddStepMenuOpen(false); setIsSharedStepsModalOpen(true); }}
-                                  style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 13, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontFamily: 'var(--cp-font-body)' }}
+                                  style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 13, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'var(--cp-font-body)' }}
                                   onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
                                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                                 >

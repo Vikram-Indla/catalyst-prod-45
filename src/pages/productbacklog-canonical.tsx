@@ -105,7 +105,7 @@ export default function ProductBacklogCanonicalPage() {
     <QueryClientProvider client={queryClient}>
       <div style={{ padding: '24px', minHeight: '100vh', backgroundColor: '#F7F8F9' }}>
         <div style={{ maxWidth: '1440px', margin: '0 auto' }}>
-          <h1 style={{ fontSize: '28px', fontWeight: 600, marginBottom: '8px', color: 'var(--cp-text-primary, #172B4D)' }}>
+          <h1 style={{ fontSize: '28px', fontWeight: 600, marginBottom: '8px', color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))' }}>
             Product Backlog (Canonical)
           </h1>
           <p style={{ fontSize: '14px', color: '#626F86', marginBottom: '24px' }}>

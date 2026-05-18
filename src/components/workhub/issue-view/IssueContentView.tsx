@@ -159,7 +159,7 @@ function StatusPill({ status, statusCategory, issueId, onStatusChange }: { statu
                   onClick={() => handleSelect(s)}
                   style={{
                     display: 'block', width: '100%', textAlign: 'left',
-                    padding: '6px 12px', fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
+                    padding: '6px 12px', fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                     background: s === status ? '#E9F2FF' : 'transparent',
                     border: 'none', cursor: 'pointer', fontWeight: s === status ? 600 : 400,
                   }}
@@ -573,7 +573,7 @@ export function IssueContentView({
                         onUpdate={() => { queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); queryClient.invalidateQueries({ queryKey: ['allwork-items'] }); }}
                       />
                     ) : (
-                      <span style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Medium</span>
+                      <span style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Medium</span>
                     )}
                   </div>
                 </div>
@@ -871,7 +871,7 @@ export function IssueContentView({
             }}
             title="Automation"
           >
-            <Zap size={18} color="var(--ds-text, var(--cp-text-primary, #172B4D))" />
+            <Zap size={18} color="var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))" />
           </button>
           <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
             {/* Watcher count */}
@@ -895,7 +895,7 @@ export function IssueContentView({
                 }}>
                   {/* Add/Remove flag in menu */}
                   <button onClick={() => { setShowFlagPopover(true); setMoreMenuOpen(false); }}
-                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', background: 'transparent', border: 'none', cursor: 'pointer' }}
                     onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >{checkFlagged(item) ? 'Remove flag' : 'Add flag'}</button>
@@ -903,26 +903,26 @@ export function IssueContentView({
                   {/* Convert to Subtask */}
                   {item?.issue_type && item.issue_type !== 'Sub-task' && (
                     <button onClick={() => { setShowConvertWizard(true); setMoreMenuOpen(false); }}
-                      style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                      style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', background: 'transparent', border: 'none', cursor: 'pointer' }}
                       onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
                       onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                     >Convert to Subtask</button>
                   )}
                   {/* Clone */}
                   <button onClick={() => { setShowCloneWizard(true); setMoreMenuOpen(false); }}
-                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', background: 'transparent', border: 'none', cursor: 'pointer' }}
                     onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Clone</button>
                   {/* Move */}
                   <button onClick={() => { setShowMoveWizard(true); setMoreMenuOpen(false); }}
-                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', background: 'transparent', border: 'none', cursor: 'pointer' }}
                     onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Move</button>
                   {/* Archive */}
                   <button onClick={() => { setShowArchiveDialog(true); setMoreMenuOpen(false); }}
-                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', background: 'transparent', border: 'none', cursor: 'pointer' }}
                     onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Archive</button>
@@ -946,13 +946,13 @@ export function IssueContentView({
               ? <ChevronRight size={14} color="#42526E" />
               : <ChevronDown size={14} color="#42526E" />
             }
-            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Details</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Details</span>
           </div>
           {!collapsed.details && (
             <div>
               {/* Fix versions — Jira-parity editable dropdown */}
               <div style={{ marginBottom: 14, position: 'relative' }} ref={fixVersionDropdownRef}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', marginBottom: 4 }}>Fix versions</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 4 }}>Fix versions</div>
                 <div
                   onClick={() => setShowFixVersionDropdown(!showFixVersionDropdown)}
                   style={{
@@ -982,7 +982,7 @@ export function IssueContentView({
                   <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', zIndex: 100, maxHeight: 320, overflow: 'hidden' }}>
                     <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
                       <input autoFocus value={fixVersionSearch} onChange={e => setFixVersionSearch(e.target.value)} placeholder="Search versions..."
-                        style={{ width: '100%', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 4, padding: '6px 10px', fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', outline: 'none', fontFamily: 'inherit' }}
+                        style={{ width: '100%', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 4, padding: '6px 10px', fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', outline: 'none', fontFamily: 'inherit' }}
                         onFocus={e => { e.currentTarget.style.borderColor = '#4C9AFF'; }}
                         onBlur={e => { e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'; }}
                       />
@@ -998,7 +998,7 @@ export function IssueContentView({
                             {filtered.map(v => {
                               const isSel = fixVersionNames.includes(v.name);
                               return (
-                                <div key={v.name} onClick={() => handleToggleFixVersion(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? '#DEEBFF' : 'transparent', transition: 'background 0.1s' }}
+                                <div key={v.name} onClick={() => handleToggleFixVersion(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? '#DEEBFF' : 'transparent', transition: 'background 0.1s' }}
                                   onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
                                   onMouseLeave={e => { e.currentTarget.style.background = isSel ? '#DEEBFF' : 'transparent'; }}
                                 >
@@ -1019,7 +1019,7 @@ export function IssueContentView({
                             {filtered.map(v => {
                               const isSel = fixVersionNames.includes(v.name);
                               return (
-                                <div key={v.name} onClick={() => handleToggleFixVersion(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? '#DEEBFF' : 'transparent', transition: 'background 0.1s' }}
+                                <div key={v.name} onClick={() => handleToggleFixVersion(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? '#DEEBFF' : 'transparent', transition: 'background 0.1s' }}
                                   onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
                                   onMouseLeave={e => { e.currentTarget.style.background = isSel ? '#DEEBFF' : 'transparent'; }}
                                 >
@@ -1038,7 +1038,7 @@ export function IssueContentView({
 
               {/* Assignee — Jira parity: avatar + name, click-to-edit dropdown */}
               <div style={{ marginBottom: 14 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', marginBottom: 4 }}>Assignee</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 4 }}>Assignee</div>
                 {item?.id ? (
                   <EditableAssignee
                     issueId={item.id}
@@ -1058,12 +1058,12 @@ export function IssueContentView({
 
               {/* Reporter — Jira parity: 28px avatar + 14px name */}
               <div style={{ marginBottom: 14 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', marginBottom: 4 }}>Reporter</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 4 }}>Reporter</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px', borderRadius: 4 }}>
                   {item?.reporter_name ? (
                     <>
                       <Avatar name={item.reporter_name} url={resolveAvatarUrl(item.reporter_name)} size={28} />
-                      <span style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontWeight: 400 }}>{item.reporter_name}</span>
+                      <span style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 400 }}>{item.reporter_name}</span>
                     </>
                   ) : <span style={{ color: '#42526E', fontSize: 14 }}>—</span>}
                 </div>

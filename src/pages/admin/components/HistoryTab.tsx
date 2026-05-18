@@ -261,7 +261,7 @@ export default function HistoryTab() {
                         style={{
                           fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace',
                           fontSize: 12,
-                          color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
+                          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                         }}
                       >
                         {row.route}
@@ -274,7 +274,7 @@ export default function HistoryTab() {
                   <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", "Roboto Mono", monospace', fontSize: 12 }}>
                     v{row.version}
                   </td>
-                  <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', maxWidth: 320, color: token('color.text', 'var(--cp-text-primary, #172B4D)') }}>
+                  <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', maxWidth: 320, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
                     {row.notes ?? ''}
                   </td>
                   <td style={{ padding: token('space.100', '8px'), verticalAlign: 'top', textAlign: 'right' }}>
@@ -302,7 +302,7 @@ export default function HistoryTab() {
               </ModalTitle>
             </ModalHeader>
             <ModalBody>
-              <div style={{ fontSize: 13, color: token('color.text', 'var(--cp-text-primary, #172B4D)'), marginBottom: token('space.200', '16px') }}>
+              <div style={{ fontSize: 13, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), marginBottom: token('space.200', '16px') }}>
                 This will affect <strong>{rollbackConsumerCount} consumer files</strong> that import{' '}
                 <code>{rollbackEntry?.name ?? rollbackTarget.component_id}</code>{' '}
                 at the <strong>{rollbackScopeLabel}</strong> scope. {rollbackChangedCount}{' '}

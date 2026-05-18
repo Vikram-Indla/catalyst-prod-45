@@ -266,7 +266,7 @@ function IconCard({
             flex: 1,
             fontSize: 12,
             fontWeight: 500,
-            color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
+            color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',

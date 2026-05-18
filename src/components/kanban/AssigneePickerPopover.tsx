@@ -124,7 +124,7 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
                 placeholder={currentAssignee || 'Search people...'}
                 style={{
                   flex: 1, border: 'none', outline: 'none',
-                  fontSize: 14, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
+                  fontSize: 14, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                   background: 'transparent',
                   fontFamily: 'var(--cp-font-body)',
                 }}
@@ -151,7 +151,7 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
                 }}>
                   <User size={18} color="#5E6C84" />
                 </span>
-                <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Unassigned</span>
+                <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Unassigned</span>
               </button>
 
               {/* People */}
@@ -177,7 +177,7 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
                       tk={tk}
                     />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', lineHeight: '18px' }}>
+                      <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', lineHeight: '18px' }}>
                         {person.name}
                       </div>
                       {person.email && (

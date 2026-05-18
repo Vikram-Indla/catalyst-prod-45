@@ -30,7 +30,7 @@ export function ConfirmDialog({
         background: 'var(--ds-surface, #FFF)', borderRadius: 8, padding: 28, width: 400, maxWidth: '95vw',
         animation: 'sdm-confirm-in 200ms ease-out',
       }}>
-        <h3 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', marginBottom: 8 }}>{title}</h3>
+        <h3 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 8 }}>{title}</h3>
         <p style={{ fontSize: 13, color: 'var(--ds-text-subtle, #5E6C84)', lineHeight: 1.6, marginBottom: 20 }}>{message}</p>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button onClick={onCancel} style={{

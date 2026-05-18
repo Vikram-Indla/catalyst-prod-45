@@ -103,7 +103,7 @@ export default function Departments() {
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Departments</h1>
+            <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Departments</h1>
             <p className="mt-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
               Manage department list for Business Requests
             </p>
@@ -116,23 +116,23 @@ export default function Departments() {
         <div className="grid gap-4 md:grid-cols-3">
           <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Total Departments</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Total Departments</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{departments.length}</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{departments.length}</div>
           </div>
           <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Active Departments</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Active Departments</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
               {departments.filter(d => d.is_active).length}
             </div>
           </div>
           <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Inactive Departments</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Inactive Departments</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
               {departments.filter(d => !d.is_active).length}
             </div>
           </div>
@@ -140,7 +140,7 @@ export default function Departments() {
 
         <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <div style={{ marginBottom: '12px' }}>
-            <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Department Configuration</h2>
+            <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Department Configuration</h2>
             <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
               Configure departments for Business Requests. Each department maps to a Business Owner.
             </p>
@@ -162,10 +162,10 @@ export default function Departments() {
                 <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
                   <tr>
                     <th className="text-left p-3 text-sm font-medium w-10"></th>
-                    <th className="text-left p-3 text-sm font-medium w-[80px]" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>D-ID</th>
-                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Department Name</th>
-                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Status</th>
-                    <th className="text-right p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Actions</th>
+                    <th className="text-left p-3 text-sm font-medium w-[80px]" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>D-ID</th>
+                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Department Name</th>
+                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Status</th>
+                    <th className="text-right p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -195,7 +195,7 @@ export default function Departments() {
                         <td className="p-3">
                           <span className="text-sm font-mono font-medium" style={{ color: 'var(--ds-text-brand, #0C66E4)' }}>{dept.department_code || '—'}</span>
                         </td>
-                        <td className="p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{dept.name}</td>
+                        <td className="p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{dept.name}</td>
                         <td className="p-3 text-sm">
                           <Toggle
                             isChecked={dept.is_active ?? true}
@@ -225,7 +225,7 @@ export default function Departments() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <label htmlFor="name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Department Name</label>
+                <label htmlFor="name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Department Name</label>
                 <Textfield
                   id="name"
                   value={newDepartmentName}

@@ -140,11 +140,11 @@
 }
 .jf-tab:hover:not(.jf-tab--active):not(:disabled) {
   background-color: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06));
-  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 .jf-tab--active {
   background: transparent;
-  color: var(--ds-text-selected, var(--cp-text-primary, #172B4D));
+  color: var(--ds-text-selected, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   font-weight: 500;
   border-bottom: 2px solid var(--ds-text-brand, var(--cp-primary-60, #0052CC));
 }
@@ -210,11 +210,11 @@
   border-radius: 3px;
   background: transparent;
   cursor: pointer;
-  /* Jira measured: 14px / 400 / var(--cp-text-primary, #172B4D) */
+  /* Jira measured: 14px / 400 / var(--cp-text-primary, var(--cp-text-inverse, #172B4D)) */
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
-  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   text-align: left;
   overflow: hidden;
   font-family: inherit;
@@ -373,7 +373,7 @@
   padding: 0;
   font-size: 14px;
   line-height: 20px;
-  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   font-family: inherit;
   width: 100%;
 }
@@ -424,7 +424,7 @@
   align-items: center;
   gap: 8px;
   height: 24px;
-  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   font-size: 14px;
   font-weight: 400;
 }
@@ -457,7 +457,7 @@
 .jf-option-label {
   font-size: 14px;
   font-weight: 400;
-  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

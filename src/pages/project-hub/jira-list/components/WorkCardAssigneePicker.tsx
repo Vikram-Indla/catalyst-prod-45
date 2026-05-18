@@ -171,7 +171,7 @@ export function WorkCardAssigneePicker({
                 width: '100%', height: 36, padding: '0 10px',
                 border: '1px solid var(--cp-border-default, rgba(9,30,66,0.14))', borderRadius: 4,
                 fontSize: 14, fontFamily: 'inherit', outline: 'none',
-                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-primary, var(--cp-text-primary, #172B4D))',
+                background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
               }}
               onFocus={e => (e.target.style.border = '2px solid #2563EB')}
               onBlur={e => (e.target.style.border = '1px solid var(--cp-border-default, rgba(9,30,66,0.14))')}
@@ -214,7 +214,7 @@ export function WorkCardAssigneePicker({
                   }}>{m.full_name.split(' ').map(s => s[0]).slice(0, 2).join('').toUpperCase()}</div>
                 )}
                 <div style={{
-                  flex: 1, minWidth: 0, fontSize: 14, color: 'var(--cp-text-primary, var(--cp-text-primary, #172B4D))',
+                  flex: 1, minWidth: 0, fontSize: 14, color: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>{m.full_name}</div>
               </div>

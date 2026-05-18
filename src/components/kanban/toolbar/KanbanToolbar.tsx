@@ -72,7 +72,7 @@ function BoardMenuItem({
       className="flex items-center gap-3 w-full"
       style={{
         padding: '10px 16px', background: 'transparent', border: 'none',
-        cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontWeight: 450,
+        cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 450,
         textAlign: 'left', fontFamily: 'var(--cp-font-body)',
         transition: 'background 80ms ease',
       }}

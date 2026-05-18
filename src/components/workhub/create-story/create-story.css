@@ -57,7 +57,7 @@
 }
 .csModalTitle {
   font: 600 20px/24px system-ui, -apple-system, sans-serif;
-  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   margin: 0;
 }
 .csModalHeaderActions {
@@ -76,7 +76,7 @@
   justify-content: center;
   color: var(--ds-text-subtlest, #6B778C);
 }
-.csHeaderBtn:hover { background: var(--ds-surface-sunken, #F4F5F7); color: var(--ds-text, var(--cp-text-primary, #172B4D)); }
+.csHeaderBtn:hover { background: var(--ds-surface-sunken, #F4F5F7); color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))); }
 
 /* Required fields note */
 .csRequiredNote {
@@ -114,7 +114,7 @@
   align-items: center;
   gap: 8px;
   font: 400 14px/20px system-ui, -apple-system, sans-serif;
-  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   cursor: pointer;
 }
 .csCreateAnother input[type="checkbox"] {
@@ -157,7 +157,7 @@
 .csLabel {
   display: block;
   font: 600 14px/20px system-ui, -apple-system, sans-serif;
-  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   margin-bottom: 4px;
 }
 .csRequired { color: #DE350B; }
@@ -198,7 +198,7 @@
   height: 36px;
   padding: 0 8px;
   font: 400 14px/20px system-ui, -apple-system, sans-serif;
-  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   outline: none;
   background: transparent;
   transition: border-color 120ms;
@@ -241,7 +241,7 @@
   background: var(--ds-surface-sunken, #FAFBFC);
   cursor: pointer;
   font: 400 14px/20px system-ui, -apple-system, sans-serif;
-  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 .csSelect:hover { border-color: #B3BAC5; }
 .csSelect:focus { border-color: #0C66E4; outline: none; }
@@ -289,7 +289,7 @@
   border: none;
   background: none;
   font: 400 14px/20px system-ui;
-  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   cursor: pointer;
   text-align: left;
 }
@@ -459,7 +459,7 @@
   padding: 8px 12px;
   min-height: 120px;
   font: 400 14px/22px system-ui, -apple-system, sans-serif;
-  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   outline: none;
 }
 .csEditorContent .tiptap p.is-editor-empty:first-child::before {

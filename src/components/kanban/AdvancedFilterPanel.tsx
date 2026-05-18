@@ -194,7 +194,7 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
       }}>
         <div className="flex items-center gap-2">
           <Filter size={15} color="#42526E" />
-          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', letterSpacing: '-0.01em' }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', letterSpacing: '-0.01em' }}>
             Advanced Filters
           </span>
           {activeCount > 0 && (
@@ -309,7 +309,7 @@ function MultiSelectFilterSection({
         className="flex items-center justify-between w-full"
         style={{
           padding: '12px 20px', background: 'transparent', border: 'none',
-          cursor: 'pointer', fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
+          cursor: 'pointer', fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
           textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.05em',
         }}
         onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
@@ -341,7 +341,7 @@ function MultiSelectFilterSection({
                 style={{
                   width: '100%', height: 32, paddingLeft: 28, paddingRight: 8,
                   border: '1px solid #DDDEE1', borderRadius: 4,
-                  fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', background: 'var(--ds-surface-sunken, #FAFBFC)',
+                  fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', background: 'var(--ds-surface-sunken, #FAFBFC)',
                   outline: 'none', fontFamily: 'var(--cp-font-body)',
                 }}
                 onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))')}
@@ -360,7 +360,7 @@ function MultiSelectFilterSection({
                   style={{
                     padding: '7px 8px', background: isSelected ? 'rgba(37,99,235,0.06)' : 'transparent',
                     border: 'none', cursor: 'pointer', fontSize: 13.5,
-                    color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', textAlign: 'left', borderRadius: 4,
+                    color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', textAlign: 'left', borderRadius: 4,
                     fontWeight: isSelected ? 600 : 400,
                   }}
                   onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
@@ -412,7 +412,7 @@ function DateRangeFilterSection({
         className="flex items-center justify-between w-full"
         style={{
           padding: '12px 20px', background: 'transparent', border: 'none',
-          cursor: 'pointer', fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
+          cursor: 'pointer', fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
           textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.05em',
         }}
         onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}

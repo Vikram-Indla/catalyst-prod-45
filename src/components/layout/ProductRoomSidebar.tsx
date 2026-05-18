@@ -211,7 +211,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
                   fontWeight: isCurrent ? 600 : 400,
                   color: isCurrent
                     ? 'var(--cp-text-link, var(--cp-primary-60, #0052CC))'
-                    : isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-text-primary, #172B4D))',
+                    : isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                   textAlign: 'left',
                 }}
                 onMouseEnter={(e) => {

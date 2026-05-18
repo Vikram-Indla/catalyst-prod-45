@@ -121,7 +121,7 @@ export function AddEditRoleModal({
         <div className="space-y-4 py-4">
           {/* Role Name */}
           <div className="space-y-2">
-            <label htmlFor="role-name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
+            <label htmlFor="role-name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
               Role Name <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
             </label>
             <Textfield
@@ -142,7 +142,7 @@ export function AddEditRoleModal({
 
           {/* Description */}
           <div className="space-y-2">
-            <label htmlFor="role-description" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Description</label>
+            <label htmlFor="role-description" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Description</label>
             <TextArea
               id="role-description"
               value={description}
@@ -156,7 +156,7 @@ export function AddEditRoleModal({
           {/* Active Toggle */}
           <div className="flex items-center justify-between rounded-lg border p-3" style={{ borderColor: 'var(--ds-border, #DCDFE4)' }}>
             <div className="space-y-0.5">
-              <label htmlFor="role-active" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Active Status</label>
+              <label htmlFor="role-active" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Active Status</label>
               <p className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}>
                 Inactive roles cannot be assigned to users
               </p>

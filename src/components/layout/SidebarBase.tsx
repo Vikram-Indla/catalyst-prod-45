@@ -176,7 +176,7 @@ export function SidebarBase({
     activeText: 'var(--cp-text-link, var(--cp-primary-60, #0052CC))',
     activeBg: isDark ? 'var(--ds-background-selected, #1C2B41)' : '#E9F2FF',
     hoverBg: isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : 'var(--ds-surface-sunken, #F4F5F7)',
-    hoverText: 'var(--cp-text-primary, var(--cp-text-primary, #172B4D))',
+    hoverText: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
     iconOpacityInactive: isDark ? 0.85 : 0.75,
     badgeBg: isDark ? 'var(--ds-background-neutral-subtle, #22272B)' : '#EBECF0',
     badgeText: 'var(--cp-text-tertiary, #6B778C)',
@@ -188,7 +188,7 @@ export function SidebarBase({
   // stays unique to the primary action. Hover lifts to text-primary for an
   // affordance pop without reintroducing brand colour.
   const chevronColor = 'var(--cp-text-tertiary, #6B778C)';
-  const chevronHoverColor = 'var(--cp-text-primary, var(--cp-text-primary, #172B4D))';
+  const chevronHoverColor = 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))';
   // ADS canonical: side-nav uses --ds-surface (rail surface lifts above
   // page bg --ds-background-neutral). Was incorrectly using page bg token.
   const sidebarBg = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
@@ -196,7 +196,7 @@ export function SidebarBase({
   const sidebarBorder = 'var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
   const dividerColor = 'var(--cp-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))';
   const sectionLabel = 'var(--cp-text-tertiary, #6B778C)';
-  const hubLabel = 'var(--cp-text-primary, var(--cp-text-primary, #172B4D))';
+  const hubLabel = 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))';
 
   const isActive = (path: string, exact: boolean = false, activeMatchPaths: string[] = []) => {
     if (activeMatchPaths.some((matchPath) => location.pathname === matchPath || location.pathname.startsWith(matchPath + '/'))) {

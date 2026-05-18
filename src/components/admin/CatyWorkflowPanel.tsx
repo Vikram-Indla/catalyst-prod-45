@@ -50,7 +50,7 @@ function ProposalDiff({ proposal, statuses }: { proposal: WorkflowAIProposal; st
       padding: '10px 12px',
       fontSize: 12,
     }}>
-      <div style={{ fontWeight: 600, marginBottom: 6, color: 'var(--ds-text,var(--cp-text-primary, #172B4D))', fontSize: 12 }}>
+      <div style={{ fontWeight: 600, marginBottom: 6, color: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontSize: 12 }}>
         Proposed changes
       </div>
 
@@ -121,7 +121,7 @@ function MessageBubble({
         borderRadius: isUser ? '8px 8px 2px 8px' : '8px 8px 8px 2px',
         padding: '10px 12px',
         fontSize: 13,
-        color: 'var(--ds-text,var(--cp-text-primary, #172B4D))',
+        color: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
         lineHeight: 1.5,
       }}>
         {msg.content}
@@ -277,7 +277,7 @@ export function CatyWorkflowPanel({
           C
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text,var(--cp-text-primary, #172B4D))' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
             Ask CATY
           </div>
           <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest,#6B778C)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

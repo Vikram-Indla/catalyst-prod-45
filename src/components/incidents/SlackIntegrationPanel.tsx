@@ -13,7 +13,7 @@ export function SlackIntegrationPanel({ incident }: SlackIntegrationPanelProps) 
     <div className="bg-white border border-[#E8E8E8] rounded-lg p-4">
       <div className="flex items-center gap-2 mb-3">
         <MessageSquare className="w-4 h-4 text-[#8C8C8C]" />
-        <h4 className="text-sm font-semibold text-[var(--ds-text,var(--cp-text-primary, #172B4D))]">Collaboration</h4>
+        <h4 className="text-sm font-semibold text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]">Collaboration</h4>
       </div>
 
       {hasChannel ? (

@@ -66,7 +66,7 @@ export function IncidentAttachments({
                 <div className="flex items-center gap-3">
                   {getFileIcon(attachment.name)}
                   <div>
-                    <p className="text-sm font-medium text-[var(--ds-text,var(--cp-text-primary, #172B4D))]">{attachment.name}</p>
+                    <p className="text-sm font-medium text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]">{attachment.name}</p>
                     <p className="text-xs text-[#8C8C8C]">
                       {attachment.size} • Uploaded by {attachment.uploadedBy} at {attachment.uploadedAt}
                     </p>

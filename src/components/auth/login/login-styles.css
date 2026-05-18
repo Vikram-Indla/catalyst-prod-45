@@ -9,7 +9,7 @@
 .clmp-root {
   font-family: var(--ds-font-family-body, 'Atlassian Sans', ui-sans-serif, system-ui, sans-serif);
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
@@ -30,7 +30,7 @@
   --clmp-p10:   #DEEBFF;
   --clmp-p05:   #F0F5FF;
 
-  --clmp-text1: var(--ds-text, var(--cp-text-primary, #172B4D));
+  --clmp-text1: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   --clmp-text2: var(--ds-text-subtle, var(--cp-text-secondary, #44546F));
   --clmp-text3: var(--ds-text-subtlest, #5E6C84);
   --clmp-mute:  var(--ds-text-subtlest, #6B778C);
@@ -302,7 +302,7 @@
 .clmp-card-title {
   font: var(--ds-font-heading-medium, 500 20px/24px ui-sans-serif, system-ui, sans-serif);
   font-weight: 600;
-  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   margin: 0 0 4px;
   letter-spacing: 0;
 }
@@ -342,7 +342,7 @@
   height: 100%;
   transition: color 150ms cubic-bezier(0.15,1,0.3,1);
 }
-.clmp-pwd-toggle:hover { color: var(--ds-text, var(--cp-text-primary, #172B4D)); }
+.clmp-pwd-toggle:hover { color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))); }
 .clmp-pwd-toggle:focus-visible { outline: 2px solid var(--ds-border-focused, #388BFF); outline-offset: -2px; border-radius: 3px; }
 
 /* password row with forgot link */
@@ -1291,7 +1291,7 @@
   border-radius: 4px;
   border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   background: var(--ds-background-neutral-subtle, #F7F8F9);
-  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   font-size: 14px;
   font-weight: 500;
   font-family: var(--ds-font-family-body, 'Atlassian Sans', sans-serif);
@@ -1320,7 +1320,7 @@
   font-weight: 700;
   letter-spacing: 0.35em;
   text-align: center;
-  color: var(--ds-text, var(--cp-text-primary, #172B4D));
+  color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', monospace;
   outline: none;
   transition: border-color 120ms ease, box-shadow 120ms ease;

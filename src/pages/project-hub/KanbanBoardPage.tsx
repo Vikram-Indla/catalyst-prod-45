@@ -1153,13 +1153,13 @@ export default function KanbanBoardPage() {
 
       {/* F3: "Show archived" moved into the board ••• menu — no standalone row above toolbar */}
       {showArchived && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 16px', background: 'var(--ds-background-warning-bold, #FFAB00)', color: 'var(--cp-text-primary, #172B4D)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 16px', background: 'var(--ds-background-warning-bold, #FFAB00)', color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))' }}>
           <span style={{ fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)' }}>
             Showing archived issues — restore from the issue overflow menu.
           </span>
           <button
             onClick={() => setShowArchived(false)}
-            style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--cp-text-primary, #172B4D)', fontFamily: 'var(--cp-font-body)', padding: '0 4px' }}
+            style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))', fontFamily: 'var(--cp-font-body)', padding: '0 4px' }}
           >
             Exit
           </button>

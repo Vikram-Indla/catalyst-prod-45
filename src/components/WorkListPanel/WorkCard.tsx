@@ -37,10 +37,10 @@ const statusCategoryTextColor: Record<
   'todo' | 'inprogress' | 'done' | 'default',
   string
 > = {
-  todo: 'var(--cp-text-primary, #172B4D)', // Dark grey
+  todo: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))', // Dark grey
   inprogress: '#FFFFFF', // White
-  done: 'var(--cp-text-primary, #172B4D)', // Dark
-  default: 'var(--cp-text-primary, #172B4D)',
+  done: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))', // Dark
+  default: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
 };
 
 export const WorkCard = memo(function WorkCard({
@@ -132,7 +132,7 @@ export const WorkCard = memo(function WorkCard({
         style={{
           fontSize: '13px',
           fontWeight: 400,
-          color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
+          color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
           lineHeight: '16px',
           overflow: 'hidden',
           textOverflow: 'ellipsis',

@@ -67,7 +67,7 @@ export const WorkListEmptyState = memo(function WorkListEmptyState() {
           margin: 0,
           fontSize: '16px',
           fontWeight: 600,
-          color: 'var(--cp-text-primary, #172B4D)',
+          color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))',
         }}
       >
         No items found

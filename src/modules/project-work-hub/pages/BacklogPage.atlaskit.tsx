@@ -1529,7 +1529,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             )}
             {!isOrphan && parentSummary && (
               <span style={{
-                color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
+                color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                 fontWeight: 500,
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -3142,7 +3142,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   display: 'block',
                   fontSize: 16,
                   fontWeight: 600,
-                  color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
+                  color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
                   marginBottom: 8,
                   textAlign: 'center',
                 }}>
@@ -3268,7 +3268,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
                   <span style={{ color: token('color.link', '#0C66E4'), textDecoration: 'underline', fontWeight: 500, flexShrink: 0 }}>
                     {activeDragRow.key || '—'}
                   </span>
-                  <span style={{ color: token('color.text', 'var(--cp-text-primary, #172B4D)'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                  <span style={{ color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                     {activeDragRow.title}
                   </span>
                 </div>

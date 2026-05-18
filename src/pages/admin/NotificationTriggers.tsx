@@ -162,7 +162,7 @@ export default function NotificationTriggers() {
         <div>
           <h1
             className="text-2xl font-semibold tracking-tight flex items-center gap-2"
-            style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))', fontFamily: 'var(--cp-font-body)' }}
+            style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontFamily: 'var(--cp-font-body)' }}
           >
             <span style={{ display: 'inline-flex', color: 'var(--ds-text-brand, #0C66E4)' }}><NotificationIcon label="" size="medium" /></span>
             Notification Triggers
@@ -350,7 +350,7 @@ export default function NotificationTriggers() {
                   ) : (
                     <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }}><ChevronRightIcon label="" size="small" /></span>
                   )}
-                  <span className="text-sm font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>{group.label}</span>
+                  <span className="text-sm font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{group.label}</span>
                   <Lozenge appearance="default">
                     {group.enabledCount}/{group.totalCount}
                   </Lozenge>
@@ -428,7 +428,7 @@ function StatsCard({
   variant?: 'default' | 'blue' | 'gray' | 'red' | 'muted' | 'amber';
 }) {
   const colorMap: Record<string, string> = {
-    default: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
+    default: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
     blue: 'var(--ds-text-brand, #0C66E4)',
     gray: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
     red: 'var(--ds-text-danger, #CA3521)',
@@ -509,7 +509,7 @@ function TriggerRow({
           }
         >
           <div className="flex items-center gap-1.5">
-            <span className="text-xs font-medium truncate" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
+            <span className="text-xs font-medium truncate" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
               {trigger.displayName}
             </span>
             {trigger.isMandatory && (

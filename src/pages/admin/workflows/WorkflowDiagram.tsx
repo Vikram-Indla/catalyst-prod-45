@@ -98,8 +98,8 @@ function StartNode() {
         width: 28,
         height: 28,
         borderRadius: '50%',
-        background: 'var(--ds-text,var(--cp-text-primary, #172B4D))',
-        border: '3px solid var(--ds-text,var(--cp-text-primary, #172B4D))',
+        background: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+        border: '3px solid var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -110,7 +110,7 @@ function StartNode() {
       <Handle
         type="source"
         position={Position.Right}
-        style={{ background: 'var(--ds-text,var(--cp-text-primary, #172B4D))', border: 'none', width: 8, height: 8 }}
+        style={{ background: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', border: 'none', width: 8, height: 8 }}
       />
     </div>
   );
@@ -155,7 +155,7 @@ function StatusNode({ data, selected }: { data: any; selected: boolean }) {
         <span style={{
           fontSize: 12,
           fontWeight: 600,
-          color: 'var(--ds-text,var(--cp-text-primary, #172B4D))',
+          color: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
           lineHeight: 1.3,
           flex: 1,
           overflow: 'hidden',
@@ -259,8 +259,8 @@ function buildFlowEdges(
       target: initial.id,
       type: 'bezier',
       animated: false,
-      style: { stroke: 'var(--cp-text-primary, #172B4D)', strokeWidth: 2 },
-      markerEnd: { type: MarkerType.ArrowClosed, color: 'var(--cp-text-primary, #172B4D)', width: 16, height: 16 },
+      style: { stroke: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))', strokeWidth: 2 },
+      markerEnd: { type: MarkerType.ArrowClosed, color: 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))', width: 16, height: 16 },
     });
   }
 
@@ -557,7 +557,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
         borderRadius: 8, padding: '8px 12px',
         boxShadow: '0 1px 4px rgba(9,30,66,0.08)',
       }}>
-        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ds-text,var(--cp-text-primary, #172B4D))', marginRight: 4 }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginRight: 4 }}>
           {scheme.name}
         </span>
         <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest,#6B778C)', marginRight: 8 }}>
@@ -627,7 +627,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
           boxShadow: '0 4px 16px rgba(9,30,66,0.12)',
           padding: 16, width: 280,
         }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text,var(--cp-text-primary, #172B4D))', marginBottom: 10 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 10 }}>
             Add Status
           </div>
 
@@ -770,7 +770,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
         <MiniMap
           position="bottom-right"
           nodeColor={(n) => {
-            if (n.id === 'START') return 'var(--cp-text-primary, #172B4D)';
+            if (n.id === 'START') return 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))';
             if (n.id === 'ANY') return 'var(--cp-amber, #F59E0B)';
             const data = n.data as any;
             return data?.category === 'done' ? '#22A06B' : '#579DFF';
@@ -805,7 +805,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
         <LegendRow color="#579DFF" label="To Do / In Progress" />
         <LegendRow color="#22A06B" label="Done" />
         <LegendRow color="var(--cp-amber, #F59E0B)" label="Global (any → status)" dashed />
-        <LegendRow color="var(--cp-text-primary, #172B4D)" label="Start" />
+        <LegendRow color="var(--cp-text-primary, var(--cp-text-inverse, #172B4D))" label="Start" />
       </div>
 
       {/* ─── Delete confirm modal ─── */}

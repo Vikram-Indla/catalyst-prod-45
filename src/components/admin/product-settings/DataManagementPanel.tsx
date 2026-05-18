@@ -135,7 +135,7 @@ export function DataManagementPanel() {
       {/* Export Configuration */}
       <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
         <div style={{ padding: '16px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
-          <p className="text-base font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Export Configuration</p>
+          <p className="text-base font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Export Configuration</p>
           <p className="text-sm text-muted-foreground">Download Product settings as a JSON file for backup or migration.</p>
         </div>
         <div style={{ padding: '16px' }}>
@@ -149,7 +149,7 @@ export function DataManagementPanel() {
       <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', opacity: 0.6 }}>
         <div style={{ padding: '16px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
           <div className="flex items-center gap-2">
-            <p className="text-base font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>Import Configuration</p>
+            <p className="text-base font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Import Configuration</p>
             <span className="text-xs bg-muted px-2 py-0.5 rounded-full">Phase 2</span>
           </div>
           <p className="text-sm text-muted-foreground">Import Product settings from a previously exported JSON file.</p>
@@ -247,7 +247,7 @@ export function DataManagementPanel() {
           </AlertDialogHeader>
           
           <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4 my-4">
-            <label htmlFor="confirm-phrase" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>
+            <label htmlFor="confirm-phrase" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
               Type <code className="bg-muted px-1 rounded">{CONFIRM_PHRASE}</code> to confirm:
             </label>
             <div className="mt-2">

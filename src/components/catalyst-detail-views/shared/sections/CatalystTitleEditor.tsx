@@ -38,7 +38,7 @@ import type { PhIssue } from '../types';
    to the measured values. We target the wrapper class so other
    InlineEdit instances keep their defaults.
 
-   Prior state (kept for traceability): 24/500/var(--cp-text-primary, #172B4D) with -0.01em
+   Prior state (kept for traceability): 24/500/var(--cp-text-primary, var(--cp-text-inverse, #172B4D)) with -0.01em
    tracking. Superseded by the Jira-measured spec in HANDOVER.md. */
 const CV_TITLE_STYLE_ID = 'cv-title-edit-style';
 if (typeof document !== 'undefined' && !document.getElementById(CV_TITLE_STYLE_ID)) {

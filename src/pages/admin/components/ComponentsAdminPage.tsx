@@ -104,7 +104,7 @@ function StatsStrip() {
               color:
                 item.tone === 'banned'
                   ? token('color.text.danger', '#AE2A19')
-                  : token('color.text', 'var(--cp-text-primary, #172B4D)'),
+                  : token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
               marginTop: token('space.050', '4px'),
             }}
           >
@@ -218,7 +218,7 @@ function InventoryPane() {
           borderRadius: 6,
           padding: token('space.300', '24px'),
           background: token('elevation.surface', '#FFFFFF'),
-          color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
+          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
         }}
       >
         {selected ? (
@@ -256,7 +256,7 @@ function BannedPane() {
               borderRadius: 6,
               padding: token('space.200', '16px'),
               background: token('color.background.danger', '#FFEDEB'),
-              color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
+              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
             }}
           >
             <div
@@ -284,7 +284,7 @@ function BannedPane() {
                 marginTop: token('space.100', '8px'),
                 fontSize: 13,
                 lineHeight: '18px',
-                color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
+                color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
               }}
             >
               {entry.banned_reason}
@@ -340,7 +340,7 @@ export default function ComponentsAdminPage() {
           padding: '24px 32px',
           maxWidth: 1400,
           margin: '0 auto',
-          color: token('color.text', 'var(--cp-text-primary, #172B4D)'),
+          color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
         }}
       >
         <Heading size="xlarge">Components</Heading>
