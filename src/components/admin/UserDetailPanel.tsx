@@ -102,7 +102,7 @@ function getEventDotColor(ev: any): string {
   if (ev.event_type === 'created') return 'var(--cp-purple-60, #7C3AED)';
   if (ev.event_type === 'deactivated' || ev.event_type === 'reactivated') return 'var(--ds-text-warning, #D97706)';
   if (ev.direction === 'jira_to_catalyst') return 'var(--ds-text-brand, #2563EB)';
-  if (ev.direction === 'catalyst_to_jira') return '#0D9488';
+  if (ev.direction === 'catalyst_to_jira') return 'var(--cp-teal-60, #0D9488)';
   return 'var(--ds-text-brand, #2563EB)';
 }
 
@@ -521,7 +521,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   <span style={{
                     padding: '1px 5px', borderRadius: '4px', fontSize: '9.5px', fontWeight: 700,
                     background: 'var(--cp-success-light, #F0FDFA)',
-                    color: 'var(--cp-teal-60, #0D9488)',
+                    color: 'var(--cp-teal-60, var(--cp-teal-60, #0D9488))',
                     border: `1px solid ${'var(--cp-teal-60, #99F6E4)'}`,
                     whiteSpace: 'nowrap',
                   }}>

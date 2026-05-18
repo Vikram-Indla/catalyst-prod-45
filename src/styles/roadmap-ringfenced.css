@@ -21,9 +21,9 @@
   /* ─── TYPE COLORS (bars, legends, icons, dots) ────────────────── */
   
   /* Enhancement = Teal (from CP V11 teal scale) */
-  --roadmap-type-enhancement:       var(--cp-teal-60);       /* #0D9488 */
+  --roadmap-type-enhancement:       var(--cp-teal-60);       /* var(--cp-teal-60, #0D9488) */
   --roadmap-type-enhancement-bg:    var(--cp-teal-5);        /* #F0FDFA */
-  --roadmap-type-enhancement-bar:   linear-gradient(135deg, #0D9488, #0F766E);
+  --roadmap-type-enhancement-bar:   linear-gradient(135deg, var(--cp-teal-60, #0D9488), #0F766E);
   --roadmap-type-enhancement-hover: var(--cp-teal-70);       /* #0F766E */
   --roadmap-type-enhancement-light: rgba(13, 148, 136, 0.12);
 
@@ -135,7 +135,7 @@
 .dark , [data-theme="dark"] {
   --roadmap-type-enhancement:       var(--cp-teal-40);
   --roadmap-type-enhancement-bg:    rgba(13, 148, 136, 0.15);
-  --roadmap-type-enhancement-bar:   linear-gradient(135deg, #14B8A6, #0D9488);
+  --roadmap-type-enhancement-bar:   linear-gradient(135deg, #14B8A6, var(--cp-teal-60, #0D9488));
   
   --roadmap-type-project:           var(--ds-text-subtlest, #94A3B8);
   --roadmap-type-project-bg:        rgba(71, 85, 105, 0.15);

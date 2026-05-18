@@ -688,7 +688,7 @@ function CheckinsTab({ checkins, krs }: { checkins: KRCheckin[]; krs: KeyResult[
 function ActivityTab({ goal, krs, checkins }: { goal: Goal; krs: KeyResult[]; checkins: KRCheckin[] }) {
   const items = [
     { icon: <Activity size={12} color="var(--ds-text-brand, #2563EB)" />, user: 'System', text: 'Goal created', date: goal.created_at || goal.start_date },
-    ...(krs.length > 0 ? [{ icon: <BarChart3 size={12} color="#0D9488" />, user: 'System', text: `${krs.length} Key Results added`, date: goal.created_at }] : []),
+    ...(krs.length > 0 ? [{ icon: <BarChart3 size={12} color="var(--cp-teal-60, #0D9488)" />, user: 'System', text: `${krs.length} Key Results added`, date: goal.created_at }] : []),
     ...(checkins.length > 0 ? [{ icon: <Clock size={12} color="var(--ds-text-warning, #D97706)" />, user: 'Team', text: `${checkins.length} check-ins recorded`, date: checkins[0]?.created_at }] : []),
   ];
   return (

@@ -32,7 +32,7 @@
   --catalyst-primary: var(--ds-text-brand, #2563EB);
   --catalyst-primary-hover: var(--ds-background-brand-bold-hovered, #1D4ED8);
   --catalyst-primary-bg: var(--ds-background-selected, #EFF6FF);
-  --catalyst-success: #0D9488;
+  --catalyst-success: var(--cp-teal-60, #0D9488);
   --catalyst-success-bg: #F0FDFA;
   --catalyst-warning: var(--ds-text-warning, #D97706);
   --catalyst-warning-bg: #FFFBEB;
@@ -43,7 +43,7 @@
 
   /* ── Theme Colors (Strategic Themes) ── */
   --theme-digital: var(--ds-text-brand, #2563EB);
-  --theme-workforce: #0D9488;
+  --theme-workforce: var(--cp-teal-60, #0D9488);
   --theme-supply-chain: var(--ds-text-warning, #D97706);
   --theme-esg: var(--ds-text-success, #16A34A);
 

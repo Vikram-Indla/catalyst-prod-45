@@ -390,7 +390,7 @@ export const catalyst = {
   primaryBlue: '#2563EB',
   primaryBlueHover: '#1D4ED8',
   aiPurple: 'var(--cp-purple-60, #7C3AED)',
-  aiTeal: '#0D9488',
+  aiTeal: 'var(--cp-teal-60, #0D9488)',
 } as const;
 
 // ============================================

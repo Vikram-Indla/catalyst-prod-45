@@ -27,7 +27,7 @@ const TYPE_MAP: Record<string, RoadmapRequest['type']> = {
 };
 
 // ── Color fallback for owners — deterministic from name ──
-const OWNER_PALETTE = ['var(--ds-text-brand, #2563EB)', 'var(--cp-purple-60, #7C3AED)', '#0D9488', '#EC4899', 'var(--ds-text-warning, #D97706)', '#059669', '#E11D48', '#6366F1'];
+const OWNER_PALETTE = ['var(--ds-text-brand, #2563EB)', 'var(--cp-purple-60, #7C3AED)', 'var(--cp-teal-60, #0D9488)', '#EC4899', 'var(--ds-text-warning, #D97706)', '#059669', '#E11D48', '#6366F1'];
 
 function getInitials(name: string): string {
   if (!name || name === 'Unassigned') return '?';

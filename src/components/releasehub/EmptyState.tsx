@@ -13,7 +13,7 @@ interface Props {
 const VARIANT_CLASSES = {
   primary: 'bg-[var(--ds-text-brand,#2563EB)] text-white hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)]',
   ghost: 'border border-[#C9D3E0] text-[#1E293B] hover:bg-[#F4F7FA]',
-  teal: 'border border-[#0D9488] text-[#0D9488] hover:bg-[#F0FDFA]',
+  teal: 'border border-[var(--cp-teal-60, #0D9488)] text-[var(--cp-teal-60, #0D9488)] hover:bg-[#F0FDFA]',
 };
 
 export function EmptyState({ icon: Icon = Package, title, subtitle, actions, className = '' }: Props) {

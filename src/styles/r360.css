@@ -82,7 +82,7 @@
   width: 48px; height: 48px; border-radius: 50%; display: flex;
   align-items: center; justify-content: center; font-size: 16px;
   font-weight: 700; color: var(--ds-surface, #fff); flex-shrink: 0; overflow: hidden;
-  background: linear-gradient(135deg, var(--ds-text-brand, #2563EB), #0D9488);
+  background: linear-gradient(135deg, var(--ds-text-brand, #2563EB), var(--cp-teal-60, #0D9488));
 }
 .r3-profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .r3-profile-name { font-size: 20px; font-weight: 500; color: var(--ds-text, #172B4D); letter-spacing: -0.2px; }
@@ -151,7 +151,7 @@
   box-shadow: 0 0 0 6px rgba(37,99,235,.12); overflow: hidden;
   display: flex; align-items: center; justify-content: center;
   font-size: 28px; font-weight: 700; color: var(--ds-surface, #fff);
-  background: linear-gradient(135deg, var(--ds-text-brand, #2563EB), #0D9488);
+  background: linear-gradient(135deg, var(--ds-text-brand, #2563EB), var(--cp-teal-60, #0D9488));
 }
 .r3-ring-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .r3-ring-name { font-size: 13px; font-weight: 600; color: #020617; margin-top: 6px; }

@@ -20,7 +20,7 @@ const TYPES = [
   { key: 'task', label: 'Task', desc: 'General work item', color: 'var(--ds-text-brand, #2563EB)' },
   { key: 'story', label: 'Story', desc: 'User story for backlog', color: 'var(--ds-text-success, #16A34A)' },
   { key: 'epic', label: 'Epic', desc: 'Large body of work', color: 'var(--cp-purple-60, #7C3AED)' },
-  { key: 'feature', label: 'New Feature', desc: 'New functionality', color: '#0D9488' },
+  { key: 'feature', label: 'New Feature', desc: 'New functionality', color: 'var(--cp-teal-60, #0D9488)' },
   { key: 'improvement', label: 'Improvement', desc: 'Enhance existing feature', color: 'var(--ds-text-warning, #D97706)' },
 ];
 

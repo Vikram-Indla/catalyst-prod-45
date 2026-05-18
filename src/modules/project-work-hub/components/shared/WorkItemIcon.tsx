@@ -17,7 +17,7 @@ export const WorkItemIcon: React.FC<WorkItemIconProps> = ({ type, size = 16 }) =
   if (type === 'feature') {
     return (
       <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="1" y="1" width="14" height="14" rx="2" fill="#0D9488"/>
+        <rect x="1" y="1" width="14" height="14" rx="2" fill="var(--cp-teal-60, #0D9488)"/>
         <rect x="4" y="4" width="8" height="3" rx="0.5" fill="white" opacity="0.9"/>
         <rect x="4" y="9" width="8" height="3" rx="0.5" fill="white" opacity="0.6"/>
       </svg>

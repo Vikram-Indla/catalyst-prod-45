@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { X } from '@/lib/atlaskit-icons';
 
-const AVATAR_COLORS = ['var(--cp-purple-60, #7C3AED)', 'var(--ds-text-brand, #2563EB)', '#0D9488', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, #DC2626)', '#EA580C', '#0284C7'];
+const AVATAR_COLORS = ['var(--cp-purple-60, #7C3AED)', 'var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, #DC2626)', '#EA580C', '#0284C7'];
 
 const ROLE_STYLES: Record<string, { bg: string; text: string }> = {
   admin: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)' },

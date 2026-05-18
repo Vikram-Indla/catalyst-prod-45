@@ -92,7 +92,7 @@ const CATEGORY_BADGE: Record<ModuleCategory, { bg: string; text: string; border:
   Strategy:   { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)', border: '#BFDBFE' },
   Product:    { bg: '#F4F4F5', text: '#3F3F46', border: '#D4D4D8' },
   Delivery:   { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)', border: '#BFDBFE' },
-  Quality:    { bg: '#F0FDFA', text: '#0D9488', border: '#99F6E4' },
+  Quality:    { bg: '#F0FDFA', text: 'var(--cp-teal-60, #0D9488)', border: '#99F6E4' },
   Operations: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #DC2626)', border: '#FECACA' },
 };
 

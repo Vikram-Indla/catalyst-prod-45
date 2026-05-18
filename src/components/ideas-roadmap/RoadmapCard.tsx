@@ -213,9 +213,9 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
             transition: 'all 120ms',
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.background = '#0D9488';
+            e.currentTarget.style.background = 'var(--cp-teal-60, #0D9488)';
             e.currentTarget.style.color = 'var(--ds-surface, #FFFFFF)';
-            e.currentTarget.style.borderColor = '#0D9488';
+            e.currentTarget.style.borderColor = 'var(--cp-teal-60, #0D9488)';
           }}
           onMouseLeave={e => {
             e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)';

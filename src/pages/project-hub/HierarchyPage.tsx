@@ -92,7 +92,7 @@ function filterTree(items: WorkItem[], search: string, filters: Filters): WorkIt
 }
 
 /* ── Avatar color palette ── */
-const FILTER_AVATAR_COLORS = ['#0D9488','var(--ds-text-brand, #2563EB)','var(--ds-text-danger, #DC2626)','var(--ds-text-success, #16A34A)','var(--ds-text-subtlest, #64748B)','#0284C7','#059669','#BE123C','var(--ds-background-brand-bold-hovered, #1D4ED8)','#0F766E'];
+const FILTER_AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, #2563EB)','var(--ds-text-danger, #DC2626)','var(--ds-text-success, #16A34A)','var(--ds-text-subtlest, #64748B)','#0284C7','#059669','#BE123C','var(--ds-background-brand-bold-hovered, #1D4ED8)','#0F766E'];
 function getFilterAvatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -146,7 +146,7 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
 const STATUS_DOT_COLORS: Record<string, string> = {
   'Done': 'var(--ds-text-success, #16A34A)', 'Closed': 'var(--ds-text-success, #16A34A)', 'Resolved': 'var(--ds-text-success, #16A34A)', 'Released': 'var(--ds-text-success, #16A34A)', 'In Production': 'var(--ds-text-success, #16A34A)',
   'In Development': 'var(--ds-text-brand, #2563EB)', 'In Progress': 'var(--ds-text-brand, #2563EB)', 'In Beta': 'var(--ds-text-brand, #2563EB)', 'In QA': 'var(--ds-text-brand, #2563EB)', 'UAT Ready': 'var(--ds-text-brand, #2563EB)', 'In Review': 'var(--ds-text-brand, #2563EB)',
-  'Ready for Production': '#0D9488', 'Ready for QA': '#0D9488',
+  'Ready for Production': 'var(--cp-teal-60, #0D9488)', 'Ready for QA': 'var(--cp-teal-60, #0D9488)',
   'Backlog': 'var(--ds-text-subtlest, #94A3B8)', 'To Do': 'var(--ds-text-subtlest, #94A3B8)', 'Open': 'var(--ds-text-subtlest, #94A3B8)',
   'On Hold': 'var(--ds-text-warning, #D97706)', 'Awaiting Info': 'var(--ds-text-warning, #D97706)', 'Awaiting Information': 'var(--ds-text-warning, #D97706)', 'Blocked': 'var(--ds-text-danger, #DC2626)',
 };
@@ -295,7 +295,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
 
                 {variant === 'release' && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
-                    <div style={{ width: 6, height: 6, borderRadius: 4, background: '#0D9488', flexShrink: 0 }} />
+                    <div style={{ width: 6, height: 6, borderRadius: 4, background: 'var(--cp-teal-60, #0D9488)', flexShrink: 0 }} />
                     <span style={{ fontSize: 12 }}>{opt}</span>
                   </div>
                 )}

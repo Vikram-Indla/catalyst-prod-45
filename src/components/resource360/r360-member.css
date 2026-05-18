@@ -280,7 +280,7 @@
   width: 48px !important;
   height: 48px !important;
   border-radius: 50% !important;
-  background: linear-gradient(135deg, var(--ds-text-brand, #2563EB), #0D9488) !important;
+  background: linear-gradient(135deg, var(--ds-text-brand, #2563EB), var(--cp-teal-60, #0D9488)) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -569,7 +569,7 @@
   border-radius: 50% !important;
   border: 3px solid var(--ds-text-brand, #2563EB) !important;
   box-shadow: 0 0 0 6px rgba(37,99,235,0.15) !important;
-  background: linear-gradient(135deg, var(--ds-text-brand, #2563EB), #0D9488) !important;
+  background: linear-gradient(135deg, var(--ds-text-brand, #2563EB), var(--cp-teal-60, #0D9488)) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;

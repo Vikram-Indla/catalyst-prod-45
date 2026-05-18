@@ -63,11 +63,11 @@ export interface DrawerProps {
 // ── Status Color Mapping ──
 
 export const STATUS_COLORS: Record<OkrStatus, string> = {
-  on_track: 'var(--catalyst-success, #0D9488)',
+  on_track: 'var(--catalyst-success, var(--cp-teal-60, #0D9488))',
   at_risk: 'var(--catalyst-warning, #D97706)',
   off_track: 'var(--catalyst-danger, #EF4444)',
   not_started: 'var(--catalyst-text-tertiary, #94A3B8)',
-  completed: 'var(--catalyst-success, #0D9488)',
+  completed: 'var(--catalyst-success, var(--cp-teal-60, #0D9488))',
 };
 
 export const STATUS_LABELS: Record<OkrStatus, string> = {
@@ -80,7 +80,7 @@ export const STATUS_LABELS: Record<OkrStatus, string> = {
 
 export const THEME_COLORS: Record<string, string> = {
   'Digital Transformation': '#2563EB',
-  'Workforce Development': '#0D9488',
+  'Workforce Development': 'var(--cp-teal-60, #0D9488)',
   'Supply Chain Excellence': '#D97706',
   'Sustainability & ESG': '#16A34A',
 };

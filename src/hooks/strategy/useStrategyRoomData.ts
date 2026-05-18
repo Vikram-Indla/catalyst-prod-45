@@ -47,7 +47,7 @@ const STATUS_MAP: Record<string, 'on_track' | 'off_track' | 'at_risk'> = {
 
 const TYPE_COLORS: Record<string, string> = {
   Permanent: '#2563EB',
-  Fixed: '#0D9488',
+  Fixed: 'var(--cp-teal-60, #0D9488)',
   Variable: 'var(--cp-purple-60, #7C3AED)',
   Freelance: '#F59E0B',
 };
@@ -273,7 +273,7 @@ function useBudget() {
         const lic = Number(s.licenses_budget) || 0;
         const segments: BudgetSegment[] = [
           { label: 'Insourced', pct: total > 0 ? Math.round((ins / total) * 100) : 0, color: '#2563EB' },
-          { label: 'Co-sourced', pct: total > 0 ? Math.round((cos / total) * 100) : 0, color: '#0D9488' },
+          { label: 'Co-sourced', pct: total > 0 ? Math.round((cos / total) * 100) : 0, color: 'var(--cp-teal-60, #0D9488)' },
           { label: 'Outsourced', pct: total > 0 ? Math.round((out / total) * 100) : 0, color: 'var(--cp-purple-60, #7C3AED)' },
           { label: 'Licenses', pct: total > 0 ? Math.round((lic / total) * 100) : 0, color: '#F59E0B' },
         ].filter(s => s.pct > 0);
@@ -304,7 +304,7 @@ function useBudget() {
         const t = r.resource_type || 'Other';
         typeCtc.set(t, (typeCtc.get(t) || 0) + (Number(r.ctc) || 0));
       });
-      const segColors: Record<string, string> = { Permanent: '#2563EB', Fixed: '#0D9488', Variable: 'var(--cp-purple-60, #7C3AED)', Freelance: '#F59E0B' };
+      const segColors: Record<string, string> = { Permanent: '#2563EB', Fixed: 'var(--cp-teal-60, #0D9488)', Variable: 'var(--cp-purple-60, #7C3AED)', Freelance: '#F59E0B' };
       const segments: BudgetSegment[] = Array.from(typeCtc.entries())
         .sort((a, b) => b[1] - a[1])
         .map(([label, val]) => ({

@@ -7,7 +7,7 @@ import { EmptyState } from '@/components/releasehub/EmptyState';
 import { BarChart3 } from '@/lib/atlaskit-icons';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend } from 'recharts';
 
-const RADAR_COLORS = ['var(--ds-text-brand, #2563EB)', '#0D9488', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-subtlest, #64748B)'];
+const RADAR_COLORS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-subtlest, #64748B)'];
 const statusScore: Record<string, number> = { todo: 20, in_progress: 55, done: 100, archived: 10 };
 
 export default function ReleaseComparePage() {
@@ -32,7 +32,7 @@ export default function ReleaseComparePage() {
       { label: 'Status', values: selectedReleases.map((r: any) => r.status), render: (v: any) => <ReleaseStatusBadge status={v} />, bestIdx: -1 },
       { label: 'Target Date', values: selectedReleases.map((r: any) => r.target_date), render: (v: any) => v ? new Date(v).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—', bestIdx: -1 },
       { label: 'Days Remaining', values: selectedReleases.map((r: any) => r.days_remaining ?? 0), render: (v: any, r: any) => r?.is_overdue ? <span className="text-[var(--ds-text-danger,#DC2626)] font-bold">{Math.abs(v)}d OVERDUE</span> : <span>{v}d</span>, bestIdx: getBestIdx(selectedReleases.map((r: any) => r.days_remaining ?? 0), true) },
-      { label: 'CHG Count', values: selectedReleases.map((r: any) => r.change_count || r.chg_count || 0), render: (v: any) => <span className="font-bold" style={{ fontFamily: RH.fontMono, color: v === 0 ? '#0D9488' : RH.ink1 }}>{v}</span>, bestIdx: -1 },
+      { label: 'CHG Count', values: selectedReleases.map((r: any) => r.change_count || r.chg_count || 0), render: (v: any) => <span className="font-bold" style={{ fontFamily: RH.fontMono, color: v === 0 ? 'var(--cp-teal-60, #0D9488)' : RH.ink1 }}>{v}</span>, bestIdx: -1 },
       { label: 'Test Cycles', values: selectedReleases.map((r: any) => r.test_cycle_count || 0), render: (v: any) => <span>{v}</span>, bestIdx: getBestIdx(selectedReleases.map((r: any) => r.test_cycle_count || 0), true) },
       { label: 'Sign-offs Pending', values: selectedReleases.map((r: any) => r.pending_signoffs || 0), render: (v: any) => <span className={v > 0 ? 'text-[var(--ds-text-danger,#DC2626)] font-bold' : ''}>{v}</span>, bestIdx: getBestIdx(selectedReleases.map((r: any) => r.pending_signoffs || 0), false) },
     ];
@@ -70,7 +70,7 @@ export default function ReleaseComparePage() {
               const isSelected = selected.includes(r.id);
               return (
                 <button key={r.id} onClick={() => toggleSelect(r.id)}
-                  className={`bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-lg border p-3 text-left transition-all ${isSelected ? 'border-[#0D9488] border-2 ring-2 ring-[#0D9488]/20' : 'border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)] hover:border-[#C9D3E0]'}`}
+                  className={`bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-lg border p-3 text-left transition-all ${isSelected ? 'border-[var(--cp-teal-60, #0D9488)] border-2 ring-2 ring-[var(--cp-teal-60, #0D9488)]/20' : 'border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)] hover:border-[#C9D3E0]'}`}
                   style={{ transition: 'all 0.12s ease' }}>
                   <span className="text-[13px] font-semibold block truncate" style={{ color: RH.ink1 }}>{r.name}</span>
                   <div className="flex items-center gap-2 mt-1.5">
@@ -102,7 +102,7 @@ export default function ReleaseComparePage() {
                           <td key={r.id} className="px-3 py-0">
                             <span className="inline-flex items-center gap-1">
                               {row.render(row.values[i] as any, r)}
-                              {row.bestIdx === i && <span className="text-[#0D9488]">★</span>}
+                              {row.bestIdx === i && <span className="text-[var(--cp-teal-60, #0D9488)]">★</span>}
                             </span>
                           </td>
                         ))}

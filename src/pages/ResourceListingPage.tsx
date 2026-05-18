@@ -34,7 +34,7 @@ interface Resource {
 const DEPT_COLORS: Record<string, string> = {
   Delivery: 'var(--ds-text-brand, #2563EB)',
   Product: 'var(--cp-purple-60, #7C3AED)',
-  Governance: '#0D9488',
+  Governance: 'var(--cp-teal-60, #0D9488)',
   Operations: 'var(--ds-text-warning, #D97706)',
   'Technical Support': 'var(--ds-text-danger, #DC2626)',
   'Strategy & Planning': '#0891B2',

@@ -116,7 +116,7 @@
 
   /* ═══ Requirement Assist Capability Accents ═══ */
   --cap-brd: #2563EB;
-  --cap-translate: #0D9488;
+  --cap-translate: var(--cp-teal-60, #0D9488);
   --cap-epic: var(--cp-purple-60, #7C3AED);
   --cap-uat: #D97706;
   --quality-high: #059669;
@@ -138,7 +138,7 @@
   --ra-radius-lozenge: 3px;
   --ra-slot-w: 22px;
   --ra-slot-h: 6px;
-  --ra-slot-done: #0D9488;
+  --ra-slot-done: var(--cp-teal-60, #0D9488);
   --ra-slot-processing: #2563EB;
   --ra-slot-pending: #E5E5E5;
   --ra-slot-error: #DC2626;
@@ -218,7 +218,7 @@
   --cp-success-60: #16A34A;
   --cp-warning-60: #D97706;
   --cp-danger-60: #DC2626;
-  --cp-teal-60: #0D9488;
+  --cp-teal-60: var(--cp-teal-60, #0D9488);
   --cp-lozenge-grey-bg: #DFE1E6;
   --cp-lozenge-grey-text: #42526E;
   --cp-lozenge-blue-bg: #0C66E4;

@@ -1,7 +1,7 @@
 const CATEGORIES = [
   { name: 'To Do', color: '#A3A3A3', description: 'Not yet started. Counted as remaining.' },
   { name: 'In Progress', color: 'var(--ds-text-brand, #2563EB)', description: 'Actively being worked on.' },
-  { name: 'Done', color: '#0D9488', description: 'Completed. Counted toward progress %.' },
+  { name: 'Done', color: 'var(--cp-teal-60, #0D9488)', description: 'Completed. Counted toward progress %.' },
   { name: 'Terminal', color: '#D4D4D4', description: 'Excluded from progress (Cancelled, Won\'t Do).' },
 ];
 

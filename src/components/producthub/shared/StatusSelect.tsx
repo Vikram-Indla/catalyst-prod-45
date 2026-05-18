@@ -22,9 +22,9 @@ const STATUS_GROUPS = [
   {
     group: 'Execution',
     items: [
-      { value: 'under_implementation', label: 'Under Implementation', color: '#0D9488' },
+      { value: 'under_implementation', label: 'Under Implementation', color: 'var(--cp-teal-60, #0D9488)' },
       { value: 'on_hold', label: 'On Hold', color: '#71717A' },
-      { value: 'implementation_review', label: 'Implementation Review', color: '#0D9488' },
+      { value: 'implementation_review', label: 'Implementation Review', color: 'var(--cp-teal-60, #0D9488)' },
     ],
   },
   {

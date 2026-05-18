@@ -562,7 +562,7 @@ export const STATUS_COLORS: Record<StatusCategory, { bg: string; text: string; b
 /** Hub color mapping (V3) */
 export const WH_HUB_COLORS: Record<string, string> = {
   StrategyHub:  'var(--cp-purple-60, #7C3AED)',
-  ProductHub:   '#0D9488',
+  ProductHub:   'var(--cp-teal-60, #0D9488)',
   ProjectHub:   '#2563EB',
   ReleaseHub:   '#D97706',
   TestHub:      '#DC2626',

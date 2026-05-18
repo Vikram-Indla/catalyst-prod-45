@@ -7,7 +7,7 @@ import { Plus, Search, X, Link as LinkIcon, Check } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 
 const TYPE_COLORS: Record<string, string> = {
-  Epic: 'var(--cp-purple-60, #7C3AED)', Feature: 'var(--ds-text-brand, #2563EB)', Story: '#0D9488',
+  Epic: 'var(--cp-purple-60, #7C3AED)', Feature: 'var(--ds-text-brand, #2563EB)', Story: 'var(--cp-teal-60, #0D9488)',
   Bug: 'var(--ds-text-danger, #DC2626)', Task: 'var(--ds-text-warning, #D97706)', Subtask: 'var(--ds-text-subtlest, #94A3B8)',
 };
 

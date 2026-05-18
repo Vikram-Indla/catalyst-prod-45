@@ -55,7 +55,7 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
   // D-19: No auto-scroll -- Chronology renders Today first at the top.
   // The tab-switch handler already scrolls to top on view change.
 
-  const accentColor = (cat: string) => cat === 'in_progress' ? 'var(--ds-text-brand, #2563EB)' : cat === 'in_qa' ? '#0D9488' : cat === 'blocked' ? 'var(--ds-text-danger, #EF4444)' : cat === 'done' ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-warning, #D97706)';
+  const accentColor = (cat: string) => cat === 'in_progress' ? 'var(--ds-text-brand, #2563EB)' : cat === 'in_qa' ? 'var(--cp-teal-60, #0D9488)' : cat === 'blocked' ? 'var(--ds-text-danger, #EF4444)' : cat === 'done' ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-warning, #D97706)';
 
   // Render a single chronology card
   const renderChronoCard = (item: R360WorkItem) => {

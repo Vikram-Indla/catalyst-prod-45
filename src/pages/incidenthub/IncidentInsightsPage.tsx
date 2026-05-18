@@ -41,7 +41,7 @@ export default function IncidentInsightsPage() {
           <div className="flex items-start gap-3">
             <div className="shrink-0 rounded-full flex items-center justify-center" style={{
               width: 36, height: 50,
-              background: 'linear-gradient(135deg, var(--cp-purple-60, #7C3AED), #0D9488)',
+              background: 'linear-gradient(135deg, var(--cp-purple-60, #7C3AED), var(--cp-teal-60, #0D9488))',
             }}>
               <Sparkles size={18} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
             </div>

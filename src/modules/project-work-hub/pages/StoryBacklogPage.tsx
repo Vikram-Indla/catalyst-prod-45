@@ -141,7 +141,7 @@ function groupStories(items: BacklogStory[], groupBy: GroupByKey): { label: stri
 
 
 
-const AVATAR_COLOURS = ['var(--ds-text-brand, #2563EB)', '#0D9488', '#0284C7', 'var(--ds-text-danger, #DC2626)', '#DB2777'];
+const AVATAR_COLOURS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, #DC2626)', '#DB2777'];
 
 // ── V2 table feature flag ──
 // When localStorage.catalyst.table.v2 === '1', the backlog renders via the

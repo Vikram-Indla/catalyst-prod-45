@@ -36,16 +36,16 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'In Execution':         { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Execution' },
   'Fix in Progress':      { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'Fixing' },
   // ── Teal: Review / QA ──
-  'In Review':            { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
-  'In QA':                { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA' },
-  'Ready for QA':         { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Ready QA' },
-  'Retest':               { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Retest' },
-  'Code Review':          { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
-  'Technical Validation': { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Validation' },
-  'End to End Testing':   { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'E2E Testing' },
-  'In Testing':           { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Testing' },
-  'QA Pass':              { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'QA Pass' },
-  'QA Fail':              { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'QA Fail' },
+  'In Review':            { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
+  'In QA':                { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA' },
+  'Ready for QA':         { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'Ready QA' },
+  'Retest':               { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'Retest' },
+  'Code Review':          { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
+  'Technical Validation': { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'Validation' },
+  'End to End Testing':   { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'E2E Testing' },
+  'In Testing':           { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'Testing' },
+  'QA Pass':              { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'QA Pass' },
+  'QA Fail':              { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', tx: '#134E4A', label: 'QA Fail' },
   // ── Purple: UAT ──
   'In UAT':               { dot: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT' },
   'UAT Ready':            { dot: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready' },
@@ -93,7 +93,7 @@ function resolveStatus(item: any) {
   return CAT_TODO;
 }
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, #D97706)', FAC: 'var(--ds-text-success, #16A34A)', OPS: '#0D9488', SUP: 'var(--ds-text-subtlest, #64748B)', LND: 'var(--cp-purple-60, #7C3AED)' };
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, #D97706)', FAC: 'var(--ds-text-success, #16A34A)', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, #64748B)', LND: 'var(--cp-purple-60, #7C3AED)' };
 const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, #64748B)';
 const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, #16A34A)' : d <= 14 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
 const ageLabel = (d: number) => d === 0 ? 'Today' : d === 1 ? '1d ago' : `${d}d ago`;

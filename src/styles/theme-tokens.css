@@ -90,7 +90,7 @@
 
   /* Chart Palette */
   --cp-chart-1: var(--ds-text-brand, #2563EB);
-  --cp-chart-2: #0D9488;
+  --cp-chart-2: var(--cp-teal-60, #0D9488);
   --cp-chart-3: var(--ds-text-warning, #D97706);
   --cp-chart-4: var(--ds-text-danger, #DC2626);
   --cp-chart-5: var(--ds-text-success, #16A34A);

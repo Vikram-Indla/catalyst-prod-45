@@ -7,7 +7,7 @@ import { useTheme } from '@/hooks/useTheme';
 import type * as D3Type from 'd3';
 
 const DOMAIN_COLORS: Record<string, string> = {
-  D1: 'var(--ds-text-brand, #2563EB)', D2: '#0D9488', D3: 'var(--ds-text-warning, #D97706)', D4: 'var(--ds-text-success, #16A34A)',
+  D1: 'var(--ds-text-brand, #2563EB)', D2: 'var(--cp-teal-60, #0D9488)', D3: 'var(--ds-text-warning, #D97706)', D4: 'var(--ds-text-success, #16A34A)',
   D5: 'var(--ds-text-danger, #DC2626)', D6: '#0891B2', D7: 'var(--ds-text-subtlest, #64748B)', D8: '#4F46E5', D9: '#CA8A04',
 };
 

@@ -32,7 +32,7 @@ function computeThemes(ideas: Idea[]) {
   });
   const sorted = Object.entries(map).sort((a, b) => b[1] - a[1]);
   const max = sorted[0]?.[1] || 1;
-  const colors = ['var(--ds-text-brand, #2563EB)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-success, #16A34A)', '#0D9488', 'var(--ds-text-danger, #EF4444)', '#EC4899', '#6366F1'];
+  const colors = ['var(--ds-text-brand, #2563EB)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-success, #16A34A)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, #EF4444)', '#EC4899', '#6366F1'];
   return sorted.slice(0, 8).map(([name, count], i) => ({
     name, count, pct: Math.round((count / max) * 100),
     trend: i < 2 ? '↑ trending' : i < 4 ? '→ stable' : '↑ new',
@@ -135,7 +135,7 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
           { value: String(duplicates.length), label: `idea pairs with keyword overlap`, title: 'DUPLICATE SIGNALS', valueColor: 'var(--ds-text-warning, #D97706)' },
           { value: String(themes.length), label: 'themes identified from backlog', title: 'THEMES DISCOVERED', valueColor: 'var(--ds-text-brand, #2563EB)' },
           { value: `${conversionRate}%`, label: `${converted} of ${total} ideas converted`, title: 'CONVERSION RATE', valueColor: 'var(--ds-text-success, #16A34A)' },
-          { value: String(underReview), label: `ideas pending review`, title: 'UNDER REVIEW', valueColor: '#0D9488' },
+          { value: String(underReview), label: `ideas pending review`, title: 'UNDER REVIEW', valueColor: 'var(--cp-teal-60, #0D9488)' },
         ].map(s => (
           <div key={s.title} style={{
             flex: 1, background: C.bg, border: `1px solid ${C.border}`, borderRadius: '12px', padding: '16px 20px',
@@ -201,7 +201,7 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge, ideas 
         <ContentCard title="Team Distribution" badge={`${teamStats.length} teams`} badgeColor={C.success}>
           {teamStats.map(([team, count]) => {
             const pct = Math.round((count / total) * 100);
-            const barColor = team.includes('BAU') ? 'var(--ds-text-brand, #2563EB)' : team.includes('Integration') ? '#0D9488' : team.includes('Mobile') ? 'var(--cp-purple-60, #7C3AED)' : 'var(--ds-text-subtlest, #64748B)';
+            const barColor = team.includes('BAU') ? 'var(--ds-text-brand, #2563EB)' : team.includes('Integration') ? 'var(--cp-teal-60, #0D9488)' : team.includes('Mobile') ? 'var(--cp-purple-60, #7C3AED)' : 'var(--ds-text-subtlest, #64748B)';
             return (
               <div key={team} style={{ marginBottom: '14px', paddingBottom: '14px', borderBottom: `1px solid ${C.surfaceAlt}` }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>

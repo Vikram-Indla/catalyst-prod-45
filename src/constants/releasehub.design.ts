@@ -17,7 +17,7 @@ export const RH = {
   primary: 'var(--ds-text-brand, #2563EB)',
   primaryDark: 'var(--ds-background-brand-bold-hovered, #1D4ED8)',
   primaryLt: 'var(--ds-background-selected, #EFF6FF)',
-  teal: '#0D9488',
+  teal: 'var(--cp-teal-60, #0D9488)',
   success: 'var(--ds-text-success, #16A34A)',
   successBg: '#1B7F37',
   warning: 'var(--ds-text-warning, #D97706)',
@@ -129,7 +129,7 @@ export const SECTION_ACCENT: Record<string, string> = {
   past: 'var(--ds-text-subtlest, #94A3B8)',
   today: 'var(--ds-text-danger, #DC2626)',
   this_week: 'var(--ds-text-brand, #2563EB)',
-  upcoming: '#0D9488',
+  upcoming: 'var(--cp-teal-60, #0D9488)',
   future: 'var(--ds-text-success, #16A34A)',
 };
 

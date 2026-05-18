@@ -62,7 +62,7 @@ function getStatusStyleFallback(statusName: string, statusCategory?: string): St
   if (lower === 'in progress' || lower === 'under implementation' || lower === 'in development')
     return { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E3A5F', category: 'started' };
   if (lower === 'in review' || lower === 'in qa' || lower === 'ready for qa' || lower === 'retest')
-    return { dot: '#0D9488', bg: '#F0FDFA', text: '#134E4A', category: 'started' };
+    return { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', text: '#134E4A', category: 'started' };
   if (lower === 'in uat' || lower === 'uat ready')
     return { dot: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', text: '#4C1D95', category: 'started' };
   if (lower === 'done' || lower === 'closed' || lower === 'resolved' || lower === 'ready for production' || lower === 'beta ready')

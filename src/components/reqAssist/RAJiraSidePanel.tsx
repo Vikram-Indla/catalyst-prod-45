@@ -707,7 +707,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               {/* Wiki Chunks Row — D04: renamed link */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)' }}>
                 <div style={{ width: 28, height: 28, borderRadius: 6, background: 'var(--cp-success-light, #F0FDFA)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <BookOpen size={16} color="#0D9488" />
+                  <BookOpen size={16} color="var(--cp-teal-60, #0D9488)" />
                 </div>
                 <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)', flexShrink: 0, minWidth: 80 }}>Wiki Chunks</span>
                 {wikiCount > 0 ? (

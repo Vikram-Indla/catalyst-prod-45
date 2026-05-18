@@ -38,11 +38,11 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       value: `${avgProgress}%`,
       sub: `${progressDelta >= 0 ? '↑' : '↓'} ${Math.abs(progressDelta)}% vs target`,
       icon: progressDelta >= 0 ? TrendingUp : TrendingDown,
-      iconColor: progressDelta >= 0 ? '#0D9488' : 'var(--ds-text-danger, #DC2626)',
+      iconColor: progressDelta >= 0 ? 'var(--cp-teal-60, #0D9488)' : 'var(--ds-text-danger, #DC2626)',
       iconBg: isDark
         ? (progressDelta >= 0 ? 'rgba(13,148,136,0.12)' : 'rgba(220,38,38,0.12)')
         : (progressDelta >= 0 ? '#F0FDFA' : 'var(--ds-background-danger, #FEF2F2)'),
-      subColor: progressDelta >= 0 ? '#0D9488' : 'var(--ds-text-danger, #DC2626)',
+      subColor: progressDelta >= 0 ? 'var(--cp-teal-60, #0D9488)' : 'var(--ds-text-danger, #DC2626)',
       cardBg: undefined,
     },
     {

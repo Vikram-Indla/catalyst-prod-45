@@ -342,7 +342,7 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
         </div>
         <div className="border border-slate-200 rounded-lg p-3.5">
           <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 10 }}>Key Results</p>
-          <p className="font-bold leading-none" style={{ fontSize: 20, color: '#0D9488' }}>
+          <p className="font-bold leading-none" style={{ fontSize: 20, color: 'var(--cp-teal-60, #0D9488)' }}>
             {krCount}
           </p>
           <p className="text-slate-500 mt-0.5" style={{ fontSize: 10 }}>{krsOnTrack} on track</p>

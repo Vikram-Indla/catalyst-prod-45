@@ -60,7 +60,7 @@ export const STATUS_CONFIG: Record<IssueStatus, { label: string; color: string; 
   in_dev:     { label: 'In Dev',    color: '#2563EB', bg: '#EFF6FF' },
   in_qa:      { label: 'In QA',     color: '#D97706', bg: '#FFFBEB' },
   in_uat:     { label: 'In UAT',    color: '#D97706', bg: '#FFFBEB' },
-  in_beta:    { label: 'In Beta',   color: '#0D9488', bg: '#F0FDFA' },
+  in_beta:    { label: 'In Beta',   color: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA' },
   prod_ready: { label: 'Prod Ready',color: '#16A34A', bg: '#DCFCE7' },
   production: { label: 'Production',color: '#16A34A', bg: '#DCFCE7' },
   on_hold:    { label: 'On Hold',   color: '#EF4444', bg: '#FEF2F2' },
@@ -78,7 +78,7 @@ export const PRIORITY_CONFIG: Record<IssuePriority, { label: string; color: stri
 export const ISSUE_TYPE_CONFIG: Record<IssueType, { icon: string; color: string; label: string }> = {
   epic:    { icon: '◆', color: 'var(--cp-purple-60, #7C3AED)', label: 'Epic' },
   feature: { icon: '▲', color: '#2563EB', label: 'Feature' },
-  story:   { icon: '●', color: '#0D9488', label: 'Story' },
+  story:   { icon: '●', color: 'var(--cp-teal-60, #0D9488)', label: 'Story' },
   bug:     { icon: '⬡', color: '#DC2626', label: 'Bug' },
   task:    { icon: '■', color: '#D97706', label: 'Task' },
   subtask: { icon: '○', color: '#94A3B8', label: 'Subtask' },
@@ -90,6 +90,6 @@ export const DEFAULT_BOARD_COLUMNS: BoardColumn[] = [
   { name: 'Ready',       statuses: ['ready'],                color: '#2563EB', wip_limit: 10 },
   { name: 'In Progress', statuses: ['in_dev'],               color: '#2563EB', wip_limit: 8 },
   { name: 'In QA',       statuses: ['in_qa'],                color: '#D97706', wip_limit: 5 },
-  { name: 'UAT',         statuses: ['in_uat', 'in_beta'],    color: '#0D9488', wip_limit: 5 },
+  { name: 'UAT',         statuses: ['in_uat', 'in_beta'],    color: 'var(--cp-teal-60, #0D9488)', wip_limit: 5 },
   { name: 'Done',        statuses: ['prod_ready', 'production'], color: '#16A34A', wip_limit: 0 },
 ];

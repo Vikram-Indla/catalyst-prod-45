@@ -249,7 +249,7 @@ export default function CommandCenterPage() {
       {/* Row 1: KPI Cards */}
       <div className="grid grid-cols-4 gap-4 mb-6">
         <KPICard label="Active Releases" value={activeReleases} color="var(--ds-text-brand, #2563EB)" icon={Rocket} loading={isLoading} onClick={() => navigate('/release-hub/releases')} isDark={isDark} />
-        <KPICard label="Changes In Flight" value={changesInFlight} delta={`${changesInFlight} active`} deltaLabel="neutral" color="#0D9488" icon={ArrowLeftRight} loading={isLoading} onClick={() => navigate('/release-hub/changes')} isDark={isDark} />
+        <KPICard label="Changes In Flight" value={changesInFlight} delta={`${changesInFlight} active`} deltaLabel="neutral" color="var(--cp-teal-60, #0D9488)" icon={ArrowLeftRight} loading={isLoading} onClick={() => navigate('/release-hub/changes')} isDark={isDark} />
         <KPICard label="Sign-offs Pending" value={signoffsPending} color="var(--ds-text-danger, #DC2626)" icon={CheckSquare} loading={isLoading} onClick={() => navigate('/release-hub/sign-off-queue')} isDark={isDark} />
         <KPICard label="Test Cycles Running" value={kpis?.test_cycles_running ?? 0} color="var(--ds-text-success, #16A34A)" icon={FlaskConical} loading={isLoading} isDark={isDark} />
       </div>

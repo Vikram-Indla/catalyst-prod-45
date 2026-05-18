@@ -25,7 +25,7 @@ function issueTypeToLevel(type: string): { level: number; name: string; color: s
     case 'Change Request':
       return { level: 3, name: 'Change Req', color: '#EA580C', colorText: '#C2410C' };
     case 'Business Gap':
-      return { level: 1, name: 'Business Gap', color: '#0D9488', colorText: '#0F766E' };
+      return { level: 1, name: 'Business Gap', color: 'var(--cp-teal-60, #0D9488)', colorText: '#0F766E' };
     default:
       return { level: 3, name: type, color: '#64748B', colorText: '#475569' };
   }

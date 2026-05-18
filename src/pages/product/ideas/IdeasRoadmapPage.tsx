@@ -316,7 +316,7 @@ export default function IdeasRoadmapPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmConvert} style={{ background: '#0D9488', color: 'var(--ds-surface, #FFFFFF)' }}>
+            <AlertDialogAction onClick={handleConfirmConvert} style={{ background: 'var(--cp-teal-60, #0D9488)', color: 'var(--ds-surface, #FFFFFF)' }}>
               Convert
             </AlertDialogAction>
           </AlertDialogFooter>

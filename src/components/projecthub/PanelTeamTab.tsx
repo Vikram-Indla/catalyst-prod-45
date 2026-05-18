@@ -7,7 +7,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-const AVATAR_COLORS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-purple-60, #7C3AED)', '#0D9488', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-success, #16A34A)', '#0284C7', '#6366F1'];
+const AVATAR_COLORS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-purple-60, #7C3AED)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-success, #16A34A)', '#0284C7', '#6366F1'];
 function getColor(name: string) {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);

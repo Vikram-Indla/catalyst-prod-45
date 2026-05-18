@@ -43,7 +43,7 @@
   --r360-hub-strategy: #0284C7;
   --r360-hub-product: var(--ds-text-brand, #2563EB);
   --r360-hub-project: var(--ds-text-brand, #2563EB);
-  --r360-hub-release: #0D9488;
+  --r360-hub-release: var(--cp-teal-60, #0D9488);
   --r360-hub-test: #C2410C;
   --r360-hub-incident: var(--ds-text-danger, #DC2626);
   --r360-hub-task: #4F46E5;

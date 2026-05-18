@@ -13,13 +13,13 @@ import { format, parseISO } from 'date-fns';
 
 const TYPE_COLORS: Record<string, string> = {
   project: 'var(--ds-text-brand, #2563EB)',
-  enhancement: '#0D9488',
+  enhancement: 'var(--cp-teal-60, #0D9488)',
   improvement: 'var(--ds-text-warning, #D97706)',
 };
 
 const TYPE_HOVER_GRADIENTS: Record<string, string> = {
   project: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-text-brand, #3B82F6) 100%)',
-  enhancement: 'linear-gradient(135deg, #0D9488 0%, #14B8A6 100%)',
+  enhancement: 'linear-gradient(135deg, var(--cp-teal-60, #0D9488) 0%, #14B8A6 100%)',
   improvement: 'linear-gradient(135deg, var(--ds-text-warning, #D97706) 0%, var(--ds-text-warning, #F59E0B) 100%)',
 };
 

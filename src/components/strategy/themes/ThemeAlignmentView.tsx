@@ -29,7 +29,7 @@ import { AIStrategyIntelligencePanel } from '@/components/strategy/intelligence/
 // ── Layer colors (NO purple for KRs) ──
 const LAYER = {
   theme:      { color: 'var(--ds-text-brand, #2563EB)', badgeBg: 'var(--ds-background-selected, #EFF6FF)', badgeText: '#1E40AF', border: 'var(--ds-text-brand, #2563EB)' },
-  goal:       { color: '#0D9488', badgeBg: '#F0FDFA', badgeText: '#115E59', border: '#0D9488' },
+  goal:       { color: 'var(--cp-teal-60, #0D9488)', badgeBg: '#F0FDFA', badgeText: '#115E59', border: 'var(--cp-teal-60, #0D9488)' },
   kr:         { color: 'var(--ds-text-brand, #2563EB)', badgeBg: '#DBEAFE', badgeText: '#1E40AF', border: 'var(--ds-text-brand, #2563EB)' },
   initiative: { color: 'var(--ds-text-warning, #D97706)', badgeBg: '#FFFBEB', badgeText: '#92400E', border: 'var(--ds-text-warning, #D97706)' },
   epic:       { color: '#4F46E5', badgeBg: '#EEF2FF', badgeText: '#3730A3', border: '#4F46E5' },
@@ -46,7 +46,7 @@ const STATUS_CONFIG: Record<string, { dot: string; bg: string; text: string; lab
   cancelled:    { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Cancelled' },
   in_progress:  { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E40AF', label: 'In Progress' },
   not_started:  { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Not Started' },
-  approved:     { dot: '#0D9488', bg: '#F0FDFA', text: '#115E59', label: 'Approved' },
+  approved:     { dot: 'var(--cp-teal-60, #0D9488)', bg: '#F0FDFA', text: '#115E59', label: 'Approved' },
   proposed:     { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Proposed' },
   analyzing:    { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Analyzing' },
 };

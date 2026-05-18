@@ -335,7 +335,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
             disabled={isExporting || itemCount === 0}
             style={{
               height: 44, padding: '0 24px', display: 'flex', alignItems: 'center', gap: 8,
-              background: itemCount === 0 ? 'var(--divider)' : 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
+              background: itemCount === 0 ? 'var(--divider)' : 'linear-gradient(135deg, #14B8A6 0%, var(--cp-teal-60, #0D9488) 100%)',
               border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--ds-surface, #FFF)',
               cursor: isExporting || itemCount === 0 ? 'not-allowed' : 'pointer',
             }}

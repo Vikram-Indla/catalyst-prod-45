@@ -125,7 +125,7 @@ const PROJECT_COLOR_FALLBACK: Record<string, string> = {
   BAU: 'var(--ds-text-brand, #2563EB)',
   SEN: 'var(--ds-text-warning, #D97706)',
   FAC: 'var(--ds-text-success, #16A34A)',
-  OPS: '#0D9488',
+  OPS: 'var(--cp-teal-60, #0D9488)',
   SUP: 'var(--ds-text-subtlest, #64748B)',
   LND: 'var(--cp-purple-60, #7C3AED)',
 };

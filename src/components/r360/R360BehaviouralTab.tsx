@@ -12,7 +12,7 @@ const WORK_DAYS = [0, 1, 2, 3, 4]; // Sun=0..Thu=4
 const DAY_ABBRS = ['Su', 'Mo', 'Tu', 'We', 'Th'];
 
 const HUB_COLORS: Record<string, string> = {
-  BAU: '#0D9488', bau: '#0D9488', incident: DANGER, Product: '#3F3F46', Task: '#D4D4D8',
+  BAU: 'var(--cp-teal-60, #0D9488)', bau: 'var(--cp-teal-60, #0D9488)', incident: DANGER, Product: '#3F3F46', Task: '#D4D4D8',
 };
 
 interface BehaviouralTabProps {

@@ -191,7 +191,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
 }
 
 function hashColor(id: string): string {
-  const colors = ['var(--ds-text-brand, #2563EB)', 'var(--ds-text-success, #16A34A)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-warning, #D97706)', '#0D9488', '#0284C7', '#525252'];
+  const colors = ['var(--ds-text-brand, #2563EB)', 'var(--ds-text-success, #16A34A)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-warning, #D97706)', 'var(--cp-teal-60, #0D9488)', '#0284C7', '#525252'];
   let hash = 0;
   for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
   return colors[Math.abs(hash) % colors.length];

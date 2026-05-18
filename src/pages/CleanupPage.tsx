@@ -1140,7 +1140,7 @@ export default function CleanupPage() {
                                 {(() => {
                                   const name = item.reporter_name || 'Unknown';
                                   const ini = initials(name);
-                                  const clr = ['var(--ds-text-brand, #2563EB)', '#0D9488', '#0284C7', 'var(--ds-text-danger, #DC2626)', '#DB2777'][ini.charCodeAt(0) % 5];
+                                  const clr = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, #DC2626)', '#DB2777'][ini.charCodeAt(0) % 5];
                                   return (
                                     <>
                                       <div style={{
@@ -1168,7 +1168,7 @@ export default function CleanupPage() {
                                 {(() => {
                                   const name = item.reporter_name || 'Unknown';
                                   const ini = initials(name);
-                                  const clr = ['var(--ds-text-brand, #2563EB)', '#0D9488', '#0284C7', 'var(--ds-text-danger, #DC2626)', '#DB2777'][ini.charCodeAt(0) % 5];
+                                  const clr = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', '#0284C7', 'var(--ds-text-danger, #DC2626)', '#DB2777'][ini.charCodeAt(0) % 5];
                                   return (
                                     <>
                                       <div style={{

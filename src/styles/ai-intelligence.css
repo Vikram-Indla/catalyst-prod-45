@@ -16,7 +16,7 @@
   --rai-primary: var(--ds-text-brand, #2563EB);
   --rai-primary-hover: var(--ds-background-brand-bold-hovered, #1D4ED8);
   --rai-primary-bg: var(--ds-background-selected, #EFF6FF);
-  --rai-teal: #0D9488;
+  --rai-teal: var(--cp-teal-60, #0D9488);
   --rai-teal-bg: #F0FDFA;
   --rai-success: var(--ds-text-success, #16A34A);
   --rai-success-bg: #F0FDF4;

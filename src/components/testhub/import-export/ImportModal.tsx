@@ -469,7 +469,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
             disabled={(step === 2 && !file) || isProcessing}
             style={{
               height: 44, padding: '0 24px',
-              background: (step === 2 && !file) ? 'var(--divider)' : 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
+              background: (step === 2 && !file) ? 'var(--divider)' : 'linear-gradient(135deg, #14B8A6 0%, var(--cp-teal-60, #0D9488) 100%)',
               border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--ds-surface, #FFF)',
               cursor: (step === 2 && !file) || isProcessing ? 'not-allowed' : 'pointer',
             }}
