@@ -42,9 +42,15 @@ class ADSTokenScanner {
     const lines = content.split('\n');
 
     lines.forEach((line, index) => {
-      // Check for raw hex colors
-      if (this.rawHexPattern.test(line)) {
-        // Exclude allowed patterns (comments, strings in certain contexts)
+      // Check for raw hex colors — but ONLY hex that is NOT inside a CSS
+      // var() fallback chain. `var(--ds-foo, #BAR)` is the ADS-canonical
+      // pattern (token first, hex fallback for browsers without CSS
+      // custom-property support or SSR). Strip those before scanning.
+      const stripped = line
+        .replace(/var\([^)]*\)/g, '') // remove every var(...) expression
+        .replace(/\/\/.*$/, ''); // strip line comments
+      if (this.rawHexPattern.test(stripped)) {
+        // Exclude allowed patterns
         if (!line.trim().startsWith('//') && !line.includes('whitelist')) {
           this.violations.push({
             file: filePath,
