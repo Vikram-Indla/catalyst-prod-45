@@ -461,17 +461,45 @@ export const previewFixtures: Record<string, PreviewFixture> = {
 };
 
 /**
- * Per-id explanation for why no fixture ships. Surfaced in the
- * "Preview deferred to v2" placeholder.
+ * Structured deferred-entry data.
+ * Used by ComponentLivePreview to render an actionable warning panel
+ * (with live-route buttons + docs link + VS Code source link) instead
+ * of a dead-end grey placeholder.
  */
-export const DEFERRED_REASONS: Record<string, string> = {
-  'rich-text-editor': 'AdfDescriptionField wraps @atlaskit/editor-core (~2 MB ProseMirror bundle). Rendering inline crashes in the preview sandbox. Reference: https://atlassian.design/components/editor/examples · Source: src/components/shared/rich-text/atlaskit/AdfDescriptionField.tsx',
+export interface DeferredEntry {
+  /** Why inline preview is unavailable. Shown in the warning banner. */
+  reason: string;
+  /** One or more routes where the component renders live — must be clickable. */
+  liveRoutes: Array<{ label: string; href: string }>;
+  /** External docs URL (e.g. atlassian.design examples page). */
+  docsUrl?: string;
+  /** Repo-relative source file path — linked via vscode://file/ protocol. */
+  sourceFile?: string;
+}
+
+export const DEFERRED_ENTRIES: Record<string, DeferredEntry> = {
+  'rich-text-editor': {
+    reason:
+      '@atlaskit/editor-core (~2 MB ProseMirror bundle) crashes the Vite preview sandbox on eager import. Open any Epic description to see the live editor.',
+    liveRoutes: [
+      { label: 'Open Epic BAU-5419 description', href: '/project-hub/BAU/backlog/BAU-5419' },
+      { label: 'Open any Epic in backlog', href: '/project-hub/BAU/backlog' },
+    ],
+    docsUrl: 'https://atlassian.design/components/editor/examples',
+    sourceFile: 'src/components/shared/rich-text/atlaskit/AdfDescriptionField.tsx',
+  },
 };
+
+/** @deprecated — use DEFERRED_ENTRIES for structured data with actionable links */
+export const DEFERRED_REASONS: Record<string, string> = Object.fromEntries(
+  Object.entries(DEFERRED_ENTRIES).map(([id, e]) => [id, e.reason]),
+);
 
 export function hasFixture(id: string): boolean {
   return id in previewFixtures;
 }
 
+/** @deprecated — use DEFERRED_ENTRIES[id] for structured data */
 export function getDeferredReason(id: string): string | undefined {
   return DEFERRED_REASONS[id];
 }

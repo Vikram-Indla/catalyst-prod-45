@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { AdminSidebar } from './AdminSidebar';
+import { AdminSidebarV2 } from '@/components/admin/AdminSidebarV2';
 
 const T = {
   border: 'var(--ds-border, #DCDFE4)',
@@ -17,7 +17,7 @@ export function AdminLayout() {
         overflowY: 'auto',
         padding: '12px 0',
       }}>
-        <AdminSidebar />
+        <AdminSidebarV2 expanded={true} onToggle={() => {}} />
       </div>
 
       {/* Main content */}

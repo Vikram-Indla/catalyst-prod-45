@@ -346,6 +346,11 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
 
       <ComponentLivePreview entry={entry} />
 
+      {/* Consumers first — "where is this used?" is more immediately useful
+          than the deep engineering spec. Engineers need to find consumers
+          before they need props tables. */}
+      <ConsumerList name={entry.name} />
+
       {entry.editor_spec && (
         <EditorSpecPanel
           spec={entry.editor_spec}
@@ -353,8 +358,6 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
           filePath={entry.file_path}
         />
       )}
-
-      <ConsumerList name={entry.name} />
 
       {entry.tags && entry.tags.length > 0 && (
         <div style={{ display: 'flex', gap: token('space.075', '6px'), flexWrap: 'wrap' }}>
