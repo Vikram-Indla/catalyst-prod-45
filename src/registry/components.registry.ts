@@ -401,6 +401,81 @@ function EpicDescriptionSection({ issue }: { issue: PhIssue }) {
 ];
 
 // ──────────────────────────────────────────────────────────────────────────────
+// DEPRECATED — shadcn/ui wrappers shimmed to ADS tokens on 2026-05-19.
+// 738+ consumers still import from @/components/ui/*. Migrate to Atlaskit
+// native imports when touching a consumer file. Never re-introduce raw hex or
+// Tailwind colour classes in these wrapper files.
+// ──────────────────────────────────────────────────────────────────────────────
+
+const DEPRECATED: ComponentRegistryEntry[] = [
+  {
+    id: 'shadcn-button',
+    name: 'Button (shadcn shim)',
+    category: 'atom',
+    origin: 'shared',
+    status: 'deprecated',
+    version: '5.1.0',
+    file_path: 'src/components/ui/button.tsx',
+    jsdoc_excerpt:
+      'Shadcn/ui Button shimmed to ADS tokens on 2026-05-19. Variants map to Atlaskit appearance props. Migrate new call-sites to @atlaskit/button/new directly.',
+    deprecation_target: '@atlaskit/button/new',
+    tags: ['shadcn', 'deprecated', 'atom', 'interactive'],
+  },
+  {
+    id: 'shadcn-input',
+    name: 'Input (shadcn shim)',
+    category: 'atom',
+    origin: 'shared',
+    status: 'deprecated',
+    version: '5.1.0',
+    file_path: 'src/components/ui/input.tsx',
+    jsdoc_excerpt:
+      'Shadcn/ui Input shimmed to ADS border tokens on 2026-05-19. Migrate new call-sites to @atlaskit/textfield directly.',
+    deprecation_target: '@atlaskit/textfield',
+    tags: ['shadcn', 'deprecated', 'atom', 'form'],
+  },
+  {
+    id: 'shadcn-textarea',
+    name: 'Textarea (shadcn shim)',
+    category: 'atom',
+    origin: 'shared',
+    status: 'deprecated',
+    version: '5.1.0',
+    file_path: 'src/components/ui/textarea.tsx',
+    jsdoc_excerpt:
+      'Shadcn/ui Textarea shimmed to ADS border/focus tokens on 2026-05-19. Migrate new call-sites to @atlaskit/textarea directly.',
+    deprecation_target: '@atlaskit/textarea',
+    tags: ['shadcn', 'deprecated', 'atom', 'form'],
+  },
+  {
+    id: 'shadcn-select',
+    name: 'Select (shadcn shim)',
+    category: 'molecule',
+    origin: 'shared',
+    status: 'deprecated',
+    version: '5.1.0',
+    file_path: 'src/components/ui/select.tsx',
+    jsdoc_excerpt:
+      'Shadcn/ui Radix Select compound shimmed to ADS border/focus tokens on 2026-05-19. Compound API (SelectTrigger/SelectContent/SelectItem) is incompatible with @atlaskit/select — consumers need individual migration.',
+    deprecation_target: '@atlaskit/select',
+    tags: ['shadcn', 'deprecated', 'molecule', 'form', 'radix'],
+  },
+  {
+    id: 'shadcn-dialog',
+    name: 'Dialog (shadcn shim)',
+    category: 'organism',
+    origin: 'shared',
+    status: 'deprecated',
+    version: '5.1.0',
+    file_path: 'src/components/ui/dialog.tsx',
+    jsdoc_excerpt:
+      'Shadcn/ui Radix Dialog shimmed to ADS elevation-surface token on 2026-05-19. Compound API (DialogContent/DialogHeader/DialogFooter) needs per-consumer migration to @atlaskit/modal-dialog.',
+    deprecation_target: '@atlaskit/modal-dialog',
+    tags: ['shadcn', 'deprecated', 'organism', 'modal', 'radix'],
+  },
+];
+
+// ──────────────────────────────────────────────────────────────────────────────
 // BANNED — permanently out-of-scope per Vikram + CLAUDE.md.
 // Surface in /admin/components with red badge so they cannot be re-introduced.
 // ──────────────────────────────────────────────────────────────────────────────
@@ -506,6 +581,7 @@ const BANNED: ComponentRegistryEntry[] = [
 
 export const componentsRegistry: ComponentRegistryEntry[] = [
   ...CANONICAL,
+  ...DEPRECATED,
   ...BANNED,
 ];
 
@@ -520,4 +596,5 @@ export const registryStats = {
   canonical: componentsRegistry.filter(e => e.status === 'canonical').length,
   deprecated: componentsRegistry.filter(e => e.status === 'deprecated').length,
   banned: componentsRegistry.filter(e => e.status === 'banned').length,
+  observed: componentsRegistry.filter(e => e.status === 'observed').length,
 };

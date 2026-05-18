@@ -27,15 +27,15 @@ const buttonVariants = cva(
         // Outline - Bordered
         outline: "border border-border bg-transparent text-foreground hover:bg-muted",
         
-        // Danger - Red
-        danger: "bg-[var(--ds-text-danger,#dc2626)] text-white hover:bg-[#b91c1c] shadow-sm",
-        destructive: "bg-[var(--ds-text-danger,#dc2626)] text-white hover:bg-[#b91c1c] shadow-sm",
-        
-        // Success - Teal
-        success: "bg-[#0d9488] text-white hover:bg-[#0f766e] shadow-sm",
-        
-        // AI - Purple gradient
-        ai: "bg-gradient-to-r from-[#7c3aed] to-[#8b5cf6] text-white hover:from-[#6d28d9] hover:to-[#7c3aed] shadow-[0_4px_14px_-2px_rgba(124,58,237,0.3)]",
+        // Danger - Red (ADS danger bold token)
+        danger: "bg-[var(--ds-background-danger-bold)] text-white hover:bg-[var(--ds-background-danger-bold-hovered)] shadow-sm",
+        destructive: "bg-[var(--ds-background-danger-bold)] text-white hover:bg-[var(--ds-background-danger-bold-hovered)] shadow-sm",
+
+        // Success - Teal (ADS success bold token)
+        success: "bg-[var(--ds-background-success-bold)] text-white hover:bg-[var(--ds-background-success-bold-hovered)] shadow-sm",
+
+        // AI - Brand bold (no ADS gradient token; mapped to brand, 0 consumers)
+        ai: "bg-[var(--ds-background-brand-bold)] text-white hover:bg-[var(--ds-background-brand-bold-hovered)] shadow-sm",
         
         // Link style
         link: "text-brand-primary underline-offset-4 hover:underline p-0 h-auto",
