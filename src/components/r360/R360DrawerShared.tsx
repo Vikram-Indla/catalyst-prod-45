@@ -11,7 +11,7 @@ import { fetchItemDetail, calcDaysSitting } from '@/lib/r360/fetchItemDetail';
 // ── Colour tokens ──
 export const INK1 = 'var(--ds-text, #0F172A)';
 export const INK2 = 'var(--ds-text-subtle, #334155)';
-export const INK4 = 'var(--ds-text-subtlest, #64748B)';
+export const INK4 = 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
 export const MUTED = 'var(--ds-text-subtlest, #94A3B8)';
 export const SUCCESS = 'var(--ds-text-success, var(--cp-success, #16A34A))';
 export const WARNING = 'var(--ds-text-warning, var(--cp-warning, #D97706))';
@@ -19,7 +19,7 @@ export const DANGER = 'var(--ds-text-danger, var(--cp-danger, #DC2626))';
 export const BRAND = 'var(--ds-text-brand, #2563EB)';
 export const BORDER = 'rgba(15,23,42,0.12)';
 export const BORDER_LIGHT = 'rgba(15,23,42,0.06)';
-export const SLATE = 'var(--ds-text-subtlest, #64748B)';
+export const SLATE = 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
 
 export const TYPE_COLORS: Record<string, { color: string; opacity: number }> = {
   Bug:      { color: '#FF5630', opacity: 0.75 },

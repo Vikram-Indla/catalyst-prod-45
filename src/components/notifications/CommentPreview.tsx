@@ -41,7 +41,7 @@ export default function CommentPreview({ text, attachmentFilename }: CommentPrev
         </button>
       )}
       {attachmentFilename && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 6, color: 'var(--cp-text-tertiary, #64748B)', fontSize: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 6, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', fontSize: 12 }}>
           <Paperclip size={13} />
           <span>{attachmentFilename}</span>
         </div>

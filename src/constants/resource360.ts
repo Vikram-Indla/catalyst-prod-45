@@ -30,7 +30,7 @@ export const PRIORITY_COLORS: Record<string, string> = {
   Critical: 'var(--ds-text-danger, var(--cp-danger, #DC2626))',
   High: '#EA580C',
   Medium: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
-  Low: 'var(--ds-text-subtlest, #64748B)',
+  Low: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
 };
 
 export const PRIORITY_ICONS: Record<string, string> = {
@@ -86,7 +86,7 @@ export const R360_TOKENS = {
   ink1: '#020617',
   ink2: 'var(--fg-1, #0F172A)',
   ink3: 'var(--ds-text-subtle, #334155)',
-  ink4: 'var(--ds-text-subtlest, #64748B)',
+  ink4: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
   surface: 'var(--bg-1, #F8FAFC)',
   card: 'var(--ds-surface, #FFFFFF)',
   border: 'var(--bd-default, var(--cp-border, #E2E8F0))',
@@ -111,7 +111,7 @@ export const R360_PROJECT_COLORS: Record<string, string> = {
   SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))',
   FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))',
   OPS: 'var(--cp-teal-60, #0D9488)',
-  SUP: 'var(--ds-text-subtlest, #64748B)',
+  SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
   LND: 'var(--cp-purple-60, #7C3AED)',
 };
 

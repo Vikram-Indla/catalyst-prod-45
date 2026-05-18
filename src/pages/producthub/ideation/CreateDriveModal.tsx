@@ -148,7 +148,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
           <button
             onClick={onClose}
             style={{
-              background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cp-text-tertiary, #64748B)',
+              background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
               padding: '4px', borderRadius: '6px', display: 'flex',
             }}
           >
@@ -243,7 +243,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                         ? (isActive ? ('var(--cp-success-light, #F0FDF4)') : ('var(--cp-bg-page, #F8FAFC)'))
                         : ('var(--cp-bg-elevated, #FFFFFF)'),
                       color: isSelected
-                        ? (isActive ? ('var(--cp-success, #15803D)') : ('var(--cp-text-tertiary, #64748B)'))
+                        ? (isActive ? ('var(--cp-success, #15803D)') : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'))
                         : ('var(--cp-text-muted, #94A3B8)'),
                       transition: 'all 150ms ease',
                       fontFamily: 'var(--cp-font-body)',
@@ -276,7 +276,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     ...(touched.deadline && errors.deadline ? { borderColor: 'var(--ds-text-danger, #EF4444)' } : {}),
                   }}
                 >
-                  <CalendarIcon size={16} style={{ color: 'var(--cp-text-tertiary, #64748B)', flexShrink: 0 }} />
+                  <CalendarIcon size={16} style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', flexShrink: 0 }} />
                   <span style={{ fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)' }}>{format(deadline, 'MMM d, yyyy')}</span>
                 </button>
               </PopoverTrigger>

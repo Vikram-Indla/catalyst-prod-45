@@ -47,7 +47,7 @@ function GroupSkeleton({ label, rowCount, isDark }: {
               background: 'var(--cp-bg-sunken, var(--cp-border, #E2E8F0))',
             }} />
             <span style={{
-              fontSize: 11, fontWeight: 700, color: 'var(--cp-text-tertiary, #64748B)',
+              fontSize: 11, fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
               textTransform: 'uppercase', letterSpacing: '0.04em',
               fontFamily: 'var(--cp-font-body)', opacity: 0.6,
             }}>

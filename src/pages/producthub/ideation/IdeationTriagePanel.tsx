@@ -24,7 +24,7 @@ const DOT_COLORS: Record<string, string> = {
 
 const CATEGORY_TEXT_COLORS: Record<string, string> = {
   'FAST-TRACK RECOMMENDED': 'var(--ds-text-success, var(--cp-success, #16A34A))', 'MERGE CANDIDATES': 'var(--ds-text-brand, #2563EB)',
-  'NEEDS INVESTIGATION': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'RECOMMENDED TO DEFER': 'var(--ds-text-subtlest, #64748B)',
+  'NEEDS INVESTIGATION': 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'RECOMMENDED TO DEFER': 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
 };
 
 type TriageItem = {
@@ -160,7 +160,7 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
             </div>
             <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cp-text-muted, #94A3B8)', padding: '4px' }}><X size={18} /></button>
           </div>
-          <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--cp-text-tertiary, #64748B)', marginTop: '4px' }}>
+          <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginTop: '4px' }}>
             {ideas.length} ideas analyzed · {totalRecommendations} recommendations
           </div>
         </div>
@@ -225,7 +225,7 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
           )}
 
           <div style={{ marginTop: '20px', borderTop: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, paddingTop: '16px' }}>
-            <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>Team Distribution</div>
+            <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>Team Distribution</div>
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '16px' }}>
               {teamStats.map(([team, count]) => (
                 <span key={team} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 600, background: 'var(--cp-bg-sunken, #F1F5F9)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, color: 'var(--cp-text-secondary, #475569)', padding: '4px 10px', borderRadius: '4px' }}>
@@ -233,12 +233,12 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
                 </span>
               ))}
             </div>
-            <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>Top Themes</div>
+            <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>Top Themes</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               {themeStats.map(([theme, count]) => (
                 <div key={theme} style={{ background: 'var(--cp-bg-page, #F8FAFC)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: '8px', padding: '8px', textAlign: 'center' }}>
                   <div style={{ fontSize: '16px', fontWeight: 800, color: 'var(--cp-text-primary, #0F172A)' }}>{count}</div>
-                  <div style={{ fontSize: '9px', fontWeight: 600, color: 'var(--cp-text-tertiary, #64748B)', marginTop: '2px', direction: /[\u0600-\u06FF]/.test(theme) ? 'rtl' : 'ltr' }}>{theme}</div>
+                  <div style={{ fontSize: '9px', fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginTop: '2px', direction: /[\u0600-\u06FF]/.test(theme) ? 'rtl' : 'ltr' }}>{theme}</div>
                 </div>
               ))}
             </div>
@@ -258,12 +258,12 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
 
 function CategoryHeader({ label, sub }: { label: string; sub: string }) {
   const { isDark } = useTheme();
-  const color = CATEGORY_TEXT_COLORS[label] || 'var(--ds-text-subtlest, #64748B)';
+  const color = CATEGORY_TEXT_COLORS[label] || 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
   return (
     <div style={{ marginBottom: '12px', marginTop: '8px' }}>
       <div style={{ borderTop: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, marginBottom: '16px' }} />
       <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', color, textTransform: 'uppercase' }}>{label}</div>
-      <div style={{ fontSize: '12px', color: 'var(--cp-text-tertiary, #64748B)', marginTop: '2px' }}>{sub}</div>
+      <div style={{ fontSize: '12px', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginTop: '2px' }}>{sub}</div>
     </div>
   );
 }
@@ -282,10 +282,10 @@ function TriageCard({ badge, ideaKey, title, body, aiSuggestion, primary, second
           <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
           {badge}
         </span>
-        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '12px', fontWeight: 600, color: 'var(--cp-text-tertiary, #64748B)' }}>{ideaKey}</span>
+        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '12px', fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{ideaKey}</span>
       </div>
       <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginTop: '8px', lineHeight: 1.4 }}>{title}</div>
-      <div style={{ fontSize: '13px', fontWeight: 400, color: 'var(--cp-text-tertiary, #64748B)', lineHeight: 1.5, marginTop: '4px' }}>{body}</div>
+      <div style={{ fontSize: '13px', fontWeight: 400, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', lineHeight: 1.5, marginTop: '4px' }}>{body}</div>
       {aiSuggestion && (
         <div style={{ background: 'var(--cp-bg-page, #F8FAFC)', borderLeft: `2px solid ${'var(--cp-border-strong, #CBD5E1)'}`, borderRadius: '0 6px 6px 0', padding: '8px 12px', marginTop: '10px', fontSize: '12px', fontWeight: 500, color: 'var(--cp-text-secondary, #475569)', lineHeight: 1.4 }}>
           {aiSuggestion}

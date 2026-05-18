@@ -7,7 +7,7 @@ import { EmptyState } from '@/components/releasehub/EmptyState';
 import { BarChart3 } from '@/lib/atlaskit-icons';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend } from 'recharts';
 
-const RADAR_COLORS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-subtlest, #64748B)'];
+const RADAR_COLORS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'];
 const statusScore: Record<string, number> = { todo: 20, in_progress: 55, done: 100, archived: 10 };
 
 export default function ReleaseComparePage() {
@@ -56,7 +56,7 @@ export default function ReleaseComparePage() {
     <div className="rh-page">
       <div className="mb-5">
         <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>Release Compare</h1>
-        <p className="text-[13px] text-[var(--ds-text-subtlest,#64748B)]" style={{ fontFamily: RH.fontBody }}>Side-by-side release comparison (select up to 4)</p>
+        <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]" style={{ fontFamily: RH.fontBody }}>Side-by-side release comparison (select up to 4)</p>
       </div>
 
       {isLoading ? (
@@ -75,7 +75,7 @@ export default function ReleaseComparePage() {
                   <span className="text-[13px] font-semibold block truncate" style={{ color: RH.ink1 }}>{r.name}</span>
                   <div className="flex items-center gap-2 mt-1.5">
                     <ReleaseStatusBadge status={r.status} />
-                    {r.version && <span className="text-[10px] text-[var(--ds-text-subtlest,#64748B)]" style={{ fontFamily: RH.fontMono }}>{r.version}</span>}
+                    {r.version && <span className="text-[10px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]" style={{ fontFamily: RH.fontMono }}>{r.version}</span>}
                   </div>
                 </button>
               );
@@ -97,7 +97,7 @@ export default function ReleaseComparePage() {
                   <tbody>
                     {comparisonRows.map(row => (
                       <tr key={row.label} className="border-b border-[var(--ds-surface-sunken,#F1F5F9)] h-9">
-                        <td className="px-3 py-0 font-semibold text-[var(--ds-text-subtlest,#64748B)]">{row.label}</td>
+                        <td className="px-3 py-0 font-semibold text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]">{row.label}</td>
                         {selectedReleases.map((r: any, i: number) => (
                           <td key={r.id} className="px-3 py-0">
                             <span className="inline-flex items-center gap-1">

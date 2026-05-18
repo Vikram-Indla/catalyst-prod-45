@@ -96,7 +96,7 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
         </DialogHeader>
 
         <div className="px-5 pb-2">
-          <p className="text-[var(--ds-text-subtlest,#64748B)] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 12, marginBottom: 12 }}>
+          <p className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 12, marginBottom: 12 }}>
             Select users from the organization directory to add to this project.
           </p>
 
@@ -140,7 +140,7 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
 
                   <div className="flex-1 min-w-0">
                     <div className="text-[var(--ds-text,#0F172A)] dark:text-[var(--ds-text,#EDEDED)]" style={{ fontSize: 13, fontWeight: 600, lineHeight: '18px' }}>{u.name}</div>
-                    <div className="text-[var(--ds-text-subtlest,#64748B)] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 11, lineHeight: '16px' }}>
+                    <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 11, lineHeight: '16px' }}>
                       {u.role_name || 'No role'}
                       {u.department_name && <span className="text-[var(--ds-text-disabled,#CBD5E1)] dark:text-[var(--ds-border-bold,#454545)]"> · </span>}
                       {u.department_name && <span className="text-[var(--ds-text-subtlest,#94A3B8)] dark:text-[#7D7D7D]">{u.department_name}</span>}

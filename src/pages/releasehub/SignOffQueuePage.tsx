@@ -59,7 +59,7 @@ export default function SignOffQueuePage() {
     <div className="p-6" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)' }}>
       <div className="mb-5">
         <h1 className="text-[24px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>Signoff Queue</h1>
-        <p className="text-[13px] mt-1" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>All pending approvals — notifications sent to approver's For You homepage</p>
+        <p className="text-[13px] mt-1" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>All pending approvals — notifications sent to approver's For You homepage</p>
       </div>
 
       {/* Toolbar */}
@@ -83,7 +83,7 @@ export default function SignOffQueuePage() {
             <thead>
               <tr style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }}>
                 {['CHANGE', 'TITLE', 'GATE', 'APPROVER', 'RISK', 'STATUS', 'ACTIONS'].map(h => (
-                  <th key={h} className="text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 50, padding: '8px 12px', color: 'var(--cp-text-tertiary, #64748B)' }}>{h}</th>
+                  <th key={h} className="text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 50, padding: '8px 12px', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -102,7 +102,7 @@ export default function SignOffQueuePage() {
                     <td className="px-3" style={{ fontFamily: RH.fontMono, color: 'var(--ds-text-brand, #2563EB)', fontWeight: 650 }}>{so.rh_changes?.chg_number || '—'}</td>
                     <td className="px-3 truncate max-w-[240px]" style={{ color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : RH.ink2 }}>{so.rh_changes?.title || '—'}</td>
                     <td className="px-3" style={{ color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : RH.ink2 }}>{so.signoff_role || so.stage || '—'}</td>
-                    <td className="px-3" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>{so.assigned_to || '—'}</td>
+                    <td className="px-3" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{so.assigned_to || '—'}</td>
                     <td className="px-3"><RiskBadge risk={so.rh_changes?.risk_level || 'standard'} /></td>
                     <td className="px-3"><StatusLozenge status={so.status} /></td>
                     <td className="px-3">
@@ -136,8 +136,8 @@ export default function SignOffQueuePage() {
           {actionModal && (
             <div className="space-y-4">
               <div className="rounded-[6px] p-3" style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }}>
-                <p className="text-[12px] mb-1" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>Gate: <span className="font-bold" style={{ color: 'var(--cp-text-secondary, #334155)' }}>{actionModal.signoff.signoff_role || actionModal.signoff.stage}</span></p>
-                <p className="text-[12px]" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>Change: <span style={{ fontFamily: RH.fontMono, fontWeight: 650, color: 'var(--ds-text-brand, #2563EB)' }}>{actionModal.signoff.rh_changes?.chg_number}</span> — {actionModal.signoff.rh_changes?.title}</p>
+                <p className="text-[12px] mb-1" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Gate: <span className="font-bold" style={{ color: 'var(--cp-text-secondary, #334155)' }}>{actionModal.signoff.signoff_role || actionModal.signoff.stage}</span></p>
+                <p className="text-[12px]" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Change: <span style={{ fontFamily: RH.fontMono, fontWeight: 650, color: 'var(--ds-text-brand, #2563EB)' }}>{actionModal.signoff.rh_changes?.chg_number}</span> — {actionModal.signoff.rh_changes?.title}</p>
                 {actionModal.signoff.rh_changes?.risk_level && <div className="mt-2"><RiskBadge risk={actionModal.signoff.rh_changes.risk_level} /></div>}
               </div>
               <div>

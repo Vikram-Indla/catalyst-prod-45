@@ -55,7 +55,7 @@ export type ProjectView = 'backlog' | 'board' | 'list' | 'timeline';
 
 /** Status display config */
 export const STATUS_CONFIG: Record<IssueStatus, { label: string; color: string; bg: string }> = {
-  backlog:    { label: 'Backlog',    color: '#64748B', bg: '#F1F5F9' },
+  backlog:    { label: 'Backlog',    color: 'var(--cp-ink-3, #64748B)', bg: '#F1F5F9' },
   ready:      { label: 'Ready',     color: '#2563EB', bg: '#EFF6FF' },
   in_dev:     { label: 'In Dev',    color: '#2563EB', bg: '#EFF6FF' },
   in_qa:      { label: 'In QA',     color: 'var(--cp-warning, #D97706)', bg: '#FFFBEB' },
@@ -71,7 +71,7 @@ export const PRIORITY_CONFIG: Record<IssuePriority, { label: string; color: stri
   urgent: { label: 'Urgent', color: 'var(--cp-danger, #DC2626)' },
   high:   { label: 'High',   color: 'var(--cp-warning, #D97706)' },
   medium: { label: 'Medium', color: '#2563EB' },
-  low:    { label: 'Low',    color: '#64748B' },
+  low:    { label: 'Low',    color: 'var(--cp-ink-3, #64748B)' },
 };
 
 /** Issue type icon config */
@@ -86,7 +86,7 @@ export const ISSUE_TYPE_CONFIG: Record<IssueType, { icon: string; color: string;
 
 /** Default board columns */
 export const DEFAULT_BOARD_COLUMNS: BoardColumn[] = [
-  { name: 'Backlog',     statuses: ['backlog'],              color: '#64748B', wip_limit: 0 },
+  { name: 'Backlog',     statuses: ['backlog'],              color: 'var(--cp-ink-3, #64748B)', wip_limit: 0 },
   { name: 'Ready',       statuses: ['ready'],                color: '#2563EB', wip_limit: 10 },
   { name: 'In Progress', statuses: ['in_dev'],               color: '#2563EB', wip_limit: 8 },
   { name: 'In QA',       statuses: ['in_qa'],                color: 'var(--cp-warning, #D97706)', wip_limit: 5 },

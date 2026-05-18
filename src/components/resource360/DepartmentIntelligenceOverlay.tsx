@@ -366,7 +366,7 @@ function ProjectCard({ prj }: { prj: ProjectActivity }) {
             <span className="di-prj-contribs-lbl">Contributors</span>
             {prj.contributors.map((c, ci) => (
               <span className="di-prj-contrib" key={ci}>
-                <span className="di-prj-avatar" style={{ background: c.color || 'var(--ds-text-subtlest, #64748B)' }}>
+                <span className="di-prj-avatar" style={{ background: c.color || 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
                   {c.initials}
                 </span>
                 <span className="di-prj-contrib-name">{c.name}</span>

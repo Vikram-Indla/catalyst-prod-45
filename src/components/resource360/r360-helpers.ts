@@ -88,7 +88,7 @@ function getStatusStyleFallback(statusName: string, statusCategory?: string): St
   }
 
   // Default — gray for truly unknown statuses
-  return { dot: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtle, #334155)', category: 'unstarted' };
+  return { dot: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtle, #334155)', category: 'unstarted' };
 }
 
 /** @deprecated Use resolveStatusStyle instead */
@@ -102,7 +102,7 @@ export function getPriorityColor(priority: string): string {
     case 'high': return '#EA580C';
     case 'medium': return '#CA8A04';
     case 'low': return '#57534E';
-    default: return 'var(--ds-text-subtlest, #64748B)';
+    default: return 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
   }
 }
 

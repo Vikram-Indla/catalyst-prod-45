@@ -47,7 +47,7 @@ export function WikiAdminPagesTab() {
           border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
           background: 'var(--cp-bg-page, #fff)', flex: 1, maxWidth: 300,
         }}>
-          <Search style={{ width: 14, height: 14, color: 'var(--cp-text-tertiary, #64748B)' }} />
+          <Search style={{ width: 14, height: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }} />
           <input
             placeholder="Search pages..."
             value={search}
@@ -78,7 +78,7 @@ export function WikiAdminPagesTab() {
       {/* Empty state */}
       {pages.length === 0 ? (
         <EmptyState
-          icon={<FileText style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, #64748B)' }} />}
+          icon={<FileText style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }} />}
           message="No wiki pages generated yet"
           sub="Run a sync to generate pages from Jira data."
         />
@@ -90,7 +90,7 @@ export function WikiAdminPagesTab() {
               <thead>
                 <tr style={{ background: 'var(--cp-bg-sunken, #F8FAFC)' }}>
                   {['Title', 'Domain', 'Status', 'Confidence', 'Coverage', 'Ver', 'Reads', 'Updated', 'Actions'].map(h => (
-                    <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, #64748B)', whiteSpace: 'nowrap' }}>{h}</th>
+                    <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -154,9 +154,9 @@ export function WikiAdminPagesTab() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end', fontFamily: 'var(--cp-font-body)', fontSize: 12 }}>
-              <span style={{ color: 'var(--cp-text-tertiary, #64748B)', marginInlineEnd: 8 }}>{total} pages</span>
+              <span style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginInlineEnd: 8 }}>{total} pages</span>
               <PagBtn disabled={page === 0} onClick={() => setPage(p => p - 1)}><ChevronLeft style={{ width: 14, height: 14 }} /></PagBtn>
-              <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>Page {page + 1} of {totalPages}</span>
+              <span style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Page {page + 1} of {totalPages}</span>
               <PagBtn disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)}><ChevronRight style={{ width: 14, height: 14 }} /></PagBtn>
             </div>
           )}
@@ -172,7 +172,7 @@ function ActionBtn({ icon, title, onClick }: { icon: React.ReactNode; title: str
       padding: 4, borderRadius: 4,
       border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
       background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center',
-      color: 'var(--cp-text-tertiary, #64748B)', outline: 'none',
+      color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', outline: 'none',
     }}
       onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
       onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}

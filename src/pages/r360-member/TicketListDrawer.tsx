@@ -36,7 +36,7 @@ export function TicketListDrawer({ mode, items, onClose, onSelectItem }: {
             </div>
             <button className="r3-panel-close" onClick={onClose}><X size={14} /></button>
           </div>
-          <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>
+          <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
             {isStale ? 'Items with no activity for 14+ days' : 'All currently open items across all periods'}
           </div>
         </div>

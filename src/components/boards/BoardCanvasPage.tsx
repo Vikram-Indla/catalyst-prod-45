@@ -264,7 +264,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
         <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: 0 }}>
           {boardTabs.map(tab => {
             const active = tab.id === boardId;
-            const accent = BOARD_ACCENT[tab.name] || tab.color || 'var(--ds-text-subtlest, #64748B)';
+            const accent = BOARD_ACCENT[tab.name] || tab.color || 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
             const isPersonal = tab.name === 'My Planning Board';
             return (
               <button
@@ -310,7 +310,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
               cursor: 'pointer',
             }}>
               Group by: <strong style={{ fontWeight: 600 }}>{board.swimlaneType === 'none' ? 'None' : board.swimlaneType.charAt(0).toUpperCase() + board.swimlaneType.slice(1)}</strong>
-              <ChevronDown size={12} color="var(--ds-text-subtlest, #64748B)" />
+              <ChevronDown size={12} color="var(--ds-text-subtlest, var(--cp-ink-3, #64748B))" />
             </button>
             <button onClick={() => setSettingsOpen(true)} style={{
               display: 'flex', alignItems: 'center', gap: 5, height: 32, padding: '8px 12px',

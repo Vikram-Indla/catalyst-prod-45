@@ -219,7 +219,7 @@ export function NotionImportWizard() {
             <div className="space-y-4">
               <div className="mb-1">
                 <h2 className="text-[15px] font-semibold text-[var(--ds-text,#0F172A)]">Connect to Notion</h2>
-                <p className="text-[13px] text-[var(--ds-text-subtlest,#64748B)] mt-0.5">
+                <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] mt-0.5">
                   Enter your integration token and database URL to start.
                 </p>
               </div>
@@ -311,7 +311,7 @@ export function NotionImportWizard() {
             <div className="space-y-4">
               <div>
                 <h2 className="text-[15px] font-semibold text-[var(--ds-text,#0F172A)]">Data Preview</h2>
-                <p className="text-[13px] text-[var(--ds-text-subtlest,#64748B)] mt-0.5">
+                <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] mt-0.5">
                   {notionRows.length} rows from <span className="font-medium text-[var(--ds-text,#0F172A)]">{dbTitle}</span>
                 </p>
               </div>
@@ -327,9 +327,9 @@ export function NotionImportWizard() {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-[var(--ds-border,var(--cp-border, #E2E8F0))] bg-[var(--ds-surface-sunken,#F8FAFC)]">
-                        <th className="text-left px-3 py-2 font-semibold text-[10px] uppercase tracking-wider text-[var(--ds-text-subtlest,#64748B)] w-8">#</th>
+                        <th className="text-left px-3 py-2 font-semibold text-[10px] uppercase tracking-wider text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] w-8">#</th>
                         {notionProps.map(p => (
-                          <th key={p.id} className="text-left px-3 py-2 font-semibold text-[10px] uppercase tracking-wider text-[var(--ds-text-subtlest,#64748B)] whitespace-nowrap">
+                          <th key={p.id} className="text-left px-3 py-2 font-semibold text-[10px] uppercase tracking-wider text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] whitespace-nowrap">
                             {p.name}
                           </th>
                         ))}
@@ -364,7 +364,7 @@ export function NotionImportWizard() {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-[15px] font-semibold text-[var(--ds-text,#0F172A)]">Map Fields</h2>
-                  <p className="text-[13px] text-[var(--ds-text-subtlest,#64748B)] mt-0.5">
+                  <p className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] mt-0.5">
                     Map each Notion column to a Catalyst field.
                   </p>
                 </div>
@@ -376,9 +376,9 @@ export function NotionImportWizard() {
 
               <div className="bg-white border border-[var(--ds-border,var(--cp-border, #E2E8F0))] rounded-lg overflow-hidden">
                 <div className="flex items-center px-4 py-2 bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-[var(--ds-border,var(--cp-border, #E2E8F0))]">
-                  <span className="flex-1 text-[10px] uppercase tracking-wider font-semibold text-[var(--ds-text-subtlest,#64748B)]">Notion Column</span>
+                  <span className="flex-1 text-[10px] uppercase tracking-wider font-semibold text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]">Notion Column</span>
                   <ArrowRightIcon label="" size="small" />
-                  <span className="w-44 text-[10px] uppercase tracking-wider font-semibold text-[var(--ds-text-subtlest,#64748B)] text-right">Catalyst Field</span>
+                  <span className="w-44 text-[10px] uppercase tracking-wider font-semibold text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] text-right">Catalyst Field</span>
                 </div>
                 {notionProps.map(p => {
                   const mapped = mappings[p.name] || '__skip__';
@@ -432,7 +432,7 @@ export function NotionImportWizard() {
                       <div key={row.label} className={`flex items-center justify-between px-4 py-2.5 ${i < 4 ? 'border-b border-[var(--ds-surface-sunken,#F1F5F9)]' : ''}`}>
                         <div className="flex items-center gap-2">
                           <row.icon className="h-3.5 w-3.5 text-[var(--ds-text-subtlest,#94A3B8)]" />
-                          <span className="text-[13px] text-[var(--ds-text-subtlest,#64748B)]">{row.label}</span>
+                          <span className="text-[13px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]">{row.label}</span>
                         </div>
                         <span className="text-[13px] font-semibold text-[var(--ds-text,#0F172A)]">{row.value}</span>
                       </div>
@@ -449,7 +449,7 @@ export function NotionImportWizard() {
                   {importing && (
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between text-[13px]">
-                        <span className="text-[var(--ds-text-subtlest,#64748B)]">Importing…</span>
+                        <span className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]">Importing…</span>
                         <span className="font-mono font-semibold text-[var(--ds-text,#0F172A)]">{importDone}/{notionRows.length}</span>
                       </div>
                       <div className="h-1.5 rounded-full bg-[var(--ds-surface-sunken,#F1F5F9)] overflow-hidden">
@@ -475,7 +475,7 @@ export function NotionImportWizard() {
                       <span className="px-2.5 py-1 rounded-full bg-[var(--ds-background-success,#DCFCE7)] text-[var(--ds-text-success,var(--cp-success, #16A34A))]">{importResult.imported} imported</span>
                     )}
                     {importResult.skipped > 0 && (
-                      <span className="px-2.5 py-1 rounded-full bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtlest,#64748B)]">{importResult.skipped} skipped</span>
+                      <span className="px-2.5 py-1 rounded-full bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]">{importResult.skipped} skipped</span>
                     )}
                     {importResult.failed > 0 && (
                       <span className="px-2.5 py-1 rounded-full bg-[#FEE2E2] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]">{importResult.failed} failed</span>

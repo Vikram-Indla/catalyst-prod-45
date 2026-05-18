@@ -41,7 +41,7 @@ function Lozenge({ status }: { status: string }) {
 }
 
 /* ── Shared table helpers ───────────────────────────────── */
-const thClass = 'text-left text-[10px] font-semibold uppercase text-[var(--ds-text-subtlest,#64748B)] dark:text-gray-400';
+const thClass = 'text-left text-[10px] font-semibold uppercase text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] dark:text-gray-400';
 const thStyle = { padding: '10px 12px', height: 50, maxHeight: 50 } as const;
 const tdClass = 'text-[var(--ds-text-subtle,#334155)] dark:text-white';
 const tdStyle = { padding: '8px 12px', fontSize: 12, height: 50, maxHeight: 50 } as const;
@@ -80,7 +80,7 @@ function PaginationBar({ page, setPage, count }: { page: number; setPage: (p: nu
   const start = page * PAGE_SIZE + 1;
   const end = page * PAGE_SIZE + count;
   return (
-    <div className="flex items-center justify-between px-4 py-2 text-[var(--ds-text-subtlest,#64748B)] dark:text-gray-400" style={{ fontSize: 12 }}>
+    <div className="flex items-center justify-between px-4 py-2 text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] dark:text-gray-400" style={{ fontSize: 12 }}>
       <span>Showing {start}–{end}</span>
       <div className="flex gap-2">
         {page > 0 && (
@@ -340,7 +340,7 @@ export default function JiraSyncAuditLog() {
           <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700 }} className="text-[var(--ds-text,#0F172A)] dark:text-white">
             Jira Sync Audit Log
           </h1>
-          <p style={{ fontSize: 13 }} className="text-[var(--ds-text-subtlest,#64748B)] dark:text-gray-400 mt-1">
+          <p style={{ fontSize: 13 }} className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] dark:text-gray-400 mt-1">
             Monitor bi-directional sync activity
           </p>
         </div>

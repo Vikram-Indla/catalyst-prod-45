@@ -94,7 +94,7 @@ export default function SharedStepDetailPage() {
 
   if (!step) {
     return (
-      <div style={{ padding: 32, textAlign: 'center', color: 'var(--cp-text-tertiary, #64748B)' }}>
+      <div style={{ padding: 32, textAlign: 'center', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
         Shared step not found.
       </div>
     );
@@ -106,12 +106,12 @@ export default function SharedStepDetailPage() {
       <div style={{ padding: '20px 32px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
         <button
           onClick={() => navigate('/testhub/shared-steps')}
-          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: 0, border: 'none', backgroundColor: 'transparent', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 13, fontWeight: 500, cursor: 'pointer', marginBottom: 16 }}
+          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: 0, border: 'none', backgroundColor: 'transparent', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', fontSize: 13, fontWeight: 500, cursor: 'pointer', marginBottom: 16 }}
         >
           <ArrowLeft size={16} /> Shared Steps
         </button>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 8px' }}>{step.name}</h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: 'var(--cp-text-tertiary, #64748B)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
           {step.category && (
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', backgroundColor: 'var(--cp-bg-sunken, #F1F5F9)', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: step.category.color }} />
@@ -129,7 +129,7 @@ export default function SharedStepDetailPage() {
       <div style={{ flex: 1, padding: 32, overflowY: 'auto' }}>
         {/* Step Details */}
         <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 12, padding: 24, marginBottom: 24 }}>
-          <h2 style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px' }}>Step Details</h2>
+          <h2 style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px' }}>Step Details</h2>
           {step.description && (
             <div style={{ marginBottom: 16 }}>
               <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-muted, #94A3B8)', display: 'block', marginBottom: 4 }}>Description</label>
@@ -151,7 +151,7 @@ export default function SharedStepDetailPage() {
         {/* Linked Test Cases */}
         <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 12, overflow: 'hidden' }}>
           <div style={{ padding: '16px 24px', borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
-            <h2 style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
+            <h2 style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
               Linked Test Cases ({linkedCases.length})
             </h2>
           </div>
@@ -164,8 +164,8 @@ export default function SharedStepDetailPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
-                  <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Case Key</th>
-                  <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Title</th>
+                  <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Case Key</th>
+                  <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Title</th>
                 </tr>
               </thead>
               <tbody>

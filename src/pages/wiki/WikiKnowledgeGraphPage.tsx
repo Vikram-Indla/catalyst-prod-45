@@ -8,7 +8,7 @@ import type * as D3Type from 'd3';
 
 const DOMAIN_COLORS: Record<string, string> = {
   D1: 'var(--ds-text-brand, #2563EB)', D2: 'var(--cp-teal-60, #0D9488)', D3: 'var(--ds-text-warning, var(--cp-warning, #D97706))', D4: 'var(--ds-text-success, var(--cp-success, #16A34A))',
-  D5: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', D6: '#0891B2', D7: 'var(--ds-text-subtlest, #64748B)', D8: '#4F46E5', D9: '#CA8A04',
+  D5: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', D6: '#0891B2', D7: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', D8: '#4F46E5', D9: '#CA8A04',
 };
 
 interface GNode extends D3Type.SimulationNodeDatum {
@@ -105,7 +105,7 @@ export default function WikiKnowledgeGraphPage() {
       .data(nodes)
       .join('circle')
       .attr('r', d => radiusScale(d.view_count ?? 1))
-      .attr('fill', d => DOMAIN_COLORS[d.domain_code] || 'var(--ds-text-subtlest, #64748B)')
+      .attr('fill', d => DOMAIN_COLORS[d.domain_code] || 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))')
       .attr('stroke', isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface, #FFFFFF)')
       .attr('stroke-width', 1.5)
       .attr('cursor', 'pointer')
@@ -161,10 +161,10 @@ export default function WikiKnowledgeGraphPage() {
         <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
           <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}>Wiki</span>
           <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)' }} />
-          <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)', fontWeight: 600 }}>Knowledge Graph</span>
+          <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 600 }}>Knowledge Graph</span>
         </nav>
         <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, margin: '0 0 8px' }}>Knowledge Graph</h1>
-        <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)', marginBottom: 12 }}>
+        <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginBottom: 12 }}>
           Visualize article relationships. Node size = view count. Click to open article.
         </p>
         {/* Legend */}
@@ -172,7 +172,7 @@ export default function WikiKnowledgeGraphPage() {
           {Object.entries(DOMAIN_COLORS).map(([code, color]) => (
             <div key={code} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: color }} />
-              <span style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)', fontWeight: 500 }}>{code}</span>
+              <span style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 500 }}>{code}</span>
             </div>
           ))}
         </div>
@@ -188,7 +188,7 @@ export default function WikiKnowledgeGraphPage() {
             pointerEvents: 'none', zIndex: 10, fontSize: 12, maxWidth: 200,
           }}>
             <div style={{ fontWeight: 600, marginBottom: 2, color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }}>{tooltip.title}</div>
-            <div style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)' }}>{tooltip.domain} · {tooltip.views} views</div>
+            <div style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{tooltip.domain} · {tooltip.views} views</div>
           </div>
         )}
       </div>

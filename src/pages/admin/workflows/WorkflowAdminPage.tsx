@@ -59,7 +59,7 @@ export default function WorkflowAdminPage() {
             <h1 className="text-lg font-semibold text-[var(--ds-text,#0F172A)] font-['Sora']">
               Workflows
             </h1>
-            <p className="text-xs text-[var(--ds-text-subtlest,#64748B)]">
+            <p className="text-xs text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]">
               Manage statuses, transitions, and categories per issue type
             </p>
           </div>
@@ -108,7 +108,7 @@ export default function WorkflowAdminPage() {
                 className={cn(
                   'relative px-4 py-2 text-xs font-medium rounded-none border-b-2 transition-colors data-[state=active]:shadow-none',
                   'data-[state=active]:border-[var(--ds-text-brand,#2563EB)] data-[state=active]:text-[var(--ds-text,#0F172A)]',
-                  'data-[state=inactive]:border-transparent data-[state=inactive]:text-[var(--ds-text-subtlest,#64748B)] data-[state=inactive]:hover:text-[var(--ds-text,#0F172A)]',
+                  'data-[state=inactive]:border-transparent data-[state=inactive]:text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] data-[state=inactive]:hover:text-[var(--ds-text,#0F172A)]',
                   'bg-transparent'
                 )}
               >
@@ -156,7 +156,7 @@ function WorkflowTabContent({ issueType, viewMode }: { issueType: string; viewMo
 
   if (!workflow.scheme) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-[var(--ds-text-subtlest,#64748B)]">
+      <div className="flex flex-col items-center justify-center py-20 text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]">
         <BoardsIcon label="" size="large" />
         <p className="text-sm">No workflow configured for {issueType}</p>
       </div>

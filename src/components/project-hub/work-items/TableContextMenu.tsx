@@ -77,7 +77,7 @@ export function TableContextMenu({
             </button>
             <button
               onClick={() => setDeleteConfirm(false)}
-              className="text-[11px] px-2 py-0.5 text-[var(--ds-text-subtlest,#64748B)]"
+              className="text-[11px] px-2 py-0.5 text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]"
             >
               No
             </button>

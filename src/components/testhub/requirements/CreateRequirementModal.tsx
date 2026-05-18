@@ -126,7 +126,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>Add Requirement</h2>
           </div>
-          <button onClick={onClose} style={{ width: 36, height: 50, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: 'var(--ds-text-subtlest, #64748B)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={onClose} style={{ width: 36, height: 50, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={20} />
           </button>
         </div>
@@ -205,7 +205,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
         {/* Footer */}
         <div style={{ padding: '16px 24px', borderTop: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={onClose} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 20px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 12, fontSize: 14, fontWeight: 500, color: 'var(--cp-text-tertiary, #64748B)', cursor: 'pointer' }}>
+            style={{ height: 44, padding: '0 20px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 12, fontSize: 14, fontWeight: 500, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer' }}>
             Cancel
           </button>
           <button onClick={handleSubmit} disabled={isSubmitting}

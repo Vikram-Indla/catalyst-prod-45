@@ -150,7 +150,7 @@
   --cp-primary-border: #BFDBFE;
   --cp-ink-1: #0F172A;
   --cp-ink-2: #334155;
-  --cp-ink-3: #64748B;
+  --cp-ink-3: var(--cp-ink-3, #64748B);
   --cp-ink-4: #94A3B8;
   --cp-surface: #F8FAFC;
   --cp-card: #FFFFFF;
@@ -249,7 +249,7 @@
   --cp-bd-table: rgba(15,23,42,0.06);
   --cp-t1: #0F172A;
   --cp-t2: #334155;
-  --cp-t3: #64748B;
+  --cp-t3: var(--cp-ink-3, #64748B);
   --cp-t4: #94A3B8;
   --cp-blue: #2563EB;
   --cp-blue-wash: rgba(37,99,235,0.08);
@@ -895,7 +895,7 @@ html:has(body[data-scroll-locked]) {
        Per QA-CATALYST-SHELL-V10.md specification
        ═══════════════════════════════════════════════════════════════ */
     --nav-bg: #FFFFFF;
-    --nav-text: #64748B;                    /* V11: Inactive nav items */
+    --nav-text: var(--cp-ink-3, #64748B);                    /* V11: Inactive nav items */
     --nav-text-hover: #0F172A;              /* V11: Nav hover state */
     --nav-active: #2563EB;                  /* V11: Active nav text + underline */
     --nav-hover-bg: transparent;            /* V11: NO background on hover */

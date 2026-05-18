@@ -689,7 +689,7 @@ export function TestRepositoryPage() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s',
               }}
             >
-              <RefreshCw style={{ width: 16, height: 16, color: 'var(--ds-text-subtlest, #64748B)' }} />
+              <RefreshCw style={{ width: 16, height: 16, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }} />
             </button>
 
             {/* Import */}
@@ -702,7 +702,7 @@ export function TestRepositoryPage() {
                 display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
               }}
             >
-              <Download style={{ width: 16, height: 16, color: 'var(--cp-text-tertiary, #64748B)' }} />
+              <Download style={{ width: 16, height: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }} />
               Import
             </button>
 
@@ -716,7 +716,7 @@ export function TestRepositoryPage() {
                 display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
               }}
             >
-              <Upload style={{ width: 16, height: 16, color: 'var(--cp-text-tertiary, #64748B)' }} />
+              <Upload style={{ width: 16, height: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }} />
               Export
             </button>
 
@@ -969,7 +969,7 @@ export function TestRepositoryPage() {
                     fontFamily: 'var(--cp-font-body)',
                     fontSize: 13,
                     fontWeight: 500,
-                    color: 'var(--ds-text-subtlest, #64748B)',
+                    color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
                     cursor: 'pointer',
                   }}
                   onMouseEnter={(e) => {

@@ -98,7 +98,7 @@ export default function IncidentDetailPage() {
         height: 50,
         borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)',
       }}>
-        <div className="flex items-center gap-1" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>
+        <div className="flex items-center gap-1" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
           <span className="cursor-pointer hover:underline" onClick={() => navigate('/incident-hub')}>Incident List</span>
           <ChevronRight size={12} />
           <span style={{ color: 'var(--cp-text-primary, #0F172A)', fontWeight: 650 }}>{incident.incident_key || incident.jira_key || 'INC'}</span>
@@ -133,7 +133,7 @@ export default function IncidentDetailPage() {
               {incident.incident_key || incident.jira_key}
             </span>
             <span style={{ color: 'var(--cp-text-muted, #CBD5E1)' }}>&middot;</span>
-            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>
+            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
               Opened {incident.created_at ? formatDistanceToNow(new Date(incident.created_at), { addSuffix: true }) : ''}
             </span>
           </div>
@@ -194,7 +194,7 @@ export default function IncidentDetailPage() {
                   style={{
                     fontFamily: 'var(--cp-font-body)',
                     fontWeight: activeTab === tab ? 650 : 400,
-                    color: activeTab === tab ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-tertiary, #64748B)'),
+                    color: activeTab === tab ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'),
                     borderBottom: activeTab === tab ? '2px solid #2563EB' : '2px solid transparent',
                     borderRadius: 0,
                   }}
@@ -292,7 +292,7 @@ export default function IncidentDetailPage() {
               { label: 'Resolution', value: incident.resolution || '\u2014' },
             ].map(row => (
               <div key={row.label} className="flex items-center gap-2">
-                <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-tertiary, #64748B)', width: 80, flexShrink: 0 }}>{row.label}</span>
+                <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', width: 80, flexShrink: 0 }}>{row.label}</span>
                 <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-primary, #0F172A)' }}>
                   {typeof row.value === 'string' ? row.value : row.value}
                 </div>
@@ -303,14 +303,14 @@ export default function IncidentDetailPage() {
           {/* Custom Fields */}
           <div className="mt-4 pt-4" style={{ borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
             <div className="flex items-center gap-2 mb-2">
-              <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-tertiary, #64748B)', width: 80 }}>Created</span>
-              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>
+              <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', width: 80 }}>Created</span>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
                 {incident.created_at ? new Date(incident.created_at).toLocaleString() : '\u2014'}
               </span>
             </div>
             <div className="flex items-center gap-2 mb-2">
-              <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-tertiary, #64748B)', width: 80 }}>Updated</span>
-              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>
+              <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', width: 80 }}>Updated</span>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
                 {incident.updated_at ? new Date(incident.updated_at).toLocaleString() : '\u2014'}
               </span>
             </div>

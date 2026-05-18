@@ -109,7 +109,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     panelBg: 'var(--cp-bg-elevated, #FFFFFF)',
     surfaceBg: 'var(--cp-bg-elevated, #FFFFFF)',
     text1: 'var(--cp-text-primary, #0F172A)',
-    text2: 'var(--cp-text-tertiary, #64748B)',
+    text2: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
     text3: 'var(--cp-text-muted, #94A3B8)',
     border: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
     borderStrong: 'var(--cp-border-default, rgba(15,23,42,0.12))',

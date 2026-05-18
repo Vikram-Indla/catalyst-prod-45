@@ -137,12 +137,12 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
 
   const T = {
     text1: 'var(--cp-text-primary, #0F172A)',
-    text2: 'var(--cp-text-tertiary, #64748B)',
+    text2: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
     text3: 'var(--cp-text-muted, #94A3B8)',
     hover: 'var(--cp-interact-hover, rgba(15,23,42,0.04))',
     press: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
     borderStrong: isDark ? 'var(--ds-border-bold, #454545)' : 'rgba(15,23,42,0.2)',
-    checkStroke: 'var(--cp-text-tertiary, #64748B)',
+    checkStroke: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
   };
 
   /* ═══ C-03: Actor avatar logic ═══ */

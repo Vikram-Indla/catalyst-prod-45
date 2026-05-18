@@ -298,7 +298,7 @@ export default function TestHubDashboardPage() {
       {/* ═══ PAGE HEADER — 52px ═══ */}
       <CatalystPageHeader title="TestHub Dashboard" actions={
         <>
-          <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-tertiary, #64748B)' }}>
+          <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
             Updated {formatLastUpdated()}
           </span>
           <button onClick={fetchDashboardData} style={{
@@ -419,10 +419,10 @@ export default function TestHubDashboardPage() {
                        </div>
                        <div style={{ display: 'flex', gap: 6, fontSize: 12, fontWeight: 600, justifyContent: 'flex-end' }}>
                          <span style={{ color: 'var(--quality-high, #059669)' }}>{csPassed}P</span>
-                         <span style={{ color: 'var(--ds-text-subtlest, #64748B)' }}>·</span>
+                         <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>·</span>
                          <span style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{csFailed}F</span>
-                         <span style={{ color: 'var(--ds-text-subtlest, #64748B)' }}>·</span>
-                         <span style={{ color: 'var(--ds-text-subtlest, #64748B)' }}>{csNotRun}NR</span>
+                         <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>·</span>
+                         <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{csNotRun}NR</span>
                        </div>
                      </div>
                    );
@@ -514,7 +514,7 @@ export default function TestHubDashboardPage() {
                }}>
                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                    <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>Defects</span>
-                   <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-tertiary, #64748B)', background: 'var(--cp-bg-sunken, #F1F5F9)', padding: '2px 8px', borderRadius: 10 }}>
+                   <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', background: 'var(--cp-bg-sunken, #F1F5F9)', padding: '2px 8px', borderRadius: 10 }}>
                      {defectStats?.total_defects ?? 0}
                    </span>
                  </div>
@@ -534,7 +534,7 @@ export default function TestHubDashboardPage() {
                      borderRight: i < 3 ? `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}` : 'none',
                    }}>
                      <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', lineHeight: 1 }}>{d.value}</div>
-                     <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-text-tertiary, #64748B)', marginTop: 4 }}>{d.label}</div>
+                     <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginTop: 4 }}>{d.label}</div>
                    </div>
                  ))}
                </div>
@@ -558,7 +558,7 @@ export default function TestHubDashboardPage() {
                 </span>
               </div>
               {attentionItems.length === 0 ? (
-                <div style={{ padding: '16px', textAlign: 'center', fontSize: 13, color: 'var(--cp-text-tertiary, #64748B)' }}>
+                <div style={{ padding: '16px', textAlign: 'center', fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
                   All clear — no issues
                 </div>
               ) : (
@@ -572,7 +572,7 @@ export default function TestHubDashboardPage() {
                     </div>
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)' }}>{item.title}</div>
-                      <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-tertiary, #64748B)' }}>{item.meta}</div>
+                      <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{item.meta}</div>
                     </div>
                   </div>
                 ))
@@ -589,7 +589,7 @@ export default function TestHubDashboardPage() {
               </div>
                <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
                  {recentActivity.length === 0 ? (
-                   <div style={{ padding: '24px 16px', textAlign: 'center', fontSize: 13, color: 'var(--cp-text-tertiary, #64748B)' }}>
+                   <div style={{ padding: '24px 16px', textAlign: 'center', fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
                      No test executions recorded yet.
                    </div>
                  ) : (
@@ -614,7 +614,7 @@ export default function TestHubDashboardPage() {
                                <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>{a.case_key}</span>
                                {' '}<span style={{ fontWeight: 600 }}>{verb}</span> in {a.cycle_key}
                              </div>
-                             <div style={{ fontSize: 11, fontWeight: 400, color: 'var(--cp-text-tertiary, #64748B)' }}>
+                             <div style={{ fontSize: 11, fontWeight: 400, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
                                {a.executed_by_name} · {formatTimeAgo(a.executed_at)}
                              </div>
                            </div>
@@ -688,7 +688,7 @@ function KPICard({ label, value, accent, trend, subtitle, sparkData, valueColor,
         </span>
       </div>
       <Sparkline data={sparkData} color={accent} />
-      <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-tertiary, #64748B)', marginTop: 4 }}>{subtitle}</div>
+      <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginTop: 4 }}>{subtitle}</div>
     </div>
   );
 }
@@ -704,7 +704,7 @@ function Card({ title, badge, badgeDanger, badgeColor, onViewAll, children, styl
 }) {
   const { isDark } = useTheme();
   const bg = badgeDanger ? ('var(--cp-danger-light, #FEF2F2)') : ('var(--cp-bg-sunken, #F1F5F9)');
-  const color = badgeDanger ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : badgeColor || ('var(--cp-text-tertiary, #64748B)');
+  const color = badgeDanger ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : badgeColor || ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))');
   return (
     <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0, ...style }}>
       <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}`, flexShrink: 0 }}>
@@ -734,7 +734,7 @@ function EmptyMini({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 0', gap: 6 }}>
       {icon}
-      <span style={{ fontSize: 13, color: 'var(--cp-text-tertiary, #64748B)' }}>{text}</span>
+      <span style={{ fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{text}</span>
     </div>
   );
 }

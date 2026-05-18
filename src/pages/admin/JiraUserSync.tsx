@@ -265,7 +265,7 @@ const JiraUserSync: React.FC = () => {
                 Jira User Sync
               </h1>
               <p className="jira-text-secondary"
-                style={{ fontSize: '11px', margin: '2px 0 0', color: 'var(--cp-text-tertiary, #64748B)' }}>
+                style={{ fontSize: '11px', margin: '2px 0 0', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
                 Bidirectional identity bridge · Jira Cloud ↔ Catalyst · Live proxy auth · Webhooks active
               </p>
             </div>
@@ -314,7 +314,7 @@ const JiraUserSync: React.FC = () => {
               <div className="flex items-center gap-[5px] mb-[4px]">
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: card.dot, flexShrink: 0 }} />
                 <span className="jira-stat-label"
-                  style={{ fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.03em', fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-tertiary, #64748B)' }}>
+                  style={{ fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.03em', fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
                   {card.label}
                 </span>
               </div>
@@ -334,7 +334,7 @@ const JiraUserSync: React.FC = () => {
         <div className="jira-toolbar shrink-0 flex items-center gap-[7px] flex-wrap"
           style={{ padding: '9px 18px', background: 'var(--cp-bg-elevated, #FFFFFF)', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}>
           <div className="relative w-[220px]">
-            <span className="absolute left-2 top-1/2 -translate-y-1/2" style={{ display: 'inline-flex', color: 'var(--cp-text-tertiary, #64748B)' }}><SearchIcon label="" size="small" /></span>
+            <span className="absolute left-2 top-1/2 -translate-y-1/2" style={{ display: 'inline-flex', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}><SearchIcon label="" size="small" /></span>
             <input
               className="jira-input w-full"
               value={search}
@@ -437,7 +437,7 @@ const JiraUserSync: React.FC = () => {
                   <div className="jira-text-primary" style={{ fontSize: '13px', fontWeight: 600, marginBottom: '2px', color: 'var(--cp-text-primary, #0F172A)' }}>
                     Assign to Jira Space
                   </div>
-                  <div className="jira-text-secondary" style={{ fontSize: '11px', marginBottom: '8px', color: 'var(--cp-text-tertiary, #64748B)' }}>
+                  <div className="jira-text-secondary" style={{ fontSize: '11px', marginBottom: '8px', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
                     Select a project. Permission level applies to all {selected.size} selected users.
                   </div>
                   <input
@@ -453,7 +453,7 @@ const JiraUserSync: React.FC = () => {
                     }}
                   />
                   <div className="flex items-center gap-1 mb-2">
-                    <span style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', marginRight: '4px', color: 'var(--cp-text-tertiary, #64748B)' }}>Level:</span>
+                    <span style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', marginRight: '4px', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Level:</span>
                     {(['view', 'edit', 'full'] as const).map(lvl => (
                       <button
                         key={lvl}
@@ -466,7 +466,7 @@ const JiraUserSync: React.FC = () => {
                             ? lvl === 'full' ? 'var(--ds-background-success, #DCFCE7)' : lvl === 'edit' ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface-sunken, #F1F5F9)'
                             : 'transparent',
                           color: assignPermLevel === lvl
-                            ? lvl === 'full' ? '#006644' : lvl === 'edit' ? 'var(--ds-background-brand-bold-hovered, #1D4ED8)' : 'var(--ds-text-subtlest, #64748B)'
+                            ? lvl === 'full' ? '#006644' : lvl === 'edit' ? 'var(--ds-background-brand-bold-hovered, #1D4ED8)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'
                             : ('var(--cp-text-muted, #94A3B8)'),
                         }}
                       >
@@ -547,7 +547,7 @@ const JiraUserSync: React.FC = () => {
             </button>
             <button onClick={clearAll}
               className="ml-auto"
-              style={{ padding: '2px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--cp-text-tertiary, #64748B)' }}>
+              style={{ padding: '2px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
               Clear selection
             </button>
           </div>
@@ -730,7 +730,7 @@ const JiraUserSync: React.FC = () => {
                             </span>
                           );
                         })}
-                        {perms.length > 2 && <span style={{ fontSize: '10px', fontWeight: 500, whiteSpace: 'nowrap', color: 'var(--cp-text-tertiary, #64748B)' }}>+{perms.length - 2} more</span>}
+                        {perms.length > 2 && <span style={{ fontSize: '10px', fontWeight: 500, whiteSpace: 'nowrap', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>+{perms.length - 2} more</span>}
                         {perms.length === 0 && <span style={{ fontSize: '10px', color: 'var(--cp-text-muted, #94A3B8)' }}>—</span>}
                       </div>
                     </td>
@@ -742,16 +742,16 @@ const JiraUserSync: React.FC = () => {
                       ) : (
                         <div className="flex items-center gap-1">
                           <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--ds-text-success, var(--cp-success, #16A34A))', flexShrink: 0 }} />
-                          <span style={{ fontSize: '11px', fontFamily: 'var(--cp-font-mono)', whiteSpace: 'nowrap', color: 'var(--cp-text-tertiary, #64748B)' }}>{formatSyncDate(user.last_synced_at)}</span>
+                          <span style={{ fontSize: '11px', fontFamily: 'var(--cp-font-mono)', whiteSpace: 'nowrap', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{formatSyncDate(user.last_synced_at)}</span>
                         </div>
                       )}
                     </td>
 
                     {/* Last Jira Login */}
-                    <td style={{ padding: '8px 12px', fontSize: '11px', fontFamily: 'var(--cp-font-mono)', color: 'var(--cp-text-tertiary, #64748B)' }}>{relativeTime(user.last_jira_login_at)}</td>
+                    <td style={{ padding: '8px 12px', fontSize: '11px', fontFamily: 'var(--cp-font-mono)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{relativeTime(user.last_jira_login_at)}</td>
 
                     {/* Last in Catalyst */}
-                    <td style={{ padding: '8px 12px', fontSize: '11px', fontFamily: 'var(--cp-font-mono)', color: 'var(--cp-text-tertiary, #64748B)' }}>{relativeTime(user.last_catalyst_login_at)}</td>
+                    <td style={{ padding: '8px 12px', fontSize: '11px', fontFamily: 'var(--cp-font-mono)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{relativeTime(user.last_catalyst_login_at)}</td>
 
                     {/* Status lozenge */}
                     <td style={{ padding: '8px 12px' }}>
@@ -794,7 +794,7 @@ const JiraUserSync: React.FC = () => {
         {/* ══ Pagination ══ */}
         <div className="jira-pagination-bg shrink-0 flex items-center justify-between"
           style={{ padding: '9px 16px', borderTop: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`, background: 'var(--cp-bg-page, #F8FAFC)' }}>
-          <span style={{ fontSize: '11px', color: 'var(--cp-text-tertiary, #64748B)' }}>
+          <span style={{ fontSize: '11px', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
             {totalCount > 0 ? `Showing ${showStart}–${showEnd} of ${totalCount} users` : 'No results'}
           </span>
           <div className="flex gap-1 items-center">
@@ -824,7 +824,7 @@ const JiraUserSync: React.FC = () => {
                     width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
                     background: page === p ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-bg-elevated, #FFFFFF)'),
-                    color: page === p ? 'var(--ds-text-inverse, #FFFFFF)' : ('var(--cp-text-tertiary, #64748B)'),
+                    color: page === p ? 'var(--ds-text-inverse, #FFFFFF)' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'),
                     border: page === p ? 'none' : `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                   }}
                 >

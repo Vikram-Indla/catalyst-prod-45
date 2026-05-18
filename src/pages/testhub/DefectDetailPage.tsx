@@ -177,7 +177,7 @@ export default function DefectDetailPage() {
           {defect.source_test_run_id ? (
             <div style={{ background: 'var(--ds-surface-sunken, #F8FAFC)', border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6, padding: '12px 14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--ds-text-subtlest, #64748B)' }}>
+                <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
                   Execution Evidence
                 </span>
                 <span style={{ fontSize: 10, background: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', padding: '1px 5px', borderRadius: 3, fontWeight: 600 }}>
@@ -191,7 +191,7 @@ export default function DefectDetailPage() {
           ) : defect.jira_source ? (
             <div style={{ background: 'var(--ds-surface-sunken, #F8FAFC)', border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6, padding: '12px 14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--ds-text-subtlest, #64748B)' }}>
+                <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
                   Jira Description
                 </span>
                 <span style={{ fontSize: 10, background: '#F0FDF4', color: '#166534', padding: '1px 5px', borderRadius: 3, fontWeight: 600 }}>

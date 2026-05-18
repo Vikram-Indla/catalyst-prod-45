@@ -29,7 +29,7 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'Blocked':              { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: 'Blocked' },
   'Rejected':             { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: 'Rejected' },
 };
-const SCD = { dot: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', tx: 'var(--ds-text-subtle, #334155)', label: 'Unknown' };
+const SCD = { dot: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, #F1F5F9)', tx: 'var(--ds-text-subtle, #334155)', label: 'Unknown' };
 
 function resolveStatus(item: any) {
   if (item.status_name && SC[item.status_name]) return SC[item.status_name];
@@ -42,12 +42,12 @@ function resolveStatus(item: any) {
   return SCD;
 }
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, #64748B)', LND: 'var(--cp-purple-60, #7C3AED)' };
-const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, #64748B)';
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, var(--cp-warning, #D97706))', FAC: 'var(--ds-text-success, var(--cp-success, #16A34A))', OPS: 'var(--cp-teal-60, #0D9488)', SUP: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', LND: 'var(--cp-purple-60, #7C3AED)' };
+const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
 const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-danger, #EF4444)';
 
 const PRI_DOT: Record<string, string> = {
-  critical: 'var(--ds-text-danger, #EF4444)', highest: 'var(--ds-text-danger, #EF4444)', high: 'var(--ds-text-warning, var(--cp-warning, #D97706))', medium: 'var(--ds-text-warning, var(--cp-warning, #D97706))', low: 'var(--ds-text-subtlest, #64748B)', lowest: 'var(--ds-text-subtlest, #94A3B8)',
+  critical: 'var(--ds-text-danger, #EF4444)', highest: 'var(--ds-text-danger, #EF4444)', high: 'var(--ds-text-warning, var(--cp-warning, #D97706))', medium: 'var(--ds-text-warning, var(--cp-warning, #D97706))', low: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', lowest: 'var(--ds-text-subtlest, #94A3B8)',
 };
 
 const COLS = [
@@ -104,7 +104,7 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
             ) : col.items.map(item => {
               const s = resolveStatus(item);
               const projColor = pColor(item.project_key, item.project_color);
-              const priDot = PRI_DOT[(item.priority || '').toLowerCase()] || 'var(--ds-text-subtlest, #64748B)';
+              const priDot = PRI_DOT[(item.priority || '').toLowerCase()] || 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
               return (
                 <div key={item.id} onClick={() => onItemClick(item)} style={{
                   background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: '8px',

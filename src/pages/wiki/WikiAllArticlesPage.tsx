@@ -80,7 +80,7 @@ export default function WikiAllArticlesPage() {
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)' }} />
-        <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)', fontWeight: 600 }}>All Articles</span>
+        <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 600 }}>All Articles</span>
       </nav>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
@@ -134,7 +134,7 @@ export default function WikiAllArticlesPage() {
           }}>Apply to {selected.size}</button>
           <button onClick={() => { setBulkAction(null); setBulkValue(''); }} style={{
             fontSize: 11, padding: '4px 8px', borderRadius: 4, border: 'none',
-            background: 'transparent', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #64748B)', cursor: 'pointer',
+            background: 'transparent', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', cursor: 'pointer',
           }}><X size={14} /></button>
         </div>
       )}
@@ -145,7 +145,7 @@ export default function WikiAllArticlesPage() {
           <div onClick={() => setShowConfirm(false)} style={{ position: 'absolute', inset: 0, background: isDark ? 'rgba(0,0,0,0.5)' : 'rgba(15,23,42,0.3)' }} />
           <div style={{ position: 'relative', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', borderRadius: 12, padding: 24, width: 400, boxShadow: '0 12px 40px rgba(0,0,0,0.15)' }}>
             <h3 style={{ fontFamily: F.sora, fontSize: 16, fontWeight: 700, marginBottom: 8 }}>Confirm Bulk Action</h3>
-            <p style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)', marginBottom: 20 }}>
+            <p style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginBottom: 20 }}>
               This will {bulkAction === 'archive' ? 'archive' : `update ${bulkAction} for`} <strong>{selected.size} articles</strong>. This cannot be undone easily.
             </p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
@@ -168,7 +168,7 @@ export default function WikiAllArticlesPage() {
           display: 'grid', gridTemplateColumns: '32px 3% 1fr 80px 100px 80px 80px 100px 50px',
           background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F1F5F9)', padding: '8px 12px', height: 50, alignItems: 'center',
           fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
-          color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #64748B)', letterSpacing: '0.05em', borderBottom: `0.75px solid ${borderColor}`,
+          color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', letterSpacing: '0.05em', borderBottom: `0.75px solid ${borderColor}`,
         }}>
           <span>
             <input type="checkbox" checked={articles?.length ? selected.size === articles.length : false} onChange={toggleAll}
@@ -176,15 +176,15 @@ export default function WikiAllArticlesPage() {
           </span>
           <span></span><span>Article</span><span>Domain</span><span>Verification</span><span>Conf.</span><span>Views</span><span>Updated</span><span>Ver.</span>
         </div>
-        {isLoading ? <div style={{ padding: 32, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #64748B)', fontSize: 12 }}>Loading...</div> :
-          (articles ?? []).length === 0 ? <div style={{ padding: 32, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #64748B)', fontSize: 12 }}>No articles found.</div> :
+        {isLoading ? <div style={{ padding: 32, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontSize: 12 }}>Loading...</div> :
+          (articles ?? []).length === 0 ? <div style={{ padding: 32, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontSize: 12 }}>No articles found.</div> :
           (articles ?? []).map((a: any) => {
             const conf = Math.round((a.ai_confidence ?? 0) * 100);
             const confColor = conf >= 90 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : conf >= 70 ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, var(--cp-warning, #D97706))';
             const verStatus = a.verification_status || 'unverified';
             const verBadge = verStatus === 'verified' ? { bg: 'rgba(22,163,74,0.08)', color: 'var(--ds-text-success, var(--cp-success, #16A34A))', label: 'Verified' }
               : verStatus === 'needs_review' ? { bg: 'rgba(217,119,6,0.08)', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', label: 'Review' }
-              : { bg: 'rgba(100,116,139,0.08)', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #64748B)', label: 'Unverified' };
+              : { bg: 'rgba(100,116,139,0.08)', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', label: 'Unverified' };
             const isSelected = selected.has(a.id);
             return (
               <div key={a.id} style={{
@@ -203,12 +203,12 @@ export default function WikiAllArticlesPage() {
                   {a.format === 'pdf' ? <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 4, background: isDark ? 'rgba(220,38,38,0.12)' : '#FEE2E2', color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>PDF</span> : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)' }} />}
                 </span>
                 <span onClick={() => navigate(`/wiki/${a.slug}`)} style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
-                <span style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)' }}>{a.domain_code}</span>
+                <span style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{a.domain_code}</span>
                 <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: verBadge.bg, color: verBadge.color, width: 'fit-content' }}>{verBadge.label}</span>
                 <span style={{ fontFamily: F.mono, fontSize: 11, fontWeight: 500, color: confColor }}>{conf}%</span>
-                <span style={{ fontFamily: F.mono, fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)' }}>{a.view_count ?? 0}</span>
-                <span style={{ fontFamily: F.mono, fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)' }}>{new Date(a.updated_at).toLocaleDateString()}</span>
-                <span style={{ fontFamily: F.mono, fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)' }}>v{a.version ?? 1}</span>
+                <span style={{ fontFamily: F.mono, fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{a.view_count ?? 0}</span>
+                <span style={{ fontFamily: F.mono, fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{new Date(a.updated_at).toLocaleDateString()}</span>
+                <span style={{ fontFamily: F.mono, fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>v{a.version ?? 1}</span>
               </div>
             );
           })}

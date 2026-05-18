@@ -106,7 +106,7 @@ export default function AllReleasesPage() {
       <div className="flex items-center justify-between mb-5">
         <div>
           <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>All Releases</h1>
-          <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-tertiary, #64748B)' }}>Manage and track all releases</p>
+          <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Manage and track all releases</p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={handleImport} disabled={importing}
@@ -222,7 +222,7 @@ export default function AllReleasesPage() {
                     )}
                   </div>
 
-                  <div className="flex items-center gap-3 text-[12px] mb-3" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>
+                  <div className="flex items-center gap-3 text-[12px] mb-3" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
                     <span>{r.target_date ? new Date(r.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No date'}</span>
                     <span>·</span>
                     <span>{progress.total} {progress.total === 1 ? 'change' : 'changes'}</span>
@@ -254,7 +254,7 @@ export default function AllReleasesPage() {
             <thead>
               <tr style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }}>
                 {['RELEASE', 'SOURCE', 'STATUS', 'TARGET DATE', 'CHANGES', 'PROGRESS'].map(h => (
-                  <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>{h}</th>
+                  <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -296,7 +296,7 @@ export default function AllReleasesPage() {
                           <div className="w-16 h-1 rounded-full overflow-hidden" style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }}>
                             <div className="h-full rounded-full" style={{ width: progress.pct + '%', background: accentColor(r.status) }} />
                           </div>
-                          <span className="text-[11px]" style={{ fontFamily: RH.fontMono, color: 'var(--cp-text-tertiary, #64748B)' }}>{progress.pct}%</span>
+                          <span className="text-[11px]" style={{ fontFamily: RH.fontMono, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{progress.pct}%</span>
                         </div>
                       )}
                     </td>

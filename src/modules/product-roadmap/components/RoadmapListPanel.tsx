@@ -36,12 +36,12 @@ export function RoadmapListPanel({
       style={{ height: 44, borderBottom: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', background: 'var(--ds-surface-sunken, #FAFBFC)' }}
     >
       <div className="flex items-center gap-2">
-        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, #64748B)' }}>
+        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
           Business Requests
         </span>
         <span
           style={{
-            fontSize: 10, fontWeight: 600, color: 'var(--ds-text-subtlest, #64748B)', background: 'var(--ds-surface-sunken, #F1F5F9)',
+            fontSize: 10, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', background: 'var(--ds-surface-sunken, #F1F5F9)',
             borderRadius: 12, padding: '2px 7px', fontFamily: 'var(--cp-font-mono)',
           }}
         >

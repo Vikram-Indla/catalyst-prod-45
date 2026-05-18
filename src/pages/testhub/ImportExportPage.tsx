@@ -57,11 +57,11 @@ const TYPE_CONFIG: Record<string, { label: string; icon: any; color: string }> =
   shared_steps: { label: 'Shared Steps', icon: Layers, color: 'var(--cp-purple-60, #7C3AED)' },
   tags: { label: 'Tags', icon: Tags, color: '#EC4899' },
   cycles: { label: 'Test Cycles', icon: RefreshCw, color: '#0891B2' },
-  full_backup: { label: 'Full Backup', icon: Database, color: 'var(--ds-text-subtlest, #64748B)' },
+  full_backup: { label: 'Full Backup', icon: Database, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  pending: { label: 'Pending', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: Clock },
+  pending: { label: 'Pending', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: Clock },
   validating: { label: 'Validating', color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', icon: AlertTriangle },
   processing: { label: 'Processing', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', icon: RefreshCw },
   completed: { label: 'Completed', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
@@ -146,7 +146,7 @@ export default function ImportExportPage() {
           <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <FileUp size={18} style={{ color: '#14B8A6' }} />
-              <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase' }}>Total Imports</span>
+              <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase' }}>Total Imports</span>
             </div>
             <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>{stats.total_imports}</p>
             <p style={{ fontSize: 12, color: 'var(--quality-high, #059669)', margin: '4px 0 0' }}>
@@ -156,7 +156,7 @@ export default function ImportExportPage() {
           <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <FileDown size={18} style={{ color: '#14B8A6' }} />
-              <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase' }}>Total Exports</span>
+              <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase' }}>Total Exports</span>
             </div>
             <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>{stats.total_exports}</p>
             <p style={{ fontSize: 12, color: 'var(--quality-high, #059669)', margin: '4px 0 0' }}>
@@ -190,7 +190,7 @@ export default function ImportExportPage() {
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '10px 20px', border: 'none', borderRadius: 8,
             backgroundColor: activeTab === 'import' ? ('var(--cp-bg-elevated, #FFFFFF)') : 'transparent',
-            color: activeTab === 'import' ? ('var(--cp-text-primary, #0F172A)') : ('var(--cp-text-tertiary, #64748B)'),
+            color: activeTab === 'import' ? ('var(--cp-text-primary, #0F172A)') : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'),
             fontSize: 14, fontWeight: 500, cursor: 'pointer',
             boxShadow: activeTab === 'import' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
           }}
@@ -203,7 +203,7 @@ export default function ImportExportPage() {
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '10px 20px', border: 'none', borderRadius: 8,
             backgroundColor: activeTab === 'export' ? ('var(--cp-bg-elevated, #FFFFFF)') : 'transparent',
-            color: activeTab === 'export' ? ('var(--cp-text-primary, #0F172A)') : ('var(--cp-text-tertiary, #64748B)'),
+            color: activeTab === 'export' ? ('var(--cp-text-primary, #0F172A)') : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'),
             fontSize: 14, fontWeight: 500, cursor: 'pointer',
             boxShadow: activeTab === 'export' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
           }}
@@ -221,7 +221,7 @@ export default function ImportExportPage() {
         importJobs.length === 0 ? (
           <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
             <Upload size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
-            <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, #64748B)', margin: 0 }}>No import jobs yet</p>
+            <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0 }}>No import jobs yet</p>
             <p style={{ fontSize: 14, color: 'var(--cp-text-muted, #94A3B8)', margin: '8px 0 0' }}>
               Click "Import" to start importing data
             </p>
@@ -260,7 +260,7 @@ export default function ImportExportPage() {
                         </span>
                       </div>
                       <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>{job.name}</p>
-                      <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', margin: '4px 0 0' }}>
+                      <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '4px 0 0' }}>
                         {type.label} • {job.source_format.toUpperCase()} • {formatDate(job.created_at)}
                       </p>
                     </div>
@@ -298,7 +298,7 @@ export default function ImportExportPage() {
         exportJobs.length === 0 ? (
           <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
             <Download size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
-            <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, #64748B)', margin: 0 }}>No export jobs yet</p>
+            <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0 }}>No export jobs yet</p>
             <p style={{ fontSize: 14, color: 'var(--cp-text-muted, #94A3B8)', margin: '8px 0 0' }}>
               Click "Export" to export your data
             </p>
@@ -337,7 +337,7 @@ export default function ImportExportPage() {
                         </span>
                       </div>
                       <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>{job.name}</p>
-                      <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', margin: '4px 0 0' }}>
+                      <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '4px 0 0' }}>
                         {type.label} • {job.export_format.toUpperCase()} • {job.total_items} items • {formatDate(job.created_at)}
                       </p>
                     </div>

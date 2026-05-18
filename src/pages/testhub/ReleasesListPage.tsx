@@ -14,8 +14,8 @@ import { CreateReleaseModal } from '@/components/testhub/releases/CreateReleaseM
 import { format } from 'date-fns';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  planning: { label: 'Planning', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: Clock },
-  planned: { label: 'Planned', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: Clock },
+  planning: { label: 'Planning', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: Clock },
+  planned: { label: 'Planned', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: Clock },
   development: { label: 'Development', color: '#8B5CF6', bg: '#F5F3FF', icon: Settings2 },
   testing: { label: 'Testing', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', icon: Beaker },
   uat: { label: 'UAT', color: '#EA580C', bg: '#FFF7ED', icon: Monitor },
@@ -61,7 +61,7 @@ export default function ReleasesListPage() {
             <Package style={{ width: 24, height: 24, color: 'var(--ds-text-brand, #2563EB)' }} />
             Releases
           </h1>
-          <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, #64748B)', margin: '4px 0 0' }}>
+          <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', margin: '4px 0 0' }}>
             Manage software releases and track quality metrics
           </p>
         </div>
@@ -132,7 +132,7 @@ export default function ReleasesListPage() {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 36, height: 50, border: 'none', cursor: 'pointer',
               backgroundColor: viewMode === 'table' ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface, #fff)',
-              color: viewMode === 'table' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #64748B)',
+              color: viewMode === 'table' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
             }}
           >
             <List style={{ width: 16, height: 16 }} />
@@ -143,7 +143,7 @@ export default function ReleasesListPage() {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 36, height: 50, border: 'none', cursor: 'pointer',
               backgroundColor: viewMode === 'card' ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface, #fff)',
-              color: viewMode === 'card' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #64748B)',
+              color: viewMode === 'card' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
               borderLeft: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))',
             }}
           >
@@ -215,12 +215,12 @@ function TableView({ releases, navigate }: { releases: Release[]; navigate: any 
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = '')}
               >
                 <td style={tdStyle}>
-                  <span style={{ fontFamily: 'monospace', fontSize: 12, color: 'var(--ds-text-subtlest, #64748B)', fontWeight: 600 }}>{r.version}</span>
+                  <span style={{ fontFamily: 'monospace', fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 600 }}>{r.version}</span>
                 </td>
                 <td style={tdStyle}>
                   <div style={{ fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{r.name}</div>
                   {r.vehicle && (
-                    <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #64748B)' }}>{r.vehicle.name}</span>
+                    <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{r.vehicle.name}</span>
                   )}
                 </td>
                 <td style={tdStyle}>
@@ -250,7 +250,7 @@ function TableView({ releases, navigate }: { releases: Release[]; navigate: any 
                   </span>
                 </td>
                 <td style={tdStyle}>
-                  <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #64748B)' }}>
+                  <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
                     {r.target_date ? format(new Date(r.target_date), 'MMM dd, yyyy') : '—'}
                   </span>
                 </td>
@@ -301,7 +301,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
                 {sc.label}
               </span>
               {r.vehicle && (
-                <span style={{ padding: '2px 8px', borderRadius: 6, backgroundColor: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, #64748B)', fontSize: 11, fontWeight: 500 }}>
+                <span style={{ padding: '2px 8px', borderRadius: 6, backgroundColor: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontSize: 11, fontWeight: 500 }}>
                   {r.vehicle.name}
                 </span>
               )}
@@ -310,7 +310,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
             {/* Progress bar */}
             <div style={{ marginBottom: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
-                <span style={{ color: 'var(--ds-text-subtlest, #64748B)' }}>Test Progress</span>
+                <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>Test Progress</span>
                 <span style={{ fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{execPct}%</span>
               </div>
               <div style={{ height: 6, backgroundColor: 'var(--ds-surface-sunken, #F1F5F9)', borderRadius: 3 }}>
@@ -319,7 +319,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
             </div>
 
             {/* Stats row */}
-            <div style={{ display: 'flex', gap: 16, fontSize: 12, color: 'var(--ds-text-subtlest, #64748B)' }}>
+            <div style={{ display: 'flex', gap: 16, fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
               <span><strong style={{ color: 'var(--quality-high, #059669)' }}>{r.test_cases_passed}</strong> passed</span>
               <span><strong style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{r.test_cases_failed || 0}</strong> failed</span>
               <span><strong style={{ color: 'var(--ds-text-warning, var(--cp-warning, #D97706))' }}>{r.defects_open}</strong> defects</span>
@@ -339,7 +339,7 @@ function CardView({ releases, navigate, getExecPercent, getPassRate }: { release
 
 const thStyle: React.CSSProperties = {
   padding: '10px 14px', textAlign: 'left', fontSize: 11, fontWeight: 650,
-  color: 'var(--ds-text-subtlest, #64748B)', textTransform: 'uppercase', letterSpacing: '0.04em',
+  color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '0.04em',
 };
 
 const tdStyle: React.CSSProperties = {

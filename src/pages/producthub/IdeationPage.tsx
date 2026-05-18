@@ -492,7 +492,7 @@ function PriorityBadge({ priority }: { priority: string }) {
 }
 
 function ImpactCell({ score }: { score: number }) {
-  const textColor = score >= 4 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : score >= 3 ? 'var(--ds-text-brand, #2563EB)' : score >= 2 ? 'var(--ds-text-subtlest, #64748B)' : 'var(--ds-text-subtlest, #94A3B8)';
+  const textColor = score >= 4 ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : score >= 3 ? 'var(--ds-text-brand, #2563EB)' : score >= 2 ? 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' : 'var(--ds-text-subtlest, #94A3B8)';
   return (
     <span style={{
       fontFamily: 'var(--cp-font-mono)', fontSize: '13px', fontWeight: 500,

@@ -129,7 +129,7 @@ export function PromoteToRoadmapDialog({ open, onClose, request }: Props) {
             <div className="p-3 px-5 border-t flex justify-end gap-2" style={{ borderColor: 'var(--divider)' }}>
               <button
                 onClick={onClose}
-                className="px-4 py-1.5 text-[12.5px] font-medium rounded-md text-[var(--ds-text-subtlest,#64748B)] hover:bg-[var(--ds-surface-sunken,#F1F5F9)] transition-colors"
+                className="px-4 py-1.5 text-[12.5px] font-medium rounded-md text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] hover:bg-[var(--ds-surface-sunken,#F1F5F9)] transition-colors"
               >
                 Cancel
               </button>

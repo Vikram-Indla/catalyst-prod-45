@@ -529,7 +529,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
             <button
               onClick={onClose}
               style={{
-                background: 'transparent', color: 'var(--cp-text-tertiary, #64748B)',
+                background: 'transparent', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
                 border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: '8px',
                 padding: '10px 20px', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
               }}

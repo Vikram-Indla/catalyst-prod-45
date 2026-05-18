@@ -144,7 +144,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                       style={{
                         fontSize: 10,
                         fontWeight: 600,
-                        color: 'var(--ds-text-subtlest, #64748B)',
+                        color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
                         background: 'var(--ds-surface-sunken, #F1F5F9)',
                         borderRadius: 12,
                         padding: '2px 7px',
@@ -186,7 +186,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
                         ) : (
                           <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full" style={{ background: 'var(--ds-text-brand, #2563EB)' }} />
-                            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #64748B)' }}>Outside range</span>
+                            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>Outside range</span>
                           </div>
                         )}
                       </div>

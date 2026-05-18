@@ -118,11 +118,11 @@ export function KBInputArea({
             if (!isListening) e.currentTarget.style.color = 'var(--cp-primary-60, #2563EB)';
           }}
           onMouseLeave={(e) => {
-            if (!isListening) e.currentTarget.style.color = 'var(--cp-text-tertiary, #64748B)';
+            if (!isListening) e.currentTarget.style.color = 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))';
           }}
           title={isListening ? 'Stop listening' : 'Voice input'}
         >
-          <Mic size={18} color={isListening ? 'var(--cp-text-inverse, #FFFFFF)' : 'var(--cp-text-tertiary, #64748B)'} />
+          <Mic size={18} color={isListening ? 'var(--cp-text-inverse, #FFFFFF)' : 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'} />
         </button>
 
         {/* Text input */}
@@ -198,7 +198,7 @@ export function KBInputArea({
           appearance: none !important;
         }
         .kb-input-field::placeholder {
-          color: var(--cp-text-tertiary, #64748B);
+          color: var(--cp-text-tertiary, var(--cp-ink-3, #64748B));
         }
         @keyframes kb-mic-pulse {
           0% { box-shadow: 0 0 0 0 rgba(220,38,38,0.4); }

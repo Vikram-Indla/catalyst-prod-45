@@ -71,7 +71,7 @@ export function StatusMapping() {
   }
 
   if (isLoading) {
-    return <div style={{ padding: 40, color: 'var(--ds-text-subtlest, #64748B)', fontFamily: 'var(--cp-font-body)' }}>Loading...</div>
+    return <div style={{ padding: 40, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-body)' }}>Loading...</div>
   }
 
   return (
@@ -80,7 +80,7 @@ export function StatusMapping() {
         <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
           Status Mapping
         </h1>
-        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)', marginTop: 4 }}>
+        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginTop: 4 }}>
           Map each Jira workflow status to a Catalyst category. Covers Story, Task, Sub-task, Production Incident, and QA Bug workflows.
         </p>
       </div>
@@ -94,7 +94,7 @@ export function StatusMapping() {
             Category Mapping
           </h2>
           <span style={{
-            fontSize: 10, background: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, #64748B)', padding: '2px 8px',
+            fontSize: 10, background: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', padding: '2px 8px',
             borderRadius: 4, fontWeight: 500,
           }}>{totalCount} statuses</span>
         </div>
@@ -192,7 +192,7 @@ export function StatusMapping() {
                   }}>Add</button>
                   <button onClick={() => { setAddingTo(null); setNewStatus('') }} style={{
                     padding: '5px 12px', borderRadius: 4, fontSize: 11,
-                    background: 'var(--bg-1, #F8FAFC)', color: 'var(--ds-text-subtlest, #64748B)', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', cursor: 'pointer',
+                    background: 'var(--bg-1, #F8FAFC)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', cursor: 'pointer',
                   }}>Cancel</button>
                 </div>
               )}

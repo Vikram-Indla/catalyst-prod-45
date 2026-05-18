@@ -69,7 +69,7 @@ export function ChgDrawer({ change: c, onClose }: Props) {
             <h2 className="text-[18px] font-extrabold mb-3" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>{c.title}</h2>
             <div className="flex items-center gap-2 mb-4">
               <StatusLozenge status={c.status} />
-              {c.category && <span className="text-[12px] text-[var(--ds-text-subtlest,#64748B)]">{c.category}</span>}
+              {c.category && <span className="text-[12px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]">{c.category}</span>}
               {c.deployment_date && <span className="text-[12px] text-[var(--fg-3)]" style={{ fontFamily: RH.fontMono }}>Planned: {new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
               {nextStatus && (
                 <button onClick={() => handleAdvanceStatus(nextStatus)}
@@ -108,7 +108,7 @@ export function ChgDrawer({ change: c, onClose }: Props) {
           <div className="border-b border-[rgba(15,23,42,0.12)] px-6 flex gap-0">
             {TABS.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
-                className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[var(--ds-text-brand,#2563EB)] text-[var(--ds-text-brand,#2563EB)]' : 'border-transparent text-[var(--ds-text-subtlest,#64748B)] hover:text-[var(--ds-text-subtle,#475569)]'}`}>
+                className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[var(--ds-text-brand,#2563EB)] text-[var(--ds-text-brand,#2563EB)]' : 'border-transparent text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] hover:text-[var(--ds-text-subtle,#475569)]'}`}>
                 {tab}
                 {tab === 'Work Items' && workItems.length > 0 && <span className="ml-1 text-[10px] font-bold bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtle,#475569)] px-1 rounded">{workItems.length}</span>}
               </button>

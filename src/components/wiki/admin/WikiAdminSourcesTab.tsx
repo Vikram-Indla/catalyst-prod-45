@@ -19,7 +19,7 @@ export function WikiAdminSourcesTab() {
         {(['documents', 'jira'] as const).map(t => (
           <button key={t} onClick={() => setSubTab(t)} style={{
             padding: '8px 16px', fontSize: 12, fontFamily: 'var(--cp-font-body)', fontWeight: subTab === t ? 600 : 450,
-            color: subTab === t ? 'var(--cp-primary-60, #2563EB)' : 'var(--cp-text-tertiary, #64748B)',
+            color: subTab === t ? 'var(--cp-primary-60, #2563EB)' : 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
             background: 'transparent', border: 'none', cursor: 'pointer',
             borderBottom: subTab === t ? '2px solid var(--cp-primary-60, #2563EB)' : '2px solid transparent',
             textTransform: 'capitalize', outline: 'none',
@@ -57,7 +57,7 @@ function DocumentsTable() {
   if (isLoading) return <div>{Array.from({ length: 5 }).map((_, i) => <SkeletonBlock key={i} height={36} style={{ marginBottom: 4 }} />)}</div>;
 
   if (!docs || docs.length === 0) {
-    return <EmptyState icon={<FileText style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, #64748B)' }} />} message="No documents uploaded yet" sub="Use the Upload Document button to add documents." />;
+    return <EmptyState icon={<FileText style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }} />} message="No documents uploaded yet" sub="Use the Upload Document button to add documents." />;
   }
 
   return (
@@ -83,7 +83,7 @@ function DocumentsTable() {
           <thead>
             <tr style={{ background: 'var(--cp-bg-sunken, #F8FAFC)' }}>
               {['Domain', 'Filename', 'Type', 'Chunks', 'Status', 'Uploaded', 'Actions'].map(h => (
-                <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, #64748B)' }}>{h}</th>
+                <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -128,7 +128,7 @@ function JiraSourcesTable() {
   if (isLoading) return <div>{Array.from({ length: 3 }).map((_, i) => <SkeletonBlock key={i} height={36} style={{ marginBottom: 4 }} />)}</div>;
 
   if (!sources || sources.length === 0) {
-    return <EmptyState icon={<Database style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, #64748B)' }} />} message="No Jira sources configured" sub="Configure Jira sync sources in the KB admin settings." />;
+    return <EmptyState icon={<Database style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }} />} message="No Jira sources configured" sub="Configure Jira sync sources in the KB admin settings." />;
   }
 
   return (
@@ -137,7 +137,7 @@ function JiraSourcesTable() {
         <thead>
           <tr style={{ background: 'var(--cp-bg-sunken, #F8FAFC)' }}>
             {['Source Table', 'Display Name', 'Enabled', 'Last Synced'].map(h => (
-              <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, #64748B)' }}>{h}</th>
+              <th key={h} style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{h}</th>
             ))}
           </tr>
         </thead>
@@ -164,7 +164,7 @@ function SmBtn({ icon, title, onClick }: { icon: React.ReactElement; title: stri
     <button onClick={onClick} title={title} aria-label={title} style={{
       padding: 4, borderRadius: 4, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
       background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center',
-      color: 'var(--cp-text-tertiary, #64748B)', outline: 'none',
+      color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', outline: 'none',
     }}
       onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
       onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}

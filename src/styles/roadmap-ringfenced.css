@@ -139,7 +139,7 @@
   
   --roadmap-type-project:           var(--ds-text-subtlest, #94A3B8);
   --roadmap-type-project-bg:        rgba(71, 85, 105, 0.15);
-  --roadmap-type-project-bar:       linear-gradient(135deg, var(--ds-text-subtlest, #94A3B8), var(--ds-text-subtlest, #64748B));
+  --roadmap-type-project-bar:       linear-gradient(135deg, var(--ds-text-subtlest, #94A3B8), var(--ds-text-subtlest, var(--cp-ink-3, #64748B)));
   
   --roadmap-type-entity:            var(--cp-warning-40);
   --roadmap-type-entity-bg:         rgba(217, 119, 6, 0.15);

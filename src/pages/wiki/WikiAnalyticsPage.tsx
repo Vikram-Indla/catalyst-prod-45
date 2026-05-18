@@ -9,7 +9,7 @@ import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, Cart
 
 const DOMAIN_COLORS: Record<string, string> = {
   D1: 'var(--ds-text-brand, #2563EB)', D2: 'var(--cp-teal-60, #0D9488)', D3: 'var(--ds-text-warning, var(--cp-warning, #D97706))', D4: 'var(--ds-text-success, var(--cp-success, #16A34A))',
-  D5: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', D6: '#0891B2', D7: 'var(--ds-text-subtlest, #64748B)', D8: '#4F46E5', D9: '#CA8A04',
+  D5: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', D6: '#0891B2', D7: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', D8: '#4F46E5', D9: '#CA8A04',
 };
 
 export default function WikiAnalyticsPage() {
@@ -103,7 +103,7 @@ export default function WikiAnalyticsPage() {
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)' }} />
-        <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)', fontWeight: 600 }}>Analytics</span>
+        <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontWeight: 600 }}>Analytics</span>
       </nav>
 
       <h1 style={{ fontFamily: F.sora, fontSize: 18, fontWeight: 700, marginBottom: 24 }}>WikiHub Analytics</h1>
@@ -128,12 +128,12 @@ export default function WikiAnalyticsPage() {
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={domainDistribution ?? []}>
               <CartesianGrid strokeDasharray="3 3" stroke={border} />
-              <XAxis dataKey="domain" tick={{ fontSize: 10, fill: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)' }} />
-              <YAxis tick={{ fontSize: 10, fill: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)' }} />
+              <XAxis dataKey="domain" tick={{ fontSize: 10, fill: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }} />
+              <YAxis tick={{ fontSize: 10, fill: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }} />
               <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, border: `1px solid ${isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--ds-border, var(--cp-border, #E2E8F0))'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                 {(domainDistribution ?? []).map((d: any) => (
-                  <Cell key={d.domain} fill={DOMAIN_COLORS[d.domain] || 'var(--ds-text-subtlest, #64748B)'} />
+                  <Cell key={d.domain} fill={DOMAIN_COLORS[d.domain] || 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'} />
                 ))}
               </Bar>
             </BarChart>
@@ -167,7 +167,7 @@ export default function WikiAnalyticsPage() {
               display: 'grid', gridTemplateColumns: '1fr 60px 60px 60px',
               background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F1F5F9)', padding: '0 14px', height: 32, alignItems: 'center',
               fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
-              color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #64748B)', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
+              color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
             }}>
               <span>Article</span><span>Views</span><span>Help.</span><span>Conf.</span>
             </div>
@@ -183,7 +183,7 @@ export default function WikiAnalyticsPage() {
                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                   <span style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
                   <span style={{ fontFamily: F.mono, fontSize: 11 }}>{a.view_count ?? 0}</span>
-                  <span style={{ fontFamily: F.mono, fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)' }}>{Math.round(a.helpfulness_score ?? 0)}%</span>
+                  <span style={{ fontFamily: F.mono, fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{Math.round(a.helpfulness_score ?? 0)}%</span>
                   <span style={{ fontFamily: F.mono, fontSize: 11, color: confColor }}>{conf}%</span>
                 </div>
               );
@@ -199,7 +199,7 @@ export default function WikiAnalyticsPage() {
               display: 'grid', gridTemplateColumns: '1fr 60px 60px',
               background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F1F5F9)', padding: '0 14px', height: 32, alignItems: 'center',
               fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
-              color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #64748B)', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
+              color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
             }}>
               <span>Article</span><span>Help.</span><span>Votes</span>
             </div>
@@ -214,7 +214,7 @@ export default function WikiAnalyticsPage() {
                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <span style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</span>
                 <span style={{ fontFamily: F.mono, fontSize: 11, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>{Math.round(a.helpfulness_score ?? 0)}%</span>
-                <span style={{ fontFamily: F.mono, fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)' }}>{a.helpfulness_votes}</span>
+                <span style={{ fontFamily: F.mono, fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{a.helpfulness_votes}</span>
               </div>
             ))}
           </div>

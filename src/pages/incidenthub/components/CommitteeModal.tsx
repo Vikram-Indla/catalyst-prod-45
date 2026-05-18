@@ -44,7 +44,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
               style={{
                 fontFamily: 'var(--cp-font-body)', fontSize: 12,
                 fontWeight: activeTab === i ? 650 : 400,
-                color: activeTab === i ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #64748B)',
+                color: activeTab === i ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
                 borderBottom: activeTab === i ? '2px solid #2563EB' : '2px solid transparent',
               }}
             >
@@ -79,7 +79,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                           <span className="px-1.5" style={{ fontSize: 9, fontWeight: 700, backgroundColor: 'var(--cp-danger-light, #FEE2E2)', color: 'var(--cp-danger-text, #991B1B)', borderRadius: 3 }}>VETO</span>
                         )}
                       </div>
-                      <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--ds-text-subtlest, #64748B)' }}>{m.role || 'Member'}</span>
+                      <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{m.role || 'Member'}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       {['approved', 'rejected', 'pending'].map(v => (

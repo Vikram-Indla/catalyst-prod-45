@@ -49,7 +49,7 @@ export default function CommitteeQueuePage() {
             {['KEY', 'INCIDENT', 'SEV', 'STATUS', 'AGE', 'APPROVAL', 'TYPE', 'ACTIONS'].map(h => (
               <div key={h} className="px-3" style={{
                 fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 700,
-                textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, #64748B)',
+                textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
               }}>{h}</div>
             ))}
           </div>
@@ -92,7 +92,7 @@ export default function CommitteeQueuePage() {
                 </div>
                 <div className="px-3"><SeverityChip severity={item.severity || 'SEV4'} /></div>
                 <div className="px-3"><StatusLozenge status={item.committee_status || 'pending'} /></div>
-                <div className="px-3" style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-tertiary, #64748B)' }}>
+                <div className="px-3" style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
                   {item.age_hours ? `${Math.round(item.age_hours)}h` : '\u2014'}
                 </div>
                 <div className="px-3 flex items-center gap-2">
@@ -105,7 +105,7 @@ export default function CommitteeQueuePage() {
                       transition: 'width 400ms ease',
                     }} />
                   </div>
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: 'var(--cp-text-tertiary, #64748B)', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', whiteSpace: 'nowrap' }}>
                     {approved}/{total}
                   </span>
                 </div>

@@ -17,7 +17,7 @@ export default function IncidentInsightsPage() {
   const pageBg = 'var(--cp-bg-elevated, #FFFFFF)';
   const surfaceBg = 'var(--cp-bg-elevated, #FFFFFF)';
   const textPrimary = 'var(--cp-text-primary, #0F172A)';
-  const textSecondary = 'var(--cp-text-tertiary, #64748B)';
+  const textSecondary = 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))';
   const textBody = 'var(--cp-text-secondary, #334155)';
   const borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';
 

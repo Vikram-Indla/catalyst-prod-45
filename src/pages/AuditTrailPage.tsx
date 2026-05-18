@@ -58,7 +58,7 @@ function restoreStatus(entry: AuditEntry): { label: string; bg: string; color: s
   }
   const deadline = new Date(entry.restore_deadline);
   if (deadline < new Date()) {
-    return { label: 'EXPIRED', bg: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, #64748B)', border: 'var(--ds-border, var(--cp-border, #E2E8F0))' };
+    return { label: 'EXPIRED', bg: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', border: 'var(--ds-border, var(--cp-border, #E2E8F0))' };
   }
   const daysLeft = Math.max(0, Math.ceil((deadline.getTime() - Date.now()) / 86400_000));
   return { label: `RESTORABLE \u00B7 ${daysLeft}d left`, bg: '#FFFBEB', color: '#92400E', border: '#FCD34D' };
@@ -170,7 +170,7 @@ export default function AuditTrailPage() {
           <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--ds-text, #0F172A)' }}>
             Audit Trail
           </div>
-          <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)', marginTop: 2 }}>
+          <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginTop: 2 }}>
             AI Cleanup governance log
           </div>
         </div>
@@ -219,7 +219,7 @@ export default function AuditTrailPage() {
         </Select>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)' }}>From</span>
+          <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>From</span>
           <input
             type="date"
             value={dateFrom}
@@ -230,7 +230,7 @@ export default function AuditTrailPage() {
               color: 'var(--ds-text, #0F172A)', fontFamily: 'var(--cp-font-body)',
             }}
           />
-          <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)' }}>To</span>
+          <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>To</span>
           <input
             type="date"
             value={dateTo}
@@ -342,7 +342,7 @@ export default function AuditTrailPage() {
                     </td>
 
                     {/* CATEGORY */}
-                    <td style={{ padding: '8px 12px', fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)', verticalAlign: 'top' }}>
+                    <td style={{ padding: '8px 12px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', verticalAlign: 'top' }}>
                       {CATEGORY_MAP[entry.governance_category] ?? 'Unknown'}
                     </td>
 
@@ -368,7 +368,7 @@ export default function AuditTrailPage() {
                     <td style={{ padding: '8px 12px', verticalAlign: 'top' }}>
                       <div style={{
                         fontFamily: 'var(--cp-font-mono)',
-                        fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)',
+                        fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
                       }}>
                         {relativeTime(entry.closed_at)}
                       </div>
@@ -442,7 +442,7 @@ export default function AuditTrailPage() {
         padding: '12px 24px', background: 'var(--ds-surface, #ffffff)', borderTop: '1px solid var(--cp-border, #E2E8F0)',
         flexShrink: 0,
       }}>
-        <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)' }}>
+        <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
           {total > 0 ? `Showing ${fromRow}\u2013${toRow} of ${total} events` : 'No events'}
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -456,7 +456,7 @@ export default function AuditTrailPage() {
             <ChevronLeft size={14} />
             Previous
           </Button>
-          <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)' }}>
+          <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
             Page {page + 1} of {totalPages}
           </span>
           <Button

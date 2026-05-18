@@ -90,7 +90,7 @@ export default function IncidentListPage() {
   const surfaceBg = 'var(--cp-bg-elevated, #FFFFFF)';
   const borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';
   const textPrimary = 'var(--cp-text-primary, #0F172A)';
-  const textSecondary = 'var(--cp-text-tertiary, #64748B)';
+  const textSecondary = 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))';
   const textMuted = 'var(--cp-text-muted, #94A3B8)';
 
   // ── Column schema (the canonical's value props per row) ─────────────────

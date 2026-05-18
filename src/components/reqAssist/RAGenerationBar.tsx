@@ -35,7 +35,7 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
   const barColor = isComplete ? 'var(--ds-text-success, var(--cp-success, #16A34A))' : isFailed ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--ds-text-brand, #2563EB)';
 
   let labelText = '';
-  let labelColor = 'var(--ds-text-subtlest, #64748B)';
+  let labelColor = 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
 
   if (isProcessing) {
     labelText = `~${etaMinutes ?? 4}m left`;

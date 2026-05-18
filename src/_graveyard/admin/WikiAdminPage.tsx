@@ -105,7 +105,7 @@ function WikiAdminContent() {
                   padding: '8px 16px 10px',
                   fontSize: 13, fontFamily: 'var(--cp-font-body)',
                   fontWeight: isActive ? 600 : 450,
-                  color: isActive ? 'var(--cp-primary-60, #2563EB)' : 'var(--cp-text-tertiary, #64748B)',
+                  color: isActive ? 'var(--cp-primary-60, #2563EB)' : 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
                   background: 'transparent', border: 'none',
                   borderBottom: isActive ? '2px solid var(--cp-primary-60, #2563EB)' : '2px solid transparent',
                   cursor: 'pointer', whiteSpace: 'nowrap',
@@ -113,7 +113,7 @@ function WikiAdminContent() {
                   marginBottom: -1,
                 }}
                 onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.color = 'var(--cp-text-primary, #0F172A)'; }}
-                onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.color = 'var(--cp-text-tertiary, #64748B)'; }}
+                onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.color = 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'; }}
               >
                 <Icon style={{ width: 15, height: 15, strokeWidth: 1.6 }} />
                 {label}

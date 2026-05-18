@@ -251,7 +251,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
       {/* ─── LEFT: Status List ─── */}
       <div className="w-full lg:w-[380px] shrink-0">
         <div className="px-4 py-3 border-b border-[var(--ds-border,var(--cp-border, #E2E8F0))] flex items-center justify-between">
-          <h3 className="text-xs font-semibold text-[var(--ds-text-subtlest,#64748B)] uppercase tracking-wider">
+          <h3 className="text-xs font-semibold text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] uppercase tracking-wider">
             Statuses ({statuses.length})
           </h3>
         </div>
@@ -433,7 +433,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
       {/* ─── RIGHT: Transition Matrix ─── */}
       <div className="flex-1 overflow-auto">
         <div className="px-4 py-3 border-b border-[var(--ds-border,var(--cp-border, #E2E8F0))]">
-          <h3 className="text-xs font-semibold text-[var(--ds-text-subtlest,#64748B)] uppercase tracking-wider">
+          <h3 className="text-xs font-semibold text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] uppercase tracking-wider">
             Transition Matrix
           </h3>
           <p className="text-[11px] text-[var(--ds-text-subtlest,#94A3B8)] mt-0.5">
@@ -450,7 +450,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
             <table className="w-full border-collapse text-xs">
               <thead>
                 <tr>
-                  <th className="sticky left-0 z-10 bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-r border-[var(--ds-border,var(--cp-border, #E2E8F0))] px-3 py-2 text-left text-[10px] text-[var(--ds-text-subtlest,#64748B)] uppercase tracking-wider min-w-[140px]">
+                  <th className="sticky left-0 z-10 bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-r border-[var(--ds-border,var(--cp-border, #E2E8F0))] px-3 py-2 text-left text-[10px] text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] uppercase tracking-wider min-w-[140px]">
                     From ↓ \ To →
                   </th>
                   {statuses.map(s => (
@@ -534,7 +534,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
         <AlertDialogContent className="bg-white border-[var(--ds-border,var(--cp-border, #E2E8F0))]">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-[var(--ds-text,#0F172A)]">Delete Status</AlertDialogTitle>
-            <AlertDialogDescription className="text-[var(--ds-text-subtlest,#64748B)]">
+            <AlertDialogDescription className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]">
               Are you sure you want to delete "{deleteTarget?.name}"? This will also remove all
               transitions referencing this status. Any issues currently in this status will need
               to be reassigned.

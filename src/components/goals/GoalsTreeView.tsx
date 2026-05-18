@@ -41,9 +41,9 @@ function statusBadge(status: string, isDark = false) {
     achieved:    { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDark: '#1A2030', textDark: '#93C5FD', label: 'Achieved' },
     at_risk:     { dot: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', bgDark: '#2A2418', textDark: '#FBBF24', label: 'At Risk' },
     off_track:   { dot: 'var(--ds-text-danger, #EF4444)', bg: 'rgba(239,68,68,0.08)',  text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bgDark: '#2A1C1E', textDark: 'var(--ds-border-danger, #FCA5A5)', label: 'Off Track' },
-    draft:       { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F1F5F9)',               text: 'var(--ds-text-subtlest, #64748B)', bgDark: 'var(--ds-surface-raised, #1A1A1A)', textDark: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Draft' },
-    not_started: { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F1F5F9)',               text: 'var(--ds-text-subtlest, #64748B)', bgDark: 'var(--ds-surface-raised, #1A1A1A)', textDark: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Not Started' },
-    cancelled:   { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F1F5F9)',               text: 'var(--ds-text-subtlest, #64748B)', bgDark: 'var(--ds-surface-raised, #1A1A1A)', textDark: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Cancelled' },
+    draft:       { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F1F5F9)',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bgDark: 'var(--ds-surface-raised, #1A1A1A)', textDark: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Draft' },
+    not_started: { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F1F5F9)',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bgDark: 'var(--ds-surface-raised, #1A1A1A)', textDark: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Not Started' },
+    cancelled:   { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F1F5F9)',               text: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bgDark: 'var(--ds-surface-raised, #1A1A1A)', textDark: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Cancelled' },
   };
   const s = map[status] || map.draft;
   return (
@@ -315,7 +315,7 @@ export function GoalsTreeView({
               onMouseLeave={e => (e.currentTarget.style.background = themeRowBg)}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <ChevronRight size={14} color={'var(--cp-text-tertiary, #64748B)'} style={{ transform: themeExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0 }} />
+                <ChevronRight size={14} color={'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'} style={{ transform: themeExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0 }} />
                 <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-1)' }}>{theme.title}</span>
                 <span style={{ fontSize: 11, color: isDark ? DK.t3 : 'var(--fg-3)' }}>({themeGoals.length} goal{themeGoals.length !== 1 ? 's' : ''})</span>
               </div>

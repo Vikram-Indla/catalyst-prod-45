@@ -85,7 +85,7 @@ export default function IdeationDrivesView() {
               fontFamily: MONO, color: 'var(--ds-text-subtlest, #94A3B8)',
             }}>{drives.length}</span>
           </div>
-          <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, #64748B)', margin: 0 }}>
+          <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', margin: 0 }}>
             Themed innovation campaigns to focus idea generation around strategic priorities
           </p>
         </div>
@@ -151,7 +151,7 @@ export default function IdeationDrivesView() {
             </div>
 
             {/* Description */}
-            <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, #64748B)', margin: '0 0 12px', lineHeight: 1.5 }}>{drive.description}</p>
+            <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', margin: '0 0 12px', lineHeight: 1.5 }}>{drive.description}</p>
 
             {/* Stats row */}
             <div style={{ display: 'flex', gap: '24px', fontSize: '12px', color: 'var(--ds-text-subtle, #334155)', fontWeight: 500, marginBottom: '10px' }}>
@@ -175,7 +175,7 @@ export default function IdeationDrivesView() {
                   minWidth: pct > 0 ? 4 : 0,
                 }} />
               </div>
-              <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748B)', minWidth: 32, textAlign: 'right' }}>
+              <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', minWidth: 32, textAlign: 'right' }}>
                 {submitted}/{drive.target_count}
               </span>
             </div>

@@ -90,7 +90,7 @@ export function DataScope() {
   }
 
   if (configLoading) {
-    return <div style={{ padding: 40, color: 'var(--ds-text-subtlest, #64748B)', fontFamily: 'var(--cp-font-body)' }}>Loading...</div>
+    return <div style={{ padding: 40, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-body)' }}>Loading...</div>
   }
 
   const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) => (
@@ -124,7 +124,7 @@ export function DataScope() {
         <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
           Data Scope
         </h1>
-        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)', marginTop: 4 }}>
+        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginTop: 4 }}>
           Select projects to sync and configure time window and data quality rules.
         </p>
       </div>
@@ -146,7 +146,7 @@ export function DataScope() {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {accessibleProjects.map(p => {
             const isOn = includedProjects.includes(p.key)
-            const color = WORKSTREAM_COLORS[p.key] || 'var(--ds-text-subtlest, #64748B)'
+            const color = WORKSTREAM_COLORS[p.key] || 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'
             return (
               <button
                 key={p.key}
@@ -167,7 +167,7 @@ export function DataScope() {
                   {p.name}
                 </span>
                 <span style={{
-                  fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: 'var(--ds-text-subtlest, #64748B)',
+                  fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
                 }}>
                   {p.key}
                 </span>

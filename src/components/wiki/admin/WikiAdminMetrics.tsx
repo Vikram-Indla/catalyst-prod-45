@@ -64,7 +64,7 @@ const labelStyle: React.CSSProperties = {
   fontWeight: 650,
   textTransform: 'uppercase',
   letterSpacing: '0.04em',
-  color: 'var(--cp-text-tertiary, #64748B)',
+  color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
   marginBottom: 6,
 };
 

@@ -92,7 +92,7 @@ function filterTree(items: WorkItem[], search: string, filters: Filters): WorkIt
 }
 
 /* ── Avatar color palette ── */
-const FILTER_AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, #2563EB)','var(--ds-text-danger, var(--cp-danger, #DC2626))','var(--ds-text-success, var(--cp-success, #16A34A))','var(--ds-text-subtlest, #64748B)','#0284C7','var(--quality-high, #059669)','#BE123C','var(--ds-background-brand-bold-hovered, #1D4ED8)','#0F766E'];
+const FILTER_AVATAR_COLORS = ['var(--cp-teal-60, #0D9488)','var(--ds-text-brand, #2563EB)','var(--ds-text-danger, var(--cp-danger, #DC2626))','var(--ds-text-success, var(--cp-success, #16A34A))','var(--ds-text-subtlest, var(--cp-ink-3, #64748B))','#0284C7','var(--quality-high, #059669)','#BE123C','var(--ds-background-brand-bold-hovered, #1D4ED8)','#0F766E'];
 function getFilterAvatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -163,7 +163,7 @@ function PriorityIcon({ name }: { name: string }) {
   else if (n === 'high' || n === 'highest') level = 3;
   else if (n === 'medium') level = 2;
   else if (n === 'low' || n === 'lowest') level = 1;
-  const color = level >= 3 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : level === 2 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-subtlest, #64748B)';
+  const color = level >= 3 ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : level === 2 ? 'var(--ds-text-warning, var(--cp-warning, #D97706))' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
   return (
     <div style={{ display: 'flex', gap: 1.5, alignItems: 'flex-end', height: 14, width: 14 }}>
       {[1, 2, 3, 4].map(i => (
@@ -438,7 +438,7 @@ export default function HierarchyPage() {
               background: viewMode === 'table' ? 'var(--cp-interact-selected)' : 'var(--cp-bg-elevated)', border: 'none', cursor: 'pointer',
               transition: 'background 80ms',
             }}>
-            <TableProperties size={14} color={viewMode === 'table' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #64748B)'} />
+            <TableProperties size={14} color={viewMode === 'table' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'} />
           </button>
           <button onClick={() => setViewMode('tree')}
             style={{
@@ -446,7 +446,7 @@ export default function HierarchyPage() {
               background: viewMode === 'tree' ? 'var(--cp-interact-selected)' : 'var(--cp-bg-elevated)', border: 'none', cursor: 'pointer',
               borderLeft: `1px solid ${'var(--cp-border-default)'}`, transition: 'background 80ms',
             }}>
-            <GitBranch size={14} color={viewMode === 'tree' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #64748B)'} />
+            <GitBranch size={14} color={viewMode === 'tree' ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'} />
           </button>
         </div>
       </div>
@@ -544,7 +544,7 @@ export default function HierarchyPage() {
                 color: 'var(--cp-text-tertiary)', transition: 'all 80ms',
               }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-danger, var(--cp-danger, #DC2626))'; e.currentTarget.style.color = 'var(--ds-text-danger, var(--cp-danger, #DC2626))'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--cp-border-default)'; e.currentTarget.style.color = 'var(--ds-text-subtlest, #64748B)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--cp-border-default)'; e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'; }}
               title="Clear all filters"
             >
               <X size={14} />

@@ -60,7 +60,7 @@ const STEP_COLORS: Record<string, { text: string; bg: string; border: string }> 
   failed:  { text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', border: '#FECACA' },
   blocked: { text: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', border: '#FED7AA' },
   skipped: { text: 'var(--ds-text-subtle, #475569)', bg: 'var(--bg-1, #F8FAFC)', border: 'var(--bd-default, var(--cp-border, #E2E8F0))' },
-  not_run: { text: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', border: 'var(--bd-default, var(--cp-border, #E2E8F0))' },
+  not_run: { text: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, #F1F5F9)', border: 'var(--bd-default, var(--cp-border, #E2E8F0))' },
 };
 
 export function ExecutionSidebar({
@@ -242,7 +242,7 @@ export function ExecutionSidebar({
                     </div>
                     <p style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', margin: 0, lineHeight: 1.4 }}>{step.title}</p>
                     {step.notes && (
-                      <p style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #64748B)', margin: '4px 0 0', fontStyle: 'italic' }}>{step.notes}</p>
+                      <p style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', margin: '4px 0 0', fontStyle: 'italic' }}>{step.notes}</p>
                     )}
                   </div>
                 );

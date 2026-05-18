@@ -119,7 +119,7 @@ export function RoadmapSidePanel({
             background: 'var(--bg-app)', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <X size={14} color="var(--ds-text-subtlest, #64748B)" />
+            <X size={14} color="var(--ds-text-subtlest, var(--cp-ink-3, #64748B))" />
           </button>
           <div style={{ flex: 1, minWidth: 0 }}>
             <span style={{ fontSize: 12, fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-4)' }}>

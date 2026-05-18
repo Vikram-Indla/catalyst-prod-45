@@ -259,14 +259,14 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
           aria-label="Configure module"
           style={{ borderRadius: 4 }}
         >
-          <span style={{ display: 'inline-flex', color: 'var(--cp-text-tertiary, #64748B)' }}><SettingsIcon label="" size="small" /></span>
+          <span style={{ display: 'inline-flex', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}><SettingsIcon label="" size="small" /></span>
         </button>
         <button
           className="w-7 h-7 flex items-center justify-center rounded hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
           aria-label="More options"
           style={{ borderRadius: 4 }}
         >
-          <span style={{ display: 'inline-flex', color: 'var(--cp-text-tertiary, #64748B)' }}><ShowMoreHorizontalIcon label="" size="small" /></span>
+          <span style={{ display: 'inline-flex', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}><ShowMoreHorizontalIcon label="" size="small" /></span>
         </button>
       </div>
     </div>
@@ -309,7 +309,7 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
         fontWeight: 600,
         letterSpacing: '0.06em',
         textTransform: 'uppercase',
-        color: 'var(--cp-text-tertiary, #64748B)',
+        color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
       }}>
         {category}
       </span>
@@ -318,7 +318,7 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
           fontFamily: 'var(--cp-font-body)',
           fontSize: 11,
           fontWeight: 500,
-          color: 'var(--cp-text-tertiary, #64748B)',
+          color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
           background: 'var(--cp-border, #E5E5E5)',
           borderRadius: 9999,
           padding: '1px 6px',

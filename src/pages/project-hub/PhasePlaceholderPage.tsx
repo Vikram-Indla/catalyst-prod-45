@@ -25,7 +25,7 @@ export default function PhasePlaceholderPage({ title, phase, icon: Icon = List, 
           <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--fg-1, #0F172A)', marginTop: 16, fontFamily: 'var(--cp-font-heading)' }}>
             {title}
           </h3>
-          <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, #64748B)', marginTop: 4, textAlign: 'center', maxWidth: 400 }}>
+          <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginTop: 4, textAlign: 'center', maxWidth: 400 }}>
             {description}
           </p>
           <span

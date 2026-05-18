@@ -115,7 +115,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
       <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)', marginBottom: 20, textAlign: 'center' }}>Pick one to begin structured learning.</p>
       <div style={{ display: 'grid', gap: 8 }}>
         {(paths as any[]).slice(0, 3).map((p: any) => {
-          const diffColor = DIFF_COLORS[p.difficulty] || 'var(--ds-text-subtlest, #64748B)';
+          const diffColor = DIFF_COLORS[p.difficulty] || 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
           return (
             <div key={p.id} style={{
               padding: 16, borderRadius: 8, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',

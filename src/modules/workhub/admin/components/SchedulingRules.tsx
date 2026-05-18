@@ -38,7 +38,7 @@ export function SchedulingRules() {
   }
 
   if (isLoading) {
-    return <div style={{ padding: 40, color: 'var(--ds-text-subtlest, #64748B)', fontFamily: 'var(--cp-font-body)' }}>Loading...</div>
+    return <div style={{ padding: 40, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-body)' }}>Loading...</div>
   }
 
   const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) => (
@@ -75,7 +75,7 @@ export function SchedulingRules() {
         <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
           Scheduling Rules
         </h1>
-        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)', marginTop: 4 }}>
+        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginTop: 4 }}>
           Configure how effective due dates are calculated for the hierarchy.
         </p>
       </div>
@@ -104,7 +104,7 @@ export function SchedulingRules() {
             }} />
             <div>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{p.label}</span>
-              <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #64748B)' }}> — {p.desc}</span>
+              <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}> — {p.desc}</span>
             </div>
           </div>
         ))}
