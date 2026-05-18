@@ -31,6 +31,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { PROJECT_AVATAR_REGISTRY } from '@/components/icons';
+import { useJiraBaseUrl } from '@/hooks/useJiraBaseUrl';
 
 export type WorkMode = 'OPS' | 'DEL' | 'TSK';
 export type WorkGroup = 'YESTERDAY' | 'THIS_WEEK' | 'EARLIER';
@@ -394,6 +395,7 @@ function mapIssueToWorkItem(
   projectNameMap: Map<string, string>,
   attachmentCounts: Map<string, number>,
   projectAvatarMap: Map<string, string | null>,
+  jiraBaseUrl: string | null,
 ): WorkItem {
   const assigneeName = row.assignee_display_name || 'Unassigned';
   const projectKey = row.project_key || '';
@@ -452,7 +454,7 @@ function mapIssueToWorkItem(
     fixVersion: fixVersion || undefined,
     component: component || undefined,
     description: row.description_text || undefined,
-    jiraUrl: row.issue_key ? `https://jira.example.com/browse/${row.issue_key}` : undefined,
+    jiraUrl: row.issue_key && jiraBaseUrl ? `${jiraBaseUrl}/browse/${row.issue_key}` : undefined,
     lastSyncedAt: row.last_synced_at || undefined,
     parentKey: row.parent_key || undefined,
     parentSummary: row.parent_summary || undefined,
@@ -1074,6 +1076,7 @@ export function useForYouData(authLoading = false) {
 
   const { user: authUser } = useAuth();
   const queryClient = useQueryClient();
+  const jiraBaseUrl = useJiraBaseUrl();
 
   // Single query — no serial gate. User mapping resolved inside fetchForYouRawData.
   const rawDataKey = useMemo(() => ['for-you-data', authUser?.id ?? ''], [authUser?.id]);
@@ -1114,7 +1117,7 @@ export function useForYouData(authLoading = false) {
 
   const filteredItems = useMemo(() => {
     let items = sourceItems.map(row =>
-      mapIssueToWorkItem(row, starredItems, projectNameMap, attachmentCounts, projectAvatarMap)
+      mapIssueToWorkItem(row, starredItems, projectNameMap, attachmentCounts, projectAvatarMap, jiraBaseUrl)
     );
     if (activeMode !== 'all') items = items.filter(item => item.mode.toLowerCase() === activeMode);
     if (searchQuery) {

@@ -5,6 +5,7 @@ import { X, FileText, Zap, BookOpen, FlaskConical, Copy, Check, Paperclip, Arrow
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 import { formatTimestamp } from '@/lib/formatTimestamp';
+import { useJiraBaseUrl } from '@/hooks/useJiraBaseUrl';
 import toast from 'react-hot-toast';
 
 interface Props {
@@ -49,6 +50,7 @@ function deriveDomain(jiraKey: string | null | undefined, docDomain: string | nu
 export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, onViewDrafts, onSyncKb }: Props) {
   const { isDark } = useTheme();
   const navigate = useNavigate();
+  const jiraBaseUrl = useJiraBaseUrl();
   const [brdData, setBrdData] = useState<BrdData>({
     id: null, pipeline_stage: null, raw_text: null,
     epicCount: 0, wikiCount: 0, publishedCount: 0, uatCount: 0,
@@ -334,7 +336,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 onClick={() => {
                   // Try to open parent drawer or Jira URL
                   const prefix = brdData.parentJiraKey!.split('-')[0];
-                  window.open(`https://jira.example.com/browse/${brdData.parentJiraKey}`, '_blank');
+                  if (jiraBaseUrl) window.open(`${jiraBaseUrl}/browse/${brdData.parentJiraKey}`, '_blank');
                 }}
               >{brdData.parentJiraKey}</span>
               <ChevronRight size={10} color="var(--ds-text-disabled, #CBD5E1)" />

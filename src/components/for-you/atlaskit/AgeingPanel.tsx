@@ -20,6 +20,7 @@ import ForYouRow from './ForYouRow';
 import { ForYouEmptyState } from './helpers';
 import { text } from '@/lib/typography';
 import { resolveAvatarUrl } from '@/lib/avatars';
+import { useJiraBaseUrl } from '@/hooks/useJiraBaseUrl';
 import type { WorkItem, HubType, WorkMode, WorkGroup } from '@/hooks/useForYouData';
 
 // ─── Age bracket config ───────────────────────────────────────────────────────
@@ -67,7 +68,7 @@ function initials(name: string): string {
   return (name || '').split(/\s+/).map(p => p[0]).filter(Boolean).join('').toUpperCase().slice(0, 2);
 }
 
-function ageingToWorkItem(a: AgeingItem): WorkItem {
+function ageingToWorkItem(a: AgeingItem, jiraBaseUrl: string | null): WorkItem {
   const assigneeName = a.assignee_display_name || 'Unassigned';
   return {
     id: a.issue_key,
@@ -88,7 +89,7 @@ function ageingToWorkItem(a: AgeingItem): WorkItem {
     parentSummary: a.parent_summary || undefined,
     updatedAt: a.jira_updated_at ? formatRelative(a.jira_updated_at) : '—',
     createdAt: a.jira_created_at || '—',
-    jiraUrl: a.issue_key ? `https://jira.example.com/browse/${a.issue_key}` : undefined,
+    jiraUrl: a.issue_key && jiraBaseUrl ? `${jiraBaseUrl}/browse/${a.issue_key}` : undefined,
     assignee: {
       id: a.assignee_account_id || 'none',
       name: assigneeName,
@@ -255,6 +256,7 @@ function AgeingRow({ item, onSelect, suggestion }: {
 // ─── Component ───────────────────────────────────────────────────────────────
 export default function AgeingPanel() {
   const { data: ageingItems, isLoading, isError } = useAgeingItems();
+  const jiraBaseUrl = useJiraBaseUrl();
 
   const grouped = useMemo(() => {
     if (!ageingItems) return [];
@@ -321,7 +323,7 @@ export default function AgeingPanel() {
           {items.map(a => (
             <AgeingRow
               key={a.id}
-              item={ageingToWorkItem(a)}
+              item={ageingToWorkItem(a, jiraBaseUrl)}
               onSelect={handleSelect}
               suggestion={
                 a.days_open >= 90

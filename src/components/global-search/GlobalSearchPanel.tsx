@@ -208,7 +208,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         kind: 'suggestion',
         id: 'sug-mywork',
         label: <>Show my <strong>work items</strong></>,
-        activate: () => { navigate('/?tab=assigned'); onClose(); },
+        activate: () => { navigate('/for-you/assigned'); onClose(); },
       });
       if (assigneeIds.length > 0) {
         const name = memberOptions.find((o) => o.id === assigneeIds[0])?.name ?? assigneeIds[0];
@@ -216,7 +216,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
           kind: 'suggestion',
           id: 'sug-assignee',
           label: <>Work items assigned to <strong>{name}</strong></>,
-          activate: () => { navigate('/?tab=assigned'); onClose(); },
+          activate: () => { navigate('/for-you/assigned'); onClose(); },
         });
       }
     }

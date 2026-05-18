@@ -8,6 +8,11 @@ function NavigateProducthubReqAssistId() {
   const { id } = useParams();
   return <Navigate to={`/product-hub/requirement-assist/${id ?? ''}`} replace />;
 }
+
+function IssueRedirectToBrowse() {
+  const { issueKey } = useParams();
+  return <Navigate to={`/browse/${issueKey ?? ''}`} replace />;
+}
 import { ENABLE_AI, ENABLE_WIKI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
 import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
 import { ModuleGate } from '../components/common/ModuleGate';
@@ -20,6 +25,7 @@ const GovernanceSettings = lazy(() => import("../pages/admin/GovernanceSettings"
 const AdminIconsPage = lazy(() => import("../pages/admin/icons/AdminIconsPage"));
 const AdminAvatarsPage = lazy(() => import("../pages/admin/avatars/AdminAvatarsPage"));
 const ComponentsAdminPage = lazy(() => import("../pages/admin/components/ComponentsAdminPage"));
+const RoutingTaxonomyPageLazy = lazy(() => import("../pages/admin/RoutingTaxonomyPage"));
 const WorkListPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogPage.atlaskit"));
 
 // ─── Lazy page imports ───────────────────────────────────────────
@@ -858,10 +864,15 @@ export default function FullAppRoutes() {
           <Route path="resource-assignments" element={<S><ResourceAssignmentsPage /></S>} />
           <Route path="jira-user-sync" element={<S><JiraUserSyncPage /></S>} />
           <Route path="business-owners" element={<S><BusinessOwnersAdmin /></S>} />
-          <Route path="business/ProcessStep" element={<S><ProcessSteps /></S>} />
-          <Route path="business/EpicStatus" element={<S><EpicStatuses /></S>} />
-          <Route path="business/FeatureStatus" element={<S><FeatureStatuses /></S>} />
-          <Route path="business/ThemeStatus" element={<S><ThemeStatuses /></S>} />
+          <Route path="business/process-steps" element={<S><ProcessSteps /></S>} />
+          <Route path="business/epic-statuses" element={<S><EpicStatuses /></S>} />
+          <Route path="business/feature-statuses" element={<S><FeatureStatuses /></S>} />
+          <Route path="business/theme-statuses" element={<S><ThemeStatuses /></S>} />
+          {/* Legacy camelCase redirects */}
+          <Route path="business/ProcessStep" element={<Navigate to="/admin/business/process-steps" replace />} />
+          <Route path="business/EpicStatus" element={<Navigate to="/admin/business/epic-statuses" replace />} />
+          <Route path="business/FeatureStatus" element={<Navigate to="/admin/business/feature-statuses" replace />} />
+          <Route path="business/ThemeStatus" element={<Navigate to="/admin/business/theme-statuses" replace />} />
           <Route path="product-settings" element={<S><ProductSettings /></S>} />
           <Route path="workflows" element={<S><WorkflowAdminPage /></S>} />
           <Route path="workhub-connection" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
@@ -885,6 +896,7 @@ export default function FullAppRoutes() {
           {/* RESET ICONS — runtime asset override management. Admin-only. */}
           <Route path="icons" element={<S><AdminIconsPage /></S>} />
           <Route path="avatars" element={<S><AdminAvatarsPage /></S>} />
+          <Route path="routing-taxonomy" element={<S><RoutingTaxonomyPageLazy /></S>} />
           <Route path="resources" element={<S><RouteRoleGuard><ResourceListingPageLazy /></RouteRoleGuard></S>} />
           <Route path="resources/:resourceId" element={<S><RouteRoleGuard><R360MemberDetailLazy /></RouteRoleGuard></S>} />
         </Route>
@@ -927,7 +939,7 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/feature-backlog" element={<LegacyBacklogRedirect />} />
         <Route path="/project-hub/:key/story-backlog" element={<LegacyBacklogRedirect />} />
         <Route path="/project-hub/:key/story/:itemId" element={<S><StoryDetailPageLazy /></S>} />
-        <Route path="/project-hub/:key/issue/:issueKey" element={<S><IssueDetailPageLazy /></S>} />
+        <Route path="/project-hub/:key/issue/:issueKey" element={<IssueRedirectToBrowse />} />
         <Route path="/project-hub/:key/board" element={<S><ProjectBoardPageLazy /></S>} />
         <Route path="/project-hub/:key/boards" element={<S><KanbanBoardPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/map-statuses" element={<S><MapStatusesPageLazy /></S>} />

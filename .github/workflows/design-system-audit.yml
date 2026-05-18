@@ -41,6 +41,19 @@ jobs:
           echo "✅ Design system audit passed."
           exit 0
       
+      - name: Run Routing Taxonomy Scanner
+        run: |
+          echo "🔗 Scanning route taxonomy compliance..."
+          node design-governance/rules/routing-taxonomy-scanner.js src/
+          ROUTING_EXIT_CODE=$?
+
+          if [ $ROUTING_EXIT_CODE -ne 0 ]; then
+            echo "⚠️ Routing taxonomy violations detected (informational — does not block merge yet)."
+          else
+            echo "✅ Routing taxonomy audit passed."
+          fi
+        continue-on-error: true
+
       - name: Check Atlassian Sans CDN
         run: |
           if grep -q "fonts.atlassian.com\|atlassian-sans" public/index.html; then
