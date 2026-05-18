@@ -358,7 +358,7 @@
 /* Available capacity row - keep green styling */
 .ra-enterprise-clean [class*="bg-emerald"] .rounded-md {
   background: #d1fae5 !important;
-  color: #059669 !important;
+  color: var(--quality-high, #059669) !important;
   border-color: #a7f3d0 !important;
 }
 

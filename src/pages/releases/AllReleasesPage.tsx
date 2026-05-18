@@ -1162,7 +1162,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
       </td>
       <td style={{ ...cellStyle, width: '80px' }}>
         {r.status === 'released' ? (
-          <span style={{ fontSize: '11px', fontWeight: 500, color: '#059669', textTransform: 'uppercase' as const, letterSpacing: '0.03em' }}>Released</span>
+          <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--quality-high, #059669)', textTransform: 'uppercase' as const, letterSpacing: '0.03em' }}>Released</span>
         ) : (
           <span style={{ fontSize: '13px', fontWeight: r.daysRemaining <= 7 ? 600 : 500, color: r.daysRemaining <= 7 ? 'var(--ds-text-danger, #ef4444)' : r.daysRemaining <= 14 ? 'var(--ds-text-warning, #d97706)' : 'var(--ds-text-subtlest, #64748b)', fontFamily: 'var(--cp-font-mono)' }}>
             {r.overdue ? `-${r.daysRemaining}d` : `${r.daysRemaining}d`}

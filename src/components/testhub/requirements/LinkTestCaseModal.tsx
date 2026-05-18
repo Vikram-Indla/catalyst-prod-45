@@ -26,7 +26,7 @@ interface TestCase {
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  critical: 'var(--ds-text-danger, #DC2626)', high: '#EA580C', medium: 'var(--ds-text-warning, #D97706)', low: '#059669',
+  critical: 'var(--ds-text-danger, #DC2626)', high: '#EA580C', medium: 'var(--ds-text-warning, #D97706)', low: 'var(--quality-high, #059669)',
 };
 
 export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, alreadyLinkedIds }: LinkTestCaseModalProps) {

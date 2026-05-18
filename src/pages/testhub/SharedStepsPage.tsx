@@ -625,7 +625,7 @@ export default function SharedStepsPage() {
                               style={{
                                 padding: '2px 8px', borderRadius: 12, fontSize: 12, fontWeight: 600,
                                 backgroundColor: step.usage_count > 0 ? ('var(--cp-success-light, #F0FDF4)') : ('var(--cp-bg-sunken, #F1F5F9)'),
-                                color: step.usage_count > 0 ? '#059669' : ('var(--cp-text-tertiary, #64748B)'),
+                                color: step.usage_count > 0 ? 'var(--quality-high, #059669)' : ('var(--cp-text-tertiary, #64748B)'),
                                 border: 'none', cursor: 'pointer',
                               }}
                               onMouseEnter={(e) => { if (step.usage_count > 0) e.currentTarget.style.textDecoration = 'underline'; }}

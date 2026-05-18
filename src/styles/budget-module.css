@@ -42,7 +42,7 @@
   /* ============================================
      V8 SEMANTIC COLORS
      ============================================ */
-  --budget-success: #059669;
+  --budget-success: var(--quality-high, #059669);
   --budget-success-light: rgba(5, 150, 105, 0.1);
   --budget-warning: var(--ds-text-warning, #d97706);
   --budget-warning-light: rgba(217, 119, 6, 0.1);

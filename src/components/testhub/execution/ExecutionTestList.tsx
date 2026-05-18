@@ -150,7 +150,7 @@ export function ExecutionTestList({
           </span>
         </div>
         <div style={{ height: 5, backgroundColor: 'hsl(var(--muted))', borderRadius: 4, overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${cycle.progress_percent}%`, background: 'linear-gradient(90deg, #10B981 0%, #059669 100%)', borderRadius: 3 }} />
+          <div style={{ height: '100%', width: `${cycle.progress_percent}%`, background: 'linear-gradient(90deg, #10B981 0%, var(--quality-high, #059669) 100%)', borderRadius: 3 }} />
         </div>
       </div>
     </div>

@@ -42,7 +42,7 @@ const COLOR_OPTIONS = [
   { value: 'var(--ds-text-brand, #2563eb)', label: 'Blue' },
   { value: '#0d9488', label: 'Teal' },
   { value: '#7c3aed', label: 'Purple' },
-  { value: '#059669', label: 'Green' },
+  { value: 'var(--quality-high, #059669)', label: 'Green' },
   { value: 'var(--ds-text-warning, #d97706)', label: 'Orange' },
   { value: 'var(--ds-text-danger, #dc2626)', label: 'Red' },
   { value: '#4f46e5', label: 'Indigo' },

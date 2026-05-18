@@ -39,7 +39,7 @@ const badgeVariants = cva(
         purple: "border-transparent bg-[#ede9fe] text-[#7c3aed]",
         
         // Semantic - Status
-        success: "border-transparent bg-[#d1fae5] text-[#059669]",
+        success: "border-transparent bg-[#d1fae5] text-[var(--quality-high, #059669)]",
         warning: "border-transparent bg-[#fef3c7] text-[var(--ds-text-warning,#d97706)]",
         danger: "border-transparent bg-[#fee2e2] text-[var(--ds-text-danger,#dc2626)]",
         destructive: "border-transparent bg-[#fee2e2] text-[var(--ds-text-danger,#dc2626)]",
@@ -51,8 +51,8 @@ const badgeVariants = cva(
         // Workflow status
         draft: "border-[#e5e5e5] bg-[#f5f5f5] text-[#737373]",
         active: "border-transparent bg-[#dbeafe] text-[var(--ds-text-brand,#2563eb)]",
-        complete: "border-transparent bg-[#d1fae5] text-[#059669]",
-        approved: "border-transparent bg-[#d1fae5] text-[#059669]",
+        complete: "border-transparent bg-[#d1fae5] text-[var(--quality-high, #059669)]",
+        approved: "border-transparent bg-[#d1fae5] text-[var(--quality-high, #059669)]",
         rejected: "border-transparent bg-[#fee2e2] text-[var(--ds-text-danger,#dc2626)]",
         blocked: "border-transparent bg-[#fef3c7] text-[var(--ds-text-warning,#d97706)]",
         ready: "border-transparent bg-[#ccfbf1] text-[#0d9488]",
@@ -60,7 +60,7 @@ const badgeVariants = cva(
         deprecated: "border-transparent bg-[#e5e5e5] text-[#525252]",
         
         // Test result variants
-        passed: "border-transparent bg-[#d1fae5] text-[#059669]",
+        passed: "border-transparent bg-[#d1fae5] text-[var(--quality-high, #059669)]",
         failed: "border-transparent bg-[#fee2e2] text-[var(--ds-text-danger,#dc2626)]",
         skipped: "border-transparent bg-[#f5f5f5] text-[#737373]",
         "not-run": "border-transparent bg-[#f5f5f5] text-[#a3a3a3]",

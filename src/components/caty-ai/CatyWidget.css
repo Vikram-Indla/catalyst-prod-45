@@ -44,7 +44,7 @@
   --caty-text-light: var(--ds-text-subtlest, #94a3b8);
   
   /* Status Colors */
-  --caty-success: #059669;
+  --caty-success: var(--quality-high, #059669);
   --caty-success-bg: #ecfdf5;
   --caty-success-border: rgba(5, 150, 105, 0.3);
   
@@ -182,7 +182,7 @@
 .caty-status-dot {
   width: 8px !important;
   height: 8px !important;
-  background: #059669 !important;
+  background: var(--quality-high, #059669) !important;
   border-radius: 50% !important;
   flex-shrink: 0;
 }
@@ -202,7 +202,7 @@
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    DARK MODE — Rule 3 paired overrides for !important hex in this file.
-   Brand-blue icon background (var(--ds-text-brand, #2563eb)), success/danger dots (#059669/#dc2626)
+   Brand-blue icon background (var(--ds-text-brand, #2563eb)), success/danger dots (var(--quality-high, #059669)/#dc2626)
    and white svg text on the brand circle are intentional — kept as-is.
    We flip the white panel header and dark text to ADS dark tokens.
    ═══════════════════════════════════════════════════════════════════════════════ */

@@ -364,7 +364,7 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
             <FilterChip key={`s-${s}`} label={s} color="#0891b2" bgColor="#ecfeff" borderColor="#a5f3fc" onRemove={() => removeChip('statuses', s)} />
           ))}
           {selectedReleases.map(r => (
-            <FilterChip key={`r-${r}`} label={r} color="#059669" bgColor="#ecfdf5" borderColor="#a7f3d0" onRemove={() => removeChip('fix_version_names', r)} />
+            <FilterChip key={`r-${r}`} label={r} color="var(--quality-high, #059669)" bgColor="#ecfdf5" borderColor="#a7f3d0" onRemove={() => removeChip('fix_version_names', r)} />
           ))}
         </div>
       )}

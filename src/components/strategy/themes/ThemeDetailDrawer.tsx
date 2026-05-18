@@ -352,7 +352,7 @@ function FinancialsTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
       <div className="grid grid-cols-3 gap-3 mb-5">
         <KpiCard label="Allocated" value={formatBudget(allocated)} isDark={isDark} />
         <KpiCard label="Spent" value={formatBudget(spent)} isDark={isDark} />
-        <KpiCard label="Remaining" value={`${remainingPct}%`} color={remainingPct < 20 ? 'var(--sem-danger)' : '#059669'} isDark={isDark} />
+        <KpiCard label="Remaining" value={`${remainingPct}%`} color={remainingPct < 20 ? 'var(--sem-danger)' : 'var(--quality-high, #059669)'} isDark={isDark} />
       </div>
       <div className="mb-3">
         <div className="flex items-center justify-between mb-1">

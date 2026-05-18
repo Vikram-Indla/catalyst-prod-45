@@ -19,7 +19,7 @@ const ageColor = (days: number | null | undefined): string => {
   if (days > 365) return 'var(--sem-danger)';
   if (days > 14) return 'var(--sem-danger)';
   if (days > 7) return 'var(--sem-warning)';
-  return '#059669';
+  return 'var(--quality-high, #059669)';
 };
 
 const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) => {

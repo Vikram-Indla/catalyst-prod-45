@@ -20,7 +20,7 @@ function deriveKeyFromName(name: string): string {
   return letters.slice(0, 3);
 }
 
-const BADGE_COLORS = ['var(--cp-teal-60, #0D9488)', 'var(--ds-text-brand, #2563EB)', '#6366F1', '#0891B2', 'var(--ds-text-subtle, #475569)', '#059669', '#4F46E5', '#0284C7'];
+const BADGE_COLORS = ['var(--cp-teal-60, #0D9488)', 'var(--ds-text-brand, #2563EB)', '#6366F1', '#0891B2', 'var(--ds-text-subtle, #475569)', 'var(--quality-high, #059669)', '#4F46E5', '#0284C7'];
 function getRandomBadgeColor() {
   return BADGE_COLORS[Math.floor(Math.random() * BADGE_COLORS.length)];
 }

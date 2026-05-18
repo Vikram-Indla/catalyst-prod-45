@@ -370,9 +370,9 @@ function StatChip({ value, label, color, isActive, onClick, pulse }: StatChipPro
       inactiveText: 'text-[var(--ds-text-subtle,#475569)] dark:text-[var(--text-secondary)]',
     },
     emerald: {
-      dot: 'bg-[#059669]',
+      dot: 'bg-[var(--quality-high, #059669)]',
       activeBg: 'bg-[#ecfdf5] dark:bg-emerald-900/50',
-      activeText: 'text-[#059669] dark:text-emerald-300',
+      activeText: 'text-[var(--quality-high, #059669)] dark:text-emerald-300',
       inactiveText: 'text-[var(--ds-text-subtle,#475569)] dark:text-[var(--text-secondary)]',
     },
     blue: {

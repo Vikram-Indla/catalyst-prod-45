@@ -50,7 +50,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       value: totalGoals,
       sub: themes.length ? `~${Math.round(totalGoals / themes.length)} per theme` : '—',
       icon: Target,
-      iconColor: '#059669',
+      iconColor: 'var(--quality-high, #059669)',
       iconBg: 'var(--cp-success-light, #ECFDF5)',
       cardBg: undefined,
     },
@@ -68,7 +68,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       value: atRiskCount,
       sub: atRiskCount > 0 ? 'Needs attention' : 'All healthy',
       icon: AlertTriangle,
-      iconColor: atRiskCount > 0 ? 'var(--ds-text-danger, #DC2626)' : '#059669',
+      iconColor: atRiskCount > 0 ? 'var(--ds-text-danger, #DC2626)' : 'var(--quality-high, #059669)',
       iconBg: isDark
         ? (atRiskCount > 0 ? 'rgba(220,38,38,0.12)' : 'rgba(5,150,105,0.12)')
         : (atRiskCount > 0 ? 'var(--ds-background-danger, #FEF2F2)' : '#ECFDF5'),

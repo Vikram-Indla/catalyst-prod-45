@@ -301,7 +301,7 @@ export function TimelineGrid({
                         style={{
                           width: 'calc(100% - 8px)',
                           backgroundColor: '#d1fae5',
-                          color: '#059669',
+                          color: 'var(--quality-high, #059669)',
                           border: '1px solid #a7f3d0',
                         }}
                       >

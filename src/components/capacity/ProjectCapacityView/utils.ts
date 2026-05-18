@@ -234,7 +234,7 @@ const PROJECT_COLORS = [
   '#6366f1', // Indigo
   '#8b5cf6', // Violet
   '#0891b2', // Cyan
-  '#059669', // Emerald
+  'var(--quality-high, #059669)', // Emerald
   'var(--ds-text-brand, #3b82f6)', // Light Blue
 ];
 

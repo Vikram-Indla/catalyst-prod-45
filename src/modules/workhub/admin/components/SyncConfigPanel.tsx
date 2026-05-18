@@ -481,7 +481,7 @@ export function SyncConfigPanel() {
                             onChange={(vals) => updateProjectConfig(pk, { fix_versions: vals })}
                             placeholder="All releases (no filter)"
                             emptyMessage={`No versions found for ${pk}. Sync first to discover releases.`}
-                            accentColor="#059669"
+                            accentColor="var(--quality-high, #059669)"
                           />
                           <p style={{ fontSize: 10, color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
                             {config.fix_versions.length === 0

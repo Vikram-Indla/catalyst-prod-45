@@ -249,7 +249,7 @@ export default function TestHubDashboardPage() {
   const totalExecuted = totalPassed + totalFailed + totalBlocked;
   const totalAll = totalExecuted + totalNotRun;
   const passRate = overallPassRate;
-  const passRateColor = passRate < 60 ? 'var(--ds-text-danger, #DC2626)' : passRate < 80 ? 'var(--ds-text-warning, #D97706)' : '#059669';
+  const passRateColor = passRate < 60 ? 'var(--ds-text-danger, #DC2626)' : passRate < 80 ? 'var(--ds-text-warning, #D97706)' : 'var(--quality-high, #059669)';
 
   const execSegments = useMemo(() => {
     if (totalAll === 0) return [];
@@ -326,7 +326,7 @@ export default function TestHubDashboardPage() {
         {/* ── KPI STRIP — 6 cards ── */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12, flexShrink: 0 }}>
           <KPICard label="Total test cases" value={totalTestCases} accent="var(--ds-text-brand, #2563EB)"
-            trend={{ direction: 'up', value: '+3', color: '#059669' }}
+            trend={{ direction: 'up', value: '+3', color: 'var(--quality-high, #059669)' }}
             subtitle={`${totalCycles} cycles total`} sparkData={[4, 6, 5, 8, 10, 9, 12, 14]} />
           <KPICard label="Overall pass rate" value={`${passRate}%`} accent={passRate < 60 ? "var(--ds-text-danger, #EF4444)" : "var(--ds-text-warning, #D97706)"}
             trend={{ direction: 'down', value: '−12%', color: 'var(--ds-text-danger, #DC2626)' }}
@@ -418,7 +418,7 @@ export default function TestHubDashboardPage() {
                          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', minWidth: 32, textAlign: 'right' }}>{pct}%</span>
                        </div>
                        <div style={{ display: 'flex', gap: 6, fontSize: 12, fontWeight: 600, justifyContent: 'flex-end' }}>
-                         <span style={{ color: '#059669' }}>{csPassed}P</span>
+                         <span style={{ color: 'var(--quality-high, #059669)' }}>{csPassed}P</span>
                          <span style={{ color: 'var(--ds-text-subtlest, #64748B)' }}>·</span>
                          <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>{csFailed}F</span>
                          <span style={{ color: 'var(--ds-text-subtlest, #64748B)' }}>·</span>

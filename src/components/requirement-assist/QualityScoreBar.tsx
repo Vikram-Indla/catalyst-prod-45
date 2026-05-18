@@ -5,7 +5,7 @@ interface QualityScoreBarProps {
 }
 
 function getScoreColor(score: number): string {
-  if (score >= 80) return 'var(--quality-high, #059669)';
+  if (score >= 80) return 'var(--quality-high, var(--quality-high, #059669))';
   if (score >= 70) return 'var(--quality-mid, #D97706)';
   return 'var(--quality-low, #DC2626)';
 }

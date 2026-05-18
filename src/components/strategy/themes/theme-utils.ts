@@ -89,7 +89,7 @@ export const PRIORITY_CONFIG: Record<string, { label: string; color: string }> =
 // ═══ COLOR SWATCHES ═══
 export const THEME_COLORS = [
   'var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-warning, #D97706)', 'var(--cp-purple-60, #7C3AED)', '#EC4899',
-  '#059669', 'var(--ds-text-danger, #DC2626)', '#0284C7', '#4F46E5', '#CA8A04',
+  'var(--quality-high, #059669)', 'var(--ds-text-danger, #DC2626)', '#0284C7', '#4F46E5', '#CA8A04',
 ];
 
 // ═══ PROGRESS BAR COLOR ═══
@@ -114,7 +114,7 @@ export function getInitials(name: string | null): string {
 
 export function getAvatarColor(name: string | null): string {
   if (!name) return 'var(--ds-text-subtlest, #94A3B8)';
-  const colors = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, #D97706)', '#EC4899', '#059669', 'var(--ds-text-danger, #DC2626)'];
+  const colors = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, #D97706)', '#EC4899', 'var(--quality-high, #059669)', 'var(--ds-text-danger, #DC2626)'];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
   return colors[Math.abs(hash) % colors.length];

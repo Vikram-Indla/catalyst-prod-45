@@ -44,14 +44,14 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> 
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  active: { label: 'Active', color: '#059669', bg: '#ECFDF5', icon: Power },
+  active: { label: 'Active', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: Power },
   maintenance: { label: 'Maintenance', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', icon: Wrench },
   inactive: { label: 'Inactive', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: Power },
   deprecated: { label: 'Deprecated', color: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F8FAFC)', icon: XCircle },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  healthy: { label: 'Healthy', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
+  healthy: { label: 'Healthy', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
   degraded: { label: 'Degraded', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', icon: AlertTriangle },
   down: { label: 'Down', color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)', icon: XCircle },
   unknown: { label: 'Unknown', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: HelpCircle },
@@ -181,10 +181,10 @@ export default function EnvironmentsListPage() {
           <div style={{ backgroundColor: '#ECFDF5', borderRadius: 12, padding: 20, border: '1px solid #A7F3D0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <p style={{ fontSize: 12, color: '#059669', margin: 0, textTransform: 'uppercase' }}>Healthy</p>
-                <p style={{ fontSize: 28, fontWeight: 700, color: '#059669', margin: '8px 0 0' }}>{summary.healthy_count}</p>
+                <p style={{ fontSize: 12, color: 'var(--quality-high, #059669)', margin: 0, textTransform: 'uppercase' }}>Healthy</p>
+                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--quality-high, #059669)', margin: '8px 0 0' }}>{summary.healthy_count}</p>
               </div>
-              <CheckCircle2 size={24} style={{ color: '#059669' }} />
+              <CheckCircle2 size={24} style={{ color: 'var(--quality-high, #059669)' }} />
             </div>
           </div>
           <div style={{ backgroundColor: '#FFFBEB', borderRadius: 12, padding: 20, border: '1px solid #FDE68A' }}>

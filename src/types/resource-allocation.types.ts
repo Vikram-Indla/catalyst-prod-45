@@ -226,7 +226,7 @@ export const ASSIGNMENT_COLORS: string[] = [
   '#7c3aed', // Purple
   '#ea580c', // Orange
   '#db2777', // Pink
-  '#059669', // Emerald
+  'var(--quality-high, #059669)', // Emerald
   '#8b5cf6', // Violet
 ];
 
@@ -237,7 +237,7 @@ export const ASSIGNMENT_COLOR_MAP: Record<string, string> = {
   orange: '#ea580c',
   purple: '#7c3aed',
   pink: '#db2777',
-  emerald: '#059669',
+  emerald: 'var(--quality-high, #059669)',
   violet: '#8b5cf6',
 };
 

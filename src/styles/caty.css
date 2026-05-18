@@ -31,7 +31,7 @@
   --caty-status-critical-bg: var(--ds-background-danger, #fef2f2);
   --caty-status-warning: #ea580c;
   --caty-status-warning-bg: #fff7ed;
-  --caty-status-safe: #059669;
+  --caty-status-safe: var(--quality-high, #059669);
   --caty-status-safe-bg: #ecfdf5;
   --caty-status-total: var(--ds-text-brand, #2563eb);
   --caty-status-total-bg: var(--ds-background-selected, #eff6ff);

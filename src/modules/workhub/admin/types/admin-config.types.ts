@@ -17,7 +17,7 @@ export const CATALYST_CATEGORY_COLORS: Record<CatalystCategory, { bg: string; te
   'In Progress': { bg: 'rgba(37,99,235,0.1)',     text: 'var(--ds-text-brand, #2563EB)' },
   'Blocked':     { bg: 'rgba(239,68,68,0.1)',     text: 'var(--ds-text-danger, #EF4444)' },
   'In Review':   { bg: 'rgba(139,92,246,0.1)',    text: '#8B5CF6' },
-  'Done':        { bg: 'rgba(16,185,129,0.1)',    text: '#059669' },
+  'Done':        { bg: 'rgba(16,185,129,0.1)',    text: 'var(--quality-high, #059669)' },
 }
 
 // User mapping

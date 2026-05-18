@@ -38,7 +38,7 @@
   --ct-danger-light: rgba(239, 68, 68, 0.08);
 
   --ct-success: #10b981;
-  --ct-success-dark: #059669;
+  --ct-success-dark: var(--quality-high, #059669);
   --ct-success-light: rgba(16, 185, 129, 0.08);
 
   /* ═══════════════════════════════════════════════════════════

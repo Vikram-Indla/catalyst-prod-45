@@ -201,7 +201,7 @@ export function ExecutionRunMode({
                         <div style={{ flex: 1 }}>
                           <p style={{ fontSize: 13, color: 'hsl(var(--foreground))', margin: 0 }}>{highlightVariables(step.action)}</p>
                           {step.expected_result && (
-                            <p style={{ fontSize: 12, color: '#059669', margin: '6px 0 0', paddingLeft: 10, borderLeft: '2px solid #A7F3D0' }}>{highlightVariables(step.expected_result)}</p>
+                            <p style={{ fontSize: 12, color: 'var(--quality-high, #059669)', margin: '6px 0 0', paddingLeft: 10, borderLeft: '2px solid #A7F3D0' }}>{highlightVariables(step.expected_result)}</p>
                           )}
                         </div>
                       </div>
@@ -244,7 +244,7 @@ export function ExecutionRunMode({
 
                  {currentStep.expected_result && (
                    <div style={{ marginTop: 16, padding: 14, backgroundColor: 'var(--cp-success-light, #ECFDF5)', borderRadius: 8, borderLeft: '3px solid #10B981' }}>
-                     <span style={{ fontSize: 10, fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.06em' }}>EXPECTED</span>
+                     <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--quality-high, #059669)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>EXPECTED</span>
                      <p style={{ fontSize: 14, color: 'var(--cp-success-text, #065F46)', margin: '4px 0 0', lineHeight: 1.5 }}>
                        {highlightVariables(currentStep.expected_result)}
                      </p>
@@ -292,7 +292,7 @@ export function ExecutionRunMode({
 
         {/* Status buttons */}
         {[
-          { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: onPass, color: '#059669', bg: 'var(--cp-success-light, #ECFDF5)', activeBg: 'linear-gradient(135deg, #10B981, #059669)' },
+          { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: onPass, color: 'var(--quality-high, #059669)', bg: 'var(--cp-success-light, #ECFDF5)', activeBg: 'linear-gradient(135deg, #10B981, var(--quality-high, #059669))' },
           { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: onFail, color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--cp-danger-light, #FEF2F2)', activeBg: 'linear-gradient(135deg, var(--ds-text-danger, #EF4444), var(--ds-text-danger, #DC2626))' },
           { key: 'blocked', label: 'Block', shortcut: 'B', icon: AlertTriangle, onClick: onBlocked, color: 'var(--ds-text-warning, #D97706)', bg: 'var(--cp-warning-light, #FFFBEB)', activeBg: 'linear-gradient(135deg, var(--ds-text-warning, #F59E0B), var(--ds-text-warning, #D97706))' },
           { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: onSkip, color: 'var(--cp-text-tertiary, #64748B)', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, var(--ds-text-subtlest, #64748B), var(--ds-text-subtle, #475569))' },

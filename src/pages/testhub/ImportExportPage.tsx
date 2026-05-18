@@ -53,7 +53,7 @@ interface Stats {
 const TYPE_CONFIG: Record<string, { label: string; icon: any; color: string }> = {
   test_cases: { label: 'Test Cases', icon: FileText, color: 'var(--ds-text-brand, #2563EB)' },
   defects: { label: 'Defects', icon: Bug, color: 'var(--ds-text-danger, #DC2626)' },
-  requirements: { label: 'Requirements', icon: FileCheck, color: '#059669' },
+  requirements: { label: 'Requirements', icon: FileCheck, color: 'var(--quality-high, #059669)' },
   shared_steps: { label: 'Shared Steps', icon: Layers, color: 'var(--cp-purple-60, #7C3AED)' },
   tags: { label: 'Tags', icon: Tags, color: '#EC4899' },
   cycles: { label: 'Test Cycles', icon: RefreshCw, color: '#0891B2' },
@@ -64,7 +64,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
   pending: { label: 'Pending', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: Clock },
   validating: { label: 'Validating', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', icon: AlertTriangle },
   processing: { label: 'Processing', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', icon: RefreshCw },
-  completed: { label: 'Completed', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
+  completed: { label: 'Completed', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
   failed: { label: 'Failed', color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)', icon: XCircle },
   cancelled: { label: 'Cancelled', color: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F8FAFC)', icon: XCircle },
 };
@@ -149,7 +149,7 @@ export default function ImportExportPage() {
               <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase' }}>Total Imports</span>
             </div>
             <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>{stats.total_imports}</p>
-            <p style={{ fontSize: 12, color: '#059669', margin: '4px 0 0' }}>
+            <p style={{ fontSize: 12, color: 'var(--quality-high, #059669)', margin: '4px 0 0' }}>
               {stats.records_imported.toLocaleString()} records
             </p>
           </div>
@@ -159,16 +159,16 @@ export default function ImportExportPage() {
               <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase' }}>Total Exports</span>
             </div>
             <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>{stats.total_exports}</p>
-            <p style={{ fontSize: 12, color: '#059669', margin: '4px 0 0' }}>
+            <p style={{ fontSize: 12, color: 'var(--quality-high, #059669)', margin: '4px 0 0' }}>
               {stats.records_exported.toLocaleString()} records
             </p>
           </div>
           <div style={{ backgroundColor: '#ECFDF5', borderRadius: 12, padding: 20, border: '1px solid #A7F3D0' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <CheckCircle2 size={18} style={{ color: '#059669' }} />
-              <span style={{ fontSize: 12, color: '#059669', textTransform: 'uppercase' }}>Successful</span>
+              <CheckCircle2 size={18} style={{ color: 'var(--quality-high, #059669)' }} />
+              <span style={{ fontSize: 12, color: 'var(--quality-high, #059669)', textTransform: 'uppercase' }}>Successful</span>
             </div>
-            <p style={{ fontSize: 28, fontWeight: 700, color: '#059669', margin: 0 }}>
+            <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--quality-high, #059669)', margin: 0 }}>
               {stats.successful_imports + stats.successful_exports}
             </p>
           </div>
@@ -268,7 +268,7 @@ export default function ImportExportPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     {job.status === 'completed' && (
                       <div style={{ textAlign: 'right' }}>
-                        <p style={{ fontSize: 14, fontWeight: 600, color: '#059669', margin: 0 }}>
+                        <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--quality-high, #059669)', margin: 0 }}>
                           {job.success_count} imported
                         </p>
                         {job.error_count > 0 && (
@@ -350,7 +350,7 @@ export default function ImportExportPage() {
                         style={{
                           display: 'flex', alignItems: 'center', gap: 6,
                           height: 50, padding: '0 14px', border: '1px solid #A7F3D0', borderRadius: 8,
-                          backgroundColor: '#ECFDF5', color: '#059669', fontSize: 13, textDecoration: 'none',
+                          backgroundColor: '#ECFDF5', color: 'var(--quality-high, #059669)', fontSize: 13, textDecoration: 'none',
                         }}
                       >
                         <Download size={14} /> Download

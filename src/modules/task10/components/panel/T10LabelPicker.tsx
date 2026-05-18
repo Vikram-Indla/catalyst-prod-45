@@ -17,7 +17,7 @@ export function getLabelColor(label: string): { bg: string; color: string; borde
     case 'NEEDS-REVIEW': return { bg: '#f5f3ff', color: '#7c3aed', border: '#ddd6fe' };
     case 'HR': return { bg: 'var(--ds-background-selected, #eff6ff)', color: 'var(--ds-text-brand, #2563eb)', border: '#bfdbfe' };
     case 'BUG FIX': return { bg: 'var(--ds-background-danger, #fef2f2)', color: 'var(--ds-text-danger, #dc2626)', border: '#fecaca' };
-    case 'FEATURE': return { bg: '#ecfdf5', color: '#059669', border: '#a7f3d0' };
+    case 'FEATURE': return { bg: '#ecfdf5', color: 'var(--quality-high, #059669)', border: '#a7f3d0' };
     case 'DOCUMENTATION': return { bg: '#f0f9ff', color: '#0284c7', border: '#bae6fd' };
     default: {
       // Generate consistent color based on label hash

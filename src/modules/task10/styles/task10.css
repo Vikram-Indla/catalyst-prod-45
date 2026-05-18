@@ -2590,7 +2590,7 @@
 .t10-checkout-success-icon {
   width: 64px !important;
   height: 64px !important;
-  background: linear-gradient(135deg, #10b981, #059669) !important;
+  background: linear-gradient(135deg, #10b981, var(--quality-high, #059669)) !important;
   border-radius: 50% !important;
   display: flex !important;
   align-items: center !important;

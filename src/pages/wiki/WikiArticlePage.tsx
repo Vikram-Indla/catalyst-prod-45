@@ -63,7 +63,7 @@ const MODULE_COLORS: Record<string, { bg: string; color: string; label: string }
   task: { bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)', label: 'TaskHub' },
   product: { bg: '#F5F3FF', color: 'var(--cp-purple-60, #7C3AED)', label: 'ProductHub' },
   incident: { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #DC2626)', label: 'IncidentHub' },
-  release: { bg: '#ECFDF5', color: '#059669', label: 'ReleaseHub' },
+  release: { bg: '#ECFDF5', color: 'var(--quality-high, #059669)', label: 'ReleaseHub' },
   requirement: { bg: '#FFFBEB', color: 'var(--ds-text-warning, #D97706)', label: 'Requirements' },
   wiki: { bg: '#F0F9FF', color: '#0284C7', label: 'WikiHub' },
 };
@@ -126,7 +126,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
                   background: i === 0 ? (isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F1F5F9)'),
                 }}>v{v.version_number}</span>
                 {i === 0 && (
-                  <span style={{ fontSize: 9, fontWeight: 700, color: '#059669', textTransform: 'uppercase' as const }}>CURRENT</span>
+                  <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--quality-high, #059669)', textTransform: 'uppercase' as const }}>CURRENT</span>
                 )}
               </div>
               {i > 0 && (

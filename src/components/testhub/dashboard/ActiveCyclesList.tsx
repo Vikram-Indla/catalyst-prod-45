@@ -54,7 +54,7 @@ export function ActiveCyclesList({ cycles }: Props) {
             const pct = cycle.progress_percent ?? 0;
             const pctColor = pct >= 80 ? 'var(--sem-success)' : pct >= 50 ? 'var(--cp-blue)' : 'var(--fg-3)';
             const barGrad = pct >= 80
-              ? 'linear-gradient(90deg, #10B981, #059669)'
+              ? 'linear-gradient(90deg, #10B981, var(--quality-high, #059669))'
               : pct >= 50
               ? 'linear-gradient(90deg, var(--ds-text-brand, #3B82F6), var(--ds-text-brand, #2563EB))'
               : 'linear-gradient(90deg, var(--ds-text-subtlest, #94A3B8), var(--ds-text-subtlest, #64748B))';

@@ -33,7 +33,7 @@ interface AuditStats {
 }
 
 const ACTION_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
-  create: { label: 'Created', color: '#059669', icon: Plus },
+  create: { label: 'Created', color: 'var(--quality-high, #059669)', icon: Plus },
   update: { label: 'Updated', color: 'var(--ds-text-brand, #2563EB)', icon: Edit2 },
   delete: { label: 'Deleted', color: 'var(--ds-text-danger, #DC2626)', icon: Trash2 },
   execute: { label: 'Executed', color: 'var(--cp-purple-60, #7C3AED)', icon: Play },
@@ -49,7 +49,7 @@ const ENTITY_CONFIG: Record<string, { label: string; color: string; icon: any }>
   defect: { label: 'Defect', color: 'var(--ds-text-danger, #DC2626)', icon: Bug },
   test_cycle: { label: 'Test Cycle', color: '#0891B2', icon: RefreshCcw },
   test_plan: { label: 'Test Plan', color: 'var(--cp-purple-60, #7C3AED)', icon: ClipboardList },
-  requirement: { label: 'Requirement', color: '#059669', icon: FileCheck },
+  requirement: { label: 'Requirement', color: 'var(--quality-high, #059669)', icon: FileCheck },
   environment: { label: 'Environment', color: '#6366F1', icon: Server },
   tag: { label: 'Tag', color: '#EC4899', icon: Tags },
 };
@@ -157,8 +157,8 @@ export default function ActivityFeedPage() {
             <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '4px 0 0' }}>{stats.total_events}</p>
           </div>
           <div style={{ backgroundColor: '#ECFDF5', borderRadius: 12, padding: 16, border: '1px solid #A7F3D0' }}>
-            <p style={{ fontSize: 11, color: '#059669', margin: 0, textTransform: 'uppercase' }}>Created</p>
-            <p style={{ fontSize: 24, fontWeight: 700, color: '#059669', margin: '4px 0 0' }}>{stats.creates}</p>
+            <p style={{ fontSize: 11, color: 'var(--quality-high, #059669)', margin: 0, textTransform: 'uppercase' }}>Created</p>
+            <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--quality-high, #059669)', margin: '4px 0 0' }}>{stats.creates}</p>
           </div>
           <div style={{ backgroundColor: 'var(--ds-background-selected, #EFF6FF)', borderRadius: 12, padding: 16, border: '1px solid #BFDBFE' }}>
             <p style={{ fontSize: 11, color: 'var(--ds-text-brand, #2563EB)', margin: 0, textTransform: 'uppercase' }}>Updated</p>

@@ -16,7 +16,7 @@ interface CatalystToastOptions {
 const toastConfig = {
   success: {
     icon: CheckCircle,
-    iconColor: '#059669',
+    iconColor: 'var(--quality-high, #059669)',
     bgColor: '#ECFDF5',
     borderColor: '#A7F3D0',
     titleColor: '#065F46',

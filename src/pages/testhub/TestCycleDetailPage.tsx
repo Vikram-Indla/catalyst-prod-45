@@ -64,7 +64,7 @@ const statusConfig: Record<string, { label: string; color: string; bg: string }>
 
 const executionStatusConfig: Record<string, { label: string; color: string; bg: string; Icon: any }> = {
   not_run: { label: 'Not Run', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', Icon: Clock },
-  passed: { label: 'Passed', color: '#059669', bg: '#ECFDF5', Icon: CheckCircle2 },
+  passed: { label: 'Passed', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', Icon: CheckCircle2 },
   failed: { label: 'Failed', color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)', Icon: XCircle },
   blocked: { label: 'Blocked', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', Icon: AlertTriangle },
   skipped: { label: 'Skipped', color: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F8FAFC)', Icon: Clock },
@@ -74,7 +74,7 @@ const priorityConfig: Record<string, { color: string; bg: string }> = {
   critical: { color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)' },
   high: { color: '#EA580C', bg: '#FFF7ED' },
   medium: { color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB' },
-  low: { color: '#059669', bg: '#ECFDF5' },
+  low: { color: 'var(--quality-high, #059669)', bg: '#ECFDF5' },
 };
 
 const defectStatusColors: Record<string, { bg: string; color: string }> = {
@@ -410,7 +410,7 @@ export default function TestCycleDetailPage() {
                   catalystToast.info('All test cases have been executed', { title: 'Complete' });
                 }
               }}
-                style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 8, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #10B981 0%, var(--quality-high, #059669) 100%)', border: 'none', borderRadius: 8, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Play size={16} /> Execute Tests
               </button>
             )}
@@ -435,9 +435,9 @@ export default function TestCycleDetailPage() {
           <div style={{ width: 100, height: 100, margin: '0 auto 16px', position: 'relative' }}>
             <svg viewBox="0 0 36 36" style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }}>
               <circle cx="18" cy="18" r="15.9155" fill="none" stroke={'var(--cp-border, #E2E8F0)'} strokeWidth="3" />
-              <circle cx="18" cy="18" r="15.9155" fill="none" stroke={pp === 100 ? '#059669' : 'var(--ds-text-brand, #2563EB)'} strokeWidth="3" strokeDasharray={`${pp} ${100 - pp}`} strokeLinecap="round" />
+              <circle cx="18" cy="18" r="15.9155" fill="none" stroke={pp === 100 ? 'var(--quality-high, #059669)' : 'var(--ds-text-brand, #2563EB)'} strokeWidth="3" strokeDasharray={`${pp} ${100 - pp}`} strokeLinecap="round" />
             </svg>
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 700, color: pp === 100 ? '#059669' : 'var(--ds-text-brand, #2563EB)' }}>
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 700, color: pp === 100 ? 'var(--quality-high, #059669)' : 'var(--ds-text-brand, #2563EB)' }}>
               {pp}%
             </div>
           </div>
@@ -449,9 +449,9 @@ export default function TestCycleDetailPage() {
           <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px' }}>By Status</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <button onClick={() => setStatusFilter('passed')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'passed' ? ('var(--cp-success-light, #ECFDF5)') : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
-              <CheckCircle2 size={18} style={{ color: '#059669' }} />
+              <CheckCircle2 size={18} style={{ color: 'var(--quality-high, #059669)' }} />
               <span style={{ flex: 1, fontSize: 14, color: 'var(--cp-text-secondary, #334155)' }}>Passed</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: '#059669' }}>{passedCount}</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--quality-high, #059669)' }}>{passedCount}</span>
             </button>
             <button onClick={() => setStatusFilter('failed')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'failed' ? ('var(--cp-danger-light, #FEF2F2)') : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <XCircle size={18} style={{ color: 'var(--ds-text-danger, #DC2626)' }} />
@@ -494,7 +494,7 @@ export default function TestCycleDetailPage() {
                       <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>{ts.executed}/{ts.total}</span>
                     </div>
                     <div style={{ height: 6, backgroundColor: 'var(--cp-border, #E2E8F0)', borderRadius: 4, overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${pct}%`, backgroundColor: pct === 100 ? '#059669' : 'var(--ds-text-brand, #2563EB)', borderRadius: 4, transition: 'width 0.3s' }} />
+                      <div style={{ height: '100%', width: `${pct}%`, backgroundColor: pct === 100 ? 'var(--quality-high, #059669)' : 'var(--ds-text-brand, #2563EB)', borderRadius: 4, transition: 'width 0.3s' }} />
                     </div>
                   </div>
                 );
@@ -698,7 +698,7 @@ export default function TestCycleDetailPage() {
                         </td>
                         <td style={{ padding: '14px 16px', textAlign: 'center' }}>
                           {cycle.status === 'active' && (
-                            <button onClick={(e) => { e.stopPropagation(); navigate(`/testhub/cycles/${cycleId}/execute?testId=${ctc.id}`); }} style={{ height: 30, padding: '8px 12px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 6, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                            <button onClick={(e) => { e.stopPropagation(); navigate(`/testhub/cycles/${cycleId}/execute?testId=${ctc.id}`); }} style={{ height: 30, padding: '8px 12px', background: 'linear-gradient(135deg, #10B981 0%, var(--quality-high, #059669) 100%)', border: 'none', borderRadius: 6, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                               <Play size={12} /> Run
                             </button>
                           )}

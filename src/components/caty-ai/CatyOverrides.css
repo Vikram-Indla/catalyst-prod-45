@@ -133,7 +133,7 @@ header.caty-header-fixed,
 .caty-status-dot {
   width: 8px !important;
   height: 8px !important;
-  background: #059669 !important;
+  background: var(--quality-high, #059669) !important;
   border-radius: 50% !important;
   flex-shrink: 0 !important;
   display: inline-block !important;
@@ -268,7 +268,7 @@ button.caty-header-btn:hover {
 [class*="status-dot"] {
   width: 8px !important;
   height: 8px !important;
-  background: #059669 !important;
+  background: var(--quality-high, #059669) !important;
   border-radius: 50% !important;
 }
 
@@ -450,7 +450,7 @@ button.caty-department-pill,
 }
 
 .caty-metric-card.success .caty-metric-value {
-  color: #059669 !important;
+  color: var(--quality-high, #059669) !important;
 }
 
 .caty-metric-label {
@@ -492,7 +492,7 @@ button.caty-department-pill,
 }
 
 .caty-data-card-header.success {
-  border-left-color: #059669 !important;
+  border-left-color: var(--quality-high, #059669) !important;
 }
 
 .caty-data-card-header.info {
@@ -525,7 +525,7 @@ button.caty-department-pill,
 }
 
 .caty-data-card-badge.success {
-  color: #059669 !important;
+  color: var(--quality-high, #059669) !important;
   background: #ecfdf5 !important;
 }
 
@@ -663,7 +663,7 @@ button.caty-department-pill,
 
 .caty-tag.util.success {
   background: #ecfdf5 !important;
-  color: #059669 !important;
+  color: var(--quality-high, #059669) !important;
 }
 
 /* ========== PROFILE CARD (Individual Resource) ========== */
@@ -760,7 +760,7 @@ button.caty-department-pill,
 }
 
 .caty-profile-value.success {
-  color: #059669 !important;
+  color: var(--quality-high, #059669) !important;
 }
 
 /* TEAM ROW */
@@ -1475,7 +1475,7 @@ button.caty-fab {
 .dark .caty-panel .caty-status-dot,
 .dark .caty-header-subtitle .caty-status-dot,
 .dark .caty-status-dot {
-  background: #059669 !important;
+  background: var(--quality-high, #059669) !important;
 }
 
 .dark .caty-status-dot.offline {
@@ -1537,7 +1537,7 @@ button.caty-fab {
 
 .dark .caty-status-dot,
 .dark [class*="status-dot"] {
-  background: #059669 !important;
+  background: var(--quality-high, #059669) !important;
 }
 
 .dark .caty-widget .caty-context-bar,
@@ -1623,7 +1623,7 @@ button.caty-fab {
 }
 
 .dark .caty-metric-card.success .caty-metric-value {
-  color: #059669 !important;
+  color: var(--quality-high, #059669) !important;
 }
 
 .dark .caty-metric-label {
@@ -1650,7 +1650,7 @@ button.caty-fab {
 }
 
 .dark .caty-data-card-header.success {
-  border-left-color: #059669 !important;
+  border-left-color: var(--quality-high, #059669) !important;
 }
 
 .dark .caty-data-card-header.info {
@@ -1677,7 +1677,7 @@ button.caty-fab {
 }
 
 .dark .caty-data-card-badge.success {
-  color: #059669 !important;
+  color: var(--quality-high, #059669) !important;
   background: #ecfdf5 !important;
 }
 
@@ -1736,7 +1736,7 @@ button.caty-fab {
 
 .dark .caty-tag.util.success {
   background: #ecfdf5 !important;
-  color: #059669 !important;
+  color: var(--quality-high, #059669) !important;
 }
 
 .dark .caty-profile-card {
@@ -1782,7 +1782,7 @@ button.caty-fab {
 }
 
 .dark .caty-profile-value.success {
-  color: #059669 !important;
+  color: var(--quality-high, #059669) !important;
 }
 
 .dark .caty-team-row {

@@ -7,7 +7,7 @@ export const HUB_COLORS: Record<string, string> = {
   ReleaseHub: 'var(--cp-teal-60, #0D9488)',
   TestHub: 'var(--ds-text-warning, #D97706)',
   IncidentHub: 'var(--ds-text-danger, #DC2626)',
-  TaskHub: '#059669',
+  TaskHub: 'var(--quality-high, #059669)',
 };
 
 export const HUB_SHORT: Record<string, string> = {
@@ -23,7 +23,7 @@ export const HUB_SHORT: Record<string, string> = {
 export const STATUS_CATEGORY_COLORS = {
   todo: { bg: '#FEE2E2', text: 'var(--ds-text-danger, #DC2626)', border: 'var(--ds-border-danger, #FCA5A5)', dot: 'var(--ds-text-danger, #DC2626)' },
   progress: { bg: '#DBEAFE', text: 'var(--ds-text-brand, #2563EB)', border: '#93C5FD', dot: 'var(--ds-text-brand, #2563EB)' },
-  done: { bg: '#D1FAE5', text: '#059669', border: '#6EE7B7', dot: '#059669' },
+  done: { bg: '#D1FAE5', text: 'var(--quality-high, #059669)', border: '#6EE7B7', dot: 'var(--quality-high, #059669)' },
 };
 
 export const PRIORITY_COLORS: Record<string, string> = {

@@ -40,14 +40,14 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; ic
   plan_summary: { label: 'Plan Summary', color: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', icon: FileText },
   coverage: { label: 'Coverage', color: '#0891B2', bg: '#ECFEFF', icon: Shield },
   defect: { label: 'Defect Report', color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)', icon: AlertCircle },
-  trend: { label: 'Trend Analysis', color: '#059669', bg: '#ECFDF5', icon: TrendingUp },
+  trend: { label: 'Trend Analysis', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: TrendingUp },
   custom: { label: 'Custom', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: FileBarChart },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   draft: { label: 'Draft', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
   generating: { label: 'Generating', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB' },
-  ready: { label: 'Ready', color: '#059669', bg: '#ECFDF5' },
+  ready: { label: 'Ready', color: 'var(--quality-high, #059669)', bg: '#ECFDF5' },
   failed: { label: 'Failed', color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)' },
   archived: { label: 'Archived', color: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F8FAFC)' },
 };
@@ -153,10 +153,10 @@ export default function ReportsListPage() {
           <div style={{ backgroundColor: '#ECFDF5', borderRadius: 12, padding: 20, border: '1px solid #A7F3D0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <p style={{ fontSize: 12, color: '#059669', margin: 0, textTransform: 'uppercase' }}>Ready</p>
-                <p style={{ fontSize: 28, fontWeight: 700, color: '#059669', margin: '8px 0 0' }}>{stats.ready_reports}</p>
+                <p style={{ fontSize: 12, color: 'var(--quality-high, #059669)', margin: 0, textTransform: 'uppercase' }}>Ready</p>
+                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--quality-high, #059669)', margin: '8px 0 0' }}>{stats.ready_reports}</p>
               </div>
-              <CheckCircle2 size={24} style={{ color: '#059669' }} />
+              <CheckCircle2 size={24} style={{ color: 'var(--quality-high, #059669)' }} />
             </div>
           </div>
           <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
@@ -250,7 +250,7 @@ export default function ReportsListPage() {
                   <div style={{ display: 'flex', gap: 8 }}>
                     {report.status === 'ready' && (
                       <button onClick={(e) => { e.stopPropagation(); navigate(`/testhub/reports/${report.id}`); }}
-                        style={{ width: 36, height: 50, border: '1px solid #E2E8F0', borderRadius: 8, backgroundColor: 'var(--ds-surface, #FFF)', color: '#059669', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        style={{ width: 36, height: 50, border: '1px solid #E2E8F0', borderRadius: 8, backgroundColor: 'var(--ds-surface, #FFF)', color: 'var(--quality-high, #059669)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Download size={16} />
                       </button>
                     )}

@@ -90,7 +90,7 @@ export function ExecutionHeader({
         {/* Stats badges */}
         <div style={{ display: 'flex', gap: 6 }}>
           {[
-            { count: cycle.passed_count, color: '#059669', bg: 'var(--cp-success-light, #ECFDF5)', Icon: CheckCircle2 },
+            { count: cycle.passed_count, color: 'var(--quality-high, #059669)', bg: 'var(--cp-success-light, #ECFDF5)', Icon: CheckCircle2 },
             { count: cycle.failed_count, color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--cp-danger-light, #FEF2F2)', Icon: XCircle },
             { count: cycle.blocked_count, color: 'var(--ds-text-warning, #D97706)', bg: 'var(--cp-warning-light, #FFFBEB)', Icon: AlertTriangle },
           ].map((s, i) => (
@@ -114,9 +114,9 @@ export function ExecutionHeader({
         {/* Progress */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 100, height: 6, backgroundColor: 'hsl(var(--muted))', borderRadius: 4, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${cycle.progress_percent}%`, background: 'linear-gradient(90deg, #10B981 0%, #059669 100%)', borderRadius: 4, transition: 'width 0.3s' }} />
+            <div style={{ height: '100%', width: `${cycle.progress_percent}%`, background: 'linear-gradient(90deg, #10B981 0%, var(--quality-high, #059669) 100%)', borderRadius: 4, transition: 'width 0.3s' }} />
           </div>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#059669' }}>{cycle.progress_percent}%</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--quality-high, #059669)' }}>{cycle.progress_percent}%</span>
         </div>
 
         {/* Sidebar toggle */}

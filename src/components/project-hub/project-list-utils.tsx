@@ -96,7 +96,7 @@ export function HealthBadge({ health }: { health: string | null }) {
   );
 }
 
-const AVATAR_COLORS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, #DC2626)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, #D97706)', '#059669', '#0369A1', '#BE185D'];
+const AVATAR_COLORS = ['var(--ds-text-brand, #2563EB)', 'var(--cp-teal-60, #0D9488)', 'var(--ds-text-danger, #DC2626)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, #D97706)', 'var(--quality-high, #059669)', '#0369A1', '#BE185D'];
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);

@@ -556,7 +556,7 @@ export const STATUS_COLORS: Record<StatusCategory, { bg: string; text: string; b
   all:      { bg: '#F3F4F6', text: '#374151', border: '#D1D5DB', dot: '#6B7280' },
   todo:     { bg: '#F1F5F9', text: '#64748B', border: '#CBD5E1', dot: '#64748B' },
   progress: { bg: '#DBEAFE', text: '#2563EB', border: '#93C5FD', dot: '#2563EB' },
-  done:     { bg: '#D1FAE5', text: '#059669', border: '#6EE7B7', dot: '#059669' },
+  done:     { bg: '#D1FAE5', text: 'var(--quality-high, #059669)', border: '#6EE7B7', dot: 'var(--quality-high, #059669)' },
 };
 
 /** Hub color mapping (V3) */

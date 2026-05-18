@@ -81,7 +81,7 @@ const PRIORITY_CONFIG: Record<string, { color: string; bg: string }> = {
   critical: { color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)' },
   high: { color: '#EA580C', bg: '#FFF7ED' },
   medium: { color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB' },
-  low: { color: '#059669', bg: '#ECFDF5' },
+  low: { color: 'var(--quality-high, #059669)', bg: '#ECFDF5' },
 };
 
 const FAILURE_REASON_LABELS: Record<string, string> = {

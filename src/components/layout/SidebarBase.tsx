@@ -607,7 +607,7 @@ function renderMenuItem(
             background: item.textBadge === 'AI' 
               ? 'rgba(124, 58, 237, 0.06)'
               : item.textBadgeVariant === 'new' 
-              ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+              ? 'linear-gradient(135deg, #10b981 0%, var(--quality-high, #059669) 100%)'
               : item.textBadgeVariant === 'beta'
               ? 'linear-gradient(135deg, var(--ds-text-warning, #f59e0b) 0%, var(--ds-text-warning, #d97706) 100%)'
               : 'hsl(var(--brand-primary))',

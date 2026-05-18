@@ -119,7 +119,7 @@
   --cap-translate: var(--cp-teal-60, #0D9488);
   --cap-epic: var(--cp-purple-60, #7C3AED);
   --cap-uat: #D97706;
-  --quality-high: #059669;
+  --quality-high: var(--quality-high, #059669);
   --quality-mid: #D97706;
   --quality-low: #DC2626;
   --primary-50: #EFF6FF;
@@ -658,7 +658,7 @@ html:has(body[data-scroll-locked]) {
        ═══════════════════════════════════════════════════════════════ */
     
     /* V5 CANONICAL SEMANTIC COLORS (A2 Spec Exact) */
-    --success: 160 84% 39%;                /* #059669 emerald-600 */
+    --success: 160 84% 39%;                /* var(--quality-high, #059669) emerald-600 */
     --success-foreground: 0 0% 100%;
     --success-bg: 160 84% 39%;
     --success-border: 160 84% 39%;
@@ -736,7 +736,7 @@ html:has(body[data-scroll-locked]) {
     /* Semantic tokens → V5 CANONICAL (Light Mode) - Exact A2 Spec */
     --sem-danger: #dc2626;                 /* Red-600 */
     --sem-warning: #d97706;                /* Amber-600 */
-    --sem-success: #059669;                /* Emerald-600 - A2 Spec */
+    --sem-success: var(--quality-high, #059669);                /* Emerald-600 - A2 Spec */
     --sem-info: #0284c7;                   /* Sky-600 - A2 Spec */
     --sem-critical: #dc2626;               /* Red-600 */
     --sem-blocked: #d97706;                /* Orange */

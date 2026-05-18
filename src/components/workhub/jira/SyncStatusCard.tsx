@@ -44,7 +44,7 @@ export function SyncStatusCards({ projects, totalItems, syncLogs }: SyncStatusCa
 
   const cards = [
     { icon: FolderGit2, value: activeCount, label: 'Projects Connected', iconBg: '#dbeafe', iconColor: 'var(--cp-blue)' },
-    { icon: FileStack, value: totalItems, label: 'Total Items', iconBg: '#d1fae5', iconColor: '#059669' },
+    { icon: FileStack, value: totalItems, label: 'Total Items', iconBg: '#d1fae5', iconColor: 'var(--quality-high, #059669)' },
     { icon: RefreshCw, value: lastSyncTime, label: 'Last Sync', iconBg: '#e0e7ff', iconColor: '#4f46e5' },
     {
       icon: AlertTriangle,

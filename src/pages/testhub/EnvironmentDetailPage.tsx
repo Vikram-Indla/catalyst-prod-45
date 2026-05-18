@@ -55,14 +55,14 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> 
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  active: { label: 'Active', color: '#059669', bg: '#ECFDF5' },
+  active: { label: 'Active', color: 'var(--quality-high, #059669)', bg: '#ECFDF5' },
   maintenance: { label: 'Maintenance', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB' },
   inactive: { label: 'Inactive', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
   deprecated: { label: 'Deprecated', color: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F8FAFC)' },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  healthy: { label: 'Healthy', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
+  healthy: { label: 'Healthy', color: 'var(--quality-high, #059669)', bg: '#ECFDF5', icon: CheckCircle2 },
   degraded: { label: 'Degraded', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', icon: AlertTriangle },
   down: { label: 'Down', color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)', icon: XCircle },
   unknown: { label: 'Unknown', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: HelpCircle },

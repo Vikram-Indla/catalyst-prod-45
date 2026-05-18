@@ -159,7 +159,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
                 <span className="font-semibold text-[14px] text-[var(--ds-text,#0f172a)] dark:text-foreground truncate">{value}</span>
                 {/* Online indicator */}
                 {isOnline && (
-                  <span className="w-2 h-2 rounded-full bg-[#059669] flex-shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-[var(--quality-high, #059669)] flex-shrink-0" />
                 )}
               </div>
               {/* Location label */}
@@ -295,7 +295,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
           'OPERATIONS': { bg: 'rgba(13,148,136,0.15)', text: '#115e59' },
           'PRODUCT': { bg: 'rgba(109,40,217,0.12)', text: '#6d28d9' },
           'DELIVERY': { bg: 'rgba(14,116,144,0.12)', text: '#0e7490' },
-          'SUPPORT': { bg: 'rgba(16,185,129,0.12)', text: '#059669' },
+          'SUPPORT': { bg: 'rgba(16,185,129,0.12)', text: 'var(--quality-high, #059669)' },
         };
 
         const style = deptStyles[deptUpper] || { bg: 'rgba(100,116,139,0.12)', text: 'var(--ds-text-subtle, #475569)' };

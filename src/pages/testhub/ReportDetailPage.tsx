@@ -33,7 +33,7 @@ const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
   plan_summary: { label: 'Plan Summary', color: 'var(--cp-purple-60, #7C3AED)' },
   coverage: { label: 'Coverage', color: '#0891B2' },
   defect: { label: 'Defect Report', color: 'var(--ds-text-danger, #DC2626)' },
-  trend: { label: 'Trend Analysis', color: '#059669' },
+  trend: { label: 'Trend Analysis', color: 'var(--quality-high, #059669)' },
   custom: { label: 'Custom', color: 'var(--ds-text-subtlest, #64748B)' },
 };
 
@@ -178,9 +178,9 @@ export default function ReportDetailPage() {
               <p style={{ fontSize: 12, color: textSecondary, margin: '4px 0 0' }}>Total Tests</p>
             </div>
             <div style={{ backgroundColor: 'var(--cp-success-light, #ECFDF5)', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? '#2D4A2D' : '#A7F3D0'}`, textAlign: 'center' }}>
-              <CheckCircle2 size={24} style={{ color: '#059669', marginBottom: 8 }} />
-              <p style={{ fontSize: 28, fontWeight: 700, color: '#059669', margin: 0 }}>{data.summary.passed}</p>
-              <p style={{ fontSize: 12, color: '#059669', margin: '4px 0 0' }}>Passed</p>
+              <CheckCircle2 size={24} style={{ color: 'var(--quality-high, #059669)', marginBottom: 8 }} />
+              <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--quality-high, #059669)', margin: 0 }}>{data.summary.passed}</p>
+              <p style={{ fontSize: 12, color: 'var(--quality-high, #059669)', margin: '4px 0 0' }}>Passed</p>
             </div>
             <div style={{ backgroundColor: 'var(--cp-danger-light, #FEF2F2)', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-danger-light, #FECACA)'}`, textAlign: 'center' }}>
               <XCircle size={24} style={{ color: 'var(--ds-text-danger, #DC2626)', marginBottom: 8 }} />
@@ -188,8 +188,8 @@ export default function ReportDetailPage() {
               <p style={{ fontSize: 12, color: 'var(--ds-text-danger, #DC2626)', margin: '4px 0 0' }}>Failed</p>
             </div>
             <div style={{ backgroundColor: surfaceBg, borderRadius: 12, padding: 20, border: `1px solid ${borderColor}`, textAlign: 'center' }}>
-              <PieChart size={24} style={{ color: data.summary.pass_rate >= 80 ? '#059669' : data.summary.pass_rate >= 50 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #DC2626)', marginBottom: 8 }} />
-              <p style={{ fontSize: 28, fontWeight: 700, color: data.summary.pass_rate >= 80 ? '#059669' : data.summary.pass_rate >= 50 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #DC2626)', margin: 0 }}>{data.summary.pass_rate}%</p>
+              <PieChart size={24} style={{ color: data.summary.pass_rate >= 80 ? 'var(--quality-high, #059669)' : data.summary.pass_rate >= 50 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #DC2626)', marginBottom: 8 }} />
+              <p style={{ fontSize: 28, fontWeight: 700, color: data.summary.pass_rate >= 80 ? 'var(--quality-high, #059669)' : data.summary.pass_rate >= 50 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #DC2626)', margin: 0 }}>{data.summary.pass_rate}%</p>
               <p style={{ fontSize: 12, color: textSecondary, margin: '4px 0 0' }}>Pass Rate</p>
             </div>
           </div>
@@ -230,7 +230,7 @@ export default function ReportDetailPage() {
                     <p style={{ fontSize: 14, fontWeight: 600, color: textPrimary, margin: '0 0 8px' }}>{a.assignee_name}</p>
                     <div style={{ display: 'flex', gap: 12, fontSize: 12 }}>
                       <span>Total: {a.total}</span>
-                      <span style={{ color: '#059669' }}>Passed: {a.passed}</span>
+                      <span style={{ color: 'var(--quality-high, #059669)' }}>Passed: {a.passed}</span>
                       <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>Failed: {a.failed}</span>
                     </div>
                   </div>
@@ -266,7 +266,7 @@ export default function ReportDetailPage() {
                           <span style={{
                             fontSize: 11, fontWeight: 500, padding: '3px 8px', borderRadius: 4,
                             backgroundColor: tc.status === 'passed' ? ('var(--cp-success-light, #ECFDF5)') : tc.status === 'failed' ? ('var(--cp-danger-light, #FEF2F2)') : ('var(--cp-bg-sunken, #F1F5F9)'),
-                            color: tc.status === 'passed' ? '#059669' : tc.status === 'failed' ? 'var(--ds-text-danger, #DC2626)' : textSecondary,
+                            color: tc.status === 'passed' ? 'var(--quality-high, #059669)' : tc.status === 'failed' ? 'var(--ds-text-danger, #DC2626)' : textSecondary,
                           }}>
                             {tc.status || 'Not Run'}
                           </span>
