@@ -1,33 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Select from '@atlaskit/select';
 import Button from '@atlaskit/button';
-import { getModuleViolations, getAuditHistory, runAudit } from '@/lib/design-audit';
+import Textfield from '@atlaskit/textfield';
+import SearchIcon from '@atlaskit/icon/core/search';
+import {
+  getModuleViolations,
+  getAuditHistory,
+  runAudit,
+  type Module,
+  type Violation,
+  type AuditTrail,
+} from '@/lib/design-audit';
 
-export type Module = 'project-hub' | 'product-hub' | 'incidents' | 'releases' | 'reports' | 'admin' | 'resources';
-
-interface Violation {
-  id: string;
-  rule: string;
-  severity: 'P0' | 'P1' | 'P2';
-  description: string;
-  surface_id: string;
-  created_at: string;
-}
-
-interface AuditTrail {
-  id: string;
-  action: string;
-  module_id: string;
-  created_at: string;
-  details?: Record<string, any>;
-}
+/* ── Jira admin tokens (probed live 2026-05-19) ──────────────────────
+ * Source: https://digital-transformation.atlassian.net/jira/settings/issues/issue-types
+ * H1: 24px / 653 / rgb(41,42,46) / Atlassian Sans / lineHeight 28px
+ * Page subtitle: 14px / 400 / rgb(80,82,88)
+ * Primary button: 14px / 500 / white text on rgb(24,104,219) / radius 3px / height 32
+ * Filter input: 14px placeholder / height 28px
+ * Table header: 12px / 653 / rgb(80,82,88) / sentence-case / borderBottom 1.67px solid rgba(11,18,14,0.14)
+ * Table cell:   14px / 400 / rgb(41,42,46) / padding 4px 8px 4px 0
+ * ────────────────────────────────────────────────────────────────── */
 
 interface AuditMessage {
   type: 'success' | 'error' | 'info';
   text: string;
 }
 
-const MODULE_OPTIONS = [
+const MODULE_OPTIONS: { label: string; value: Module }[] = [
   { label: 'Project Hub', value: 'project-hub' },
   { label: 'Product Hub', value: 'product-hub' },
   { label: 'Incidents', value: 'incidents' },
@@ -39,36 +39,57 @@ const MODULE_OPTIONS = [
 
 const SURFACE_OPTIONS: Record<string, { label: string; value: string }[]> = {
   'project-hub': [
-    { label: 'All Surfaces', value: 'all' },
+    { label: 'All surfaces', value: 'all' },
     { label: 'Backlog', value: 'backlog' },
     { label: 'Board', value: 'board' },
-    { label: 'List View', value: 'list' },
+    { label: 'List view', value: 'list' },
   ],
   'product-hub': [
-    { label: 'All Surfaces', value: 'all' },
-    { label: 'Product List', value: 'list' },
+    { label: 'All surfaces', value: 'all' },
+    { label: 'Product list', value: 'list' },
   ],
   incidents: [
-    { label: 'All Surfaces', value: 'all' },
-    { label: 'Incidents List', value: 'list' },
+    { label: 'All surfaces', value: 'all' },
+    { label: 'Incidents list', value: 'list' },
   ],
   releases: [
-    { label: 'All Surfaces', value: 'all' },
-    { label: 'Release Calendar', value: 'calendar' },
+    { label: 'All surfaces', value: 'all' },
+    { label: 'Release calendar', value: 'calendar' },
   ],
   reports: [
-    { label: 'All Surfaces', value: 'all' },
+    { label: 'All surfaces', value: 'all' },
     { label: 'Dashboard', value: 'dashboard' },
   ],
   admin: [
-    { label: 'All Surfaces', value: 'all' },
-    { label: 'Users & Access', value: 'users' },
+    { label: 'All surfaces', value: 'all' },
+    { label: 'Users & access', value: 'users' },
   ],
   resources: [
-    { label: 'All Surfaces', value: 'all' },
+    { label: 'All surfaces', value: 'all' },
     { label: 'Capacity', value: 'capacity' },
   ],
 };
+
+/* ── Severity badge — sentence case, Jira-style lozenge ──────────── */
+function getSeverityBadgeStyle(severity: string): React.CSSProperties {
+  const tone =
+    severity === 'P0'
+      ? { bg: 'var(--ds-background-danger, #FFECEB)', fg: 'var(--ds-text-danger, #AE2A19)' }
+      : severity === 'P1'
+        ? { bg: 'var(--ds-background-warning, #FFF7D6)', fg: 'var(--ds-text-warning-inverse, #533F04)' }
+        : { bg: 'var(--ds-background-neutral, #DCDFE4)', fg: 'var(--ds-text-subtle, #44546F)' };
+  return {
+    display: 'inline-block',
+    padding: '2px 6px',
+    borderRadius: 3,
+    backgroundColor: tone.bg,
+    color: tone.fg,
+    fontSize: 11,
+    fontWeight: 700,
+    lineHeight: '16px',
+    letterSpacing: '0.16px',
+  };
+}
 
 export default function DesignSystemAdmin() {
   const [violations, setViolations] = useState<Violation[]>([]);
@@ -78,15 +99,16 @@ export default function DesignSystemAdmin() {
   const [selectedSurface, setSelectedSurface] = useState<string | null>(null);
   const [isAuditing, setIsAuditing] = useState(false);
   const [auditMessage, setAuditMessage] = useState<AuditMessage | null>(null);
+  const [filterQuery, setFilterQuery] = useState('');
 
-  // Fetch violations and audit history when module changes
+  // Fetch violations and audit history when module changes.
   useEffect(() => {
     if (!selectedModule) {
       setViolations([]);
       setAuditTrail([]);
       return;
     }
-
+    let cancelled = false;
     const fetchData = async () => {
       setIsLoadingViolations(true);
       try {
@@ -94,43 +116,42 @@ export default function DesignSystemAdmin() {
           getModuleViolations(selectedModule),
           getAuditHistory(selectedModule, 10),
         ]);
+        if (cancelled) return;
         setViolations(violationData || []);
         setAuditTrail(trailData || []);
       } catch (error) {
+        if (cancelled) return;
         console.error('Error fetching audit data:', error);
         setViolations([]);
         setAuditTrail([]);
       } finally {
-        setIsLoadingViolations(false);
+        if (!cancelled) setIsLoadingViolations(false);
       }
     };
-
     fetchData();
+    return () => {
+      cancelled = true;
+    };
   }, [selectedModule]);
 
   const handleRunAudit = async () => {
     if (!selectedModule) return;
-
     setIsAuditing(true);
     setAuditMessage(null);
-
     try {
       const result = await runAudit({
         module: selectedModule,
         surface: selectedSurface || undefined,
       });
-
       setAuditMessage({
         type: 'success',
         text: `Audit complete: ${result.violationCount} violations found, ${result.tokenCount} tokens analyzed.`,
       });
-
-      // Refresh violations
-      const violationData = await getModuleViolations(selectedModule);
+      const [violationData, trailData] = await Promise.all([
+        getModuleViolations(selectedModule),
+        getAuditHistory(selectedModule, 10),
+      ]);
       setViolations(violationData || []);
-
-      // Refresh audit trail
-      const trailData = await getAuditHistory(selectedModule, 10);
       setAuditTrail(trailData || []);
     } catch (error) {
       setAuditMessage({
@@ -142,424 +163,377 @@ export default function DesignSystemAdmin() {
     }
   };
 
-  // Calculate metrics
+  /* ── Metrics ─────────────────────────────────────────────────── */
   const totalViolations = violations.length;
-  const p0Violations = violations.filter((v) => v.severity === 'P0').length;
-  const p1Violations = violations.filter((v) => v.severity === 'P1').length;
+  const p0Violations = violations.filter(v => v.severity === 'P0').length;
+  const p1Violations = violations.filter(v => v.severity === 'P1').length;
   const complianceScore =
-    totalViolations === 0
-      ? 100
-      : Math.max(0, 100 - totalViolations * 10);
+    totalViolations === 0 ? 100 : Math.max(0, 100 - totalViolations * 10);
 
-  const getSeverityBadgeStyle = (severity: string) => ({
-    display: 'inline-block',
-    padding: '2px 8px',
-    borderRadius: '3px',
-    backgroundColor:
-      severity === 'P0'
-        ? 'var(--ds-background-danger-subtlest)'
-        : severity === 'P1'
-          ? 'var(--ds-background-warning-subtlest)'
-          : 'var(--ds-background-neutral-subtlest)',
-    color:
-      severity === 'P0'
-        ? 'var(--ds-text-danger)'
-        : severity === 'P1'
-          ? 'var(--ds-text-warning)'
-          : 'var(--ds-text-subtlest)',
-    fontSize: '12px',
-    fontWeight: 500,
-  });
+  /* ── Filter ──────────────────────────────────────────────────── */
+  const visibleViolations = useMemo(() => {
+    if (!filterQuery.trim()) return violations;
+    const q = filterQuery.toLowerCase();
+    return violations.filter(
+      v =>
+        v.rule_name.toLowerCase().includes(q) ||
+        v.description.toLowerCase().includes(q) ||
+        v.surface_id.toLowerCase().includes(q),
+    );
+  }, [violations, filterQuery]);
+
+  const moduleOption = selectedModule
+    ? MODULE_OPTIONS.find(o => o.value === selectedModule) ?? null
+    : null;
+  const surfaceOption =
+    selectedModule && selectedSurface
+      ? SURFACE_OPTIONS[selectedModule]?.find(o => o.value === selectedSurface) ?? null
+      : null;
 
   return (
-    <div style={{ padding: '32px' }}>
-      <h1
-        style={{
-          fontSize: '28px',
-          fontWeight: 700,
-          marginBottom: '24px',
-          color: 'var(--ds-text)',
-        }}
-      >
-        Design System & Governance
-      </h1>
-
-      {/* Control Panel */}
+    <div
+      style={{
+        padding: '24px 32px 48px',
+        maxWidth: 1280,
+        color: 'rgb(41, 42, 46)',
+        fontFamily:
+          '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+      }}
+    >
+      {/* ─── Page header ─── Jira parity: H1 24/653 + subtitle + right-aligned primary button */}
       <div
         style={{
           display: 'flex',
-          gap: '16px',
-          alignItems: 'flex-end',
-          marginBottom: '32px',
-          padding: '16px',
-          backgroundColor: 'var(--ds-background-neutral-subtle)',
-          borderRadius: '4px',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          gap: 16,
+          marginBottom: 8,
         }}
       >
-        <div style={{ flex: 1, minWidth: '200px' }}>
+        <div style={{ flex: 1 }}>
+          <h1
+            style={{
+              fontSize: 24,
+              fontWeight: 653,
+              lineHeight: '28px',
+              color: 'rgb(41, 42, 46)',
+              margin: 0,
+              letterSpacing: 'normal',
+            }}
+          >
+            Design system
+          </h1>
+        </div>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <Button
+            appearance="primary"
+            onClick={handleRunAudit}
+            isDisabled={!selectedModule || isAuditing}
+          >
+            {isAuditing ? 'Running audit…' : 'Run audit'}
+          </Button>
+        </div>
+      </div>
+
+      <p
+        style={{
+          fontSize: 14,
+          fontWeight: 400,
+          color: 'rgb(80, 82, 88)',
+          margin: '0 0 24px 0',
+          lineHeight: '20px',
+          maxWidth: 760,
+        }}
+      >
+        Track design system compliance across modules and surfaces. Select a module
+        to load violations, then run an audit to refresh.
+      </p>
+
+      {/* ─── Module + Surface picker row ─── inline, no boxed panel */}
+      <div
+        style={{
+          display: 'flex',
+          gap: 12,
+          alignItems: 'flex-end',
+          marginBottom: 24,
+          flexWrap: 'wrap',
+        }}
+      >
+        <div style={{ minWidth: 240, flex: '0 1 280px' }}>
           <label
             style={{
               display: 'block',
-              fontSize: '12px',
+              fontSize: 12,
               fontWeight: 600,
-              marginBottom: '8px',
-              color: 'var(--ds-text-subtlest)',
+              color: 'rgb(80, 82, 88)',
+              marginBottom: 4,
             }}
           >
             Module
           </label>
           <Select
             options={MODULE_OPTIONS}
-            value={
-              selectedModule
-                ? MODULE_OPTIONS.find((o) => o.value === selectedModule)
-                : null
-            }
-            onChange={(option) =>
-              setSelectedModule((option?.value as Module) || null)
-            }
-            placeholder="Select a module..."
+            value={moduleOption}
+            onChange={option => {
+              setSelectedModule((option?.value as Module) || null);
+              setSelectedSurface(null);
+            }}
+            placeholder="Select a module"
             isClearable
           />
         </div>
 
         {selectedModule && (
-          <div style={{ flex: 1, minWidth: '200px' }}>
+          <div style={{ minWidth: 240, flex: '0 1 280px' }}>
             <label
               style={{
                 display: 'block',
-                fontSize: '12px',
+                fontSize: 12,
                 fontWeight: 600,
-                marginBottom: '8px',
-                color: 'var(--ds-text-subtlest)',
+                color: 'rgb(80, 82, 88)',
+                marginBottom: 4,
               }}
             >
               Surface
             </label>
             <Select
               options={SURFACE_OPTIONS[selectedModule] || []}
-              value={
-                selectedSurface
-                  ? SURFACE_OPTIONS[selectedModule]?.find(
-                      (o) => o.value === selectedSurface
-                    )
-                  : null
-              }
-              onChange={(option) => setSelectedSurface(option?.value || null)}
-              placeholder="Select a surface..."
+              value={surfaceOption}
+              onChange={option => setSelectedSurface(option?.value || null)}
+              placeholder="Select a surface"
               isClearable
             />
           </div>
         )}
-
-        <Button
-          appearance="primary"
-          onClick={handleRunAudit}
-          isDisabled={!selectedModule || isAuditing}
-        >
-          {isAuditing ? 'Running Audit...' : 'Run Audit'}
-        </Button>
       </div>
 
-      {/* Audit Message */}
+      {/* ─── Audit feedback message ─── Jira-style flat notification */}
       {auditMessage && (
         <div
+          role="status"
           style={{
-            padding: '12px 16px',
-            marginBottom: '24px',
-            borderRadius: '4px',
-            backgroundColor:
+            padding: '8px 12px',
+            marginBottom: 16,
+            borderRadius: 3,
+            fontSize: 13,
+            lineHeight: '20px',
+            background:
               auditMessage.type === 'success'
-                ? 'var(--ds-background-success-subtlest)'
+                ? 'var(--ds-background-success, #DCFFF1)'
                 : auditMessage.type === 'error'
-                  ? 'var(--ds-background-danger-subtlest)'
-                  : 'var(--ds-background-information-subtlest)',
+                  ? 'var(--ds-background-danger, #FFECEB)'
+                  : 'var(--ds-background-information, #E9F2FF)',
             color:
               auditMessage.type === 'success'
-                ? 'var(--ds-text-success)'
+                ? 'var(--ds-text-success, #216E4E)'
                 : auditMessage.type === 'error'
-                  ? 'var(--ds-text-danger)'
-                  : 'var(--ds-text-information)',
-            fontSize: '13px',
+                  ? 'var(--ds-text-danger, #AE2A19)'
+                  : 'var(--ds-text-information, #0055CC)',
           }}
         >
           {auditMessage.text}
         </div>
       )}
 
-      {/* Compliance Dashboard */}
+      {/* ─── Compliance metric strip ─── compact horizontal cards, Jira-style */}
       {selectedModule && (
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '16px',
-            marginBottom: '32px',
+            display: 'flex',
+            gap: 12,
+            marginBottom: 24,
+            flexWrap: 'wrap',
           }}
         >
-          <div
-            style={{
-              padding: '16px',
-              backgroundColor: 'var(--ds-background-neutral-subtle)',
-              borderRadius: '4px',
-              border: '1px solid var(--ds-border)',
-            }}
-          >
+          {[
+            {
+              label: 'Compliance score',
+              value: `${complianceScore}%`,
+              valueColor:
+                complianceScore >= 80
+                  ? 'rgb(33, 110, 78)'
+                  : complianceScore >= 50
+                    ? 'rgb(133, 79, 4)'
+                    : 'rgb(174, 42, 25)',
+            },
+            { label: 'Total violations', value: totalViolations },
+            {
+              label: 'P0 blockers',
+              value: p0Violations,
+              valueColor: p0Violations > 0 ? 'rgb(174, 42, 25)' : 'rgb(41, 42, 46)',
+            },
+            {
+              label: 'P1 issues',
+              value: p1Violations,
+              valueColor: p1Violations > 0 ? 'rgb(133, 79, 4)' : 'rgb(41, 42, 46)',
+            },
+          ].map(card => (
             <div
+              key={card.label}
               style={{
-                fontSize: '12px',
-                fontWeight: 600,
-                color: 'var(--ds-text-subtlest)',
-                marginBottom: '8px',
+                flex: '1 1 180px',
+                minWidth: 160,
+                padding: '12px 16px',
+                background: '#FFFFFF',
+                border: '1px solid rgba(11, 18, 14, 0.14)',
+                borderRadius: 3,
               }}
             >
-              Compliance Score
+              <div
+                style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: 'rgb(80, 82, 88)',
+                  marginBottom: 4,
+                  letterSpacing: 'normal',
+                }}
+              >
+                {card.label}
+              </div>
+              <div
+                style={{
+                  fontSize: 20,
+                  fontWeight: 653,
+                  lineHeight: '24px',
+                  color: card.valueColor || 'rgb(41, 42, 46)',
+                }}
+              >
+                {card.value}
+              </div>
             </div>
-            <div
-              style={{
-                fontSize: '28px',
-                fontWeight: 700,
-                color: 'var(--ds-text)',
-              }}
-            >
-              {complianceScore}%
-            </div>
-          </div>
-
-          <div
-            style={{
-              padding: '16px',
-              backgroundColor: 'var(--ds-background-neutral-subtle)',
-              borderRadius: '4px',
-              border: '1px solid var(--ds-border)',
-            }}
-          >
-            <div
-              style={{
-                fontSize: '12px',
-                fontWeight: 600,
-                color: 'var(--ds-text-subtlest)',
-                marginBottom: '8px',
-              }}
-            >
-              Total Violations
-            </div>
-            <div
-              style={{
-                fontSize: '28px',
-                fontWeight: 700,
-                color: 'var(--ds-text)',
-              }}
-            >
-              {totalViolations}
-            </div>
-          </div>
-
-          <div
-            style={{
-              padding: '16px',
-              backgroundColor: 'var(--ds-background-neutral-subtle)',
-              borderRadius: '4px',
-              border: '1px solid var(--ds-border)',
-            }}
-          >
-            <div
-              style={{
-                fontSize: '12px',
-                fontWeight: 600,
-                color: 'var(--ds-text-danger)',
-                marginBottom: '8px',
-              }}
-            >
-              P0 Blockers
-            </div>
-            <div
-              style={{
-                fontSize: '28px',
-                fontWeight: 700,
-                color: 'var(--ds-text-danger)',
-              }}
-            >
-              {p0Violations}
-            </div>
-          </div>
-
-          <div
-            style={{
-              padding: '16px',
-              backgroundColor: 'var(--ds-background-neutral-subtle)',
-              borderRadius: '4px',
-              border: '1px solid var(--ds-border)',
-            }}
-          >
-            <div
-              style={{
-                fontSize: '12px',
-                fontWeight: 600,
-                color: 'var(--ds-text-warning)',
-                marginBottom: '8px',
-              }}
-            >
-              P1 Issues
-            </div>
-            <div
-              style={{
-                fontSize: '28px',
-                fontWeight: 700,
-                color: 'var(--ds-text-warning)',
-              }}
-            >
-              {p1Violations}
-            </div>
-          </div>
+          ))}
         </div>
       )}
 
-      {/* Design Violations Table */}
-      {isLoadingViolations ? (
-        <div style={{ padding: '32px', textAlign: 'center', color: 'var(--ds-text-subtlest)' }}>
-          Loading violations...
+      {/* ─── Filter input ─── Jira's "Filter X by name or description" pattern */}
+      {selectedModule && (
+        <div style={{ maxWidth: 360, marginBottom: 12 }}>
+          <Textfield
+            placeholder="Filter violations by rule, description, or surface"
+            value={filterQuery}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setFilterQuery(e.target.value)
+            }
+            elemBeforeInput={
+              <div
+                style={{
+                  paddingLeft: 8,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <SearchIcon label="" size="small" />
+              </div>
+            }
+            isCompact
+          />
         </div>
-      ) : violations.length > 0 ? (
-        <div style={{ marginBottom: '32px' }}>
-          <h2
-            style={{
-              fontSize: '16px',
-              fontWeight: 600,
-              marginBottom: '16px',
-              color: 'var(--ds-text)',
-            }}
-          >
-            Design Violations ({violations.length})
-          </h2>
+      )}
+
+      {/* ─── Violations table ─── Jira admin parity: 12/653 sentence-case headers, 14/400 cells, no outer border */}
+      {isLoadingViolations ? (
+        <div
+          style={{
+            padding: '32px 0',
+            fontSize: 14,
+            color: 'rgb(80, 82, 88)',
+          }}
+        >
+          Loading violations…
+        </div>
+      ) : visibleViolations.length > 0 ? (
+        <div style={{ marginBottom: 32 }}>
           <table
             style={{
               width: '100%',
               borderCollapse: 'collapse',
-              border: '1px solid var(--ds-border)',
-              borderRadius: '4px',
-              overflow: 'hidden',
+              fontSize: 14,
             }}
           >
             <thead>
-              <tr style={{ backgroundColor: 'var(--ds-background-neutral-subtle)' }}>
-                <th
-                  style={{
-                    padding: '12px 16px',
-                    textAlign: 'left',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    color: 'var(--ds-text-subtlest)',
-                    borderBottom: '1px solid var(--ds-border)',
-                  }}
-                >
-                  Rule
-                </th>
-                <th
-                  style={{
-                    padding: '12px 16px',
-                    textAlign: 'left',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    color: 'var(--ds-text-subtlest)',
-                    borderBottom: '1px solid var(--ds-border)',
-                    width: '80px',
-                  }}
-                >
-                  Severity
-                </th>
-                <th
-                  style={{
-                    padding: '12px 16px',
-                    textAlign: 'left',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    color: 'var(--ds-text-subtlest)',
-                    borderBottom: '1px solid var(--ds-border)',
-                  }}
-                >
-                  Description
-                </th>
-                <th
-                  style={{
-                    padding: '12px 16px',
-                    textAlign: 'left',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    color: 'var(--ds-text-subtlest)',
-                    borderBottom: '1px solid var(--ds-border)',
-                    width: '120px',
-                  }}
-                >
-                  Surface
-                </th>
-                <th
-                  style={{
-                    padding: '12px 16px',
-                    textAlign: 'left',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    color: 'var(--ds-text-subtlest)',
-                    borderBottom: '1px solid var(--ds-border)',
-                    width: '140px',
-                  }}
-                >
-                  Date
-                </th>
+              <tr>
+                {[
+                  { key: 'rule', label: 'Rule', width: '28%' },
+                  { key: 'sev', label: 'Severity', width: '90px' },
+                  { key: 'desc', label: 'Description', width: 'auto' },
+                  { key: 'surface', label: 'Surface', width: '130px' },
+                  { key: 'date', label: 'Created', width: '140px' },
+                ].map(col => (
+                  <th
+                    key={col.key}
+                    scope="col"
+                    style={{
+                      textAlign: 'left',
+                      fontSize: 12,
+                      fontWeight: 653,
+                      color: 'rgb(80, 82, 88)',
+                      padding: '8px 12px 8px 0',
+                      borderBottom: '1.67px solid rgba(11, 18, 14, 0.14)',
+                      textTransform: 'none',
+                      letterSpacing: 'normal',
+                      width: col.width,
+                      lineHeight: '16px',
+                    }}
+                  >
+                    {col.label}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {violations.map((violation, idx) => (
-                <tr
-                  key={violation.id}
-                  style={{
-                    borderBottom:
-                      idx < violations.length - 1
-                        ? '1px solid var(--ds-border)'
-                        : 'none',
-                  }}
-                >
+              {visibleViolations.map(v => (
+                <tr key={v.id}>
                   <td
                     style={{
-                      padding: '12px 16px',
-                      fontSize: '13px',
-                      color: 'var(--ds-text)',
-                      fontFamily: 'monospace',
+                      padding: '12px 12px 12px 0',
+                      fontSize: 13,
+                      fontFamily:
+                        'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
+                      color: 'rgb(41, 42, 46)',
+                      borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
                     }}
                   >
-                    {violation.rule}
+                    {v.rule_name}
                   </td>
-                  <td style={{ padding: '12px 16px' }}>
-                    <span style={getSeverityBadgeStyle(violation.severity)}>
-                      {violation.severity}
+                  <td
+                    style={{
+                      padding: '12px 12px 12px 0',
+                      borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
+                    }}
+                  >
+                    <span style={getSeverityBadgeStyle(v.severity)}>
+                      {v.severity}
                     </span>
                   </td>
                   <td
                     style={{
-                      padding: '12px 16px',
-                      fontSize: '13px',
-                      color: 'var(--ds-text)',
+                      padding: '12px 12px 12px 0',
+                      fontSize: 14,
+                      color: 'rgb(41, 42, 46)',
+                      borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
                     }}
                   >
-                    {violation.description}
+                    {v.description}
                   </td>
                   <td
                     style={{
-                      padding: '12px 16px',
-                      fontSize: '13px',
-                      color: 'var(--ds-text-subtlest)',
+                      padding: '12px 12px 12px 0',
+                      fontSize: 14,
+                      color: 'rgb(80, 82, 88)',
+                      borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
                     }}
                   >
-                    {violation.surface_id}
+                    {v.surface_id}
                   </td>
                   <td
                     style={{
-                      padding: '12px 16px',
-                      fontSize: '12px',
-                      color: 'var(--ds-text-subtlest)',
+                      padding: '12px 12px 12px 0',
+                      fontSize: 13,
+                      color: 'rgb(80, 82, 88)',
+                      borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
                     }}
                   >
-                    {new Date(violation.created_at).toLocaleDateString()}
+                    {new Date(v.created_at).toLocaleDateString()}
                   </td>
                 </tr>
               ))}
@@ -569,65 +543,56 @@ export default function DesignSystemAdmin() {
       ) : selectedModule ? (
         <div
           style={{
-            padding: '32px',
-            textAlign: 'center',
-            color: 'var(--ds-text-subtlest)',
-            backgroundColor: 'var(--ds-background-neutral-subtle)',
-            borderRadius: '4px',
-            marginBottom: '32px',
+            padding: '24px 0',
+            fontSize: 14,
+            color: 'rgb(80, 82, 88)',
           }}
         >
-          No violations found. Design system is compliant!
+          No violations found. Design system is compliant for this module.
         </div>
-      ) : null}
+      ) : (
+        <div
+          style={{
+            padding: '24px 0',
+            fontSize: 14,
+            color: 'rgb(80, 82, 88)',
+          }}
+        >
+          Select a module above to load its design system violations.
+        </div>
+      )}
 
-      {/* Recent Audit Changes */}
+      {/* ─── Recent audit changes ─── compact list, Jira-style */}
       {auditTrail.length > 0 && (
-        <div>
+        <div style={{ marginTop: 32 }}>
           <h2
             style={{
-              fontSize: '16px',
-              fontWeight: 600,
-              marginBottom: '16px',
-              color: 'var(--ds-text)',
+              fontSize: 16,
+              fontWeight: 653,
+              color: 'rgb(41, 42, 46)',
+              margin: '0 0 12px 0',
+              lineHeight: '20px',
             }}
           >
-            Recent Audit Changes
+            Recent audit changes
           </h2>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-            }}
-          >
-            {auditTrail.map((entry) => (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {auditTrail.map(entry => (
               <div
                 key={entry.id}
                 style={{
-                  padding: '12px 16px',
-                  backgroundColor: 'var(--ds-background-neutral-subtle)',
-                  borderLeft: '4px solid var(--ds-border-information)',
-                  borderRadius: '0 4px 4px 0',
-                  fontSize: '13px',
-                  color: 'var(--ds-text)',
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 180px',
+                  gap: 12,
+                  padding: '8px 0',
+                  borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
+                  fontSize: 14,
                 }}
               >
-                <div style={{ fontWeight: 600 }}>{entry.action}</div>
-                <div style={{ fontSize: '12px', color: 'var(--ds-text-subtlest)' }}>
+                <div style={{ color: 'rgb(41, 42, 46)' }}>{entry.action}</div>
+                <div style={{ color: 'rgb(80, 82, 88)', fontSize: 13 }}>
                   {new Date(entry.created_at).toLocaleString()}
                 </div>
-                {entry.details && (
-                  <div
-                    style={{
-                      fontSize: '12px',
-                      color: 'var(--ds-text-subtlest)',
-                      marginTop: '4px',
-                    }}
-                  >
-                    {JSON.stringify(entry.details).substring(0, 100)}...
-                  </div>
-                )}
               </div>
             ))}
           </div>

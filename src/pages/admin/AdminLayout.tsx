@@ -1,27 +1,35 @@
 import { Outlet } from 'react-router-dom';
 import { AdminSidebarV2 } from '@/components/admin/AdminSidebarV2';
 
-const T = {
-  border: 'var(--ds-border, #DCDFE4)',
-  bgPage: 'var(--ds-background-accent-gray-subtlest, #F7F8F9)',
-};
-
+/**
+ * AdminLayout — Jira admin parity (probed 2026-05-19).
+ *
+ * Two-column shell: 240px Jira-style sidebar + white main content surface.
+ * The sidebar (AdminSidebarV2) owns its own border-right; this layout
+ * intentionally has no inner padding around either column so leaf pages
+ * can manage their own page padding (Jira-style 24-32px) just like
+ * Atlassian's settings surfaces.
+ */
 export function AdminLayout() {
   return (
-    <div style={{ height: '100%', display: 'flex', background: T.bgPage }}>
-      {/* Sidebar */}
-      <div style={{
-        width: '240px',
-        background: 'var(--cp-bg-elevated, #ffffff)',
-        borderRight: `1px solid ${T.border}`,
-        overflowY: 'auto',
-        padding: '12px 0',
-      }}>
-        <AdminSidebarV2 expanded={true} onToggle={() => {}} />
-      </div>
+    <div
+      style={{
+        height: '100%',
+        display: 'flex',
+        background: '#FFFFFF',
+      }}
+    >
+      <AdminSidebarV2 expanded={true} onToggle={() => {}} />
 
-      {/* Main content */}
-      <div style={{ flex: 1, minWidth: 0, overflowY: 'auto' }}>
+      {/* Main content surface */}
+      <div
+        style={{
+          flex: 1,
+          minWidth: 0,
+          overflowY: 'auto',
+          background: '#FFFFFF',
+        }}
+      >
         <Outlet />
       </div>
     </div>

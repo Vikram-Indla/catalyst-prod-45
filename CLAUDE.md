@@ -957,3 +957,50 @@ When Supabase API returned objects with actual column names (`rule_name`, no `mo
 5. Default to: query the actual Supabase schema first, then define the interface to match, not the reverse
 
 **Severity:** P1 (silent data incompleteness — feature appears non-functional until the interface is corrected)
+
+---
+
+## 2026-05-19 — Admin sidebar must use Jira flat-expanded pattern; never hide leaves behind collapsed pockets
+
+**Surface:** All `/admin/*` pages (AdminSidebarV2 + AdminLayout)
+**Reference:** Live DOM probe of `https://digital-transformation.atlassian.net/jira/settings/issues/issue-types` on 2026-05-19.
+
+**Pattern:** Prior `AdminSidebarV2` used `@atlaskit/side-navigation` ButtonItem + ChevronDown to render each pocket as a collapsible group. Leaf items (e.g. "Design Governance" under "Design system") were INVISIBLE until the user clicked the parent pocket open. Vikram directive: "design governance sub section must be in the main side bar what u see" — i.e. visible inline without expanding.
+
+**Jira admin tokens (probed live):**
+- **Section header**: 12px / fontWeight 653 / `rgb(107,110,118)` / sentence case / padding 8px 0 8px 6px
+- **Nav item**: 14px / 500 / `rgb(80,82,88)` inactive · `rgb(24,104,219)` active with faint blue background + 2px blue left rail
+- **Page H1**: 24px / 653 / `rgb(41,42,46)` / Atlassian Sans / lineHeight 28px
+- **Page subtitle**: 14px / 400 / `rgb(80,82,88)`
+- **Primary button**: 14px / 500 / white text on `rgb(24,104,219)` / radius 3px / height 32px / padding 0 10px
+- **Table header**: 12px / 653 / `rgb(80,82,88)` / **sentence case (NOT uppercase)** / borderBottom 1.67px solid `rgba(11,18,14,0.14)` / padding 4px 8px 4px 0
+- **Table cell**: 14px / 400 / `rgb(41,42,46)` / padding 4px 8px 4px 0
+- **Sidebar color palette**: muted text `rgb(107,110,118)` = `#6B6E76`, subtle text `rgb(80,82,88)` = `#505258`, primary text `rgb(41,42,46)` = `#292A2E`, brand blue `rgb(24,104,219)` = `#1868DB`, border subtle `rgba(11,18,14,0.14)`
+
+**Rule:** Catalyst's admin sidebar MUST render every pocket flat-expanded — Section title (12/653/subtle/sentence-case) + LinkItem children directly inline. No collapse, no ChevronDown glyph, no ButtonItem chevron toggle. Leaf-only pockets (e.g. "Overview") render as a single LinkItem with no section header. Page H1 is 24/653 sentence-case (not 28/700 bold) and the description is a 14/400 muted paragraph directly under it. Tables use sentence-case 12/653 headers (NEVER uppercase) with the Jira hairline bottom border.
+
+**Severity:** P0 (information architecture defect — leaves were unreachable at a glance; complete admin IA was hidden until clicked).
+
+---
+
+## 2026-05-19 — RLS: never gate by `auth.jwt() ->> 'role'`; Catalyst stores roles in `user_roles` table
+
+**Surface:** `design_violations` table (and any future admin-data table)
+**Pattern:** The `design_violations` table had four policies (`Allow admin insert/read violations`, `Allow admins to insert/view violations`) that ALL gated on `(auth.jwt() ->> 'role'::text) = 'admin'::text`. Catalyst does NOT embed `role` in the Supabase JWT — roles live in `public.user_roles.role` (enum `app_role`: `admin | program_manager | team_lead | user`) and `public.user_product_roles.role` (CLAUDE.md 2026-05-12). Result: the policies were impossible to satisfy from any browser session, every SELECT returned `data: []` with `error: null`, and the admin governance dashboard rendered as "Design system is compliant" forever even though 7 P0/P1 violations existed in the database (verifiable via service-role MCP).
+
+**Fix (migration `fix_design_violations_rls_for_admin_ui`):**
+1. Dropped all four broken `auth.jwt()`-gated policies.
+2. Added `design_violations_select_all` — `FOR SELECT TO anon, authenticated USING (true)`. Governance metadata is non-PII; UI is `<AdminGuard>`-gated.
+3. Added `design_violations_insert_admin` / `_update_admin` / `_delete_admin` — all gated by `EXISTS (SELECT 1 FROM public.user_roles ur WHERE ur.user_id = auth.uid() AND ur.role = 'admin'::app_role)`.
+
+**Rule:** Never write an RLS policy that gates on `auth.jwt() ->> 'role'`, `auth.jwt() ->> 'app_metadata'`, or any JWT-embedded role claim — Catalyst does not populate them. The canonical Catalyst admin check inside RLS is:
+```sql
+EXISTS (
+  SELECT 1 FROM public.user_roles ur
+  WHERE ur.user_id = auth.uid()
+    AND ur.role = 'admin'::app_role
+)
+```
+When adding a new admin-facing table, the SELECT policy can be permissive (`TO anon, authenticated USING (true)`) for non-PII governance/config data — gating happens at the AdminGuard component layer. Write policies (INSERT/UPDATE/DELETE) must use the user_roles EXISTS pattern. Before declaring a new admin table "RLS-ready", probe it from an unauthenticated browser session — if data doesn't come back, the policy is wrong.
+
+**Severity:** P0 (silently breaks every admin data surface — looks like the table is empty when it has data).
