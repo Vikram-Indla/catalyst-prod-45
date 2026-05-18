@@ -86,7 +86,7 @@ export function StatusMapping() {
       </div>
 
       <div style={{
-        background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 8,
+        background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 8,
         padding: 20, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
@@ -148,7 +148,7 @@ export function StatusMapping() {
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 6,
                       padding: '4px 10px', borderRadius: 4,
-                      background: 'var(--bg-1, #F8FAFC)', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))',
+                      background: 'var(--bg-1, #F8FAFC)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
                       fontSize: 12, fontFamily: 'var(--cp-font-mono)',
                       color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontWeight: 500, cursor: 'grab',
                     }}
@@ -182,7 +182,7 @@ export function StatusMapping() {
                     placeholder="Jira status name"
                     autoFocus
                     style={{
-                      padding: '5px 10px', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 4,
+                      padding: '5px 10px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 4,
                       fontSize: 12, fontFamily: 'var(--cp-font-mono)', width: 200,
                     }}
                   />
@@ -192,7 +192,7 @@ export function StatusMapping() {
                   }}>Add</button>
                   <button onClick={() => { setAddingTo(null); setNewStatus('') }} style={{
                     padding: '5px 12px', borderRadius: 4, fontSize: 11,
-                    background: 'var(--bg-1, #F8FAFC)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', cursor: 'pointer',
+                    background: 'var(--bg-1, #F8FAFC)', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', cursor: 'pointer',
                   }}>Cancel</button>
                 </div>
               )}
@@ -200,7 +200,7 @@ export function StatusMapping() {
           )
         })}
 
-        <div style={{ borderTop: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', paddingTop: 16, marginTop: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div style={{ borderTop: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', paddingTop: 16, marginTop: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
           <button
             onClick={handleSave}
             disabled={updateConfig.isPending}
@@ -216,7 +216,7 @@ export function StatusMapping() {
             onClick={handleReset}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-              background: 'var(--bg-1, #F8FAFC)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', cursor: 'pointer',
+              background: 'var(--bg-1, #F8FAFC)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', cursor: 'pointer',
             }}
           >
             Reset to Default

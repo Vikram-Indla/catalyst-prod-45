@@ -212,7 +212,7 @@ export function UserMapping() {
   }
 
   const cardBg = 'var(--ds-surface, #fff)'
-  const borderColor = 'var(--bd-default, var(--cp-border, #E2E8F0))'
+  const borderColor = 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'
 
   // Available (unmapped) Jira users for manual dropdown
   const availableJiraUsers = jiraUsers.filter(j => !Object.values(localMappings).includes(j.id) || !localMappings[j.id])
@@ -326,7 +326,7 @@ export function UserMapping() {
           ))}
         </select>
 
-        <div style={{ width: 1, height: 24, background: 'var(--bd-default, var(--cp-border, #E2E8F0))', margin: '0 4px' }} />
+        <div style={{ width: 1, height: 24, background: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', margin: '0 4px' }} />
 
         {/* View mode toggle */}
         <div style={{ display: 'flex', borderRadius: 6, overflow: 'hidden', border: `1px solid ${borderColor}` }}>
@@ -349,7 +349,7 @@ export function UserMapping() {
           ))}
         </div>
 
-        <div style={{ width: 1, height: 24, background: 'var(--bd-default, var(--cp-border, #E2E8F0))', margin: '0 4px' }} />
+        <div style={{ width: 1, height: 24, background: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', margin: '0 4px' }} />
 
         <input
           type="text"

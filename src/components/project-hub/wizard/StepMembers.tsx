@@ -179,7 +179,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
               </select>
               <button
                 onClick={() => removeMember(member.userId)}
-                className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,var(--cp-border, #E2E8F0))]"
+                className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]"
                 style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer' }}
               >
                 <X size={14} color="var(--fg-4)" />

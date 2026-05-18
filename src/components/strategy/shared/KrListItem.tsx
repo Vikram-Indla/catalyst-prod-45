@@ -26,7 +26,7 @@ export function KrListItem({ status, title, meta, progress, onClick, className =
       onKeyDown={onClick ? (e) => { if (e.key === 'Enter') onClick(); } : undefined}
       style={{
         padding: '10px 0',
-        borderBottom: '1px solid var(--catalyst-border-default, var(--bd-default, var(--cp-border, #E2E8F0)))',
+        borderBottom: '1px solid var(--catalyst-border-default, var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))))',
         cursor: onClick ? 'pointer' : 'default',
         transition: 'background 150ms',
       }}

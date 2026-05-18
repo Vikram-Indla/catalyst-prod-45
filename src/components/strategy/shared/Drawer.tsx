@@ -65,7 +65,7 @@ export function Drawer({ isOpen, onClose, title, width = 480, children }: Drawer
           maxWidth: '90vw',
           height: '100vh',
           background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-          borderLeft: '1px solid var(--catalyst-border-default, var(--bd-default, var(--cp-border, #E2E8F0)))',
+          borderLeft: '1px solid var(--catalyst-border-default, var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))))',
           boxShadow: '-8px 0 30px rgba(0,0,0,0.12)',
           zIndex: 400,
           display: 'flex',
@@ -79,7 +79,7 @@ export function Drawer({ isOpen, onClose, title, width = 480, children }: Drawer
           className="flex items-center justify-between shrink-0"
           style={{
             padding: '16px 20px',
-            borderBottom: '1px solid var(--catalyst-border-default, var(--bd-default, var(--cp-border, #E2E8F0)))',
+            borderBottom: '1px solid var(--catalyst-border-default, var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))))',
           }}
         >
           <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--catalyst-text-primary, var(--cp-ink-1, #0F172A))' }}>

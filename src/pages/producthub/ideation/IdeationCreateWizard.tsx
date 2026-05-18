@@ -60,7 +60,7 @@ const focusHandlersLight = {
     e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)';
   },
   onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-border, #E2E8F0))';
+    e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))';
     e.currentTarget.style.boxShadow = 'none';
   },
 };
@@ -80,7 +80,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
 
   const inputBase: React.CSSProperties = {
     width: '100%', height: '44px',
-    border: `1px solid ${'var(--cp-border-strong, var(--cp-border, #E2E8F0))'}`,
+    border: `1px solid ${'var(--cp-border-strong, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
     borderRadius: '8px', padding: '0 14px', fontSize: '14px',
     color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
     background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', outline: 'none',
@@ -248,7 +248,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
           {/* Header */}
           <div style={{
             padding: '24px 32px 16px',
-            borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
+            borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
             <span style={{ fontSize: '20px', fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>Submit New Idea</span>
@@ -304,7 +304,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                 value={title}
                 onChange={e => { setTitle(e.target.value); setTitleError(false); }}
                 placeholder="Enter idea title..."
-                style={{ ...inputBase, borderColor: titleError ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-border, var(--cp-border, #E2E8F0))' }}
+                style={{ ...inputBase, borderColor: titleError ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }}
                 {...focusHandlers}
               />
               {titleError && <span style={{ fontSize: '12px', color: 'var(--ds-text-danger, #EF4444)', marginTop: '4px', display: 'block' }}>Required</span>}
@@ -324,7 +324,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                   padding: '12px 14px',
                   lineHeight: '1.6',
                   resize: 'vertical' as const,
-                  borderColor: descError ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-border, var(--cp-border, #E2E8F0))',
+                  borderColor: descError ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
                 }}
                 {...focusHandlers}
               />
@@ -336,7 +336,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               <div>
                 <label style={labelBase}>Idea Type</label>
                 <Select value={ideaType} onValueChange={setIdeaType}>
-                  <SelectTrigger className="h-[44px] border-[var(--ds-border,var(--cp-border, #E2E8F0))] rounded-lg text-sm">
+                  <SelectTrigger className="h-[44px] border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded-lg text-sm">
                     <SelectValue placeholder="Select type..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -354,7 +354,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               <div>
                 <label style={labelBase}>Priority</label>
                 <Select value={priority} onValueChange={setPriority}>
-                  <SelectTrigger className="h-[44px] border-[var(--ds-border,var(--cp-border, #E2E8F0))] rounded-lg text-sm">
+                  <SelectTrigger className="h-[44px] border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded-lg text-sm">
                     <SelectValue placeholder="Select priority..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -371,7 +371,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               <div>
                 <label style={labelBase}>Department</label>
                 <Select value={department} onValueChange={setDepartment}>
-                  <SelectTrigger className="h-[44px] border-[var(--ds-border,var(--cp-border, #E2E8F0))] rounded-lg text-sm">
+                  <SelectTrigger className="h-[44px] border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded-lg text-sm">
                     <SelectValue placeholder="Select department..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -384,7 +384,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               <div>
                 <label style={labelBase}>Source</label>
                 <Select value={source} onValueChange={setSource}>
-                  <SelectTrigger className="h-[44px] border-[var(--ds-border,var(--cp-border, #E2E8F0))] rounded-lg text-sm">
+                  <SelectTrigger className="h-[44px] border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded-lg text-sm">
                     <SelectValue placeholder="Select source..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -401,7 +401,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               <div>
                 <label style={labelBase}>Assignee</label>
                 <Select value={assignee} onValueChange={setAssignee}>
-                  <SelectTrigger className="h-[44px] border-[var(--ds-border,var(--cp-border, #E2E8F0))] rounded-lg text-sm">
+                  <SelectTrigger className="h-[44px] border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded-lg text-sm">
                     <SelectValue placeholder="Select assignee..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -440,7 +440,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               <div>
                 <label style={labelBase}>Assigned Team</label>
                 <Select value={assignedTeam} onValueChange={setAssignedTeam}>
-                  <SelectTrigger className="h-[44px] border-[var(--ds-border,var(--cp-border, #E2E8F0))] rounded-lg text-sm">
+                  <SelectTrigger className="h-[44px] border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] rounded-lg text-sm">
                     <SelectValue placeholder="Select team..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -481,13 +481,13 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               <label style={labelBase}>Tags</label>
               <div style={{
                 display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px',
-                minHeight: '44px', border: `1px solid ${'var(--cp-border-strong, var(--cp-border, #E2E8F0))'}`, borderRadius: '8px',
+                minHeight: '44px', border: `1px solid ${'var(--cp-border-strong, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: '8px',
                 padding: '6px 10px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               }}>
                 {tags.map(tag => (
                   <span key={tag} style={{
                     display: 'inline-flex', alignItems: 'center', gap: '4px',
-                    padding: '2px 8px', background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
+                    padding: '2px 8px', background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
                     borderRadius: '4px', fontSize: '12px', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))',
                   }}>
                     {tag}
@@ -518,7 +518,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
           {/* Footer */}
           <div style={{
             padding: '16px 32px',
-            borderTop: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
+            borderTop: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
             display: 'flex',
             justifyContent: 'flex-end',
             alignItems: 'center',
@@ -530,7 +530,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               onClick={onClose}
               style={{
                 background: 'transparent', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))',
-                border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: '8px',
+                border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: '8px',
                 padding: '10px 20px', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
               }}
             >Cancel</button>

@@ -25,7 +25,7 @@ export function RoadmapFilters({ teams, activeTeam, onTeamChange, ideaCount }: R
             transition: 'background 120ms, color 120ms',
           }}
           onMouseEnter={e => {
-            if (activeTeam !== t) e.currentTarget.style.background = 'var(--bd-default, var(--cp-border, #E2E8F0))';
+            if (activeTeam !== t) e.currentTarget.style.background = 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))';
           }}
           onMouseLeave={e => {
             if (activeTeam !== t) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))';

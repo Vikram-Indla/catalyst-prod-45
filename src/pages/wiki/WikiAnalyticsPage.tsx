@@ -130,7 +130,7 @@ export default function WikiAnalyticsPage() {
               <CartesianGrid strokeDasharray="3 3" stroke={border} />
               <XAxis dataKey="domain" tick={{ fontSize: 10, fill: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }} />
               <YAxis tick={{ fontSize: 10, fill: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }} />
-              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, border: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, var(--cp-border, #E2E8F0))'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
+              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, border: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                 {(domainDistribution ?? []).map((d: any) => (
                   <Cell key={d.domain} fill={DOMAIN_COLORS[d.domain] || 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))'} />
@@ -150,7 +150,7 @@ export default function WikiAnalyticsPage() {
                   <Cell key={i} fill={entry.fill} />
                 ))}
               </Pie>
-              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined, border: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, var(--cp-border, #E2E8F0))'}` }} />
+              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined, border: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }} />
               <Legend wrapperStyle={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : undefined }} />
             </PieChart>
           </ResponsiveContainer>

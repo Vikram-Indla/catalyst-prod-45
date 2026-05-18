@@ -342,7 +342,7 @@ export function ExecutionRunMode({
               failed:  { bg: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
               blocked: { bg: 'var(--ds-text-warning, var(--cp-warning, #D97706))', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
               skipped: { bg: 'var(--ds-text-subtle, #475569)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-              not_run: { bg: 'var(--cp-border, var(--cp-border, #E2E8F0))', text: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' },
+              not_run: { bg: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', text: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' },
             };
             const colors = statusColors[derivedStatus] || statusColors.not_run;
             const label = derivedStatus !== 'not_run'
@@ -354,7 +354,7 @@ export function ExecutionRunMode({
                 disabled={isDisabled}
                 title={!anyStepMarked ? 'Mark all steps before completing' : `Complete with status: ${derivedStatus}`}
                 style={{
-                  height: 34, padding: '0 14px', border: isDisabled ? `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` : 'none',
+                  height: 34, padding: '0 14px', border: isDisabled ? `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` : 'none',
                   borderRadius: 6, backgroundColor: isDisabled ? ('var(--cp-bg-page, #F8FAFC)') : colors.bg,
                   color: isDisabled ? ('var(--cp-text-muted, var(--cp-ink-4, #94A3B8))') : colors.text, fontSize: 12, fontWeight: 700,
                   cursor: isDisabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 5,

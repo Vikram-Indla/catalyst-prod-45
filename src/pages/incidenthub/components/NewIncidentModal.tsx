@@ -25,7 +25,7 @@ const SEV_STYLES: Record<string, { bg: string; border: string; text: string; dar
   SEV1: { bg: '#FEE2E2', border: '#FECACA', text: 'var(--ds-text-danger, #991B1B)', darkBg: 'rgba(239,68,68,0.12)', darkBorder: 'rgba(239,68,68,0.2)', darkText: 'var(--ds-border-danger, #FCA5A5)' },
   SEV2: { bg: '#FEF3C7', border: '#FDE68A', text: '#92400E', darkBg: 'rgba(251,191,36,0.12)', darkBorder: 'rgba(251,191,36,0.2)', darkText: '#FDE68A' },
   SEV3: { bg: '#DBEAFE', border: '#BFDBFE', text: '#1E40AF', darkBg: 'rgba(59,130,246,0.12)', darkBorder: 'rgba(59,130,246,0.2)', darkText: '#93C5FD' },
-  SEV4: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', border: 'var(--ds-border, var(--cp-border, #E2E8F0))', text: 'var(--ds-text-subtle, #475569)', darkBg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', darkBorder: 'var(--ds-border-bold, #454545)', darkText: 'var(--ds-text-subtlest, #A1A1A1)' },
+  SEV4: { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', border: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', text: 'var(--ds-text-subtle, #475569)', darkBg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))', darkBorder: 'var(--ds-border-bold, #454545)', darkText: 'var(--ds-text-subtlest, #A1A1A1)' },
 };
 
 export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {

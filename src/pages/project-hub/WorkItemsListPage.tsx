@@ -282,7 +282,7 @@ export default function WorkItemsListPage() {
             className="inline-flex items-center gap-1.5"
             style={{
               height: 30, padding: '0 10px', borderRadius: 4,
-              border: '0.75px solid var(--bd-default, var(--cp-border, #E2E8F0))', background: 'none',
+              border: '0.75px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', background: 'none',
               fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtle, #475569)',
               fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
             }}

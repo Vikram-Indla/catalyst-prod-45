@@ -134,7 +134,7 @@ export default function ImportExportPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
       <CatalystPageHeader title="Import / Export" actions={
-        <button onClick={fetchData} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 16px', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+        <button onClick={fetchData} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 16px', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 8, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
           <RefreshCw size={16} /> Refresh
         </button>
       } />
@@ -143,7 +143,7 @@ export default function ImportExportPage() {
       {/* Stats Cards */}
       {stats && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <FileUp size={18} style={{ color: '#14B8A6' }} />
               <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase' }}>Total Imports</span>
@@ -153,7 +153,7 @@ export default function ImportExportPage() {
               {stats.records_imported.toLocaleString()} records
             </p>
           </div>
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <FileDown size={18} style={{ color: '#14B8A6' }} />
               <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase' }}>Total Exports</span>
@@ -183,7 +183,7 @@ export default function ImportExportPage() {
       )}
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 4, marginBottom: 24, backgroundColor: 'var(--cp-border, var(--cp-border, #E2E8F0))', padding: 4, borderRadius: 12, width: 'fit-content' }}>
+      <div style={{ display: 'flex', gap: 4, marginBottom: 24, backgroundColor: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', padding: 4, borderRadius: 12, width: 'fit-content' }}>
         <button
           onClick={() => setActiveTab('import')}
           style={{
@@ -219,7 +219,7 @@ export default function ImportExportPage() {
         </div>
       ) : activeTab === 'import' ? (
         importJobs.length === 0 ? (
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
             <Upload size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
             <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0 }}>No import jobs yet</p>
             <p style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', margin: '8px 0 0' }}>
@@ -237,7 +237,7 @@ export default function ImportExportPage() {
               return (
                 <div key={job.id} style={{
                   backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20,
-                  border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div style={{
@@ -296,7 +296,7 @@ export default function ImportExportPage() {
         )
       ) : (
         exportJobs.length === 0 ? (
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
             <Download size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
             <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0 }}>No export jobs yet</p>
             <p style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', margin: '8px 0 0' }}>
@@ -314,7 +314,7 @@ export default function ImportExportPage() {
               return (
                 <div key={job.id} style={{
                   backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20,
-                  border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div style={{

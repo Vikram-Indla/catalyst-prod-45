@@ -144,7 +144,7 @@ export default function MyTestScopePage() {
           onClick={fetchMyScope}
           style={{
             display: 'flex', alignItems: 'center', gap: 6, height: 50,
-            padding: '0 14px', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 8,
+            padding: '0 14px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 8,
             backgroundColor: 'var(--ds-surface, #FFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 13, cursor: 'pointer',
           }}
         >
@@ -175,7 +175,7 @@ export default function MyTestScopePage() {
       {items.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: 60, backgroundColor: 'var(--ds-surface, #FFF)',
-          borderRadius: 12, border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))',
+          borderRadius: 12, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
         }}>
           <UserCheck size={48} style={{ marginBottom: 16, opacity: 0.3, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
           <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', margin: '0 0 8px' }}>
@@ -188,7 +188,7 @@ export default function MyTestScopePage() {
       ) : filteredItems.length === 0 ? (
         <div style={{
           textAlign: 'center', padding: 40, backgroundColor: 'var(--ds-surface, #FFF)',
-          borderRadius: 12, border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))',
+          borderRadius: 12, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
         }}>
           <Filter size={32} style={{ marginBottom: 12, opacity: 0.3, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
           <p style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', margin: 0 }}>
@@ -201,13 +201,13 @@ export default function MyTestScopePage() {
             const first = cycleItems[0];
             return (
               <div key={cycleId} style={{
-                backgroundColor: 'var(--ds-surface, #FFF)', borderRadius: 12, border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))',
+                backgroundColor: 'var(--ds-surface, #FFF)', borderRadius: 12, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
                 overflow: 'hidden',
               }}>
                 {/* Cycle Header */}
                 <div style={{
                   padding: '12px 16px', backgroundColor: 'var(--bg-1, #F8FAFC)',
-                  borderBottom: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))',
+                  borderBottom: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -248,7 +248,7 @@ export default function MyTestScopePage() {
                         style={{
                           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                           padding: '10px 16px', height: 44,
-                          borderBottom: idx < cycleItems.length - 1 ? '0.75px solid var(--bd-default, var(--cp-border, #E2E8F0))' : 'none',
+                          borderBottom: idx < cycleItems.length - 1 ? '0.75px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' : 'none',
                           transition: 'background-color 0.1s',
                         }}
                         onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.02)'}

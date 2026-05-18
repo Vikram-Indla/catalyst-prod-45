@@ -263,7 +263,7 @@ export default function SharedStepsPage() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
       <TestHubPageHeader title="Shared Steps Library" subtitle="Reusable test steps for consistency across test cases">
             <button onClick={handleRefresh} title="Refresh" style={{
-              width: 40, height: 40, padding: 0, border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
+              width: 40, height: 40, padding: 0, border: `1.5px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 8,
               backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             }}>
@@ -285,7 +285,7 @@ export default function SharedStepsPage() {
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
         {/* Category Sidebar */}
         <div style={{
-          width: 260, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRight: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
+          width: 260, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRight: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
         }}>
           {/* Sidebar Header */}
@@ -298,7 +298,7 @@ export default function SharedStepsPage() {
               letterSpacing: '0.05em', margin: 0, fontFamily: 'var(--cp-font-body)',
             }}>Categories</h2>
             <button onClick={() => setIsCreateCategoryModalOpen(true)} title="Add category" style={{
-              width: 28, height: 28, padding: 0, border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 6,
+              width: 28, height: 28, padding: 0, border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 6,
               backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
@@ -345,7 +345,7 @@ export default function SharedStepsPage() {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           {/* Toolbar */}
           <div style={{
-            padding: '16px 24px', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
+            padding: '16px 24px', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
             display: 'flex', alignItems: 'center', gap: 12,
           }}>
             <div style={{ position: 'relative', flex: 1, maxWidth: 400 }}>
@@ -355,7 +355,7 @@ export default function SharedStepsPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
                   width: '100%', height: 40, paddingLeft: 40, paddingRight: 12,
-                  border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, fontSize: 14,
+                  border: `1.5px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 8, fontSize: 14,
                   color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontFamily: 'var(--cp-font-body)',
                 }}
               />
@@ -367,7 +367,7 @@ export default function SharedStepsPage() {
                 onClick={(e) => { e.stopPropagation(); setIsFilterOpen(!isFilterOpen); setIsSortOpen(false); }}
                 style={{
                   height: 40, padding: '0 14px',
-                  border: `1.5px solid ${activeFilters.length > 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-border, var(--cp-border, #E2E8F0))')}`,
+                  border: `1.5px solid ${activeFilters.length > 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))')}`,
                   borderRadius: 8,
                   backgroundColor: activeFilters.length > 0 ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
                   color: activeFilters.length > 0 ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-ink-2, var(--cp-ink-2, #334155))'),
@@ -394,7 +394,7 @@ export default function SharedStepsPage() {
                   onClick={(e) => e.stopPropagation()}
                   style={{
                     position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 280,
-                    backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
+                    backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 8,
                     boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.4)' : '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, overflow: 'hidden',
                   }}
                 >
@@ -456,7 +456,7 @@ export default function SharedStepsPage() {
               <button
                 onClick={(e) => { e.stopPropagation(); setIsSortOpen(!isSortOpen); setIsFilterOpen(false); }}
                 style={{
-                  height: 40, padding: '0 14px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
+                  height: 40, padding: '0 14px', border: `1.5px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 8,
                   backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 14, fontWeight: 500,
                   cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'var(--cp-font-body)',
                 }}
@@ -471,7 +471,7 @@ export default function SharedStepsPage() {
                   onClick={(e) => e.stopPropagation()}
                   style={{
                     position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 220,
-                    backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
+                    backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 8,
                     boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.4)' : '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 8,
                   }}
                 >
@@ -516,7 +516,7 @@ export default function SharedStepsPage() {
             <div style={{ flex: 1 }} />
 
             {/* View Toggle */}
-            <div style={{ display: 'flex', border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, overflow: 'hidden' }}>
+            <div style={{ display: 'flex', border: `1.5px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 8, overflow: 'hidden' }}>
               <button onClick={() => setViewMode('list')} title="List view" style={{
                 width: 40, height: 38, padding: 0, border: 'none',
                 backgroundColor: viewMode === 'list' ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
@@ -527,7 +527,7 @@ export default function SharedStepsPage() {
               </button>
               <button onClick={() => setViewMode('card')} title="Card view" style={{
                 width: 40, height: 38, padding: 0, border: 'none',
-                borderLeft: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
+                borderLeft: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
                 backgroundColor: viewMode === 'card' ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'),
                 color: viewMode === 'card' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : ('var(--cp-text-tertiary, var(--cp-ink-3, #64748B))'), cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -546,7 +546,7 @@ export default function SharedStepsPage() {
             {loading ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 300 }}>
                 <div style={{
-                  width: 40, height: 40, border: `3px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderTopColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
+                  width: 40, height: 40, border: `3px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderTopColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
                   borderRadius: '50%', animation: 'spin 1s linear infinite',
                 }} />
               </div>
@@ -564,10 +564,10 @@ export default function SharedStepsPage() {
                 </p>
               </div>
             ) : viewMode === 'list' ? (
-              <div style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 12, overflow: 'hidden' }}>
+              <div style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 12, overflow: 'hidden' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--cp-font-body)' }}>
                   <thead>
-                    <tr style={{ borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
+                    <tr style={{ borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
                       <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Name</th>
                       <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Category</th>
                       <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textTransform: 'uppercase', letterSpacing: '0.05em', width: 80 }}>Variables</th>
@@ -785,11 +785,11 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
   return (
     <div
       style={{
-        backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8,
+        backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, borderRadius: 8,
         padding: 16, cursor: 'pointer', transition: 'border-color 0.15s, box-shadow 0.15s', display: 'flex', flexDirection: 'column' as const,
       }}
       onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border-strong, #CBD5E1)'; e.currentTarget.style.boxShadow = isDark ? '0 4px 12px rgba(0,0,0,0.2)' : '0 4px 12px rgba(0,0,0,0.08)'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))'; e.currentTarget.style.boxShadow = 'none'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'; e.currentTarget.style.boxShadow = 'none'; }}
       onClick={onView}
     >
       {/* Top row: category badge + usage + kebab */}
@@ -829,7 +829,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
               onClick={(e) => e.stopPropagation()}
               style={{
                 position: 'absolute', right: 0, top: 36, width: 160, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                borderRadius: 8, border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.4)' : '0 8px 24px rgba(0,0,0,0.12)',
+                borderRadius: 8, border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.4)' : '0 8px 24px rgba(0,0,0,0.12)',
                 padding: 4, zIndex: 50,
               }}
             >

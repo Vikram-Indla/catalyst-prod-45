@@ -185,7 +185,7 @@ export function CatalystTable({
 
   if (resolvedGroups.length === 0) {
     return (
-      <div className="fy-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 0', border: '0.555556px solid var(--cp-border, #E2E8F0)', borderRadius: 8, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+      <div className="fy-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 0', border: '0.555556px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 8, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
         <span style={{ fontSize: 24, marginBottom: 12 }}>📋</span>
         <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 4 }}>No work items found</p>
         <p style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>Try adjusting your filters or search</p>
@@ -213,8 +213,8 @@ export function CatalystTable({
                 style={{
                   height: 36, padding: '0 12px', cursor: 'pointer', userSelect: 'none',
                   background: '#F7F8F9',
-                  borderTop: '0.75px solid var(--cp-border, #E2E8F0)',
-                  borderBottom: '0.75px solid var(--cp-border, #E2E8F0)',
+                  borderTop: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+                  borderBottom: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                   fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)',
                   textTransform: 'uppercase', letterSpacing: '0.08em',
                   display: 'flex', alignItems: 'center', gap: 6,
@@ -250,7 +250,7 @@ export function CatalystTable({
                     onClick={() => { setFocusedIndex(currentRowIndex); onRowClick(item.id); }}
                     style={{
                       padding: '12px',
-                      borderBottom: '0.75px solid var(--cp-border, #E2E8F0)',
+                      borderBottom: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                       cursor: 'pointer',
                       background: isSelected ? 'rgba(37,99,235,0.08)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                       display: 'flex', flexDirection: 'column', gap: 8,
@@ -303,7 +303,7 @@ export function CatalystTable({
                     {/* Row 4: avatar + project + updated */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
                       {avatarUrl ? (
-                        <img src={avatarUrl} alt={reporterName} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, #E2E8F0)' }} />
+                        <img src={avatarUrl} alt={reporterName} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }} />
                       ) : (
                         <div style={{ width: 20, height: 20, borderRadius: '50%', background: clr, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
                       )}
@@ -415,7 +415,7 @@ export function CatalystTable({
                 const ini = reporterName.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
                 const clr = AVATAR_COLOURS[ini.charCodeAt(0) % AVATAR_COLOURS.length];
                 return avatarUrl ? (
-                  <img src={avatarUrl} alt={reporterName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, #E2E8F0)' }} />
+                  <img src={avatarUrl} alt={reporterName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }} />
                 ) : (
                   <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
                 );
@@ -430,7 +430,7 @@ export function CatalystTable({
   };
 
   return (
-    <div ref={tableRef} tabIndex={0} className="fy-table" style={{ outline: 'none', border: '0.555556px solid var(--cp-border, #E2E8F0)', borderRadius: 8, overflow: 'hidden' }}>
+    <div ref={tableRef} tabIndex={0} className="fy-table" style={{ outline: 'none', border: '0.555556px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 8, overflow: 'hidden' }}>
       {/* Scoped sticky — at tablet widths (768–1023px) the SUMMARY column
           (5th th/td after checkbox/star/type/key) pins to the left edge so
           the item summary stays readable while the right-hand columns
@@ -510,8 +510,8 @@ export function CatalystTable({
                     style={{
                       height: 36, padding: '0 12px', cursor: 'pointer', userSelect: 'none',
                       background: '#F7F8F9',
-                      borderBottom: '0.75px solid var(--cp-border, #E2E8F0)',
-                      borderTop: '0.75px solid var(--cp-border, #E2E8F0)',
+                      borderBottom: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+                      borderTop: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                       fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)',
                       textTransform: 'uppercase', letterSpacing: '0.08em',
                       verticalAlign: 'middle',
@@ -524,7 +524,7 @@ export function CatalystTable({
                       }
                       {isAssigneeGroup && (
                         avatarUrl ? (
-                          <img src={avatarUrl} alt="" style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, #E2E8F0)' }} />
+                          <img src={avatarUrl} alt="" style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }} />
                         ) : (
                           <div style={{
                             width: 20, height: 20, borderRadius: '50%', flexShrink: 0,

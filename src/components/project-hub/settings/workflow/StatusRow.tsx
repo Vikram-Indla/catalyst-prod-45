@@ -95,7 +95,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
       <div className="relative" ref={menuRef}>
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,var(--cp-border, #E2E8F0))]"
+          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]"
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
         >
           <MoreHorizontal size={16} color="var(--fg-3)" />

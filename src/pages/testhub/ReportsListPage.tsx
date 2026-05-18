@@ -141,7 +141,7 @@ export default function ReportsListPage() {
       {/* Stats Cards */}
       {stats && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)' }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0, textTransform: 'uppercase' }}>Total Reports</p>
@@ -159,7 +159,7 @@ export default function ReportsListPage() {
               <CheckCircle2 size={24} style={{ color: 'var(--quality-high, #059669)' }} />
             </div>
           </div>
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)' }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0, textTransform: 'uppercase' }}>This Month</p>
@@ -176,9 +176,9 @@ export default function ReportsListPage() {
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
           <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
           <input type="text" placeholder="Search reports..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
+            style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
         </div>
-        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} style={{ height: 44, padding: '0 36px 0 14px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined, cursor: 'pointer' }}>
+        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} style={{ height: 44, padding: '0 36px 0 14px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined, cursor: 'pointer' }}>
           <option value="all">All Types</option>
           <option value="cycle_summary">Cycle Summary</option>
           <option value="plan_summary">Plan Summary</option>
@@ -187,7 +187,7 @@ export default function ReportsListPage() {
           <option value="trend">Trend Analysis</option>
           <option value="custom">Custom</option>
         </select>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} style={{ height: 44, padding: '0 36px 0 14px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined, cursor: 'pointer' }}>
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} style={{ height: 44, padding: '0 36px 0 14px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined, cursor: 'pointer' }}>
           <option value="all">All Status</option>
           <option value="draft">Draft</option>
           <option value="generating">Generating</option>
@@ -196,7 +196,7 @@ export default function ReportsListPage() {
           <option value="archived">Archived</option>
         </select>
         {hasActiveFilters && (
-          <button onClick={clearFilters} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', fontSize: 14, cursor: 'pointer' }}>
+          <button onClick={clearFilters} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
@@ -212,7 +212,7 @@ export default function ReportsListPage() {
           <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' }} />
         </div>
       ) : filteredReports.length === 0 ? (
-        <div style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)' }}>
+        <div style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }}>
           <FileBarChart size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
           <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0 }}>No reports found</p>
           <p style={{ fontSize: 14, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', margin: '8px 0 0' }}>Generate a new report to get started</p>
@@ -225,9 +225,9 @@ export default function ReportsListPage() {
             const TypeIcon = type.icon;
             return (
               <div key={report.id} onClick={() => navigate(`/testhub/reports/${report.id}`)}
-                style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', cursor: 'pointer', transition: 'all 0.15s' }}
+                style={{ backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', cursor: 'pointer', transition: 'all 0.15s' }}
                 onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border-strong, #CBD5E1)'; e.currentTarget.style.boxShadow = isDark ? '0 4px 12px rgba(0,0,0,0.2)' : '0 4px 12px rgba(0,0,0,0.05)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))'; e.currentTarget.style.boxShadow = 'none'; }}>
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'; e.currentTarget.style.boxShadow = 'none'; }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div style={{ display: 'flex', gap: 16, flex: 1 }}>
                     <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: type.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -250,7 +250,7 @@ export default function ReportsListPage() {
                   <div style={{ display: 'flex', gap: 8 }}>
                     {report.status === 'ready' && (
                       <button onClick={(e) => { e.stopPropagation(); navigate(`/testhub/reports/${report.id}`); }}
-                        style={{ width: 36, height: 50, border: '1px solid var(--cp-border, #E2E8F0)', borderRadius: 8, backgroundColor: 'var(--ds-surface, #FFF)', color: 'var(--quality-high, #059669)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        style={{ width: 36, height: 50, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 8, backgroundColor: 'var(--ds-surface, #FFF)', color: 'var(--quality-high, #059669)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Download size={16} />
                       </button>
                     )}

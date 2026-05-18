@@ -117,7 +117,7 @@ export function ChannelToggleCard({
             className={`flex items-center gap-3 px-3 py-2.5 rounded-md border text-left transition-colors duration-150 ${
               channels[key]
                 ? 'bg-[rgba(37,99,235,0.04)] border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20'
-                : 'bg-white border-[var(--bd-default,var(--cp-border, #E2E8F0))] hover:bg-[rgba(0,0,0,0.02)]'
+                : 'bg-white border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] hover:bg-[rgba(0,0,0,0.02)]'
             } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
           >
             <span
@@ -165,7 +165,7 @@ export function ChannelBadges({ channels }: ChannelBadgesProps) {
       {active.map(({ key, label, Icon }) => (
         <div
           key={key}
-          className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] border border-[var(--bd-default,var(--cp-border, #E2E8F0))]"
+          className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))]"
         >
           <span style={{ color: 'var(--ds-text-subtle, #475569)', display: 'flex' }}>
             <Icon label="" size="small" />

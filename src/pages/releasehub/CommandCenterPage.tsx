@@ -20,9 +20,9 @@ function KPICard({ label, value, delta, deltaLabel, color, icon: Icon, loading, 
   label: string; value: number | string; delta?: string; deltaLabel?: string; color: string; icon: any; loading?: boolean; onClick?: () => void; isDark?: boolean;
 }) {
   return (
-    <button onClick={onClick} className="rounded-[6px] p-5 text-left transition-all hover:shadow-md" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, cursor: onClick ? 'pointer' : 'default' }}
+    <button onClick={onClick} className="rounded-[6px] p-5 text-left transition-all hover:shadow-md" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, cursor: onClick ? 'pointer' : 'default' }}
       onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border-strong, #CBD5E1)'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'; }}
     >
       <div className="flex items-start justify-between">
         <div>
@@ -300,7 +300,7 @@ export default function CommandCenterPage() {
           ) : (
             <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
               <thead>
-                <tr style={{ background: 'var(--cp-bg-page, #F8FAFC)', borderBottom: `2px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
+                <tr style={{ background: 'var(--cp-bg-page, #F8FAFC)', borderBottom: `2px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
                   {['RELEASE', 'STATUS', 'CHANGES', 'TARGET', 'PROGRESS'].map(h => (
                     <th key={h} className="px-3 text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 36, padding: '10px 12px', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{h}</th>
                   ))}
@@ -310,7 +310,7 @@ export default function CommandCenterPage() {
                 {activeRels.map((r: any) => {
                   const chgCount = changes.filter((c: any) => c.release_id === r.id).length;
                   return (
-                    <tr key={r.id} onClick={() => setSelectedRelease(r)} className="cursor-pointer" style={{ height: 44, borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}
+                    <tr key={r.id} onClick={() => setSelectedRelease(r)} className="cursor-pointer" style={{ height: 44, borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}
                       onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                       <td className="px-3" style={{ fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>{r.name}</td>

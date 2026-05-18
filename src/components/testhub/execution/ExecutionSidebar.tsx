@@ -59,8 +59,8 @@ const STEP_COLORS: Record<string, { text: string; bg: string; border: string }> 
   passed:  { text: 'var(--ds-text-success, var(--cp-success, #16A34A))', bg: '#F0FDF4', border: '#BBF7D0' },
   failed:  { text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', bg: 'var(--ds-background-danger, #FEF2F2)', border: '#FECACA' },
   blocked: { text: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: '#FFFBEB', border: '#FED7AA' },
-  skipped: { text: 'var(--ds-text-subtle, #475569)', bg: 'var(--bg-1, #F8FAFC)', border: 'var(--bd-default, var(--cp-border, #E2E8F0))' },
-  not_run: { text: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', border: 'var(--bd-default, var(--cp-border, #E2E8F0))' },
+  skipped: { text: 'var(--ds-text-subtle, #475569)', bg: 'var(--bg-1, #F8FAFC)', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' },
+  not_run: { text: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))', border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' },
 };
 
 export function ExecutionSidebar({
@@ -226,7 +226,7 @@ export function ExecutionSidebar({
                 return (
                   <div key={i} style={{
                     padding: '8px 10px', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                    border: '0.75px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 6,
+                    border: '0.75px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 6,
                     borderLeft: `3px solid ${colors.border}`,
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>

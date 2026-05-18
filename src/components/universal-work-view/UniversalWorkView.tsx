@@ -174,7 +174,7 @@ export function UniversalWorkView({ params, onClose }: Props) {
             alignItems: 'center',
             gap: 8,
             padding: '8px 16px',
-            borderBottom: '1px solid var(--cp-border, #E2E8F0)',
+            borderBottom: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
             background: 'var(--ds-surface-sunken, #F8FAFC)',
             fontSize: 12,
             flexWrap: 'wrap',
@@ -190,7 +190,7 @@ export function UniversalWorkView({ params, onClose }: Props) {
                 gap: 4,
                 padding: '2px 8px',
                 background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                border: '1px solid var(--cp-border, #E2E8F0)',
+                border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                 borderRadius: 3,
                 color: 'var(--ds-text, var(--cp-ink-1, #0F172A))',
               }}

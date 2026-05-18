@@ -250,7 +250,7 @@ export default function RequirementDetailPage() {
   return (
     <div style={{ padding: 24, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', minHeight: '100vh' }}>
       <button onClick={() => navigate('/testhub/requirements')}
-        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', borderRadius: 8, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
+        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 8, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
         <ArrowLeft size={16} /> Back to Requirements
       </button>
 
@@ -293,7 +293,7 @@ export default function RequirementDetailPage() {
 
       {/* Description */}
       {requirement.description && (
-        <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', marginBottom: 24 }}>
+        <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', marginBottom: 24 }}>
           <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
             <FileText size={18} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} /> Description
           </h3>
@@ -302,7 +302,7 @@ export default function RequirementDetailPage() {
       )}
 
       {/* Linked Tests */}
-      <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)' }}>
+      <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Link2 size={18} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} /> Linked Test Cases ({linkedTests.length})
@@ -323,7 +323,7 @@ export default function RequirementDetailPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {linkedTests.map((test) => (
               <div key={test.link_id}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 14, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 12, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)' }}>
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 14, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 12, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                     <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '2px 8px', borderRadius: 4 }}>{test.case_key}</span>
@@ -343,11 +343,11 @@ export default function RequirementDetailPage() {
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '8px 12px', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 12, cursor: 'pointer' }}>
+                    style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '8px 12px', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', fontSize: 12, cursor: 'pointer' }}>
                     View <ChevronRight size={14} />
                   </button>
                   <button onClick={() => unlinkTest(test.link_id)}
-                    style={{ width: 32, height: 32, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', borderRadius: 6, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    style={{ width: 32, height: 32, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 6, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Unlink size={14} />
                   </button>
                 </div>
@@ -358,7 +358,7 @@ export default function RequirementDetailPage() {
       </div>
 
       {/* Linked Defects */}
-      <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', marginTop: 24 }}>
+      <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', marginTop: 24 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Bug size={18} style={{ color: '#E5493A' }} /> Linked Defects
@@ -368,12 +368,12 @@ export default function RequirementDetailPage() {
       </div>
 
       {/* Comments */}
-      <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', marginTop: 24 }}>
+      <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', marginTop: 24 }}>
         <EntityCommentsPanel entityType="requirement" entityId={requirement?.id} title="Requirement Comments" />
       </div>
 
       {/* Attachments */}
-      <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', marginTop: 24 }}>
+      <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', marginTop: 24 }}>
         <EntityAttachmentsPanel entityType="requirement" entityId={requirement?.id} title="Requirement Attachments" />
       </div>
 

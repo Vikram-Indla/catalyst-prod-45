@@ -589,22 +589,22 @@ const JiraUserSync: React.FC = () => {
                 Array.from({ length: 10 }).map((_, i) => (
                   <tr key={`skel-${i}`} className="jira-row"
                     style={{ height: '50px', maxHeight: '50px', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}>
-                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 14, height: 14, borderRadius: 4, background: 'var(--cp-border, var(--cp-border, #E2E8F0))' }} /></td>
+                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 14, height: 14, borderRadius: 4, background: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }} /></td>
                     <td style={{ padding: '8px 12px' }}>
                       <div className="flex items-center gap-2">
-                        <div className="jira-skeleton animate-pulse" style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--cp-border, var(--cp-border, #E2E8F0))' }} />
+                        <div className="jira-skeleton animate-pulse" style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }} />
                         <div>
-                          <div className="jira-skeleton animate-pulse" style={{ width: 120, height: 10, borderRadius: 4, marginBottom: 4, background: 'var(--cp-border, var(--cp-border, #E2E8F0))' }} />
+                          <div className="jira-skeleton animate-pulse" style={{ width: 120, height: 10, borderRadius: 4, marginBottom: 4, background: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }} />
                           <div className="jira-skeleton animate-pulse" style={{ width: 160, height: 8, borderRadius: 4, background: 'var(--cp-border-lt, var(--cp-bg-sunken, #F1F5F9))' }} />
                         </div>
                       </div>
                     </td>
-                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 70, height: 16, borderRadius: 4, background: 'var(--cp-border, var(--cp-border, #E2E8F0))' }} /></td>
-                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 100, height: 16, borderRadius: 4, background: 'var(--cp-border, var(--cp-border, #E2E8F0))' }} /></td>
-                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 80, height: 10, borderRadius: 4, background: 'var(--cp-border, var(--cp-border, #E2E8F0))' }} /></td>
-                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 60, height: 10, borderRadius: 4, background: 'var(--cp-border, var(--cp-border, #E2E8F0))' }} /></td>
-                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 60, height: 10, borderRadius: 4, background: 'var(--cp-border, var(--cp-border, #E2E8F0))' }} /></td>
-                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 50, height: 18, borderRadius: 4, background: 'var(--cp-border, var(--cp-border, #E2E8F0))' }} /></td>
+                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 70, height: 16, borderRadius: 4, background: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }} /></td>
+                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 100, height: 16, borderRadius: 4, background: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }} /></td>
+                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 80, height: 10, borderRadius: 4, background: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }} /></td>
+                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 60, height: 10, borderRadius: 4, background: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }} /></td>
+                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 60, height: 10, borderRadius: 4, background: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }} /></td>
+                    <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 50, height: 18, borderRadius: 4, background: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }} /></td>
                     <td />
                   </tr>
                 ))

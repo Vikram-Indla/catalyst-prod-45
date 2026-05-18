@@ -9,7 +9,7 @@
   --catalyst-bg-surface-0: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --catalyst-bg-surface-1: var(--ds-surface-sunken, #F8FAFC);
   --catalyst-bg-surface-2: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
-  --catalyst-bg-surface-3: var(--ds-border, var(--cp-border, #E2E8F0));
+  --catalyst-bg-surface-3: var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   --catalyst-bg-hover: rgba(0,0,0,0.04);
   --catalyst-bg-active: rgba(0,0,0,0.06);
   --catalyst-bg-selected: var(--ds-background-selected, #EFF6FF);
@@ -23,7 +23,7 @@
   --catalyst-text-on-primary: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
 
   /* ── Borders ── */
-  --catalyst-border-default: var(--ds-border, var(--cp-border, #E2E8F0));
+  --catalyst-border-default: var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   --catalyst-border-strong: var(--ds-text-disabled, #CBD5E1);
   --catalyst-border-focus: var(--ds-text-brand, #3B82F6);
   --catalyst-border-interactive: var(--ds-text-brand, #3B82F6);

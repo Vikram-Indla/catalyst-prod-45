@@ -912,7 +912,7 @@ function SettingsPopupBody({
         </div>
       )}
 
-      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', 'var(--cp-border, #E2E8F0)')}` }} />
+      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}` }} />
 
       {/* Threshold */}
       <div style={sectionHeadingStyle}>
@@ -931,7 +931,7 @@ function SettingsPopupBody({
         <span>or fewer days remain</span>
       </div>
 
-      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', 'var(--cp-border, #E2E8F0)')}` }} />
+      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}` }} />
 
       {/* Item types */}
       <div style={sectionHeadingStyle}>
@@ -2021,7 +2021,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
           </div>
 
           {visibleByTab.length > 10 && (
-            <div style={{ padding: '6px 16px', textAlign: 'center', borderTop: `1px solid ${token('color.border', 'var(--cp-border, #E2E8F0)')}` }}>
+            <div style={{ padding: '6px 16px', textAlign: 'center', borderTop: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}` }}>
               <button
                 type="button"
                 onClick={() => {
@@ -2066,7 +2066,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
           )}
 
           {delivered.length > 0 && (
-            <div style={{ background: token('elevation.surface.sunken', '#F7F8F9'), borderTop: `1px solid ${token('color.border', 'var(--cp-border, #E2E8F0)')}` }}>
+            <div style={{ background: token('elevation.surface.sunken', '#F7F8F9'), borderTop: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}` }}>
               <button
                 onClick={() => setDeliveredOpen((v) => !v)}
                 style={{
@@ -2121,7 +2121,7 @@ function DeliveredRow({ row, projectKey }: { row: DemandRow; projectKey: string 
         alignItems: 'center',
         gap: 8,
         padding: '6px 16px',
-        borderTop: `1px solid ${token('color.border', 'var(--cp-border, #E2E8F0)')}`,
+        borderTop: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
         font: token('font.body.small'),
       }}
     >

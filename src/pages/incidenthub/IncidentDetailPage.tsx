@@ -228,7 +228,7 @@ export default function IncidentDetailPage() {
                 {incident.comments?.map((c: any) => (
                   <div key={c.id} className="mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
                     <div className="flex items-center gap-2 mb-1">
-                      <div className="rounded-full flex items-center justify-center" style={{ width: 24, height: 24, backgroundColor: 'var(--cp-border, var(--cp-border, #E2E8F0))', fontSize: 10, fontWeight: 650, color: 'var(--cp-text-secondary, #475569)' }}>
+                      <div className="rounded-full flex items-center justify-center" style={{ width: 24, height: 24, backgroundColor: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', fontSize: 10, fontWeight: 650, color: 'var(--cp-text-secondary, #475569)' }}>
                         {(c.author?.full_name || c.author_name || 'U').charAt(0).toUpperCase()}
                       </div>
                       <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>

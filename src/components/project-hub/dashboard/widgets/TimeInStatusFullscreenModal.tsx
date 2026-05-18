@@ -204,7 +204,7 @@ export default function TimeInStatusFullscreenModal({
                 justifyContent: 'space-between',
                 gap: token('space.200', '16px'),
                 padding: '8px 0 16px 0',
-                borderBottom: `1px solid ${token('color.border', 'var(--cp-border, #E2E8F0)')}`,
+                borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
               }}
             >
               <div style={{ display: 'flex', gap: 4, overflowX: 'auto', minWidth: 0 }}>
@@ -312,8 +312,8 @@ export default function TimeInStatusFullscreenModal({
                           width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                           textAlign: 'left',
                           padding: '10px 12px',
-                          borderBottom: `1px solid ${token('color.border', 'var(--cp-border, #E2E8F0)')}`,
-                          borderRight: `1px solid ${token('color.border', 'var(--cp-border, #E2E8F0)')}`,
+                          borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+                          borderRight: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
                           fontWeight: 600,
                           color: token('color.text', '#292A2E'),
                         }}
@@ -327,8 +327,8 @@ export default function TimeInStatusFullscreenModal({
                             minWidth: STATUS_COL_MIN,
                             textAlign: 'left',
                             padding: '10px 12px',
-                            borderBottom: `1px solid ${token('color.border', 'var(--cp-border, #E2E8F0)')}`,
-                            borderRight: `1px solid ${token('color.border', 'var(--cp-border, #E2E8F0)')}`,
+                            borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+                            borderRight: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
                           }}
                         >
                           <StatusLozenge status={s.category === 'in_progress' ? 'inProgress' : s.category}>
@@ -341,7 +341,7 @@ export default function TimeInStatusFullscreenModal({
                           minWidth: 110,
                           padding: '10px 12px',
                           textAlign: 'right',
-                          borderBottom: `1px solid ${token('color.border', 'var(--cp-border, #E2E8F0)')}`,
+                          borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
                           fontWeight: 600,
                           color: token('color.text', '#292A2E'),
                           background: token('elevation.surface', '#FFFFFF'),
@@ -364,10 +364,10 @@ export default function TimeInStatusFullscreenModal({
                           style={{
                             position: 'sticky', left: 0,
                             background: token('elevation.surface', '#FFFFFF'),
-                            boxShadow: '1px 0 0 0 ' + token('color.border', 'var(--cp-border, #E2E8F0)'),
+                            boxShadow: '1px 0 0 0 ' + token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))'),
                             padding: '8px 12px',
-                            borderBottom: `1px solid ${token('color.border', 'var(--cp-border, #E2E8F0)')}`,
-                            borderRight: `1px solid ${token('color.border', 'var(--cp-border, #E2E8F0)')}`,
+                            borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+                            borderRight: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
                             width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                           }}
                         >
@@ -410,8 +410,8 @@ export default function TimeInStatusFullscreenModal({
                               style={{
                                 minWidth: STATUS_COL_MIN,
                                 padding: '8px 12px',
-                                borderBottom: `1px solid ${token('color.border', 'var(--cp-border, #E2E8F0)')}`,
-                                borderRight: `1px solid ${token('color.border', 'var(--cp-border, #E2E8F0)')}`,
+                                borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
+                                borderRight: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
                                 background: categoryBg(s.category, ms),
                                 fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                                 fontSize: 12,
@@ -459,7 +459,7 @@ export default function TimeInStatusFullscreenModal({
                           style={{
                             padding: '8px 12px',
                             textAlign: 'right',
-                            borderBottom: `1px solid ${token('color.border', 'var(--cp-border, #E2E8F0)')}`,
+                            borderBottom: `1px solid ${token('color.border', 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))')}`,
                             fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                             fontSize: 13,
                             fontWeight: 600,

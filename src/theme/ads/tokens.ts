@@ -108,7 +108,7 @@ export const adsTokens = {
     inverse:   { cp: '--cp-text-inverse',   light: '#FFFFFF', dark: '#0A0A0A', atlaskit: 'color.text.inverse' } satisfies AdsToken,
   },
   border: {
-    default: { cp: '--cp-border-default', light: 'var(--cp-border, #E2E8F0)', dark: '#2E2E2E', atlaskit: 'color.border' } satisfies AdsToken,
+    default: { cp: '--cp-border-default', light: 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', dark: '#2E2E2E', atlaskit: 'color.border' } satisfies AdsToken,
     subtle:  { cp: '--cp-border-subtle',  light: 'var(--cp-bg-sunken, #F1F5F9)', dark: '#292929', atlaskit: 'color.border.accent.gray' } satisfies AdsToken,
     strong:  { cp: '--cp-border-strong',  light: '#CBD5E1', dark: '#454545', atlaskit: 'color.border.bold' } satisfies AdsToken,
     focus:   { cp: '--cp-border-focus',   light: '#2563EB', dark: '#2563EB', atlaskit: 'color.border.focused' } satisfies AdsToken,

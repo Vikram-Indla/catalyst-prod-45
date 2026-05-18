@@ -59,7 +59,7 @@ export function SchedulingRules() {
   )
 
   const cardStyle: React.CSSProperties = {
-    background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 8,
+    background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 8,
     padding: 20, marginBottom: 16, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
   }
 
@@ -133,7 +133,7 @@ export function SchedulingRules() {
             value={multiVersionStrategy}
             onChange={(e) => setMultiVersionStrategy(e.target.value)}
             style={{
-              width: 200, padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))',
+              width: 200, padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
               fontSize: 12, color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', background: 'var(--bg-app, #fff)',
             }}
           >
@@ -205,7 +205,7 @@ export function SchedulingRules() {
             onClick={handleReset}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-              background: 'var(--bg-1, #F8FAFC)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', cursor: 'pointer',
+              background: 'var(--bg-1, #F8FAFC)', color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', cursor: 'pointer',
             }}
           >
             Reset to Default

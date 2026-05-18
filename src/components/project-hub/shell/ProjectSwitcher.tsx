@@ -48,7 +48,7 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
   return (
     <div
       ref={ref}
-      className="absolute top-full left-0 mt-1 z-50 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]"
+      className="absolute top-full left-0 mt-1 z-50 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]"
       style={{
         width: 280,
         borderRadius: 8,
@@ -57,7 +57,7 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
       }}
     >
       {/* Search */}
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
         <Search size={13} className="flex-shrink-0 text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:text-[#7D7D7D]" />
         <input
           autoFocus

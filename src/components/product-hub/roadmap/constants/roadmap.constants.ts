@@ -46,7 +46,7 @@ export const INK = {
 export const SURFACE = {
   page: 'var(--bg-1, #F8FAFC)',
   card: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-  border: 'var(--bd-default, var(--cp-border, #E2E8F0))',
+  border: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
   borderLight: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))',
 };
 
@@ -88,6 +88,6 @@ export const OWNER_COLORS = ['var(--ds-text-brand, var(--cp-workstream-catalyst-
 export const SCROLLBAR_CSS = `
   .roadmap-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
   .roadmap-scroll::-webkit-scrollbar-track { background: transparent; }
-  .roadmap-scroll::-webkit-scrollbar-thumb { background: var(--bd-default, var(--cp-border, #E2E8F0)); border-radius: 3px; }
+  .roadmap-scroll::-webkit-scrollbar-thumb { background: var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))); border-radius: 3px; }
   .roadmap-scroll::-webkit-scrollbar-thumb:hover { background: var(--ds-text-disabled, #CBD5E1); }
 `;

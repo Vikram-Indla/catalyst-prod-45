@@ -470,7 +470,7 @@ function TypeBadge({ type }: { type: Idea['type'] }) {
     <span style={{
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px',
       borderRadius: 4, fontSize: '11px', fontWeight: 500,
-      background: c.bg, color: c.text, border: '1px solid var(--cp-border, #E2E8F0)',
+      background: c.bg, color: c.text, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
     }}>
       {c.label}
     </span>

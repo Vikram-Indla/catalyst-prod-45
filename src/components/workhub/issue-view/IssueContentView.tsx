@@ -408,7 +408,7 @@ export function IssueContentView({
 
   if (loading) {
     return <div className="awBody" style={{ padding: 20 }}>
-      {[1,2,3].map(i => <div key={i} style={{ width: `${80-i*15}%`, height: 14, borderRadius: 3, background: 'var(--ds-border, var(--cp-border, #E2E8F0))', marginBottom: 10 }} />)}
+      {[1,2,3].map(i => <div key={i} style={{ width: `${80-i*15}%`, height: 14, borderRadius: 3, background: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', marginBottom: 10 }} />)}
     </div>;
   }
 

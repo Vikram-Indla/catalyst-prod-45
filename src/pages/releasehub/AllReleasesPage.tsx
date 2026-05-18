@@ -111,7 +111,7 @@ export default function AllReleasesPage() {
         <div className="flex items-center gap-2">
           <button onClick={handleImport} disabled={importing}
             className="h-9 px-4 rounded-md text-[13px] font-semibold flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            style={{ border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-secondary, #475569)' }}>
+            style={{ border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: 'var(--cp-text-secondary, #475569)' }}>
             <Download size={14} /> Import from Jira
           </button>
           <button onClick={() => setShowCreate(true)}

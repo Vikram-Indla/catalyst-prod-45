@@ -136,8 +136,8 @@ export function SyncEventsTab() {
   }), [syncLogs, statusFilter, keyFilter]);
 
   return (
-      <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-surface-raised,#1A1A1A)] rounded-md overflow-hidden">
-        <div className="flex items-center gap-3 p-3 border-b border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-surface-raised,#1A1A1A)]">
+      <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-surface-raised,#1A1A1A)] rounded-md overflow-hidden">
+        <div className="flex items-center gap-3 p-3 border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-surface-raised,#1A1A1A)]">
           {(() => {
             const statusOpts = [
               { label: 'All', value: 'all' },
@@ -168,7 +168,7 @@ export function SyncEventsTab() {
 
         <table className="w-full border-collapse">
           <thead>
-            <tr className="border-b border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-surface-raised,#1A1A1A)]">
+            <tr className="border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-surface-raised,#1A1A1A)]">
               {['Time', 'Event Type', 'Jira Key', 'Status', 'Items', 'Duration', 'Error'].map((h) => (
                 <th key={h} className={thClass} style={thStyle}>{h}</th>
               ))}
@@ -179,7 +179,7 @@ export function SyncEventsTab() {
               {filteredLogs.map((log: any) => {
                 const items = (log.items_created ?? 0) + (log.items_updated ?? 0) + (log.items_deleted ?? 0);
                 return (
-                  <tr key={log.id} className="border-b border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-surface-raised,#1A1A1A)]" style={{ height: 50, maxHeight: 50 }}>
+                  <tr key={log.id} className="border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-surface-raised,#1A1A1A)]" style={{ height: 50, maxHeight: 50 }}>
                     <td className={tdClass} style={tdStyle}>{formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}</td>
                     <td className={tdClass} style={tdStyle}>{log.event_type}</td>
                     <td className={tdClass} style={tdStyle}>{log.jira_key || '—'}</td>
@@ -226,10 +226,10 @@ export function WriteBackQueueTab() {
   });
 
   return (
-      <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-surface-raised,#1A1A1A)] rounded-md overflow-hidden">
+      <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-surface-raised,#1A1A1A)] rounded-md overflow-hidden">
         <table className="w-full border-collapse">
           <thead>
-            <tr className="border-b border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-surface-raised,#1A1A1A)]">
+            <tr className="border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-surface-raised,#1A1A1A)]">
               {['Work Item', 'Operation', 'Status', 'Retries', 'Last Error', 'Queued', 'Action'].map((h) => (
                 <th key={h} className={thClass} style={thStyle}>{h}</th>
               ))}
@@ -238,7 +238,7 @@ export function WriteBackQueueTab() {
           {isLoading ? <SkeletonRows cols={7} /> : isError ? <ErrorRow cols={7} /> : (
             <tbody>
               {(queueItems ?? []).map((q: any) => (
-                <tr key={q.id} className="border-b border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-surface-raised,#1A1A1A)]" style={{ height: 50, maxHeight: 50 }}>
+                <tr key={q.id} className="border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-surface-raised,#1A1A1A)]" style={{ height: 50, maxHeight: 50 }}>
                   <td className={tdClass} style={tdStyle}>{q.ph_work_items?.title || q.ph_work_item_id}</td>
                   <td style={tdStyle}>
                     <span className="inline-block bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F1F5F9))] text-[var(--cp-ink-2, var(--cp-ink-2, #334155))] dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-gray-300" style={{ fontSize: 11, fontWeight: 600, borderRadius: 4, padding: '2px 6px', textTransform: 'uppercase' }}>
@@ -285,7 +285,7 @@ export function DeletedItemsTab() {
   });
 
   return (
-      <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-surface-raised,#1A1A1A)] rounded-md overflow-hidden">
+      <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-surface-raised,#1A1A1A)] rounded-md overflow-hidden">
         {!isLoading && !isError && (!deletedItems || deletedItems.length === 0) ? (
           <div className="flex flex-col items-center justify-center py-10 gap-2">
             <TrashIcon label="" size="large" />
@@ -295,7 +295,7 @@ export function DeletedItemsTab() {
           <>
             <table className="w-full border-collapse">
               <thead>
-                <tr className="border-b border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-surface-raised,#1A1A1A)]">
+                <tr className="border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-surface-raised,#1A1A1A)]">
                   {['Jira Key', 'Catalyst Key', 'Deleted', 'Snapshot Preview'].map((h) => (
                     <th key={h} className={thClass} style={thStyle}>{h}</th>
                   ))}
@@ -307,7 +307,7 @@ export function DeletedItemsTab() {
                     const snap = d.item_snapshot ? JSON.stringify(d.item_snapshot) : '';
                     const preview = snap.length > 80 ? snap.substring(0, 80) + '…' : snap;
                     return (
-                      <tr key={d.id} className="border-b border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-surface-raised,#1A1A1A)]" style={{ height: 50, maxHeight: 50 }}>
+                      <tr key={d.id} className="border-b border-[var(--bd-default,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-surface-raised,#1A1A1A)]" style={{ height: 50, maxHeight: 50 }}>
                         <td className={tdClass} style={tdStyle}>{d.jira_key || '—'}</td>
                         <td className={tdClass} style={tdStyle}>{d.catalyst_item_key || '—'}</td>
                         <td className={tdClass} style={tdStyle}>{formatDistanceToNow(new Date(d.deleted_at), { addSuffix: true })}</td>

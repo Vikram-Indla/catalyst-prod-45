@@ -393,7 +393,7 @@ export default function ReqAssistLibrary() {
                     <tr key={i} style={{ height: 50 }}>
                       {Array.from({ length: 8 }).map((_, j) => (
                         <td key={j} style={{ padding: '8px 12px' }}>
-                          <div style={{ width: j === 1 ? '80%' : '60%', height: 12, background: 'var(--cp-border, var(--cp-border, #E2E8F0))', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
+                          <div style={{ width: j === 1 ? '80%' : '60%', height: 12, background: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
                         </td>
                       ))}
                     </tr>
@@ -937,7 +937,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         display: 'inline-flex', alignItems: 'center',
         height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
         borderRadius: 6, border: 'none', cursor: 'not-allowed',
-        background: 'var(--cp-border, var(--cp-border, #E2E8F0))', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))',
+        background: 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))',
         fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
       }}>
         Generate

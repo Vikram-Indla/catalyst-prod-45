@@ -148,7 +148,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
         width: 260,
         borderRadius: 8,
         background: isDark ? 'var(--ds-surface-raised, #1A1A1A)' : '#fff',
-        border: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, var(--cp-border, #E2E8F0))'}`,
+        border: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
         boxShadow: isDark
           ? '0 8px 24px rgba(0,0,0,0.60)'
           : '0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05)',
@@ -163,7 +163,7 @@ function ProductSwitcher({ products, currentCode, onClose, onSelect }: ProductSw
           alignItems: 'center',
           gap: 8,
           padding: '8px 12px',
-          borderBottom: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--cp-border, #E2E8F0)'}`,
+          borderBottom: `1px solid ${isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'var(--cp-border, var(--cp-bg-sunken, #E2E8F0))'}`,
         }}
       >
         <Search size={13} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', flexShrink: 0 }} />

@@ -291,7 +291,7 @@ export default function TestHubVerifyPage() {
         </div>
 
         {/* Results table */}
-        <div style={{ border: '0.75px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: 6, overflow: 'hidden' }}>
+        <div style={{ border: '0.75px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 6, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--cp-font-body)' }}>
             <thead>
               <tr style={{ backgroundColor: 'var(--bg-1, #F8FAFC)' }}>
@@ -305,7 +305,7 @@ export default function TestHubVerifyPage() {
                     letterSpacing: '0.04em',
                     color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',
                     textAlign: 'left',
-                    borderBottom: '0.75px solid var(--bd-default, var(--cp-border, #E2E8F0))',
+                    borderBottom: '0.75px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
                   }}>
                     {h}
                   </th>
@@ -487,7 +487,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
   return (
     <>
       {/* Divider + header */}
-      <div style={{ borderTop: '0.75px solid var(--bd-default, var(--cp-border, #E2E8F0))', marginTop: 32, paddingTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ borderTop: '0.75px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', marginTop: 32, paddingTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{ fontSize: 16, fontWeight: 600, color: '#1E293B', fontFamily: 'var(--cp-font-body)' }}>
           Module health scores
         </span>
@@ -497,7 +497,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
             height: 32,
             padding: '8px 12px',
             backgroundColor: 'transparent',
-            border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))',
+            border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
             borderRadius: 6,
             fontSize: 13,
             fontWeight: 500,
@@ -521,7 +521,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
           return (
             <div key={mod.key} style={{
               backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-              border: '0.75px solid var(--bd-default, var(--cp-border, #E2E8F0))',
+              border: '0.75px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
               borderRadius: 8,
               padding: 16,
             }}>

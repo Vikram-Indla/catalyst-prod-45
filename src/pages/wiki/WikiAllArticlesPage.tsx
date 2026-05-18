@@ -151,7 +151,7 @@ export default function WikiAllArticlesPage() {
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
               <button onClick={() => setShowConfirm(false)} style={{
                 fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 6,
-                border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))', cursor: 'pointer',
+                border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--cp-ink-2, var(--cp-ink-2, #334155))', cursor: 'pointer',
               }}>Cancel</button>
               <button onClick={executeBulk} style={{
                 fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 6, border: 'none',

@@ -510,7 +510,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
           <td key={colKey} style={{ width: columnWidths.assignee }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
               {avatarUrl ? (
-                <img src={avatarUrl} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, #E2E8F0)' }} alt="" />
+                <img src={avatarUrl} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }} alt="" />
               ) : (
                 <div style={{
                   width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
@@ -535,7 +535,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                 const level = PRIORITY_ORDER.indexOf(story.priority || '') >= 0 ? PRIORITY_ORDER.length - PRIORITY_ORDER.indexOf(story.priority || '') : 0;
                 const filled = i <= level;
                 const fillColor = level >= 4 ? '#E5484D' : level >= 3 ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : 'var(--ds-text-success, #22C55E)';
-                return <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: filled ? fillColor : 'var(--ds-border, var(--cp-border, #E2E8F0))' }} />;
+                return <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: filled ? fillColor : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }} />;
               })}
             </div>
           </td>
@@ -698,7 +698,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             {url ? (
               <img
                 src={url}
-                style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, #E2E8F0)' }}
+                style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }}
                 alt=""
               />
             ) : (
@@ -737,7 +737,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             {[1, 2, 3, 4].map((i) => {
               const filled = i <= level;
               const fillColor = level >= 4 ? '#E5484D' : level >= 3 ? 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' : 'var(--ds-text-success, #22C55E)';
-              return <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: filled ? fillColor : 'var(--ds-border, var(--cp-border, #E2E8F0))' }} />;
+              return <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: filled ? fillColor : 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }} />;
             })}
           </div>
         );
@@ -796,7 +796,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     totalPages > 1 ? (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 12px', borderTop: '0.75px solid var(--cp-border, #E2E8F0)',
+        padding: '10px 12px', borderTop: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
         fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-body)',
       }}>
         <span style={{ fontWeight: 500 }}>
@@ -809,7 +809,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               width: 28, height: 28, borderRadius: 4,
-              border: '1px solid var(--cp-border, #E2E8F0)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               cursor: page <= 1 ? 'not-allowed' : 'pointer',
               opacity: page <= 1 ? 0.4 : 1,
             }}
@@ -833,7 +833,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                   style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     minWidth: 28, height: 28, borderRadius: 4, padding: '0 6px',
-                    border: page === p ? '1.5px solid #2563EB' : '1px solid var(--cp-border, #E2E8F0)',
+                    border: page === p ? '1.5px solid #2563EB' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                     background: page === p ? 'rgba(37,99,235,0.06)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     color: page === p ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtle, #475569)',
                     fontWeight: page === p ? 600 : 400,
@@ -851,7 +851,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               width: 28, height: 28, borderRadius: 4,
-              border: '1px solid var(--cp-border, #E2E8F0)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+              border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               cursor: page >= totalPages ? 'not-allowed' : 'pointer',
               opacity: page >= totalPages ? 0.4 : 1,
             }}
@@ -864,7 +864,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   );
 
   const renderTableV2 = () => (
-    <div ref={tableRef} tabIndex={0} style={{ outline: 'none', border: '0.555556px solid var(--cp-border, #E2E8F0)', borderRadius: 8, overflow: 'hidden' }}>
+    <div ref={tableRef} tabIndex={0} style={{ outline: 'none', border: '0.555556px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 8, overflow: 'hidden' }}>
       <DynamicTable<BacklogStory>
         tableId="story-backlog"
         ariaLabel="Story backlog"
@@ -906,7 +906,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     }
 
     return (
-      <div ref={tableRef} tabIndex={0} style={{ outline: 'none', border: '0.555556px solid var(--cp-border, #E2E8F0)', borderRadius: 8, overflow: 'hidden' }}>
+      <div ref={tableRef} tabIndex={0} style={{ outline: 'none', border: '0.555556px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 8, overflow: 'hidden' }}>
         <div style={{ overflowX: 'auto' }}>
           <table className="pb-table" style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: 1100 }}>
             <colgroup>
@@ -966,8 +966,8 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                         style={{
                           height: 36, padding: '0 12px', cursor: 'pointer', userSelect: 'none',
                           background: '#F7F8F9',
-                          borderBottom: '0.75px solid var(--cp-border, #E2E8F0)',
-                          borderTop: '0.75px solid var(--cp-border, #E2E8F0)',
+                          borderBottom: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
+                          borderTop: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                           fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)',
                           textTransform: 'uppercase', letterSpacing: '0.08em',
                           verticalAlign: 'middle',
@@ -982,7 +982,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                           {groupBy === 'assignee' && group.label !== 'Unassigned' && (() => {
                             const url = avatarsByName.get(group.label.toLowerCase());
                             return url ? (
-                              <img src={url} alt="" style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, #E2E8F0)' }} />
+                              <img src={url} alt="" style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))' }} />
                             ) : (
                               <div style={{
                                 width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
@@ -1039,7 +1039,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         {totalPages > 1 && (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '10px 12px', borderTop: '0.75px solid var(--cp-border, #E2E8F0)',
+            padding: '10px 12px', borderTop: '0.75px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
             fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', fontFamily: 'var(--cp-font-body)',
           }}>
             <span style={{ fontWeight: 500 }}>
@@ -1052,7 +1052,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                 style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   width: 28, height: 28, borderRadius: 4,
-                  border: '1px solid var(--cp-border, #E2E8F0)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                  border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   cursor: page <= 1 ? 'not-allowed' : 'pointer',
                   opacity: page <= 1 ? 0.4 : 1,
                 }}
@@ -1076,7 +1076,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                       style={{
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                         minWidth: 28, height: 28, borderRadius: 4, padding: '0 6px',
-                        border: page === p ? '1.5px solid #2563EB' : '1px solid var(--cp-border, #E2E8F0)',
+                        border: page === p ? '1.5px solid #2563EB' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
                         background: page === p ? 'rgba(37,99,235,0.06)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                         color: page === p ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--ds-text-subtle, #475569)',
                         fontWeight: page === p ? 600 : 400,
@@ -1094,7 +1094,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                 style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   width: 28, height: 28, borderRadius: 4,
-                  border: '1px solid var(--cp-border, #E2E8F0)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                  border: '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   cursor: page >= totalPages ? 'not-allowed' : 'pointer',
                   opacity: page >= totalPages ? 0.4 : 1,
                 }}
@@ -1123,7 +1123,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by title, key, Jira ID..."
             className="h-9 pl-9 pr-3 text-sm"
-            style={{ borderColor: 'var(--ds-border, var(--cp-border, #E2E8F0))', background: tk.pageBg, color: tk.t1 }}
+            style={{ borderColor: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', background: tk.pageBg, color: tk.t1 }}
           />
         </div>
 
@@ -1166,7 +1166,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9))')}
             onMouseLeave={e => { if (!isDraggingPanel.current) e.currentTarget.style.background = 'transparent'; }}
           >
-            <div style={{ width: 1.5, height: 40, borderRadius: 1, background: 'var(--ds-border, var(--cp-border, #E2E8F0))' }} />
+            <div style={{ width: 1.5, height: 40, borderRadius: 1, background: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }} />
           </div>
           <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', transition: isDraggingPanel.current ? 'none' : 'flex 0.15s ease' }}>
             <Suspense fallback={<div style={{ padding: 24, color: '#97A0AF' }}>Loading…</div>}>

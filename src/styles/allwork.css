@@ -439,7 +439,7 @@
 }
 .jlpSkLine {
   border-radius: 3px;
-  background: var(--ds-border, var(--cp-border, #E2E8F0));
+  background: var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   animation: jlpPulse 1.5s ease-in-out infinite;
 }
 .jlpSkRow {
@@ -452,7 +452,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--ds-border, var(--cp-border, #E2E8F0));
+  background: var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   animation: jlpPulse 1.5s ease-in-out infinite;
 }
 @keyframes jlpPulse {

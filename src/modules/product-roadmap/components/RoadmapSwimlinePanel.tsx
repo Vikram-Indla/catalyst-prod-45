@@ -75,7 +75,7 @@ export function RoadmapSwimlanePanel({ items, config, selectedItemId, onItemClic
   }, [items]);
 
   const hc = highContrast;
-  const borderColor = hc ? '#09090B' : 'var(--bd-default, var(--cp-border, #E2E8F0))';
+  const borderColor = hc ? '#09090B' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))';
 
   const renderGridlines = () => (
     <div className="absolute inset-0 pointer-events-none flex">

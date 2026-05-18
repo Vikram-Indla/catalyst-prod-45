@@ -86,7 +86,7 @@ export function MultiSelectDropdown({
           onClick={() => setOpen(!open)}
           style={{
             width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))',
+            padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
             background: 'var(--bg-app, #fff)', cursor: 'pointer', minHeight: '50px', gap: '8px',
           }}
         >
@@ -130,7 +130,7 @@ export function MultiSelectDropdown({
         {open && (
           <div style={{
             position: 'absolute', top: '100%', left: 0, right: 0, marginTop: '4px',
-            background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', borderRadius: '8px',
+            background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: '8px',
             boxShadow: '0 8px 24px rgba(0,0,0,.12)', zIndex: 9999, overflow: 'hidden',
           }}>
             {/* Search */}

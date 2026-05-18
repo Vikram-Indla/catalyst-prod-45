@@ -77,7 +77,7 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
       style={{
         height: 44,
         backgroundColor: isSelected ? ('var(--cp-primary-light, #EFF6FF)') : 'transparent',
-        borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
+        borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
         outline: isFocused ? '2px solid #2563EB' : 'none',
         outlineOffset: -2,
       }}
@@ -133,7 +133,7 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
       ) : (
         <div
           className="flex-shrink-0 flex items-center justify-center rounded-full"
-          style={{ width: 28, height: 28, background: 'var(--bd-default, var(--cp-border, #E2E8F0))' }}
+          style={{ width: 28, height: 28, background: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))' }}
         >
           <User className="w-3.5 h-3.5" style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }} />
         </div>

@@ -118,7 +118,7 @@ export default function FreezeWindowsPage() {
       </div>
 
       {/* Calendar Strip */}
-      <div className="mb-6 rounded-lg p-4" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
+      <div className="mb-6 rounded-lg p-4" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
         <div className="flex items-center justify-between mb-3">
           <button onClick={() => setCalMonth(new Date(calMonth.getFullYear(), calMonth.getMonth() - 1))}
             className="h-7 w-7 rounded flex items-center justify-center" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
@@ -169,7 +169,7 @@ export default function FreezeWindowsPage() {
           <p className="text-[13px] max-w-md" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Add one to protect critical periods.</p>
         </div>
       ) : (
-        <div className="rounded-lg overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
+        <div className="rounded-lg overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}` }}>
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
             <thead>
               <tr style={{ background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))' }}>
@@ -213,25 +213,25 @@ export default function FreezeWindowsPage() {
               <label className="text-[12px] font-semibold text-[var(--ds-text-subtle,#475569)] block mb-1">Name *</label>
               <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g. Go-Live Freeze Q2"
-                className="h-9 w-full px-3 rounded border border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,#EDEDED)] text-[13px] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />
+                className="h-9 w-full px-3 rounded border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,#EDEDED)] text-[13px] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-[12px] font-semibold text-[var(--ds-text-subtle,#475569)] block mb-1">Start Date *</label>
                 <input type="date" value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))}
-                  className="h-9 w-full px-3 rounded border border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,#EDEDED)] text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />
+                  className="h-9 w-full px-3 rounded border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,#EDEDED)] text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />
               </div>
               <div>
                 <label className="text-[12px] font-semibold text-[var(--ds-text-subtle,#475569)] block mb-1">End Date *</label>
                 <input type="date" value={form.end_date} onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))}
-                  className="h-9 w-full px-3 rounded border border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,#EDEDED)] text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />
+                  className="h-9 w-full px-3 rounded border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,#EDEDED)] text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />
               </div>
             </div>
             <div>
               <label className="text-[12px] font-semibold text-[var(--ds-text-subtle,#475569)] block mb-1">Reason</label>
               <textarea value={form.reason} onChange={e => setForm(f => ({ ...f, reason: e.target.value }))}
                 placeholder="e.g. National holiday / major go-live" rows={3}
-                className="w-full px-3 py-2 rounded border border-[var(--ds-border,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,#EDEDED)] text-[13px] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] resize-none focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />
+                className="w-full px-3 py-2 rounded border border-[var(--ds-border,var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,#EDEDED)] text-[13px] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] resize-none focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]/20 focus:border-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" />
             </div>
             {formError && <p className="text-[12px] text-[var(--ds-text-danger,var(--cp-danger, #DC2626))]">{formError}</p>}
           </div>

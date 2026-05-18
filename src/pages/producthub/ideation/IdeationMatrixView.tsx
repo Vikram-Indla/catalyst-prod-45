@@ -75,7 +75,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
             <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ctrl.label}:</span>
             <div style={{
               width: '160px', fontSize: '12px', fontWeight: 600, padding: '5px 10px',
-              background: 'var(--cp-bg-page, #F8FAFC)', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', borderRadius: '6px',
+              background: 'var(--cp-bg-page, #F8FAFC)', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: '6px',
               color: 'var(--cp-ink-2, var(--cp-ink-2, #334155))', cursor: 'pointer',
             }}>
               {ctrl.value}
@@ -87,7 +87,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
       {/* Chart — V12: border-only, NO box-shadow */}
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         <div style={{
-          width: '100%', height: '520px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)',
+          width: '100%', height: '520px', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))',
           borderRadius: '6px', position: 'relative', overflow: 'hidden',
         }}>
           {/* Grid area */}

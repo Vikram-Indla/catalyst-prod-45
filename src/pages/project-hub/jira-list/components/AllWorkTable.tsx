@@ -131,7 +131,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
         {Array.from({ length: 8 }).map((_, i) => (
           <div key={i} style={{
             height: 36, borderRadius: 4, marginBottom: 4,
-            background: 'linear-gradient(90deg, var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9)) 25%, var(--ds-border, var(--cp-border, #E2E8F0)) 50%, var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9)) 75%)',
+            background: 'linear-gradient(90deg, var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9)) 25%, var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))) 50%, var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9)) 75%)',
             backgroundSize: '200% 100%',
             animation: 'shimmer 1.5s infinite',
           }} />

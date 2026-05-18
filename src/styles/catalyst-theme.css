@@ -36,7 +36,7 @@
   --loz-gn-bg: #E3FCEF;
   --loz-gn-tx: #006644;
   --pop-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
-  --pop-border: var(--ds-border, var(--cp-border, #E2E8F0));
+  --pop-border: var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)));
   --pop-hover: var(--ds-surface-sunken, var(--cp-bg-sunken, #F1F5F9));
   --shadow-pop: 0 8px 24px rgba(0,0,0,0.12), 0 0 1px rgba(0,0,0,0.2);
 }

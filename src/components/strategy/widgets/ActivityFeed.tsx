@@ -54,7 +54,7 @@ export function ActivityFeed() {
           className="flex gap-3"
           style={{
             padding: '10px 4px',
-            borderBottom: i < TEMP_MOCK_FEED.length - 1 ? '1px solid var(--exec-border, var(--bd-default, var(--cp-border, #E2E8F0)))' : 'none',
+            borderBottom: i < TEMP_MOCK_FEED.length - 1 ? '1px solid var(--exec-border, var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0))))' : 'none',
             transition: 'background 120ms',
             borderRadius: 6,
             margin: '0 -4px',

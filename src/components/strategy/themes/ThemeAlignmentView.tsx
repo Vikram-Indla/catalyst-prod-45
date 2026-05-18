@@ -678,7 +678,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
       if (srcIn && tgtIn) {
         return { stroke: p.layerColor, strokeWidth: 3, opacity: 1, filter: 'drop-shadow(0 0 4px rgba(37, 99, 235, 0.3))' };
       }
-      return { stroke: 'var(--bd-default, var(--cp-border, #E2E8F0))', strokeWidth: 0.5, opacity: 0.05, filter: 'none' };
+      return { stroke: 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', strokeWidth: 0.5, opacity: 0.05, filter: 'none' };
     }
     // Hover-only
     const isLit = highlightedNodes.has(p.sourceId) && highlightedNodes.has(p.targetId);

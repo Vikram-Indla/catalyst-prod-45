@@ -109,7 +109,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
 
   const inputStyle = (hasError?: boolean): React.CSSProperties => ({
     width: '100%', height: 44, padding: '0 14px',
-    border: `1.5px solid ${hasError ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
+    border: `1.5px solid ${hasError ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
     borderRadius: 12, fontSize: 14,
     backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : undefined,
     color: isDark ? 'var(--ds-text, #EDEDED)' : undefined,
@@ -119,7 +119,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
     <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 24 }}>
       <div style={{ width: '100%', maxWidth: 600, maxHeight: '90vh', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 16, boxShadow: '0 25px 50px rgba(0,0,0,0.25)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {/* Header */}
-        <div style={{ padding: '20px 24px', borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '20px 24px', borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <FileCheck size={22} style={{ color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }} />
@@ -198,14 +198,14 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
             </label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)}
               placeholder="Detailed description of the requirement..." rows={4}
-              style={{ width: '100%', padding: 14, border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 12, fontSize: 14, resize: 'vertical', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : undefined, color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
+              style={{ width: '100%', padding: 14, border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 12, fontSize: 14, resize: 'vertical', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : undefined, color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
           </div>
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px', borderTop: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+        <div style={{ padding: '16px 24px', borderTop: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={onClose} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 20px', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, #E2E8F0)', borderRadius: 12, fontSize: 14, fontWeight: 500, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer' }}>
+            style={{ height: 44, padding: '0 20px', backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 12, fontSize: 14, fontWeight: 500, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer' }}>
             Cancel
           </button>
           <button onClick={handleSubmit} disabled={isSubmitting}

@@ -47,7 +47,7 @@ export default function ReportDetailPage() {
   // DARK MODE tokens
   const pageBg = 'var(--cp-bg-page, #F8FAFC)';
   const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)';
-  const borderColor = 'var(--cp-border, var(--cp-border, #E2E8F0))';
+  const borderColor = 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))';
   const borderSubtle = 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9))';
   const textPrimary = 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))';
   const textSecondary = 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))';
@@ -200,7 +200,7 @@ export default function ReportDetailPage() {
               <span style={{ fontSize: 14, fontWeight: 600, color: textPrimary }}>Execution Progress</span>
               <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }}>{data.summary.progress_percent}%</span>
             </div>
-            <div style={{ height: 16, backgroundColor: 'var(--cp-bg-sunken, var(--cp-border, #E2E8F0))', borderRadius: 8, overflow: 'hidden', display: 'flex' }}>
+            <div style={{ height: 16, backgroundColor: 'var(--cp-bg-sunken, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', borderRadius: 8, overflow: 'hidden', display: 'flex' }}>
               {data.summary.total_cases > 0 && (
                 <>
                   <div style={{ width: `${(data.summary.passed / data.summary.total_cases) * 100}%`, backgroundColor: '#10B981' }} />

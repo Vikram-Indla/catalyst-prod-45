@@ -33,7 +33,7 @@ export function RoadmapListPanel({
   const renderHeader = () => (
     <div
       className="flex items-center justify-between px-4"
-      style={{ height: 44, borderBottom: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', background: 'var(--ds-surface-sunken, #FAFBFC)' }}
+      style={{ height: 44, borderBottom: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', background: 'var(--ds-surface-sunken, #FAFBFC)' }}
     >
       <div className="flex items-center gap-2">
         <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
@@ -65,7 +65,7 @@ export function RoadmapListPanel({
   // Grouped view
   if (groups && groups.length > 0) {
     return (
-      <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+      <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
         {renderHeader()}
         <ScrollArea className="flex-1">
           <div role="table">
@@ -110,7 +110,7 @@ export function RoadmapListPanel({
 
   // Flat list with DnD
   return (
-    <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid var(--bd-default, var(--cp-border, #E2E8F0))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
+    <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
       {renderHeader()}
       <ScrollArea className="flex-1">
         <Droppable droppableId="roadmap-list">

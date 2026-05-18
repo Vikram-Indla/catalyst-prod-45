@@ -123,7 +123,7 @@ function BulkBtn({ icon: Icon, label, onClick, danger }: {
     <button onClick={onClick} style={{
       height: 30, padding: '0 10px', fontSize: 12, fontWeight: 500,
       fontFamily: 'var(--cp-font-body)',
-      color: danger ? 'var(--ds-border-danger, #FCA5A5)' : 'var(--bd-default, var(--cp-border, #E2E8F0))',
+      color: danger ? 'var(--ds-border-danger, #FCA5A5)' : 'var(--bd-default, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))',
       background: 'transparent', border: '1px solid #475569', borderRadius: 4,
       cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
     }}
