@@ -531,7 +531,7 @@
 .dark .jf-trigger-btn {
   background: transparent;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 .dark .jf-trigger-btn:hover {
   background-color: var(--ds-surface-overlay, #1F1F1F);
@@ -546,7 +546,7 @@
 .dark .jf-panel {
   background: var(--cp-bg-surface, #242528);
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
 }
 
@@ -558,7 +558,7 @@
 }
 .dark .jf-tab:hover:not(.jf-tab--active):not(:disabled) {
   background-color: var(--ds-surface-overlay, #1F1F1F);
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 .dark .jf-tab--active {
   background-color: var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB));
@@ -573,7 +573,7 @@
 }
 .dark .jf-category-item:hover:not(.jf-category-item--active) {
   background-color: var(--ds-surface-overlay, #1F1F1F);
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 .dark .jf-category-item--active {
   background-color: #0D1526;
@@ -601,7 +601,7 @@
   color: var(--ds-text-subtlest, #878787);
 }
 .dark .jf-search-input {
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 
 .dark .jf-option-item:hover .jf-option-inner {
@@ -611,10 +611,10 @@
   background-color: #0D1526;
 }
 .dark .jf-option-row {
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 .dark .jf-option-label {
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 .dark .jf-option-label-extra {
   color: var(--ds-text-subtlest, #878787);
@@ -639,5 +639,5 @@
   color: var(--ds-text-subtlest, #878787);
 }
 .dark .jf-feedback-btn:hover {
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }

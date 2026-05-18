@@ -75,7 +75,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent
-        className="!bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] !text-slate-900 dark:!text-[var(--ds-text,#EDEDED)] p-0 gap-0"
+        className="!bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] !text-slate-900 dark:!text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] p-0 gap-0"
         style={{ maxWidth: '460px', borderRadius: '8px' }}
       >
         {/* Header */}

@@ -124,7 +124,7 @@ export function AddColumnModal({ open, onOpenChange }: AddColumnModalProps) {
                   className="w-2 h-2 rounded-full"
                   style={{ backgroundColor: color }}
                 />
-                <span className="text-sm font-medium text-slate-700 dark:text-[var(--ds-text,#EDEDED)]">
+                <span className="text-sm font-medium text-slate-700 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
                   {name || 'Column Name'}
                 </span>
                 <span className="text-xs text-slate-500 bg-slate-200 dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] px-2 py-0.5 rounded-full ml-auto">

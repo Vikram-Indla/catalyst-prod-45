@@ -60,7 +60,7 @@ function LinkedIssueRow({
 
       <span className={cn(
         'font-body text-sm truncate flex-1 min-w-0',
-        isDark ? 'text-[var(--ds-text,#EDEDED)]' : 'text-[var(--ds-text,#292A2E)]',
+        isDark ? 'text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' : 'text-[var(--ds-text,#292A2E)]',
       )}>
         {summary}
       </span>

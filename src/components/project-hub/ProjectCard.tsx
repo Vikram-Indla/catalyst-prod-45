@@ -41,7 +41,7 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
           {project.key}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold font-['Sora',sans-serif] text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-[var(--ds-text,#EDEDED)]">
+          <div className="truncate text-sm font-semibold font-['Sora',sans-serif] text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
             {project.name}
           </div>
           <span className="text-[11px] font-medium font-['JetBrains_Mono',monospace] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">

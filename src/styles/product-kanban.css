@@ -23,8 +23,8 @@
 /* ═══ DARK MODE — Dark mode One Surface Model ═══ */
 .dark [data-module="product-kanban"],
 .dark [data-module="product-kanban"] , [data-theme="dark"] [data-module="product-kanban"] {
-  --pk-ink: var(--ds-text, #EDEDED);
-  --pk-ink-secondary: var(--ds-text, #EDEDED);
+  --pk-ink: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
+  --pk-ink-secondary: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --pk-ink-tertiary: var(--ds-text-subtlest, #A1A1A1);
   --pk-ink-muted: #7D7D7D;
   --pk-surface: var(--cp-bg-page, #1F1F21);
@@ -46,7 +46,7 @@
 }
 .dark .pk-card-title,
 .dark .pk-card-title , [data-theme="dark"] .pk-card-title {
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 .dark .pk-chip,
 .dark .pk-chip , [data-theme="dark"] .pk-chip {

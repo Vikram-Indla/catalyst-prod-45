@@ -287,7 +287,7 @@
   --ra-slate-100: var(--cp-bg-surface, #242528);  /* card surface */
   --ra-slate-200: var(--ds-border, #292929);  /* active / pressed */
   --ra-slate-700: var(--ds-text-subtlest, #A1A1A1);  /* text secondary */
-  --ra-slate-800: var(--ds-text, #EDEDED);  /* text primary */
+  --ra-slate-800: var(--ds-text, var(--cp-bg-neutral, #EDEDED));  /* text primary */
 }
 
 .dark .ra-enterprise-clean td {

@@ -151,7 +151,7 @@
 
   --roadmap-timeline-header-bg:     var(--ds-surface-overlay, #1F1F1F);
   --roadmap-timeline-quarter-text:  var(--ds-text-subtlest, #A1A1A1);
-  --roadmap-timeline-month-text:    var(--ds-text, #EDEDED);
+  --roadmap-timeline-month-text:    var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --roadmap-timeline-grid:          var(--ds-border, #292929);
 
   --roadmap-group-bg:               var(--ds-surface-overlay, #1F1F1F);

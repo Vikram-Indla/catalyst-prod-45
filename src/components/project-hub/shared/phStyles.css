@@ -55,7 +55,7 @@
 }
 
 .dark .ph-card-title {
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   border-bottom-color: var(--ds-border, #292929);
 }
 

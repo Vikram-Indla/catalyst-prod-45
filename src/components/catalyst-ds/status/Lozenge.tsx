@@ -7,7 +7,7 @@ const lozengeVariants = cva(
   {
     variants: {
       appearance: {
-        default: 'bg-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] text-[var(--ds-text,#253858)] dark:bg-[var(--ds-border-bold,#454545)] dark:text-[var(--ds-text,#EDEDED)]',
+        default: 'bg-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] text-[var(--ds-text,#253858)] dark:bg-[var(--ds-border-bold,#454545)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
         info: 'bg-[#DEEBFF] text-[#0747A6] dark:bg-[#1C3A5C] dark:text-[#DEEBFF]',
         success: 'bg-[#E3FCEF] text-[#006644] dark:bg-[#1C3D2E] dark:text-[#E3FCEF]',
         warning: 'bg-[#FFF0B3] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:bg-[#4A3B1A] dark:text-[#FFF0B3]',

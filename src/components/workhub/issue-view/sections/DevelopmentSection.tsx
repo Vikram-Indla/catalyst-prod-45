@@ -88,7 +88,7 @@ export function DevelopmentSection({ isDark, items }: DevelopmentSectionProps) {
                   {TYPE_ICONS[type]}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className={cn('font-body text-sm truncate', isDark ? 'text-[var(--ds-text,#EDEDED)]' : 'text-[var(--ds-text,#292A2E)]')}>
+                  <p className={cn('font-body text-sm truncate', isDark ? 'text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' : 'text-[var(--ds-text,#292A2E)]')}>
                     {devItem.title}
                   </p>
                   <div className={cn('flex items-center gap-2 text-xs font-body', isDark ? 'text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text-subtlest,#6B6E76)]')}>

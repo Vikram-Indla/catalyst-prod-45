@@ -135,8 +135,8 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
                 className={cn(
                   "px-3 py-1 text-xs font-medium capitalize transition-colors border-r border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] last:border-r-0",
                   zoom === level
-                    ? "bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] text-slate-900 dark:text-[var(--ds-text,#EDEDED)] shadow-sm"
-                    : "text-slate-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:text-slate-700 dark:hover:text-[var(--ds-text,#EDEDED)] hover:bg-white/50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
+                    ? "bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] shadow-sm"
+                    : "text-slate-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:text-slate-700 dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] hover:bg-white/50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
                 )}
               >
                 {level}
@@ -220,7 +220,7 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
                   {release.version}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-[12px] font-medium text-slate-800 dark:text-[var(--ds-text,#EDEDED)] truncate leading-tight">{release.name}</div>
+                  <div className="text-[12px] font-medium text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] truncate leading-tight">{release.name}</div>
                   <div className="text-[10px] text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)] leading-tight">{statusLabel}</div>
                 </div>
               </div>

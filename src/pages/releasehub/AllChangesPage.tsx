@@ -102,7 +102,7 @@ export default function AllChangesPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>All Changes</h1>
+          <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : RH.ink1 }}>All Changes</h1>
           <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Every deployment change — past, present & future</p>
         </div>
         <button onClick={() => setShowCreateChg(true)}

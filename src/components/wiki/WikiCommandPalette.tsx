@@ -124,7 +124,7 @@ export function WikiCommandPalette({ open, onClose }: Props) {
             style={{
               flex: 1, fontSize: 15, fontFamily: 'var(--cp-font-body)',
               background: 'transparent', border: 'none', outline: 'none',
-              color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--cp-text-primary)',
+              color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)',
             }}
           />
         </div>
@@ -152,7 +152,7 @@ export function WikiCommandPalette({ open, onClose }: Props) {
               }}
             >
               {item.type === 'category' ? <Folder size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-muted)' }} /> : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-muted)' }} />}
-              <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--cp-text-primary)' }}>{item.label}</span>
+              <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-text-primary)' }}>{item.label}</span>
               <span dir="ltr" style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-muted)' }}>{item.meta}</span>
               {idx === selectedIdx && <ArrowRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-muted)' }} />}
             </div>

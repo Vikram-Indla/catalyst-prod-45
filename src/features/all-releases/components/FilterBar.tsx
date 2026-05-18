@@ -183,7 +183,7 @@ export function FilterBar({
           variant="ghost"
           size="sm"
           onClick={onClearFilters}
-          className="text-slate-500 hover:text-slate-700 dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:text-[var(--ds-text,#EDEDED)]"
+          className="text-slate-500 hover:text-slate-700 dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]"
         >
           <CloseIcon label="" size="small" primaryColor="currentColor" />
           Clear ({activeFilterCount})

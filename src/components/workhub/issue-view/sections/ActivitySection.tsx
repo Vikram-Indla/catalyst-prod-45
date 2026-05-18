@@ -60,12 +60,12 @@ function CommentItem({ comment, isDark }: { comment: any; isDark: boolean }) {
       <AvatarSmall name={name} isDark={isDark} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className={cn('font-body text-sm font-medium', isDark ? 'text-[var(--ds-text,#EDEDED)]' : 'text-[var(--ds-text,#292A2E)]')}>{name}</span>
+          <span className={cn('font-body text-sm font-medium', isDark ? 'text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' : 'text-[var(--ds-text,#292A2E)]')}>{name}</span>
           <span className={cn('font-body text-xs', isDark ? 'text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text-subtlest,#6B6E76)]')}>
             {formatRelative(comment.created_at)}
           </span>
         </div>
-        <div className={cn('font-body text-sm whitespace-pre-wrap', isDark ? 'text-[var(--ds-text,#EDEDED)]' : 'text-[var(--ds-text,#292A2E)]')}>
+        <div className={cn('font-body text-sm whitespace-pre-wrap', isDark ? 'text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' : 'text-[var(--ds-text,#292A2E)]')}>
           {comment.body ?? ''}
         </div>
       </div>
@@ -86,7 +86,7 @@ function HistoryItem({ entry, isDark }: { entry: any; isDark: boolean }) {
       <AvatarSmall name={name} isDark={isDark} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className={cn('font-body text-sm font-medium', isDark ? 'text-[var(--ds-text,#EDEDED)]' : 'text-[var(--ds-text,#292A2E)]')}>{name}</span>
+          <span className={cn('font-body text-sm font-medium', isDark ? 'text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' : 'text-[var(--ds-text,#292A2E)]')}>{name}</span>
           <span className={cn('font-body text-xs', isDark ? 'text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text-subtlest,#6B6E76)]')}>
             changed {fieldName} {formatRelative(entry.created_at)}
           </span>
@@ -184,7 +184,7 @@ export function ActivitySection({
             className={cn(
               'inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-body font-medium transition-colors',
               filter === opt.key
-                ? isDark ? 'bg-[var(--ds-surface-overlay,#1F1F1F)] text-[var(--ds-text,#EDEDED)]' : 'bg-[#E9F2FF] text-[#0C66E4]'
+                ? isDark ? 'bg-[var(--ds-surface-overlay,#1F1F1F)] text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' : 'bg-[#E9F2FF] text-[#0C66E4]'
                 : isDark ? 'text-[var(--ds-text-subtlest,#878787)] hover:bg-[var(--ds-surface-overlay,#1F1F1F)]' : 'text-[var(--ds-text-accent-gray,#505258)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)]',
             )}
           >
@@ -208,7 +208,7 @@ export function ActivitySection({
             disabled={posting}
             className={cn(
               'flex-1 bg-transparent border-none outline-none resize-none font-body text-sm',
-              isDark ? 'text-[var(--ds-text,#EDEDED)] placeholder:text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text,#292A2E)] placeholder:text-[var(--ds-text-subtlest,#878787)]',
+              isDark ? 'text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text,#292A2E)] placeholder:text-[var(--ds-text-subtlest,#878787)]',
             )}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {

@@ -78,7 +78,7 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     headerBg: '#111111',
     border: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
     borderSubtle: 'var(--ds-border, #292929)',
-    textPrimary: 'var(--ds-text, #EDEDED)',
+    textPrimary: 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))',
     textSecondary: 'var(--ds-text-subtlest, #A1A1A1)',
     textMuted: 'var(--ds-text-subtlest, #A1A1A1)',
     textDisabled: '#7D7D7D',
@@ -98,7 +98,7 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     inputBorder: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
     overlay: 'rgba(255,255,255,.04)',
     epicLozengeBg: 'var(--ds-border, var(--cp-ink-1, #2E2E2E))',
-    epicLozengeText: 'var(--ds-text, #EDEDED)',
+    epicLozengeText: 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))',
   },
 };
 

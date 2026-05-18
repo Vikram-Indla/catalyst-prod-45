@@ -108,7 +108,7 @@ function ActivityPanel({
             (live DOM BAU-5814 Story + QA Bug exemplars). Corrects 2026-05-08
             14/600 lesson which measured wrapper levels. */}
         <h2
-          className="text-[var(--ds-text,#292A2E)] dark:text-[var(--ds-text,#EDEDED)]"
+          className="text-[var(--ds-text,#292A2E)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]"
           style={{ margin: 0, fontSize: 16, fontWeight: 653, lineHeight: '20px', fontFamily: 'var(--cp-font-body)' }}
         >
           Activity
@@ -143,7 +143,7 @@ function ActivityPanel({
           <button
             type="button"
             onClick={() => setSortOpen(!sortOpen)}
-            className="flex items-center gap-1 text-[14px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:hover:text-[var(--ds-text,#EDEDED)] transition-colors"
+            className="flex items-center gap-1 text-[14px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] transition-colors"
           >
             {sortOrder === 'newest' ? 'Newest first' : 'Oldest first'}
             <ChevronDown className="h-3.5 w-3.5" />
@@ -165,7 +165,7 @@ function ActivityPanel({
                       'w-full text-left px-3 py-1.5 text-[14px] transition-colors',
                       order === sortOrder
                         ? 'bg-[#E9F2FE] text-[#1868DB] dark:bg-[#1C3A5C] dark:text-[#4C9AFF]'
-                        : 'text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,#EDEDED)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
+                        : 'text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
                     )}
                   >
                     {order === 'newest' ? 'Newest first' : 'Oldest first'}
@@ -251,7 +251,7 @@ function ActivityPanel({
                           <textarea
                             value={editValue}
                             onChange={(e) => setEditValue(e.target.value)}
-                            className="w-full resize-none border-0 bg-transparent text-[14px] text-[var(--ds-text,#292A2E)] dark:text-[var(--ds-text,#EDEDED)] focus:outline-none focus:ring-0 min-h-[60px]"
+                            className="w-full resize-none border-0 bg-transparent text-[14px] text-[var(--ds-text,#292A2E)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] focus:outline-none focus:ring-0 min-h-[60px]"
                             autoFocus
                             onKeyDown={(e) => {
                               if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
@@ -279,7 +279,7 @@ function ActivityPanel({
                             <button
                               type="button"
                               onClick={() => setEditingId(null)}
-                              className="text-[12px] font-medium text-[var(--ds-text-subtlest,#6B778C)] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:text-[var(--ds-text,#EDEDED)]"
+                              className="text-[12px] font-medium text-[var(--ds-text-subtlest,#6B778C)] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]"
                             >
                               Cancel
                             </button>

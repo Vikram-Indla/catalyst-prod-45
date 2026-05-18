@@ -78,7 +78,7 @@ export function OkrProgressCell({ baseline, status, compact = false }: OkrProgre
       </div>
 
       {/* Percentage */}
-      <span className={cn("text-[14px] font-semibold flex-shrink-0 min-w-[36px] text-left tabular-nums", isDark ? 'text-[var(--ds-text,#EDEDED)]' : 'text-[#171717]')}>
+      <span className={cn("text-[14px] font-semibold flex-shrink-0 min-w-[36px] text-left tabular-nums", isDark ? 'text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' : 'text-[#171717]')}>
         {Math.round(actual)}%
       </span>
       

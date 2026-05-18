@@ -127,7 +127,7 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
               className={cn(
                 'w-full text-left px-3 py-2 text-xs font-body transition-colors',
                 isDark
-                  ? 'text-[var(--ds-text,#EDEDED)] hover:bg-[var(--ds-surface-overlay,#1F1F1F)] disabled:text-[var(--ds-text-subtlest,#878787)]'
+                  ? 'text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] hover:bg-[var(--ds-surface-overlay,#1F1F1F)] disabled:text-[var(--ds-text-subtlest,#878787)]'
                   : 'text-[var(--ds-text,#292A2E)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] disabled:text-[var(--ds-text-subtlest,#6B6E76)]',
               )}
             >
@@ -148,7 +148,7 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
               'flex items-center justify-between px-4 py-3 border-b',
               isDark ? 'border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]' : 'border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))]',
             )}>
-              <span className={cn('font-body text-sm font-medium', isDark ? 'text-[var(--ds-text,#EDEDED)]' : 'text-[var(--ds-text,#292A2E)]')}>
+              <span className={cn('font-body text-sm font-medium', isDark ? 'text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' : 'text-[var(--ds-text,#292A2E)]')}>
                 Copy manually
               </span>
               <button onClick={() => setFallbackText(null)} className={cn('p-1 rounded', isDark ? 'hover:bg-[var(--ds-border,#292929)]' : 'hover:bg-[var(--ds-surface-sunken,#F4F5F7)]')}>
@@ -165,7 +165,7 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
                 value={fallbackText}
                 className={cn(
                   'w-full min-h-[200px] rounded-md border p-3 font-mono text-xs resize-y',
-                  isDark ? 'bg-[#111111] border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--ds-text,#EDEDED)]' : 'bg-[#F7F8F9] border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] text-[var(--ds-text,#292A2E)]',
+                  isDark ? 'bg-[#111111] border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' : 'bg-[#F7F8F9] border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] text-[var(--ds-text,#292A2E)]',
                 )}
               />
             </div>

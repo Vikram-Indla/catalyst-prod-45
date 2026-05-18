@@ -539,7 +539,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                   placeholder={isRTL ? 'بحث...' : 'Search ID or title...'}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-9 text-xs bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,#EDEDED)] px-3"
+                  className="h-9 text-xs bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] px-3"
                   style={{ border: '1px solid hsl(var(--roadmap-sandstone))', borderRadius: '12px' }}
                   onKeyDown={(e) => {
                     if (e.key === 'Escape') {

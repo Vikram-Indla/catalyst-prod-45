@@ -386,7 +386,7 @@ export function AllWorkView() {
                           }}
                         />
                         <span className="text-lg">{assignee.avatar}</span>
-                        <span className="text-[14px] text-slate-900 dark:text-[var(--ds-text,#EDEDED)]">{assignee.name}</span>
+                        <span className="text-[14px] text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">{assignee.name}</span>
                       </label>
                     ))}
                 </div>
@@ -435,7 +435,7 @@ export function AllWorkView() {
                             }}
                           />
                           <Icon className={cn('h-4 w-4', type.color)} />
-                          <span className="text-[14px] text-slate-900 dark:text-[var(--ds-text,#EDEDED)]">{type.name}</span>
+                          <span className="text-[14px] text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">{type.name}</span>
                         </label>
                       );
                     })}
@@ -492,7 +492,7 @@ export function AllWorkView() {
               </PopoverContent>
             </Popover>
 
-            <button className="text-[13px] text-slate-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:text-slate-900 dark:hover:text-[var(--ds-text,#EDEDED)] px-2 flex items-center gap-1">
+            <button className="text-[13px] text-slate-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:text-slate-900 dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] px-2 flex items-center gap-1">
               More filters
               <ChevronDown className="h-3.5 w-3.5" />
             </button>

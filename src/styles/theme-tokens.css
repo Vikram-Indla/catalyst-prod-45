@@ -129,7 +129,7 @@
   --cp-text-disabled:   #7D7D7D;
 
   /* Text — ADS solid hex scale */
-  --cp-t1:              var(--ds-text, #EDEDED);
+  --cp-t1:              var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --cp-t2:              var(--ds-text-subtlest, #A1A1A1);
   --cp-t3:              var(--ds-text-subtlest, #878787);
   --cp-t4:              #555555;

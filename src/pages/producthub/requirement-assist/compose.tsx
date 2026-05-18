@@ -155,7 +155,7 @@ export default function RequirementAssistCompose() {
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter document title…"
               className={cn(
-                'w-full h-10 px-3 text-sm rounded-lg border border-[hsl(var(--border))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] dark:text-[var(--ds-text,#EDEDED)]',
+                'w-full h-10 px-3 text-sm rounded-lg border border-[hsl(var(--border))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
                 'focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/10',
                 'placeholder:text-muted-foreground'
               )}
@@ -194,7 +194,7 @@ export default function RequirementAssistCompose() {
                 value={sourceBrdId}
                 onChange={(e) => setSourceBrdId(e.target.value)}
                 className={cn(
-                  'w-full h-10 px-3 text-sm rounded-lg border border-[hsl(var(--border))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] dark:text-[var(--ds-text,#EDEDED)]',
+                  'w-full h-10 px-3 text-sm rounded-lg border border-[hsl(var(--border))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
                   'focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/10'
                 )}
               >
@@ -220,7 +220,7 @@ export default function RequirementAssistCompose() {
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder={config.textPlaceholder}
                 className={cn(
-                  'w-full min-h-[160px] p-3 text-[13px] leading-relaxed rounded-lg border border-[hsl(var(--border))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] dark:text-[var(--ds-text,#EDEDED)] resize-y',
+                  'w-full min-h-[160px] p-3 text-[13px] leading-relaxed rounded-lg border border-[hsl(var(--border))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] resize-y',
                   'focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/10',
                   'placeholder:text-muted-foreground',
                   capabilityKey === 'translation' && 'text-right'

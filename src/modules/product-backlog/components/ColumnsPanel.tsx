@@ -93,7 +93,7 @@ export function ColumnsPanel({
       >
         <span 
           className="text-sm font-semibold"
-          style={{ color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--text-1)' }}
+          style={{ color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--text-1)' }}
         >
           Columns
         </span>
@@ -129,7 +129,7 @@ export function ColumnsPanel({
               />
               <span 
                 className="text-sm"
-                style={{ color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--text-1)' }}
+                style={{ color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--text-1)' }}
               >
                 {col.header}
               </span>

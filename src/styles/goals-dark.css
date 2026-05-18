@@ -7,7 +7,7 @@
 /* ── Goals Page Wrapper ── */
 .dark [data-goals-page] , [data-theme="dark"] [data-goals-page] {
   background-color: var(--cp-bg-page, #1F1F21) !important;
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 
 /* ── Stats Strip Cards ── */
@@ -74,7 +74,7 @@
 [data-theme="dark"] [data-goals-page] [style*="color: var(--cp-ink-1, #0F172A)"],
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(30, 41, 59)"],
 .dark [data-goals-page] [style*="color: #1E293B"] , [data-theme="dark"] [data-goals-page] [style*="color: #1E293B"] {
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 
 /* Secondary text (var(--cp-ink-2, var(--cp-ink-2, #334155)), var(--ds-text-subtle, #475569)) → t2 */
@@ -131,7 +131,7 @@
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark [data-goals-page] input , [data-theme="dark"] [data-goals-page] input {
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 
 /* Filter dropdown panels (float layer) */
@@ -141,7 +141,7 @@
   box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
 }
 .dark [data-goals-page] div[style*="position: absolute"] label , [data-theme="dark"] [data-goals-page] div[style*="position: absolute"] label {
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 .dark [data-goals-page] div[style*="position: absolute"] label:hover , [data-theme="dark"] [data-goals-page] div[style*="position: absolute"] label:hover {
   background: var(--ds-border, #292929) !important;
@@ -154,7 +154,7 @@
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(241, 245, 249)"] button[style*="background: rgb(255, 255, 255)"] {
   background: var(--ds-border-bold, #454545) !important;
   box-shadow: none !important;
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 
 /* ── Progress bar tracks ── */

@@ -115,8 +115,8 @@
 .dark .budget-module,
 .dark .budget-module , [data-theme="dark"] .budget-module {
   /* Neutrals — hex only (no HSL) */
-  --slate-900: var(--fg-1, #EDEDED);
-  --slate-800: var(--ds-text, #EDEDED);
+  --slate-900: var(--fg-1, var(--cp-bg-neutral, #EDEDED));
+  --slate-800: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --slate-700: var(--fg-2, #A1A1A1);
   --slate-600: var(--fg-3, #878787);
   --slate-500: #7D7D7D;
@@ -130,7 +130,7 @@
   /* Surfaces + text */
   --budget-bg-page: var(--cp-bg-page, #1F1F21);
   --budget-bg-surface: var(--cp-bg-surface, #242528);
-  --budget-text-primary: var(--fg-1, #EDEDED);
+  --budget-text-primary: var(--fg-1, var(--cp-bg-neutral, #EDEDED));
   --budget-text-secondary: var(--fg-2, #A1A1A1);
   --budget-text-muted: var(--fg-3, #878787);
   --budget-border: var(--ds-border, var(--cp-ink-1, #2E2E2E));
@@ -139,7 +139,7 @@
   /* Legacy aliases */
   --budget-bg: var(--cp-bg-page, #1F1F21);
   --budget-surface: var(--cp-bg-surface, #242528);
-  --budget-text: var(--fg-1, #EDEDED);
+  --budget-text: var(--fg-1, var(--cp-bg-neutral, #EDEDED));
   --budget-border-light: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 
   /* Primary surfaces used in info/expanded rows */

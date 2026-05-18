@@ -60,9 +60,9 @@ function ToolbarButton({ icon, title, onClick, active }: ToolbarButtonProps) {
       className={cn(
         'h-7 w-7 flex items-center justify-center rounded',
         'text-[var(--ds-text-subtlest,#6B778C)] hover:bg-[#EBECF0] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]',
-        'dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-border,#292929)] dark:hover:text-[var(--ds-text,#EDEDED)]',
+        'dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-border,#292929)] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
         'transition-colors duration-100',
-        active && 'bg-[#EBECF0] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:bg-[var(--ds-border,#292929)] dark:text-[var(--ds-text,#EDEDED)]',
+        active && 'bg-[#EBECF0] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:bg-[var(--ds-border,#292929)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
         '[&_svg]:h-4 [&_svg]:w-4'
       )}
     >
@@ -214,7 +214,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                           className={cn(
                             'h-7 w-7 flex items-center justify-center rounded',
                             'text-[var(--ds-text-subtlest,#6B778C)] hover:bg-[#EBECF0] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]',
-                            'dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-border,#292929)] dark:hover:text-[var(--ds-text,#EDEDED)]',
+                            'dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-border,#292929)] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
                             '[&_svg]:h-4 [&_svg]:w-4'
                           )}
                         >
@@ -286,7 +286,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                 rows={isExpanded ? 4 : 2}
                 className={cn(
                   'w-full resize-none border-0 bg-transparent px-3 py-2.5',
-                  'text-[14px] text-[var(--ds-text,#292A2E)] dark:text-[var(--ds-text,#EDEDED)]',
+                  'text-[14px] text-[var(--ds-text,#292A2E)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
                   'placeholder:text-[#7A869A] dark:placeholder:text-[var(--ds-text-subtlest,#878787)]',
                   'focus:outline-none focus:ring-0',
                   'transition-all duration-150'
@@ -316,7 +316,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                     <button
                       type="button"
                       onClick={onCancel}
-                      className="text-[13px] font-medium text-[var(--ds-text-subtlest,#6B778C)] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:text-[var(--ds-text,#EDEDED)] transition-colors"
+                      className="text-[13px] font-medium text-[var(--ds-text-subtlest,#6B778C)] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] transition-colors"
                     >
                       Cancel
                     </button>
@@ -332,7 +332,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                         onClick={() => handleQuickReply(qr.template)}
                         className={cn(
                           'text-[12px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]',
-                          'hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:hover:text-[var(--ds-text,#EDEDED)]',
+                          'hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
                           'hover:underline transition-colors cursor-pointer'
                         )}
                       >
@@ -346,7 +346,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                   <p className="text-[12px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)] mt-1.5">
                     {shortcutHint.split(/(\*\*[^*]+\*\*)/).map((part, i) =>
                       part.startsWith('**') ? (
-                        <span key={i} className="font-semibold text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,#EDEDED)]">
+                        <span key={i} className="font-semibold text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
                           {part.replace(/\*\*/g, '')}
                         </span>
                       ) : (

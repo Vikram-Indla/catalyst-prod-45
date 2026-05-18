@@ -858,7 +858,7 @@ function AccessMatrixTab() {
           <tbody className="divide-y divide-zinc-100">
             {roles.map((role) => (
               <tr key={role} className="hover:bg-zinc-50/50">
-                <td className="px-3 py-2 font-medium text-zinc-700 dark:text-[#EDEDED] sticky left-0 bg-white dark:bg-[#1A1A1A] z-10 whitespace-nowrap">{role}</td>
+                <td className="px-3 py-2 font-medium text-zinc-700 dark:text-[var(--cp-bg-neutral, #EDEDED)] sticky left-0 bg-white dark:bg-[#1A1A1A] z-10 whitespace-nowrap">{role}</td>
                 {modules.map((mod) => {
                   const acc = getAccess(role, mod);
                   const on = acc?.has_access;
@@ -1286,15 +1286,15 @@ function TrainingTab() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search questions or answers..."
-            className="flex-1 min-w-[200px] px-3 py-1.5 text-xs border border-zinc-200 dark:border-[var(--cp-ink-1, #2E2E2E)] rounded bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] focus:outline-none focus:ring-1 focus:ring-blue-400"
+            className="flex-1 min-w-[200px] px-3 py-1.5 text-xs border border-zinc-200 dark:border-[var(--cp-ink-1, #2E2E2E)] rounded bg-white dark:bg-[#1A1A1A] dark:text-[var(--cp-bg-neutral, #EDEDED)] focus:outline-none focus:ring-1 focus:ring-blue-400"
           />
-          <select value={catFilter} onChange={(e) => setCatFilter(e.target.value)} className="px-3 py-1.5 text-xs border border-zinc-200 dark:border-[var(--cp-ink-1, #2E2E2E)] rounded bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED]">
+          <select value={catFilter} onChange={(e) => setCatFilter(e.target.value)} className="px-3 py-1.5 text-xs border border-zinc-200 dark:border-[var(--cp-ink-1, #2E2E2E)] rounded bg-white dark:bg-[#1A1A1A] dark:text-[var(--cp-bg-neutral, #EDEDED)]">
             <option value="all">All Categories ({questions.length})</option>
             {categories.map(c => (
               <option key={c.category} value={c.category}>{c.category} ({c.count})</option>
             ))}
           </select>
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as any)} className="px-3 py-1.5 text-xs border border-zinc-200 dark:border-[var(--cp-ink-1, #2E2E2E)] rounded bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED]">
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as any)} className="px-3 py-1.5 text-xs border border-zinc-200 dark:border-[var(--cp-ink-1, #2E2E2E)] rounded bg-white dark:bg-[#1A1A1A] dark:text-[var(--cp-bg-neutral, #EDEDED)]">
             <option value="all">All Status</option>
             <option value="answered">Has Answer</option>
             <option value="unanswered">No Answer</option>
@@ -1430,7 +1430,7 @@ export default function KBAdminPage() {
     <div className="min-h-screen bg-zinc-50" style={{ paddingTop: 48 }}>
       {/* Page header */}
       <div className="bg-white dark:bg-[#1A1A1A] border-b border-zinc-200 dark:border-[var(--cp-ink-1, #2E2E2E)] px-6 py-4">
-        <h1 className="text-lg font-bold text-zinc-900 dark:text-[#EDEDED]">Knowledge Base — Admin</h1>
+        <h1 className="text-lg font-bold text-zinc-900 dark:text-[var(--cp-bg-neutral, #EDEDED)]">Knowledge Base — Admin</h1>
         <p className="text-xs text-zinc-500 mt-0.5">Manage training, sources, access control, and pipeline configuration</p>
       </div>
 

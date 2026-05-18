@@ -116,8 +116,8 @@
   --cp-bg-sunken: var(--ds-surface-overlay, #1F1F1F);
   --cp-bg-elevated: transparent;
 
-  --cp-text-primary: var(--ds-text, #EDEDED);
-  --cp-text-secondary: var(--ds-text, #EDEDED);
+  --cp-text-primary: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
+  --cp-text-secondary: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --cp-text-tertiary: var(--ds-text-subtlest, #A1A1A1);
   --cp-text-muted: #7D7D7D;
   --cp-text-link: var(--ds-text-brand, #60A5FA);

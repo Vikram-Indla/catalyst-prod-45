@@ -42,8 +42,8 @@
 
 /* ── Dark mode overrides ── */
 .dark , [data-theme="dark"] {
-  --di-ink: var(--ds-text, #EDEDED);
-  --di-ink-secondary: var(--ds-text, #EDEDED);
+  --di-ink: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
+  --di-ink-secondary: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --di-ink-tertiary: var(--ds-text-subtlest, #878787);
   --di-ink-muted: #7D7D7D;
   --di-surface: var(--cp-bg-page, #1F1F21);

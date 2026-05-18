@@ -103,7 +103,7 @@ export function RoadmapToolbar({
           placeholder={isRTL ? 'بحث...' : 'Search...'}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="h-9 w-[200px] text-xs bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,#EDEDED)] pl-9 pr-3"
+          className="h-9 w-[200px] text-xs bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] pl-9 pr-3"
           style={{ border: '1px solid hsl(var(--roadmap-sandstone))', borderRadius: '12px' }}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {

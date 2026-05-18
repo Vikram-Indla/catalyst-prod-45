@@ -134,7 +134,7 @@ export function BoardTaskCard({ task, onClick, isDragging }: BoardTaskCardProps)
           CARD TITLE — The Hero
           Weight 500, darkest element
           ======================================== */}
-      <h4 className="boards-card__title dark:text-[var(--ds-text,#EDEDED)]">{task.title}</h4>
+      <h4 className="boards-card__title dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">{task.title}</h4>
 
       {/* Blocked indicator */}
       {task.blocked && (

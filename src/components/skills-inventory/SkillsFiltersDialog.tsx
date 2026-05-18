@@ -406,7 +406,7 @@ export function SkillsFiltersDialog({
                     max="100"
                     value={localFilters.coverageMin ?? ''}
                     onChange={(e) => updateFilter('coverageMin', e.target.value ? parseInt(e.target.value) : null)}
-                    className="w-full h-10 px-3 border border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-md text-sm bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,#EDEDED)] focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="w-full h-10 px-3 border border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-md text-sm bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] focus:outline-none focus:ring-1 focus:ring-brand-primary"
                     placeholder="0"
                   />
                 </div>
@@ -418,7 +418,7 @@ export function SkillsFiltersDialog({
                     max="100"
                     value={localFilters.coverageMax ?? ''}
                     onChange={(e) => updateFilter('coverageMax', e.target.value ? parseInt(e.target.value) : null)}
-                    className="w-full h-10 px-3 border border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-md text-sm bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,#EDEDED)] focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="w-full h-10 px-3 border border-border dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-md text-sm bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] focus:outline-none focus:ring-1 focus:ring-brand-primary"
                     placeholder="100"
                   />
                 </div>

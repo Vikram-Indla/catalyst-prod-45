@@ -415,7 +415,7 @@
   border-bottom-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 .dark #r360-root .r3-table td {
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   border-bottom-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
 }
 .dark #r360-root .r3-table tbody tr:hover {
@@ -465,28 +465,28 @@
 }
 .dark #r360-root .r3-tab--active {
   background: transparent;
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   border-bottom-color: var(--ds-text-brand, #3B82F6);
 }
 
 /* General dark overrides for R360 surfaces */
 .dark #r360-root {
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 .dark #r360-root .r3-title {
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 .dark #r360-root .r3-search {
   background-color: transparent;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E));
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 .dark #r360-root .r3-search:focus {
   border-color: var(--ds-text-brand, #3B82F6);
   box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
 }
 .dark #r360-root .r3-res-name {
-  color: var(--ds-text, #EDEDED);
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
 }
 .dark #r360-root .r3-res-rid {
   color: var(--ds-text-subtlest, #878787);
@@ -546,7 +546,7 @@
   border-color: var(--ds-border, #292929) !important;
 }
 .dark #r360-root .r3-week-label {
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 
 /* Calendar day cells */
@@ -637,7 +637,7 @@
 .dark #r360-root .r3-search {
   background: var(--cp-bg-surface, #242528) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 
 /* Quarter select + nav buttons */
@@ -673,7 +673,7 @@
 .dark #r360-root [style*="color: var(--cp-ink-1, #0F172A)"],
 .dark #r360-root [style*="color: #020617"],
 .dark #r360-root [style*="color:var(--cp-ink-1, #0F172A)"] {
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 .dark #r360-root [style*="color: var(--cp-ink-2, #334155)"], [style*="color: #334155"],
 .dark #r360-root [style*="color:var(--cp-ink-2, #334155)"], [style*="color:#334155"] {

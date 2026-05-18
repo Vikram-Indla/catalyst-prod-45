@@ -151,7 +151,7 @@ export function CalendarGrid({
                 height: `${ROW_HEIGHT - 8}px`,
               }}
             >
-              <span className="text-sm font-semibold text-slate-900 dark:text-[var(--ds-text,#EDEDED)] truncate">
+              <span className="text-sm font-semibold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] truncate">
                 {release.version}
               </span>
               <span className="text-xs text-slate-500 truncate">

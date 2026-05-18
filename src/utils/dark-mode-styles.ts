@@ -31,7 +31,7 @@ export const DK: DarkTokens = {
   progressTrack: 'var(--cp-border-default, var(--cp-ink-1, #2E2E2E))',
   iconBg:        'var(--cp-bg-sunken, #292929)',
 
-  t1: 'var(--cp-text-primary, #EDEDED)',
+  t1: 'var(--cp-text-primary, var(--cp-bg-neutral, #EDEDED))',
   t2: 'var(--cp-text-secondary, #C9CCD0)',
   t3: 'var(--cp-text-tertiary, #A1A1A1)',
   t4: 'var(--cp-text-tertiary, #878787)',

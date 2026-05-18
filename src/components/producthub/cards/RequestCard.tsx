@@ -66,9 +66,9 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
             className={cn(
               'text-xs font-bold uppercase rounded px-1.5 py-0.5',
               status.label === 'Done' && 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300',
-              status.label === 'New' && 'bg-gray-100 text-gray-700 dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,#EDEDED)]',
+              status.label === 'New' && 'bg-gray-100 text-gray-700 dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
               (status.label === 'Under Implementation' || status.label === 'Portfolio Review' || status.label === 'In Progress') && 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300',
-              !['Done','New','Under Implementation','Portfolio Review','In Progress'].includes(status.label) && 'bg-gray-100 text-gray-700 dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,#EDEDED)]',
+              !['Done','New','Under Implementation','Portfolio Review','In Progress'].includes(status.label) && 'bg-gray-100 text-gray-700 dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
             )}
           >
             {status.label}
@@ -238,7 +238,7 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
       {/* Assignee + counts (medium/large) */}
       {gridSize !== 'small' && (
         <div className="px-4 pb-2">
-          <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-[var(--ds-text,#EDEDED)]">
+          <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
             {request.assignee_name ? (
               <div className="flex items-center gap-1.5">
                 <div

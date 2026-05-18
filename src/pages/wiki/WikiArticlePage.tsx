@@ -89,7 +89,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <History size={16} style={{ color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
-          <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 700, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>Version History</span>
+          <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 700, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>Version History</span>
           <span style={{
             fontSize: 10, fontWeight: 650, padding: '2px 6px', borderRadius: 9999,
             background: isDark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',
@@ -139,7 +139,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
                 </button>
               )}
             </div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 4 }}>{v.title || 'Untitled'}</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 4 }}>{v.title || 'Untitled'}</div>
             {v.change_summary && (
               <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 4, lineHeight: 1.5 }}>{v.change_summary}</div>
             )}
@@ -175,7 +175,7 @@ function ExportDropdown({ onClose }: { onClose: () => void }) {
     }}>
       <button onClick={handlePdf} style={{
         width: '100%', padding: '8px 14px', fontSize: 12, fontWeight: 500,
-        color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', background: 'transparent', border: 'none', cursor: 'pointer',
+        color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', background: 'transparent', border: 'none', cursor: 'pointer',
         display: 'flex', alignItems: 'center', gap: 8, textAlign: 'left',
       }}
         onMouseEnter={e => e.currentTarget.style.background = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--ds-surface-sunken, #F8FAFC)'}
@@ -185,7 +185,7 @@ function ExportDropdown({ onClose }: { onClose: () => void }) {
       </button>
       <button onClick={handlePrint} style={{
         width: '100%', padding: '8px 14px', fontSize: 12, fontWeight: 500,
-        color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', background: 'transparent', border: 'none', cursor: 'pointer',
+        color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', background: 'transparent', border: 'none', cursor: 'pointer',
         display: 'flex', alignItems: 'center', gap: 8, textAlign: 'left',
       }}
         onMouseEnter={e => e.currentTarget.style.background = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--ds-surface-sunken, #F8FAFC)'}
@@ -345,7 +345,7 @@ export default function WikiArticlePage() {
     return (
       <div style={{ fontFamily: 'var(--cp-font-body)', padding: 80, textAlign: 'center', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : undefined, minHeight: '100%' }}>
         <div style={{ fontSize: 48, marginBottom: 12 }}>📄</div>
-        <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 8 }}>Article not found</div>
+        <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 8 }}>Article not found</div>
         <div style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', marginBottom: 16 }}>The article you're looking for doesn't exist or has been removed.</div>
         <button onClick={() => navigate('/wiki')} style={{
           fontSize: 12, fontWeight: 650, padding: '8px 20px', borderRadius: 6,
@@ -417,7 +417,7 @@ export default function WikiArticlePage() {
   ].filter(r => r.show);
 
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, #F8FAFC)', minHeight: '100%' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, #F8FAFC)', minHeight: '100%' }}>
       {/* Scroll progress bar */}
       <div style={{
         position: 'fixed', top: 0, left: 0, right: 0, height: 3, zIndex: 100,
@@ -444,7 +444,7 @@ export default function WikiArticlePage() {
           {/* Main content */}
           <article>
             {/* Title */}
-            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 28, fontWeight: 700, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', margin: '0 0 12px' }}>{title}</h1>
+            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 28, fontWeight: 700, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', margin: '0 0 12px' }}>{title}</h1>
 
             {/* Metadata row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
@@ -580,7 +580,7 @@ export default function WikiArticlePage() {
             {sections.map((s: any, i: number) => (
               <div key={s.id} id={`section-${i}`} style={{ marginBottom: 32 }}>
                 <h2 style={{
-                  fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))',
+                  fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 650, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))',
                   margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8,
                 }}>
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{i + 1}.</span>
@@ -622,7 +622,7 @@ export default function WikiArticlePage() {
               display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16,
             }}>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 4 }}>Was this helpful?</div>
+                <div style={{ fontSize: 14, fontWeight: 650, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 4 }}>Was this helpful?</div>
                 <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
                   {helpVotes > 0 ? `${helpScore}% found this helpful (${helpVotes} votes)` : 'Be the first to rate this article'}
                 </div>
@@ -655,7 +655,7 @@ export default function WikiArticlePage() {
               <div style={{ marginTop: 40 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                   <div style={{ width: 3, height: 16, borderRadius: 4, background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' }} />
-                  <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>Related Articles</span>
+                  <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 650, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>Related Articles</span>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
                   {(related ?? []).map((r: any) => (
@@ -667,7 +667,7 @@ export default function WikiArticlePage() {
                       onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))'}
                       onMouseLeave={e => e.currentTarget.style.borderColor = isDark ? 'var(--ds-border, var(--cp-ink-1, #2E2E2E))' : 'rgba(15,23,42,0.12)'}
                     >
-                      <div style={{ fontSize: 13, fontWeight: 600, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 6 }}>{r.title}</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 6 }}>{r.title}</div>
                       <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>
                         {r.domain_code}
                         {r.read_time_minutes ? ` · ${r.read_time_minutes} min` : ''}
@@ -697,7 +697,7 @@ export default function WikiArticlePage() {
                 padding: '7px 14px', borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)',
               }}>
                 <span style={{ color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))', fontSize: 11 }}>{row.label}</span>
-                <span style={{ fontSize: 11, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', fontWeight: 500 }}>{row.value}</span>
+                <span style={{ fontSize: 11, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', fontWeight: 500 }}>{row.value}</span>
               </div>
             ))}
           </aside>

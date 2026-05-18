@@ -183,7 +183,7 @@
   --r360-surface-hover: var(--ds-surface-overlay, #1F1F1F);
   --r360-surface-active: var(--ds-border, #292929);
 
-  --r360-text-1: var(--ds-text, #EDEDED);
+  --r360-text-1: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --r360-text-2: var(--ds-text-subtlest, #A1A1A1);
   --r360-text-3: var(--ds-text-subtlest, #A1A1A1);
   --r360-text-4: var(--ds-text-subtlest, #878787);

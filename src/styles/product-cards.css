@@ -42,8 +42,8 @@
    value matches --cp-bg-surface dark (var(--ds-surface-raised, #1A1A1A)) for consistency. */
 .dark [data-module="product-cards"],
 .dark [data-module="product-cards"] , [data-theme="dark"] [data-module="product-cards"] {
-  --pc-ink: var(--ds-text, #EDEDED);
-  --pc-ink-secondary: var(--ds-text, #EDEDED);
+  --pc-ink: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
+  --pc-ink-secondary: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --pc-ink-tertiary: var(--ds-text-subtlest, #A1A1A1);
   --pc-ink-muted: #7D7D7D;
   --pc-surface: var(--cp-bg-surface, #242528);

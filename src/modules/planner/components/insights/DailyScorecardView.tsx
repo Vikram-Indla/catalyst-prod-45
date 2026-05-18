@@ -38,7 +38,7 @@ export function DailyScorecardView() {
           <div className="px-8 py-7 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="font-serif text-[28px] font-bold text-slate-900 dark:text-[var(--ds-text,#EDEDED)] mb-1">
+                <h1 className="font-serif text-[28px] font-bold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] mb-1">
                   Daily Scorecard
                 </h1>
                 <p className="text-sm text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">
@@ -54,12 +54,12 @@ export function DailyScorecardView() {
             {/* Summary Stats Row */}
             <div className="flex items-center gap-6 mt-6 pt-5 border-t border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
               <div className="text-center">
-                <div className="text-2xl font-bold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">{data.summary.workstreams}</div>
+                <div className="text-2xl font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">{data.summary.workstreams}</div>
                 <div className="text-[10px] font-medium text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase mt-1">Workstreams</div>
               </div>
               <div className="w-px h-10 bg-slate-200 dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
               <div className="text-center">
-                <div className="text-2xl font-bold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">{data.summary.totalTasks}</div>
+                <div className="text-2xl font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">{data.summary.totalTasks}</div>
                 <div className="text-[10px] font-medium text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase mt-1">Total Tasks</div>
               </div>
               <div className="w-px h-10 bg-slate-200 dark:bg-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]" />
@@ -103,7 +103,7 @@ export function DailyScorecardView() {
                       {team.initial}
                     </div>
                     <div className="flex-1">
-                      <span className="font-bold text-slate-900 dark:text-[var(--ds-text,#EDEDED)]">
+                      <span className="font-bold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
                         {team.name}
                       </span>
                       <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] mt-0.5">{team.memberCount} members • {team.taskCount} tasks</div>
@@ -130,7 +130,7 @@ export function DailyScorecardView() {
                           {member.initials}
                         </div>
                         <div className="flex-1">
-                          <span className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">
+                          <span className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
                             {member.name}
                           </span>
                           <div className="text-[11px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">{member.role}</div>
@@ -141,7 +141,7 @@ export function DailyScorecardView() {
                             <div className="text-[9px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase">Done</div>
                           </div>
                           <div className="text-center">
-                            <div className="text-base font-bold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">{member.tasksActive}</div>
+                            <div className="text-base font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">{member.tasksActive}</div>
                             <div className="text-[9px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] uppercase">Active</div>
                           </div>
                           <div className="text-center">

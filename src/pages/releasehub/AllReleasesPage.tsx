@@ -105,7 +105,7 @@ export default function AllReleasesPage() {
     <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', minHeight: '100%', padding: '24px' }}>
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>All Releases</h1>
+          <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : RH.ink1 }}>All Releases</h1>
           <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))' }}>Manage and track all releases</p>
         </div>
         <div className="flex items-center gap-2">
@@ -203,7 +203,7 @@ export default function AllReleasesPage() {
                 style={{ borderRadius: 6, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
                 <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: accentColor(r.status), borderRadius: '6px 0 0 6px' }} />
                 <div className="p-4 pl-5">
-                  <h3 className="text-[15px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1, fontWeight: 650 }}>{r.name}</h3>
+                  <h3 className="text-[15px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : RH.ink1, fontWeight: 650 }}>{r.name}</h3>
                   {r.jira_key && <span className="text-[11px] block mb-2" style={{ fontFamily: RH.fontMono, color: 'var(--cp-text-muted, var(--cp-ink-4, var(--cp-border-neutral-light, #94A3B8)))' }}>{r.jira_key}</span>}
 
                   <div className="flex items-center gap-2 flex-wrap mb-2">
@@ -267,7 +267,7 @@ export default function AllReleasesPage() {
                     style={{ height: 50, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', transition: 'background 120ms', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}
                     onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))')}>
-                    <td className="px-3 py-0 font-medium" style={{ color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>
+                    <td className="px-3 py-0 font-medium" style={{ color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : RH.ink1 }}>
                       <div className="flex items-center gap-2">
                         {r.name}
                         {r.source === 'jira' && relativeTime(r.synced_at || r.updated_at) && (

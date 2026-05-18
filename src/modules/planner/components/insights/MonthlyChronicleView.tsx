@@ -21,7 +21,7 @@ function SectionHeader({ icon: Icon, title, color }: { icon: any; title: string;
       <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", color)}>
         <Icon className="w-5 h-5 text-white" />
       </div>
-      <h2 className="text-lg font-bold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">{title}</h2>
+      <h2 className="text-lg font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">{title}</h2>
     </div>
   );
 }
@@ -65,7 +65,7 @@ function ItemCard({
         <Icon className="w-4 h-4" />
       </div>
       <div className="flex-1">
-        <div className="text-[15px] font-semibold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">
+        <div className="text-[15px] font-semibold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
           {id && <span className="text-blue-600 cursor-pointer hover:underline mr-2">{id}</span>}
           {title}
         </div>

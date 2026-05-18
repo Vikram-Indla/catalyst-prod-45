@@ -535,7 +535,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                   }}>
                     {checked && <Check size={12} strokeWidth={3} color="var(--ds-text-success, var(--cp-success, #16A34A))" />}
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: dk ? 'var(--ds-text, #EDEDED)' : '#1e293b', flex: 1 }}>{opt.label}</span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: dk ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : '#1e293b', flex: 1 }}>{opt.label}</span>
                   {opt.isCurrent && (
                     <span style={{
                       fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #fff)',

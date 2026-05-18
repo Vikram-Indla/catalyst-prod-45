@@ -163,7 +163,7 @@ export function SidebarProjectNav({
               >
                 <div className="min-w-0">
                   <div className="text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '0.03em', textTransform: 'uppercase' }}>{projectKey}</div>
-                  <div className="truncate text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,#EDEDED)]" style={{ fontSize: 14, fontWeight: 600, fontFamily: 'var(--cp-font-heading)', lineHeight: '18px' }}>
+                  <div className="truncate text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 14, fontWeight: 600, fontFamily: 'var(--cp-font-heading)', lineHeight: '18px' }}>
                     {projectName}
                   </div>
                 </div>

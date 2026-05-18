@@ -151,7 +151,7 @@ export function T10NewListModal({ isOpen, onClose, onCreated }: T10NewListModalP
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-[var(--ds-text,#EDEDED)]">Create list</h2>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">Create list</h2>
           <button
             type="button"
             className="p-1.5 rounded-lg text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)] hover:text-slate-600 hover:bg-slate-100 transition-colors"
@@ -176,7 +176,7 @@ export function T10NewListModal({ isOpen, onClose, onCreated }: T10NewListModalP
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g., Q1 Sprint Goals"
                 maxLength={100}
-                className={`w-full px-4 py-2.5 text-[15px] text-slate-900 dark:text-[var(--ds-text,#EDEDED)] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,#878787)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
+                className={`w-full px-4 py-2.5 text-[15px] text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,#878787)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
                   nameError ? 'border-red-400' : 'border-slate-300 dark:border-[var(--ds-border-bold,#454545)]'
                 }`}
               />
@@ -195,13 +195,13 @@ export function T10NewListModal({ isOpen, onClose, onCreated }: T10NewListModalP
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="What is this list for?"
                 rows={2}
-                className="w-full px-4 py-2.5 text-[15px] text-slate-900 dark:text-[var(--ds-text,#EDEDED)] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,#878787)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-slate-300 dark:border-[var(--ds-border-bold,#454545)] rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-4 py-2.5 text-[15px] text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,#878787)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-slate-300 dark:border-[var(--ds-border-bold,#454545)] rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               />
             </div>
 
             {/* Start Week Selection */}
             <div className="space-y-3">
-              <label className="block text-sm font-semibold text-slate-900 dark:text-[var(--ds-text,#EDEDED)]">
+              <label className="block text-sm font-semibold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
                 Start Week
               </label>
               
@@ -228,7 +228,7 @@ export function T10NewListModal({ isOpen, onClose, onCreated }: T10NewListModalP
                       </div>
                       
                       {/* Label */}
-                      <span className="text-[15px] font-medium text-slate-900 dark:text-[var(--ds-text,#EDEDED)]">
+                      <span className="text-[15px] font-medium text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
                         {week.label}
                       </span>
                       

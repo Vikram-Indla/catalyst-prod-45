@@ -92,7 +92,7 @@ function ActivityItemDisplay({ item, jiraUserMap, className }: ActivityItemProps
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <CatalystAvatar size="xsmall" name={actor.name} src={actor.avatarUrl} />
-          <span className="text-[13px] font-semibold text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,#EDEDED)]">
+          <span className="text-[13px] font-semibold text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
             {actor.name}
           </span>
 
@@ -105,7 +105,7 @@ function ActivityItemDisplay({ item, jiraUserMap, className }: ActivityItemProps
           {type === 'update' && fieldChange && (
             <span className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
               updated the{' '}
-              <span className="font-medium text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,#EDEDED)]">
+              <span className="font-medium text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
                 {formatFieldName(fieldChange.field)}
               </span>
             </span>
@@ -142,7 +142,7 @@ function ActivityItemDisplay({ item, jiraUserMap, className }: ActivityItemProps
                     : <span className="italic">None</span>}
                 </div>
                 <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)] shrink-0 mt-1.5" />
-                <div className="text-[13px] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,#EDEDED)] whitespace-pre-wrap break-words">
+                <div className="text-[13px] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] whitespace-pre-wrap break-words">
                   {fieldChange.newValue
                     ? renderJiraContent(fieldChange.newValue, { userMap: jiraUserMap })
                     : <span className="italic text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">None</span>}
@@ -154,7 +154,7 @@ function ActivityItemDisplay({ item, jiraUserMap, className }: ActivityItemProps
                   {normalizeJiraText(fieldChange.oldValue, { userMap: jiraUserMap }) || 'None'}
                 </span>
                 <ArrowRight className="h-3 w-3 text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)] shrink-0" />
-                <span className="text-[13px] font-medium text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,#EDEDED)]">
+                <span className="text-[13px] font-medium text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
                   {normalizeJiraText(fieldChange.newValue, { userMap: jiraUserMap }) || 'None'}
                 </span>
               </div>

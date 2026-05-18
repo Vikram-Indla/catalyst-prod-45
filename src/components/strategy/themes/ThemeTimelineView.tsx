@@ -67,7 +67,7 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
             {/* Label */}
             <div className="shrink-0 flex items-center gap-2 min-w-0" style={{ width: 220, padding: '8px 12px' }}>
               <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: theme.color }} />
-              <span className="truncate text-xs font-medium text-slate-900 dark:text-[var(--ds-text,#EDEDED)]" title={theme.title}>{theme.title}</span>
+              <span className="truncate text-xs font-medium text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" title={theme.title}>{theme.title}</span>
               <span className="shrink-0 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5" style={{ fontSize: 9, fontWeight: 500, background: sc.bg, color: sc.text }}>
                 <span className="rounded-full" style={{ width: 4, height: 4, background: sc.dot }} />
                 {sc.label}
@@ -106,7 +106,7 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
                     background: progressColor,
                     opacity: 0.75,
                   }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-slate-900 dark:text-[var(--ds-text,#EDEDED)]">{theme.progress_pct}%</span>
+                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">{theme.progress_pct}%</span>
                 </div>
               )}
             </div>
@@ -124,7 +124,7 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
         >
           <div className="shrink-0 flex items-center gap-2 min-w-0" style={{ width: 220, padding: '8px 12px' }}>
             <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: theme.color }} />
-            <span className="truncate text-xs font-medium text-slate-900 dark:text-[var(--ds-text,#EDEDED)]">{theme.title}</span>
+            <span className="truncate text-xs font-medium text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">{theme.title}</span>
           </div>
           <div className="flex-1 flex items-center justify-center border-l border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
             <span className="text-[11px] text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)]">No dates set</span>

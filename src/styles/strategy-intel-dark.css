@@ -7,14 +7,14 @@
 .dark .strategy-intel-panel {
   background: var(--cp-bg-surface, #242528) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 
 /* Text overrides */
 .dark .strategy-intel-panel .text-slate-900,
 .dark .strategy-intel-panel .text-slate-800,
 .dark .strategy-intel-panel .text-\[15px\].font-\[700\] {
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 .dark .strategy-intel-panel .text-slate-700,
 .dark .strategy-intel-panel .text-slate-600 {

@@ -64,7 +64,7 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search projects..."
-          className="flex-1 bg-transparent outline-none border-none text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-[var(--ds-text,#EDEDED)]"
+          className="flex-1 bg-transparent outline-none border-none text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]"
           style={{ fontSize: 12 }}
         />
       </div>
@@ -129,7 +129,7 @@ function ProjectRow({
         {project.key}
       </div>
       <div className="flex flex-col items-start min-w-0">
-        <span className="truncate w-full text-[var(--fg-1)] dark:text-[var(--ds-text,#EDEDED)]" style={{ fontSize: 12, fontWeight: 500 }}>
+        <span className="truncate w-full text-[var(--fg-1)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]" style={{ fontSize: 12, fontWeight: 500 }}>
           {project.name}
         </span>
         <span className="text-[var(--fg-4)] dark:text-[#7D7D7D]" style={{ fontSize: 10 }}>{project.key}</span>

@@ -168,7 +168,7 @@ function FilterSection({
             key={opt}
             onClick={() => onToggle(opt)}
             className={`flex items-center gap-2 w-full py-1.5 cursor-pointer rounded px-2 transition-colors ${dark ? 'hover:bg-[var(--ds-surface-overlay,#1F1F1F)]' : 'hover:bg-[var(--ds-surface-sunken,#F4F5F7)]'}`}
-            style={{ fontSize: 12, color: dark ? 'var(--ds-text, #EDEDED)' : '#42526E', background: 'transparent', border: 'none', fontFamily: 'var(--cp-font-body)', textAlign: 'left' }}
+            style={{ fontSize: 12, color: dark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : '#42526E', background: 'transparent', border: 'none', fontFamily: 'var(--cp-font-body)', textAlign: 'left' }}
           >
             <div
               className="flex items-center justify-center rounded flex-shrink-0"

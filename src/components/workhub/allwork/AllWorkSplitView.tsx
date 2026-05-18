@@ -242,7 +242,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                       onClick={() => { onSort(opt.field); setSortOpen(false); }}
                       className="w-full flex items-center justify-between px-3 py-1.5 text-[12px] text-left transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
                       style={{
-                        color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--fg-1)',
+                        color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--fg-1)',
                         fontFamily: 'var(--cp-font-body)',
                         background: 'none',
                         border: 'none',
@@ -365,7 +365,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                     fontFamily: 'var(--cp-font-mono)',
                     fontSize: 11,
                     fontWeight: 650,
-                    color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--fg-1)',
+                    color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--fg-1)',
                   }}
                 >
                   {currentItem.issue_key}
@@ -378,7 +378,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                   fontFamily: 'var(--cp-font-mono)',
                   fontSize: 11,
                   fontWeight: 650,
-                  color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--fg-1)',
+                  color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--fg-1)',
                 }}
               >
                 {currentItem.issue_key}
@@ -523,7 +523,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                             onClick={() => { setActiveTab(action.tab); setAddOpen(false); }}
                             className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] text-left transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
                             style={{
-                              color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--fg-1)',
+                              color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--fg-1)',
                               fontFamily: 'var(--cp-font-body)',
                               background: 'none',
                               border: 'none',

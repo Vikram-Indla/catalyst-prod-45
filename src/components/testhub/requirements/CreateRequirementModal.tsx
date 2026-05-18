@@ -112,7 +112,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
     border: `1.5px solid ${hasError ? 'var(--ds-text-danger, var(--cp-danger, #DC2626))' : 'var(--cp-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))'}`,
     borderRadius: 12, fontSize: 14,
     backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : undefined,
-    color: isDark ? 'var(--ds-text, #EDEDED)' : undefined,
+    color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined,
   });
 
   return (
@@ -198,7 +198,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
             </label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)}
               placeholder="Detailed description of the requirement..." rows={4}
-              style={{ width: '100%', padding: 14, border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 12, fontSize: 14, resize: 'vertical', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : undefined, color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
+              style={{ width: '100%', padding: 14, border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid var(--cp-border, var(--cp-bg-sunken, #E2E8F0))', borderRadius: 12, fontSize: 14, resize: 'vertical', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : undefined, color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined }} />
           </div>
         </div>
 

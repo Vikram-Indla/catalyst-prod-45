@@ -1319,7 +1319,7 @@
 .dark #r360-root .r3-date-label,
 .dark #r360-root .r3-board-col-title,
 .dark #r360-root .r3-week-strip-left {
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 .dark #r360-root .r3-role,
 .dark #r360-root .r3-count,
@@ -1349,13 +1349,13 @@
 }
 .dark #r360-root .r3-tab:hover {
   background: var(--ds-surface-overlay, #1F1F1F) !important;
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 .dark #r360-root .r3-tab.active,
 .dark #r360-root .r3-tab--active {
   background: transparent !important;
-  color: var(--ds-text, #EDEDED) !important;
-  border-bottom-color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
+  border-bottom-color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 .dark #r360-root .r3-btn-outline,
 .dark #r360-root .r3-week-nav,
@@ -1370,7 +1370,7 @@
 .dark #r360-root .r3-day-cell.selected,
 .dark #r360-root .r3-day-cell.today.selected {
   background: var(--ds-surface-overlay, #1F1F1F) !important;
-  border-color: var(--ds-text, #EDEDED) !important;
+  border-color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 .dark #r360-root .r3-filter-chip.active,
 .dark #r360-root .r3-status-filter.active {
@@ -1410,14 +1410,14 @@
 }
 .dark #r360-root .r3-ring-card .r3-ring-card-title,
 .dark #r360-root .r3-ring-card .r3-item-title {
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 .dark #r360-root .r3-ring-card .r3-ring-card-meta,
 .dark #r360-root .r3-ring-card .r3-item-meta {
   color: var(--ds-text-subtlest, #A1A1A1) !important;
 }
 .dark #r360-root .r3-ring-name {
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 .dark #r360-root .r3-ring-role {
   color: var(--ds-text-subtlest, #A1A1A1) !important;
@@ -1437,7 +1437,7 @@
   background: var(--cp-bg-page, #1F1F21) !important;
 }
 .dark #r360-root .r3-profile-name {
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 .dark #r360-root .r3-profile-role {
   color: var(--ds-text-subtlest, #A1A1A1) !important;
@@ -1454,17 +1454,17 @@
   color: var(--ds-text-subtlest, #878787) !important;
 }
 .dark #r360-root .r3-tab:hover {
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 .dark #r360-root .r3-tab.active {
-  color: var(--ds-text, #EDEDED) !important;
-  border-bottom-color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
+  border-bottom-color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 
 /* Quarter outline button — dark */
 .dark #r360-root .r3-btn-outline {
   background: var(--cp-bg-surface, #242528) !important;
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
   border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)) !important;
 }
 .dark #r360-root .r3-btn-outline:hover {
@@ -1499,11 +1499,11 @@
 .dark #r360-root select {
   background: var(--cp-bg-surface, #242528) !important;
 
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 .dark #r360-root .r3-day-cell.today {
   background: var(--cp-bg-surface, #242528) !important;
-  border-color: var(--ds-text, #EDEDED) !important;
+  border-color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 
 /* Hover states */
@@ -1551,7 +1551,7 @@
 .dark #r360-root [style*="color:var(--cp-ink-1, #0F172A)"],
 .dark #r360-root [style*="color: #020617"],
 .dark #r360-root [style*="color:#020617"] {
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 .dark #r360-root [style*="color: var(--cp-ink-2, #334155)"], [style*="color: #334155"],
 .dark #r360-root [style*="color:var(--cp-ink-2, #334155)"], [style*="color:#334155"] {
@@ -1595,7 +1595,7 @@
 .dark #r360-root [style*="color: #020617"],
 .dark #r360-root [style*="color: #1E293B"],
 .dark #r360-root [style*="color: var(--cp-ink-2, #334155)"], [style*="color: #334155"] {
-  color: var(--ds-text, #EDEDED) !important;
+  color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)) !important;
 }
 .dark #r360-root [style*="color: #475569"],
 .dark #r360-root [style*="color: var(--cp-ink-3, var(--cp-text-secondary, #64748B))"] {

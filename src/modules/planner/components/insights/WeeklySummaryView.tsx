@@ -90,10 +90,10 @@ export function WeeklySummaryView() {
 
   // KPI Strip data from real counts
   const kpiStrip = [
-    { label: 'Stories', value: stories.length, colorClass: 'text-slate-800 dark:text-[var(--ds-text,#EDEDED)]' },
+    { label: 'Stories', value: stories.length, colorClass: 'text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' },
     { label: 'Releases', value: releases.length, colorClass: 'text-emerald-600', highlight: releases.length > 0 },
-    { label: 'Incidents', value: incidents.length, colorClass: incidents.length > 0 ? 'text-amber-600' : 'text-slate-800 dark:text-[var(--ds-text,#EDEDED)]' },
-    { label: 'Defects', value: defects.length, colorClass: defects.length > 0 ? 'text-red-600' : 'text-slate-800 dark:text-[var(--ds-text,#EDEDED)]' },
+    { label: 'Incidents', value: incidents.length, colorClass: incidents.length > 0 ? 'text-amber-600' : 'text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' },
+    { label: 'Defects', value: defects.length, colorClass: defects.length > 0 ? 'text-red-600' : 'text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' },
   ];
 
   return (
@@ -140,7 +140,7 @@ export function WeeklySummaryView() {
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
               <div className="flex items-center gap-2">
                 <Rocket className="w-5 h-5 text-blue-600" />
-                <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">Releases</h3>
+                <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">Releases</h3>
               </div>
               <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">{releases.length} this week</span>
             </div>
@@ -154,7 +154,7 @@ export function WeeklySummaryView() {
                       REL
                     </div>
                     <div className="flex-1">
-                      <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">
+                      <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">
                         {release.name || release.version}
                       </div>
                       <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] mt-0.5">
@@ -173,7 +173,7 @@ export function WeeklySummaryView() {
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-amber-600" />
-                <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">Incidents</h3>
+                <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">Incidents</h3>
               </div>
               <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">{incidents.length} this week</span>
             </div>
@@ -191,7 +191,7 @@ export function WeeklySummaryView() {
                       incident.severity === 'low' && "bg-slate-400"
                     )} />
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,#EDEDED)] truncate">
+                      <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] truncate">
                         {incident.title}
                       </div>
                       <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] mt-0.5">
@@ -210,7 +210,7 @@ export function WeeklySummaryView() {
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
               <div className="flex items-center gap-2">
                 <Bug className="w-5 h-5 text-red-600" />
-                <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">Defects</h3>
+                <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">Defects</h3>
               </div>
               <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">{defects.length} this week</span>
             </div>
@@ -227,7 +227,7 @@ export function WeeklySummaryView() {
                       defect.severity === 'minor' && "bg-teal-500"
                     )} />
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,#EDEDED)] truncate">
+                      <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] truncate">
                         {defect.title}
                       </div>
                       <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] mt-0.5">
@@ -246,7 +246,7 @@ export function WeeklySummaryView() {
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
               <div className="flex items-center gap-2">
                 <GitBranch className="w-5 h-5 text-purple-600" />
-                <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,#EDEDED)]">Stories</h3>
+                <h3 className="font-bold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">Stories</h3>
               </div>
               <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">{stories.length} this week</span>
             </div>
@@ -257,7 +257,7 @@ export function WeeklySummaryView() {
                 stories.slice(0, 5).map((story: any) => (
                   <div key={story.id} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-[#111111] rounded-lg hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors">
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,#EDEDED)] truncate">
+                      <div className="text-sm font-semibold text-slate-800 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] truncate">
                         {story.title}
                       </div>
                     </div>

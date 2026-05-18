@@ -566,7 +566,7 @@ export function ListView() {
                                 <td colSpan={12} className="px-4 py-2 border-b border-slate-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
                                   <div className="flex items-center gap-2">
                                     <ChevronDown className="h-4 w-4 text-slate-500" />
-                                    <span className="text-[14px] font-semibold text-slate-900 dark:text-[var(--ds-text,#EDEDED)]">{groupKey}</span>
+                                    <span className="text-[14px] font-semibold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]">{groupKey}</span>
                                     <span className="text-[12px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">{groupItems.length}</span>
                                   </div>
                                 </td>
@@ -681,7 +681,7 @@ export function ListView() {
                                       {/* Comments */}
                                       {isFieldVisible('comments') && (
                                         <TableCell className="w-28" onClick={(e) => e.stopPropagation()}>
-                                          <button className="inline-flex items-center gap-1 text-[14px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] hover:text-slate-900 dark:hover:text-[var(--ds-text,#EDEDED)] hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] rounded px-1 py-0.5 -mx-1 transition-colors">
+                                          <button className="inline-flex items-center gap-1 text-[14px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] hover:text-slate-900 dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] rounded px-1 py-0.5 -mx-1 transition-colors">
                                             <MessageSquare className="h-3.5 w-3.5" />
                                             {item.comments > 0 ? (
                                               <span>{item.comments} comment{item.comments > 1 ? 's' : ''}</span>

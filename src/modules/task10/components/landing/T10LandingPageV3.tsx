@@ -96,7 +96,7 @@ function ListCard({
           <span className="px-3 py-1.5 font-mono text-xs font-bold text-blue-600 bg-blue-50 border border-blue-200 rounded-md tracking-wide flex-shrink-0">
             {list.key || 'T10'}
           </span>
-          <span className="text-[17px] font-semibold text-slate-900 dark:text-[var(--ds-text,#EDEDED)] tracking-tight truncate">
+          <span className="text-[17px] font-semibold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] tracking-tight truncate">
             {list.name}
           </span>
         </div>
@@ -108,7 +108,7 @@ function ListCard({
             {hasActiveWeek ? (
               <>
                 Week of{' '}
-                <strong className="text-slate-900 dark:text-[var(--ds-text,#EDEDED)] font-semibold">
+                <strong className="text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] font-semibold">
                   {formatWeekRange(list.week_start, list.week_end)}
                 </strong>
               </>
@@ -229,7 +229,7 @@ function CompletedWeekCard({ week }: { week: T10CompletedWeekView }) {
           <span className="px-2 py-1 font-mono text-xs font-bold text-blue-600 bg-blue-50 border border-blue-200 rounded">
             {week.list_key || 'T10'}
           </span>
-          <span className="text-[15px] font-semibold text-slate-900 dark:text-[var(--ds-text,#EDEDED)] truncate">
+          <span className="text-[15px] font-semibold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] truncate">
             {week.list_name}
           </span>
         </div>
@@ -480,7 +480,7 @@ export function T10LandingPageV3() {
         <div className="flex items-center gap-1">
           <span className="text-[32px] font-extrabold text-blue-600 leading-none">10</span>
           <div className="flex flex-col ml-2">
-            <span className="text-xl font-bold text-slate-900 dark:text-[var(--ds-text,#EDEDED)] tracking-tight">
+            <span className="text-xl font-bold text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] tracking-tight">
               Priorities
             </span>
             <span className="text-xs font-medium text-slate-500">
@@ -520,7 +520,7 @@ export function T10LandingPageV3() {
             placeholder="Search lists, task number, or keyword..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 min-w-0 text-[15px] font-medium text-slate-900 dark:text-[var(--ds-text,#EDEDED)] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,#878787)] !bg-transparent !border-0 !p-0 !outline-none !shadow-none !ring-0 focus:!outline-none focus:!shadow-none focus:!ring-0"
+            className="flex-1 min-w-0 text-[15px] font-medium text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,#878787)] !bg-transparent !border-0 !p-0 !outline-none !shadow-none !ring-0 focus:!outline-none focus:!shadow-none focus:!ring-0"
             style={{
               WebkitAppearance: 'none',
               MozAppearance: 'none',
@@ -568,7 +568,7 @@ export function T10LandingPageV3() {
             onClick={() => setActiveTab('this-week')}
             className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold rounded-lg transition-all ${
               activeTab === 'this-week'
-                ? 'text-slate-900 dark:text-[var(--ds-text,#EDEDED)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] shadow-sm'
+                ? 'text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] shadow-sm'
                 : 'text-slate-500 hover:text-slate-700 dark:hover:text-[var(--ds-text-subtlest,#A1A1A1)]'
             }`}
           >
@@ -578,7 +578,7 @@ export function T10LandingPageV3() {
             onClick={() => setActiveTab('completed')}
             className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold rounded-lg transition-all ${
               activeTab === 'completed'
-                ? 'text-slate-900 dark:text-[var(--ds-text,#EDEDED)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] shadow-sm'
+                ? 'text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] shadow-sm'
                 : 'text-slate-500 hover:text-slate-700 dark:hover:text-[var(--ds-text-subtlest,#A1A1A1)]'
             }`}
           >
@@ -597,7 +597,7 @@ export function T10LandingPageV3() {
             onClick={() => setActiveTab('archived')}
             className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold rounded-lg transition-all ${
               activeTab === 'archived'
-                ? 'text-slate-900 dark:text-[var(--ds-text,#EDEDED)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] shadow-sm'
+                ? 'text-slate-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] shadow-sm'
                 : 'text-slate-500 hover:text-slate-700 dark:hover:text-[var(--ds-text-subtlest,#A1A1A1)]'
             }`}
           >

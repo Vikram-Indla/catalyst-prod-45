@@ -67,7 +67,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
               }}
-              onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.color = isDark ? 'var(--ds-text, #EDEDED)' : 'var(--cp-blue)'; }}
+              onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.color = isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : 'var(--cp-blue)'; }}
               onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.color = isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)'; }}
             >
               {tab.label}

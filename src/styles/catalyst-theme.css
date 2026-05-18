@@ -48,7 +48,7 @@
   --bg-elevated: var(--ds-surface-raised, #1A1A1A);
   --bg-float: var(--ds-surface-raised, #1A1A1A);
   --bg-overlay: rgba(0,0,0,0.65);
-  --text-1: var(--ds-text, #EDEDED);
+  --text-1: var(--ds-text, var(--cp-bg-neutral, #EDEDED));
   --text-2: var(--ds-text-subtlest, #A1A1A1);
   --text-3: var(--ds-text-subtlest, #878787);
   --text-4: #444444;

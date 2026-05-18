@@ -345,14 +345,14 @@ export default function DemandSummaryPage() {
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <button 
               onClick={() => setIsArabic(!isArabic)}
-              className={cn("flex items-center gap-1.5 px-3 sm:px-3.5 py-2 bg-muted border-2 border-brand-primary rounded-lg text-xs font-medium text-foreground hover:bg-brand-primary/10 transition-colors", isDark && "bg-[var(--ds-surface-raised,#1A1A1A)] text-[var(--ds-text,#EDEDED)]")}
+              className={cn("flex items-center gap-1.5 px-3 sm:px-3.5 py-2 bg-muted border-2 border-brand-primary rounded-lg text-xs font-medium text-foreground hover:bg-brand-primary/10 transition-colors", isDark && "bg-[var(--ds-surface-raised,#1A1A1A)] text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]")}
             >
               <Globe className="w-4 h-4 text-brand-primary" />
               <span>{isArabic ? 'EN | عربي' : 'عربي | EN'}</span>
             </button>
             <div className={cn("flex bg-muted rounded-lg p-0.5", isDark && "bg-[var(--ds-surface-raised,#1A1A1A)]")}>
               {periodOptions.map((p) => (
-                <button key={p.key} onClick={() => setActivePeriod(p.key)} className={cn('px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all', activePeriod === p.key ? (isDark ? 'bg-[var(--ds-surface,#0A0A0A)] text-[var(--ds-text,#EDEDED)]' : 'bg-brand-dark text-white') : (isDark ? 'text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-[var(--ds-border,#292929)]' : 'text-muted-foreground hover:bg-border'))}>{p.label}</button>
+                <button key={p.key} onClick={() => setActivePeriod(p.key)} className={cn('px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all', activePeriod === p.key ? (isDark ? 'bg-[var(--ds-surface,#0A0A0A)] text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' : 'bg-brand-dark text-white') : (isDark ? 'text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-[var(--ds-border,#292929)]' : 'text-muted-foreground hover:bg-border'))}>{p.label}</button>
               ))}
             </div>
           </div>

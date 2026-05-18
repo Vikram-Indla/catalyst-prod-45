@@ -45,7 +45,7 @@ export function DepartmentSelect({ value, onChange, departments, disabled }: Dep
         type="button"
         onClick={() => { if (!disabled) { setOpen(!open); setSearch(''); } }}
         disabled={disabled}
-        className="w-full flex items-center justify-between px-3 py-2.5 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-zinc-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg text-sm text-zinc-900 dark:text-[var(--ds-text,#EDEDED)] hover:border-zinc-300 dark:hover:border-[var(--ds-border-bold,#454545)] focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-between px-3 py-2.5 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-zinc-200 dark:border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] rounded-lg text-sm text-zinc-900 dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] hover:border-zinc-300 dark:hover:border-[var(--ds-border-bold,#454545)] focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <span className="flex items-center gap-2 min-w-0">
           <Building2 className="w-4 h-4 text-zinc-400 shrink-0" />

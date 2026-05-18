@@ -472,26 +472,26 @@
 
 /* ── Dark mode ── */
 .dark .csModal { background: var(--cp-bg-surface, #242528); }
-.dark .csModalTitle { color: var(--ds-text, #EDEDED); }
+.dark .csModalTitle { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .csRequiredNote { color: var(--ds-text-subtlest, #878787); }
 .dark .csHeaderBtn { color: var(--ds-text-subtlest, #A1A1A1); }
-.dark .csHeaderBtn:hover { background: var(--ds-border, #292929); color: var(--ds-text, #EDEDED); }
+.dark .csHeaderBtn:hover { background: var(--ds-border, #292929); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .csModalFooter { border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
-.dark .csLabel { color: var(--ds-text, #EDEDED); }
-.dark .csInput { color: var(--ds-text, #EDEDED); border-color: var(--ds-border-bold, #454545); }
+.dark .csLabel { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
+.dark .csInput { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); border-color: var(--ds-border-bold, #454545); }
 .dark .csInput:focus { border-color: #0C66E4; }
-.dark .csSelect { background: var(--ds-border, #292929); border-color: var(--ds-border-bold, #454545); color: var(--ds-text, #EDEDED); }
+.dark .csSelect { background: var(--ds-border, #292929); border-color: var(--ds-border-bold, #454545); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .csDropdown { background: var(--cp-bg-surface, #242528); border-color: var(--ds-border, var(--cp-ink-1, #2E2E2E)); }
-.dark .csDropdownItem { color: var(--ds-text, #EDEDED); }
+.dark .csDropdownItem { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .csDropdownItem:hover { background: var(--ds-border, #292929); }
 .dark .csDropdownItem.selected { background: rgba(12,102,228,0.15); }
-.dark .csDropdownSearch input { background: var(--ds-border, #292929); border-color: var(--ds-border-bold, #454545); color: var(--ds-text, #EDEDED); }
+.dark .csDropdownSearch input { background: var(--ds-border, #292929); border-color: var(--ds-border-bold, #454545); color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .csEditorWrap { border-color: var(--ds-border-bold, #454545); }
 .dark .csEditorToolbar { background: var(--ds-border, #292929); border-color: var(--ds-border-bold, #454545); }
 .dark .csEditorBtn { color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .csEditorBtn:hover { background: #3A3A3A; }
-.dark .csEditorContent .tiptap { color: var(--ds-text, #EDEDED); }
-.dark .csCreateAnother { color: var(--ds-text, #EDEDED); }
+.dark .csEditorContent .tiptap { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
+.dark .csCreateAnother { color: var(--ds-text, var(--cp-bg-neutral, #EDEDED)); }
 .dark .csCancel { color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .csCancel:hover { background: var(--ds-border, #292929); }
 .dark .csHelpText { color: var(--ds-text-subtlest, #878787); }

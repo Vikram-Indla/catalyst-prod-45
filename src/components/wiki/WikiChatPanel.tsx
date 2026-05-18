@@ -152,7 +152,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
           style={{
             flex: 1, height: 50, padding: '8px 12px', borderRadius: 8, fontSize: 12.5,
             border: `0.75px solid ${border}`, outline: 'none', fontFamily: 'var(--cp-font-body)',
-            background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-1)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined,
+            background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-1)', color: isDark ? 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' : undefined,
           }}
           onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
           onBlur={e => { e.currentTarget.style.borderColor = 'var(--cp-border-subtle, rgba(0,0,0,0.06))'; e.currentTarget.style.boxShadow = 'none'; }}

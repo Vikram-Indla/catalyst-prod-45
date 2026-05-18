@@ -119,7 +119,7 @@ const RequirementDefectsPanel = ({ requirementId }: { requirementId?: string }) 
                     {d.defect_key}
                   </span>
                 </td>
-                <td style={{ padding: '8px 12px', color: 'var(--ds-text, #EDEDED)' }}>{d.title}</td>
+                <td style={{ padding: '8px 12px', color: 'var(--ds-text, var(--cp-bg-neutral, #EDEDED))' }}>{d.title}</td>
                 <td style={{ padding: '8px 12px' }}>
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', height: 20, padding: '2px 6px', borderRadius: 3,
