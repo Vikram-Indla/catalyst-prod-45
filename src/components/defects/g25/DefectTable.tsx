@@ -33,7 +33,7 @@ function BugTypeIcon() {
 const SEVERITY_MAP: Record<string, { label: string; bg: string; text: string; border: string }> = {
   critical: { label: 'CRITICAL', bg: '#FFECEC', text: '#AE2A19', border: '#FFBDAD' },
   high:     { label: 'HIGH',     bg: '#FFF4EC', text: '#974F0C', border: '#FFD2A7' },
-  medium:   { label: 'MEDIUM',   bg: 'var(--ds-surface-sunken, #F4F5F7)', text: '#42526E', border: '#C1C7D0' },
+  medium:   { label: 'MEDIUM',   bg: 'var(--ds-surface-sunken, #F4F5F7)', text: '#42526E', border: 'var(--ds-border-disabled, #C1C7D0)' },
   low:      { label: 'LOW',      bg: 'var(--ds-surface-sunken, #F4F5F7)', text: 'var(--ds-text-subtlest, #6B778C)', border: 'var(--ds-border, #DFE1E6)' },
 };
 

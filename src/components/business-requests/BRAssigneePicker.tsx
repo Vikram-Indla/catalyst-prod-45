@@ -113,7 +113,7 @@ export function BRAssigneePicker({ value, saveAs = 'name', onChange, placeholder
                 onMouseEnter={e => { if (value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
                 onMouseLeave={e => { if (value) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
-                <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, border: '1px dashed #C1C7D0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: '#C1C7D0' }}>?</div>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, border: '1px dashed var(--ds-border-disabled, #C1C7D0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: 'var(--ds-border-disabled, #C1C7D0)' }}>?</div>
                 <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, #6B778C)', flex: 1 }}>Unassigned</span>
                 {!value && <CheckmarkSVG />}
               </div>
