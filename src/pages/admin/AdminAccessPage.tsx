@@ -730,6 +730,48 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
 
 // ─── PeopleTab ────────────────────────────────────────────────────────────────
 
+/**
+ * PeopleTableSkeleton — loading placeholder that mirrors the 7-column
+ * People table shape. Replaces the bare centred Spinner (design-critique
+ * 2026-05-18 H1 P2). Each row renders an avatar bubble + bar shimmers
+ * sized to the real cells so the layout stays stable across the
+ * loading → loaded transition.
+ */
+function PeopleTableSkeleton() {
+  const SHIMMER: React.CSSProperties = {
+    background: 'linear-gradient(90deg, var(--ds-skeleton, #F1F2F4) 0%, var(--ds-skeleton-subtle, #E9EBEE) 50%, var(--ds-skeleton, #F1F2F4) 100%)',
+    backgroundSize: '200% 100%',
+    animation: 'cp-skeleton-shimmer 1.4s ease-in-out infinite',
+    borderRadius: 3,
+  };
+  const COLS = 7; // mirrors the People table header: Name, Email, Role, Modules, Status, Joined, actions
+  return (
+    <>
+      <style>{`@keyframes cp-skeleton-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }} data-testid="people-skeleton" data-columns={COLS}>
+        <tbody>
+          {Array.from({ length: 8 }).map((_, rowIdx) => (
+            <tr key={rowIdx} style={{ borderBottom: '1px solid var(--ds-border-subtle, #F4F5F7)' }}>
+              <td style={{ padding: '10px 12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ ...SHIMMER, width: 24, height: 24, borderRadius: '50%' }} />
+                  <div style={{ ...SHIMMER, width: 120, height: 12 }} />
+                </div>
+              </td>
+              <td style={{ padding: '10px 12px' }}><div style={{ ...SHIMMER, width: 160, height: 12 }} /></td>
+              <td style={{ padding: '10px 12px' }}><div style={{ ...SHIMMER, width: 80, height: 18, borderRadius: 3 }} /></td>
+              <td style={{ padding: '10px 12px', textAlign: 'center' }}><div style={{ ...SHIMMER, width: 36, height: 18, borderRadius: 9, margin: '0 auto' }} /></td>
+              <td style={{ padding: '10px 12px' }}><div style={{ ...SHIMMER, width: 60, height: 18, borderRadius: 3 }} /></td>
+              <td style={{ padding: '10px 12px' }}><div style={{ ...SHIMMER, width: 72, height: 12 }} /></td>
+              <td style={{ padding: '10px 4px' }}><div style={{ ...SHIMMER, width: 16, height: 16, borderRadius: 3, margin: '0 auto' }} /></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
+  );
+}
+
 function PeopleTab() {
   const { user: currentUser } = useAuth();
   const [search, setSearch] = useState('');
