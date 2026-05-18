@@ -119,7 +119,7 @@ export default function AllChangesPage() {
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }} />
             <input type="text" placeholder="Search changes..." value={search} onChange={e => setSearch(e.target.value)}
               className="h-9 w-[280px] pl-9 pr-3 rounded text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,#2563EB)]/20 focus:border-[var(--ds-text-brand,#2563EB)]"
-              style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-primary, #0F172A)' }} />
+              style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }} />
           </div>
           <CustomDropdown label="Status" value={statusFilter} options={statusOptions} onChange={v => setParam('status', v)} isDark={isDark} />
           <CustomDropdown label="Release" value={releaseFilter} options={releaseOptions} onChange={v => setParam('release', v)} isDark={isDark} />
@@ -181,7 +181,7 @@ export default function AllChangesPage() {
                       <span className="text-[13px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:underline" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
                     </td>
                     <td className="px-3 py-0 max-w-[300px]">
-                      <span className="text-[13px] font-medium truncate block" style={{ color: 'var(--cp-text-primary, #0F172A)' }}>{c.title}</span>
+                      <span className="text-[13px] font-medium truncate block" style={{ color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{c.title}</span>
                     </td>
                     <td className="px-3 py-0"><StatusLozenge status={c.status} /></td>
                     <td className="px-3 py-0"><RiskBadge risk={mapRisk(c.risk_level)} /></td>
@@ -232,7 +232,7 @@ function KanbanView({ changes, onSelect, isDark }: { changes: any[]; onSelect: (
                   className="w-full rounded-md p-3 text-left hover:shadow-sm transition-shadow"
                   style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
                   <span className="text-[11px] font-medium text-[var(--ds-text-brand,#2563EB)] block mb-1" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
-                  <span className="text-[13px] font-medium block truncate" style={{ color: 'var(--cp-text-primary, #0F172A)' }}>{c.title}</span>
+                  <span className="text-[13px] font-medium block truncate" style={{ color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{c.title}</span>
                   <div className="flex items-center gap-2 mt-2">
                     <RiskBadge risk={c.risk_level?.toLowerCase() === 'low' || c.risk_level?.toLowerCase() === 'medium' ? 'standard' : c.risk_level} />
                     <SourceBadge source={c.source} />

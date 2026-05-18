@@ -133,7 +133,7 @@ function ChangedFieldsDetail({ fields }: { fields: Record<string, { from?: strin
         <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 3 }}>
           {entries.map(([field, val]) => (
             <div key={field} style={{ fontSize: 11, color: 'var(--cp-t2, #475569)', display: 'flex', gap: 4, alignItems: 'baseline' }}>
-              <span style={{ fontWeight: 600, color: 'var(--cp-t1, #0F172A)', minWidth: 60 }}>{field}:</span>
+              <span style={{ fontWeight: 600, color: 'var(--cp-t1, var(--cp-ink-1, #0F172A))', minWidth: 60 }}>{field}:</span>
               <span style={{ textDecoration: 'line-through', color: 'var(--cp-t3, var(--cp-ink-4, #94A3B8))' }}>{val.from || '—'}</span>
               <span style={{ color: 'var(--cp-t3, var(--cp-ink-4, #94A3B8))' }}>→</span>
               <span style={{ fontWeight: 500 }}>{val.to || '—'}</span>
@@ -161,7 +161,7 @@ function SummaryStats({ items }: { items: SyncActivity[] }) {
   }, [items]);
 
   const pills: { label: string; value: number; color: string; bg: string }[] = [
-    { label: 'Total', value: stats.total, color: 'var(--cp-t1, #0F172A)', bg: 'var(--cp-hover, #F1F5F9)' },
+    { label: 'Total', value: stats.total, color: 'var(--cp-t1, var(--cp-ink-1, #0F172A))', bg: 'var(--cp-hover, #F1F5F9)' },
     { label: 'Inbound', value: stats.inbound, color: 'var(--ds-text-brand, #2563EB)', bg: 'rgba(37,99,235,0.08)' },
     { label: 'Outbound', value: stats.outbound, color: 'var(--ds-text-warning, var(--cp-warning, #D97706))', bg: 'rgba(217,119,6,0.08)' },
     { label: 'Success', value: stats.success, color: 'var(--quality-high, #059669)', bg: 'rgba(5,150,105,0.08)' },
@@ -275,7 +275,7 @@ export default function JiraActivitySyncPage() {
       }}>
         <h1 style={{
           fontSize: 20, fontWeight: 700, fontFamily: 'var(--cp-font-heading)',
-          color: 'var(--cp-t1, #0F172A)', margin: 0, whiteSpace: 'nowrap',
+          color: 'var(--cp-t1, var(--cp-ink-1, #0F172A))', margin: 0, whiteSpace: 'nowrap',
         }}>
           Jira Activity Sync
         </h1>
@@ -286,7 +286,7 @@ export default function JiraActivitySyncPage() {
             display: 'inline-flex', alignItems: 'center', gap: 6,
             padding: '6px 14px', borderRadius: 6, fontSize: 13, fontWeight: 600,
             border: '1px solid var(--cp-bd, var(--cp-border, #E2E8F0))',
-            background: 'var(--cp-bg, #FFFFFF)', color: 'var(--cp-t1, #0F172A)',
+            background: 'var(--cp-bg, #FFFFFF)', color: 'var(--cp-t1, var(--cp-ink-1, #0F172A))',
             cursor: 'pointer',
           }}
         >
@@ -403,7 +403,7 @@ export default function JiraActivitySyncPage() {
                     <td style={{ padding: '6px 12px', maxWidth: 300 }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                         <span style={{
-                          fontSize: 13, fontWeight: 500, color: 'var(--cp-t1, #0F172A)',
+                          fontSize: 13, fontWeight: 500, color: 'var(--cp-t1, var(--cp-ink-1, #0F172A))',
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                         }}>
                           {item.work_item_title || '—'}
@@ -501,8 +501,8 @@ export default function JiraActivitySyncPage() {
         fontSize: 12, color: 'var(--cp-t3, var(--cp-ink-4, #94A3B8))',
       }}>
         <span>
-          Showing <strong style={{ color: 'var(--cp-t1, #0F172A)', fontWeight: 600 }}>{filtered.length}</strong> of{' '}
-          <strong style={{ color: 'var(--cp-t1, #0F172A)', fontWeight: 600 }}>{rawItems.length}</strong> events (last 30 days)
+          Showing <strong style={{ color: 'var(--cp-t1, var(--cp-ink-1, #0F172A))', fontWeight: 600 }}>{filtered.length}</strong> of{' '}
+          <strong style={{ color: 'var(--cp-t1, var(--cp-ink-1, #0F172A))', fontWeight: 600 }}>{rawItems.length}</strong> events (last 30 days)
         </span>
         <span>Auto-purge: records older than 30 days are deleted automatically</span>
       </div>

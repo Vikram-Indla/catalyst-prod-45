@@ -101,7 +101,7 @@ export const adsTokens = {
     pressed:  { cp: '--cp-interact-press',    light: 'rgba(0,0,0,0.08)', dark: '#292929', atlaskit: 'color.background.neutral.pressed' } satisfies AdsToken,
   },
   text: {
-    primary:   { cp: '--cp-text-primary',   light: '#0F172A', dark: '#EDEDED', atlaskit: 'color.text' } satisfies AdsToken,
+    primary:   { cp: '--cp-text-primary',   light: 'var(--cp-ink-1, #0F172A)', dark: '#EDEDED', atlaskit: 'color.text' } satisfies AdsToken,
     secondary: { cp: '--cp-text-secondary', light: '#475569', dark: '#A1A1A1', atlaskit: 'color.text.subtle' } satisfies AdsToken,
     muted:     { cp: '--cp-text-muted',     light: 'var(--cp-ink-4, #94A3B8)', dark: '#878787', atlaskit: 'color.text.subtlest' } satisfies AdsToken,
     disabled:  { cp: '--cp-text-disabled',  light: '#CBD5E1', dark: '#7D7D7D', atlaskit: 'color.text.disabled' } satisfies AdsToken,

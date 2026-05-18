@@ -271,7 +271,7 @@ export default function RequirementDetailPage() {
               </span>
             )}
           </div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>{requirement.title}</h1>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>{requirement.title}</h1>
           <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>
             {requirement.release_version && <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Tag size={14} /> v{requirement.release_version}</span>}
             <span>Created {formatDate(requirement.created_at)}</span>
@@ -294,7 +294,7 @@ export default function RequirementDetailPage() {
       {/* Description */}
       {requirement.description && (
         <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', marginBottom: 24 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
             <FileText size={18} style={{ color: 'var(--ds-text-brand, #2563EB)' }} /> Description
           </h3>
           <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, #334155)', margin: 0, whiteSpace: 'pre-wrap' }}>{requirement.description}</p>
@@ -304,7 +304,7 @@ export default function RequirementDetailPage() {
       {/* Linked Tests */}
       <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Link2 size={18} style={{ color: 'var(--ds-text-brand, #2563EB)' }} /> Linked Test Cases ({linkedTests.length})
           </h3>
           <button onClick={() => setShowLinkModal(true)}
@@ -339,7 +339,7 @@ export default function RequirementDetailPage() {
                       );
                     })()}
                   </div>
-                  <p style={{ fontSize: 14, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>{test.title}</p>
+                  <p style={{ fontSize: 14, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>{test.title}</p>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
@@ -360,7 +360,7 @@ export default function RequirementDetailPage() {
       {/* Linked Defects */}
       <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border, #E2E8F0)', marginTop: 24 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Bug size={18} style={{ color: '#E5493A' }} /> Linked Defects
           </h3>
         </div>

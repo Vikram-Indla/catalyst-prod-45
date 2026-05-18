@@ -85,7 +85,7 @@ export default function ReleaseDetailPage() {
             <ArrowLeft style={{ width: 18, height: 18 }} />
           </button>
           <span style={{ fontFamily: 'monospace', fontSize: 13, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', fontWeight: 600 }}>{release.version}</span>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0, flex: 1 }}>{release.name}</h1>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0, flex: 1 }}>{release.name}</h1>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
             padding: '4px 12px', borderRadius: 6, backgroundColor: sc.bg, color: sc.color, fontSize: 13, fontWeight: 600,
@@ -157,12 +157,12 @@ function OverviewTab({ release, isDark }: { release: any; isDark: boolean }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 24 }}>
       <div>
-        <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 12 }}>Description</h3>
+        <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: 12 }}>Description</h3>
         <p style={{ fontSize: 14, color: 'var(--cp-text-secondary, #334155)', lineHeight: 1.7 }}>
           {release.description || 'No description provided.'}
         </p>
 
-        <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '24px 0 12px' }}>Test Progress</h3>
+        <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '24px 0 12px' }}>Test Progress</h3>
         <div style={{ height: 10, backgroundColor: 'var(--cp-bg-sunken, #F1F5F9)', borderRadius: 6, overflow: 'hidden', marginBottom: 8 }}>
           {release.test_cases_total > 0 && (
             <div style={{
@@ -184,7 +184,7 @@ function OverviewTab({ release, isDark }: { release: any; isDark: boolean }) {
 
       {/* Details panel */}
       <div style={{ background: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 16 }}>Details</h3>
+        <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: 16 }}>Details</h3>
         <dl style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
           <DetailRow label="Target Date" value={release.target_date ? format(new Date(release.target_date), 'MMMM dd, yyyy') : '—'} />
           <DetailRow label="Start Date" value={release.start_date ? format(new Date(release.start_date), 'MMMM dd, yyyy') : '—'} />
@@ -204,7 +204,7 @@ function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
       <dt style={{ fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{label}</dt>
-      <dd style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>{value}</dd>
+      <dd style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>{value}</dd>
     </div>
   );
 }
@@ -247,7 +247,7 @@ function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isL
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--cp-bg-page, #F8FAFC)')}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = '')}
               >
-                <td style={tdStyle}><span style={{ fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>{cycle.name}</span></td>
+                <td style={tdStyle}><span style={{ fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{cycle.name}</span></td>
                 <td style={tdStyle}><span style={{ fontSize: 12, textTransform: 'capitalize' }}>{cycle.status}</span></td>
                 <td style={tdStyle}>{cycle.total_cases || 0}</td>
                 <td style={tdStyle}><span style={{ color: 'var(--quality-high, #059669)', fontWeight: 600 }}>{cycle.passed_count || 0}</span></td>

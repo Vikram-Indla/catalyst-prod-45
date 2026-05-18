@@ -177,7 +177,7 @@ export default function EnvironmentDetailPage() {
             <span style={{ fontSize: 12, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '4px 10px', borderRadius: 6 }}>{type.label}</span>
             <span style={{ fontSize: 12, fontWeight: 500, color: status.color, backgroundColor: status.bg, padding: '4px 10px', borderRadius: 6 }}>{status.label}</span>
           </div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>{environment.name}</h1>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>{environment.name}</h1>
           {environment.owner && (
             <p style={{ fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '8px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}>
               <User size={14} /> {environment.owner.full_name}
@@ -220,7 +220,7 @@ export default function EnvironmentDetailPage() {
         {/* Left Column */}
         <div>
           <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, marginBottom: 24 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Settings size={18} style={{ color: '#6366F1' }} /> Connection Info
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -236,13 +236,13 @@ export default function EnvironmentDetailPage() {
               {environment.api_url && (
                 <div>
                   <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: 4 }}><Link2 size={12} /> API URL</p>
-                  <p style={{ fontSize: 14, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>{environment.api_url}</p>
+                  <p style={{ fontSize: 14, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>{environment.api_url}</p>
                 </div>
               )}
               {environment.database_info && (
                 <div>
                   <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: 4 }}><Database size={12} /> Database</p>
-                  <p style={{ fontSize: 14, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>{environment.database_info}</p>
+                  <p style={{ fontSize: 14, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>{environment.database_info}</p>
                 </div>
               )}
               {!environment.url && !environment.api_url && !environment.database_info && (
@@ -253,7 +253,7 @@ export default function EnvironmentDetailPage() {
 
           {environment.description && (
             <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
-              <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <FileText size={18} style={{ color: '#6366F1' }} /> Description
               </h3>
               <p style={{ fontSize: 14, color: 'var(--cp-text-secondary, #334155)', margin: 0, whiteSpace: 'pre-wrap' }}>{environment.description}</p>
@@ -265,7 +265,7 @@ export default function EnvironmentDetailPage() {
         <div>
           {/* Variables */}
           <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, marginBottom: 24 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Key size={18} style={{ color: '#6366F1' }} /> Variables ({variables.length})
             </h3>
             {variables.length === 0 ? (
@@ -275,7 +275,7 @@ export default function EnvironmentDetailPage() {
                 {variables.map((v) => (
                   <div key={v.id} style={{ padding: 12, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>{v.key}</p>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>{v.key}</p>
                       <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '2px 0 0', fontFamily: 'monospace' }}>
                         {v.is_secret && !showSecrets[v.id] ? '••••••••' : v.value || '(empty)'}
                       </p>
@@ -300,7 +300,7 @@ export default function EnvironmentDetailPage() {
 
           {/* Linked Cycles */}
           <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
-            <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Activity size={18} style={{ color: '#6366F1' }} /> Test Cycles ({linkedCycles.length})
             </h3>
             {linkedCycles.length === 0 ? (
@@ -312,7 +312,7 @@ export default function EnvironmentDetailPage() {
                     style={{ padding: 12, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 8, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '2px 6px', borderRadius: 4, marginRight: 8 }}>{cycle.cycle_key}</span>
-                      <span style={{ fontSize: 13, color: 'var(--cp-text-primary, #0F172A)' }}>{cycle.name}</span>
+                      <span style={{ fontSize: 13, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{cycle.name}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{cycle.progress_percent}%</span>

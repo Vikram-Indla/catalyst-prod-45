@@ -50,7 +50,7 @@ export function WikiAdminTrainingTab() {
             placeholder="Search questions..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-            style={{ border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--cp-font-body)', fontSize: 12, width: '100%', color: 'var(--cp-text-primary, #0F172A)' }}
+            style={{ border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--cp-font-body)', fontSize: 12, width: '100%', color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}
           />
         </div>
         <button onClick={() => setShowAdd(!showAdd)} style={{
@@ -154,12 +154,12 @@ function AddQuestionForm({ onClose }: { onClose: () => void }) {
       display: 'flex', flexDirection: 'column', gap: 8,
     }}>
       <input placeholder="Question *" value={question} onChange={(e) => setQuestion(e.target.value)}
-        style={{ padding: '6px 10px', borderRadius: 4, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', fontFamily: 'var(--cp-font-body)', fontSize: 12, background: 'var(--cp-bg-page, #fff)', color: 'var(--cp-text-primary, #0F172A)', outline: 'none' }}
+        style={{ padding: '6px 10px', borderRadius: 4, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', fontFamily: 'var(--cp-font-body)', fontSize: 12, background: 'var(--cp-bg-page, #fff)', color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', outline: 'none' }}
         onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
         onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
       />
       <textarea placeholder="Answer (optional)" value={answer} onChange={(e) => setAnswer(e.target.value)} rows={2}
-        style={{ padding: '6px 10px', borderRadius: 4, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', fontFamily: 'var(--cp-font-body)', fontSize: 12, background: 'var(--cp-bg-page, #fff)', color: 'var(--cp-text-primary, #0F172A)', resize: 'vertical', outline: 'none' }}
+        style={{ padding: '6px 10px', borderRadius: 4, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', fontFamily: 'var(--cp-font-body)', fontSize: 12, background: 'var(--cp-bg-page, #fff)', color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', resize: 'vertical', outline: 'none' }}
         onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
         onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
       />
@@ -186,7 +186,7 @@ function PagBtn({ disabled, onClick, children }: { disabled: boolean; onClick: (
       border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
       background: 'transparent', cursor: disabled ? 'default' : 'pointer',
       opacity: disabled ? 0.4 : 1, display: 'flex', alignItems: 'center',
-      color: 'var(--cp-text-primary, #0F172A)', outline: 'none',
+      color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', outline: 'none',
     }}
       onFocus={(e) => { if (!disabled) e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
       onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}

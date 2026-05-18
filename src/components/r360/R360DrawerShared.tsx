@@ -9,7 +9,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { fetchItemDetail, calcDaysSitting } from '@/lib/r360/fetchItemDetail';
 
 // ── Colour tokens ──
-export const INK1 = 'var(--ds-text, #0F172A)';
+export const INK1 = 'var(--ds-text, var(--cp-ink-1, #0F172A))';
 export const INK2 = 'var(--ds-text-subtle, #334155)';
 export const INK4 = 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))';
 export const MUTED = 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))';

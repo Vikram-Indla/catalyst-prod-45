@@ -37,7 +37,7 @@ export const STATUS_COLORS: Record<string, { color: string; bg: string; label: s
 
 // ── Ink / Surface ──
 export const INK = {
-  1: 'var(--fg-1, #0F172A)',  // primary text
+  1: 'var(--fg-1, var(--cp-ink-1, #0F172A))',  // primary text
   2: 'var(--ds-text-subtle, #334155)',  // secondary text (AUDIT #17: not muted)
   3: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))',  // tertiary
   4: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))',  // muted

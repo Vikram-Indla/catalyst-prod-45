@@ -288,7 +288,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 </div>
               ) : (
                 <span
-                  className="text-[13px] text-[var(--ds-text,#0F172A)] flex-1 cursor-pointer hover:underline"
+                  className="text-[13px] text-[var(--ds-text,var(--cp-ink-1, #0F172A))] flex-1 cursor-pointer hover:underline"
                   onClick={() => { setEditingId(s.id); setEditName(s.name); }}
                 >
                   {s.name}
@@ -371,7 +371,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                   onClick={() => handleToggleFlag(s.id, 'is_initial', s.is_initial)}
                   className={cn(
                     'p-1 rounded hover:bg-[var(--ds-surface-sunken,#F1F5F9)] transition-colors',
-                    s.is_initial ? 'text-[var(--ds-text,#0F172A)]' : 'text-[var(--ds-text-disabled,#CBD5E1)]'
+                    s.is_initial ? 'text-[var(--ds-text,var(--cp-ink-1, #0F172A))]' : 'text-[var(--ds-text-disabled,#CBD5E1)]'
                   )}
                   title="Set as initial status"
                 >
@@ -381,7 +381,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                   onClick={() => handleToggleFlag(s.id, 'is_final', s.is_final)}
                   className={cn(
                     'p-1 rounded hover:bg-[var(--ds-surface-sunken,#F1F5F9)] transition-colors',
-                    s.is_final ? 'text-[var(--ds-text,#0F172A)]' : 'text-[var(--ds-text-disabled,#CBD5E1)]'
+                    s.is_final ? 'text-[var(--ds-text,var(--cp-ink-1, #0F172A))]' : 'text-[var(--ds-text-disabled,#CBD5E1)]'
                   )}
                   title="Set as final status"
                 >
@@ -472,7 +472,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
               <tbody>
                 {/* Global row */}
                 <tr className="bg-[#FFFBEB]">
-                  <td className="sticky left-0 z-10 bg-[#FFFBEB] border-b border-r border-[var(--ds-border,var(--cp-border, #E2E8F0))] px-3 py-2 text-[var(--ds-text,#0F172A)] font-medium">
+                  <td className="sticky left-0 z-10 bg-[#FFFBEB] border-b border-r border-[var(--ds-border,var(--cp-border, #E2E8F0))] px-3 py-2 text-[var(--ds-text,var(--cp-ink-1, #0F172A))] font-medium">
                     <span className="flex items-center gap-1.5">
                       <span style={{ display: 'inline-flex', color: 'var(--cp-amber, #F59E0B)' }}><CheckCircleIcon label="" size="small" /></span>
                       Any (Global)
@@ -494,7 +494,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 {/* Per-status rows */}
                 {statuses.map(from => (
                   <tr key={from.id} className="hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors">
-                    <td className="sticky left-0 z-10 bg-white hover:bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-r border-[var(--ds-border,var(--cp-border, #E2E8F0))] px-3 py-2 text-[var(--ds-text,#0F172A)] font-medium">
+                    <td className="sticky left-0 z-10 bg-white hover:bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-r border-[var(--ds-border,var(--cp-border, #E2E8F0))] px-3 py-2 text-[var(--ds-text,var(--cp-ink-1, #0F172A))] font-medium">
                       <span className="flex items-center gap-1.5">
                         <div
                           className="w-2 h-2 rounded-full"
@@ -533,7 +533,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
         <AlertDialogContent className="bg-white border-[var(--ds-border,var(--cp-border, #E2E8F0))]">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-[var(--ds-text,#0F172A)]">Delete Status</AlertDialogTitle>
+            <AlertDialogTitle className="text-[var(--ds-text,var(--cp-ink-1, #0F172A))]">Delete Status</AlertDialogTitle>
             <AlertDialogDescription className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]">
               Are you sure you want to delete "{deleteTarget?.name}"? This will also remove all
               transitions referencing this status. Any issues currently in this status will need
@@ -541,7 +541,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white border-[var(--ds-border,var(--cp-border, #E2E8F0))] text-[var(--ds-text,#0F172A)] hover:bg-[var(--ds-surface-sunken,#F8FAFC)]">
+            <AlertDialogCancel className="bg-white border-[var(--ds-border,var(--cp-border, #E2E8F0))] text-[var(--ds-text,var(--cp-ink-1, #0F172A))] hover:bg-[var(--ds-surface-sunken,#F8FAFC)]">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction

@@ -356,7 +356,7 @@ export default function SharedStepsPage() {
                 style={{
                   width: '100%', height: 40, paddingLeft: 40, paddingRight: 12,
                   border: `1.5px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 8, fontSize: 14,
-                  color: 'var(--cp-text-primary, #0F172A)', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', fontFamily: 'var(--cp-font-body)',
+                  color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', fontFamily: 'var(--cp-font-body)',
                 }}
               />
             </div>
@@ -590,7 +590,7 @@ export default function SharedStepsPage() {
                           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
                           <td style={{ padding: '12px 16px' }}>
-                            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>{step.name}</div>
+                            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{step.name}</div>
                             {step.description && (
                               <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 400 }}>
                                 {step.description}
@@ -844,7 +844,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
       </div>
 
       {/* Name */}
-      <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 15, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 4px' }}>
+      <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 15, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 4px' }}>
         {step.name}
       </h3>
 

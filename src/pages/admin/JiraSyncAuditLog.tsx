@@ -337,7 +337,7 @@ export default function JiraSyncAuditLog() {
     <div className="p-6 space-y-6 dark:bg-[var(--ds-surface,#0A0A0A)] min-h-screen">
       <div className="flex items-start justify-between">
         <div>
-          <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700 }} className="text-[var(--ds-text,#0F172A)] dark:text-white">
+          <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700 }} className="text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-white">
             Jira Sync Audit Log
           </h1>
           <p style={{ fontSize: 13 }} className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] dark:text-gray-400 mt-1">

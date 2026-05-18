@@ -10,7 +10,7 @@
   --bg-elevated: var(--ds-surface, #FFFFFF);
   --bg-float: var(--ds-surface, #FFFFFF);
   --bg-overlay: rgba(0,0,0,0.5);
-  --text-1: var(--ds-text, #0F172A);
+  --text-1: var(--ds-text, var(--cp-ink-1, #0F172A));
   --text-2: var(--ds-text-subtle, #334155);
   --text-3: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
   --text-4: var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8));

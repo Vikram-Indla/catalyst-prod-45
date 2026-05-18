@@ -81,7 +81,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
 
         {/* Body */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500, color: 'var(--fg-1, #0F172A)', lineHeight: '18px' }}>
+          <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', lineHeight: '18px' }}>
             <span style={{ fontWeight: 650 }}>{actorName}</span>{' '}
             {getActionVerb(n.notification_type)}
           </div>
@@ -89,7 +89,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
             <WorkItemIcon type={n.entity_icon_type} />
             {/* m-06: entity title truncation increased to 260px */}
             <span style={{
-              fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--fg-1, #0F172A)',
+              fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               maxWidth: 260,
             }}>

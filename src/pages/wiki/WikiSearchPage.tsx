@@ -99,7 +99,7 @@ export default function WikiSearchPage() {
   const borderColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(15,23,42,0.12)';
 
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, #0F172A)', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, #F8FAFC)', minHeight: '100%' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, #F8FAFC)', minHeight: '100%' }}>
       <div style={{ maxWidth: 840, marginInline: 'auto', padding: '24px 28px 48px' }}>
         {/* Breadcrumb */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
@@ -128,7 +128,7 @@ export default function WikiSearchPage() {
             style={{
               flex: 1, fontSize: 15, fontFamily: 'var(--cp-font-body)',
               background: 'transparent', border: 'none', outline: 'none',
-              color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, #0F172A)',
+              color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))',
             }}
           />
           {mode === 'ai' && (
@@ -311,7 +311,7 @@ export default function WikiSearchPage() {
                       {/* Title row */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                         {fmtIcon}
-                        <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, #0F172A)' }}>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, var(--cp-ink-1, #0F172A))' }}>
                           {highlightText(r.title || '—', debouncedQuery, isDark)}
                         </span>
                       </div>

@@ -106,7 +106,7 @@ export function IntegrationTab() {
     <div className="space-y-6 dark:bg-[var(--ds-surface,#0A0A0A)]">
       {/* Section 1 — Connection Status */}
       <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#292929)] rounded-md p-4">
-        <h3 className="text-sm font-semibold text-[var(--ds-text,#0F172A)] dark:text-white mb-3">Jira Connection</h3>
+        <h3 className="text-sm font-semibold text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-white mb-3">Jira Connection</h3>
         {connLoading ? (
           <Skeleton className="h-10 w-64" />
         ) : connection ? (
@@ -162,7 +162,7 @@ export function IntegrationTab() {
 
       {/* Section 3 — Recent Sync Log */}
       <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#292929)] rounded-md overflow-hidden">
-        <h3 className="text-sm font-semibold text-[var(--ds-text,#0F172A)] dark:text-white p-4 pb-2">Recent Sync Events</h3>
+        <h3 className="text-sm font-semibold text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-white p-4 pb-2">Recent Sync Events</h3>
 
         {logsError ? (
           <div className="flex items-center justify-center gap-2 py-8">

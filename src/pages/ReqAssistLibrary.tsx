@@ -239,7 +239,7 @@ export default function ReqAssistLibrary() {
       {/* ── ZONE 1: PAGE HEADER ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '24px 28px 0' }}>
         <div>
-          <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 22, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>
+          <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 22, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>
             Req Assist™
           </h1>
           <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '2px 0 0', fontFamily: 'var(--cp-font-body)' }}>
@@ -303,7 +303,7 @@ export default function ReqAssistLibrary() {
             border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`, borderRadius: 8,
           }}>
             <FileText size={32} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" style={{ marginBottom: 12 }} />
-            <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 6px', fontFamily: 'var(--cp-font-heading)' }}>No documents yet</p>
+            <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 6px', fontFamily: 'var(--cp-font-heading)' }}>No documents yet</p>
             <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '0 0 20px', fontFamily: 'var(--cp-font-body)' }}>Import from Jira or generate a BRD from text to get started.</p>
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => setImportOpen(true)} style={{
@@ -467,7 +467,7 @@ export default function ReqAssistLibrary() {
                         {/* Title */}
                         <td style={{ padding: '8px 12px', overflow: 'hidden', maxWidth: 0 }}>
                           <span title={doc.title} style={{
-                            display: 'block', fontSize: 13, fontWeight: 400, color: 'var(--cp-text-primary, #0F172A)',
+                            display: 'block', fontSize: 13, fontWeight: 400, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
                             fontFamily: 'var(--cp-font-body)',
                             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                             maxWidth: 320,
@@ -639,7 +639,7 @@ export default function ReqAssistLibrary() {
             padding: 24, border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
             fontFamily: 'var(--cp-font-body)',
           }}>
-            <h3 style={{ fontSize: 16, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 8px', fontFamily: 'var(--cp-font-heading)' }}>
+            <h3 style={{ fontSize: 16, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 8px', fontFamily: 'var(--cp-font-heading)' }}>
               Epics Already Exist
             </h3>
             <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '0 0 20px', lineHeight: 1.5 }}>

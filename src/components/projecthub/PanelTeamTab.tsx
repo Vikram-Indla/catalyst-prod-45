@@ -153,7 +153,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search by name, role, or email..."
-            className="flex-1 bg-transparent p-0 m-0 appearance-none text-[var(--ds-text,#0F172A)] dark:text-[var(--ds-text,#EDEDED)] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:placeholder:text-[#7D7D7D]"
+            className="flex-1 bg-transparent p-0 m-0 appearance-none text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-[var(--ds-text,#EDEDED)] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:placeholder:text-[#7D7D7D]"
             style={{ fontSize: 13, border: 'none', boxShadow: 'none', outline: 'none', WebkitAppearance: 'none', MozAppearance: 'none', background: 'transparent', borderRadius: 0 }}
           />
         </div>
@@ -186,7 +186,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <div className="text-[var(--ds-text,#0F172A)] dark:text-[var(--ds-text,#EDEDED)]" style={{ fontSize: 13, fontWeight: 600 }}>{u.name}</div>
+                <div className="text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-[var(--ds-text,#EDEDED)]" style={{ fontSize: 13, fontWeight: 600 }}>{u.name}</div>
                 <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 11 }}>
                   {u.role_name || 'No role'}
                   {u.department_name && <span className="text-[var(--ds-text-disabled,#CBD5E1)] dark:text-[var(--ds-border-bold,#454545)]"> · </span>}
@@ -239,7 +239,7 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
                     )}
 
                     <div className="flex-1 min-w-0">
-                      <div className="text-[var(--ds-text,#0F172A)] dark:text-[var(--ds-text,#EDEDED)]" style={{ fontSize: 14, fontWeight: 600, lineHeight: '20px' }}>{m.full_name}</div>
+                      <div className="text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-[var(--ds-text,#EDEDED)]" style={{ fontSize: 14, fontWeight: 600, lineHeight: '20px' }}>{m.full_name}</div>
                       <div style={{ fontSize: 12, color: ROLE_COLOR[m.project_role] || 'var(--cp-blue)', fontWeight: 500, lineHeight: '18px' }}>
                         {m.project_role || 'member'}
                       </div>

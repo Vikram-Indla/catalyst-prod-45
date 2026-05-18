@@ -16,7 +16,7 @@ export default function IncidentInsightsPage() {
   // DARK MODE tokens
   const pageBg = 'var(--cp-bg-elevated, #FFFFFF)';
   const surfaceBg = 'var(--cp-bg-elevated, #FFFFFF)';
-  const textPrimary = 'var(--cp-text-primary, #0F172A)';
+  const textPrimary = 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))';
   const textSecondary = 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))';
   const textBody = 'var(--cp-text-secondary, #334155)';
   const borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';

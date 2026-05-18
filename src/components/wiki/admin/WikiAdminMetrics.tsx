@@ -72,6 +72,6 @@ const valueStyle: React.CSSProperties = {
   fontFamily: 'var(--cp-font-mono)',
   fontSize: 28,
   fontWeight: 700,
-  color: 'var(--cp-text-primary, #0F172A)',
+  color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
   lineHeight: 1.1,
 };

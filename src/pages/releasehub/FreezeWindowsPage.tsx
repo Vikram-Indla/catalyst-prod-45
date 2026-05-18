@@ -106,7 +106,7 @@ export default function FreezeWindowsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-[22px]" style={{ fontFamily: RH.fontDisplay, color: 'var(--cp-text-primary, #0F172A)', fontWeight: 650 }}>Freeze Windows</h1>
+          <h1 className="text-[22px]" style={{ fontFamily: RH.fontDisplay, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', fontWeight: 650 }}>Freeze Windows</h1>
           <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
             Define deployment freeze periods. Releases targeting these dates will be flagged automatically.
           </p>
@@ -124,7 +124,7 @@ export default function FreezeWindowsPage() {
             className="h-7 w-7 rounded flex items-center justify-center" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
             <ChevronLeft size={16} />
           </button>
-          <span className="text-[14px] font-semibold" style={{ fontFamily: RH.fontDisplay, color: 'var(--cp-text-primary, #0F172A)' }}>{monthLabel}</span>
+          <span className="text-[14px] font-semibold" style={{ fontFamily: RH.fontDisplay, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{monthLabel}</span>
           <button onClick={() => setCalMonth(new Date(calMonth.getFullYear(), calMonth.getMonth() + 1))}
             className="h-7 w-7 rounded flex items-center justify-center" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
             <ChevronRight size={16} />
@@ -165,7 +165,7 @@ export default function FreezeWindowsPage() {
           <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }}>
             <CalendarOff className="w-8 h-8" style={{ color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))' }} />
           </div>
-          <h3 className="font-semibold text-lg mb-1" style={{ color: 'var(--cp-text-primary, #0F172A)' }}>No freeze windows defined</h3>
+          <h3 className="font-semibold text-lg mb-1" style={{ color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>No freeze windows defined</h3>
           <p className="text-[13px] max-w-md" style={{ color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>Add one to protect critical periods.</p>
         </div>
       ) : (
@@ -184,7 +184,7 @@ export default function FreezeWindowsPage() {
                   style={{ height: 50, transition: 'background 120ms', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}
                   onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)')}>
-                  <td className="px-3 py-0 font-medium" style={{ color: 'var(--cp-text-primary, #0F172A)', fontWeight: 650 }}>{fw.name}</td>
+                  <td className="px-3 py-0 font-medium" style={{ color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', fontWeight: 650 }}>{fw.name}</td>
                   <td className="px-3 py-0" style={{ fontFamily: RH.fontMono, fontSize: 12, color: 'var(--cp-text-secondary, #475569)' }}>{formatDate(fw.start_date)}</td>
                   <td className="px-3 py-0" style={{ fontFamily: RH.fontMono, fontSize: 12, color: 'var(--cp-text-secondary, #475569)' }}>{formatDate(fw.end_date)}</td>
                   <td className="px-3 py-0" style={{ fontFamily: RH.fontMono, fontSize: 12, color: 'var(--cp-text-secondary, #475569)' }}>{daysBetween(fw.start_date, fw.end_date)} days</td>

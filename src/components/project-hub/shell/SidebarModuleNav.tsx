@@ -36,7 +36,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
         </div>
         {!collapsed && (
           <span
-            className="flex-1 truncate text-[var(--ds-text,#0F172A)] dark:text-[var(--ds-text,#EDEDED)]"
+            className="flex-1 truncate text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-[var(--ds-text,#EDEDED)]"
             style={{ fontSize: 13, fontWeight: 600, fontFamily: 'var(--cp-font-heading)' }}
           >
             ProjectHub

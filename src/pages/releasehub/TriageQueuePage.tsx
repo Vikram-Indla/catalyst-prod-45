@@ -85,7 +85,7 @@ export default function TriageQueuePage() {
                       <span className="text-[13px] font-medium text-[var(--ds-text-brand,#2563EB)]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span>
                     </td>
                     <td className="px-3 py-2 max-w-[220px]">
-                      <span className="text-[13px] text-[var(--ds-text,#0F172A)] truncate block">{c.title}</span>
+                      <span className="text-[13px] text-[var(--ds-text,var(--cp-ink-1, #0F172A))] truncate block">{c.title}</span>
                     </td>
                     <td className="px-3 py-2"><RiskBadge risk={mapRisk(c.risk_level)} /></td>
                     <td className="px-3 py-2"><SourceBadge source={c.source} /></td>
@@ -98,7 +98,7 @@ export default function TriageQueuePage() {
                           <Sparkles className="w-3.5 h-3.5 text-[var(--ds-text-brand,#2563EB)] flex-shrink-0 mt-0.5" />
                           <div className="text-[12px] leading-relaxed">
                             <span className="font-semibold text-[var(--ds-text-brand,#2563EB)]">Suggested:</span>{' '}
-                            <span className="text-[var(--ds-text,#0F172A)]">{rec.releaseName}</span>
+                            <span className="text-[var(--ds-text,var(--cp-ink-1, #0F172A))]">{rec.releaseName}</span>
                             <br />
                             <span className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))]">{rec.reason}</span>
                           </div>

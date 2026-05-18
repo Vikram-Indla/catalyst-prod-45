@@ -106,7 +106,7 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by name, role, or email..."
-              className="flex-1 bg-transparent outline-none text-[var(--ds-text,#0F172A)] dark:text-[var(--ds-text,#EDEDED)] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:placeholder:text-[#7D7D7D]"
+              className="flex-1 bg-transparent outline-none text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-[var(--ds-text,#EDEDED)] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:placeholder:text-[#7D7D7D]"
               style={{ fontSize: 13 }}
               autoFocus
             />
@@ -139,7 +139,7 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
                   )}
 
                   <div className="flex-1 min-w-0">
-                    <div className="text-[var(--ds-text,#0F172A)] dark:text-[var(--ds-text,#EDEDED)]" style={{ fontSize: 13, fontWeight: 600, lineHeight: '18px' }}>{u.name}</div>
+                    <div className="text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-[var(--ds-text,#EDEDED)]" style={{ fontSize: 13, fontWeight: 600, lineHeight: '18px' }}>{u.name}</div>
                     <div className="text-[var(--ds-text-subtlest,var(--cp-ink-3, #64748B))] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 11, lineHeight: '16px' }}>
                       {u.role_name || 'No role'}
                       {u.department_name && <span className="text-[var(--ds-text-disabled,#CBD5E1)] dark:text-[var(--ds-border-bold,#454545)]"> · </span>}

@@ -147,7 +147,7 @@ export default function EnvironmentsListPage() {
               <Server size={24} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>Test Environments</h1>
+              <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>Test Environments</h1>
               <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '4px 0 0' }}>Manage and monitor test environments</p>
             </div>
           </div>
@@ -173,7 +173,7 @@ export default function EnvironmentsListPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0, textTransform: 'uppercase' }}>Total</p>
-                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '8px 0 0' }}>{summary.total_environments}</p>
+                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '8px 0 0' }}>{summary.total_environments}</p>
               </div>
               <Server size={24} style={{ color: '#6366F1' }} />
             </div>
@@ -295,7 +295,7 @@ export default function EnvironmentsListPage() {
                     <HealthIcon size={12} /> {health.label}
                   </div>
                 </div>
-                <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 8px' }}>{env.name}</h3>
+                <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 8px' }}>{env.name}</h3>
                 {env.url && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginBottom: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     <ExternalLink size={14} /> {env.url}

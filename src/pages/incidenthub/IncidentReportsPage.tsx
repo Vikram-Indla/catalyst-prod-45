@@ -35,7 +35,7 @@ export default function IncidentReportsPage() {
           <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: 'var(--ds-background-selected, #EFF6FF)' }}>
             <FileText size={18} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
           </div>
-          <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>Incident Reports</h1>
+          <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))' }}>Incident Reports</h1>
         </div>
 
         {/* Tab Bar */}
@@ -75,7 +75,7 @@ export default function IncidentReportsPage() {
               </div>
               <div className="p-3" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }}>
                 <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginBottom: 4 }}>Avg Age (days)</div>
-                <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>{avgAge}</div>
+                <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))' }}>{avgAge}</div>
               </div>
             </div>
             <div className="p-8 flex items-center justify-center" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6, backgroundColor: 'var(--cp-bg-sunken, #F1F5F9)' }}>

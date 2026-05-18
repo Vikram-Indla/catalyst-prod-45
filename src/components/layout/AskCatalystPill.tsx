@@ -152,7 +152,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
               cursor: isForYou ? 'pointer' : 'not-allowed',
               opacity: isForYou ? 1 : 0.55,
               fontFamily: 'var(--cp-font-body)',
-              color: token('color.text', '#0F172A'),
+              color: token('color.text', 'var(--cp-ink-1, #0F172A)'),
             }}
           >
             <CatySparkle size={18} />
@@ -162,7 +162,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
                 fontWeight: 650,
                 letterSpacing: '-0.1px',
                 lineHeight: 1,
-                color: token('color.text', '#0F172A'),
+                color: token('color.text', 'var(--cp-ink-1, #0F172A)'),
               }}
             >
               Ask Caty

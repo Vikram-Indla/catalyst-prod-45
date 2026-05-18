@@ -261,7 +261,7 @@ const JiraUserSync: React.FC = () => {
           <div className="flex items-start justify-between pb-3">
             <div>
               <h1 className="jira-text-primary"
-                style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '17px', fontWeight: 700, letterSpacing: '-0.3px', margin: 0, lineHeight: 1.3, color: 'var(--cp-text-primary, #0F172A)' }}>
+                style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '17px', fontWeight: 700, letterSpacing: '-0.3px', margin: 0, lineHeight: 1.3, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>
                 Jira User Sync
               </h1>
               <p className="jira-text-secondary"
@@ -319,7 +319,7 @@ const JiraUserSync: React.FC = () => {
                 </span>
               </div>
               <div className="jira-stat-value"
-                style={{ fontSize: '28px', fontWeight: 650, lineHeight: 1.1, fontFamily: 'var(--cp-font-heading)', color: 'var(--cp-text-primary, #0F172A)' }}>
+                style={{ fontSize: '28px', fontWeight: 650, lineHeight: 1.1, fontFamily: 'var(--cp-font-heading)', color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>
                 {getStatValue(card.key)}
               </div>
               <div className="jira-stat-sub"
@@ -343,7 +343,7 @@ const JiraUserSync: React.FC = () => {
               style={{
                 padding: '5px 10px 5px 26px', borderRadius: '4px', fontSize: '12px', outline: 'none',
                 background: 'var(--cp-bg-elevated, #FFFFFF)',
-                color: 'var(--cp-text-primary, #0F172A)',
+                color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}
             />
@@ -434,7 +434,7 @@ const JiraUserSync: React.FC = () => {
                 align="start"
               >
                 <div style={{ padding: '12px 14px 8px' }}>
-                  <div className="jira-text-primary" style={{ fontSize: '13px', fontWeight: 600, marginBottom: '2px', color: 'var(--cp-text-primary, #0F172A)' }}>
+                  <div className="jira-text-primary" style={{ fontSize: '13px', fontWeight: 600, marginBottom: '2px', color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>
                     Assign to Jira Space
                   </div>
                   <div className="jira-text-secondary" style={{ fontSize: '11px', marginBottom: '8px', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
@@ -448,7 +448,7 @@ const JiraUserSync: React.FC = () => {
                     style={{
                       padding: '5px 8px', borderRadius: '4px', fontSize: '11px', outline: 'none', marginBottom: '6px',
                       background: 'var(--cp-bg-page, #F8FAFC)',
-                      color: 'var(--cp-text-primary, #0F172A)',
+                      color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
                       border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                     }}
                   />
@@ -680,7 +680,7 @@ const JiraUserSync: React.FC = () => {
                         </div>
                         <div style={{ minWidth: 0, maxWidth: '220px' }}>
                           <div className="flex items-center gap-[5px]">
-                            <span className="jira-text-primary" style={{ fontSize: '12px', fontWeight: 500, textDecoration: isInactive ? 'line-through' : 'none', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--cp-text-primary, #0F172A)' }}>{user.display_name}</span>
+                            <span className="jira-text-primary" style={{ fontSize: '12px', fontWeight: 500, textDecoration: isInactive ? 'line-through' : 'none', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{user.display_name}</span>
                             {isCatalystOnly && <span className="jira-local-marker" style={{ fontSize: '9px', fontWeight: 600, whiteSpace: 'nowrap', color: 'var(--cp-purple-60, var(--cp-purple-60, #7C3AED))' }}>◆ Local</span>}
                           </div>
                           <div className="jira-text-label" style={{ fontSize: '11px', fontFamily: 'var(--cp-font-mono)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--cp-text-tertiary, #6B7280)' }}>

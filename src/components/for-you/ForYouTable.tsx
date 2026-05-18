@@ -187,7 +187,7 @@ export function CatalystTable({
     return (
       <div className="fy-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 0', border: '0.555556px solid var(--cp-border, #E2E8F0)', borderRadius: 8, background: 'var(--ds-text-inverse, #FFFFFF)' }}>
         <span style={{ fontSize: 24, marginBottom: 12 }}>📋</span>
-        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #0F172A)', marginBottom: 4 }}>No work items found</p>
+        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', marginBottom: 4 }}>No work items found</p>
         <p style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))' }}>Try adjusting your filters or search</p>
       </div>
     );
@@ -279,7 +279,7 @@ export function CatalystTable({
                     {/* Row 2: summary (2-line clamp) */}
                     <div
                       style={{
-                        fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #0F172A)', lineHeight: 1.3,
+                        fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', lineHeight: 1.3,
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',

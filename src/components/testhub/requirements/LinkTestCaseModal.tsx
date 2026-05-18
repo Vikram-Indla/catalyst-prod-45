@@ -117,7 +117,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
             <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: 'var(--ds-text-brand, #2563EB)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Link2 size={22} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
             </div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>Link Test Cases</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>Link Test Cases</h2>
           </div>
           <button onClick={onClose} style={{ width: 36, height: 50, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={20} />
@@ -161,7 +161,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
                       <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '2px 8px', borderRadius: 4 }}>{tc.case_key}</span>
                       <span style={{ fontSize: 11, fontWeight: 500, color: priorityColor }}>{priorityName}</span>
                     </div>
-                    <p style={{ fontSize: 13, color: 'var(--cp-text-primary, #0F172A)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tc.title}</p>
+                    <p style={{ fontSize: 13, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tc.title}</p>
                   </div>
                 </div>
               );

@@ -143,7 +143,7 @@ export function WikiAdminSyncTab() {
           {/* Progress bar */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
             <Activity style={{ width: 16, height: 16, color: 'var(--cp-blue)', flexShrink: 0 }} />
-            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>
+            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>
               Sync in progress
             </span>
             <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--cp-blue)', fontWeight: 700 }}>
@@ -275,7 +275,7 @@ export function WikiAdminSyncTab() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <span style={{
                     fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500,
-                    color: 'var(--cp-text-primary, #0F172A)',
+                    color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
                   }}>{step.name}</span>
                   {isActive && stepMeta && (
                     <div style={{
@@ -347,7 +347,7 @@ export function WikiAdminSyncTab() {
       {/* Recent runs table */}
       {runs.length > 1 && (
         <div>
-          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 8 }}>
+          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: 8 }}>
             Recent Runs
           </div>
           <div style={{ border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', borderRadius: 4, overflow: 'hidden' }}>
@@ -391,7 +391,7 @@ export function EmptyState({ icon, message, sub }: { icon: React.ReactNode; mess
       borderRadius: 6, background: 'var(--cp-bg-sunken, #F8FAFC)',
     }}>
       {icon}
-      <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>{message}</span>
+      <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{message}</span>
       <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', textAlign: 'center', maxWidth: 320 }}>{sub}</span>
     </div>
   );

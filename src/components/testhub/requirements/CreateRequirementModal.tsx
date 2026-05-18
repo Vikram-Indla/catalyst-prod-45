@@ -124,7 +124,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
             <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: 'var(--ds-text-brand, #2563EB)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <FileCheck size={22} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
             </div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>Add Requirement</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>Add Requirement</h2>
           </div>
           <button onClick={onClose} style={{ width: 36, height: 50, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={20} />
@@ -134,7 +134,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
         {/* Body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
           <div style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: 6 }}>
               Title <span style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }}>*</span>
             </label>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
@@ -148,13 +148,13 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 6 }}>Type</label>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: 6 }}>Type</label>
               <select value={type} onChange={(e) => setType(e.target.value)} style={{ ...inputStyle(), backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}>
                 {TYPE_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 6 }}>Priority</label>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: 6 }}>Priority</label>
               <select value={priority} onChange={(e) => setPriority(e.target.value)} style={{ ...inputStyle(), backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}>
                 {PRIORITY_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
@@ -163,26 +163,26 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 6 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: 6 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><ExternalLink size={14} /> External ID</span>
               </label>
               <input type="text" value={externalId} onChange={(e) => setExternalId(e.target.value)} placeholder="e.g., JIRA-123" style={inputStyle()} />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 6 }}>Source</label>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: 6 }}>Source</label>
               <input type="text" value={source} onChange={(e) => setSource(e.target.value)} placeholder="e.g., Jira, Azure DevOps" style={inputStyle()} />
             </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 6 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: 6 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Tag size={14} /> Release Version</span>
               </label>
               <input type="text" value={releaseVersion} onChange={(e) => setReleaseVersion(e.target.value)} placeholder="e.g., 2.0.0" style={inputStyle()} />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 6 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: 6 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><User size={14} /> Owner</span>
               </label>
               <select value={ownerId} onChange={(e) => setOwnerId(e.target.value)} style={{ ...inputStyle(), backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}>
@@ -193,7 +193,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: 6 }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><FileText size={14} /> Description</span>
             </label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)}

@@ -7,7 +7,7 @@ interface EmptyStateProps {
 
 export default function EmptyState({ variant }: EmptyStateProps) {
   const { isDark } = useTheme();
-  const text1 = 'var(--cp-text-primary, #0F172A)';
+  const text1 = 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))';
   const text3 = 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))';
   const iconBgMuted = 'var(--cp-bg-sunken, #F1F5F9)';
 

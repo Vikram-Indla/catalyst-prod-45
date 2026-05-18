@@ -414,7 +414,7 @@ export default function BoardCanvasPage({ projectIdOverride, basePath }: BoardCa
                 )}
                 {lane.id === 'default' && (
                   <span style={{
-                    fontSize: 12, fontWeight: 600, color: 'var(--ds-text, #0F172A)',
+                    fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-ink-1, #0F172A))',
                     fontFamily: 'var(--cp-font-mono)',
                   }}>{lane.name}</span>
                 )}

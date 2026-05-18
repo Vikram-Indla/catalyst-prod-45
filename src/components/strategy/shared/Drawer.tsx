@@ -82,7 +82,7 @@ export function Drawer({ isOpen, onClose, title, width = 480, children }: Drawer
             borderBottom: '1px solid var(--catalyst-border-default, var(--bd-default, var(--cp-border, #E2E8F0)))',
           }}
         >
-          <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--catalyst-text-primary, #0F172A)' }}>
+          <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--catalyst-text-primary, var(--cp-ink-1, #0F172A))' }}>
             {title}
           </span>
           <button

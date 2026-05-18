@@ -155,7 +155,7 @@ export function RecipientPicker({ trigger, open, onClose, onSave }: RecipientPic
           </DialogTitle>
           <DialogDescription className="text-sm text-[var(--ds-text-subtle,#475569)]">
             Configure who receives the{' '}
-            <span className="font-medium text-[var(--ds-text,#0F172A)]">{trigger.displayName}</span>{' '}
+            <span className="font-medium text-[var(--ds-text,var(--cp-ink-1, #0F172A))]">{trigger.displayName}</span>{' '}
             notification.
           </DialogDescription>
         </DialogHeader>
@@ -183,7 +183,7 @@ export function RecipientPicker({ trigger, open, onClose, onSave }: RecipientPic
               <div className="flex items-center gap-3 min-w-0">
                 <span className="text-base flex-shrink-0 w-6 text-center">{def.icon}</span>
                 <div className="min-w-0">
-                  <p className="text-xs font-medium text-[var(--ds-text,#0F172A)]">{def.label}</p>
+                  <p className="text-xs font-medium text-[var(--ds-text,var(--cp-ink-1, #0F172A))]">{def.label}</p>
                   <p className="text-[11px] text-[var(--ds-text-subtle,#475569)] truncate">{def.description}</p>
                 </div>
               </div>

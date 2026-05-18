@@ -199,7 +199,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
                   autoFocus
                   value={dateInput}
                   onChange={e => setDateInput(e.target.value)}
-                  className="text-[12px] border border-[var(--ds-text-brand,#2563EB)] rounded px-1.5 py-0.5 outline-none bg-white text-[var(--ds-text,#0F172A)]"
+                  className="text-[12px] border border-[var(--ds-text-brand,#2563EB)] rounded px-1.5 py-0.5 outline-none bg-white text-[var(--ds-text,var(--cp-ink-1, #0F172A))]"
                   style={{ fontFamily: 'inherit' }}
                 />
                 <button
@@ -244,7 +244,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
                 <Pencil size={11} className="opacity-0 group-hover:opacity-100 transition-opacity" />
               </button>
             )}
-            <span className="text-[11px] font-bold text-[var(--ds-text,#0F172A)] bg-[var(--ds-surface-sunken,#F1F5F9)] px-1.5 py-0.5 rounded">{relChanges.length} CHGs</span>
+            <span className="text-[11px] font-bold text-[var(--ds-text,var(--cp-ink-1, #0F172A))] bg-[var(--ds-surface-sunken,#F1F5F9)] px-1.5 py-0.5 rounded">{relChanges.length} CHGs</span>
             <span className="text-[11px] font-bold text-[var(--ds-text-brand,#2563EB)] bg-[var(--ds-background-selected,#EFF6FF)] px-1.5 py-0.5 rounded">{testCycles.length} cycles</span>
           </div>
         </div>
@@ -470,7 +470,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
 
         {notesState === 'success' && generatedNotes && (
           <div>
-            <div className="max-h-[300px] overflow-auto text-[13px] text-[var(--ds-text,#0F172A)] leading-relaxed whitespace-pre-wrap" style={{ fontFamily: RH.fontBody }}>
+            <div className="max-h-[300px] overflow-auto text-[13px] text-[var(--ds-text,var(--cp-ink-1, #0F172A))] leading-relaxed whitespace-pre-wrap" style={{ fontFamily: RH.fontBody }}>
               {generatedNotes}
             </div>
             <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[var(--ds-surface-sunken,#F1F5F9)]">

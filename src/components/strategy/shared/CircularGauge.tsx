@@ -38,7 +38,7 @@ export function CircularGauge({ value, size = 100, strokeWidth = 10, color, labe
           style={{ transition: animated ? 'stroke-dashoffset 800ms ease-out' : undefined }}
         />
         <text x={center} y={label ? center - 4 : center} textAnchor="middle" dominantBaseline="central"
-          style={{ fontSize: size * 0.28, fontWeight: 700, fill: 'var(--exec-text-primary, #0F172A)' }}>
+          style={{ fontSize: size * 0.28, fontWeight: 700, fill: 'var(--exec-text-primary, var(--cp-ink-1, #0F172A))' }}>
           {Math.round(clampedValue)}
         </text>
         {label && (

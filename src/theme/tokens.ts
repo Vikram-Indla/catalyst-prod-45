@@ -380,7 +380,7 @@ export const catalyst = {
   cardSurface: '#FFFFFF',
   bgOverlay: '#F8FAFC',
   bgInset: '#F1F5F9',
-  textPrimary: '#0F172A',
+  textPrimary: 'var(--cp-ink-1, #0F172A)',
   textSecondary: '#475569',
   textMuted: 'var(--cp-ink-4, #94A3B8)',
   textDisabled: '#CBD5E1',

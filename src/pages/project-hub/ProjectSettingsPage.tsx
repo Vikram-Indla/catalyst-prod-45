@@ -68,7 +68,7 @@ export default function ProjectSettingsPageNew() {
             {key?.toUpperCase()}{project ? ` — ${project.name}` : ''}
           </span>
           <ChevronRight size={12} color="var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8))" />
-          <span style={{ fontSize: 13, color: 'var(--fg-1, #0F172A)', fontWeight: 500 }}>Settings</span>
+          <span style={{ fontSize: 13, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', fontWeight: 500 }}>Settings</span>
         </div>
 
         <CatalystPageHeader title="Project Settings" />

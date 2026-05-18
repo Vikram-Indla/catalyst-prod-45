@@ -192,7 +192,7 @@ export function UniversalWorkView({ params, onClose }: Props) {
                 background: 'var(--ds-surface, #FFFFFF)',
                 border: '1px solid var(--cp-border, #E2E8F0)',
                 borderRadius: 3,
-                color: 'var(--ds-text, #0F172A)',
+                color: 'var(--ds-text, var(--cp-ink-1, #0F172A))',
               }}
             >
               <span style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }}>{c.label}:</span>

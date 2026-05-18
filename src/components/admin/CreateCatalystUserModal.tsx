@@ -80,7 +80,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
       >
         {/* Header */}
         <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(15,23,42,0.06)', position: 'relative' }}>
-          <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '15px', fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+          <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '15px', fontWeight: 700, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))', margin: 0 }}>
             Create Catalyst User
           </DialogTitle>
           <p style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))', marginTop: '2px' }}>

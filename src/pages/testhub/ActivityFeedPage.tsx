@@ -154,7 +154,7 @@ export default function ActivityFeedPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16, marginBottom: 24 }}>
           <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 16, border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
             <p style={{ fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0, textTransform: 'uppercase' }}>Total (30d)</p>
-            <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '4px 0 0' }}>{stats.total_events}</p>
+            <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '4px 0 0' }}>{stats.total_events}</p>
           </div>
           <div style={{ backgroundColor: '#ECFDF5', borderRadius: 12, padding: 16, border: '1px solid #A7F3D0' }}>
             <p style={{ fontSize: 11, color: 'var(--quality-high, #059669)', margin: 0, textTransform: 'uppercase' }}>Created</p>
@@ -170,7 +170,7 @@ export default function ActivityFeedPage() {
           </div>
           <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 16, border: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}` }}>
             <p style={{ fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0, textTransform: 'uppercase' }}>Active Users</p>
-            <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '4px 0 0' }}>{stats.active_users}</p>
+            <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '4px 0 0' }}>{stats.active_users}</p>
           </div>
         </div>
       )}
@@ -240,7 +240,7 @@ export default function ActivityFeedPage() {
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>{activity.user_name || 'Unknown user'}</span>
+                          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>{activity.user_name || 'Unknown user'}</span>
                           <span style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>{action.label.toLowerCase()}</span>
                           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: entity.color, backgroundColor: `${entity.color}15`, padding: '2px 8px', borderRadius: 4 }}>
                             <EntityIcon size={12} /> {entity.label}

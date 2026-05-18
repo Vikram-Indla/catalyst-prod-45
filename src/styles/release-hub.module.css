@@ -37,7 +37,7 @@
   --rh-bg-muted: var(--ds-surface-sunken, #F1F5F9);
 
   /* Text */
-  --rh-text-primary: var(--ds-text, #0F172A);
+  --rh-text-primary: var(--ds-text, var(--cp-ink-1, #0F172A));
   --rh-text-secondary: var(--ds-text-subtle, #334155);
   --rh-text-tertiary: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
   --rh-text-muted: var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8));

@@ -321,7 +321,7 @@ export default function TestCycleDetailPage() {
                 <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: status.color }} />{status.label}
               </span>
             </div>
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 8px' }}>{cycle.name}</h1>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 8px' }}>{cycle.name}</h1>
             {cycle.description && <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: '0 0 8px', maxWidth: 600 }}>{cycle.description}</p>}
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Calendar size={14} />{formatDate(cycle.planned_start)} — {formatDate(cycle.planned_end)}</span>
@@ -526,7 +526,7 @@ export default function TestCycleDetailPage() {
         {/* Section Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>
+            <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>
               Test Cases ({testCases.length})
             </h2>
             {/* Selection Actions */}
@@ -715,7 +715,7 @@ export default function TestCycleDetailPage() {
 
       {/* Linked Defects */}
       <div style={{ padding: '0 32px 24px' }}>
-        <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
           <Bug size={18} /> Linked Defects
         </h2>
         <CycleDefectsPanel cycleId={cycleId} isDark={isDark} />
@@ -786,7 +786,7 @@ export default function TestCycleDetailPage() {
               }}>
                 <Trash2 size={20} style={{ color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))' }} />
               </div>
-              <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: 0 }}>
                 Remove Test Cases
               </h2>
             </div>

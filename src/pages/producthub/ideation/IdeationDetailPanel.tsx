@@ -100,11 +100,11 @@ function PriorityLozenge({ priority }: { priority: string }) {
 // Note: selectStyle/inputStyle are used in edit mode — dark mode applied inline via isDark
 const selectStyle: React.CSSProperties = {
   height: '32px', borderRadius: '4px', border: '1px solid rgba(15,23,42,0.14)',
-  padding: '0 8px', fontSize: '13px', color: 'var(--ds-text, #0F172A)', width: '100%', outline: 'none',
+  padding: '0 8px', fontSize: '13px', color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', width: '100%', outline: 'none',
 };
 const inputStyle: React.CSSProperties = {
   height: '32px', borderRadius: '4px', border: '1px solid rgba(15,23,42,0.14)',
-  padding: '0 8px', fontSize: '13px', color: 'var(--ds-text, #0F172A)', width: '100%', outline: 'none',
+  padding: '0 8px', fontSize: '13px', color: 'var(--ds-text, var(--cp-ink-1, #0F172A))', width: '100%', outline: 'none',
 };
 
 function FieldPair({ label, value }: { label: string; value: React.ReactNode }) {

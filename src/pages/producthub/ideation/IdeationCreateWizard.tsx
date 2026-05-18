@@ -82,12 +82,12 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
     width: '100%', height: '44px',
     border: `1px solid ${'var(--cp-border-strong, var(--cp-border, #E2E8F0))'}`,
     borderRadius: '8px', padding: '0 14px', fontSize: '14px',
-    color: 'var(--cp-text-primary, #0F172A)',
+    color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))',
     background: 'var(--cp-bg-elevated, #FFFFFF)', outline: 'none',
   };
   const labelBase: React.CSSProperties = {
     display: 'block', fontSize: '13px', fontWeight: 600,
-    color: 'var(--cp-text-primary, #0F172A)', marginBottom: '6px',
+    color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', marginBottom: '6px',
   };
   const focusHandlers = isDark ? focusHandlersDark : focusHandlersLight;
 
@@ -251,7 +251,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
             borderBottom: `1px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
-            <span style={{ fontSize: '20px', fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)' }}>Submit New Idea</span>
+            <span style={{ fontSize: '20px', fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))' }}>Submit New Idea</span>
             <button
               onClick={onClose}
               style={{
@@ -507,7 +507,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                   placeholder={tags.length === 0 ? 'Type a tag and press Enter...' : ''}
                   style={{
                     flex: 1, minWidth: '120px', border: 'none', outline: 'none',
-                    fontSize: '13px', color: 'var(--cp-text-primary, #0F172A)', background: 'transparent',
+                    fontSize: '13px', color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', background: 'transparent',
                     height: '28px',
                   }}
                 />

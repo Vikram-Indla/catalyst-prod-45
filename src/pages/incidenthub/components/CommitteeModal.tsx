@@ -69,7 +69,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--fg-1, #0F172A)' }}>
+                        <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--fg-1, var(--cp-ink-1, #0F172A))' }}>
                           {m.user?.full_name || 'Member'}
                         </span>
                         {m.role === 'chair' && (

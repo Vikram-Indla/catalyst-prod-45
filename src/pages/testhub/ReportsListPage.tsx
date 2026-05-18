@@ -145,7 +145,7 @@ export default function ReportsListPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0, textTransform: 'uppercase' }}>Total Reports</p>
-                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '8px 0 0' }}>{stats.total_reports}</p>
+                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '8px 0 0' }}>{stats.total_reports}</p>
               </div>
               <FileBarChart size={24} style={{ color: 'var(--ds-text-warning, var(--cp-amber, #F59E0B))' }} />
             </div>
@@ -163,7 +163,7 @@ export default function ReportsListPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', margin: 0, textTransform: 'uppercase' }}>This Month</p>
-                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '8px 0 0' }}>{stats.this_month}</p>
+                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '8px 0 0' }}>{stats.this_month}</p>
               </div>
               <Calendar size={24} style={{ color: 'var(--ds-text-subtlest, var(--cp-ink-3, #64748B))' }} />
             </div>
@@ -239,7 +239,7 @@ export default function ReportsListPage() {
                         <span style={{ fontSize: 11, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '2px 8px', borderRadius: 4 }}>{type.label}</span>
                         <span style={{ fontSize: 11, fontWeight: 500, color: status.color, backgroundColor: status.bg, padding: '2px 8px', borderRadius: 4 }}>{status.label}</span>
                       </div>
-                      <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 4px' }}>{report.name}</h3>
+                      <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '0 0 4px' }}>{report.name}</h3>
                       <div style={{ display: 'flex', gap: 12, fontSize: 13, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))' }}>
                         {report.cycle && <span>Cycle: {report.cycle.cycle_key}</span>}
                         {report.plan && <span>Plan: {report.plan.plan_key}</span>}

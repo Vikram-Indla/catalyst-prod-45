@@ -103,7 +103,7 @@ export function ChannelToggleCard({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-[var(--ds-text,#0F172A)]">Delivery Channels</span>
+        <span className="text-xs font-medium text-[var(--ds-text,var(--cp-ink-1, #0F172A))]">Delivery Channels</span>
         <span className="text-[10px] text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))]">
           {enabledCount}/{CHANNEL_DEFS.length} active
         </span>
@@ -130,7 +130,7 @@ export function ChannelToggleCard({
               <Icon label="" size="small" />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-medium text-[var(--ds-text,#0F172A)]">{label}</p>
+              <p className="text-xs font-medium text-[var(--ds-text,var(--cp-ink-1, #0F172A))]">{label}</p>
               <p className="text-[10px] text-[var(--ds-text-subtle,#475569)] truncate">{description}</p>
             </div>
             <Toggle

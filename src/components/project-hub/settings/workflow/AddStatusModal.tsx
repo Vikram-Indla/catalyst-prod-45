@@ -46,7 +46,7 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
           <div>
             <label className="text-[var(--fg-2)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>Status Name <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
             <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. In Review"
-              className="w-full bg-white dark:bg-transparent border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text,#0F172A)] dark:text-[var(--ds-text,#EDEDED)] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:placeholder:text-[#7D7D7D]"
+              className="w-full bg-white dark:bg-transparent border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-[var(--ds-text,#EDEDED)] placeholder:text-[var(--ds-text-subtlest,var(--cp-ink-4, #94A3B8))] dark:placeholder:text-[#7D7D7D]"
               style={{ height: 40, padding: '8px 12px', fontSize: 13, borderRadius: 6, outline: 'none', fontFamily: 'var(--cp-font-body)' }}
             />
           </div>
@@ -54,7 +54,7 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
           <div>
             <label className="text-[var(--fg-2)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>Category <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
             <select value={category} onChange={e => setCategory(e.target.value)}
-              className="w-full bg-white dark:bg-transparent border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text,#0F172A)] dark:text-[var(--ds-text,#EDEDED)]"
+              className="w-full bg-white dark:bg-transparent border border-[var(--bd-default,var(--cp-border, #E2E8F0))] dark:border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text,var(--cp-ink-1, #0F172A))] dark:text-[var(--ds-text,#EDEDED)]"
               style={{ height: 40, padding: '8px 12px', fontSize: 13, borderRadius: 6, outline: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}
             >
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}

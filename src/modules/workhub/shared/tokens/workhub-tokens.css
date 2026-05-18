@@ -8,7 +8,7 @@
   --wh-bdr: var(--ds-border, var(--cp-border, #E2E8F0));
 
   /* Text */
-  --wh-tx: var(--ds-text, #0F172A);
+  --wh-tx: var(--ds-text, var(--cp-ink-1, #0F172A));
   --wh-tx2: var(--ds-text-subtle, #334155);
   --wh-tx3: var(--ds-text-subtlest, var(--cp-ink-3, #64748B));
   --wh-tx4: var(--ds-text-subtlest, var(--cp-ink-4, #94A3B8));

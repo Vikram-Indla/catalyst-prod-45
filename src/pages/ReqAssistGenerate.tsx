@@ -347,7 +347,7 @@ export default function ReqAssistGenerate() {
           <div style={{ border: `0.75px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, borderRadius: 6, overflow: 'hidden', background: 'var(--cp-bg-elevated, #FFFFFF)' }}>
             {/* Header */}
             <div style={{ padding: '12px 16px', borderBottom: `0.75px solid ${'var(--cp-border, var(--cp-border, #E2E8F0))'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)', fontFamily: 'var(--cp-font-heading)' }}>Generated BRD</span>
+              <span style={{ fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', fontFamily: 'var(--cp-font-heading)' }}>Generated BRD</span>
               <span style={{ display: 'inline-flex', alignItems: 'center', padding: '0 6px', height: 20, borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, background: 'var(--cp-lozenge-green-bg, #1B7F37)', color: 'var(--ds-surface, #FFFFFF)' }}>QUALIFIED</span>
               <span style={{ fontSize: 11, color: 'var(--cp-text-tertiary, var(--cp-ink-3, #64748B))', marginLeft: 'auto', fontFamily: 'var(--cp-font-mono)' }}>
                 {genResult.section_count} sections · {genResult.language.toUpperCase()} · {genResult.total_requirements} requirements
@@ -363,7 +363,7 @@ export default function ReqAssistGenerate() {
                   borderBottom: i < genResult.sections.length - 1 ? '0.75px solid rgba(0,0,0,0.06)' : 'none',
                 }}>
                   <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-text-muted, var(--cp-ink-4, #94A3B8))', textTransform: 'uppercase' as const, letterSpacing: '0.06em', fontFamily: 'var(--cp-font-body)' }}>SECTION {section.sectionNumber}</span>
-                  <h4 style={{ fontSize: 15, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)', margin: '4px 0 8px', fontFamily: 'var(--cp-font-heading)' }}>{section.title}</h4>
+                  <h4 style={{ fontSize: 15, fontWeight: 650, color: 'var(--cp-text-primary, var(--cp-ink-1, #0F172A))', margin: '4px 0 8px', fontFamily: 'var(--cp-font-heading)' }}>{section.title}</h4>
                   <div className="ra-brd-markdown">
                     <ReactMarkdown components={{
                       p: ({ children }) => <p style={{ fontSize: 14, color: 'var(--cp-text-secondary, #374151)', lineHeight: 1.6, marginBottom: 12, fontFamily: 'var(--cp-font-body)' }}>{children}</p>,
