@@ -220,7 +220,7 @@ export function CloneIssueDialog({ open, onClose, source }: CloneIssueDialogProp
       const newKey = (data as any)?.new_issue_key as string;
       toast.success(`Cloned to ${newKey}`);
       onClose();
-      if (newKey) navigate(`/project-hub/${source.project_key}/issue/${newKey}`);
+      if (newKey) navigate(`/browse/${newKey}`);
     } finally {
       setSubmitting(false);
     }

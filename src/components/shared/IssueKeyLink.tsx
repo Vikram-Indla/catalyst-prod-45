@@ -24,7 +24,7 @@ export function IssueKeyLink({
   children,
   stopPropagation = true,
 }: IssueKeyLinkProps) {
-  const href = `/issue/${encodeURIComponent(issueKey)}`;
+  const href = `/browse/${encodeURIComponent(issueKey)}`;
 
   const handleClick = (e: React.MouseEvent) => {
     if (stopPropagation) {

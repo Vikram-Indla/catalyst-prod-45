@@ -3,8 +3,8 @@
  * Detects hardcoded colors, hardcoded spacing, and non-ADS component usage
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 class ADSTokenScanner {
   constructor() {

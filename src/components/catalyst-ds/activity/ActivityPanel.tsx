@@ -109,7 +109,7 @@ function ActivityPanel({
             14/600 lesson which measured wrapper levels. */}
         <h2
           className="text-[var(--ds-text,#292A2E)] dark:text-[var(--ds-text,#EDEDED)]"
-          style={{ margin: 0, fontSize: 16, fontWeight: 653, lineHeight: '20px', fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}
+          style={{ margin: 0, fontSize: 16, fontWeight: 653, lineHeight: '20px', fontFamily: 'var(--cp-font-body)' }}
         >
           Activity
         </h2>

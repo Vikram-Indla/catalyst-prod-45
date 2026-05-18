@@ -807,7 +807,7 @@ export default function AdminIconsPage() {
             padding: '8px 12px',
             borderRadius: 4,
             fontSize: 12,
-            fontFamily: 'monospace',
+            fontFamily: 'var(--cp-font-mono)',
           }}
         >
           [debug] newCategoryOpen=true — modal should be visible

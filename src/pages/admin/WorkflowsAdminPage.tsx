@@ -31,7 +31,7 @@ export default function WorkflowsAdminPage() {
   const [preview, setPreview] = useState<Workflow | null>(null);
 
   return (
-    <div style={{ padding: 32, fontFamily: '"Atlassian Sans", -apple-system, sans-serif' }}>
+    <div style={{ padding: 32, fontFamily: 'var(--cp-font-body)' }}>
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 24, fontWeight: 600, margin: 0, color: 'var(--ds-text, #172B4D)' }}>
           Workflows

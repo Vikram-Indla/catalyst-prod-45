@@ -35,6 +35,8 @@ import DatabaseIcon from '@atlaskit/icon/core/database';
 import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
 import SettingsIcon from '@atlaskit/icon/core/settings';
 import BranchIcon from '@atlaskit/icon/core/branch';
+import PaintPaletteIcon from '@atlaskit/icon/core/paint-palette';
+import CurlyBracketsIcon from '@atlaskit/icon/core/curly-brackets';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { adminPockets } from './admin-nav';
 
@@ -45,8 +47,9 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Settings: SettingsIcon,
   Database: DatabaseIcon,
   GitBranch: BranchIcon,
+  Palette: PaintPaletteIcon,
   Cable: AngleBracketsIcon,
-  Code2: AngleBracketsIcon,
+  Code2: CurlyBracketsIcon,
 };
 
 interface AdminSidebarV2Props {

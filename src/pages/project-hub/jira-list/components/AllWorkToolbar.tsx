@@ -700,7 +700,7 @@ function FilterChip({
             border: '1px solid var(--ds-border, #DFE1E6)',
             borderRadius: 4,
             boxShadow: '0 4px 8px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31)',
-            fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+            fontFamily: 'var(--cp-font-body)',
           }}
         >
           {headline && (
@@ -1113,7 +1113,7 @@ export function AllWorkToolbar({
           borderBottom: '1px solid var(--ds-border, #DFE1E6)',
           background: 'transparent',
           flexShrink: 0,
-          fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+          fontFamily: 'var(--cp-font-body)',
         }}
       >
         <div style={{
@@ -1176,7 +1176,7 @@ export function AllWorkToolbar({
         borderBottom: '1px solid var(--ds-border, #DFE1E6)',
         background: 'transparent',
         flexShrink: 0,
-        fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+        fontFamily: 'var(--cp-font-body)',
       }}
     >
       {/* 3. Ask Caty — replaces Jira's "Ask AI". Click → expands to full-width
@@ -1282,7 +1282,7 @@ export function AllWorkToolbar({
             data-testid="catalyst-allwork-toolbar.more-filters-popup"
             style={{
               width: 520, height: 420, display: 'flex', flexDirection: 'column',
-              fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+              fontFamily: 'var(--cp-font-body)',
             }}
           >
             <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>

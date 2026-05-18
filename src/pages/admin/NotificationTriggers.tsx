@@ -162,7 +162,7 @@ export default function NotificationTriggers() {
         <div>
           <h1
             className="text-2xl font-semibold tracking-tight flex items-center gap-2"
-            style={{ color: 'var(--ds-text, #172B4D)', fontFamily: "'Sora', sans-serif" }}
+            style={{ color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--cp-font-body)' }}
           >
             <span style={{ display: 'inline-flex', color: 'var(--ds-text-brand, #0C66E4)' }}><NotificationIcon label="" size="medium" /></span>
             Notification Triggers
@@ -440,7 +440,7 @@ function StatsCard({
     <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px', textAlign: 'center' }}>
       <p
         className="text-xl font-semibold"
-        style={{ color: colorMap[variant], fontFamily: "'JetBrains Mono', monospace" }}
+        style={{ color: colorMap[variant], fontFamily: 'var(--cp-font-mono)' }}
       >
         {value}
       </p>
