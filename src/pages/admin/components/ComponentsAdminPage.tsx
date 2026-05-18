@@ -64,7 +64,7 @@ type ComponentModule =
   | 'Atlaskit'
   | 'Other';
 
-type StatusFilter = 'all' | 'canonical' | 'deprecated' | 'banned' | 'observed';
+type StatusFilter = 'all' | 'canonical' | 'banned' | 'observed';
 type ActiveModal = null | 'deprecate' | 'ban' | 'mark-canonical' | 'restore';
 
 interface UnifiedEntry {
@@ -109,7 +109,6 @@ const MODULES: ComponentModule[] = [
 const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'canonical', label: 'Canonical' },
-  { value: 'deprecated', label: 'Deprecated' },
   { value: 'banned', label: 'Banned' },
   { value: 'observed', label: 'Observed' },
 ];
@@ -355,8 +354,10 @@ function buildAiRecs(entries: UnifiedEntry[]): AiRec[] {
 // ─── Module-level constants (computed once) ───────────────────────────────────
 
 const ALL_ENTRIES = buildUnifiedEntries();
-const TOTAL_UNIFIED = ALL_ENTRIES.length;
-const AI_RECS = buildAiRecs(ALL_ENTRIES);
+/** Deprecated entries are permanently hidden — all counts and views use this. */
+const ACTIVE_ENTRIES_STATIC = ALL_ENTRIES.filter((e) => e.status !== 'deprecated');
+const TOTAL_UNIFIED = ACTIVE_ENTRIES_STATIC.length;
+const AI_RECS = buildAiRecs(ACTIVE_ENTRIES_STATIC);
 
 // ─── Status chip ──────────────────────────────────────────────────────────────
 
@@ -1010,7 +1011,6 @@ function StatsStrip() {
       {[
         { label: 'Total components', value: TOTAL_UNIFIED },
         { label: 'Canonical', value: registryStats.canonical },
-        { label: 'Deprecated', value: registryStats.deprecated },
         { label: 'Banned', value: registryStats.banned, danger: true },
         { label: 'Atlaskit observed', value: usageMapStats?.atlaskit ?? 0 },
         { label: 'Internal observed', value: usageMapStats?.internal ?? 0 },
@@ -1053,22 +1053,22 @@ function InventoryPane() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [hubFilter, setHubFilter] = useState<HubFilter>('All');
   const [search, setSearch] = useState('');
-  const [selectedId, setSelectedId] = useState<string>(ALL_ENTRIES[0]?.id ?? '');
+  const [selectedId, setSelectedId] = useState<string>(ACTIVE_ENTRIES_STATIC[0]?.id ?? '');
 
   /** Module counts (static — never changes at runtime). */
   const moduleCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const m of MODULES) {
-      counts[m] = m === 'All' ? ALL_ENTRIES.length : ALL_ENTRIES.filter((e) => e.module === m).length;
+      counts[m] = m === 'All' ? ACTIVE_ENTRIES_STATIC.length : ACTIVE_ENTRIES_STATIC.filter((e) => e.module === m).length;
     }
     return counts;
   }, []);
 
   /** Per-hub counts: how many entries have ≥1 consumer in each hub. */
   const hubCounts = useMemo(() => {
-    const counts: Record<string, number> = { All: ALL_ENTRIES.length };
+    const counts: Record<string, number> = { All: ACTIVE_ENTRIES_STATIC.length };
     for (const hub of ACTIVE_HUBS) {
-      counts[hub] = ALL_ENTRIES.filter((e) =>
+      counts[hub] = ACTIVE_ENTRIES_STATIC.filter((e) =>
         e.consumers.some((c) => getHubForFile(c) === hub),
       ).length;
     }
@@ -1077,7 +1077,8 @@ function InventoryPane() {
 
   const filtered = useMemo(() => {
     const isSearching = search.trim().length > 0;
-    let pool = ALL_ENTRIES;
+    // Deprecated components are permanently hidden — no visibility anywhere
+    let pool = [...ACTIVE_ENTRIES_STATIC];
 
     if (activeModule !== 'All') {
       pool = pool.filter((e) => e.module === activeModule);
@@ -1184,7 +1185,7 @@ function InventoryPane() {
                 onClick={() => { setHubFilter('All'); setSelectedId(''); }}
                 iconAfter={
                   <span style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86') }}>
-                    {formatCount(ALL_ENTRIES.length)}
+                    {formatCount(ACTIVE_ENTRIES_STATIC.length)}
                   </span>
                 }
               >
@@ -1458,7 +1459,7 @@ function InventoryPane() {
                 fontSize: 12,
                 color: token('color.text', '#172B4D'),
               }}
-              onClick={() => setSelectedId(ALL_ENTRIES[0]?.id ?? '')}
+              onClick={() => setSelectedId(ACTIVE_ENTRIES_STATIC[0]?.id ?? '')}
             >
               Select first component
             </button>
@@ -1710,9 +1711,9 @@ export default function ComponentsAdminPage() {
           }}
         >
           Catalyst's complete component inventory — {TOTAL_UNIFIED.toLocaleString()} components spanning{' '}
-          {registryStats.canonical} canonical, {registryStats.deprecated} deprecated, {registryStats.banned} banned,
+          {registryStats.canonical} canonical, {registryStats.banned} banned,
           and {(usageMapStats?.total ?? 0) - componentsRegistry.length} AST-observed. Grouped by functional module.
-          Use the action buttons to deprecate, ban, or promote any component.
+          Use the action buttons to ban or promote any component.
         </p>
 
         <StatsStrip />

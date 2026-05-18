@@ -14,6 +14,7 @@
  *   2. Add an entry: 'registry-id': () => <MockAppProvider><Comp /></MockAppProvider>
  *   3. Remove its id from DEFERRED_REASONS (or add a new reason if still partial).
  */
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 import Lozenge from '@atlaskit/lozenge';
 import Badge from '@atlaskit/badge';
@@ -27,6 +28,7 @@ import { WatchersChip } from '@/components/catalyst-detail-views/shared/Watchers
 import { JiraTable } from '@/components/shared/JiraTable/JiraTable';
 import { CatalystKeyDetails } from '@/components/catalyst-detail-views/shared/sections/CatalystKeyDetails';
 import { CatalystSidebarDetails } from '@/components/catalyst-detail-views/shared/sections/CatalystSidebarDetails';
+import { CanonicalDescriptionField } from '@/components/shared/CanonicalDescriptionField';
 import type { Column } from '@/components/shared/JiraTable/types';
 import type { PhIssue } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/types';
 
@@ -331,6 +333,131 @@ export const previewFixtures: Record<string, PreviewFixture> = {
       </div>
     </MockAppProvider>
   ),
+
+  // ── Molecules — CanonicalDescriptionField ──────────────────────────────────
+
+  'canonical-description-field': () => {
+    // Controlled wrapper so the preview shows both view mode and edit mode
+    function CanonicalDescriptionFieldPreview() {
+      const [value, setValue] = useState(
+        'This story implements the canonical description field component across all Catalyst detail views. The field supports plain-text editing, character limits, validation, and @mention parsing.',
+      );
+      const [isEditing, setIsEditing] = useState(false);
+      const [savedValue, setSavedValue] = useState(value);
+
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {/* ── View mode ─────────────────────────────────────────── */}
+          <div>
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: token('color.text.subtle', '#44546F'),
+                marginBottom: 8,
+                textTransform: 'uppercase' as const,
+                letterSpacing: '0.04em',
+              }}
+            >
+              View mode (click field to edit)
+            </div>
+            <CanonicalDescriptionField
+              workItemId="preview-1"
+              workItemType="story"
+              value={savedValue}
+              isEditing={false}
+              onEditToggle={() => setIsEditing(true)}
+              onChange={setValue}
+              onSave={(v) => { setSavedValue(v); setIsEditing(false); }}
+              onCancel={() => { setValue(savedValue); setIsEditing(false); }}
+              placeholder="Add a description…"
+            />
+          </div>
+
+          {/* ── Edit mode ─────────────────────────────────────────── */}
+          <div>
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: token('color.text.subtle', '#44546F'),
+                marginBottom: 8,
+                textTransform: 'uppercase' as const,
+                letterSpacing: '0.04em',
+              }}
+            >
+              Edit mode (Save / Cancel wired)
+            </div>
+            <CanonicalDescriptionField
+              workItemId="preview-2"
+              workItemType="story"
+              value={value}
+              isEditing={true}
+              onChange={setValue}
+              onSave={(v) => { setSavedValue(v); setIsEditing(false); }}
+              onCancel={() => { setValue(savedValue); setIsEditing(false); }}
+              placeholder="Add a description…"
+              maxLength={500}
+            />
+          </div>
+
+          {/* ── Empty / required state ─────────────────────────────── */}
+          <div>
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: token('color.text.subtle', '#44546F'),
+                marginBottom: 8,
+                textTransform: 'uppercase' as const,
+                letterSpacing: '0.04em',
+              }}
+            >
+              Empty + required (validation fires on save)
+            </div>
+            <CanonicalDescriptionField
+              workItemId="preview-3"
+              workItemType="task"
+              value=""
+              isEditing={true}
+              onChange={() => {}}
+              onSave={() => {}}
+              onCancel={() => {}}
+              placeholder="Description is required for Tasks…"
+              isRequired={true}
+            />
+          </div>
+
+          {/* ── Read-only state ────────────────────────────────────── */}
+          <div>
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: token('color.text.subtle', '#44546F'),
+                marginBottom: 8,
+                textTransform: 'uppercase' as const,
+                letterSpacing: '0.04em',
+              }}
+            >
+              Read-only (no edit affordance)
+            </div>
+            <CanonicalDescriptionField
+              workItemId="preview-4"
+              workItemType="story"
+              value="This description is locked and cannot be edited in the current permission context."
+              isEditing={false}
+              readOnly={true}
+              onChange={() => {}}
+              onSave={() => {}}
+              onCancel={() => {}}
+            />
+          </div>
+        </div>
+      );
+    }
+    return <CanonicalDescriptionFieldPreview />;
+  },
 };
 
 /**
@@ -338,9 +465,7 @@ export const previewFixtures: Record<string, PreviewFixture> = {
  * "Preview deferred to v2" placeholder.
  */
 export const DEFERRED_REASONS: Record<string, string> = {
-  'canonical-description-field': 'Needs Atlaskit ADF Editor context + supabase mock. Deferred — embed via Storybook iframe in v3.',
-  'rich-text-editor': 'Heavy Atlaskit Editor bundle (~1.2 MB). Deferred — Storybook iframe in v3.',
-  'dynamic-table': 'Deprecated — migrate to JiraTable. No preview planned.',
+  'rich-text-editor': 'AdfDescriptionField wraps @atlaskit/editor-core (~2 MB ProseMirror bundle). Rendering inline crashes in the preview sandbox. Reference: https://atlassian.design/components/editor/examples · Source: src/components/shared/rich-text/atlaskit/AdfDescriptionField.tsx',
 };
 
 export function hasFixture(id: string): boolean {

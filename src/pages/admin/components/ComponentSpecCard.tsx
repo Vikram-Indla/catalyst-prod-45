@@ -23,6 +23,7 @@ import { token } from '@atlaskit/tokens';
 import type { ComponentRegistryEntry } from '@/registry/components.registry';
 import { getAllConsumersByName, getUsageByName } from '@/registry/usage-map.generated';
 import ComponentLivePreview from './ComponentLivePreview';
+import { EditorSpecPanel } from './EditorSpecPanel';
 
 const CONSUMER_PREVIEW_LIMIT = 10;
 const REPO_ROOT = '/Users/vikramindla/Documents/GitHub/catalyst-prod-45';
@@ -344,6 +345,14 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
       )}
 
       <ComponentLivePreview entry={entry} />
+
+      {entry.editor_spec && (
+        <EditorSpecPanel
+          spec={entry.editor_spec}
+          componentName={entry.name}
+          filePath={entry.file_path}
+        />
+      )}
 
       <ConsumerList name={entry.name} />
 
