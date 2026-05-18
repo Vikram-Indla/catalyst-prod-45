@@ -66,7 +66,7 @@ export function BrTranslateButton({ loading, label, onClick }: BrTranslateButton
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path
             d="M8 1l1.5 4H14l-3.5 2.5 1.5 4L8 9l-4 2.5 1.5-4L2 5h4.5L8 1z"
-            fill="#7C3AED"
+            fill="var(--cp-purple-60, #7C3AED)"
           />
         </svg>
       )}

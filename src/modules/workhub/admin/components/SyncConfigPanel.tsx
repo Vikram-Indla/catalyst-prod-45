@@ -445,7 +445,7 @@ export function SyncConfigPanel() {
                             onChange={(vals) => updateProjectConfig(pk, { status_categories: vals })}
                             placeholder="All categories (no filter)"
                             emptyMessage="No categories available."
-                            accentColor="#7C3AED"
+                            accentColor="var(--cp-purple-60, #7C3AED)"
                           />
                           <p style={{ fontSize: 10, color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
                             {config.status_categories.length === 0

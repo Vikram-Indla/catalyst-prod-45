@@ -5,7 +5,7 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
 };
 
 const TYPE_CONFIG: Record<string, { color: string; icon: string }> = {
-  Epic: { color: '#7C3AED', icon: 'Zap' },
+  Epic: { color: 'var(--cp-purple-60, #7C3AED)', icon: 'Zap' },
   Feature: { color: 'var(--ds-text-brand, #2563EB)', icon: 'Layers' },
   Story: { color: '#0D9488', icon: 'Bookmark' },
   Bug: { color: 'var(--ds-text-danger, #DC2626)', icon: 'Bug' },

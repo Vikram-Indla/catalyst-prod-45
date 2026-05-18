@@ -61,7 +61,7 @@ const Sk = ({ w, h, style, isDark }: { w: string | number; h: number; style?: Re
 /* ── Module icon map for cross-links ── */
 const MODULE_COLORS: Record<string, { bg: string; color: string; label: string }> = {
   task: { bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)', label: 'TaskHub' },
-  product: { bg: '#F5F3FF', color: '#7C3AED', label: 'ProductHub' },
+  product: { bg: '#F5F3FF', color: 'var(--cp-purple-60, #7C3AED)', label: 'ProductHub' },
   incident: { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #DC2626)', label: 'IncidentHub' },
   release: { bg: '#ECFDF5', color: '#059669', label: 'ReleaseHub' },
   requirement: { bg: '#FFFBEB', color: 'var(--ds-text-warning, #D97706)', label: 'Requirements' },
@@ -376,7 +376,7 @@ export default function WikiArticlePage() {
   const formatIcon = (page as any).format === 'pdf'
     ? <FileDown size={14} style={{ color: 'var(--ds-text-danger, #DC2626)' }} />
     : (page as any).format === 'video'
-    ? <Video size={14} style={{ color: '#7C3AED' }} />
+    ? <Video size={14} style={{ color: 'var(--cp-purple-60, #7C3AED)' }} />
     : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)' }} />;
 
   const domainName = page.domain_code || 'Wiki';
@@ -452,7 +452,7 @@ export default function WikiArticlePage() {
               {conf > 0 && (
                 <span style={{
                   fontSize: 10, fontWeight: 650, padding: '2px 8px', borderRadius: 9999,
-                  background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', color: '#7C3AED', display: 'inline-flex', alignItems: 'center', gap: 3,
+                  background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', color: 'var(--cp-purple-60, #7C3AED)', display: 'inline-flex', alignItems: 'center', gap: 3,
                 }}><Sparkles size={9} /> AI {conf}%</span>
               )}
               {formatIcon}
@@ -528,12 +528,12 @@ export default function WikiArticlePage() {
 
             {/* ── TL;DR ── */}
             <div style={{
-              borderLeft: '3px solid #7C3AED', padding: '12px 16px', marginBottom: 24,
+              borderLeft: '3px solid var(--cp-purple-60, #7C3AED)', padding: '12px 16px', marginBottom: 24,
               background: isDark ? 'rgba(124,58,237,0.06)' : '#FAFAFE', borderRadius: '0 6px 6px 0',
             }}>
               <span style={{
                 fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4,
-                background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', color: '#7C3AED', display: 'inline-flex', alignItems: 'center', gap: 3,
+                background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', color: 'var(--cp-purple-60, #7C3AED)', display: 'inline-flex', alignItems: 'center', gap: 3,
                 marginBottom: 8,
               }}><Sparkles size={10} /> TL;DR</span>
               {tldr ? (
@@ -641,7 +641,7 @@ export default function WikiArticlePage() {
                 <div style={{ marginLeft: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{
                     fontSize: 10, fontWeight: 650, padding: '2px 8px', borderRadius: 9999,
-                    background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', color: '#7C3AED', display: 'inline-flex', alignItems: 'center', gap: 3,
+                    background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', color: 'var(--cp-purple-60, #7C3AED)', display: 'inline-flex', alignItems: 'center', gap: 3,
                   }}><Sparkles size={9} /> AI {conf}%</span>
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)' }}>
                     {Math.round((page.source_coverage ?? 0) * 100)}% coverage
@@ -753,7 +753,7 @@ function ReferencesSection({ refs }: { refs: any[] }) {
           {r.source_type === 'jira' ? (
             <span style={{ fontSize: 11, fontWeight: 650, color: 'var(--ds-text-brand, #2563EB)', fontFamily: 'var(--cp-font-mono)' }}>{r.source_key}</span>
           ) : r.source_type === 'document' ? (
-            <span style={{ fontSize: 11, fontWeight: 650, padding: '2px 6px', borderRadius: 4, background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', color: '#7C3AED' }}>{r.source_key}</span>
+            <span style={{ fontSize: 11, fontWeight: 650, padding: '2px 6px', borderRadius: 4, background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', color: 'var(--cp-purple-60, #7C3AED)' }}>{r.source_key}</span>
           ) : (
             <span style={{ fontSize: 11, fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #334155)' }}>{r.source_key}</span>
           )}

@@ -104,9 +104,9 @@ export function ProductScopedPageHeader({ product, activeView, stats }: Props) {
       label: 'AI Features',
       value: stats.aiFeatures ?? '0%',
       icon: Sparkles,
-      color: '#7C3AED',
+      color: 'var(--cp-purple-60, #7C3AED)',
       bg: '#F5F3FF',
-      accent: '#7C3AED',
+      accent: 'var(--cp-purple-60, #7C3AED)',
     },
   ];
 

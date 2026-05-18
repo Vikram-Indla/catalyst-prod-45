@@ -12,7 +12,7 @@ const STATUS_PRINT_COLORS: Record<string, { bg: string; c: string }> = {
   in_review: { bg: 'rgba(245,158,11,0.12)', c: 'var(--ds-text-warning, #D97706)' },
   approved: { bg: 'rgba(34,197,94,0.12)', c: '#15803D' },
   rejected: { bg: 'rgba(239,68,68,0.12)', c: 'var(--ds-text-danger, #DC2626)' },
-  in_progress: { bg: 'rgba(139,92,246,0.12)', c: '#7C3AED' },
+  in_progress: { bg: 'rgba(139,92,246,0.12)', c: 'var(--cp-purple-60, #7C3AED)' },
   completed: { bg: 'rgba(21,128,61,0.12)', c: '#15803D' },
   cancelled: { bg: 'rgba(220,38,38,0.12)', c: 'var(--ds-text-danger, #DC2626)' },
 };

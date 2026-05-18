@@ -161,7 +161,7 @@ export default function WikiDiagnosticPage() {
       {/* Header */}
       <div className="bg-white dark:bg-[#1A1A1A] border-b border-[rgba(15,23,42,0.12)] dark:border-[#2E2E2E] px-7 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Stethoscope className="w-6 h-6 text-[#7C3AED]" />
+          <Stethoscope className="w-6 h-6 text-[var(--cp-purple-60, #7C3AED)]" />
           <div>
             <h1 className="text-lg font-bold text-[#0F172A]">Wiki Pipeline Diagnostic</h1>
             <p className="text-xs text-[#44546F]">Live health checks against all wiki-related tables</p>

@@ -235,7 +235,7 @@ function AvatarCircle({ name, size = 20 }: { name: string; size?: number }) {
   const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  const colors = ['var(--ds-text-brand, #2563EB)', '#0D9488', '#7C3AED', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-success, #16A34A)'];
+  const colors = ['var(--ds-text-brand, #2563EB)', '#0D9488', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-success, #16A34A)'];
   return (
     <div
       className="rounded-full flex items-center justify-center font-bold text-white shrink-0"

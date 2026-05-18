@@ -2,11 +2,11 @@ import { MoreHorizontal } from '@/lib/atlaskit-icons';
 import { WorkItemTypeIcon } from '@/components/icons';
 
 const LEVEL_STYLES: Record<string, { bg: string; text: string }> = {
-  Top: { bg: '#F5F3FF', text: '#7C3AED' },
+  Top: { bg: '#F5F3FF', text: 'var(--cp-purple-60, #7C3AED)' },
   Mid: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)' },
   Work: { bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtle, #334155)' },
   Child: { bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtlest, #94A3B8)' },
-  top: { bg: '#F5F3FF', text: '#7C3AED' },
+  top: { bg: '#F5F3FF', text: 'var(--cp-purple-60, #7C3AED)' },
   mid: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)' },
   work: { bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtle, #334155)' },
   child: { bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtlest, #94A3B8)' },

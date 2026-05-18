@@ -608,9 +608,9 @@ function TranslateButton({ loading, label, onClick }: { loading: boolean; label:
       {loading ? (
         <Spinner size="small" />
       ) : (
-        // AI sparkle icon — purple (#7C3AED) reserved for AI per CLAUDE.md §8
+        // AI sparkle icon — purple (var(--cp-purple-60, #7C3AED)) reserved for AI per CLAUDE.md §8
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M8 1l1.5 4H14l-3.5 2.5 1.5 4L8 9l-4 2.5 1.5-4L2 5h4.5L8 1z" fill="#7C3AED"/>
+          <path d="M8 1l1.5 4H14l-3.5 2.5 1.5 4L8 9l-4 2.5 1.5-4L2 5h4.5L8 1z" fill="var(--cp-purple-60, #7C3AED)"/>
         </svg>
       )}
     </button>

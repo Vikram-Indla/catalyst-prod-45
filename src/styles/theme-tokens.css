@@ -94,7 +94,7 @@
   --cp-chart-3: var(--ds-text-warning, #D97706);
   --cp-chart-4: var(--ds-text-danger, #DC2626);
   --cp-chart-5: var(--ds-text-success, #16A34A);
-  --cp-chart-6: #7C3AED;
+  --cp-chart-6: var(--cp-purple-60, #7C3AED);
   --cp-chart-7: #DB2777;
   --cp-chart-8: #4B5563;
 }

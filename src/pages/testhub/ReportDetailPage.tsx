@@ -30,7 +30,7 @@ interface Report {
 
 const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
   cycle_summary: { label: 'Cycle Summary', color: 'var(--ds-text-brand, #2563EB)' },
-  plan_summary: { label: 'Plan Summary', color: '#7C3AED' },
+  plan_summary: { label: 'Plan Summary', color: 'var(--cp-purple-60, #7C3AED)' },
   coverage: { label: 'Coverage', color: '#0891B2' },
   defect: { label: 'Defect Report', color: 'var(--ds-text-danger, #DC2626)' },
   trend: { label: 'Trend Analysis', color: '#059669' },

@@ -725,7 +725,7 @@ export function TestRepositoryPage() {
               onClick={() => setIsAIGenerateModalOpen(true)}
               style={{
                 height: 40, padding: '0 16px',
-                background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+                background: 'linear-gradient(135deg, var(--cp-purple-60, #7C3AED) 0%, #6D28D9 100%)',
                 border: 'none', borderRadius: 8, fontFamily: 'var(--cp-font-body)',
                 fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8,

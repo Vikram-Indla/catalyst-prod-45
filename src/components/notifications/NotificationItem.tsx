@@ -59,7 +59,7 @@ function WorkItemIcon({ type }: { type: string }) {
     return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-text-brand, #2563EB)"/><path d="M4 8.5l2.5 2.5 5.5-5.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
   // Epic — purple lightning
   if (t === 'epic')
-    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#7C3AED"/><path d="M9.5 3L5.5 9h4L6.5 13l6-7H9l.5-3z" fill="white"/></svg>;
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--cp-purple-60, #7C3AED)"/><path d="M9.5 3L5.5 9h4L6.5 13l6-7H9l.5-3z" fill="white"/></svg>;
   // Business request / gap — green bookmark (story-like)
   if (t === 'business request' || t === 'business gap')
     return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#36B37E"/><path d="M4 3h8v10l-4-2.5L4 13V3z" fill="white"/></svg>;
@@ -178,7 +178,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
     // Initials fallback
     const name = actorName || '?';
     const initials = name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
-    const colours = ['var(--ds-text-brand, #2563EB)', '#0D9488', '#7C3AED', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-warning, #D97706)'];
+    const colours = ['var(--ds-text-brand, #2563EB)', '#0D9488', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-warning, #D97706)'];
     const bg = colours[(notification.actor_user_id || '').charCodeAt(0) % colours.length];
     return (
       <div style={{

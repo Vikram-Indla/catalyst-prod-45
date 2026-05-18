@@ -612,7 +612,7 @@ function renderMenuItem(
               ? 'linear-gradient(135deg, var(--ds-text-warning, #f59e0b) 0%, var(--ds-text-warning, #d97706) 100%)'
               : 'hsl(var(--brand-primary))',
             color: item.textBadge === 'AI'
-              ? '#7C3AED'
+              ? 'var(--cp-purple-60, #7C3AED)'
               : 'var(--ds-surface, #ffffff)',
             border: item.textBadge === 'AI' ? '1px solid rgba(124, 58, 237, 0.12)' : 'none',
             position: expanded ? 'relative' : 'absolute',

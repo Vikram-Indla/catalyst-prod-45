@@ -9,7 +9,7 @@ export const WorkItemIcon: React.FC<WorkItemIconProps> = ({ type, size = 16 }) =
   if (type === 'epic') {
     return (
       <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 1h10a2 2 0 012 2v10a2 2 0 01-2 2H3a2 2 0 01-2-2V3a2 2 0 012-2z" fill="#7C3AED"/>
+        <path d="M3 1h10a2 2 0 012 2v10a2 2 0 01-2 2H3a2 2 0 01-2-2V3a2 2 0 012-2z" fill="var(--cp-purple-60, #7C3AED)"/>
         <path d="M9.5 4L6.5 8.5H9L7 12l5-5.5H9L10.5 4H9.5z" fill="white"/>
       </svg>
     );

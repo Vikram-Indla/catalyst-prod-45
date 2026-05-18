@@ -47,7 +47,7 @@ interface LinkedCycle {
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   development: { label: 'Development', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)' },
-  testing: { label: 'Testing', color: '#7C3AED', bg: '#F5F3FF' },
+  testing: { label: 'Testing', color: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF' },
   staging: { label: 'Staging', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB' },
   uat: { label: 'UAT', color: '#0891B2', bg: '#ECFEFF' },
   production: { label: 'Production', color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)' },

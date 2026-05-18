@@ -109,7 +109,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             alignItems: 'flex-start', marginBottom: '16px',
           }}>
             <ShareIcon label="" size="small" />
-            <span style={{ fontSize: '11px', color: '#7C3AED', lineHeight: 1.55 }}>
+            <span style={{ fontSize: '11px', color: 'var(--cp-purple-60, #7C3AED)', lineHeight: 1.55 }}>
               This user will exist only in Catalyst. Jira bidirectional sync is
               excluded. They authenticate with a Catalyst-managed password.
             </span>

@@ -134,7 +134,7 @@ export default function WikiSearchPage() {
           {mode === 'ai' && (
             <span style={{
               fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 9999,
-              background: isDark ? 'rgba(124,58,237,0.15)' : '#F5F3FF', color: '#7C3AED', display: 'inline-flex', alignItems: 'center', gap: 3,
+              background: isDark ? 'rgba(124,58,237,0.15)' : '#F5F3FF', color: 'var(--cp-purple-60, #7C3AED)', display: 'inline-flex', alignItems: 'center', gap: 3,
               flexShrink: 0,
             }}><Sparkles size={10} /> AI</span>
           )}
@@ -158,7 +158,7 @@ export default function WikiSearchPage() {
               fontSize: 11, fontWeight: 650, padding: '6px 14px', cursor: 'pointer',
               border: 'none', borderLeft: `1px solid ${borderColor}`,
               display: 'flex', alignItems: 'center', gap: 4,
-              background: mode === 'ai' ? '#7C3AED' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)'),
+              background: mode === 'ai' ? 'var(--cp-purple-60, #7C3AED)' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)'),
               color: mode === 'ai' ? 'var(--ds-surface, #FFFFFF)' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)'),
               transition: 'all 120ms',
             }}><Sparkles size={11} /> AI Search</button>
@@ -198,7 +198,7 @@ export default function WikiSearchPage() {
         {isLoading && debouncedQuery.length >= 2 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '8px 0' }}>
             {mode === 'ai' && (
-              <div style={{ borderLeft: '3px solid #7C3AED', padding: '16px 20px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FAFAFE', borderRadius: '0 6px 6px 0', marginBottom: 8 }}>
+              <div style={{ borderLeft: '3px solid var(--cp-purple-60, #7C3AED)', padding: '16px 20px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FAFAFE', borderRadius: '0 6px 6px 0', marginBottom: 8 }}>
                 <Sk w={120} h={14} style={{ marginBottom: 12 }} isDark={isDark} />
                 <Sk w="100%" h={14} style={{ marginBottom: 6 }} isDark={isDark} />
                 <Sk w="90%" h={14} style={{ marginBottom: 6 }} isDark={isDark} />
@@ -221,12 +221,12 @@ export default function WikiSearchPage() {
             {/* AI Answer box */}
             {aiAnswer && (
               <div style={{
-                borderLeft: '3px solid #7C3AED', padding: '16px 20px', marginBottom: 24,
+                borderLeft: '3px solid var(--cp-purple-60, #7C3AED)', padding: '16px 20px', marginBottom: 24,
                 background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FAFAFE', borderRadius: '0 6px 6px 0',
               }}>
                 <span style={{
                   fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4,
-                  background: isDark ? 'rgba(124,58,237,0.15)' : '#F5F3FF', color: '#7C3AED', display: 'inline-flex', alignItems: 'center', gap: 3,
+                  background: isDark ? 'rgba(124,58,237,0.15)' : '#F5F3FF', color: 'var(--cp-purple-60, #7C3AED)', display: 'inline-flex', alignItems: 'center', gap: 3,
                   marginBottom: 10,
                 }}><Sparkles size={10} /> AI Answer</span>
                 <div style={{ fontSize: 14, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #334155)', lineHeight: 1.75, marginTop: 10 }}>
@@ -289,7 +289,7 @@ export default function WikiSearchPage() {
                   const fmtIcon = r.format === 'pdf'
                     ? <FileDown size={14} style={{ color: 'var(--ds-text-danger, #DC2626)', flexShrink: 0 }} />
                     : r.format === 'video'
-                    ? <Video size={14} style={{ color: '#7C3AED', flexShrink: 0 }} />
+                    ? <Video size={14} style={{ color: 'var(--cp-purple-60, #7C3AED)', flexShrink: 0 }} />
                     : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)', flexShrink: 0 }} />;
                   const verBadge = r.verification_status === 'verified'
                     ? { bg: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)', label: 'Verified' }

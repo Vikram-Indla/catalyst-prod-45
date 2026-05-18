@@ -38,7 +38,7 @@
   --catalyst-warning-bg: #FFFBEB;
   --catalyst-danger: var(--ds-text-danger, #EF4444);
   --catalyst-danger-bg: var(--ds-background-danger, #FEF2F2);
-  --catalyst-ai-purple: #7C3AED;
+  --catalyst-ai-purple: var(--cp-purple-60, #7C3AED);
   --catalyst-ai-purple-bg: #F5F3FF;
 
   /* ── Theme Colors (Strategic Themes) ── */

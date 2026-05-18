@@ -270,7 +270,7 @@ export default function ReqAssistGenerate() {
         {/* INPUT CARD */}
         <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 6, padding: 24, marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-            <FileText size={15} color="#7C3AED" />
+            <FileText size={15} color="var(--cp-purple-60, #7C3AED)" />
             <span style={{ fontSize: 13, fontWeight: 650, color: 'var(--cp-text-primary, #111827)', fontFamily: 'var(--cp-font-body)' }}>Requirements Input</span>
             <span style={{ fontSize: 13, color: 'var(--cp-text-tertiary, #6B7280)', fontFamily: 'var(--cp-font-body)' }}>· Paste text from meetings, briefs, email threads, or scope documents</span>
           </div>
@@ -280,7 +280,7 @@ export default function ReqAssistGenerate() {
             onChange={(e) => { setText(e.target.value); setQualifyResult(null); setGenResult(null); setGenError(null); setSavedDocId(null); setHasEpics(false); setDuplicateDoc(null); setWikiState('idle'); setShowSavedBanner(false); }}
             placeholder="Paste your requirements here..."
             style={{ width: '100%', minHeight: 200, padding: 14, fontSize: 14, lineHeight: 1.65, border: `0.75px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 4, outline: 'none', resize: 'vertical', fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary, #111827)', transition: 'border-color 150ms, box-shadow 150ms' }}
-            onFocus={(e) => { e.currentTarget.style.borderColor = '#7C3AED'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(124,58,237,0.10)'; }}
+            onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--cp-purple-60, #7C3AED)'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(124,58,237,0.10)'; }}
             onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, #E2E8F0)'; e.currentTarget.style.boxShadow = 'none'; }}
           />
           <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #6B7280)', margin: '6px 0 0', fontFamily: 'var(--cp-font-body)' }}>The AI will first qualify whether this text contains enough structured requirements.</p>
@@ -336,7 +336,7 @@ export default function ReqAssistGenerate() {
         {/* Generating spinner */}
         {generating && !genResult && (
           <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 6, padding: '40px 24px', textAlign: 'center' }}>
-            <Loader2 size={24} color="#7C3AED" style={{ animation: 'ra-spin 1s linear infinite', margin: '0 auto 12px', display: 'block' }} />
+            <Loader2 size={24} color="var(--cp-purple-60, #7C3AED)" style={{ animation: 'ra-spin 1s linear infinite', margin: '0 auto 12px', display: 'block' }} />
             <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-secondary, #374151)', margin: '0 0 4px', fontFamily: 'var(--cp-font-body)' }}>Generating BRD sections from your input…</p>
             <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #6B7280)', margin: 0, fontFamily: 'var(--cp-font-body)' }}>This typically takes 15–30 seconds</p>
           </div>
@@ -598,7 +598,7 @@ function BtnAI({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElem
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
       border: 'none', borderRadius: 4, cursor: props.disabled ? 'not-allowed' : 'pointer',
-      background: '#7C3AED', color: 'var(--ds-surface, #FFFFFF)',
+      background: 'var(--cp-purple-60, #7C3AED)', color: 'var(--ds-surface, #FFFFFF)',
       fontFamily: 'var(--cp-font-body)',
       opacity: props.disabled ? 0.6 : 1, transition: 'background 120ms',
       ...props.style,

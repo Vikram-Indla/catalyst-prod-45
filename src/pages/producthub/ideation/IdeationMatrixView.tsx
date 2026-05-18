@@ -19,7 +19,7 @@ interface DotData {
 const STATUS_BUBBLE_COLORS: Record<string, string> = {
   'converted':    'var(--ds-text-success, #16A34A)',
   'approved':     'var(--ds-text-success, #16A34A)',
-  'under_review': '#7C3AED',  // AI-enriched marker ✓
+  'under_review': 'var(--cp-purple-60, #7C3AED)',  // AI-enriched marker ✓
   'submitted':    'var(--ds-text-subtlest, #64748B)',  // neutral slate — not primary blue
   'rejected':     'var(--ds-text-danger, #DC2626)',
   'draft':        'var(--ds-text-subtlest, #94A3B8)',
@@ -185,7 +185,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
       }}>
         {[
           { color: 'var(--ds-text-success, #16A34A)', label: 'Approved / Converted' },
-          { color: '#7C3AED', label: 'Under Review (AI-enriched)' },
+          { color: 'var(--cp-purple-60, #7C3AED)', label: 'Under Review (AI-enriched)' },
           { color: 'var(--ds-text-subtlest, #64748B)', label: 'Submitted' },
           { color: 'var(--ds-text-danger, #DC2626)', label: 'Rejected' },
         ].map(l => (

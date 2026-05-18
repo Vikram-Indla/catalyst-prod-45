@@ -37,7 +37,7 @@ interface ReportStats {
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   cycle_summary: { label: 'Cycle Summary', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', icon: BarChart3 },
-  plan_summary: { label: 'Plan Summary', color: '#7C3AED', bg: '#F5F3FF', icon: FileText },
+  plan_summary: { label: 'Plan Summary', color: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', icon: FileText },
   coverage: { label: 'Coverage', color: '#0891B2', bg: '#ECFEFF', icon: Shield },
   defect: { label: 'Defect Report', color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)', icon: AlertCircle },
   trend: { label: 'Trend Analysis', color: '#059669', bg: '#ECFDF5', icon: TrendingUp },

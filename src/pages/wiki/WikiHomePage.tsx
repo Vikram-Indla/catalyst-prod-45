@@ -127,7 +127,7 @@ export default function WikiHomePage() {
       )}
       {/* ═══ HERO ═══ */}
       <div style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', position: 'relative', overflow: 'hidden', borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)' }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, var(--ds-text-brand, #2563EB), #7C3AED, var(--ds-text-brand, #2563EB))' }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, var(--ds-text-brand, #2563EB), var(--cp-purple-60, #7C3AED), var(--ds-text-brand, #2563EB))' }} />
         <div style={{ position: 'absolute', inset: 0, opacity: 0.03, backgroundImage: isDark ? 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)' : 'linear-gradient(rgba(15,23,42,1) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,1) 1px, transparent 1px)', backgroundSize: '48px 48px' }} />
 
         <div style={{ padding: '48px 40px 40px', display: 'flex', gap: 40, alignItems: 'flex-start', position: 'relative', zIndex: 1, flexWrap: 'wrap' }}>
@@ -147,7 +147,7 @@ export default function WikiHomePage() {
             >
               <Search size={15} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)' }} />
               <span style={{ flex: 1, fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)' }}>Search articles, regulations, permits...</span>
-              <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 9999, background: 'rgba(124,58,237,0.06)', color: '#7C3AED' }}>AI-powered</span>
+              <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 9999, background: 'rgba(124,58,237,0.06)', color: 'var(--cp-purple-60, #7C3AED)' }}>AI-powered</span>
               <button style={{ fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 6, border: 'none', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer' }}>Search</button>
             </div>
 

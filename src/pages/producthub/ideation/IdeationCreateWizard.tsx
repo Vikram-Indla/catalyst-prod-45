@@ -24,7 +24,7 @@ const IDEA_TYPES = [
   { key: 'Problem', label: 'Problem', dot: 'var(--ds-text-danger, #EF4444)' },
   { key: 'Opportunity', label: 'Opportunity', dot: 'var(--ds-text-success, #16A34A)' },
   { key: 'Feature Request', label: 'Feature', dot: 'var(--ds-text-brand, #2563EB)' },
-  { key: 'Solution', label: 'Solution', dot: '#7C3AED' },
+  { key: 'Solution', label: 'Solution', dot: 'var(--cp-purple-60, #7C3AED)' },
   { key: 'Improvement', label: 'Improvement', dot: 'var(--ds-text-warning, #D97706)' },
 ];
 
@@ -277,13 +277,13 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Sparkles size={14} style={{ color: '#7C3AED' }} />
-              <span style={{ fontSize: '13px', color: '#7C3AED', fontWeight: 500 }}>
+              <Sparkles size={14} style={{ color: 'var(--cp-purple-60, #7C3AED)' }} />
+              <span style={{ fontSize: '13px', color: 'var(--cp-purple-60, #7C3AED)', fontWeight: 500 }}>
                 AI can auto-fill fields from a short description
               </span>
             </div>
             <button style={{
-              background: '#7C3AED', color: 'var(--ds-surface, #FFF)', border: 'none',
+              background: 'var(--cp-purple-60, #7C3AED)', color: 'var(--ds-surface, #FFF)', border: 'none',
               borderRadius: '6px', padding: '6px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
             }}>Auto-fill</button>
           </div>

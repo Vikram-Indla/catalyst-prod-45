@@ -24,7 +24,7 @@ const CAT_DOT: Record<string, string> = { todo: 'var(--ds-text-subtlest, #94A3B8
 function getAvatarGradient(key: string) {
   const letter = (key[0] || '').toUpperCase();
   const map: Record<string, string> = {
-    A: 'var(--ds-text-brand, #2563EB)', B: 'var(--ds-text-brand, #2563EB)', C: 'var(--ds-text-brand, #2563EB)', D: '#7C3AED', E: '#7C3AED', F: '#7C3AED',
+    A: 'var(--ds-text-brand, #2563EB)', B: 'var(--ds-text-brand, #2563EB)', C: 'var(--ds-text-brand, #2563EB)', D: 'var(--cp-purple-60, #7C3AED)', E: 'var(--cp-purple-60, #7C3AED)', F: 'var(--cp-purple-60, #7C3AED)',
     G: '#0D9488', H: '#0D9488', I: '#0D9488', J: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', K: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', L: 'var(--ds-background-brand-bold-hovered, #1D4ED8)',
     M: 'var(--ds-text-warning, #F59E0B)', N: 'var(--ds-text-warning, #F59E0B)', O: 'var(--ds-text-warning, #F59E0B)', P: 'var(--ds-text-danger, #DC2626)', Q: 'var(--ds-text-danger, #DC2626)', R: 'var(--ds-text-danger, #DC2626)',
     S: 'var(--ds-text-brand, #2563EB)', T: 'var(--ds-text-brand, #2563EB)', U: 'var(--ds-text-brand, #2563EB)', V: 'var(--ds-text-success, #16A34A)', W: 'var(--ds-text-success, #16A34A)', X: 'var(--ds-text-success, #16A34A)', Y: 'var(--ds-text-success, #16A34A)', Z: 'var(--ds-text-success, #16A34A)',

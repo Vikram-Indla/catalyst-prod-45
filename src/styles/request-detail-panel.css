@@ -32,7 +32,7 @@
   --idp-warning-bg: #FFFBEB;
   --idp-danger: var(--ds-text-danger, #DC2626);
   --idp-danger-bg: var(--ds-background-danger, #FEF2F2);
-  --idp-purple: #7C3AED;
+  --idp-purple: var(--cp-purple-60, #7C3AED);
   --idp-purple-bg: #F5F3FF;
 
   /* SEMANTIC — TEXT (darkened for WCAG AA) */

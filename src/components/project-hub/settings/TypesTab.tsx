@@ -26,7 +26,7 @@ interface WorkType {
 }
 
 const LEVEL_STYLES: Record<string, { bg: string; text: string }> = {
-  top:   { bg: '#F5F3FF', text: '#7C3AED' },
+  top:   { bg: '#F5F3FF', text: 'var(--cp-purple-60, #7C3AED)' },
   mid:   { bg: '#EFF6FF', text: '#2563EB' },
   work:  { bg: '#F1F5F9', text: '#334155' },
   child: { bg: '#F1F5F9', text: '#94A3B8' },

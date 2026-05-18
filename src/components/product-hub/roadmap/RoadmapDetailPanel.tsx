@@ -59,7 +59,7 @@ const STATUS_PILL: Record<string, { color: string; bg: string }> = {
   Completed: { color: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4' },
   Cancelled: { color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)' },
   'On Hold': { color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB' },
-  'Under Review': { color: '#7C3AED', bg: '#F5F3FF' },
+  'Under Review': { color: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF' },
   Approved: { color: '#0D9488', bg: '#F0FDFA' },
   New: { color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)' },
 };

@@ -47,8 +47,8 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'QA Pass':              { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'QA Pass' },
   'QA Fail':              { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'QA Fail' },
   // ── Purple: UAT ──
-  'In UAT':               { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT' },
-  'UAT Ready':            { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready' },
+  'In UAT':               { dot: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT' },
+  'UAT Ready':            { dot: 'var(--cp-purple-60, #7C3AED)', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready' },
   // ── Green: Done ──
   'Done':                 { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
   'Closed':               { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
@@ -93,7 +93,7 @@ function resolveStatus(item: any) {
   return CAT_TODO;
 }
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, #D97706)', FAC: 'var(--ds-text-success, #16A34A)', OPS: '#0D9488', SUP: 'var(--ds-text-subtlest, #64748B)', LND: '#7C3AED' };
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, #D97706)', FAC: 'var(--ds-text-success, #16A34A)', OPS: '#0D9488', SUP: 'var(--ds-text-subtlest, #64748B)', LND: 'var(--cp-purple-60, #7C3AED)' };
 const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, #64748B)';
 const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, #16A34A)' : d <= 14 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
 const ageLabel = (d: number) => d === 0 ? 'Today' : d === 1 ? '1d ago' : `${d}d ago`;

@@ -15,7 +15,7 @@ const AVATAR_COLORS = [
   { bg: '#FEF3C7', text: '#92400E' }, { bg: '#EDE9FE', text: '#5B21B6' },
   { bg: '#FEE2E2', text: 'var(--ds-text-danger, #991B1B)' }, { bg: '#F0FDF4', text: '#0F766E' },
   { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' }, { bg: '#E0F2FE', text: '#0369A1' },
-  { bg: '#F5F3FF', text: '#7C3AED' }, { bg: '#CCFBF1', text: '#0F766E' },
+  { bg: '#F5F3FF', text: 'var(--cp-purple-60, #7C3AED)' }, { bg: '#CCFBF1', text: '#0F766E' },
 ];
 
 const TABS = [
@@ -99,7 +99,7 @@ const PERM_COLORS: Record<string, { bg: string; color: string; bgDark: string; c
 };
 
 function getEventDotColor(ev: any): string {
-  if (ev.event_type === 'created') return '#7C3AED';
+  if (ev.event_type === 'created') return 'var(--cp-purple-60, #7C3AED)';
   if (ev.event_type === 'deactivated' || ev.event_type === 'reactivated') return 'var(--ds-text-warning, #D97706)';
   if (ev.direction === 'jira_to_catalyst') return 'var(--ds-text-brand, #2563EB)';
   if (ev.direction === 'catalyst_to_jira') return '#0D9488';
@@ -394,7 +394,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   padding: '1px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 700,
                   letterSpacing: '0.03em', textTransform: 'uppercase',
                   background: 'var(--cp-purple-5, #F5F3FF)',
-                  color: 'var(--cp-purple-60, #7C3AED)',
+                  color: 'var(--cp-purple-60, var(--cp-purple-60, #7C3AED))',
                   border: '1px solid rgba(124,58,237,0.25)',
                 }}>
                   Local Auth
@@ -531,7 +531,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   <span style={{
                     padding: '1px 5px', borderRadius: '4px', fontSize: '9.5px', fontWeight: 700,
                     background: 'var(--cp-purple-5, #F5F3FF)',
-                    color: 'var(--cp-purple-60, #7C3AED)',
+                    color: 'var(--cp-purple-60, var(--cp-purple-60, #7C3AED))',
                     border: `1px solid rgba(124,58,237,0.25)`,
                     whiteSpace: 'nowrap',
                   }}>
@@ -567,7 +567,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   fontSize: '11px', lineHeight: 1.55,
                   color: isJiraProxy
                     ? ('var(--cp-teal-60, #134E4A)')
-                    : ('var(--cp-purple-60, #7C3AED)'),
+                    : ('var(--cp-purple-60, var(--cp-purple-60, #7C3AED))'),
                 }}>
                   {isJiraProxy
                     ? 'Jira password used as-is in Catalyst. No password is stored here. Changing the password in Jira takes effect on the next Catalyst login.'
@@ -670,7 +670,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 {isJiraProxy ? (
                   <>Full bidirectional. Jira → Catalyst: scheduled every 6h via pg_cron + real-time webhooks. Catalyst → Jira: role changes call <Code isDark={isDark}>jira-write-back</Code> Edge Function to update Jira group membership.</>
                 ) : (
-                  <><strong style={{ color: '#7C3AED' }}>Excluded from sync.</strong> The <Code isDark={isDark}>catalyst_only=true</Code> flag permanently blocks this user from all bidirectional sync operations. Jira will never receive any data about this user.</>
+                  <><strong style={{ color: 'var(--cp-purple-60, #7C3AED)' }}>Excluded from sync.</strong> The <Code isDark={isDark}>catalyst_only=true</Code> flag permanently blocks this user from all bidirectional sync operations. Jira will never receive any data about this user.</>
                 )}
               </InfoCard>
             </div>

@@ -555,11 +555,11 @@ function AIImproveBtn({ editor }: { editor: Editor }) {
         onMouseDown={e => { e.preventDefault(); setOpen(v => !v); }}
         className="jde-tb-style-btn"
         title="AI: Improve description"
-        style={{ color: '#7C3AED', gap: 3 }}
+        style={{ color: 'var(--cp-purple-60, #7C3AED)', gap: 3 }}
       >
-        <Sparkles size={13} style={{ color: '#7C3AED' }} />
-        <span style={{ fontSize: 12, fontWeight: 500, color: '#7C3AED' }}>Improve</span>
-        <ChevronDown size={10} style={{ color: '#7C3AED' }} />
+        <Sparkles size={13} style={{ color: 'var(--cp-purple-60, #7C3AED)' }} />
+        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-purple-60, #7C3AED)' }}>Improve</span>
+        <ChevronDown size={10} style={{ color: 'var(--cp-purple-60, #7C3AED)' }} />
       </button>
       {open && (
         <div className="jde-dropdown jde-dropdown--style">
@@ -572,9 +572,9 @@ function AIImproveBtn({ editor }: { editor: Editor }) {
                 setOpen(false);
               }}
               className="jde-dropdown-item jde-dropdown-item--row"
-              style={{ color: '#7C3AED' }}
+              style={{ color: 'var(--cp-purple-60, #7C3AED)' }}
             >
-              <span className="jde-dropdown-icon" style={{ color: '#7C3AED' }}>{a.icon}</span>
+              <span className="jde-dropdown-icon" style={{ color: 'var(--cp-purple-60, #7C3AED)' }}>{a.icon}</span>
               {a.label}
             </button>
           ))}

@@ -25,12 +25,12 @@ const FILE_TYPE_MAP: Record<string, { label: string; color: string; bg: string }
   csv: { label: 'XLS', color: '#0D7331', bg: '#0D733112' },
   doc: { label: 'DOC', color: 'var(--ds-text-brand, #2563EB)', bg: '#2563EB12' },
   docx: { label: 'DOC', color: 'var(--ds-text-brand, #2563EB)', bg: '#2563EB12' },
-  png: { label: 'IMG', color: '#7C3AED', bg: '#7C3AED12' },
-  jpg: { label: 'IMG', color: '#7C3AED', bg: '#7C3AED12' },
-  jpeg: { label: 'IMG', color: '#7C3AED', bg: '#7C3AED12' },
-  gif: { label: 'IMG', color: '#7C3AED', bg: '#7C3AED12' },
-  webp: { label: 'IMG', color: '#7C3AED', bg: '#7C3AED12' },
-  svg: { label: 'IMG', color: '#7C3AED', bg: '#7C3AED12' },
+  png: { label: 'IMG', color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--cp-purple-60, #7C3AED)12' },
+  jpg: { label: 'IMG', color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--cp-purple-60, #7C3AED)12' },
+  jpeg: { label: 'IMG', color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--cp-purple-60, #7C3AED)12' },
+  gif: { label: 'IMG', color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--cp-purple-60, #7C3AED)12' },
+  webp: { label: 'IMG', color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--cp-purple-60, #7C3AED)12' },
+  svg: { label: 'IMG', color: 'var(--cp-purple-60, #7C3AED)', bg: 'var(--cp-purple-60, #7C3AED)12' },
 };
 const DEFAULT_TYPE = { label: 'FILE', color: '#71717A', bg: '#71717A12' };
 

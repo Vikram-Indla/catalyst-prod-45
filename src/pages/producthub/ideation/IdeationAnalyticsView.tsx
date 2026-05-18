@@ -23,7 +23,7 @@ const FUNNEL_ORDER: { key: string; label: string; color: string }[] = [
   { key: 'rejected', label: 'Rejected', color: 'var(--ds-text-danger, #EF4444)' },
 ];
 
-const DEPT_COLORS = ['var(--ds-text-brand, #2563EB)', '#0D9488', 'var(--ds-text-warning, #D97706)', '#7C3AED', 'var(--ds-text-success, #16A34A)', 'var(--ds-text-danger, #EF4444)', 'var(--ds-text-subtlest, #94A3B8)', '#0F766E', '#6366F1', 'var(--ds-text-danger, #DC2626)'];
+const DEPT_COLORS = ['var(--ds-text-brand, #2563EB)', '#0D9488', 'var(--ds-text-warning, #D97706)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-success, #16A34A)', 'var(--ds-text-danger, #EF4444)', 'var(--ds-text-subtlest, #94A3B8)', '#0F766E', '#6366F1', 'var(--ds-text-danger, #DC2626)'];
 
 function getInitials(name: string): string {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
@@ -90,7 +90,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
     });
     const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
     const max = sorted.length > 0 ? sorted[0][1] : 1;
-    const colors = ['#0D9488', 'var(--ds-text-brand, #2563EB)', 'var(--ds-text-warning, #D97706)', '#7C3AED', 'var(--ds-text-success, #16A34A)'];
+    const colors = ['#0D9488', 'var(--ds-text-brand, #2563EB)', 'var(--ds-text-warning, #D97706)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-success, #16A34A)'];
     return sorted.map(([name, count], idx) => ({
       name,
       initials: getInitials(name),

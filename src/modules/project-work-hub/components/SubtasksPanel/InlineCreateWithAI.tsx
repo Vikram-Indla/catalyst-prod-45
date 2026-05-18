@@ -186,9 +186,9 @@ export function InlineCreateWithAI({
           {(suggestions.length > 0 || aiLoading) && (
             <>
               <div className="sp-create-section-label">
-                <Sparkles size={11} color="#7C3AED" />
+                <Sparkles size={11} color="var(--cp-purple-60, #7C3AED)" />
                 <span>Suggestions</span>
-                {aiLoading && <Loader2 size={11} className="animate-spin" color="#7C3AED" />}
+                {aiLoading && <Loader2 size={11} className="animate-spin" color="var(--cp-purple-60, #7C3AED)" />}
               </div>
               {suggestions.map((s, i) => {
                 const active = highlight?.kind === 'suggestion' && highlight.index === i;
@@ -201,7 +201,7 @@ export function InlineCreateWithAI({
                     className={`sp-create-option ${active ? 'is-active' : ''}`}
                     onClick={() => { onCreate(s); setDraft(''); }}
                   >
-                    <Sparkles size={12} color="#7C3AED" />
+                    <Sparkles size={12} color="var(--cp-purple-60, #7C3AED)" />
                     <span>{s}</span>
                   </button>
                 );

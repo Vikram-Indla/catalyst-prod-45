@@ -37,7 +37,7 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 /* ── Stats Config ── */
 const STATS_CONFIG = [
   { key: 'jiraSynced',   dot: 'var(--ds-text-success, #16A34A)', label: 'Jira Synced',    sub: 'from last sync' },
-  { key: 'catalystOnly', dot: '#7C3AED', label: 'Catalyst Only',  sub: 'Not in Jira' },
+  { key: 'catalystOnly', dot: 'var(--cp-purple-60, #7C3AED)', label: 'Catalyst Only',  sub: 'Not in Jira' },
   { key: 'proxyAuth',    dot: 'var(--ds-text-brand, #2563EB)', label: 'Proxy Auth',     sub: 'Jira password active' },
   { key: 'conflicts',    dot: 'var(--ds-text-warning, #D97706)', label: 'Conflicts',      sub: 'Needs resolution' },
   { key: 'inactive',     dot: 'var(--ds-text-danger, #DC2626)', label: 'Inactive',       sub: 'Access revoked' },
@@ -61,7 +61,7 @@ const AVATAR_COLORS = [
   { bg: '#FEF3C7', text: '#92400E' }, { bg: '#EDE9FE', text: '#5B21B6' },
   { bg: '#FEE2E2', text: 'var(--ds-text-danger, #991B1B)' }, { bg: '#F0FDF4', text: '#0F766E' },
   { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' }, { bg: '#E0F2FE', text: '#0369A1' },
-  { bg: '#F5F3FF', text: '#7C3AED' }, { bg: '#CCFBF1', text: '#0F766E' },
+  { bg: '#F5F3FF', text: 'var(--cp-purple-60, #7C3AED)' }, { bg: '#CCFBF1', text: '#0F766E' },
 ];
 
 const HEADERS = ['User / Jira Identity', 'Auth Mode', 'Projects & Permissions', 'Synced At', 'Last Jira Login', 'Last in Catalyst', 'Status', ''];
@@ -662,7 +662,7 @@ const JiraUserSync: React.FC = () => {
                     style={{
                       height: '50px', maxHeight: '50px',
                       borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`,
-                      borderLeft: isCatalystOnly ? '2px solid #7C3AED' : 'none',
+                      borderLeft: isCatalystOnly ? '2px solid var(--cp-purple-60, #7C3AED)' : 'none',
                       cursor: 'pointer', opacity: isInactive ? 0.5 : 1,
                       transition: 'background 120ms ease',
                       background: rowBg,
@@ -681,7 +681,7 @@ const JiraUserSync: React.FC = () => {
                         <div style={{ minWidth: 0, maxWidth: '220px' }}>
                           <div className="flex items-center gap-[5px]">
                             <span className="jira-text-primary" style={{ fontSize: '12px', fontWeight: 500, textDecoration: isInactive ? 'line-through' : 'none', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--cp-text-primary, #0F172A)' }}>{user.display_name}</span>
-                            {isCatalystOnly && <span className="jira-local-marker" style={{ fontSize: '9px', fontWeight: 600, whiteSpace: 'nowrap', color: 'var(--cp-purple-60, #7C3AED)' }}>◆ Local</span>}
+                            {isCatalystOnly && <span className="jira-local-marker" style={{ fontSize: '9px', fontWeight: 600, whiteSpace: 'nowrap', color: 'var(--cp-purple-60, var(--cp-purple-60, #7C3AED))' }}>◆ Local</span>}
                           </div>
                           <div className="jira-text-label" style={{ fontSize: '11px', fontFamily: 'var(--cp-font-mono)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--cp-text-tertiary, #6B7280)' }}>
                             {displayEmail(user.email)}

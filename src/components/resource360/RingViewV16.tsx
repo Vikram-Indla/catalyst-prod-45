@@ -127,7 +127,7 @@ const PROJECT_COLOR_FALLBACK: Record<string, string> = {
   FAC: 'var(--ds-text-success, #16A34A)',
   OPS: '#0D9488',
   SUP: 'var(--ds-text-subtlest, #64748B)',
-  LND: '#7C3AED',
+  LND: 'var(--cp-purple-60, #7C3AED)',
 };
 
 function getProjectColor(item: WorkItem): string {

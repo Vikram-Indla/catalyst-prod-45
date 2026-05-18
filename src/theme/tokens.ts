@@ -389,7 +389,7 @@ export const catalyst = {
   borderFocus: '#2563EB',
   primaryBlue: '#2563EB',
   primaryBlueHover: '#1D4ED8',
-  aiPurple: '#7C3AED',
+  aiPurple: 'var(--cp-purple-60, #7C3AED)',
   aiTeal: '#0D9488',
 } as const;
 

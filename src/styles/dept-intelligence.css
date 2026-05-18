@@ -29,7 +29,7 @@
   --di-warning-bg: #FFFBEB;
   --di-danger: var(--ds-text-danger, #DC2626);
   --di-danger-bg: var(--ds-background-danger, #FEF2F2);
-  --di-purple: #7C3AED;
+  --di-purple: var(--cp-purple-60, #7C3AED);
   --di-purple-bg: #F5F3FF;
   --di-font-heading: var(--cp-font-heading);
   --di-font-body: var(--cp-font-body);
@@ -466,7 +466,7 @@
 }
 .di-role-icon svg { width: 16px; height: 16px; }
 .role-dev  .di-role-icon { background: var(--ds-background-selected, #EFF6FF); color: var(--ds-text-brand, #2563EB); }
-.role-qa   .di-role-icon { background: #F5F3FF; color: #7C3AED; }
+.role-qa   .di-role-icon { background: #F5F3FF; color: var(--cp-purple-60, #7C3AED); }
 .role-po   .di-role-icon { background: #F0FDFA; color: #0D9488; }
 .role-ux   .di-role-icon { background: #FCE7F3; color: #DB2777; }
 .role-mgmt .di-role-icon { background: #FFFBEB; color: var(--ds-text-warning, #D97706); }

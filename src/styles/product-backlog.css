@@ -29,7 +29,7 @@
   --cp-warning-10: #FEF3C7;
   --cp-danger-60: var(--ds-text-danger, #DC2626);
   --cp-danger-10: #FEE2E2;
-  --cp-purple-60: #7C3AED;
+  --cp-purple-60: var(--cp-purple-60, #7C3AED);
 
   --cp-border-subtle: rgba(15, 23, 42, 0.06);
   --cp-border-default: rgba(15, 23, 42, 0.12);

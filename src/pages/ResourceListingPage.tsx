@@ -33,7 +33,7 @@ interface Resource {
 /* ── Constants ── */
 const DEPT_COLORS: Record<string, string> = {
   Delivery: 'var(--ds-text-brand, #2563EB)',
-  Product: '#7C3AED',
+  Product: 'var(--cp-purple-60, #7C3AED)',
   Governance: '#0D9488',
   Operations: 'var(--ds-text-warning, #D97706)',
   'Technical Support': 'var(--ds-text-danger, #DC2626)',
@@ -478,7 +478,7 @@ export default function ResourceListingPage() {
                       <div className="r360-actions" style={{ display: 'inline-flex', gap: '4px', opacity: 0, transition: 'opacity 150ms ease' }}>
                         <ActionBtn
                           tooltip="Open Intelligence"
-                          bg="#7C3AED" bgHover="#6D28D9"
+                          bg="var(--cp-purple-60, #7C3AED)" bgHover="#6D28D9"
                           shadowColor="rgba(124,58,237,0.2)"
                           icon={<Zap size={13} strokeWidth={1.9} />}
                           onClick={(e) => {

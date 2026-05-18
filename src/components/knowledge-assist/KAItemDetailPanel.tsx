@@ -93,7 +93,7 @@ function PriorityBars({ label }: { label: string }) {
 
 function Avatar({ name, size = 24 }: { name: string; size?: number }) {
   const ini = (name || '?').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  const clr = [T.primary, T.teal, T.warning, T.danger, '#7C3AED'][ini.charCodeAt(0) % 5];
+  const clr = [T.primary, T.teal, T.warning, T.danger, 'var(--cp-purple-60, #7C3AED)'][ini.charCodeAt(0) % 5];
   return (
     <div style={{
       width: size, height: size, borderRadius: '50%', background: clr, color: 'var(--ds-surface, #fff)',

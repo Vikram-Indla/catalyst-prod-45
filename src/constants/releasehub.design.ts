@@ -1,5 +1,5 @@
 // ReleaseHub v2.1 — Design System Constants (V12 Hybrid Precision)
-// BANNED: Purple (#7C3AED), Yellow/Amber, ServiceNow, Golden Hour palette
+// BANNED: Purple (var(--cp-purple-60, #7C3AED)), Yellow/Amber, ServiceNow, Golden Hour palette
 
 export const RH = {
   // Backgrounds

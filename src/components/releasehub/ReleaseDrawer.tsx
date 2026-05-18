@@ -441,13 +441,13 @@ Do not use jargon. Do not hallucinate features not listed above.`;
       {/* ── AI Release Notes Panel ── */}
       <div className="border border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)] rounded-md p-4 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
         <div className="flex justify-between items-center mb-3">
-          <span className="inline-flex items-center gap-1 text-[11px] font-bold rounded-full px-2 py-0.5 bg-[#F5F3FF] text-[#7C3AED] border border-[#DDD6FE]">
+          <span className="inline-flex items-center gap-1 text-[11px] font-bold rounded-full px-2 py-0.5 bg-[#F5F3FF] text-[var(--cp-purple-60, #7C3AED)] border border-[#DDD6FE]">
             ✦ Catalyst AI
           </span>
           <button
             onClick={generateReleaseNotes}
             disabled={notesState === 'loading'}
-            className="inline-flex items-center gap-1 bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs px-3 py-1.5 rounded font-medium disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 outline-none"
+            className="inline-flex items-center gap-1 bg-[var(--cp-purple-60, #7C3AED)] hover:bg-[#6D28D9] text-white text-xs px-3 py-1.5 rounded font-medium disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 outline-none"
           >
             <Sparkles size={12} />
             {notesState === 'success' ? 'Regenerate' : 'Generate'}
@@ -462,7 +462,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
         )}
 
         {notesState === 'loading' && (
-          <div className="flex items-center gap-2 py-6 justify-center text-[#7C3AED] text-[13px]">
+          <div className="flex items-center gap-2 py-6 justify-center text-[var(--cp-purple-60, #7C3AED)] text-[13px]">
             <Loader2 size={16} className="animate-spin" />
             <span>Generating release notes…</span>
           </div>
@@ -756,7 +756,7 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
       {entries.map((entry: any, idx: number) => {
         const isAI = !!entry.is_ai;
         const avatarBg = isAI ? '#F3E8FF' : 'var(--ds-background-selected, #EFF6FF)';
-        const avatarColor = isAI ? '#7C3AED' : 'var(--ds-text-brand, #2563EB)';
+        const avatarColor = isAI ? 'var(--cp-purple-60, #7C3AED)' : 'var(--ds-text-brand, #2563EB)';
         const initials = isAI ? 'AI' : (entry.actor_initials || '??');
 
         return (

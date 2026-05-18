@@ -80,7 +80,7 @@ export const R360_TOKENS = {
   teal: '#0D9488',
   tealLight: '#F0FDFA',
   tealText: '#134E4A',
-  purple: '#7C3AED',
+  purple: 'var(--cp-purple-60, #7C3AED)',
   purpleLight: '#F5F3FF',
   purpleText: '#4C1D95',
   ink1: '#020617',
@@ -112,7 +112,7 @@ export const R360_PROJECT_COLORS: Record<string, string> = {
   FAC: 'var(--ds-text-success, #16A34A)',
   OPS: '#0D9488',
   SUP: 'var(--ds-text-subtlest, #64748B)',
-  LND: '#7C3AED',
+  LND: 'var(--cp-purple-60, #7C3AED)',
 };
 
 // Jira issue type icon colors

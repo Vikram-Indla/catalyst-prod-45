@@ -54,7 +54,7 @@ const TYPE_CONFIG: Record<string, { label: string; icon: any; color: string }> =
   test_cases: { label: 'Test Cases', icon: FileText, color: 'var(--ds-text-brand, #2563EB)' },
   defects: { label: 'Defects', icon: Bug, color: 'var(--ds-text-danger, #DC2626)' },
   requirements: { label: 'Requirements', icon: FileCheck, color: '#059669' },
-  shared_steps: { label: 'Shared Steps', icon: Layers, color: '#7C3AED' },
+  shared_steps: { label: 'Shared Steps', icon: Layers, color: 'var(--cp-purple-60, #7C3AED)' },
   tags: { label: 'Tags', icon: Tags, color: '#EC4899' },
   cycles: { label: 'Test Cycles', icon: RefreshCw, color: '#0891B2' },
   full_backup: { label: 'Full Backup', icon: Database, color: 'var(--ds-text-subtlest, #64748B)' },

@@ -76,7 +76,7 @@ export const PRIORITY_CONFIG: Record<IssuePriority, { label: string; color: stri
 
 /** Issue type icon config */
 export const ISSUE_TYPE_CONFIG: Record<IssueType, { icon: string; color: string; label: string }> = {
-  epic:    { icon: '◆', color: '#7C3AED', label: 'Epic' },
+  epic:    { icon: '◆', color: 'var(--cp-purple-60, #7C3AED)', label: 'Epic' },
   feature: { icon: '▲', color: '#2563EB', label: 'Feature' },
   story:   { icon: '●', color: '#0D9488', label: 'Story' },
   bug:     { icon: '⬡', color: '#DC2626', label: 'Bug' },

@@ -25,7 +25,7 @@ const BOARD_ACCENT: Record<string, string> = {
   'Business Request Kanban': 'var(--ds-text-warning, #D97706)',
   'Delivery Board': 'var(--ds-text-brand, #2563EB)',
   'QA Board': 'var(--ds-text-success, #16A34A)',
-  'Design Board': '#7C3AED',
+  'Design Board': 'var(--cp-purple-60, #7C3AED)',
   'My Planning Board': 'var(--ds-text-warning, #D97706)',
 };
 

@@ -24,7 +24,7 @@
   --pc-warning-bg: #FFFBEB;
   --pc-danger: var(--ds-text-danger, #DC2626);
   --pc-danger-bg: var(--ds-background-danger, #FEF2F2);
-  --pc-purple: #7C3AED;
+  --pc-purple: var(--cp-purple-60, #7C3AED);
   --pc-purple-bg: #F5F3FF;
   --pc-r-sm: 4px;
   --pc-r-md: 6px;

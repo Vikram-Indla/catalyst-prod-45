@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { X, Tag } from '@/lib/atlaskit-icons';
 
-const COLORS = ['var(--ds-text-brand, #2563EB)', '#0D9488', '#7C3AED', 'var(--ds-text-danger, #DC2626)', '#EA580C', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-success, #16A34A)', '#0284C7'];
+const COLORS = ['var(--ds-text-brand, #2563EB)', '#0D9488', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-danger, #DC2626)', '#EA580C', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-success, #16A34A)', '#0284C7'];
 const MAX_LABELS = 20;
 
 interface LabelsTabProps {

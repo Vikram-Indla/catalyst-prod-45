@@ -27,11 +27,11 @@ export default function IncidentInsightsPage() {
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: 'var(--cp-purple-5, #F3E8FF)' }}>
-            <Sparkles size={18} style={{ color: '#7C3AED' }} />
+            <Sparkles size={18} style={{ color: 'var(--cp-purple-60, #7C3AED)' }} />
           </div>
           <div className="flex items-center gap-2">
             <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: textPrimary }}>Insights</h1>
-            <span className="px-1.5 py-0.5" style={{ fontSize: 10, fontWeight: 700, backgroundColor: 'var(--cp-purple-5, #F3E8FF)', color: '#7C3AED', borderRadius: 3 }}>AI</span>
+            <span className="px-1.5 py-0.5" style={{ fontSize: 10, fontWeight: 700, backgroundColor: 'var(--cp-purple-5, #F3E8FF)', color: 'var(--cp-purple-60, #7C3AED)', borderRadius: 3 }}>AI</span>
           </div>
           <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: textSecondary, marginLeft: 'auto' }}>Pattern analysis and recommendations</p>
         </div>
@@ -41,7 +41,7 @@ export default function IncidentInsightsPage() {
           <div className="flex items-start gap-3">
             <div className="shrink-0 rounded-full flex items-center justify-center" style={{
               width: 36, height: 50,
-              background: 'linear-gradient(135deg, #7C3AED, #0D9488)',
+              background: 'linear-gradient(135deg, var(--cp-purple-60, #7C3AED), #0D9488)',
             }}>
               <Sparkles size={18} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
             </div>

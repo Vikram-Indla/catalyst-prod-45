@@ -285,7 +285,7 @@ export function SyncLogs() {
               onChange={setSelectedVersions}
               placeholder="Select fix versions…"
               emptyMessage="Run a sync first to populate versions"
-              accentColor="#7C3AED"
+              accentColor="var(--cp-purple-60, #7C3AED)"
             />
 
             {!hasFilters && (typeOptions.length > 0 || projectOptions.length > 0) && (
@@ -480,7 +480,7 @@ function LogRow({ log, formatDuration }: { log: SyncLogEntry; formatDuration: (m
   }
   const typeColors: Record<string, { bg: string; text: string }> = {
     incremental: { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, #2563EB)' },
-    full: { bg: '#F5F3FF', text: '#7C3AED' },
+    full: { bg: '#F5F3FF', text: 'var(--cp-purple-60, #7C3AED)' },
   }
   const sc = statusColors[log.status] || statusColors.running
   const tc = typeColors[log.sync_type] || typeColors.full

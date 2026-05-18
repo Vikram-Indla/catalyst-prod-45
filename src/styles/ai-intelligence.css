@@ -24,7 +24,7 @@
   --rai-warning-bg: #FFFBEB;
   --rai-danger: var(--ds-text-danger, #DC2626);
   --rai-danger-bg: var(--ds-background-danger, #FEF2F2);
-  --rai-purple: #7C3AED;
+  --rai-purple: var(--cp-purple-60, #7C3AED);
   --rai-purple-bg: #F5F3FF;
 
   --rai-font-heading: var(--cp-font-heading);

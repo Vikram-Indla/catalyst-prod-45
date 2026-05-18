@@ -117,7 +117,7 @@
   /* ═══ Requirement Assist Capability Accents ═══ */
   --cap-brd: #2563EB;
   --cap-translate: #0D9488;
-  --cap-epic: #7C3AED;
+  --cap-epic: var(--cp-purple-60, #7C3AED);
   --cap-uat: #D97706;
   --quality-high: #059669;
   --quality-mid: #D97706;
@@ -213,7 +213,7 @@
   --cp-primary-60: var(--cp-primary-60, #0052CC);
   --cp-primary-70: #0747A6;
   --cp-primary-5: #E9F2FF;
-  --cp-purple-60: #7C3AED;
+  --cp-purple-60: var(--cp-purple-60, #7C3AED);
   --cp-purple-5: #F5F3FF;
   --cp-success-60: #16A34A;
   --cp-warning-60: #D97706;
@@ -5187,7 +5187,7 @@ input[type="range"]::-moz-range-thumb {
   background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE;
 }
 .badge-local-auth {
-  background: #F5F3FF; color: #7C3AED; border: 1px solid rgba(124,58,237,0.25);
+  background: #F5F3FF; color: var(--cp-purple-60, #7C3AED); border: 1px solid rgba(124,58,237,0.25);
 }
 
 /* Dark overrides — Vercel Neutral */

@@ -38,7 +38,7 @@ export function hubColour(hub?: string | null): string {
     case 'taskhub': return '#D4D4D8';
     case 'incidenthub': return 'var(--ds-text-danger, #DC2626)';
     case 'testhub': return '#0D9488';
-    case 'releasehub': return '#7C3AED';
+    case 'releasehub': return 'var(--cp-purple-60, #7C3AED)';
     default: return 'var(--ds-text-subtlest, #64748B)';
   }
 }

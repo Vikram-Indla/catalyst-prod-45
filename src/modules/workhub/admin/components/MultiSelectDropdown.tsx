@@ -62,7 +62,7 @@ export function MultiSelectDropdown({
     )
   }
 
-  const accentBg = accentColor === '#7C3AED' ? '#F5F3FF' : 'var(--ds-background-selected, #EFF6FF)'
+  const accentBg = accentColor === 'var(--cp-purple-60, #7C3AED)' ? '#F5F3FF' : 'var(--ds-background-selected, #EFF6FF)'
 
   return (
     <div>
