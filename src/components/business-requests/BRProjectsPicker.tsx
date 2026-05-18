@@ -99,7 +99,7 @@ export function BRProjectsPicker({ businessRequestId }: Props) {
           display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px',
           borderRadius: 4, cursor: 'pointer', transition: 'background .12s', flexWrap: 'wrap', minHeight: 32,
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+        onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
         {linkedProjects.length === 0 ? (
@@ -141,7 +141,7 @@ export function BRProjectsPicker({ businessRequestId }: Props) {
                       minHeight: 36, padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 10,
                       cursor: 'pointer', background: isActive ? '#DEEBFF' : 'transparent',
                     }}
-                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                     onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                   >
                     <div style={{ width: 24, height: 24, borderRadius: 4, background: '#E9F2FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>

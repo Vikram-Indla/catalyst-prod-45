@@ -48,7 +48,7 @@ function SidebarAddTrigger({
         fontFamily: 'inherit',
         transition: 'background 0.1s',
       }}
-      onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
       onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
     >
       {label === 'Add parent' ? 'None' : label}
@@ -301,7 +301,7 @@ function BusinessRequestParentPicker({
           }}
         >
           {/* Search */}
-          <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)' }}>
+          <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid var(--ds-border-focused, #4C9AFF)', borderRadius: 4, padding: '4px 8px' }}>
               <SearchIcon size="small" primaryColor="var(--ds-icon-subtle, #5E6C84)" />
               <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search business requests…"
@@ -315,7 +315,7 @@ function BusinessRequestParentPicker({
             {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No matching business requests</div>}
           </div>
           {currentParent && (
-            <div style={{ borderTop: '1px solid var(--ds-surface-sunken, #F4F5F7)', padding: '4px 0' }}>
+            <div style={{ borderTop: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', padding: '4px 0' }}>
               <button
                 type="button"
                 onClick={() => { updateParent.mutate(null); setShowPicker(false); }}
@@ -359,7 +359,7 @@ function renderBrGroup(
               display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
               cursor: 'pointer', background: isSelected ? 'var(--ds-background-information, #DEEBFF)' : 'transparent', transition: 'background 80ms',
             }}
-            onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+            onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
             onMouseLeave={e => { e.currentTarget.style.background = isSelected ? 'var(--ds-background-information, #DEEBFF)' : 'transparent'; }}
           >
             <IssueIcon type="Business Request" size={14} />
@@ -524,7 +524,7 @@ function SingleParentPicker({
           }}
         >
           {/* Search */}
-          <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)' }}>
+          <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid var(--ds-border-focused, #4C9AFF)', borderRadius: 4, padding: '4px 8px' }}>
               <SearchIcon size="small" primaryColor="var(--ds-icon-subtle, #5E6C84)" />
               <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
@@ -538,7 +538,7 @@ function SingleParentPicker({
             {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textAlign: 'center' }}>No matching items</div>}
           </div>
           {(currentParent || hasRawParent) && (
-            <div style={{ borderTop: '1px solid var(--ds-surface-sunken, #F4F5F7)', padding: '4px 0' }}>
+            <div style={{ borderTop: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', padding: '4px 0' }}>
               <button
                 type="button"
                 onClick={() => { updateParent.mutate(null); setShowPicker(false); }}
@@ -713,7 +713,7 @@ function MultiLinkPicker({
               boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 1000, maxHeight: 400, display: 'flex', flexDirection: 'column',
             }}
           >
-            <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)' }}>
+            <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid var(--ds-border-focused, #4C9AFF)', borderRadius: 4, padding: '4px 8px' }}>
                 <SearchIcon size="small" primaryColor="var(--ds-icon-subtle, #5E6C84)" />
                 <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
@@ -755,7 +755,7 @@ function renderGroup(
               display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
               cursor: 'pointer', background: isSelected ? 'var(--ds-background-information, #DEEBFF)' : 'transparent', transition: 'background 80ms',
             }}
-            onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+            onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
             onMouseLeave={e => { e.currentTarget.style.background = isSelected ? 'var(--ds-background-information, #DEEBFF)' : 'transparent'; }}
           >
             <IssueIcon type={item.issue_type} size={14} />
@@ -787,7 +787,7 @@ function renderGroupMulti(
               display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
               cursor: 'pointer', background: isLinked ? 'var(--ds-background-information, #DEEBFF)' : 'transparent', transition: 'background 80ms',
             }}
-            onMouseEnter={e => { if (!isLinked) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+            onMouseEnter={e => { if (!isLinked) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
             onMouseLeave={e => { e.currentTarget.style.background = isLinked ? 'var(--ds-background-information, #DEEBFF)' : 'transparent'; }}
           >
             {/* Checkbox */}

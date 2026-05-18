@@ -215,7 +215,7 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
       {!loaded && (
         <div style={{
           width: '100%', height: 200, borderRadius: 3,
-          background: 'var(--ds-surface-sunken, #F4F5F7)',
+          background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <Loader2 size={24} style={{ color: '#6B6E76', animation: 'spin 0.86s cubic-bezier(0.4,0.15,0.6,0.85) infinite' }} />

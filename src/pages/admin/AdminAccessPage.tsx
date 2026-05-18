@@ -585,7 +585,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
               </div>
 
               {/* Change password inline form */}
-              <div style={{ borderTop: '1px solid var(--ds-border-subtle, #F4F5F7)', paddingTop: 10 }}>
+              <div style={{ borderTop: '1px solid var(--ds-border-subtle, var(--cp-bg-sunken, #F4F5F7))', paddingTop: 10 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: pwOpen ? 12 : 0 }}>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Set new password</div>
@@ -847,8 +847,8 @@ function PeopleTab() {
                 <tr
                   key={u.id}
                   onClick={() => setEditUser(u)}
-                  style={{ borderBottom: '1px solid var(--ds-border-subtle, #F4F5F7)', cursor: 'pointer' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)')}
+                  style={{ borderBottom: '1px solid var(--ds-border-subtle, var(--cp-bg-sunken, #F4F5F7))', cursor: 'pointer' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7))')}
                   onMouseLeave={e => (e.currentTarget.style.background = '')}
                 >
                   <td style={{ padding: '10px 12px', fontWeight: 500 }}>
@@ -872,7 +872,7 @@ function PeopleTab() {
                   <td style={{ padding: '10px 12px', textAlign: 'center' }}>
                     <span style={{
                       display: 'inline-block',
-                      background: modCount > 0 ? 'var(--ds-background-neutral, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' : 'var(--ds-background-neutral-subtle, #F4F5F7)',
+                      background: modCount > 0 ? 'var(--ds-background-neutral, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' : 'var(--ds-background-neutral-subtle, var(--cp-bg-sunken, #F4F5F7))',
                       color: modCount > 0 ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' : 'var(--ds-text-disabled, #A5ADBA)',
                       borderRadius: 10, padding: '1px 8px', fontSize: 12, fontWeight: 500,
                     }}>
@@ -997,7 +997,7 @@ function InvitationsTab() {
               const isPending = !inv.accepted_at && !expired;
               const loading = actionLoading[inv.id];
               return (
-                <tr key={inv.id} style={{ borderBottom: '1px solid var(--ds-border-subtle, #F4F5F7)' }}>
+                <tr key={inv.id} style={{ borderBottom: '1px solid var(--ds-border-subtle, var(--cp-bg-sunken, #F4F5F7))' }}>
                   <td style={{ padding: '10px 12px', fontWeight: 500 }}>{inv.email}</td>
                   <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtle)', fontSize: 12 }}>{new Date(inv.created_at).toLocaleDateString()}</td>
                   <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtle)', fontSize: 12 }}>{new Date(inv.expires_at).toLocaleDateString()}</td>
@@ -1089,7 +1089,7 @@ function EmailLogTab() {
           {logs.length === 0 ? (
             <tr><td colSpan={4} style={{ padding: 32, textAlign: 'center', color: 'var(--ds-text-subtle)' }}>No emails sent yet</td></tr>
           ) : logs.map(log => (
-            <tr key={log.id} style={{ borderBottom: '1px solid var(--ds-border-subtle, #F4F5F7)' }}>
+            <tr key={log.id} style={{ borderBottom: '1px solid var(--ds-border-subtle, var(--cp-bg-sunken, #F4F5F7))' }}>
               <td style={{ padding: '10px 12px' }}>{log.to_email}</td>
               <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtle)' }}>{log.subject}</td>
               <td style={{ padding: '10px 12px' }}>

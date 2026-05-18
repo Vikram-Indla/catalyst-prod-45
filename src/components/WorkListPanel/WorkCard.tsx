@@ -74,7 +74,7 @@ export const WorkCard = memo(function WorkCard({
       onMouseEnter={e => {
         e.currentTarget.style.background = isSelected
           ? 'var(--ds-background-selected, #DEEBFF)'
-          : 'var(--ds-surface-hovered, #F4F5F7)';
+          : 'var(--ds-surface-hovered, var(--cp-bg-sunken, #F4F5F7))';
       }}
       onMouseLeave={e => {
         e.currentTarget.style.background = isSelected

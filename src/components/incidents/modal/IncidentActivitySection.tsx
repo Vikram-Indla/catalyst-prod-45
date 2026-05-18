@@ -163,10 +163,10 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-base font-semibold text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))]">Activity</h2>
         <div className="flex items-center gap-1">
-          <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,#F4F5F7)] text-[#42526E]">
+          <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[#42526E]">
             <Filter className="w-4 h-4" />
           </button>
-          <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,#F4F5F7)] text-[#42526E]">
+          <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[#42526E]">
             <ArrowUpDown className="w-4 h-4" />
           </button>
         </div>
@@ -181,7 +181,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
               'px-3 py-1.5 rounded text-sm transition-colors border',
               activeTab === tab.id
                 ? 'bg-[#E9F2FF] text-[var(--cp-primary-60, #0052CC)] border-[var(--cp-primary-60, #0052CC)]'
-                : 'text-[#42526E] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] border-transparent',
+                : 'text-[#42526E] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] border-transparent',
             )}
             onClick={() => setActiveTab(tab.id)}
           >
@@ -221,7 +221,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
                   Save
                 </button>
                 <button
-                  className="px-3 h-8 rounded text-sm text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,#F4F5F7)]"
+                  className="px-3 h-8 rounded text-sm text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]"
                   onClick={() => { setIsComposerExpanded(false); setComment(''); }}
                 >
                   Cancel
@@ -237,10 +237,10 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
         <div className="space-y-4 animate-pulse">
           {[1, 2, 3].map(i => (
             <div key={i} className="flex gap-3 py-4 border-t border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))]">
-              <div className="w-8 h-8 rounded-full bg-[var(--ds-surface-sunken,#F4F5F7)]" />
+              <div className="w-8 h-8 rounded-full bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]" />
               <div className="flex-1 space-y-2">
-                <div className="h-3 bg-[var(--ds-surface-sunken,#F4F5F7)] rounded w-1/3" />
-                <div className="h-3 bg-[var(--ds-surface-sunken,#F4F5F7)] rounded w-2/3" />
+                <div className="h-3 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] rounded w-1/3" />
+                <div className="h-3 bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] rounded w-2/3" />
               </div>
             </div>
           ))}

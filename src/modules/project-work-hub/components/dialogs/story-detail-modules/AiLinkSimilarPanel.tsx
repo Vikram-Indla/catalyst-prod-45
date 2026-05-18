@@ -81,7 +81,7 @@ function LinkAsDropdown({ value, onChange }: { value: string; onChange: (v: stri
                 cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                 background: opt === value ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
               }}
-              onMouseEnter={e => { if (opt !== value) (e.currentTarget).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+              onMouseEnter={e => { if (opt !== value) (e.currentTarget).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
               onMouseLeave={e => { if (opt !== value) (e.currentTarget).style.background = 'transparent'; }}
             >
               {opt}
@@ -238,7 +238,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '10px 12px', cursor: 'pointer', background: 'var(--ds-surface-sunken, #FAFBFC)',
-          borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)',
+          borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -279,7 +279,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
             {/* Select all / Deselect all */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8,
-              padding: '10px 0 6px', borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)',
+              padding: '10px 0 6px', borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
             }}>
               <Checkbox checked={allSelected} onChange={toggleAll} />
               <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
@@ -294,7 +294,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
                 onClick={() => toggleOne(s.issue_key)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 8,
-                  padding: '8px 0', borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)',
+                  padding: '8px 0', borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
                   cursor: 'pointer',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #FAFBFC)')}

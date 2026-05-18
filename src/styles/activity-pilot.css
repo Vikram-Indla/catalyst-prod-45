@@ -106,7 +106,7 @@
   cursor: pointer;
   transition: background 150ms, color 150ms;
 }
-.ap-quick-btn:hover { background: var(--ds-surface-sunken, #F4F5F7); color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))); }
+.ap-quick-btn:hover { background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)); color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))); }
 
 /* ── Composer expanded ── */
 .ap-composer-expanded {
@@ -185,7 +185,7 @@
   padding: 0 5px;
   border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 3px;
-  background: var(--ds-surface-sunken, #F4F5F7);
+  background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7));
   font: 700 11px/16px var(--cp-font-mono);
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }

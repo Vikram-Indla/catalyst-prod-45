@@ -489,7 +489,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                 display: 'flex', alignItems: 'center', gap: 6, transition: 'background 0.15s',
                 fontFamily: 'var(--cp-font-body)',
               }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'none')}
               >
                 <Share2 size={16} /> <span>Share</span>
@@ -497,11 +497,11 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
               {/* Dots menu */}
               <div ref={dotsMenuRef} style={{ position: 'relative' }}>
                 <button onClick={() => setShowDotsMenu(!showDotsMenu)} style={{
-                  background: showDotsMenu ? 'var(--ds-surface-sunken, #F4F5F7)' : 'none', border: 'none', cursor: 'pointer',
+                  background: showDotsMenu ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' : 'none', border: 'none', cursor: 'pointer',
                   padding: '6px 8px', borderRadius: 4, color: '#42526E',
                   display: 'flex', alignItems: 'center', transition: 'background 0.15s',
                 }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                   onMouseLeave={e => { if (!showDotsMenu) e.currentTarget.style.background = 'none'; }}
                 ><MoreHorizontal size={18} /></button>
                 {showDotsMenu && (
@@ -512,11 +512,11 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                     zIndex: 50, minWidth: 200, animation: 'brm-slide-down 0.15s ease',
                   }}>
                     <button onClick={() => { setShowDotsMenu(false); handleDuplicate(); }} style={menuItem}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     ><Copy size={14} /> Clone request</button>
                     <button onClick={() => { setShowDotsMenu(false); toast('Archive — coming soon'); }} style={menuItem}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     ><Archive size={14} /> Archive</button>
                     <div style={{ height: 1, background: '#EBECF0', margin: '6px 0' }} />
@@ -567,7 +567,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                   background: titleFocused ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'transparent',
                   boxShadow: titleFocused ? '0 0 0 2px #4C9AFF' : 'none',
                 }}
-                onMouseEnter={e => { if (!titleFocused) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                onMouseEnter={e => { if (!titleFocused) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                 onMouseLeave={e => { if (!titleFocused) e.currentTarget.style.background = 'transparent'; }}
               >{request.title ?? '—'}</h1>
 
@@ -723,7 +723,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                         cursor: 'pointer', transition: 'all 0.15s',
                         fontFamily: 'var(--cp-font-body)',
                       }}
-                        onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                        onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                         onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
                       >{label}</button>
                     );
@@ -817,7 +817,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 transition: 'background 0.15s',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
               onMouseLeave={e => { if (!isDraggingRef.current) e.currentTarget.style.background = 'transparent'; }}
             >
               <div style={{ width: 1.5, height: 32, borderRadius: 1, background: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' }} />
@@ -867,7 +867,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                               height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                               cursor: 'pointer', background: isActive ? '#DEEBFF' : 'transparent', transition: 'background 80ms',
                             }}
-                            onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                            onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                             onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                           >
                             <span style={{ background: bg, color, display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{step.label}</span>
@@ -898,7 +898,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                         borderRadius: 4, cursor: 'pointer', transition: 'background 0.12s',
                         border: showPriorityDropdown ? '2px solid #4C9AFF' : '2px solid transparent',
                       }}
-                      onMouseEnter={e => { if (!showPriorityDropdown) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                      onMouseEnter={e => { if (!showPriorityDropdown) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                       onMouseLeave={e => { if (!showPriorityDropdown) e.currentTarget.style.background = 'transparent'; }}
                     >
                       {PRIORITY_SVG[priorityLabel] || PRIORITY_SVG.Medium}
@@ -921,7 +921,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                                 cursor: 'pointer', background: isActive ? '#DEEBFF' : 'transparent',
                                 transition: 'background 80ms',
                               }}
-                              onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                              onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                               onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                             >
                               {PRIORITY_SVG[p]}

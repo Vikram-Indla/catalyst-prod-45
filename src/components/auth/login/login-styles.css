@@ -38,7 +38,7 @@
   --clmp-bg:         var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --clmp-bg-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --clmp-bg-subtle:  var(--ds-surface-sunken, #F7F8F9);
-  --clmp-bg-band:    var(--ds-background-neutral, #F4F5F7);
+  --clmp-bg-band:    var(--ds-background-neutral, var(--cp-bg-sunken, #F4F5F7));
   --clmp-bg-tint:    #F0F5FF;
 
   --clmp-bd-subtle:  var(--ds-border-disabled, #EBECF0);

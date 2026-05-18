@@ -239,7 +239,7 @@ export function DefectsSection({
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       width: 28, height: 28, border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3,
-                      background: 'var(--ds-surface-sunken, #F4F5F7)',
+                      background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
                       cursor: draftSummary.trim() ? 'pointer' : 'not-allowed',
                       color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
                       opacity: draftSummary.trim() ? 1 : 0.5,

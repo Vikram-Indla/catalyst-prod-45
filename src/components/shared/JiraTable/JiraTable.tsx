@@ -56,7 +56,7 @@ const pageBtnStyle = (disabled: boolean): React.CSSProperties => ({
   fontSize: 13,
   border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
   borderRadius: 3,
-  background: disabled ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+  background: disabled ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
   color: disabled ? '#A5ADBA' : '#42526E',
   cursor: disabled ? 'default' : 'pointer',
   fontFamily: 'inherit',
@@ -462,7 +462,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         box-shadow: inset 3px 0 0 #0C66E4;
       }
       .jira-table-grid .jira-table-row-focused > td {
-        background-color: var(--ds-surface-sunken, #F4F5F7) !important;
+        background-color: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)) !important;
       }
       /* Grid lines via box-shadow (immune to Atlaskit's em-based overrides).
          Phase 12 (2026-04-29): reverted to Atlaskit color.border via
@@ -734,7 +734,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         border-radius: 1px;
       }
       .jira-table-grid tbody tr.jira-table-group-row > td {
-        background: var(--ds-surface-sunken, #F4F5F7) !important;
+        background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)) !important;
       }
 
       /* ── Apr 27, 2026 (L59): Sticky Key-column prefix ──
@@ -786,7 +786,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(1),
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(2),
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(3) {
-        background: var(--ds-surface-sunken, #F4F5F7) !important;
+        background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)) !important;
       }
       /* 2026-05-10 Jira-parity: group header rows stick below the thead
          while their child rows scroll past. top:40px = thead height.
@@ -795,7 +795,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         position: sticky;
         top: 40px;
         z-index: 1;
-        background: var(--ds-surface-sunken, #F4F5F7);
+        background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7));
       }
       /* ── Critique fixes (2026-04) — ported from the retired legacy table ──
          Center the selection checkbox in its column.
@@ -877,7 +877,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
          DARK MODE — Rule 3 paired overrides for !important hex above.
          Most surfaces already use --ds-* tokens that flip natively under
          @atlaskit/tokens dark mode. The remaining hardcoded fallbacks
-         (var(--ds-surface-sunken, #F4F5F7) group-row bg, #F7F8F9 sticky header, #0C66E4 focus bar,
+         (var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)) group-row bg, #F7F8F9 sticky header, #0C66E4 focus bar,
          var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))) grid line) need explicit .dark companions per Rule 3.
          ───────────────────────────────────────────────────────────────────── */
       .dark .jira-table-grid .jira-table-row-focused > td {
@@ -2083,7 +2083,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     fontFamily: 'inherit',
                     borderRadius: 3,
                   }}
-                  onMouseEnter={(e) => { if (!disabled) (e.currentTarget as HTMLElement).style.background = a.danger ? '#FFEBE6' : 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                  onMouseEnter={(e) => { if (!disabled) (e.currentTarget as HTMLElement).style.background = a.danger ? '#FFEBE6' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                 >
                   {a.icon}
@@ -2343,7 +2343,7 @@ function ColumnManagerTrigger<TRow>({
                     fontSize: 14,
                     color: '#292A2E',
                   }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                   onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
                 >
                   <AkCheckbox

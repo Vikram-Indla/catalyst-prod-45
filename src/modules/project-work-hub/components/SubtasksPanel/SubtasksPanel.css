@@ -632,7 +632,7 @@
   font-family: inherit;
 }
 .sp-type-selector-btn:hover {
-  background: var(--ds-background-neutral-subtle-hovered, #F4F5F7);
+  background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7));
 }
 .sp-type-selector-dropdown {
   position: absolute;
@@ -657,7 +657,7 @@
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
 }
 .sp-type-selector-item:hover {
-  background: var(--ds-background-neutral-subtle-hovered, #F4F5F7);
+  background: var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7));
 }
 .sp-type-selector-item.is-active {
   background: var(--ds-background-selected, #DEEBFF);
@@ -701,7 +701,7 @@
   height: 28px;
   border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)));
   border-radius: 3px;
-  background: var(--ds-background-neutral, #F4F5F7);
+  background: var(--ds-background-neutral, var(--cp-bg-sunken, #F4F5F7));
   color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   cursor: pointer;
 }

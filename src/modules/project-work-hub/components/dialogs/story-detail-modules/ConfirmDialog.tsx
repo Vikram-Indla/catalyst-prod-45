@@ -38,7 +38,7 @@ export function ConfirmDialog({
             fontSize: 13, fontWeight: 500, cursor: 'pointer', color: 'var(--ds-text-subtle, #5E6C84)',
             transition: 'background 0.15s',
           }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
             onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface, #FFF)')}
           >{cancelLabel}</button>
           <button onClick={onConfirm} style={{

@@ -181,7 +181,7 @@ export function WorkCardAssigneePicker({
             {/* Unassigned */}
             <div onClick={() => updateMutation.mutate(null)} style={{
               height: 40, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 10,
-              cursor: 'pointer', borderBottom: '1px solid var(--cp-border-subtle, #F4F5F7)',
+              cursor: 'pointer', borderBottom: '1px solid var(--cp-border-subtle, var(--cp-bg-sunken, #F4F5F7))',
               background: !currentAssigneeId ? 'var(--cp-interact-selected, #DEEBFF)' : 'transparent',
             }}>
               <div style={{
@@ -199,7 +199,7 @@ export function WorkCardAssigneePicker({
                   cursor: 'pointer',
                   background: m.user_id === currentAssigneeId ? 'var(--cp-interact-selected, #DEEBFF)' : 'transparent',
                 }}
-                onMouseEnter={e => { if (m.user_id !== currentAssigneeId) (e.currentTarget as HTMLElement).style.background = 'var(--cp-interact-hover, #F4F5F7)'; }}
+                onMouseEnter={e => { if (m.user_id !== currentAssigneeId) (e.currentTarget as HTMLElement).style.background = 'var(--cp-interact-hover, var(--cp-bg-sunken, #F4F5F7))'; }}
                 onMouseLeave={e => { if (m.user_id !== currentAssigneeId) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
                 {m.avatar_url ? (

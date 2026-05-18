@@ -101,7 +101,7 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
           'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-body font-medium transition-colors border',
           isDark
             ? 'border-[var(--ds-border,var(--cp-ink-1, #2E2E2E))] text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
-            : 'border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] text-[var(--ds-text-accent-gray,#505258)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)]',
+            : 'border-[var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))] text-[var(--ds-text-accent-gray,#505258)] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]',
         )}
       >
         {copied ? <Check className="w-3.5 h-3.5 text-[var(--ds-icon-accent-green,#22A06B)]" /> : <Copy className="w-3.5 h-3.5" />}
@@ -128,7 +128,7 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
                 'w-full text-left px-3 py-2 text-xs font-body transition-colors',
                 isDark
                   ? 'text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] hover:bg-[var(--ds-surface-overlay,#1F1F1F)] disabled:text-[var(--ds-text-subtlest,#878787)]'
-                  : 'text-[var(--ds-text,#292A2E)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] disabled:text-[var(--ds-text-subtlest,#6B6E76)]',
+                  : 'text-[var(--ds-text,#292A2E)] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] disabled:text-[var(--ds-text-subtlest,#6B6E76)]',
               )}
             >
               {label}
@@ -151,7 +151,7 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
               <span className={cn('font-body text-sm font-medium', isDark ? 'text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' : 'text-[var(--ds-text,#292A2E)]')}>
                 Copy manually
               </span>
-              <button onClick={() => setFallbackText(null)} className={cn('p-1 rounded', isDark ? 'hover:bg-[var(--ds-border,#292929)]' : 'hover:bg-[var(--ds-surface-sunken,#F4F5F7)]')}>
+              <button onClick={() => setFallbackText(null)} className={cn('p-1 rounded', isDark ? 'hover:bg-[var(--ds-border,#292929)]' : 'hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]')}>
                 <X className="w-4 h-4" />
               </button>
             </div>

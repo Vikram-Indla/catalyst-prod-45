@@ -185,7 +185,7 @@ export function ActivitySection({
               'inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-body font-medium transition-colors',
               filter === opt.key
                 ? isDark ? 'bg-[var(--ds-surface-overlay,#1F1F1F)] text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]' : 'bg-[#E9F2FF] text-[#0C66E4]'
-                : isDark ? 'text-[var(--ds-text-subtlest,#878787)] hover:bg-[var(--ds-surface-overlay,#1F1F1F)]' : 'text-[var(--ds-text-accent-gray,#505258)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)]',
+                : isDark ? 'text-[var(--ds-text-subtlest,#878787)] hover:bg-[var(--ds-surface-overlay,#1F1F1F)]' : 'text-[var(--ds-text-accent-gray,#505258)] hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]',
             )}
           >
             {opt.icon}
@@ -224,7 +224,7 @@ export function ActivitySection({
               'p-2 rounded-md transition-colors shrink-0',
               commentText.trim()
                 ? 'bg-[#0C66E4] text-white hover:bg-[var(--cp-primary-60, #0052CC)]'
-                : isDark ? 'bg-[var(--ds-border,#292929)] text-[var(--ds-text-subtlest,#878787)]' : 'bg-[var(--ds-surface-sunken,#F4F5F7)] text-[var(--ds-text-subtlest,#6B6E76)]',
+                : isDark ? 'bg-[var(--ds-border,#292929)] text-[var(--ds-text-subtlest,#878787)]' : 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[var(--ds-text-subtlest,#6B6E76)]',
             )}
           >
             {posting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}

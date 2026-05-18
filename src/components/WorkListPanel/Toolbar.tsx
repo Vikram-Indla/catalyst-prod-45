@@ -78,7 +78,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           padding: '4px 8px',
           borderRadius: '4px',
           border: '1px solid var(--ds-border, #EBECF0)',
-          background: 'var(--ds-surface-sunken, #F4F5F7)',
+          background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
         }}
       >
         <SearchIcon size="small" color="var(--ds-text-subtlest, #626F86)" />
@@ -125,7 +125,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         }}
         onMouseEnter={e => {
           e.currentTarget.style.background =
-            'var(--ds-surface-sunken, #F4F5F7)';
+            'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))';
         }}
         onMouseLeave={e => {
           e.currentTarget.style.background = activeFilterCount > 0
@@ -214,7 +214,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         }}
         onMouseEnter={e => {
           e.currentTarget.style.background =
-            'var(--ds-surface-sunken, #F4F5F7)';
+            'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))';
         }}
         onMouseLeave={e => {
           e.currentTarget.style.background = 'transparent';

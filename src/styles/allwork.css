@@ -6,7 +6,7 @@
 :root {
   --aw-bg: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)));
   --aw-bg-subtle: #F7F8F9;
-  --aw-hover: var(--ds-surface-sunken, #F4F5F7);
+  --aw-hover: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7));
   --aw-text: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   --aw-text-subtle: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
   --aw-border: rgba(9,30,66,0.13);
@@ -417,7 +417,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--ds-surface-sunken, #F4F5F7);
+  background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7));
   flex-shrink: 0;
 }
 
@@ -1428,7 +1428,7 @@
 .sp-row {
   height: 40px; background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); cursor: pointer; transition: background 0.1s;
 }
-.sp-row:hover { background: var(--ds-surface-sunken, #F4F5F7); }
+.sp-row:hover { background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)); }
 .sp-row--create { background: #FFFDE7; }
 .sp-row--create:hover { background: #FFFDE7; }
 .sp-row + .sp-row { border-top: 0; }
@@ -1584,7 +1584,7 @@
   background: var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff))); font-size: 13px; color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
   cursor: pointer; font-family: inherit; transition: background 0.12s;
 }
-.sp-empty-cta:hover { background: var(--ds-surface-sunken, #F4F5F7); }
+.sp-empty-cta:hover { background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)); }
 
 /* ── Skeleton ── */
 .sp-skeleton-row {

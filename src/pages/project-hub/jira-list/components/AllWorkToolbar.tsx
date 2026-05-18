@@ -512,7 +512,7 @@ function renderFacetRow(
         cursor: 'pointer',
         fontSize: 13, color: 'var(--ds-text, #292A2E)',
       }}
-      onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'}
+      onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'}
       onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
     >
       <input
@@ -1144,7 +1144,7 @@ export function AllWorkToolbar({
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
               padding: '4px 10px', border: 'none', borderRadius: 4,
-              background: askCatyQuery.trim() ? 'var(--ds-background-brand-bold, #0C66E4)' : 'var(--ds-background-neutral, #F4F5F7)',
+              background: askCatyQuery.trim() ? 'var(--ds-background-brand-bold, #0C66E4)' : 'var(--ds-background-neutral, var(--cp-bg-sunken, #F4F5F7))',
               color: askCatyQuery.trim() ? '#FFFFFF' : 'var(--ds-text-disabled, #8590A2)',
               fontSize: 13, fontWeight: 500,
               cursor: askCatyQuery.trim() ? 'pointer' : 'default',
@@ -1315,7 +1315,7 @@ export function AllWorkToolbar({
                         fontFamily: 'inherit',
                         display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
                       }}
-                      onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                      onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                       onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                     >
                       <span>{FACET_LABELS[f]}</span>

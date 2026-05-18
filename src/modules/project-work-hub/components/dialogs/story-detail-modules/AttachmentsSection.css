@@ -152,7 +152,7 @@
 }
 
 .att-menu-item:hover {
-  background: var(--ds-surface-sunken, #F4F5F7);
+  background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7));
 }
 
 .att-menu-badge {
@@ -334,7 +334,7 @@
   width: 32px;
   height: 32px;
   border-radius: 4px;
-  background: var(--ds-surface-sunken, #F4F5F7);
+  background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7));
   display: flex;
   align-items: center;
   justify-content: center;

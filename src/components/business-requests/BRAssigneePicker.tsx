@@ -77,7 +77,7 @@ export function BRAssigneePicker({ value, saveAs = 'name', onChange, placeholder
           display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px',
           borderRadius: 4, cursor: 'pointer', transition: 'background .12s',
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+        onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
         {currentName ? (
@@ -110,7 +110,7 @@ export function BRAssigneePicker({ value, saveAs = 'name', onChange, placeholder
                 cursor: 'pointer', borderBottom: '1px solid #F4F5F7',
                 background: !value ? '#DEEBFF' : 'transparent',
               }}
-                onMouseEnter={e => { if (value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                onMouseEnter={e => { if (value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                 onMouseLeave={e => { if (value) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
                 <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, border: '1px dashed var(--ds-border-disabled, #C1C7D0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: 'var(--ds-border-disabled, #C1C7D0)' }}>?</div>
@@ -125,7 +125,7 @@ export function BRAssigneePicker({ value, saveAs = 'name', onChange, placeholder
                       height: 40, padding: '0 12px', display: 'flex', alignItems: 'center', gap: 10,
                       cursor: 'pointer', background: isActive ? '#DEEBFF' : 'transparent',
                     }}
-                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                     onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                   >
                     <AvatarCircle userId={u.id} name={u.full_name ?? '?'} avatarUrl={u.avatar_url} />

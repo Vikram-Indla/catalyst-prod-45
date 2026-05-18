@@ -76,7 +76,7 @@
   justify-content: center;
   color: var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C));
 }
-.csHeaderBtn:hover { background: var(--ds-surface-sunken, #F4F5F7); color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))); }
+.csHeaderBtn:hover { background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)); color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D))); }
 
 /* Required fields note */
 .csRequiredNote {
@@ -141,7 +141,7 @@
   background: none;
   color: #42526E;
 }
-.csCancel:hover { background: var(--ds-surface-sunken, #F4F5F7); }
+.csCancel:hover { background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)); }
 .csCreate {
   background: #0C66E4;
   color: var(--ds-surface, #fff);
@@ -293,7 +293,7 @@
   cursor: pointer;
   text-align: left;
 }
-.csDropdownItem:hover { background: var(--ds-surface-sunken, #F4F5F7); }
+.csDropdownItem:hover { background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)); }
 .csDropdownItem.selected { background: #E9F2FF; }
 .csDropdownEmpty {
   padding: 12px;

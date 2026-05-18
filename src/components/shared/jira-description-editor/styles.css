@@ -29,7 +29,7 @@
   gap: 1px;
   padding: 4px 6px;
   border-bottom: 1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6));
-  background: #F4F5F7;
+  background: var(--cp-bg-sunken, #F4F5F7);
   flex-wrap: wrap;
   border-radius: 2px 2px 0 0;
 }
@@ -171,7 +171,7 @@
 }
 
 .jde-dropdown-item:hover {
-  background: #F4F5F7;
+  background: var(--cp-bg-sunken, #F4F5F7);
   color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
 }
 
@@ -271,7 +271,7 @@
   transition: background 80ms;
 }
 
-.jde-btn-ghost:hover { background: #F4F5F7; }
+.jde-btn-ghost:hover { background: var(--cp-bg-sunken, #F4F5F7); }
 
 /* ── Emoji picker ──────────────────────────────────────── */
 .jde-emoji-picker {
@@ -303,7 +303,7 @@
   transition: background 80ms;
 }
 
-.jde-emoji-btn:hover { background: #F4F5F7; }
+.jde-emoji-btn:hover { background: var(--cp-bg-sunken, #F4F5F7); }
 
 /* ── Editor content area ───────────────────────────────── */
 .jde-content {
@@ -361,7 +361,7 @@
 
 /* Inline code */
 .jde-content .ProseMirror code {
-  background: #F4F5F7;
+  background: var(--cp-bg-sunken, #F4F5F7);
   border-radius: 2px;
   padding: 1px 5px;
   font-family: 'SFMono-Medium', 'SF Mono', 'Segoe UI Mono', Menlo, monospace;
@@ -371,7 +371,7 @@
 
 /* Code block */
 .jde-content .ProseMirror pre {
-  background: #F4F5F7;
+  background: var(--cp-bg-sunken, #F4F5F7);
   border-radius: 3px;
   padding: 10px 14px;
   margin: 8px 0;
@@ -430,7 +430,7 @@
 }
 
 .jde-content .ProseMirror th {
-  background: #F4F5F7;
+  background: var(--cp-bg-sunken, #F4F5F7);
   font-weight: 600;
   text-align: left;
 }
@@ -488,7 +488,7 @@
   font-size: 14px;
   color: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
   cursor: pointer;
-  background: #F4F5F7;
+  background: var(--cp-bg-sunken, #F4F5F7);
   border-radius: 2px 2px 0 0;
 }
 

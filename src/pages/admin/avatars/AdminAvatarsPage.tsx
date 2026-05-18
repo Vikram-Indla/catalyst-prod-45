@@ -357,7 +357,7 @@ export default function AdminAvatarsPage() {
         <div style={{
           padding: 40,
           textAlign: 'center',
-          background: 'var(--ds-surface-sunken, #F4F5F7)',
+          background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
           borderRadius: 6,
           color: 'var(--ds-text-subtle, #626F86)',
         }}>

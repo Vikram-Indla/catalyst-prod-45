@@ -139,14 +139,14 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
                 style={{
                   width: '100%', display: 'flex', alignItems: 'center', gap: 10,
                   padding: '10px 12px', border: 'none', cursor: 'pointer',
-                  background: currentAssignee === null ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                  background: currentAssignee === null ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                   textAlign: 'left', fontFamily: 'var(--cp-font-body)',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = currentAssignee === null ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = currentAssignee === null ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
               >
                 <span style={{
-                  width: 32, height: 32, borderRadius: '50%', background: 'var(--ds-surface-sunken, #F4F5F7)',
+                  width: 32, height: 32, borderRadius: '50%', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>
                   <User size={18} color="#5E6C84" />
@@ -164,11 +164,11 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
                     style={{
                       width: '100%', display: 'flex', alignItems: 'center', gap: 10,
                       padding: '10px 12px', border: 'none', cursor: 'pointer',
-                      background: isActive ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+                      background: isActive ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                       textAlign: 'left', fontFamily: 'var(--cp-font-body)',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = isActive ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = isActive ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
                   >
                     <KanbanAvatar
                       name={person.name}

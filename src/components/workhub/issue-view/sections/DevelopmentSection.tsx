@@ -29,7 +29,7 @@ const STATE_COLORS: Record<string, { bg: string; text: string; darkBg: string; d
   passed:      { bg: '#E3FCEF', text: '#006644', darkBg: '#1A2E1A', darkText: '#57D9A3' },
   failed:      { bg: '#FFEBE6', text: '#BF2600', darkBg: '#2E1A1A', darkText: '#FF8F73' },
   in_progress: { bg: '#DEEBFF', text: '#0747A6', darkBg: '#1A2332', darkText: '#4C9AFF' },
-  unknown:     { bg: 'var(--ds-surface-sunken, #F4F5F7)', text: 'var(--ds-text-accent-gray, #505258)', darkBg: 'var(--ds-border, #292929)', darkText: 'var(--ds-text-subtlest, #A1A1A1)' },
+  unknown:     { bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', text: 'var(--ds-text-accent-gray, #505258)', darkBg: 'var(--ds-border, #292929)', darkText: 'var(--ds-text-subtlest, #A1A1A1)' },
 };
 
 function formatRelative(date?: string): string {
@@ -81,7 +81,7 @@ export function DevelopmentSection({ isDark, items }: DevelopmentSectionProps) {
                 rel="noopener noreferrer"
                 className={cn(
                   'group flex items-center gap-2 px-2 py-2 rounded-md transition-colors',
-                  isDark ? 'hover:bg-[var(--ds-surface-overlay,#1F1F1F)]' : 'hover:bg-[var(--ds-surface-sunken,#F4F5F7)]',
+                  isDark ? 'hover:bg-[var(--ds-surface-overlay,#1F1F1F)]' : 'hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]',
                 )}
               >
                 <span className={isDark ? 'text-[var(--ds-text-subtlest,#A1A1A1)]' : 'text-[var(--ds-text-accent-gray,#505258)]'}>

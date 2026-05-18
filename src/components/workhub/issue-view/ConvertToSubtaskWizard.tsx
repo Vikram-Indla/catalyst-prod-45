@@ -227,7 +227,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
               <div style={{ marginBottom: 20 }}>
                 <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', display: 'block', marginBottom: 6 }}>Parent Issue</label>
                 {selectedParentIssue ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 4, border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', background: 'var(--ds-surface-sunken, #F4F5F7)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 4, border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' }}>
                     <JiraIssueTypeIcon type={selectedParentIssue.issue_type} size={16} />
                     <span style={{ fontSize: 13, fontWeight: 600, color: '#0C66E4' }}>{selectedParentIssue.issue_key}</span>
                     <span style={{ fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', flex: 1 }}>{selectedParentIssue.summary}</span>
@@ -262,7 +262,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                           const lozColor = cat.includes('done') ? '#006644' : cat.includes('progress') ? '#0747A6' : 'var(--ds-text, #253858)';
                           return (
                             <button key={p.id} onClick={() => selectParent(p)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', width: '100%', textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, borderBottom: '1px solid #F4F5F7' }}
-                              onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+                              onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                               onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                             >
                               <JiraIssueTypeIcon type={p.issue_type} size={16} />
@@ -288,7 +288,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   {getAvailableSubtaskTypes(issueType).map(t => (
                     <label key={t} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 4, cursor: 'pointer', background: subtaskType === t ? '#E9F2FF' : 'transparent' }}
-                      onMouseOver={e => { if (subtaskType !== t) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                      onMouseOver={e => { if (subtaskType !== t) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                       onMouseOut={e => { if (subtaskType !== t) e.currentTarget.style.background = 'transparent'; }}
                     >
                       <input type="radio" name="subtask-type" checked={subtaskType === t} onChange={() => setSubtaskType(t)} style={{ accentColor: '#0C66E4' }} />
@@ -366,7 +366,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
           {/* Navigation buttons */}
           <div style={{ display: 'flex', gap: 8, marginTop: 20, borderTop: '1px solid #EBECF0', paddingTop: 16 }}>
             {step > 0 && (
-              <button onClick={() => setStep(s => s - 1)} style={{ padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface-sunken, #F4F5F7)', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
+              <button onClick={() => setStep(s => s - 1)} style={{ padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                 Back
               </button>
             )}

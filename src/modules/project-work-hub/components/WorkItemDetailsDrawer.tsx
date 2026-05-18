@@ -286,7 +286,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                       borderRadius: 4, padding: '8px 0',
                       transition: 'background 0.15s',
                     }}
-                    onMouseEnter={e => { if (canEdit) { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; prefetchEpicEditor(); }}}
+                    onMouseEnter={e => { if (canEdit) { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; prefetchEpicEditor(); }}}
                     onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                   >
                     Add a description...
@@ -297,7 +297,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                     tabIndex={canEdit ? 0 : -1}
                     onClick={() => { if (canEdit) startTransition(() => setIsDescriptionEditing(true)); }}
                     onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && canEdit) { e.preventDefault(); startTransition(() => setIsDescriptionEditing(true)); }}}
-                    onMouseEnter={e => { if (canEdit) { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; prefetchEpicEditor(); }}}
+                    onMouseEnter={e => { if (canEdit) { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; prefetchEpicEditor(); }}}
                     onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                     style={{
                       borderRadius: 4, padding: '4px 0', cursor: canEdit ? 'text' : 'default',

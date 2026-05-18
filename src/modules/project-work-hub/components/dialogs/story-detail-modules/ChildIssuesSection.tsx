@@ -75,7 +75,7 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
                 cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                 background: opt.key === value ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
               }}
-              onMouseEnter={e => { if (opt.key !== value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+              onMouseEnter={e => { if (opt.key !== value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
               onMouseLeave={e => { if (opt.key !== value) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
             >
               <span style={{ display: 'flex', width: 16, height: 16 }}>{opt.icon}</span>
@@ -145,7 +145,7 @@ function InlineStatusDropdown({ item, onUpdate }: { item: PhIssueRow; onUpdate: 
                       cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                       background: isActive ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
                     }}
-                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                     onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                   >
                     <span style={{ flex: 1 }}>{s}</span>
@@ -408,7 +408,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
             width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
             cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', transition: 'background 0.15s, color 0.15s',
           }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; e.currentTarget.style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; e.currentTarget.style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))'; }}
           >
             <AddIcon label="Create sub-task" />
@@ -523,7 +523,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   width: 28, height: 28, border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 3,
-                  background: 'var(--ds-surface-sunken, #F4F5F7)', cursor: draftSummary.trim() ? 'pointer' : 'not-allowed',
+                  background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', cursor: draftSummary.trim() ? 'pointer' : 'not-allowed',
                   color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', opacity: draftSummary.trim() ? 1 : 0.5,
                 }}
               >

@@ -171,7 +171,7 @@ export function SidebarProjectNav({
               </button>
               <button
                 onClick={onToggle}
-                className="flex items-center justify-center rounded-md hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors flex-shrink-0"
+                className="flex items-center justify-center rounded-md hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] transition-colors flex-shrink-0"
                 style={{ width: 26, height: 26, border: 'none', background: 'transparent', cursor: 'pointer' }}
                 title="Collapse sidebar"
               >
@@ -183,7 +183,7 @@ export function SidebarProjectNav({
           {collapsed && (
             <button
               onClick={onToggle}
-              className="absolute top-2 right-1 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
+              className="absolute top-2 right-1 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
               style={{ width: 20, height: 20, border: 'none', background: 'transparent', cursor: 'pointer' }}
             >
               <ChevronsRight size={14} className="text-[var(--cp-primary-60, #0052CC)] dark:text-[#4C9AFF]" />
@@ -204,7 +204,7 @@ export function SidebarProjectNav({
       <div style={{ padding: '8px 8px 0' }}>
         <button
           onClick={() => navigate('/project-hub/projects')}
-          className="flex items-center gap-2 w-full rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
+          className="flex items-center gap-2 w-full rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]"
           style={{
             height: 32, padding: collapsed ? '0' : '0 12px',
             fontSize: 12.5, fontWeight: 500, border: 'none', background: 'transparent',
@@ -296,7 +296,7 @@ export function SidebarProjectNav({
                       margin: '0 4px',
                     }}
                     onClick={() => handleRecentClick(item)}
-                    onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--cp-bg-page, #F4F5F7)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--cp-bg-page, var(--cp-bg-sunken, #F4F5F7))'; }}
                     onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                   >
                     <span style={{ flexShrink: 0, marginTop: 2, lineHeight: 0 }}>

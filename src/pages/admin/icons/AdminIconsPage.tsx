@@ -166,7 +166,7 @@ const previewWellLightStyle: React.CSSProperties = {
   justifyContent: 'center',
   height: 64,
   borderRadius: 4,
-  backgroundColor: 'var(--ds-surface-sunken, #F4F5F7)',
+  backgroundColor: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
   marginBottom: 8,
 };
 

@@ -258,7 +258,7 @@ export function AddParentPicker({
               borderRadius: 3, fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
               transition: 'background 150ms', width: '100%', textAlign: 'left',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             <JiraIssueTypeIcon type={effectiveType} size={16} />
@@ -279,7 +279,7 @@ export function AddParentPicker({
               borderRadius: 3, fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
               transition: 'background 150ms',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             <JiraIssueTypeIcon type={iconType} size={16} />
@@ -295,7 +295,7 @@ export function AddParentPicker({
             fontSize: 14, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', borderRadius: 3,
             transition: 'background 150ms',
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
         >
           None
@@ -379,7 +379,7 @@ export function AddParentPicker({
                     textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
                     fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', transition: 'background 100ms',
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <JiraIssueTypeIcon type={row.issue_type ?? iconType} size={16} />
@@ -400,7 +400,7 @@ export function AddParentPicker({
                     textAlign: 'left', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 400,
                     transition: 'background 100ms',
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   Unlink parent
@@ -413,7 +413,7 @@ export function AddParentPicker({
                   textAlign: 'left', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 500,
                   transition: 'background 100ms',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 View all {plural}
@@ -451,13 +451,13 @@ export function AddParentPicker({
                   <button
                     onClick={() => { handleSelect(null); handleReset(); }}
                     style={{
-                      width: '100%', padding: '10px 14px', border: 'none', background: 'var(--ds-surface-sunken, #F4F5F7)',
+                      width: '100%', padding: '10px 14px', border: 'none', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
                       textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
                       fontSize: 14, color: '#DE350B', fontWeight: 500, transition: 'background 100ms',
                       borderBottom: '1px solid #EBECF0',
                     }}
                     onMouseEnter={e => (e.currentTarget.style.background = '#FFEBE6')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                   >
                     Remove
                   </button>

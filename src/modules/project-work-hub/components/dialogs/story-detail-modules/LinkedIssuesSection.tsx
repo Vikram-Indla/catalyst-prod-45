@@ -76,7 +76,7 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
                 cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                 background: opt === value ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
               }}
-              onMouseEnter={e => { if (opt !== value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+              onMouseEnter={e => { if (opt !== value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
               onMouseLeave={e => { if (opt !== value) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
             >
               <span>{opt}</span>
@@ -234,7 +234,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
             return (
               <span key={item.item_key} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4, height: 24,
-                padding: '0 6px', background: 'var(--ds-surface-sunken, #F4F5F7)', borderRadius: 3, border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
+                padding: '0 6px', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', borderRadius: 3, border: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
                 fontSize: 12, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', whiteSpace: 'nowrap',
               }}>
                 <span dangerouslySetInnerHTML={{ __html: icon }} style={{ display: 'flex', width: 14, height: 14 }} />
@@ -282,7 +282,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
                   cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', borderLeft: '3px solid transparent',
                   transition: 'background 0.1s, border-color 0.1s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; e.currentTarget.style.borderLeftColor = '#4C9AFF'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; e.currentTarget.style.borderLeftColor = '#4C9AFF'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderLeftColor = 'transparent'; }}
               >
                 <span dangerouslySetInnerHTML={{ __html: issueIcon }} style={{ display: 'flex', width: 16, height: 16, flexShrink: 0 }} />
@@ -310,7 +310,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
             disabled={!selectedItems.length || linkMutation.isPending}
             style={{
               height: 32, padding: '0 16px', border: 'none', borderRadius: 3,
-              background: selectedItems.length ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-surface-sunken, #F4F5F7)',
+              background: selectedItems.length ? 'var(--cp-primary-60, #0052CC)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
               color: selectedItems.length ? 'var(--ds-surface, #fff)' : '#A5ADBA', fontSize: 14, fontWeight: 500,
               cursor: selectedItems.length ? 'pointer' : 'not-allowed', fontFamily: 'inherit',
             }}
@@ -482,7 +482,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
         width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
         cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', transition: 'background 0.15s, color 0.15s',
       }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; e.currentTarget.style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))'; }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; e.currentTarget.style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))'; }}
         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))'; }}
       >
         <AddIcon label="Link issue" />
@@ -516,7 +516,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
               return (
                 <div key={link.id} style={{
                   display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 12px',
-                  borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)', transition: 'background 0.12s',
+                  borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', transition: 'background 0.12s',
                 }}
                   onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #FAFBFC)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}

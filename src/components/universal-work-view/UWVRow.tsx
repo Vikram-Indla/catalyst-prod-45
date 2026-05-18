@@ -354,7 +354,7 @@ export const UWVRow = React.memo(function UWVRow({
         gridTemplateColumns: gridTemplate,
         height: JIRA_ROW_HEIGHT,
         boxShadow: isSelected ? selectedShadow : restShadow,
-        backgroundColor: isSelected ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+        backgroundColor: isSelected ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         cursor: 'pointer',
         transition: 'background-color 80ms ease',
       }}

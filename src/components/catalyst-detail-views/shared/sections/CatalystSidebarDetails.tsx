@@ -362,7 +362,7 @@ export function CatalystSidebarDetails({
             gap: 6,
             transition: 'background 0.15s',
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-hovered, #F4F5F7)')}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-hovered, var(--cp-bg-sunken, #F4F5F7))')}
           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
         >
           {/* jira-compare A1 (2026-04-28): wrap with jira-parity attribute so
@@ -403,7 +403,7 @@ export function CatalystSidebarDetails({
                         justifyContent: 'space-between', cursor: 'pointer',
                         background: isActive ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent', transition: 'background 80ms',
                       }}
-                      onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                      onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                       onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
                     >
                       {/* jira-compare follow-up (2026-05-02): isBold so the

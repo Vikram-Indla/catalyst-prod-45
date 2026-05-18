@@ -31,7 +31,7 @@ const btnPrimary: React.CSSProperties = {
 };
 const btnSecondary: React.CSSProperties = {
   padding: '7px 16px', borderRadius: 4, fontSize: 14, fontWeight: 500,
-  cursor: 'pointer', border: 'none', background: 'var(--ds-surface-sunken, #F4F5F7)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
+  cursor: 'pointer', border: 'none', background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
 };
 const btnDanger: React.CSSProperties = {
   ...btnPrimary, background: '#DE350B',
@@ -40,7 +40,7 @@ const menuItem = (hover: boolean, danger = false): React.CSSProperties => ({
   display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left',
   padding: '8px 16px', fontSize: 14, border: 'none', cursor: 'pointer',
   color: danger ? '#DE350B' : 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
-  background: hover ? (danger ? '#FFEBE6' : 'var(--ds-surface-sunken, #F4F5F7)') : 'transparent',
+  background: hover ? (danger ? '#FFEBE6' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))') : 'transparent',
 });
 const labelStyle: React.CSSProperties = {
   fontSize: 13, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', display: 'block', marginBottom: 6,
@@ -327,7 +327,7 @@ export function CloneWizard({ issueId, issueKey, item, projectKey, onClose }: {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div>
                 <label style={labelStyle}>Project</label>
-                <div style={{ ...inputStyle, background: 'var(--ds-surface-sunken, #F4F5F7)', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{projectKey}</div>
+                <div style={{ ...inputStyle, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{projectKey}</div>
               </div>
               <div>
                 <label style={labelStyle}>Issue Type</label>

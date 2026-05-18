@@ -33,8 +33,8 @@ function BugTypeIcon() {
 const SEVERITY_MAP: Record<string, { label: string; bg: string; text: string; border: string }> = {
   critical: { label: 'CRITICAL', bg: '#FFECEC', text: '#AE2A19', border: '#FFBDAD' },
   high:     { label: 'HIGH',     bg: '#FFF4EC', text: '#974F0C', border: '#FFD2A7' },
-  medium:   { label: 'MEDIUM',   bg: 'var(--ds-surface-sunken, #F4F5F7)', text: '#42526E', border: 'var(--ds-border-disabled, #C1C7D0)' },
-  low:      { label: 'LOW',      bg: 'var(--ds-surface-sunken, #F4F5F7)', text: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', border: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
+  medium:   { label: 'MEDIUM',   bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', text: '#42526E', border: 'var(--ds-border-disabled, #C1C7D0)' },
+  low:      { label: 'LOW',      bg: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', text: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', border: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' },
 };
 
 function SeverityPill({ severity }: { severity: string }) {
@@ -230,7 +230,7 @@ function ParentPickerCell({ defectId, currentParentKey, projectKey }: { defectId
                 onClick={() => handleSelect(opt.key)}
                 className={cn(
                   "w-full text-left px-3 py-2.5 border-none cursor-pointer transition-colors block",
-                  isSelected ? "bg-[#DEEBFF]" : "bg-white hover:bg-[var(--ds-surface-sunken,#F4F5F7)]"
+                  isSelected ? "bg-[#DEEBFF]" : "bg-white hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]"
                 )}
               >
                 <div className="flex items-center gap-2">

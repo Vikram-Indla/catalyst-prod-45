@@ -158,7 +158,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                   gap: 8,
                   padding: '8px 12px',
                   borderBottom: '1px solid var(--ds-border, #EBECF0)',
-                  background: 'var(--ds-surface-sunken, #F4F5F7)',
+                  background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
                 }}
               >
                 <input
@@ -195,7 +195,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                     cursor: 'pointer',
                     background:
                       currentAssignee === null
-                        ? 'var(--ds-surface-sunken, #F4F5F7)'
+                        ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'
                         : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                     textAlign: 'left',
                     fontFamily: 'var(--cp-font-body)',
@@ -206,12 +206,12 @@ export const EditableAssignee = memo(function EditableAssignee({
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.background =
-                      'var(--ds-surface-sunken, #F4F5F7)';
+                      'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))';
                   }}
                   onMouseLeave={e => {
                     e.currentTarget.style.background =
                       currentAssignee === null
-                        ? 'var(--ds-surface-sunken, #F4F5F7)'
+                        ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'
                         : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
                   }}
                 >
@@ -237,7 +237,7 @@ export const EditableAssignee = memo(function EditableAssignee({
                         border: 'none',
                         cursor: 'pointer',
                         background: isActive
-                          ? 'var(--ds-surface-sunken, #F4F5F7)'
+                          ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'
                           : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                         textAlign: 'left',
                         fontFamily: 'var(--cp-font-body)',
@@ -248,11 +248,11 @@ export const EditableAssignee = memo(function EditableAssignee({
                       }}
                       onMouseEnter={e => {
                         e.currentTarget.style.background =
-                          'var(--ds-surface-sunken, #F4F5F7)';
+                          'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))';
                       }}
                       onMouseLeave={e => {
                         e.currentTarget.style.background = isActive
-                          ? 'var(--ds-surface-sunken, #F4F5F7)'
+                          ? 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'
                           : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
                       }}
                     >

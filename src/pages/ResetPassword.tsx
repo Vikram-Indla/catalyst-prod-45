@@ -142,7 +142,7 @@ export default function ResetPassword() {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center p-4"
-      style={{ background: 'var(--ds-surface-sunken, #F4F5F7)' }}
+      style={{ background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' }}
     >
       {/* Catalyst branding header */}
       <div className="flex flex-col items-center mb-8">

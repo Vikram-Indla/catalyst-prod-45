@@ -421,7 +421,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
               alignItems: 'center',
               color: '#42526E',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
             onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
           >
             <Settings size={16} />
@@ -440,7 +440,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
               alignItems: 'center',
               color: '#42526E',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
             onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
           >
             <X size={18} />
@@ -456,7 +456,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
           alignItems: 'center',
           height: 36,
           padding: '0 16px',
-          background: 'var(--ds-surface-sunken, #F4F5F7)',
+          background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
           borderBottom: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
           fontSize: 11,
           fontWeight: 700,

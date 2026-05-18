@@ -228,7 +228,7 @@ export default function WikiDiagnosticPage() {
             headers={['Table', 'Column', 'Status', 'Type']}
             rows={(data?.columnCheck || []).map((r: any) => [
               r.tbl,
-              <code className="text-[11px] bg-[#F4F5F7] px-1.5 py-0.5 rounded">{r.col}</code>,
+              <code className="text-[11px] bg-[var(--cp-bg-sunken, #F4F5F7)] px-1.5 py-0.5 rounded">{r.col}</code>,
               <StatusBadge ok={r.status === 'exists'} />,
               r.data_type,
             ])}
@@ -241,7 +241,7 @@ export default function WikiDiagnosticPage() {
             headers={['Constraint', 'Allowed Values']}
             rows={(data?.sourceTypeConstraint || []).map((r: any) => [
               r.constraint_name,
-              <code className="text-[11px] bg-[#F4F5F7] px-1.5 py-0.5 rounded break-all">{r.allowed_values}</code>,
+              <code className="text-[11px] bg-[var(--cp-bg-sunken, #F4F5F7)] px-1.5 py-0.5 rounded break-all">{r.allowed_values}</code>,
             ])}
           />
         </Section>
@@ -277,7 +277,7 @@ export default function WikiDiagnosticPage() {
           <DiagTable
             headers={['Code', 'Name', 'Articles', 'Documents', 'Last Updated']}
             rows={(data?.domainStats || []).map((r: any) => [
-              <code className="text-[11px] bg-[#F4F5F7] px-1.5 py-0.5 rounded">{r.domain_code}</code>,
+              <code className="text-[11px] bg-[var(--cp-bg-sunken, #F4F5F7)] px-1.5 py-0.5 rounded">{r.domain_code}</code>,
               r.domain_name || r.name,
               r.article_count ?? 0,
               r.document_count ?? 0,
@@ -330,7 +330,7 @@ export default function WikiDiagnosticPage() {
           </button>
           <button
             onClick={() => { runDiagnostics(); toast.success('Diagnostics refreshed'); }}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded border border-[rgba(15,23,42,0.12)] dark:border-[var(--cp-ink-1, #2E2E2E)] bg-white dark:bg-[var(--cp-ink-1, #1A1A1A)] text-[var(--cp-ink-1, var(--cp-ink-1, #0F172A))] hover:bg-[#F4F5F7]"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded border border-[rgba(15,23,42,0.12)] dark:border-[var(--cp-ink-1, #2E2E2E)] bg-white dark:bg-[var(--cp-ink-1, #1A1A1A)] text-[var(--cp-ink-1, var(--cp-ink-1, #0F172A))] hover:bg-[var(--cp-bg-sunken, #F4F5F7)]"
           >
             <Wrench className="w-4 h-4" /> Refresh All
           </button>

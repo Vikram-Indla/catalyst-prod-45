@@ -409,7 +409,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
               bgColor = '#FFEBE6'; borderColor = '#FF5630'; labelColor = '#BF2600'; detailColor = '#7A2300';
               Icon = XCircle;
             } else {
-              bgColor = 'var(--ds-surface-sunken, #F4F5F7)'; borderColor = 'var(--ds-border-disabled, #C1C7D0)'; labelColor = '#42526E'; detailColor = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))';
+              bgColor = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; borderColor = 'var(--ds-border-disabled, #C1C7D0)'; labelColor = '#42526E'; detailColor = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))';
               Icon = Minus;
             }
 
@@ -792,7 +792,7 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
               </div>
             </div>
             {idx < entries.length - 1 && (
-              <div style={{ height: 0.5, background: 'var(--ds-surface-sunken, #F4F5F7)', marginLeft: 40 }} />
+              <div style={{ height: 0.5, background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', marginLeft: 40 }} />
             )}
           </div>
         );

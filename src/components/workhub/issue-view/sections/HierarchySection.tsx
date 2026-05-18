@@ -36,7 +36,7 @@ function IssueRow({
     <div
       className={cn(
         'flex items-center gap-3 px-2 py-2 rounded-md transition-colors cursor-pointer',
-        isDark ? 'hover:bg-[var(--ds-surface-overlay,#1F1F1F)]' : 'hover:bg-[var(--ds-surface-sunken,#F4F5F7)]',
+        isDark ? 'hover:bg-[var(--ds-surface-overlay,#1F1F1F)]' : 'hover:bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))]',
       )}
       onClick={() => onOpen?.(item.key)}
     >
@@ -54,7 +54,7 @@ function IssueRow({
       {badge && (
         <span className={cn(
           'text-[10px] font-body font-medium px-1.5 py-0.5 rounded shrink-0',
-          isDark ? 'bg-[var(--ds-border,#292929)] text-[var(--ds-text-subtlest,#878787)]' : 'bg-[var(--ds-surface-sunken,#F4F5F7)] text-[var(--ds-text-subtlest,#6B6E76)]',
+          isDark ? 'bg-[var(--ds-border,#292929)] text-[var(--ds-text-subtlest,#878787)]' : 'bg-[var(--ds-surface-sunken,var(--cp-bg-sunken, #F4F5F7))] text-[var(--ds-text-subtlest,#6B6E76)]',
         )}>
           {badge}
         </span>

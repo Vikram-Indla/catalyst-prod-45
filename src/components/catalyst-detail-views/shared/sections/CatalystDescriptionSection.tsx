@@ -146,12 +146,12 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
     .cv-desc-body ol ol, .adf-description-content ol ol { list-style-type: lower-alpha; }
     .cv-desc-body ol ol ol, .adf-description-content ol ol ol { list-style-type: lower-roman; }
     .cv-desc-body table, .adf-description-content table { border-collapse: collapse; width: 100%; margin: 12px 0; }
-    .cv-desc-body th, .adf-description-content th { background: var(--ds-surface-sunken, #F4F5F7); font-weight: 600; text-align: left; }
+    .cv-desc-body th, .adf-description-content th { background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)); font-weight: 600; text-align: left; }
     .cv-desc-body th, .cv-desc-body td,
     .adf-description-content th, .adf-description-content td { border: 1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))); padding: 8px 12px; font-size: 14px; vertical-align: top; }
     .cv-desc-body blockquote, .adf-description-content blockquote { border-left: 2px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))); padding: 8px 12px; margin: 8px 0; color: var(--ds-text-subtle, #5E6C84); }
-    .cv-desc-body pre, .adf-description-content pre { background: var(--ds-surface-sunken, #F4F5F7); padding: 12px; border-radius: 4px; font-size: 13px; overflow-x: auto; margin: 4px 0 8px; font-family: var(--cp-font-mono); }
-    .cv-desc-body code, .adf-description-content code { background: var(--ds-surface-sunken, #F4F5F7); padding: 2px 4px; border-radius: 3px; font-size: 12px; font-family: var(--cp-font-mono); }
+    .cv-desc-body pre, .adf-description-content pre { background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)); padding: 12px; border-radius: 4px; font-size: 13px; overflow-x: auto; margin: 4px 0 8px; font-family: var(--cp-font-mono); }
+    .cv-desc-body code, .adf-description-content code { background: var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7)); padding: 2px 4px; border-radius: 3px; font-size: 12px; font-family: var(--cp-font-mono); }
     .cv-desc-body pre code, .adf-description-content pre code { background: none; padding: 0; }
     .cv-desc-body p, .adf-description-content p { margin: 0 0 8px; font-weight: 400; }
 
@@ -420,7 +420,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
             }}
             onMouseEnter={e => {
               e.currentTarget.style.color = 'var(--ds-text, #292A2E)';
-              e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)';
+              e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))';
               prefetchEpicEditor();
             }}
             onFocus={() => { prefetchEpicEditor(); }}
@@ -458,7 +458,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
           }}
           onMouseEnter={e => {
             if (issue) {
-              e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)';
+              e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))';
               prefetchEpicEditor();
             }
           }}
@@ -476,7 +476,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
             position: 'relative',
             transition: 'background 150ms cubic-bezier(0.15,1,0.3,1)',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; prefetchEpicEditor(); }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; prefetchEpicEditor(); }}
           onPointerDown={() => { if (issue) prefetchEpicEditor(); }}
           onClick={() => { if (issue) startTransition(() => setEditing(true)); }}
           onKeyDown={(e) => {

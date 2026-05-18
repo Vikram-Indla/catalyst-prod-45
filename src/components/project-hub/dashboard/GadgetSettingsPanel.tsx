@@ -366,7 +366,7 @@ export default function GadgetSettingsPanel({
           )}
 
           <label style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '6px 8px',
-                          background: 'var(--ds-surface-sunken, #F4F5F7)', borderRadius: 3, cursor: 'pointer' }}>
+                          background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', borderRadius: 3, cursor: 'pointer' }}>
             <input type="checkbox" checked={applyToAll}
               onChange={(e) => setApplyToAll(e.target.checked)}
               style={{ width: 13, height: 13, accentColor: 'var(--cp-primary-60, #0052CC)', cursor: 'pointer' }}/>
@@ -376,7 +376,7 @@ export default function GadgetSettingsPanel({
           </label>
 
           <span style={{ fontSize: 10, color: '#7A869A', fontFamily: 'monospace',
-                         background: 'var(--ds-surface-sunken, #F4F5F7)', padding: '2px 6px', borderRadius: 3 }}>
+                         background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', padding: '2px 6px', borderRadius: 3 }}>
             filters on: {GADGET_DATE_FIELD[gadgetType]}
           </span>
         </div>
@@ -390,7 +390,7 @@ export default function GadgetSettingsPanel({
               style={{
                 display: 'flex', alignItems: 'center', minHeight: 36,
                 border: '2px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 3,
-                background: 'var(--ds-surface-sunken, #F4F5F7)', padding: '0 10px',
+                background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', padding: '0 10px',
                 cursor: 'not-allowed', opacity: 0.6,
                 fontSize: 13, color: '#7A869A', fontStyle: 'italic',
               }}
@@ -505,7 +505,7 @@ export default function GadgetSettingsPanel({
                       borderRadius: 3,
                       cursor: 'pointer',
                       border: active ? '1px solid var(--cp-primary-60, #0052CC)' : '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))',
-                      background: active ? '#DEEBFF' : 'var(--ds-surface-sunken, #F4F5F7)',
+                      background: active ? '#DEEBFF' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
                       color: active ? 'var(--cp-primary-60, #0052CC)' : '#42526E',
                       fontWeight: active ? 500 : 400,
                       textAlign: 'left',
@@ -784,7 +784,7 @@ function MultiSelectGeneric({
                   color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                 }}
                 onMouseEnter={(e) => {
-                  if (!sel) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)';
+                  if (!sel) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))';
                 }}
                 onMouseLeave={(e) => {
                   if (!sel) e.currentTarget.style.background = 'transparent';
@@ -1024,7 +1024,7 @@ function GadgetSpecific({
   if (gadgetType === 'workload' || gadgetType === 'activity') return null;
 
   const wrapper: React.CSSProperties = {
-    background: 'var(--ds-surface-sunken, #F4F5F7)',
+    background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
     borderRadius: 4,
     padding: 10,
     display: 'flex',

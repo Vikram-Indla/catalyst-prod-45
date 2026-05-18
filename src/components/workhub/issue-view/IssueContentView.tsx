@@ -163,7 +163,7 @@ function StatusPill({ status, statusCategory, issueId, onStatusChange }: { statu
                     background: s === status ? '#E9F2FF' : 'transparent',
                     border: 'none', cursor: 'pointer', fontWeight: s === status ? 600 : 400,
                   }}
-                  onMouseOver={e => (e.currentTarget.style.background = s === status ? '#E9F2FF' : 'var(--ds-surface-sunken, #F4F5F7)')}
+                  onMouseOver={e => (e.currentTarget.style.background = s === status ? '#E9F2FF' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                   onMouseOut={e => (e.currentTarget.style.background = s === status ? '#E9F2FF' : 'transparent')}
                 >
                   {s}
@@ -896,7 +896,7 @@ export function IssueContentView({
                   {/* Add/Remove flag in menu */}
                   <button onClick={() => { setShowFlagPopover(true); setMoreMenuOpen(false); }}
                     style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                    onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+                    onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >{checkFlagged(item) ? 'Remove flag' : 'Add flag'}</button>
                   <div style={{ height: 1, background: '#EBECF0', margin: '4px 0' }} />
@@ -904,26 +904,26 @@ export function IssueContentView({
                   {item?.issue_type && item.issue_type !== 'Sub-task' && (
                     <button onClick={() => { setShowConvertWizard(true); setMoreMenuOpen(false); }}
                       style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                      onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+                      onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                       onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                     >Convert to Subtask</button>
                   )}
                   {/* Clone */}
                   <button onClick={() => { setShowCloneWizard(true); setMoreMenuOpen(false); }}
                     style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                    onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+                    onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Clone</button>
                   {/* Move */}
                   <button onClick={() => { setShowMoveWizard(true); setMoreMenuOpen(false); }}
                     style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                    onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+                    onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Move</button>
                   {/* Archive */}
                   <button onClick={() => { setShowArchiveDialog(true); setMoreMenuOpen(false); }}
                     style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                    onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+                    onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Archive</button>
                   <div style={{ height: 1, background: '#EBECF0', margin: '4px 0' }} />
@@ -962,7 +962,7 @@ export function IssueContentView({
                     border: showFixVersionDropdown ? '2px solid #4C9AFF' : '2px solid transparent',
                     background: showFixVersionDropdown ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'transparent',
                   }}
-                  onMouseEnter={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                  onMouseEnter={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                   onMouseLeave={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = 'transparent'; }}
                 >
                   {fixVersionNames.length > 0 ? (
@@ -999,7 +999,7 @@ export function IssueContentView({
                               const isSel = fixVersionNames.includes(v.name);
                               return (
                                 <div key={v.name} onClick={() => handleToggleFixVersion(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? '#DEEBFF' : 'transparent', transition: 'background 0.1s' }}
-                                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                                   onMouseLeave={e => { e.currentTarget.style.background = isSel ? '#DEEBFF' : 'transparent'; }}
                                 >
                                   <span>{v.name}</span>
@@ -1020,7 +1020,7 @@ export function IssueContentView({
                               const isSel = fixVersionNames.includes(v.name);
                               return (
                                 <div key={v.name} onClick={() => handleToggleFixVersion(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? '#DEEBFF' : 'transparent', transition: 'background 0.1s' }}
-                                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
                                   onMouseLeave={e => { e.currentTarget.style.background = isSel ? '#DEEBFF' : 'transparent'; }}
                                 >
                                   <span>{v.name}</span>

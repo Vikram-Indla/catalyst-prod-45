@@ -190,7 +190,7 @@ function TransitionTable({ workflow }: { workflow: Workflow }) {
     <div style={{ border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 6, overflow: 'hidden' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
         <thead>
-          <tr style={{ background: 'var(--ds-surface-sunken, #F4F5F7)', textAlign: 'left' }}>
+          <tr style={{ background: 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))', textAlign: 'left' }}>
             <th style={{ padding: '8px 12px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>From</th>
             <th style={{ padding: '8px 12px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>Verb</th>
             <th style={{ padding: '8px 12px', color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>To</th>

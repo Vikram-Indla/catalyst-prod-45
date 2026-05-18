@@ -11,7 +11,7 @@ export default function DeactivatedPage() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'var(--ds-surface, #F4F5F7)',
+      background: 'var(--ds-surface, var(--cp-bg-sunken, #F4F5F7))',
     }}>
       <div style={{
         background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',

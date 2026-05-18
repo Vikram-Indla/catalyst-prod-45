@@ -176,7 +176,7 @@ export const AssigneeCell = React.memo(function AssigneeCell({
             width: '100%', padding: '7px 10px', border: 'none',
             background: 'none', cursor: 'pointer', textAlign: 'left',
           }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)'; }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7))'; }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none'; }}
         >
           <Avatar src={u.avatar_url || undefined} name={u.full_name || u.email} size="xsmall" />
