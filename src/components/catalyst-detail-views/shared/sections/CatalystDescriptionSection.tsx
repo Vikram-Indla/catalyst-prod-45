@@ -441,7 +441,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
               workItemId={issue.id}
               placeholder="Add a description..."
               onAttachmentUploaded={handleInlineAttachmentUploaded}
-              appearance="full-page"
+              appearance="comment"
             />
           </Suspense>
         </div>

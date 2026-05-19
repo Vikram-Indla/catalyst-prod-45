@@ -13,6 +13,7 @@
         "@atlaskit/button": "^20.5.3",
         "@atlaskit/checkbox": "^17.3.12",
         "@atlaskit/css": "^0.9.0",
+        "@atlaskit/css-reset": "^7.4.5",
         "@atlaskit/datetime-picker": "^17.7.0",
         "@atlaskit/drawer": "^12.0.7",
         "@atlaskit/dropdown-menu": "^13.1.0",
@@ -308,6 +309,8 @@
     "@atlaskit/codemod-utils": ["@atlaskit/codemod-utils@4.2.5", "", { "dependencies": { "@babel/runtime": "^7.0.0" } }, "sha512-f7b7/BqfxbPtAfJXXgR8YfzOz9Mj912kBZB5Q/3ykKw9yvT8lQsZj6HOL7qMlHMutzPdz+uuF+duBVjybtNgCg=="],
 
     "@atlaskit/css": ["@atlaskit/css@0.9.0", "", { "dependencies": { "@atlaskit/tokens": "^3.3.0", "@babel/runtime": "^7.0.0", "@compiled/react": "^0.18.2" }, "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0" } }, "sha512-FJaiLYNq5dIXR+YnQ+U3XacKcd6s8WxZHfxsXO1mBY7k1t4I9q1M/2ArQfv13aXYNTaZKJzsuFv5BGzbG+auWQ=="],
+
+    "@atlaskit/css-reset": ["@atlaskit/css-reset@7.4.5", "", { "dependencies": { "@atlaskit/tokens": "^13.0.0", "@babel/runtime": "^7.0.0" }, "peerDependencies": { "react": "^18.2.0" } }, "sha512-EhjZCQwobc/u56l68abWFmvyg2T2ImbsUdqtBj78oQA3qI4As159ilX6Vxr20bR26OYL6unN8Dk9K5uJRKRiBQ=="],
 
     "@atlaskit/custom-steps": ["@atlaskit/custom-steps@0.16.6", "", { "dependencies": { "@atlaskit/adf-schema": "^52.0.0", "@atlaskit/editor-prosemirror": "^7.3.0", "@atlaskit/editor-tables": "^2.9.0", "@babel/runtime": "^7.0.0", "memoize-one": "^6.0.0" } }, "sha512-u1FplMEFYwelMHYUgL7GqMUVobMMsEUR5+t051AtKMlCcPcsgJ5h6LztS/Pmy7LKEq57pkKVOcc90f7z/mA9Ng=="],
 

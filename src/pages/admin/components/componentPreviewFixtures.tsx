@@ -29,7 +29,6 @@ import { JiraTable } from '@/components/shared/JiraTable/JiraTable';
 import { CatalystKeyDetails } from '@/components/catalyst-detail-views/shared/sections/CatalystKeyDetails';
 import { CatalystSidebarDetails } from '@/components/catalyst-detail-views/shared/sections/CatalystSidebarDetails';
 import { CanonicalDescriptionField } from '@/components/shared/CanonicalDescriptionField';
-import { EpicDescriptionEditorPreview } from './EpicDescriptionEditorPreview';
 import type { Column } from '@/components/shared/JiraTable/types';
 import type { PhIssue } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/types';
 
@@ -460,34 +459,31 @@ export const previewFixtures: Record<string, PreviewFixture> = {
     return <CanonicalDescriptionFieldPreview />;
   },
 
-  'epic-description-editor': () => (
-    <MockAppProvider>
-      <EpicDescriptionEditorPreview />
-    </MockAppProvider>
-  ),
 };
 
 /**
- * Structured deferred-entry data.
- * Used by ComponentLivePreview to render an actionable warning panel
- * (with live-route buttons + docs link + VS Code source link) instead
- * of a dead-end grey placeholder.
+ * Per-id reason + actionable context for components whose @atlaskit/editor-core
+ * dependency cannot be eagerly imported into the Vite preview sandbox without
+ * crashing the module graph.
+ *
+ * Each entry is a structured object so ComponentLivePreview can render
+ * actionable buttons, not just static text.
  */
 export interface DeferredEntry {
-  /** Why inline preview is unavailable. Shown in the warning banner. */
   reason: string;
-  /** One or more routes where the component renders live — must be clickable. */
+  /** Live routes where the component is rendered — open to see it in action. */
   liveRoutes: Array<{ label: string; href: string }>;
-  /** External docs URL (e.g. atlassian.design examples page). */
+  /** External docs link. */
   docsUrl?: string;
-  /** Repo-relative source file path — linked via vscode://file/ protocol. */
+  /** Repo-relative source path. */
   sourceFile?: string;
 }
 
 export const DEFERRED_ENTRIES: Record<string, DeferredEntry> = {
   'rich-text-editor': {
     reason:
-      '@atlaskit/editor-core (~2 MB ProseMirror bundle) crashes the Vite preview sandbox on eager import. Open any Epic description to see the live editor.',
+      '@atlaskit/editor-core (~2 MB ProseMirror bundle) crashes the Vite preview sandbox on eager import. ' +
+      'Open any Epic description to see the live editor.',
     liveRoutes: [
       { label: 'Open Epic BAU-5419 description', href: '/project-hub/BAU/backlog/BAU-5419' },
       { label: 'Open any Epic in backlog', href: '/project-hub/BAU/backlog' },
@@ -497,7 +493,7 @@ export const DEFERRED_ENTRIES: Record<string, DeferredEntry> = {
   },
 };
 
-/** @deprecated — use DEFERRED_ENTRIES for structured data with actionable links */
+/** @deprecated — use DEFERRED_ENTRIES for structured data */
 export const DEFERRED_REASONS: Record<string, string> = Object.fromEntries(
   Object.entries(DEFERRED_ENTRIES).map(([id, e]) => [id, e.reason]),
 );
@@ -506,7 +502,6 @@ export function hasFixture(id: string): boolean {
   return id in previewFixtures;
 }
 
-/** @deprecated — use DEFERRED_ENTRIES[id] for structured data */
 export function getDeferredReason(id: string): string | undefined {
   return DEFERRED_REASONS[id];
 }

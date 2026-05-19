@@ -405,11 +405,59 @@ function EpicDescriptionSection({ issue }: { issue: PhIssue }) {
     origin: 'shared',
     status: 'canonical',
     version: '1.0.0',
-    file_path: 'src/components/shared/rich-text/EpicDescriptionEditor.tsx',
+    file_path: 'src/components/shared/rich-text/atlaskit/EpicDescriptionEditor.tsx',
     jsdoc_excerpt:
-      'ADF-backed rich-text description editor for Epic work items. Supports marks (strong, em, strike, underline, code, link), blocks (heading, bulletList, orderedList, codeBlock, blockquote, rule, taskList), media, and mentions. Parent owns ADF JSON state. Renders in view/edit modes with AI improvement affordances.',
+      'Atlaskit Editor Core integration for ADF rich-text descriptions. Handles image upload, @mention provider, inline mark + block formatting, read-only mode, and three appearance modes (comment/chromeless/full-page).',
     dark_light_supported: true,
-    tags: ['editor', 'description', 'adf', 'rich-text', 'epic'],
+    tags: ['editor', 'adf', 'rich-text', 'description', 'atlaskit'],
+    editor_spec: {
+      props: [
+        { name: 'initialContent', type: 'unknown', required: false, description: 'Initial ADF document (null, object, or JSON string). Automatically normalized to valid ADF on mount.' },
+        { name: 'workItemId', type: 'string', required: true, description: 'Work item row ID — scopes image upload paths and optimistic-update keys.' },
+        { name: 'placeholder', type: 'string', required: false, default: '"Add a description..."', description: 'Empty-state placeholder shown in the editor.' },
+        { name: 'onChange', type: '(adfJson: string) => void', required: false, description: 'Called on every keystroke with the current ADF JSON stringified. Update parent state here; do NOT save to DB on every call.' },
+        { name: 'onSave', type: '(adfJson: string) => void', required: true, description: 'Called when the user clicks Save. Persist the ADF JSON string to DB here.' },
+        { name: 'onCancel', type: '() => void', required: true, description: 'Called when the user clicks Cancel. Restore ADF to the last saved state.' },
+        { name: 'appearance', type: '"comment" | "chromeless" | "full-page"', required: false, default: '"comment"', description: 'Editor appearance mode. Affects toolbar visibility and editor height behavior.' },
+        { name: 'onAttachmentUploaded', type: '(info: UploadedImage) => void', required: false, description: 'Called when an image is successfully uploaded to Supabase. Receives { url, filename, storagePath, width?, height? }.' },
+        { name: 'readOnly', type: 'boolean', required: false, default: 'false', description: 'Disables editing. Component renders as view-only. Editor toolbar is hidden.' },
+      ],
+      data_contract:
+        'Input → ADF document (JSON object or string) with version:1 and type:"doc" root. Automatically normalized via normalizeAdfForAtlaskit(). ' +
+        'Output → stringified ADF JSON passed to onSave. The component handles serialization; parent receives a string, not an object.',
+      architecture:
+        'Wraps @atlaskit/editor-core Editor with ProseMirror-based ADF document model. ' +
+        'Integrates Supabase image upload, @mention provider via createMentionProvider(), and adfNormalizer for schema coercion. ' +
+        'Two separate callbacks: onChange (live capture) and onSave (explicit Save button). Handles IntlProvider wrapping for i18n support.',
+      constraints: [
+        'Always pass initialContent through parseStoredDescriptionToAdf() or normalizeAdfForAtlaskit() before mounting — do not pass raw Jira ADF without normalization.',
+        'onSave is NOT called on every keystroke — it fires only on explicit Save button click.',
+        'onChange fires on every keystroke — do NOT trigger DB mutations inside onChange; use it for client-state capture only.',
+        'Image uploads are scoped to workItemId — changing workItemId mid-session may orphan uploads from previous IDs.',
+        'readOnly mode hides the editor toolbar entirely. There is no partial read-only state.',
+        'Mention provider must be initialized before the editor mounts. The component handles this internally via useMemo.',
+      ],
+      usage_snippet: `import EpicDescriptionEditor from '@/components/shared/rich-text/atlaskit/EpicDescriptionEditor';
+import { parseStoredDescriptionToAdf } from '@/components/shared/rich-text/atlaskit/adfNormalizer';
+
+function MyDescriptionPanel() {
+  const [adf, setAdf] = useState(() =>
+    parseStoredDescriptionToAdf(issue.description)
+  );
+  const mutation = useUpdateDescription();
+
+  return (
+    <EpicDescriptionEditor
+      initialContent={adf}
+      workItemId={issue.id}
+      appearance="comment"
+      onChange={(json) => setAdf(json)}
+      onSave={(json) => mutation.mutate(json)}
+      onCancel={() => setAdf(parseStoredDescriptionToAdf(issue.description))}
+    />
+  );
+}`,
+    },
   },
 ];
 
