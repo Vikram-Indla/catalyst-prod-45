@@ -100,8 +100,8 @@ export default function CapacityDepartmentsPage() {
     return (
       <div style={{ padding: 24 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }} className="animate-pulse">
-          <div style={{ height: 32, borderRadius: 3, width: 192, style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }} />
-          <div style={{ height: 128, borderRadius: 3, style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }} />
+          <div style={{ height: 32, borderRadius: 3, width: 192, background: 'var(--ds-background-neutral, #F7F8F9)' }} />
+          <div style={{ height: 128, borderRadius: 3, background: 'var(--ds-background-neutral, #F7F8F9)' }} />
         </div>
       </div>
     );
