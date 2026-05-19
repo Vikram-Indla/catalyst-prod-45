@@ -124,12 +124,31 @@ class ADSTokenScanner {
       return;
     }
 
+    // Track whether the parser is inside a /* ... */ block comment so we
+    // can skip block-comment lines entirely. JSDoc headers regularly
+    // document Jira tokens by their rgb()/hex values for reference —
+    // flagging those would be a false positive.
+    let inBlockComment = false;
+
     lines.forEach((line, index) => {
       // Skip lines flagged by the preceding `// ads-scanner:ignore-next-line`
       // marker. The marker must be the immediately preceding line.
       if (index > 0 && lines[index - 1].includes('ads-scanner:ignore-next-line')) {
         return;
       }
+
+      // Track block-comment state. A single line can both open and close
+      // a block, or open it and continue — handle both.
+      const trimmed = line.trim();
+      const opensBlock = line.includes('/*') && !line.includes('*/');
+      const closesBlock = line.includes('*/') && !line.includes('/*');
+      const isStandaloneBlockLine = trimmed.startsWith('*') || trimmed.startsWith('/*');
+      if (inBlockComment || isStandaloneBlockLine) {
+        if (closesBlock) inBlockComment = false;
+        else if (opensBlock) inBlockComment = true;
+        return; // skip every line inside a block comment
+      }
+      if (opensBlock) inBlockComment = true;
 
       // Check for raw hex colors — but ONLY hex that is NOT inside a CSS
       // var() fallback chain. `var(--ds-foo, #BAR)` is the ADS-canonical

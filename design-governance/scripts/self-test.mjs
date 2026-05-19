@@ -233,6 +233,21 @@ const FIXTURES = [
     code: `// ads-scanner:ignore-next-line\nconst safe = 'value';\n<div style={{ color: '#FF0000' }}>x</div>`,
     expect: [{ scanner: 'tokens', type: 'RAW_HEX' }],
   },
+
+  // ── Block comments — must NOT flag ────────────────────────────
+  // JSDoc headers regularly document Jira tokens by rgb()/hex value for
+  // reference. Flagging those is a false positive identical to flagging
+  // hex in a var() fallback.
+  {
+    name: 'hex-in-jsdoc-block-comment',
+    code: `/**\n * H1: 24px / 653 / rgb(41,42,46) / lineHeight 28px\n * #172B4D fallback\n */`,
+    expect: [],
+  },
+  {
+    name: 'rgb-in-jsdoc-block-comment',
+    code: `/** Color reference: rgb(80,82,88) subtle text */`,
+    expect: [],
+  },
 ];
 
 function runScannersOnFixture(code) {

@@ -86,7 +86,7 @@ function getSeverityBadgeStyle(severity: string): React.CSSProperties {
         : { bg: 'var(--ds-background-neutral, #DCDFE4)', fg: 'var(--ds-text-subtle, #44546F)' };
   return {
     display: 'inline-block',
-    padding: '2px 6px',
+    padding: '4px 8px',
     borderRadius: 3,
     backgroundColor: tone.bg,
     color: tone.fg,
@@ -269,7 +269,7 @@ export default function DesignSystemAdmin() {
       style={{
         padding: '24px 32px 48px',
         maxWidth: 1280,
-        color: 'rgb(41, 42, 46)',
+        color: 'var(--ds-text, rgb(41, 42, 46))',
         fontFamily:
           '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
       }}
@@ -290,7 +290,7 @@ export default function DesignSystemAdmin() {
               fontSize: 24,
               fontWeight: 653,
               lineHeight: '28px',
-              color: 'rgb(41, 42, 46)',
+              color: 'var(--ds-text, rgb(41, 42, 46))',
               margin: 0,
               letterSpacing: 'normal',
             }}
@@ -313,7 +313,7 @@ export default function DesignSystemAdmin() {
         style={{
           fontSize: 14,
           fontWeight: 400,
-          color: 'rgb(80, 82, 88)',
+          color: 'var(--ds-text-subtle, rgb(80, 82, 88))',
           margin: '0 0 24px 0',
           lineHeight: '20px',
           maxWidth: 760,
@@ -339,7 +339,7 @@ export default function DesignSystemAdmin() {
               display: 'block',
               fontSize: 12,
               fontWeight: 600,
-              color: 'rgb(80, 82, 88)',
+              color: 'var(--ds-text-subtle, rgb(80, 82, 88))',
               marginBottom: 4,
             }}
           >
@@ -364,7 +364,7 @@ export default function DesignSystemAdmin() {
                 display: 'block',
                 fontSize: 12,
                 fontWeight: 600,
-                color: 'rgb(80, 82, 88)',
+                color: 'var(--ds-text-subtle, rgb(80, 82, 88))',
                 marginBottom: 4,
               }}
             >
@@ -425,21 +425,21 @@ export default function DesignSystemAdmin() {
               value: `${complianceScore}%`,
               valueColor:
                 complianceScore >= 80
-                  ? 'rgb(33, 110, 78)'
+                  ? 'var(--ds-text-success, rgb(33, 110, 78))'
                   : complianceScore >= 50
-                    ? 'rgb(133, 79, 4)'
-                    : 'rgb(174, 42, 25)',
+                    ? 'var(--ds-text-warning, rgb(133, 79, 4))'
+                    : 'var(--ds-text-danger, rgb(174, 42, 25))',
             },
             { label: 'Total violations', value: totalViolations },
             {
               label: 'P0 blockers',
               value: p0Violations,
-              valueColor: p0Violations > 0 ? 'rgb(174, 42, 25)' : 'rgb(41, 42, 46)',
+              valueColor: p0Violations > 0 ? 'var(--ds-text-danger, rgb(174, 42, 25))' : 'var(--ds-text, rgb(41, 42, 46))',
             },
             {
               label: 'P1 issues',
               value: p1Violations,
-              valueColor: p1Violations > 0 ? 'rgb(133, 79, 4)' : 'rgb(41, 42, 46)',
+              valueColor: p1Violations > 0 ? 'var(--ds-text-warning, rgb(133, 79, 4))' : 'var(--ds-text, rgb(41, 42, 46))',
             },
           ].map(card => (
             <div
@@ -448,8 +448,8 @@ export default function DesignSystemAdmin() {
                 flex: '1 1 180px',
                 minWidth: 160,
                 padding: '12px 16px',
-                background: '#FFFFFF',
-                border: '1px solid rgba(11, 18, 14, 0.14)',
+                background: 'var(--ds-surface, #FFFFFF)',
+                border: '1px solid var(--ds-border, rgba(11, 18, 14, 0.14))',
                 borderRadius: 3,
               }}
             >
@@ -457,7 +457,7 @@ export default function DesignSystemAdmin() {
                 style={{
                   fontSize: 12,
                   fontWeight: 600,
-                  color: 'rgb(80, 82, 88)',
+                  color: 'var(--ds-text-subtle, rgb(80, 82, 88))',
                   marginBottom: 4,
                   letterSpacing: 'normal',
                 }}
@@ -469,7 +469,7 @@ export default function DesignSystemAdmin() {
                   fontSize: 20,
                   fontWeight: 653,
                   lineHeight: '24px',
-                  color: card.valueColor || 'rgb(41, 42, 46)',
+                  color: card.valueColor || 'var(--ds-text, rgb(41, 42, 46))',
                 }}
               >
                 {card.value}
@@ -510,7 +510,7 @@ export default function DesignSystemAdmin() {
           style={{
             padding: '32px 0',
             fontSize: 14,
-            color: 'rgb(80, 82, 88)',
+            color: 'var(--ds-text-subtle, rgb(80, 82, 88))',
           }}
         >
           Loading violations…
@@ -540,9 +540,9 @@ export default function DesignSystemAdmin() {
                       textAlign: col.key === 'actions' ? 'right' : 'left',
                       fontSize: 12,
                       fontWeight: 653,
-                      color: 'rgb(80, 82, 88)',
+                      color: 'var(--ds-text-subtle, rgb(80, 82, 88))',
                       padding: '8px 12px 8px 0',
-                      borderBottom: '1.67px solid rgba(11, 18, 14, 0.14)',
+                      borderBottom: '1.67px solid var(--ds-border, rgba(11, 18, 14, 0.14))',
                       textTransform: 'none',
                       letterSpacing: 'normal',
                       width: col.width,
@@ -572,8 +572,8 @@ export default function DesignSystemAdmin() {
                           fontSize: 13,
                           fontFamily:
                             'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
-                          color: 'rgb(41, 42, 46)',
-                          borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
+                          color: 'var(--ds-text, rgb(41, 42, 46))',
+                          borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))',
                         }}
                       >
                         {hasDetails && (
@@ -583,7 +583,7 @@ export default function DesignSystemAdmin() {
                               display: 'inline-block',
                               width: 12,
                               marginRight: 4,
-                              color: 'rgb(107,110,118)',
+                              color: 'var(--ds-text-subtlest, rgb(107,110,118))',
                               transform: isExpanded
                                 ? 'rotate(90deg)'
                                 : 'rotate(0deg)',
@@ -598,7 +598,7 @@ export default function DesignSystemAdmin() {
                       <td
                         style={{
                           padding: '12px 12px 12px 0',
-                          borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
+                          borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))',
                         }}
                       >
                         <span style={getSeverityBadgeStyle(v.severity)}>
@@ -609,8 +609,8 @@ export default function DesignSystemAdmin() {
                         style={{
                           padding: '12px 12px 12px 0',
                           fontSize: 14,
-                          color: 'rgb(41, 42, 46)',
-                          borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
+                          color: 'var(--ds-text, rgb(41, 42, 46))',
+                          borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))',
                         }}
                       >
                         {v.description}
@@ -621,8 +621,8 @@ export default function DesignSystemAdmin() {
                           fontSize: 13,
                           fontFamily:
                             'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
-                          color: 'rgb(80, 82, 88)',
-                          borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
+                          color: 'var(--ds-text-subtle, rgb(80, 82, 88))',
+                          borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))',
                           maxWidth: 220,
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
@@ -642,7 +642,7 @@ export default function DesignSystemAdmin() {
                             {v.line_number ? `:${v.line_number}` : ''}
                           </>
                         ) : (
-                          <span style={{ color: 'rgb(107,110,118)' }}>
+                          <span style={{ color: 'var(--ds-text-subtlest, rgb(107,110,118))' }}>
                             {v.surface_id}
                           </span>
                         )}
@@ -651,7 +651,7 @@ export default function DesignSystemAdmin() {
                         style={{
                           padding: '8px 0 8px 0',
                           textAlign: 'right',
-                          borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
+                          borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))',
                         }}
                         onClick={e => e.stopPropagation()}
                       >
@@ -699,8 +699,8 @@ export default function DesignSystemAdmin() {
                           colSpan={5}
                           style={{
                             padding: '0 12px 16px 16px',
-                            background: 'rgba(9, 30, 66, 0.03)',
-                            borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
+                            background: 'var(--ds-background-neutral-subtle, rgba(9, 30, 66, 0.03))',
+                            borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))',
                           }}
                         >
                           <div
@@ -716,7 +716,7 @@ export default function DesignSystemAdmin() {
                               <>
                                 <div
                                   style={{
-                                    color: 'rgb(80,82,88)',
+                                    color: 'var(--ds-text-subtle, rgb(80,82,88))',
                                     fontWeight: 500,
                                   }}
                                 >
@@ -726,7 +726,7 @@ export default function DesignSystemAdmin() {
                                   style={{
                                     fontFamily:
                                       'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
-                                    color: 'rgb(41,42,46)',
+                                    color: 'var(--ds-text, rgb(41,42,46))',
                                   }}
                                 >
                                   {v.file_path}
@@ -736,12 +736,12 @@ export default function DesignSystemAdmin() {
                                     style={{
                                       marginLeft: 8,
                                       background: 'transparent',
-                                      border: '1px solid rgba(11,18,14,0.14)',
+                                      border: '1px solid var(--ds-border, rgba(11,18,14,0.14))',
                                       borderRadius: 3,
-                                      padding: '0 6px',
+                                      padding: '0 8px',
                                       fontSize: 11,
                                       cursor: 'pointer',
-                                      color: 'rgb(24,104,219)',
+                                      color: 'var(--ds-text-information, rgb(24,104,219))',
                                     }}
                                   >
                                     Copy
@@ -753,7 +753,7 @@ export default function DesignSystemAdmin() {
                               <>
                                 <div
                                   style={{
-                                    color: 'rgb(80,82,88)',
+                                    color: 'var(--ds-text-subtle, rgb(80,82,88))',
                                     fontWeight: 500,
                                   }}
                                 >
@@ -763,14 +763,14 @@ export default function DesignSystemAdmin() {
                                   style={{
                                     margin: 0,
                                     padding: 8,
-                                    background: '#FFFFFF',
-                                    border: '1px solid rgba(11,18,14,0.14)',
+                                    background: 'var(--ds-surface, #FFFFFF)',
+                                    border: '1px solid var(--ds-border, rgba(11,18,14,0.14))',
                                     borderRadius: 3,
                                     fontFamily:
                                       'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
                                     fontSize: 12,
                                     overflowX: 'auto',
-                                    color: 'rgb(41,42,46)',
+                                    color: 'var(--ds-text, rgb(41,42,46))',
                                   }}
                                 >
                                   {v.code_snippet}
@@ -781,7 +781,7 @@ export default function DesignSystemAdmin() {
                               <>
                                 <div
                                   style={{
-                                    color: 'rgb(80,82,88)',
+                                    color: 'var(--ds-text-subtle, rgb(80,82,88))',
                                     fontWeight: 500,
                                   }}
                                 >
@@ -797,7 +797,7 @@ export default function DesignSystemAdmin() {
                                   <div
                                     style={{
                                       flex: 1,
-                                      color: 'rgb(41,42,46)',
+                                      color: 'var(--ds-text, rgb(41,42,46))',
                                     }}
                                   >
                                     {v.suggested_fix}
@@ -808,12 +808,12 @@ export default function DesignSystemAdmin() {
                                     }
                                     style={{
                                       background: 'transparent',
-                                      border: '1px solid rgba(11,18,14,0.14)',
+                                      border: '1px solid var(--ds-border, rgba(11,18,14,0.14))',
                                       borderRadius: 3,
-                                      padding: '2px 8px',
+                                      padding: '4px 8px',
                                       fontSize: 11,
                                       cursor: 'pointer',
-                                      color: 'rgb(24,104,219)',
+                                      color: 'var(--ds-text-information, rgb(24,104,219))',
                                       flexShrink: 0,
                                     }}
                                   >
@@ -824,13 +824,13 @@ export default function DesignSystemAdmin() {
                             )}
                             <div
                               style={{
-                                color: 'rgb(80,82,88)',
+                                color: 'var(--ds-text-subtle, rgb(80,82,88))',
                                 fontWeight: 500,
                               }}
                             >
                               Created
                             </div>
-                            <div style={{ color: 'rgb(80,82,88)' }}>
+                            <div style={{ color: 'var(--ds-text-subtle, rgb(80,82,88))' }}>
                               {new Date(v.created_at).toLocaleString()}
                             </div>
                           </div>
@@ -848,7 +848,7 @@ export default function DesignSystemAdmin() {
           style={{
             padding: '24px 0',
             fontSize: 14,
-            color: 'rgb(80, 82, 88)',
+            color: 'var(--ds-text-subtle, rgb(80, 82, 88))',
           }}
         >
           No violations found. Design system is compliant for this module.
@@ -858,7 +858,7 @@ export default function DesignSystemAdmin() {
           style={{
             padding: '24px 0',
             fontSize: 14,
-            color: 'rgb(80, 82, 88)',
+            color: 'var(--ds-text-subtle, rgb(80, 82, 88))',
           }}
         >
           Select a module above to load its design system violations.
@@ -872,7 +872,7 @@ export default function DesignSystemAdmin() {
             style={{
               fontSize: 16,
               fontWeight: 653,
-              color: 'rgb(41, 42, 46)',
+              color: 'var(--ds-text, rgb(41, 42, 46))',
               margin: '0 0 12px 0',
               lineHeight: '20px',
             }}
@@ -888,12 +888,12 @@ export default function DesignSystemAdmin() {
                   gridTemplateColumns: '1fr 180px',
                   gap: 12,
                   padding: '8px 0',
-                  borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
+                  borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))',
                   fontSize: 14,
                 }}
               >
-                <div style={{ color: 'rgb(41, 42, 46)' }}>{entry.action}</div>
-                <div style={{ color: 'rgb(80, 82, 88)', fontSize: 13 }}>
+                <div style={{ color: 'var(--ds-text, rgb(41, 42, 46))' }}>{entry.action}</div>
+                <div style={{ color: 'var(--ds-text-subtle, rgb(80, 82, 88))', fontSize: 13 }}>
                   {new Date(entry.created_at).toLocaleString()}
                 </div>
               </div>

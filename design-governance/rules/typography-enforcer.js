@@ -32,10 +32,23 @@ class TypographyEnforcer {
       return;
     }
 
+    let inBlockComment = false;
+
     lines.forEach((line, index) => {
       if (index > 0 && lines[index - 1].includes('ads-scanner:ignore-next-line')) {
         return;
       }
+      // Skip /* ... */ block-comment lines (JSDoc headers etc.).
+      const trimmed = line.trim();
+      const opensBlock = line.includes('/*') && !line.includes('*/');
+      const closesBlock = line.includes('*/') && !line.includes('/*');
+      const isStandaloneBlockLine = trimmed.startsWith('*') || trimmed.startsWith('/*');
+      if (inBlockComment || isStandaloneBlockLine) {
+        if (closesBlock) inBlockComment = false;
+        else if (opensBlock) inBlockComment = true;
+        return;
+      }
+      if (opensBlock) inBlockComment = true;
       // Check for h1/h2/h3 tags
       ['h1', 'h2', 'h3'].forEach(tag => {
         if (line.includes(`<${tag}`) && line.includes('style=')) {
