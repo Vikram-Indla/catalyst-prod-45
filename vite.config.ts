@@ -74,6 +74,45 @@ function devDepsWatcher(): Plugin {
 }
 
 /**
+ * ADF SCHEMA STAGE0 EXPORT PATCHER
+ *
+ * @atlaskit/editor-plugin-list v10.2.15 imports stage0 schema variants
+ * (listItemWithFlexibleFirstChildStage0, taskListWithFlexibleFirstChildStage0)
+ * that don't exist in adf-schema 52.11.4. This plugin intercepts the
+ * adf-schema module and appends stub exports for these missing variants,
+ * allowing the bundler to satisfy the imports without error.
+ *
+ * These exports are only used internally by the editor plugins themselves,
+ * not by our application source code.
+ */
+function adfSchemaStagePatcher(): Plugin {
+  const adfSchemaPath = path.resolve(__dirname, 'node_modules/@atlaskit/adf-schema/dist/esm/index.js');
+
+  return {
+    name: 'adf-schema-stage0-patcher',
+    enforce: 'pre',
+    resolveId(source) {
+      // Intercept the adf-schema main entry
+      if (source === '@atlaskit/adf-schema' || source === '@atlaskit/adf-schema/') {
+        return adfSchemaPath;
+      }
+    },
+    load(id) {
+      // If this is the adf-schema file, append the missing exports
+      if (id === adfSchemaPath && fs.existsSync(adfSchemaPath)) {
+        const originalCode = fs.readFileSync(adfSchemaPath, 'utf-8');
+        // Append stub exports for the stage0 variants that editor plugins expect
+        const patched = originalCode + '\n' +
+          '// Stubs for editor-plugin-list stage0 variants\n' +
+          'export const listItemWithFlexibleFirstChildStage0 = undefined;\n' +
+          'export const taskListWithFlexibleFirstChildStage0 = undefined;\n';
+        return patched;
+      }
+    },
+  };
+}
+
+/**
  * ATLASKIT SUBPATH RESOLVER
  *
  * Atlaskit packages use a "subdirectory package.json" pattern for subpath
@@ -204,6 +243,7 @@ export default defineConfig(({ mode, command }) => {
 
   },
   plugins: [
+    adfSchemaStagePatcher(),
     atlaskitSubpathResolver(),
     isBuild ? skipHeavyModules() : null,
     !isBuild && devDepsWatcher(),
