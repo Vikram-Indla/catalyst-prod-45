@@ -9,7 +9,7 @@ export default function JiraSyncControlPage() {
         className="border-b px-6 py-5"
         style={{ borderColor: 'var(--cp-border-default)' }}
       >
-        <div className="flex items-center gap-3">
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div
             className="h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0"
             style={{ background: 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))18' }}

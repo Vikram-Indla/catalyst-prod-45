@@ -472,7 +472,7 @@ export default function UserAccessPage() {
                     fontWeight: 653,
                     color: 'var(--ds-text-subtle, #505258)',
                     padding: '8px 12px 8px 0',
-                    borderBottom: '1.67px solid rgba(11, 18, 14, 0.14)',
+                    borderBottom: '1.67px solid var(--ds-border, rgba(11, 18, 14, 0.14))',
                     textTransform: 'none',
                     letterSpacing: 'normal',
                     lineHeight: '16px',
@@ -500,11 +500,11 @@ export default function UserAccessPage() {
               ) : (
                 filteredUsers.map((user) => (
                   <tr key={user.id}>
-                    <td style={{ padding: '12px 12px 12px 0', fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace', fontSize: 13, color: 'var(--ds-text-subtle, #505258)', borderBottom: '1px solid rgba(11, 18, 14, 0.08)' }}>
+                    <td style={{ padding: '12px 12px 12px 0', fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace', fontSize: 13, color: 'var(--ds-text-subtle, #505258)', borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))' }}>
                       {user.rid || '—'}
                     </td>
-                    <td style={{ padding: '12px 12px 12px 0', fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #292A2E)', borderBottom: '1px solid rgba(11, 18, 14, 0.08)' }}>{user.name}</td>
-                    <td style={{ padding: '12px 12px 12px 0', fontSize: 14, color: 'var(--ds-text-subtle, #505258)', borderBottom: '1px solid rgba(11, 18, 14, 0.08)' }}>
+                    <td style={{ padding: '12px 12px 12px 0', fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #292A2E)', borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))' }}>{user.name}</td>
+                    <td style={{ padding: '12px 12px 12px 0', fontSize: 14, color: 'var(--ds-text-subtle, #505258)', borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))' }}>
                       {editingEmailId === user.id ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                           <div style={{ width: '180px' }}>
@@ -542,7 +542,7 @@ export default function UserAccessPage() {
                       ) : (
                         <div
                           className="group"
-                          style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', transition: 'color 120ms ease' }}
+                          style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', transition: 'color 120ms ease' }}
                           onClick={() => { setEditingEmailId(user.id); setEditingEmailValue(user.email || ''); }}
                           onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #292A2E)')}
                           onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #505258)')}
@@ -559,7 +559,7 @@ export default function UserAccessPage() {
                         </div>
                       )}
                     </td>
-                    <td style={{ padding: '12px 12px 12px 0', borderBottom: '1px solid rgba(11, 18, 14, 0.08)' }}>
+                    <td style={{ padding: '12px 12px 12px 0', borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))' }}>
                       {user.email ? (
                         (() => {
                           const roleOpts = [
@@ -592,14 +592,14 @@ export default function UserAccessPage() {
                         </span>
                       )}
                     </td>
-                    <td style={{ padding: '12px 12px 12px 0', borderBottom: '1px solid rgba(11, 18, 14, 0.08)' }}>
+                    <td style={{ padding: '12px 12px 12px 0', borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))' }}>
                       {user.is_active ? (
                         <Lozenge appearance="success">Active</Lozenge>
                       ) : (
                         <Lozenge appearance="default">Inactive</Lozenge>
                       )}
                     </td>
-                    <td style={{ padding: '12px 0 12px 0', textAlign: 'right', borderBottom: '1px solid rgba(11, 18, 14, 0.08)' }}>
+                    <td style={{ padding: '12px 0 12px 0', textAlign: 'right', borderBottom: '1px solid var(--ds-border-subtle, rgba(11, 18, 14, 0.08))' }}>
                       {user.profile_id ? (
                         <Lozenge appearance="success">Account linked</Lozenge>
                       ) : user.email && user.role_id ? (
@@ -634,7 +634,7 @@ export default function UserAccessPage() {
       <Dialog open={createAccountOpen} onOpenChange={setCreateAccountOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><PersonAddIcon label="" size="medium" /></span>
               Create Account
             </DialogTitle>
@@ -644,7 +644,7 @@ export default function UserAccessPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+            <p style={{ fontSize: 14 }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
               This will create a new Catalyst login. The user will receive a password reset email to set their own password.
             </p>
           </div>
@@ -667,7 +667,7 @@ export default function UserAccessPage() {
       <Dialog open={bulkCreateOpen} onOpenChange={(open) => !bulkProgress && setBulkCreateOpen(open)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><PeopleGroupIcon label="" size="medium" /></span>
               Bulk Create Accounts
             </DialogTitle>
@@ -678,8 +678,8 @@ export default function UserAccessPage() {
           </DialogHeader>
           <div className="py-4 space-y-3">
             {bulkProgress ? (
-              <div className="space-y-2">
-                <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <p style={{ fontSize: 14 }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                   Creating accounts… {bulkProgress.done} / {bulkProgress.total}
                 </p>
                 <div className="w-full rounded-full h-2" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
@@ -698,7 +698,7 @@ export default function UserAccessPage() {
               </div>
             ) : (
               <>
-                <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                <p style={{ fontSize: 14 }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                   Each user will receive a password reset email to set their own password on first login.
                 </p>
                 <div className="max-h-32 overflow-y-auto text-xs rounded p-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', border: '1px solid var(--ds-border, #DCDFE4)' }}>

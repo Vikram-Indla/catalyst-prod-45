@@ -269,7 +269,7 @@ export default function NotificationTriggers() {
           className="flex items-center justify-between mt-3 pt-3"
           style={{ borderTop: '1px solid var(--ds-border-layout, #EBECF0)' }}
         >
-          <span className="text-xs" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>
+          <span style={{ fontSize: 12 }} style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>
             Showing {filtered.length} of {totalCount} triggers across {groups.length} categories
           </span>
           <div className="flex gap-2">
@@ -326,7 +326,7 @@ export default function NotificationTriggers() {
       ) : groups.length === 0 ? (
         <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '48px 16px', textAlign: 'center' }}>
           <span style={{ display: 'flex', justifyContent: 'center', color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 12 }}><NotificationIcon label="" size="large" /></span>
-          <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>No triggers match your filters.</p>
+          <p style={{ fontSize: 14 }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>No triggers match your filters.</p>
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>

@@ -82,7 +82,7 @@ const T = {
   bgNeutralHov:  'var(--ds-background-neutral-hovered,#F1F2F4)',
   bgSelected:    'var(--ds-background-selected,#E9F2FF)',
   bgWarning:     'var(--ds-background-warning-subtle,#FFF7D6)',
-  shadowRaised:  '0 1px 3px rgba(9,30,66,.13)',
+  shadowRaised:  'var(--ds-shadow-raised, 0 1px 3px rgba(9,30,66,.13))',
 } as const;
 
 // ── Window bridge helpers ────────────────────────────────────────────────────
@@ -206,7 +206,7 @@ export default function CatalystFeaturesBoard() {
       {/* ── Page header ── */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12,
-        marginBottom: 20, paddingBottom: 16,
+        marginBottom: 24, paddingBottom: 16,
         borderBottom: `2px solid ${T.borderBrand}`,
       }}>
         <BoardIcon label="" />
@@ -220,7 +220,7 @@ export default function CatalystFeaturesBoard() {
           <span style={{
             fontSize: 11, fontWeight: 600, color: 'var(--ds-text-information,#0055CC)',
             background: 'var(--ds-background-information-subtle,#E9F2FF)',
-            borderRadius: 10, padding: '2px 8px',
+            borderRadius: 8, padding: '4px 8px',
           }}>
             {cards.length} cards · {cards.filter(c => c.status === 'in_progress').length} active
           </span>
@@ -240,7 +240,7 @@ export default function CatalystFeaturesBoard() {
       </div>
 
       {/* ── Group filter tabs ── */}
-      <div style={{ display: 'flex', gap: 4, marginBottom: 20, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 4, marginBottom: 24, flexWrap: 'wrap' }}>
         {groups.map(g => {
           const count = g === 'all' ? cards.length : cards.filter(c => c.feature_group === g).length;
           const active = activeGroup === g;
@@ -271,7 +271,7 @@ export default function CatalystFeaturesBoard() {
           <div style={{
             display: 'grid',
             gridTemplateColumns: '148px repeat(4,minmax(260px,1fr))',
-            gap: 6, marginBottom: 4, minWidth: 1096,
+            gap: 8, marginBottom: 4, minWidth: 1096,
           }}>
             <div />
             {COLUMNS.map(col => {
@@ -279,12 +279,12 @@ export default function CatalystFeaturesBoard() {
               return (
                 <div key={col.id} style={{
                   background: col.bg, borderRadius: '6px 6px 0 0',
-                  padding: '7px 10px', display: 'flex', alignItems: 'center', gap: 6,
+                  padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8,
                 }}>
                   <span style={{ fontSize: 11, fontWeight: 600, color: T.textSubtle }}>{col.label}</span>
                   <span style={{
                     fontSize: 11, fontWeight: 600, color: T.textSubtlest,
-                    background: T.bgNeutral, borderRadius: 10, padding: '0 6px',
+                    background: T.bgNeutral, borderRadius: 8, padding: '0 8px',
                   }}>{count}</span>
                 </div>
               );
@@ -312,12 +312,12 @@ function SwimLaneRow({ group, cards }: { group: string; cards: FeatureCard[] }) 
     <div style={{
       display: 'grid',
       gridTemplateColumns: '148px repeat(4,minmax(260px,1fr))',
-      gap: 6, marginBottom: 8, minWidth: 1096,
+      gap: 8, marginBottom: 8, minWidth: 1096,
     }}>
       {/* Swimlane label */}
       <div style={{
         background: 'var(--ds-background-neutral,#F7F8F9)',
-        borderRadius: 6, padding: '8px 10px',
+        borderRadius: 6, padding: '8px 12px',
         borderLeft: '3px solid var(--ds-border-brand,#0C66E4)',
         display: 'flex', alignItems: 'flex-start',
       }}>
@@ -336,7 +336,7 @@ function SwimLaneRow({ group, cards }: { group: string; cards: FeatureCard[] }) 
         return (
           <div key={col.id} style={{
             background: col.bg, borderRadius: '0 0 6px 6px',
-            padding: 6, minHeight: 72,
+            padding: 8, minHeight: 72 /* not on grid but Jira-spec card height */,
             display: 'flex', flexDirection: 'column', gap: 5,
           }}>
             {colCards.map(card => <FeatureCardView key={card.card_key} card={card} />)}
@@ -366,19 +366,19 @@ function FeatureCardView({ card }: { card: FeatureCard }) {
         background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         border: `1px solid ${isStale ? 'var(--ds-border-warning,#F5A623)' : 'var(--ds-border,rgba(11,18,14,.14))'}`,
         borderLeft: isStale ? '3px solid var(--ds-border-warning,#F5A623)' : undefined,
-        borderRadius: 6, padding: '8px 10px', cursor: 'pointer',
-        boxShadow: '0 1px 3px rgba(9,30,66,.13)',
+        borderRadius: 6, padding: '8px 12px', cursor: 'pointer',
+        boxShadow: 'var(--ds-shadow-raised, 0 1px 3px rgba(9,30,66,.13))',
         transition: 'box-shadow 150ms cubic-bezier(.15,1,.3,1)',
       }}
-      onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 2px 8px rgba(9,30,66,.2)')}
-      onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 1px 3px rgba(9,30,66,.13)')}
+      onMouseEnter={e => (e.currentTarget.style.boxShadow = 'var(--ds-shadow-overlay, 0 2px 8px rgba(9,30,66,.2))')}
+      onMouseLeave={e => (e.currentTarget.style.boxShadow = 'var(--ds-shadow-raised, 0 1px 3px rgba(9,30,66,.13))')}
     >
       {/* Header: seq + chevron + title */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginBottom: 5 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 4 }}>
         <span style={{
           fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtlest,#626F86)',
           background: 'var(--ds-background-neutral,#F7F8F9)',
-          borderRadius: 3, padding: '1px 5px', fontFamily: 'var(--cp-font-mono)', flexShrink: 0,
+          borderRadius: 3, padding: '0 8px', fontFamily: 'var(--cp-font-mono)', flexShrink: 0,
         }}>
           #{String(card.sequence_number).padStart(3, '0')}
         </span>
@@ -402,7 +402,7 @@ function FeatureCardView({ card }: { card: FeatureCard }) {
             <span key={skill} style={{
               fontSize: 9, fontWeight: 600, color: '#fff',
               background: SKILL_BG[skill] ?? 'var(--ds-background-neutral-bold,var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
-              borderRadius: 3, padding: '1px 5px',
+              borderRadius: 3, padding: '0 8px',
             }}>
               {skill}
             </span>
@@ -412,7 +412,7 @@ function FeatureCardView({ card }: { card: FeatureCard }) {
               fontSize: 9, fontWeight: 600,
               color: 'var(--ds-text-warning,#974F0C)',
               background: 'var(--ds-background-warning-subtle,#FFF7D6)',
-              borderRadius: 3, padding: '1px 5px',
+              borderRadius: 3, padding: '0 8px',
             }}>
               stale
             </span>
