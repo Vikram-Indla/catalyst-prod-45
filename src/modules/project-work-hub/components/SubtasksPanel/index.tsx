@@ -632,12 +632,13 @@ export function SubtasksPanel({
   };
 
   return (
-    <div
-      className="sp-panel"
-      tabIndex={-1}
-      ref={tableContainerRef}
-      onKeyDown={handlePanelKeyDown}
-    >
+    <div style={{ marginBottom: 24 }}>
+      <div
+        className="sp-panel"
+        tabIndex={-1}
+        ref={tableContainerRef}
+        onKeyDown={handlePanelKeyDown}
+      >
       {/* ═══ Header ═══ */}
       <div className="sp-header">
         <div className="sp-header-left">
@@ -1095,6 +1096,7 @@ export function SubtasksPanel({
               so it appears as the last row within the table's visual border — Jira parity. */}
         </>
       )}
+      </div>
     </div>
   );
 }

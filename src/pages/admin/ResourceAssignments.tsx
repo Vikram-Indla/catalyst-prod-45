@@ -153,15 +153,15 @@ function SortableRow({
       onMouseEnter={e => { if (!isDragging) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; }}
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isDragging ? 'var(--ds-background-neutral, #F7F8F9)' : ''; }}
     >
-      <td className="px-4 py-3 cursor-grab active:cursor-grabbing" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }} {...attributes} {...listeners}>
+      <td style={{ padding: "12px 16px", cursor: "grab" }} className="active:cursor-grabbing" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }} {...attributes} {...listeners}>
         <span style={{ display: 'inline-flex', cursor: 'grab' }}><DragHandlerIcon label="" size="small" /></span>
       </td>
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         <span className="text-xs font-medium px-2 py-1 rounded" style={{ color: 'var(--ds-text-brand, #0C66E4)', background: 'var(--ds-background-selected, #E9F2FF)' }}>
           {assignment.assignment_id || '—'}
         </span>
       </td>
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--ds-background-selected, #E9F2FF)' }}>
             <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><BriefcaseIcon label="" size="small" /></span>
@@ -175,7 +175,7 @@ function SortableRow({
         </div>
       </td>
       {/* Resource Count - Clickable */}
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         {resourceCount > 0 ? (
           <button
             onClick={() => onResourceCountClick(assignment, budgetData?.linkedResources || [])}
@@ -191,7 +191,7 @@ function SortableRow({
           <span className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>0</span>
         )}
       </td>
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         <AdsSelect
           menuPortalTarget={document.body}
           value={{ label: statusConfig.label, value: status }}
@@ -206,7 +206,7 @@ function SortableRow({
         />
       </td>
       {/* Budget - Read-only for Insourced (auto-calculated), Editable for Outsourced/Cosourced */}
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         {normalizeAssignmentType(assignment.assignment_type) === 'Insourced' ? (
           <Tooltip content={<p>Sum of {resourceCount} linked resources' CTC (auto-calculated)</p>}>
             <div className="flex items-center gap-1 px-2 py-1 -mx-2 rounded min-w-[80px] cursor-help" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
@@ -228,7 +228,7 @@ function SortableRow({
           />
         )}
       </td>
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         <Popover>
           <PopoverTrigger asChild>
             <button
@@ -254,7 +254,7 @@ function SortableRow({
           </PopoverContent>
         </Popover>
       </td>
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         <Popover>
           <PopoverTrigger asChild>
             <button
@@ -280,7 +280,7 @@ function SortableRow({
           </PopoverContent>
         </Popover>
       </td>
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         {(assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
           <AdsSelect
             menuPortalTarget={document.body}
@@ -300,7 +300,7 @@ function SortableRow({
           <span className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>—</span>
         )}
       </td>
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         {(() => {
           const typeOpts = [
             { label: 'Not specified', value: '__none__' },
@@ -320,7 +320,7 @@ function SortableRow({
           );
         })()}
       </td>
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         {normalizeAssignmentType(assignment.assignment_type) === 'Insourced' || assignment.assignment_type === 'BAU' ? (
           // Insourced: Always show "On Track" as read-only
           <Lozenge appearance={PAYMENT_STATUS_CONFIG['on_track'].appearance}>
@@ -349,13 +349,13 @@ function SortableRow({
           <span className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>—</span>
         )}
       </td>
-      <td className="px-4 py-3 text-center">
+      <td style={{ padding: "12px 16px", textAlign: "center" }}>
         <Toggle
           isChecked={assignment.is_active}
           onChange={() => onToggleActive(assignment)}
         />
       </td>
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         <div className="flex items-center justify-center gap-1">
           <button
             onClick={() => onEdit(assignment)}
@@ -753,16 +753,40 @@ export default function ResourceAssignmentsPage() {
 
   return (
     <AdminGuard>
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Resource Assignments</h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
-            Configure assignment values for capacity planning resources.
-          </p>
+    <div
+      style={{
+        padding: '24px 32px 48px',
+        maxWidth: 1280,
+        color: 'var(--ds-text, #292A2E)',
+        fontFamily:
+          '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+      }}
+    >
+      {/* Header — Jira admin parity: H1 24/653 + subtitle + right-aligned primary button */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          gap: 16,
+          marginBottom: 8,
+        }}
+      >
+        <div style={{ flex: 1 }}>
+          <h1
+            style={{
+              fontSize: 24,
+              fontWeight: 653,
+              lineHeight: '28px',
+              color: 'var(--ds-text, #292A2E)',
+              margin: 0,
+              letterSpacing: 'normal',
+            }}
+          >
+            Resource assignments
+          </h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Button
             appearance="default"
             onClick={() => {
@@ -782,10 +806,22 @@ export default function ResourceAssignmentsPage() {
             onClick={() => setCreateModalOpen(true)}
             iconBefore={AddIcon}
           >
-            Add Assignment
+            Add assignment
           </Button>
         </div>
       </div>
+      <p
+        style={{
+          fontSize: 14,
+          fontWeight: 400,
+          color: 'var(--ds-text-subtle, #505258)',
+          margin: '0 0 24px 0',
+          lineHeight: '20px',
+          maxWidth: 760,
+        }}
+      >
+        Configure assignment values for capacity planning resources.
+      </p>
 
       {/* Grouped Assignments List */}
       <div className="space-y-4">
@@ -823,22 +859,45 @@ export default function ResourceAssignmentsPage() {
                   collisionDetection={closestCenter}
                   onDragEnd={(e) => handleDragEnd(e, group.type)}
                 >
-                  <table className="w-full">
-                    <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    {/* Jira-parity table headers: 12/653/rgb(80,82,88) SENTENCE-CASE
+                        (not uppercase), hairline bottom border, padding 8px 12px 8px 0. */}
+                    <thead>
                       <tr>
-                        <th className="w-10 px-4 py-2"></th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase w-[60px]" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>AID</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Name</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase w-[80px]" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Resources</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase w-[130px]" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Status</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase w-[110px]" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Budget (SAR)</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase w-[130px]" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Assignment Start Date</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase w-[130px]" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Assignment End Date</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase w-[120px]" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Vendor</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase w-[130px]" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Assignment Type</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase w-[120px]" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Payment Status</th>
-                        <th className="text-center px-4 py-2 text-[11px] font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Active</th>
-                        <th className="text-center px-4 py-2 text-[11px] font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Actions</th>
+                        {[
+                          { label: '', width: '32px' },
+                          { label: 'AID', width: '60px' },
+                          { label: 'Name', width: 'auto' },
+                          { label: 'Resources', width: '80px' },
+                          { label: 'Status', width: '130px' },
+                          { label: 'Budget (SAR)', width: '110px' },
+                          { label: 'Assignment start date', width: '130px' },
+                          { label: 'Assignment end date', width: '130px' },
+                          { label: 'Vendor', width: '120px' },
+                          { label: 'Assignment type', width: '130px' },
+                          { label: 'Payment status', width: '120px' },
+                          { label: 'Active', width: '80px', align: 'center' as const },
+                          { label: 'Actions', width: '100px', align: 'center' as const },
+                        ].map((col, i) => (
+                          <th
+                            key={i}
+                            scope="col"
+                            style={{
+                              textAlign: col.align || 'left',
+                              fontSize: 12,
+                              fontWeight: 653,
+                              color: 'var(--ds-text-subtle, #505258)',
+                              padding: '8px 12px 8px 0',
+                              borderBottom: '1.67px solid rgba(11, 18, 14, 0.14)',
+                              textTransform: 'none',
+                              letterSpacing: 'normal',
+                              lineHeight: '16px',
+                              width: col.width,
+                            }}
+                          >
+                            {col.label}
+                          </th>
+                        ))}
                       </tr>
                     </thead>
                     <tbody>

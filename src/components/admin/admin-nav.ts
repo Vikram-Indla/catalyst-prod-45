@@ -42,7 +42,9 @@ export const adminPockets: AdminNavPocket[] = [
       { label: 'Resource Roster', path: '/admin/user-access' },
       { label: 'Resource Names', path: '/admin/users' },
       { label: 'Resource Roles', path: '/admin/roles-permissions' },
-      { label: 'Jira User Sync', path: '/admin/jira-user-sync' },
+      // 'Jira User Sync' DEPRECATED 2026-05-19 — superseded by
+      // /admin/jira/user-mapping (canonical). The /admin/jira-user-sync
+      // route still exists temporarily and 301-redirects there.
       { label: 'Resource Departments', path: '/admin/capacity-departments' },
       { label: 'Resource Assignments', path: '/admin/resource-assignments' },
     ],
@@ -62,8 +64,9 @@ export const adminPockets: AdminNavPocket[] = [
     id: 'design-system',
     label: 'Design system',
     iconName: 'Palette',
-    path: '/admin/components',
+    path: '/admin/design-system',
     children: [
+      { label: 'Design Governance', path: '/admin/design-system' },
       { label: 'Components', path: '/admin/components' },
       // RESET ICONS — runtime asset override management. Admin-only.
       { label: 'Icons', path: '/admin/icons' },
@@ -98,20 +101,26 @@ export const adminPockets: AdminNavPocket[] = [
     ],
   },
   {
-    id: 'workhub',
-    label: 'WorkHub',
+    // 2026-05-19 — Section renamed from "WorkHub" to "Jira". Every leaf
+    // under this pocket is a Jira-integration setting; "WorkHub" was a
+    // historical codename that confused users.
+    //
+    // Three duplicate sync pages were folded into the single "Sync & logs"
+    // entry below: 'Jira Sync Control' and 'Jira Activity Sync' (both
+    // overlapping with Sync & logs) are deprecated. Their routes still
+    // resolve temporarily and redirect to /admin/jira/sync-logs.
+    id: 'jira',
+    label: 'Jira',
     iconName: 'Cable',
-    path: '/admin/workhub',
+    path: '/admin/jira',
     children: [
-      { label: 'Jira Connection', path: '/admin/workhub/jira-connection' },
-      { label: 'Jira Sync Control', path: '/admin/workhub/jira-sync-control' },
-      { label: 'Hierarchy Mapping', path: '/admin/workhub/hierarchy-mapping' },
-      { label: 'Scheduling Rules', path: '/admin/workhub/scheduling-rules' },
-      { label: 'Status Mapping', path: '/admin/workhub/status-mapping' },
-      { label: 'User Mapping', path: '/admin/workhub/user-mapping' },
-      { label: 'Data Scope', path: '/admin/workhub/data-scope' },
-      { label: 'Sync & Logs', path: '/admin/workhub/sync-logs' },
-      { label: 'Jira Activity Sync', path: '/admin/workhub/activity-sync' },
+      { label: 'Connection', path: '/admin/workhub/jira-connection' },
+      { label: 'Hierarchy mapping', path: '/admin/workhub/hierarchy-mapping' },
+      { label: 'Status mapping', path: '/admin/workhub/status-mapping' },
+      { label: 'User mapping', path: '/admin/workhub/user-mapping' },
+      { label: 'Data scope', path: '/admin/workhub/data-scope' },
+      { label: 'Scheduling rules', path: '/admin/workhub/scheduling-rules' },
+      { label: 'Sync & logs', path: '/admin/workhub/sync-logs' },
     ],
   },
   {
@@ -135,7 +144,9 @@ export const REGISTERED_ADMIN_ROUTES = new Set([
   '/admin/overview',
   '/admin/users',
   '/admin/roles-permissions',
-  '/admin/jira-user-sync',
+  // '/admin/jira-user-sync' — DEPRECATED 2026-05-19; redirects to
+  //   /admin/workhub/user-mapping. Kept out of the canonical set so the
+  //   parity test stops surfacing it as a sidebar leaf.
   '/admin/capacity-departments',
   '/admin/resource-assignments',
   '/admin/user-access',
@@ -143,6 +154,7 @@ export const REGISTERED_ADMIN_ROUTES = new Set([
   '/admin/modules-packages',
   '/admin/settings/notifications',
   '/admin/notification-triggers',
+  '/admin/design-system',
   '/admin/icons',
   '/admin/avatars',
   '/admin/components',
@@ -158,14 +170,16 @@ export const REGISTERED_ADMIN_ROUTES = new Set([
   '/admin/business/EpicStatus',
   '/admin/business/FeatureStatus',
   '/admin/workhub/jira-connection',
-  '/admin/workhub/jira-sync-control',
+  // '/admin/workhub/jira-sync-control' — DEPRECATED 2026-05-19; merged
+  //   into /admin/workhub/sync-logs.
   '/admin/workhub/hierarchy-mapping',
   '/admin/workhub/scheduling-rules',
   '/admin/workhub/status-mapping',
   '/admin/workhub/user-mapping',
   '/admin/workhub/data-scope',
   '/admin/workhub/sync-logs',
-  '/admin/workhub/activity-sync',
+  // '/admin/workhub/activity-sync' — DEPRECATED 2026-05-19; merged into
+  //   /admin/workhub/sync-logs.
   '/admin/feature-flags',
   '/admin/catalyst-features',
 ]);

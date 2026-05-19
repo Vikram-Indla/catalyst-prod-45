@@ -40,6 +40,7 @@ import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indi
 import MoreIcon from '@atlaskit/icon/glyph/more';
 import AddIcon from '@atlaskit/icon/core/add';
 import { WorkItemCard } from './WorkItemCard';
+import { InlineCreateCard } from './InlineCreateCard';
 import type { BoardIssue } from './kanban-types';
 import { CARD_COLOR_BY_PRIORITY, CARD_COLOR_BY_TYPE } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
@@ -78,6 +79,11 @@ interface CardActions {
   onCreateInColumn?: (colId: string) => void;
   /** Label for the per-column create button. Default: "+ Create issue". */
   createInColumnLabel?: string;
+  /**
+   * Callback fired when InlineCreateCard successfully creates a new issue.
+   * Host is responsible for adding the card to colMap and refreshing the board.
+   */
+  onCreateCard?: (issue: { issueId: string; summary: string; status: string }) => void;
   /**
    * Optional hub-specific icon resolver — forwarded to WorkItemCard. Hubs
    * whose type taxonomy diverges from Jira (ProductHub initiatives,
@@ -317,6 +323,8 @@ const PragmaticColumn = memo(function PragmaticColumn({
   // aria-expanded but the menu mounts at viewport (0,0) regardless of
   // shouldRenderToParent / placement / parent positioning mode).
   const [meatballAnchor, setMeatballAnchor] = useState<{ x: number; y: number } | null>(null);
+  // Inline create card — toggle for per-column form visibility
+  const [inlineCreateColId, setInlineCreateColId] = useState<string | null>(null);
   useEffect(() => {
     if (!meatballAnchor) return;
     const close = (e?: Event) => {
@@ -513,10 +521,10 @@ const PragmaticColumn = memo(function PragmaticColumn({
                   setMeatballAnchor(null);
                 },
               },
-              ...(actions.onCreateInColumn ? [{
+              ...((actions.onCreateInColumn || actions.onCreateCard) ? [{
                 key: 'create',
                 label: actions.createInColumnLabel ?? 'Create issue here',
-                act: () => { actions.onCreateInColumn?.(column.id); setMeatballAnchor(null); },
+                act: () => { setInlineCreateColId(column.id); setMeatballAnchor(null); },
               }] : []),
             ].map((item) => (
               <button
@@ -608,46 +616,59 @@ const PragmaticColumn = memo(function PragmaticColumn({
         })}
         {/*
           Per-column create — Jira-parity "+ Create issue" affordance,
-          rendered at the bottom of every column. Subtle by default;
-          becomes more prominent on hover. Hidden if no `onCreateInColumn`
-          handler is wired by the host. Click forwards the column id to
-          the host so it can open a typed create flow with the
-          destination status pre-filled.
+          rendered at the bottom of every column. Conditional render:
+          - If inlineCreateColId === column.id: show InlineCreateCard form
+          - Else: show "+ Create issue" button (subtle, full column width)
+          Hidden if no handler is wired by the host.
         */}
-        {actions.onCreateInColumn && (
-          <button
-            type="button"
-            data-testid={`kanban-column-create-${column.id}`}
-            onClick={() => actions.onCreateInColumn?.(column.id)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'flex-start',
-              gap: 6,
-              padding: '6px 8px',
-              border: 'none',
-              background: 'transparent',
-              color: tk.textMuted,
-              fontSize: 12,
-              fontWeight: 500,
-              fontFamily: 'var(--cp-font-body)',
-              borderRadius: 4,
-              cursor: 'pointer',
-              transition: 'background 120ms ease, color 120ms ease',
-              marginTop: issueIds.length === 0 ? 0 : 4,
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = tk.surfaceHover ?? 'rgba(0,0,0,0.04)';
-              (e.currentTarget as HTMLButtonElement).style.color = tk.textPrimary;
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-              (e.currentTarget as HTMLButtonElement).style.color = tk.textMuted;
-            }}
-          >
-            <AddIcon label="" size="small" primaryColor="currentColor" />
-            <span>{actions.createInColumnLabel ?? 'Create issue'}</span>
-          </button>
+        {(actions.onCreateInColumn || actions.onCreateCard) && (
+          inlineCreateColId === column.id ? (
+            <div style={{ marginTop: issueIds.length === 0 ? 0 : 4 }}>
+              <InlineCreateCard
+                projectKey={actions.projectKey || ''}
+                columnId={column.id}
+                onCreateCard={(issue) => {
+                  actions.onCreateCard?.(issue);
+                  setInlineCreateColId(null);
+                }}
+                onCancel={() => setInlineCreateColId(null)}
+              />
+            </div>
+          ) : (
+            <button
+              type="button"
+              data-testid={`kanban-column-create-${column.id}`}
+              onClick={() => setInlineCreateColId(column.id)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                gap: 6,
+                padding: '6px 8px',
+                border: 'none',
+                background: 'transparent',
+                color: tk.textMuted,
+                fontSize: 12,
+                fontWeight: 500,
+                fontFamily: 'var(--cp-font-body)',
+                borderRadius: 4,
+                cursor: 'pointer',
+                transition: 'background 120ms ease, color 120ms ease',
+                marginTop: issueIds.length === 0 ? 0 : 4,
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = tk.surfaceHover ?? 'rgba(0,0,0,0.04)';
+                (e.currentTarget as HTMLButtonElement).style.color = tk.textPrimary;
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                (e.currentTarget as HTMLButtonElement).style.color = tk.textMuted;
+              }}
+            >
+              <AddIcon label="" size="small" primaryColor="currentColor" />
+              <span>{actions.createInColumnLabel ?? 'Create issue'}</span>
+            </button>
+          )
         )}
       </div>
     </div>

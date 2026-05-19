@@ -348,17 +348,38 @@ export default function UserAccessPage() {
 
   return (
     <AdminGuard>
-    <div className="flex-1 p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold flex items-center gap-2" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
-            <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><PersonIcon label="" size="medium" /></span>
-            User Access
+    <div
+      style={{
+        padding: '24px 32px 48px',
+        maxWidth: 1280,
+        color: 'var(--ds-text, #292A2E)',
+        fontFamily:
+          '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+      }}
+    >
+      {/* Header — Jira admin parity: H1 24/653 + subtitle + right-aligned primary button */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          gap: 16,
+          marginBottom: 8,
+        }}
+      >
+        <div style={{ flex: 1 }}>
+          <h1
+            style={{
+              fontSize: 24,
+              fontWeight: 653,
+              lineHeight: '28px',
+              color: 'var(--ds-text, #292A2E)',
+              margin: 0,
+              letterSpacing: 'normal',
+            }}
+          >
+            User access
           </h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
-            Manage resource roster, product role assignments, and Catalyst login provisioning
-          </p>
         </div>
         {usersNeedingAccounts.length > 0 && (
           <Button
@@ -366,72 +387,134 @@ export default function UserAccessPage() {
             onClick={() => setBulkCreateOpen(true)}
             iconBefore={PeopleGroupIcon}
           >
-            Create {usersNeedingAccounts.length} Account{usersNeedingAccounts.length > 1 ? 's' : ''}
+            Create {usersNeedingAccounts.length} account{usersNeedingAccounts.length > 1 ? 's' : ''}
           </Button>
         )}
       </div>
+      <p
+        style={{
+          fontSize: 14,
+          fontWeight: 400,
+          color: 'var(--ds-text-subtle, #505258)',
+          margin: '0 0 24px 0',
+          lineHeight: '20px',
+          maxWidth: 760,
+        }}
+      >
+        Manage resource roster, product role assignments, and Catalyst login provisioning.
+      </p>
 
-      {/* Search */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-md">
-          <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', zIndex: 10 }}><SearchIcon label="" size="small" /></span>
-          <div style={{ paddingLeft: '36px' }}>
-            <Textfield
-              placeholder="Search by name, email, RID, or role..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
-            />
-          </div>
+      {/* Filter row — Jira filter input + count chip */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          marginBottom: 16,
+        }}
+      >
+        <div style={{ flex: '0 1 360px' }}>
+          <Textfield
+            placeholder="Filter resources by name, email, RID, or role"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
+            elemBeforeInput={
+              <div style={{ paddingLeft: 8, display: 'flex', alignItems: 'center' }}>
+                <SearchIcon label="" size="small" />
+              </div>
+            }
+            isCompact
+          />
         </div>
-        <Lozenge appearance="default">
-          {filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''}
-        </Lozenge>
+        <span
+          style={{
+            fontSize: 12,
+            color: 'var(--ds-text-subtle, #505258)',
+            fontWeight: 500,
+          }}
+        >
+          {filteredUsers.length} resource{filteredUsers.length !== 1 ? 's' : ''}
+        </span>
       </div>
 
-      {/* Table */}
-      <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--ds-border, #DCDFE4)', background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
-        <div className="overflow-auto h-[calc(100vh-280px)]">
-          <table className="min-w-full" style={{ borderCollapse: 'collapse' }}>
-            <thead className="sticky top-0 z-10" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderBottom: '1px solid var(--ds-border, #DCDFE4)' }}>
-              <tr>
-                <th className="w-[80px] px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>RID</th>
-                <th className="min-w-[150px] px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Name</th>
-                <th className="min-w-[200px] px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Email</th>
-                <th className="min-w-[180px] px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Product Role</th>
-                <th className="w-[80px] px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Status</th>
-                <th className="w-[160px] px-4 py-3 text-right text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Actions</th>
-              </tr>
-            </thead>
+      {/* Table — Jira admin parity: 12/653 sentence-case headers, 14/400 cells, hairline bottom border */}
+      <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 260px)' }}>
+        <table
+          style={{
+            width: '100%',
+            borderCollapse: 'collapse',
+            fontSize: 14,
+          }}
+        >
+          <thead
+            style={{
+              position: 'sticky',
+              top: 0,
+              background: 'var(--ds-surface, #FFFFFF)',
+              zIndex: 10,
+            }}
+          >
+            <tr>
+              {[
+                { key: 'rid', label: 'RID', width: '80px', align: 'left' as const },
+                { key: 'name', label: 'Name', width: 'auto', align: 'left' as const },
+                { key: 'email', label: 'Email', width: '260px', align: 'left' as const },
+                { key: 'role', label: 'Product role', width: '200px', align: 'left' as const },
+                { key: 'status', label: 'Status', width: '100px', align: 'left' as const },
+                { key: 'actions', label: 'Actions', width: '180px', align: 'right' as const },
+              ].map(col => (
+                <th
+                  key={col.key}
+                  scope="col"
+                  style={{
+                    textAlign: col.align,
+                    fontSize: 12,
+                    fontWeight: 653,
+                    color: 'var(--ds-text-subtle, #505258)',
+                    padding: '8px 12px 8px 0',
+                    borderBottom: '1.67px solid rgba(11, 18, 14, 0.14)',
+                    textTransform: 'none',
+                    letterSpacing: 'normal',
+                    lineHeight: '16px',
+                    width: col.width,
+                  }}
+                >
+                  {col.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-8" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
-                    Loading resources...
+                  <td colSpan={6} style={{ textAlign: 'center', padding: '32px 0', fontSize: 14, color: 'var(--ds-text-subtle, #505258)' }}>
+                    Loading resources…
                   </td>
                 </tr>
               ) : filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-8" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                  <td colSpan={6} style={{ textAlign: 'center', padding: '32px 0', fontSize: 14, color: 'var(--ds-text-subtle, #505258)' }}>
                     No resources found
                   </td>
                 </tr>
               ) : (
                 filteredUsers.map((user) => (
-                  <tr key={user.id} style={{ borderTop: '1px solid var(--ds-border-layout, #EBECF0)' }}>
-                    <td className="px-4 py-3 font-mono text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                  <tr key={user.id}>
+                    <td style={{ padding: '12px 12px 12px 0', fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace', fontSize: 13, color: 'var(--ds-text-subtle, #505258)', borderBottom: '1px solid rgba(11, 18, 14, 0.08)' }}>
                       {user.rid || '—'}
                     </td>
-                    <td className="px-4 py-3 font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{user.name}</td>
-                    <td className="px-4 py-3" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                    <td style={{ padding: '12px 12px 12px 0', fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #292A2E)', borderBottom: '1px solid rgba(11, 18, 14, 0.08)' }}>{user.name}</td>
+                    <td style={{ padding: '12px 12px 12px 0', fontSize: 14, color: 'var(--ds-text-subtle, #505258)', borderBottom: '1px solid rgba(11, 18, 14, 0.08)' }}>
                       {editingEmailId === user.id ? (
-                        <div className="flex items-center gap-1">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                           <div style={{ width: '180px' }}>
                             <Textfield
                               type="email"
                               value={editingEmailValue}
                               onChange={(e) => setEditingEmailValue((e.target as HTMLInputElement).value)}
-                              placeholder="Enter email..."
+                              placeholder="Enter email"
                               autoFocus
+                              isCompact
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                   updateEmailMutation.mutate({ resourceId: user.id, email: editingEmailValue });
@@ -443,39 +526,40 @@ export default function UserAccessPage() {
                             />
                           </div>
                           <button
-                            className="h-7 w-7 flex items-center justify-center rounded"
+                            style={{ height: 28, width: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 3, background: 'transparent', border: 'none', cursor: 'pointer' }}
                             onClick={() => updateEmailMutation.mutate({ resourceId: user.id, email: editingEmailValue })}
                             disabled={updateEmailMutation.isPending}
                           >
-                            <span style={{ display: 'inline-flex', color: '#15803D' }}><CheckMarkIcon label="" size="small" /></span>
+                            <span style={{ display: 'inline-flex', color: 'var(--ds-icon-success, #1F845A)' }}><CheckMarkIcon label="Save email" size="small" /></span>
                           </button>
                           <button
-                            className="h-7 w-7 flex items-center justify-center rounded"
+                            style={{ height: 28, width: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 3, background: 'transparent', border: 'none', cursor: 'pointer' }}
                             onClick={() => { setEditingEmailId(null); setEditingEmailValue(''); }}
                           >
-                            <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><CrossIcon label="" size="small" /></span>
+                            <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #505258)' }}><CrossIcon label="Cancel" size="small" /></span>
                           </button>
                         </div>
                       ) : (
                         <div
-                          className="flex items-center gap-1.5 group cursor-pointer transition-colors"
+                          className="group"
+                          style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', transition: 'color 120ms ease' }}
                           onClick={() => { setEditingEmailId(user.id); setEditingEmailValue(user.email || ''); }}
-                          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))')}
-                          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))')}
+                          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #292A2E)')}
+                          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #505258)')}
                         >
                           {user.email ? (
                             <>
                               <span style={{ display: 'inline-flex', flexShrink: 0 }}><EmailIcon label="" size="small" /></span>
-                              <span className="truncate">{user.email}</span>
+                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email}</span>
                             </>
                           ) : (
-                            <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontStyle: 'italic' }}>No email</span>
+                            <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)' }}>No email</span>
                           )}
-                          <span className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><EditIcon label="" size="small" /></span>
+                          <span className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #505258)' }}><EditIcon label="" size="small" /></span>
                         </div>
                       )}
                     </td>
-                    <td className="px-4 py-3">
+                    <td style={{ padding: '12px 12px 12px 0', borderBottom: '1px solid rgba(11, 18, 14, 0.08)' }}>
                       {user.email ? (
                         (() => {
                           const roleOpts = [
@@ -502,39 +586,39 @@ export default function UserAccessPage() {
                           );
                         })()
                       ) : (
-                        <span className="text-xs italic flex items-center gap-1" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 13, color: 'var(--ds-text-subtle, #505258)' }}>
                           <span style={{ display: 'inline-flex' }}><ShieldIcon label="" size="small" /></span>
                           No email
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3">
+                    <td style={{ padding: '12px 12px 12px 0', borderBottom: '1px solid rgba(11, 18, 14, 0.08)' }}>
                       {user.is_active ? (
                         <Lozenge appearance="success">Active</Lozenge>
                       ) : (
                         <Lozenge appearance="default">Inactive</Lozenge>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td style={{ padding: '12px 0 12px 0', textAlign: 'right', borderBottom: '1px solid rgba(11, 18, 14, 0.08)' }}>
                       {user.profile_id ? (
                         <Lozenge appearance="success">Account linked</Lozenge>
                       ) : user.email && user.role_id ? (
-                        <div className="flex items-center justify-end gap-2">
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
                           <Lozenge appearance="inprogress">Authorized</Lozenge>
                           <Button
                             appearance="default"
                             onClick={() => { setSelectedUser(user); setCreateAccountOpen(true); }}
                             iconBefore={PersonAddIcon}
                           >
-                            Create Login
+                            Create login
                           </Button>
                         </div>
                       ) : user.email ? (
-                        <span className="text-xs italic" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                        <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #505258)' }}>
                           Assign role to authorize
                         </span>
                       ) : (
-                        <span className="text-xs italic" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                        <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #505258)' }}>
                           No email
                         </span>
                       )}
@@ -545,7 +629,6 @@ export default function UserAccessPage() {
             </tbody>
           </table>
         </div>
-      </div>
 
       {/* Create Account Dialog */}
       <Dialog open={createAccountOpen} onOpenChange={setCreateAccountOpen}>

@@ -35,38 +35,45 @@ class DesignSystemAudit {
     console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
     console.log('🔍 Design System Audit Starting...\n');
 
+    // sourcePath may be a single file (CLI) or a directory. Normalise here
+    // and FAIL LOUDLY if the path is missing — never silently swallow.
+    if (!fs.existsSync(this.sourcePath)) {
+      throw new Error(
+        `Source path does not exist: ${this.sourcePath}\n` +
+          `Audit cannot pass when no files were scanned. Aborting.`,
+      );
+    }
+    const isDirectory = fs.statSync(this.sourcePath).isDirectory();
+
     // Run ADS Token Scanner
     console.log('1️⃣  Running ADS Token Scanner...');
     const tokenScanner = new ADSTokenScanner();
-    try {
+    if (isDirectory) {
       tokenScanner.scanDirectory(this.sourcePath);
-      this.results.tokens = tokenScanner.report();
-    } catch (e) {
-      console.log('⚠️  ADS Token Scanner skipped (source directory not accessible)\n');
-      this.results.tokens = { passed: true, violations: [] };
+    } else {
+      tokenScanner.scanFile(this.sourcePath);
     }
+    this.results.tokens = tokenScanner.report();
 
     // Run Typography Enforcer
     console.log('\n2️⃣  Running Typography Enforcer...');
     const typography = new TypographyEnforcer();
-    try {
+    if (isDirectory) {
       typography.scanDirectory(this.sourcePath);
-      this.results.typography = typography.report();
-    } catch (e) {
-      console.log('⚠️  Typography Enforcer skipped (source directory not accessible)\n');
-      this.results.typography = { passed: true, violations: [] };
+    } else {
+      typography.scanFile(this.sourcePath);
     }
+    this.results.typography = typography.report();
 
     // Run Spacing Grid Validator
     console.log('\n3️⃣  Running Spacing Grid Validator...');
     const spacing = new SpacingGridValidator();
-    try {
+    if (isDirectory) {
       spacing.scanDirectory(this.sourcePath);
-      this.results.spacing = spacing.report();
-    } catch (e) {
-      console.log('⚠️  Spacing Grid Validator skipped (source directory not accessible)\n');
-      this.results.spacing = { passed: true, violations: [] };
+    } else {
+      spacing.scanFile(this.sourcePath);
     }
+    this.results.spacing = spacing.report();
 
     // Summary
     console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');

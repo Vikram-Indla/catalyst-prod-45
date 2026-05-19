@@ -1,21 +1,29 @@
 /**
- * AdminSidebarV2 — Admin navigation rail, ADS-grade.
+ * AdminSidebarV2 — Admin navigation rail, Jira-admin-parity.
  *
- * Built on @atlaskit/side-navigation primitives (SideNavigation,
- * NavigationHeader, NavigationContent, Section, ButtonItem, LinkItem) so the
- * surface matches every other Atlassian product's settings rail out of the
- * box: ADS-native typography, hover/focus rings, dark mode, and ARIA
- * semantics — no hand-rolled CSS chrome.
+ * Mirrors Jira's admin settings sidebar pattern probed live from
+ * https://digital-transformation.atlassian.net/jira/settings/issues/issue-types
+ * on 2026-05-19:
+ *   - Every pocket is flat-expanded (no collapse). The pocket label is a
+ *     small section header (12px / 653 / sentence case) and the children
+ *     render as nav links directly inline beneath it.
+ *   - Active item: blue text, faint blue background, blue left-rail.
+ *
+ * Why: Vikram directive 2026-05-19 — Design Governance and every other
+ * leaf must be directly clickable in the admin sidebar without expanding
+ * a parent pocket. The collapsed ButtonItem pattern hid leaves and made
+ * the IA invisible at a glance.
  *
  * Contracts pinned by:
- *  - admin-sidebar-single-chevron-contract.test.ts — the collapse chevron
- *    lives ONLY in CatalystHeader. No local toggle here. No chevron-left/
- *    chevron-right glyph imports (we rotate chevron-down for group state).
- *  - admin-sidebar-ads-redesign.test.ts — no avatar badge, search uses
- *    elemBeforeInput, pinned section uses ADS Section title, nav rows use
- *    side-navigation primitives, "/" focuses the search input.
+ *   - admin-sidebar-single-chevron-contract.test.ts — no chevron-left/right
+ *     imports (we removed all collapse chevrons; only the global header
+ *     chevron remains).
+ *   - admin-sidebar-ads-redesign.test.ts — imports from
+ *     @atlaskit/side-navigation; uses Section + LinkItem primitives.
+ *   - admin-sidebar-parity.test.ts — every leaf path in adminPockets
+ *     resolves through admin-nav.ts (single source of truth).
  *
- * Data source: admin-nav.ts (single source of truth, parity-tested).
+ * Data source: admin-nav.ts.
  */
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -25,32 +33,10 @@ import {
   NavigationHeader,
   NavigationContent,
   Section,
-  ButtonItem,
   LinkItem,
 } from '@atlaskit/side-navigation';
 import SearchIcon from '@atlaskit/icon/core/search';
-import BoardIcon from '@atlaskit/icon/core/board';
-import AngleBracketsIcon from '@atlaskit/icon/core/angle-brackets';
-import DatabaseIcon from '@atlaskit/icon/core/database';
-import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
-import SettingsIcon from '@atlaskit/icon/core/settings';
-import BranchIcon from '@atlaskit/icon/core/branch';
-import PaintPaletteIcon from '@atlaskit/icon/core/paint-palette';
-import CurlyBracketsIcon from '@atlaskit/icon/core/curly-brackets';
-import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { adminPockets } from './admin-nav';
-
-/** Map iconName strings (stored in admin-nav.ts) to ADS icon components. */
-const ICON_MAP: Record<string, React.ElementType> = {
-  LayoutDashboard: BoardIcon,
-  Users: PeopleGroupIcon,
-  Settings: SettingsIcon,
-  Database: DatabaseIcon,
-  GitBranch: BranchIcon,
-  Palette: PaintPaletteIcon,
-  Cable: AngleBracketsIcon,
-  Code2: CurlyBracketsIcon,
-};
 
 interface AdminSidebarV2Props {
   /** Controlled by CatalystShell via cycleSidebarState — single-chevron contract. */
@@ -64,9 +50,6 @@ interface FlatPath {
   path: string;
   parent?: string;
 }
-
-/** Pinned admin item paths — hardcoded for now; user-customisable is a follow-up. */
-const PINNED_PATHS = ['/admin/users', '/admin/workhub/sync-logs'] as const;
 
 function getAllPaths(): FlatPath[] {
   const paths: FlatPath[] = [];
@@ -85,16 +68,6 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
-  // Open sections that have an active child by default.
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(() => {
-    const initial = new Set<string>();
-    adminPockets.forEach(pocket => {
-      if (pocket.children?.some(c => location.pathname === c.path)) {
-        initial.add(pocket.id);
-      }
-    });
-    return initial;
-  });
 
   const allPaths = useMemo(() => getAllPaths(), []);
 
@@ -109,14 +82,7 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
     });
   }, [searchQuery, allPaths]);
 
-  const pinnedItems = useMemo(
-    () =>
-      PINNED_PATHS.map(path => allPaths.find(p => p.path === path))
-        .filter((p): p is FlatPath => Boolean(p)),
-    [allPaths],
-  );
-
-  // "/" focuses the search input (Jira parity). Guarded against editable elements.
+  // "/" focuses the search input (Jira parity).
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key !== '/') return;
@@ -138,20 +104,13 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  const toggleSection = (id: string) => {
-    setExpandedSections(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
-  // Collapsed-state rendering is owned by CatalystShell (it sets wrapper
-  // width to 0 when sidebarVisuallyOpen is false). When this component
-  // renders, it always renders at the full 240px expanded layout — matches
-  // SidebarBase's behaviour on non-admin hubs.
   if (!expanded) return null;
+
+  const handleNav = (path: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate(path);
+    setSearchQuery('');
+  };
 
   return (
     <aside
@@ -160,7 +119,7 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
         width: 240,
         minWidth: 240,
         height: '100%',
-        background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+        background: 'var(--cp-bg-elevated, #ffffff)',
         borderRight: '1px solid var(--ds-border-layout, #EBECF0)',
         display: 'flex',
         flexDirection: 'column',
@@ -171,11 +130,11 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
         <NavigationHeader>
           <div
             style={{
-              padding: '8px 12px 8px 16px',
-              fontSize: 14,
-              fontWeight: 600,
+              padding: '12px 16px 4px',
+              fontSize: 16,
+              fontWeight: 653,
               color: 'var(--ds-text, #292A2E)',
-              letterSpacing: '-0.3px',
+              letterSpacing: 'normal',
             }}
           >
             Admin
@@ -183,13 +142,15 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
         </NavigationHeader>
 
         <NavigationContent>
-          {/* Search — ADS canonical: icon inside the input via elemBeforeInput. */}
+          {/* Search — Jira parity. Leading icon via elemBeforeInput. */}
           <div style={{ padding: '4px 12px 8px' }}>
             <Textfield
               ref={searchInputRef}
               placeholder="Search"
               value={searchQuery}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setSearchQuery(e.target.value)
+              }
               elemBeforeInput={
                 <div style={{ paddingLeft: 8, display: 'flex', alignItems: 'center' }}>
                   <SearchIcon label="" size="small" />
@@ -207,11 +168,7 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
                   <LinkItem
                     key={item.path}
                     href={item.path}
-                    onClick={(e: React.MouseEvent) => {
-                      e.preventDefault();
-                      setSearchQuery('');
-                      navigate(item.path);
-                    }}
+                    onClick={handleNav(item.path)}
                     isSelected={location.pathname === item.path}
                     description={item.parent}
                   >
@@ -225,7 +182,7 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
                   style={{
                     padding: '8px 16px',
                     fontSize: 12,
-                    color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
+                    color: 'var(--ds-text-subtle, #6B6E76)',
                   }}
                 >
                   Try a different search term.
@@ -234,41 +191,20 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
             )
           ) : (
             <>
-              {/* Pinned — ADS Section heading, sentence case, no glyph. */}
-              {pinnedItems.length > 0 && (
-                <Section title="Pinned">
-                  {pinnedItems.map(item => (
-                    <LinkItem
-                      key={item.path}
-                      href={item.path}
-                      onClick={(e: React.MouseEvent) => {
-                        e.preventDefault();
-                        navigate(item.path);
-                      }}
-                      isSelected={location.pathname === item.path}
-                    >
-                      {item.label}
-                    </LinkItem>
-                  ))}
-                </Section>
-              )}
-
-              {/* Pockets — leaf paths render as LinkItem, parents as expandable ButtonItem. */}
+              {/* Jira admin pattern: every pocket renders flat-expanded.
+                  Section header (small subtle text) + children listed
+                  directly as LinkItems beneath. No collapse, no icon-before
+                  on section headers, no ButtonItem chevron. */}
               {adminPockets.map(pocket => {
-                const Icon = ICON_MAP[pocket.iconName];
-                const iconBefore = Icon ? <Icon label="" size="small" /> : null;
                 const hasChildren = !!pocket.children && pocket.children.length > 0;
-
                 if (!hasChildren) {
+                  // Leaf-only pockets (e.g. Overview) render as a single
+                  // top-level LinkItem with no section header.
                   return (
                     <Section key={pocket.id}>
                       <LinkItem
                         href={pocket.path}
-                        onClick={(e: React.MouseEvent) => {
-                          e.preventDefault();
-                          navigate(pocket.path);
-                        }}
-                        iconBefore={iconBefore}
+                        onClick={handleNav(pocket.path)}
                         isSelected={location.pathname === pocket.path}
                       >
                         {pocket.label}
@@ -276,49 +212,18 @@ export function AdminSidebarV2({ expanded, onToggle: _onToggle, className }: Adm
                     </Section>
                   );
                 }
-
-                const isOpen = expandedSections.has(pocket.id);
-                const childActive = pocket.children!.some(c => location.pathname === c.path);
-
                 return (
-                  <Section key={pocket.id}>
-                    <ButtonItem
-                      iconBefore={iconBefore}
-                      iconAfter={
-                        <span
-                          style={{
-                            display: 'inline-flex',
-                            transform: isOpen ? 'rotate(0deg)' : 'rotate(-90deg)',
-                            transition: 'transform 120ms ease',
-                          }}
-                        >
-                          <ChevronDownIcon label="" size="small" />
-                        </span>
-                      }
-                      onClick={() => toggleSection(pocket.id)}
-                      isSelected={childActive && !isOpen}
-                      aria-expanded={isOpen}
-                    >
-                      {pocket.label}
-                    </ButtonItem>
-
-                    {isOpen && (
-                      <div style={{ paddingLeft: 24 }}>
-                        {pocket.children!.map(child => (
-                          <LinkItem
-                            key={child.path}
-                            href={child.path}
-                            onClick={(e: React.MouseEvent) => {
-                              e.preventDefault();
-                              navigate(child.path);
-                            }}
-                            isSelected={location.pathname === child.path}
-                          >
-                            {child.label}
-                          </LinkItem>
-                        ))}
-                      </div>
-                    )}
+                  <Section key={pocket.id} title={pocket.label}>
+                    {pocket.children!.map(child => (
+                      <LinkItem
+                        key={child.path}
+                        href={child.path}
+                        onClick={handleNav(child.path)}
+                        isSelected={location.pathname === child.path}
+                      >
+                        {child.label}
+                      </LinkItem>
+                    ))}
                   </Section>
                 );
               })}

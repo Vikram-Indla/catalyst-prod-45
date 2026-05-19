@@ -26,7 +26,29 @@ class TypographyEnforcer {
     const content = fs.readFileSync(filePath, 'utf-8');
     const lines = content.split('\n');
 
+    // Same ignore-marker scheme as ads-token-scanner. See its scanFile
+    // for the full description.
+    if (content.includes('ads-scanner:ignore-file')) {
+      return;
+    }
+
+    let inBlockComment = false;
+
     lines.forEach((line, index) => {
+      if (index > 0 && lines[index - 1].includes('ads-scanner:ignore-next-line')) {
+        return;
+      }
+      // Skip /* ... */ block-comment lines (JSDoc headers etc.).
+      const trimmed = line.trim();
+      const opensBlock = line.includes('/*') && !line.includes('*/');
+      const closesBlock = line.includes('*/') && !line.includes('/*');
+      const isStandaloneBlockLine = trimmed.startsWith('*') || trimmed.startsWith('/*');
+      if (inBlockComment || isStandaloneBlockLine) {
+        if (closesBlock) inBlockComment = false;
+        else if (opensBlock) inBlockComment = true;
+        return;
+      }
+      if (opensBlock) inBlockComment = true;
       // Check for h1/h2/h3 tags
       ['h1', 'h2', 'h3'].forEach(tag => {
         if (line.includes(`<${tag}`) && line.includes('style=')) {
@@ -51,14 +73,23 @@ class TypographyEnforcer {
         }
       });
 
-      // Check for text-transform: uppercase (banned)
-      if (line.includes('text-transform') && line.includes('uppercase')) {
+      // Check for text-transform: uppercase (banned) — supports BOTH
+      // CSS kebab-case (`text-transform: uppercase`) AND React inline
+      // camelCase (`textTransform: 'uppercase'`) AND Tailwind className
+      // `uppercase`. Sentence-case is the only allowed label form per
+      // CLAUDE.md.
+      const hasInlineUppercase =
+        (line.includes('text-transform') || line.includes('textTransform')) &&
+        line.includes('uppercase');
+      const hasTailwindUppercase =
+        /className\s*=\s*[{"'][^"'}]*\buppercase\b/.test(line);
+      if (hasInlineUppercase || hasTailwindUppercase) {
         this.violations.push({
           file: filePath,
           line: index + 1,
           type: 'UPPERCASE_LABEL',
           content: line.trim(),
-          fix: 'Remove text-transform: uppercase; use sentence-case in label strings'
+          fix: 'Remove text-transform/uppercase utility; use sentence-case in label strings'
         });
       }
 
@@ -73,19 +104,24 @@ class TypographyEnforcer {
         });
       }
 
-      // Check for hardcoded fontWeight (should use 400/500/600/700 only)
+      // Check for hardcoded fontWeight. Allowed: the standard 100-step CSS
+      // scale (300/400/500/600/700/900) PLUS the Jira-derived weights
+      // probed live from atlassian.design (653 = Jira headers/lozenges,
+      // 800 = Jira table column heads in some surfaces). These are
+      // ADS-canonical for parity work and explicitly approved by Vikram.
       if (line.includes('fontWeight:') && !line.includes('var(')) {
         const match = line.match(/fontWeight:\s*['"]?(\d+)['"]?/);
         if (match) {
           const weight = parseInt(match[1]);
-          if (![300, 400, 500, 600, 700, 900].includes(weight)) {
+          const ALLOWED_WEIGHTS = [300, 400, 500, 600, 653, 700, 800, 900];
+          if (!ALLOWED_WEIGHTS.includes(weight)) {
             this.violations.push({
               file: filePath,
               line: index + 1,
               type: 'INVALID_FONTWEIGHT',
               content: line.trim(),
-              expected: 'fontWeight should be 300, 400, 500, 600, 700, or 900',
-              fix: 'Use valid ADS font weight: fontWeight: 400 (normal), 500 (medium), 600 (semibold), 700 (bold)'
+              expected: `fontWeight should be one of ${ALLOWED_WEIGHTS.join(', ')}`,
+              fix: 'Use valid ADS font weight: 400 (normal), 500 (medium), 600 (semibold), 653 (Jira semibold-emphasis), 700 (bold)'
             });
           }
         }

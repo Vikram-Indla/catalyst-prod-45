@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Plus, Bell, Settings, Search } from '@/lib/atlaskit-icons';
 import { Logo } from '@/components/brand/Logo';
-import { UserAvatar } from './UserAvatar';
+import { CurrentUserAvatar } from './CurrentUserAvatar';
 
 const HUB_TABS = [
   { label: 'Home', path: '/for-you' },
@@ -145,7 +145,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
         </button>
 
         {/* Avatar */}
-        <UserAvatar />
+        <CurrentUserAvatar />
       </div>
     </header>
   );

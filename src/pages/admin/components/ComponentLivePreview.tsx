@@ -25,7 +25,7 @@ import { token } from '@atlaskit/tokens';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import type { ComponentRegistryEntry } from '@/registry/components.registry';
-import { previewFixtures, hasFixture, getDeferredReason } from './componentPreviewFixtures';
+import { previewFixtures, hasFixture, DEFERRED_ENTRIES } from './componentPreviewFixtures';
 
 interface ThemedFrameProps {
   mode: 'light' | 'dark';
@@ -91,7 +91,7 @@ export default function ComponentLivePreview({ entry }: ComponentLivePreviewProp
   const [resetKey, setResetKey] = useState(0);
 
   if (!hasFixture(entry.id)) {
-    const reason = getDeferredReason(entry.id);
+    const deferred = DEFERRED_ENTRIES[entry.id];
     return (
       <div>
         <Heading size="xsmall">Live preview</Heading>
@@ -99,15 +99,79 @@ export default function ComponentLivePreview({ entry }: ComponentLivePreviewProp
           style={{
             marginTop: token('space.100', '8px'),
             padding: token('space.200', '16px'),
-            border: `1px dashed ${token('color.border', '#DCDFE4')}`,
+            border: `1px dashed ${token('color.border.warning', '#E2B203')}`,
             borderRadius: 6,
-            background: token('color.background.neutral.subtle', '#F7F8F9'),
-            color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
-            fontSize: 13,
+            background: token('color.background.warning', '#FFF7D6'),
+            display: 'flex',
+            flexDirection: 'column',
+            gap: token('space.150', '12px'),
           }}
         >
-          <strong>Preview deferred to v2.</strong>{' '}
-          {reason ?? 'No fixture provided for this entry.'}
+          <div style={{ fontSize: 13, color: token('color.text.warning', '#7F5F01') }}>
+            <strong>Inline preview unavailable.</strong>{' '}
+            {deferred?.reason ?? 'No fixture provided for this entry.'}
+          </div>
+          {deferred && (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+              {deferred.liveRoutes.map(route => (
+                <a
+                  key={route.href}
+                  href={route.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    padding: '5px 12px',
+                    borderRadius: 3,
+                    background: token('color.background.brand.bold', '#0C66E4'),
+                    color: '#fff',
+                    textDecoration: 'none',
+                    fontSize: 12,
+                    fontWeight: 600,
+                  }}
+                >
+                  {route.label} ↗
+                </a>
+              ))}
+              {deferred.docsUrl && (
+                <a
+                  href={deferred.docsUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    padding: '5px 12px',
+                    borderRadius: 3,
+                    border: `1px solid ${token('color.border.warning', '#E2B203')}`,
+                    background: 'transparent',
+                    color: token('color.text.warning', '#7F5F01'),
+                    textDecoration: 'none',
+                    fontSize: 12,
+                    fontWeight: 600,
+                  }}
+                >
+                  atlassian.design examples ↗
+                </a>
+              )}
+              {deferred.sourceFile && (
+                <a
+                  href={`vscode://file/${entry.file_path ? '/Users/vikramindla/Documents/GitHub/catalyst-prod-45/' + deferred.sourceFile : ''}`}
+                  style={{
+                    fontSize: 11,
+                    color: token('color.text.subtle', '#44546F'),
+                    textDecoration: 'none',
+                    fontFamily: 'ui-monospace, SFMono-Regular, "Menlo", monospace',
+                  }}
+                >
+                  {deferred.sourceFile}
+                </a>
+              )}
+            </div>
+          )}
         </div>
       </div>
     );

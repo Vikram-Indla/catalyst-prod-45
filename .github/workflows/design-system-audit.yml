@@ -28,12 +28,23 @@ jobs:
         with:
           node-version: '18'
       
+      - name: Verify audit itself works (self-test)
+        run: |
+          echo "🧪 Running audit self-test (19 known-good/bad fixtures)..."
+          node design-governance/scripts/self-test.mjs
+          SELF_TEST_EXIT=$?
+          if [ $SELF_TEST_EXIT -ne 0 ]; then
+            echo "❌ AUDIT REGRESSION: the audit itself is broken. Fix design-governance/rules/ BEFORE merging anything."
+            exit 1
+          fi
+          echo "✅ Audit self-test passed — scanners working as advertised."
+
       - name: Run Design System Audit
         run: |
           echo "🎯 Auditing design system compliance..."
           node design-governance/rules/audit.js src/
           AUDIT_EXIT_CODE=$?
-          
+
           if [ $AUDIT_EXIT_CODE -ne 0 ]; then
             echo "❌ Design system violations detected. Merge BLOCKED until violations are fixed."
             exit 1
@@ -73,3 +84,116 @@ jobs:
               repo: context.repo.repo,
               body: '❌ **Design System Compliance Failed**\n\nThis PR violates the Catalyst Design System governance policy. Run `node design-governance/cli/index.js audit src/` locally to see violations.\n\n**Common fixes:**\n- Replace hardcoded colors with `var(--ds-*)` ADS tokens\n- Use `@atlaskit/*` components (not react-select, react-modal, etc.)\n- Use 4/8/16/24/32px spacing grid only\n- Use sentence-case labels (remove `text-transform: uppercase`)\n\nSee `design-governance/GOVERNANCE_POLICY.md` for full policy.'
             })
+
+  # ─────────────────────────────────────────────────────────────────
+  # Persist scanner output to Supabase design_violations so the UI's
+  # Design Governance dashboard always reflects the canonical (main)
+  # branch state.
+  #
+  # Runs ONLY on push to main / ADS-migration — PRs/feature branches
+  # don't churn the DB. The job is non-blocking: if Supabase is down or
+  # the secret is missing, CI still passes (the audit gate above is the
+  # blocking enforcement; persistence is a reporting nicety).
+  #
+  # Required secret (set in repo settings → Secrets and variables → Actions):
+  #   SUPABASE_SERVICE_ROLE_KEY  — service role for project lmqwtldpfacrrlvdnmld
+  #
+  # Optional override:
+  #   SUPABASE_URL  — defaults to https://lmqwtldpfacrrlvdnmld.supabase.co
+  # ─────────────────────────────────────────────────────────────────
+  persist-violations-to-supabase:
+    name: Persist scanner findings to Supabase
+    runs-on: ubuntu-latest
+    needs: design-system-audit
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/ADS-migration')
+    # Don't fail the whole workflow if persistence has a transient issue —
+    # the audit gate above is the blocking enforcement.
+    continue-on-error: true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Supabase client
+        # The persist script imports @supabase/supabase-js. Use --no-save
+        # to avoid polluting the lockfile in CI.
+        run: npm install --no-save @supabase/supabase-js@^2.45.0
+
+      - name: Sanity check — required secret present
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "⚠️  SUPABASE_SERVICE_ROLE_KEY not set in repo secrets — skipping persist."
+            echo "    Set the secret at Settings → Secrets and variables → Actions."
+            exit 0
+          fi
+          echo "✓ Service role key present."
+
+      - name: Run persist on src/pages/admin
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://lmqwtldpfacrrlvdnmld.supabase.co' }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "Skipping (no secret)."
+            exit 0
+          fi
+          node design-governance/scripts/persist-violations.mjs src/pages/admin
+
+      - name: Run persist on src/modules/project-work-hub (project-hub surface)
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://lmqwtldpfacrrlvdnmld.supabase.co' }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "Skipping (no secret)."
+            exit 0
+          fi
+          if [ -d "src/modules/project-work-hub" ]; then
+            node design-governance/scripts/persist-violations.mjs src/modules/project-work-hub --surface=project-hub
+          fi
+
+      - name: Run persist on src/pages/producthub (product-hub surface)
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://lmqwtldpfacrrlvdnmld.supabase.co' }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "Skipping (no secret)."
+            exit 0
+          fi
+          if [ -d "src/pages/producthub" ]; then
+            node design-governance/scripts/persist-violations.mjs src/pages/producthub --surface=product-hub
+          fi
+
+      - name: Run persist on src/pages/incidenthub (incidents surface)
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://lmqwtldpfacrrlvdnmld.supabase.co' }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "Skipping (no secret)."
+            exit 0
+          fi
+          if [ -d "src/pages/incidenthub" ]; then
+            node design-governance/scripts/persist-violations.mjs src/pages/incidenthub --surface=incidents
+          fi
+
+      - name: Run persist on src/pages/releases (releases surface)
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://lmqwtldpfacrrlvdnmld.supabase.co' }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "Skipping (no secret)."
+            exit 0
+          fi
+          if [ -d "src/pages/releases" ]; then
+            node design-governance/scripts/persist-violations.mjs src/pages/releases --surface=releases
+          fi

@@ -1,4 +1,4 @@
-export { UserAvatar } from './UserAvatar';
+export { UserAvatar } from '@/components/shared/UserAvatar';
 export { TypeBadge } from './TypeBadge';
 export { LocationBadge } from './LocationBadge';
 export { IdBadge } from './IdBadge';

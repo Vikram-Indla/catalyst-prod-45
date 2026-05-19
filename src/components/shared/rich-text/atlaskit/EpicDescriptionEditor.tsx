@@ -29,9 +29,11 @@ import { Editor } from '@atlaskit/editor-core';
 import { IntlProvider } from 'react-intl-next';
 import Button from '@atlaskit/button/new';
 import ImageIcon from '@atlaskit/icon/core/image';
+import EditIcon from '@atlaskit/icon/core/edit';
 import Spinner from '@atlaskit/spinner';
 import { token } from '@atlaskit/tokens';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 import { normalizeAdfForAtlaskit, parseStoredDescriptionToAdf } from './adfNormalizer';
 import { uploadDescriptionImage } from './supabaseImageUpload';
 
@@ -69,6 +71,42 @@ export interface AttachmentUploadMeta {
   mimeType: string;
   width?: number;
   height?: number;
+}
+
+/**
+ * Mention provider factory for Atlaskit Editor mention plugin.
+ * Fetches team members from Catalyst's profiles table and returns
+ * Jira-compatible mention objects: id (UUID), name (full_name), avatar.
+ */
+async function createMentionProvider() {
+  return {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    filter: async (query: string) => {
+      // Fetch all approved team members once per editor session
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url, email')
+        .eq('approval_status', 'APPROVED')
+        .order('full_name');
+
+      if (error) {
+        console.error('[MentionProvider] profiles fetch error:', error.message);
+        return { mentions: [] };
+      }
+
+      const mentions = (data ?? []).map((member: any) => ({
+        id: member.id,
+        name: member.full_name || member.email || 'Unknown',
+        avatar: member.avatar_url || undefined,
+      }));
+
+      return { mentions };
+    },
+    // Record that the mention was inserted (optional analytics/logging)
+    recordMentionSelection: () => {
+      // No-op for now; can wire to analytics if needed
+    },
+  };
 }
 
 export interface EpicDescriptionEditorProps {
@@ -136,6 +174,14 @@ function EpicDescriptionEditorImpl({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [mentionProvider, setMentionProvider] = useState<any>(null);
+
+  // Initialize mention provider on mount
+  useEffect(() => {
+    createMentionProvider().then(setMentionProvider).catch(err => {
+      console.error('[EpicDescriptionEditor] mention provider init failed:', err);
+    });
+  }, []);
   const dragCounter = useRef(0);
 
   const handleEditorReady = useCallback((actions: EditorActions) => {
@@ -376,6 +422,7 @@ function EpicDescriptionEditorImpl({
             onCancel={appearanceProp !== 'chromeless' ? onCancel : undefined}
             onEditorReady={handleEditorReady}
             onChange={onChange ? handleEditorChange : undefined}
+            mention={mentionProvider ? { provider: mentionProvider } : undefined}
             allowTextColor
             allowTextAlignment
             allowIndentation
@@ -418,6 +465,28 @@ function EpicDescriptionEditorImpl({
                stole focus from the Summary field which is the canonical
                first-focus target in Atlassian's Create dialog. */
             primaryToolbarComponents={[
+              mentionProvider && (
+                <Button
+                  key="insert-mention"
+                  appearance="subtle"
+                  spacing="compact"
+                  onClick={() => {
+                    // Mention plugin is auto-triggered via @ key press in editor
+                    // This button provides an explicit click-to-mention alternative
+                    const editorElement = wrapperRef.current?.querySelector('[role="textbox"]');
+                    if (editorElement instanceof HTMLElement) {
+                      editorElement.focus();
+                      // Insert @ character at cursor to trigger mention autocomplete
+                      document.execCommand('insertText', false, '@');
+                    }
+                  }}
+                  iconBefore={(iconProps: React.ComponentProps<typeof EditIcon>) => (
+                    <EditIcon {...iconProps} label="" />
+                  )}
+                >
+                  Mention
+                </Button>
+              ),
               <Button
                 key="insert-image"
                 appearance="subtle"

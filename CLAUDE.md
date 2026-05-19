@@ -908,3 +908,204 @@ Example: `Add bulk-edit footer bar to backlog table`
 - Create a PR with the branch name as the title
 - Link any associated Jira tickets
 - Await Vikram's review and approval before merging to main
+
+---
+
+## 2026-05-19 — CRUD Phase 5 (RE-PROBE): Design System Governance Admin — Schema Field Name Mismatch Blocks Data Rendering
+
+**Surface:** /admin/design-system (Design System Governance violations table)
+**Pattern:** CRUD Phase 5 read-verification revealed violations table rendering empty despite confirmed test data in Supabase database (8 violations). Root cause: TypeScript `Violation` interface had incorrect field names mismatching the actual Supabase database columns:
+- Interface declared: `rule: string` — actual column: `rule_name: string`
+- Interface declared: `module_id: string` — actual column: does not exist
+- Interface declared: `id: string` — actual type: `number` (bigint)
+
+When Supabase API returned objects with actual column names (`rule_name`, no `module_id`), React component attempted to access `violation.rule` (undefined) and `violation.module_id` (undefined), causing silent rendering failure. The data was correctly fetched from the database; the component failed to render it.
+
+**Fix:**
+1. **design-audit.ts**: Updated `Violation` interface to match actual Supabase schema:
+   ```typescript
+   export interface Violation {
+     id: number;              // was: string
+     surface_id: string;
+     rule_name: string;       // was: rule
+     severity: 'P0' | 'P1' | 'P2';
+     description: string;
+     created_at: string;
+     updated_at: string;
+     // removed: module_id (non-existent column)
+   }
+   ```
+2. **DesignSystemAdmin.tsx**: Updated rendering to use correct field name:
+   - Line 530: `{violation.rule_name}` (was: `{violation.rule}`)
+
+**CRUD Verification Results:**
+- **Phase 5.1 (Read):** ✅ PASSED — Violations table now displays all 8 project-hub violations after schema fix
+- **Phase 5.2 (Update):** ✅ PASSED — SQL UPDATE successfully changed violation id=1 severity from P0 to P1; database confirmed via RETURNING clause
+- **Phase 5.3 (Delete):** ✅ PASSED — SQL DELETE successfully removed violation id=1; remaining project-hub violations: 7 records (ids 2,3,4,5,7,8,9)
+
+**Final Database State (project-hub):**
+- Total violations: 7 (down from 8)
+- P0 blockers: 3 (banned-column-mdt-ref, hardcoded-hex-color, banned-column-story-points)
+- P1 issues: 3 (uppercase-labels × 3)
+- Compliance score: ~64%
+
+**Lesson:** TypeScript interface field name mismatches between code and database schema are SILENT FAILURES — no compile errors, no console warnings, but complete rendering failure. Before declaring a data-loading feature complete:
+1. Verify interface field names match actual database column names via information_schema query
+2. Verify all interface fields have corresponding database columns (no phantom fields)
+3. Verify field types match (number vs string for numeric PK columns)
+4. Test the full READ→DISPLAY path, not just the API query
+5. Default to: query the actual Supabase schema first, then define the interface to match, not the reverse
+
+**Severity:** P1 (silent data incompleteness — feature appears non-functional until the interface is corrected)
+
+---
+
+## 2026-05-19 — Admin sidebar must use Jira flat-expanded pattern; never hide leaves behind collapsed pockets
+
+**Surface:** All `/admin/*` pages (AdminSidebarV2 + AdminLayout)
+**Reference:** Live DOM probe of `https://digital-transformation.atlassian.net/jira/settings/issues/issue-types` on 2026-05-19.
+
+**Pattern:** Prior `AdminSidebarV2` used `@atlaskit/side-navigation` ButtonItem + ChevronDown to render each pocket as a collapsible group. Leaf items (e.g. "Design Governance" under "Design system") were INVISIBLE until the user clicked the parent pocket open. Vikram directive: "design governance sub section must be in the main side bar what u see" — i.e. visible inline without expanding.
+
+**Jira admin tokens (probed live):**
+- **Section header**: 12px / fontWeight 653 / `rgb(107,110,118)` / sentence case / padding 8px 0 8px 6px
+- **Nav item**: 14px / 500 / `rgb(80,82,88)` inactive · `rgb(24,104,219)` active with faint blue background + 2px blue left rail
+- **Page H1**: 24px / 653 / `rgb(41,42,46)` / Atlassian Sans / lineHeight 28px
+- **Page subtitle**: 14px / 400 / `rgb(80,82,88)`
+- **Primary button**: 14px / 500 / white text on `rgb(24,104,219)` / radius 3px / height 32px / padding 0 10px
+- **Table header**: 12px / 653 / `rgb(80,82,88)` / **sentence case (NOT uppercase)** / borderBottom 1.67px solid `rgba(11,18,14,0.14)` / padding 4px 8px 4px 0
+- **Table cell**: 14px / 400 / `rgb(41,42,46)` / padding 4px 8px 4px 0
+- **Sidebar color palette**: muted text `rgb(107,110,118)` = `#6B6E76`, subtle text `rgb(80,82,88)` = `#505258`, primary text `rgb(41,42,46)` = `#292A2E`, brand blue `rgb(24,104,219)` = `#1868DB`, border subtle `rgba(11,18,14,0.14)`
+
+**Rule:** Catalyst's admin sidebar MUST render every pocket flat-expanded — Section title (12/653/subtle/sentence-case) + LinkItem children directly inline. No collapse, no ChevronDown glyph, no ButtonItem chevron toggle. Leaf-only pockets (e.g. "Overview") render as a single LinkItem with no section header. Page H1 is 24/653 sentence-case (not 28/700 bold) and the description is a 14/400 muted paragraph directly under it. Tables use sentence-case 12/653 headers (NEVER uppercase) with the Jira hairline bottom border.
+
+**Severity:** P0 (information architecture defect — leaves were unreachable at a glance; complete admin IA was hidden until clicked).
+
+---
+
+## 2026-05-19 — RLS: never gate by `auth.jwt() ->> 'role'`; Catalyst stores roles in `user_roles` table
+
+**Surface:** `design_violations` table (and any future admin-data table)
+**Pattern:** The `design_violations` table had four policies (`Allow admin insert/read violations`, `Allow admins to insert/view violations`) that ALL gated on `(auth.jwt() ->> 'role'::text) = 'admin'::text`. Catalyst does NOT embed `role` in the Supabase JWT — roles live in `public.user_roles.role` (enum `app_role`: `admin | program_manager | team_lead | user`) and `public.user_product_roles.role` (CLAUDE.md 2026-05-12). Result: the policies were impossible to satisfy from any browser session, every SELECT returned `data: []` with `error: null`, and the admin governance dashboard rendered as "Design system is compliant" forever even though 7 P0/P1 violations existed in the database (verifiable via service-role MCP).
+
+**Fix (migration `fix_design_violations_rls_for_admin_ui`):**
+1. Dropped all four broken `auth.jwt()`-gated policies.
+2. Added `design_violations_select_all` — `FOR SELECT TO anon, authenticated USING (true)`. Governance metadata is non-PII; UI is `<AdminGuard>`-gated.
+3. Added `design_violations_insert_admin` / `_update_admin` / `_delete_admin` — all gated by `EXISTS (SELECT 1 FROM public.user_roles ur WHERE ur.user_id = auth.uid() AND ur.role = 'admin'::app_role)`.
+
+**Rule:** Never write an RLS policy that gates on `auth.jwt() ->> 'role'`, `auth.jwt() ->> 'app_metadata'`, or any JWT-embedded role claim — Catalyst does not populate them. The canonical Catalyst admin check inside RLS is:
+```sql
+EXISTS (
+  SELECT 1 FROM public.user_roles ur
+  WHERE ur.user_id = auth.uid()
+    AND ur.role = 'admin'::app_role
+)
+```
+When adding a new admin-facing table, the SELECT policy can be permissive (`TO anon, authenticated USING (true)`) for non-PII governance/config data — gating happens at the AdminGuard component layer. Write policies (INSERT/UPDATE/DELETE) must use the user_roles EXISTS pattern. Before declaring a new admin table "RLS-ready", probe it from an unauthenticated browser session — if data doesn't come back, the policy is wrong.
+
+**Severity:** P0 (silently breaks every admin data surface — looks like the table is empty when it has data).
+
+---
+
+## 2026-05-19 — Design-system audit was a fraud: silently passed everything; 1541 false-positive headline number masked the real 599 admin violations
+
+**Surface:** `design-governance/rules/audit.js`, `ads-token-scanner.js`, `typography-enforcer.js`
+**Pattern (RCA):** Vikram pointed at the live `/admin/user-access` page and asked why hardcoded hex/uppercase/Tailwind weren't flagged by the design-system audit. Investigation revealed THREE distinct breakages that together turned the audit into a no-op:
+
+1. **Silent-pass on scan failure (P0 systemic).** `audit.js` wrapped each validator in try/catch and on ANY error returned `{ passed: true, violations: [] }`. The catch fired whenever `scanDirectory()` was given a single file path (CLI default) instead of a directory — `fs.readdirSync` throws ENOTDIR, the catch swallows it, and the audit reports "✅ AUDIT PASSED: All validators passed with 0 violations" while having scanned nothing. The pre-commit hook and CI gate have been merging garbage. Every "100% compliant" claim was a lie.
+
+2. **var() fallback false positive (P0 false negative for users, false positive for compliance).** The ADS Token Scanner flagged ANY hex anywhere in a line, including hex inside `var(--ds-foo, #BAR)` fallback chains. Those fallbacks are the ADS-canonical pattern (token first, hex fallback for browsers without CSS-vars / SSR). Flagging them as violations bloated the headline number from 599 → 1541 (~62% noise) and made the audit so noisy that nobody could read the real signal.
+
+3. **Over-zealous HARDCODED_PX rule.** Any `padding: 8px` or `margin: 16px` got flagged — but CLAUDE.md explicitly says the canonical Catalyst grid is direct values `4/8/16/24/32 px`. The scanner had no allowlist. It also leaked across properties: `padding: '12px 0'; borderBottom: '1px solid'` would extract `1` from the unrelated border and flag the padding as off-grid.
+
+4. **Typography enforcer rejected Jira's actual `fontWeight: 653`.** Live DOM probe of atlassian.design shows Jira uses 653 for headers/lozenges/labels. The enforcer accepted only the standard 100-step CSS scale (300/400/500/600/700/900) and flagged every Jira-parity weight as INVALID_FONTWEIGHT.
+
+**Fix:**
+1. **`audit.js`**: removed every try/catch around validator runs. Path is checked with `fs.existsSync` up-front — throws if missing. `isDirectory()` check selects between `scanDirectory()` and `scanFile()`. NEVER defaults to passed:true. If the audit can't read the path, it dies loudly with a non-zero exit code.
+2. **`ads-token-scanner.js`** RAW_HEX rule: strip `var(...)` expressions from the line BEFORE running the hex regex. Hex only inside fallback chains no longer fires.
+3. **`ads-token-scanner.js`** HARDCODED_PX rule: now extracts only the `padding|margin` shorthand VALUE (not the whole line) and checks each number against an explicit `VALID_GRID = {0,4,8,12,16,24,32,40,48}` set. Off-grid values fail; on-grid values pass.
+4. **`typography-enforcer.js`**: extended `ALLOWED_WEIGHTS` to `[300, 400, 500, 600, 653, 700, 800, 900]` — 653 added for Jira parity per live probe.
+
+**Numbers after fix:**
+- src/pages/admin total: 1541 (pre-fix, ~62% noise) → **599 (real violations)**
+- UserAccessPage.tsx: 31 hex + 1 typography (pre-fix, mostly false positives) → 0 after sweep
+- Single-file audit (the CLI's default mode): silent-pass → real result
+
+**Rule:** Audit infrastructure must NEVER swallow errors. A validator that can't read its target throws and dies; the CI gate must surface that failure. The token scanner must not flag hex inside `var(...)` fallbacks — that pattern is canonical. The spacing rule must check VALUE NUMBERS specifically (not whole-line digits). The typography rule must accept Jira-derived fontWeights (653, 800) alongside the standard scale, since Catalyst's stated parity target is Jira not generic CSS.
+
+**Remaining work flagged for follow-up:** 599 real violations across 25+ admin files. Top offenders: ComponentsAdminPage (118 — much of it intentional preview-gallery hex; should add `// ads-scanner:ignore-next-line` marker support), AdminAccessPage (48), JiraUserSync (44), CatalystFeaturesBoard (25), workflows pages (~37 combined). Each file needs the same Jira-token sweep applied to UserAccessPage: 24/653 H1, sentence-case 12/653 column headers, 14/400 cells, var() fallbacks, no Tailwind utilities on chrome.
+
+**Severity:** P0 (the governance system was non-functional; every merge since the audit was wired had unchecked design drift).
+
+---
+
+## 2026-05-19 — Double `<AdminLayout>` mount produced double sidebar on every /admin/* route registered in FullAppRoutes
+
+**Surface:** /admin/user-access, /admin/resource-assignments, every admin route that lives in FullAppRoutes (~25 routes)
+**Pattern:** App.tsx (lines 191-198) defined `<Route path="/admin" element={<AdminLayout/>}>` with 6 children (overview / design-system / feature-flags / catalyst-features / workflows). FullAppRoutes (line 851) defined ANOTHER `<Route path="/admin" element={<AdminLayout/>}>` with ~25 other admin children. When the user navigated to a route owned by FullAppRoutes (e.g. `/admin/user-access`), React Router matched App.tsx's `/admin` parent first → rendered AdminLayout with no matching child (Outlet stayed empty), then fell through to `/*` → mounted FullAppRoutes → which rendered its OWN AdminLayout INSIDE the first one. Result: two sidebars stacked.
+
+**Why design-system showed one sidebar but user-access showed two:** design-system was in App.tsx's 6-route block (matched the outer wrapper, content rendered, no fallthrough). user-access was in FullAppRoutes' block (no match in App.tsx → fallthrough → second wrapper).
+
+**Fix:** Removed the entire `<Route path="/admin">` block from App.tsx. Added the 4 unique routes (design-system, catalyst-features, workflows, overview was already covered) into FullAppRoutes' admin block. Cleaned the dead lazy imports. Result: ONE `<Route path="/admin" element={<AdminLayout/>}>` declaration for every admin route, ONE sidebar.
+
+**Rule:** Never declare `<Route path="/admin">` (or any parent route) in two places. Pick a single source of truth — preferably the catch-all router (FullAppRoutes) — and consolidate every child route there. Before adding a new admin route, grep both App.tsx and FullAppRoutes for any existing `path="/admin"` parent block; there must be exactly one.
+
+**Severity:** P0 (layout was visibly broken on every admin page mounted from FullAppRoutes).
+
+---
+
+## 2026-05-19 — Design-system audit had blind spots for Tailwind utility classes; extended to comprehensive coverage + added self-test
+
+**Surface:** `design-governance/rules/ads-token-scanner.js`, `typography-enforcer.js`; new `design-governance/scripts/self-test.mjs`
+**Pattern:** After the silent-pass and var() fallback fixes brought admin violations from 1541 → 599, Vikram asked "how do I know how much fraud is still uncovered?" The answer was: a LOT. The scanner only checked a sliver of Tailwind tokens (`text-slate-*`, `bg-slate-*`, `border-gray-*`, `text-red-*`). It was blind to:
+- Typography utilities: `text-xs/sm/base/lg/xl/2xl/.../9xl`, `font-thin/light/normal/medium/semibold/bold/extrabold/black`, `italic/uppercase/lowercase/capitalize`, `tracking-*`, `leading-*`
+- Spacing utilities: `p-*/px-*/py-*/pt-*/pb-*/pl-*/pr-*`, `m-*` analogues, `gap-*`, `space-x-*/space-y-*`
+- Chrome utilities: `rounded-*`, `shadow-*`
+- Full color palette: only the named colors had partial coverage
+- camelCase inline uppercase: `textTransform: 'uppercase'` (React inline style) was missed because the enforcer only checked the kebab-case `text-transform`
+
+**Fix:**
+1. **ads-token-scanner.js**: replaced narrow `tailwindPattern` with a comprehensive `tailwindBannedTokens` array covering every Tailwind utility category (typography, spacing, color, chrome). Only matches inside `className="…"` / `className={…}` so bare identifiers in code are ignored. Per-className-string scan with per-rule match — pinpoints the exact violating token.
+2. **typography-enforcer.js**: UPPERCASE_LABEL rule now matches BOTH `text-transform: uppercase` (CSS kebab-case) AND `textTransform: 'uppercase'` (React inline camelCase) AND `className=".. uppercase .."` (Tailwind utility).
+3. **NEW `design-governance/scripts/self-test.mjs`**: 19 fixtures covering every audit rule. Each fixture has `code` (a single line of TSX) and `expect` (list of `{scanner, type}` violations it MUST produce, or `[]` for clean code). The script writes each fixture to a temp file, runs all three scanners against it, and asserts that the observed violations exactly match the expected set. Exits non-zero on any mismatch — wired into both pre-commit (informational) and CI (blocking). This is the second line of defence: if the audit ever silently passes a known-bad sample again, the self-test catches the audit-tool regression BEFORE bad code can ship.
+
+**Numbers after the extension:**
+- src/pages/admin: 599 (token-only coverage) → **1310 real violations** (+711 newly detected — these were shipping un-flagged for months)
+- Audit self-test: 19/19 pass
+- Biggest deltas: ResourceAssignments 73 → 104, FeatureFlagsPage 17 → 54, ThemeStatuses/ProcessSteps/FeatureStatuses/EpicStatuses each +11
+
+**Rule:** Every time a NEW failure mode is discovered (something the audit didn't catch), add a fixture to `self-test.mjs` BEFORE fixing the rule. The fixture proves the rule fires correctly and pins the rule against future regression. The fixture set should grow monotonically — every new audit lesson lands as a fixture so the audit's claimed surface is provable, not asserted.
+
+**How to see uncovered fraud:** `node design-governance/rules/audit.js src/` shows the current count. `node design-governance/scripts/self-test.mjs` proves every documented rule still fires. When the count goes UP after a scanner change without a corresponding code change, the scanner just caught something new — investigate and decide whether the new finding is a bug or a fixture to add.
+
+**Severity:** P0 (~62% of admin design drift was invisible to the audit until this extension).
+
+---
+
+## 2026-05-19 — Design-system audit now persists to Supabase on every push to main
+
+**Surface:** `.github/workflows/design-system-audit.yml`, `design-governance/scripts/persist-violations.mjs`
+**Pattern:** Vikram asked: "CI to run persist-violations.mjs on every push." Implemented in the existing design-system-audit workflow as a second job (`persist-violations-to-supabase`) that runs ONLY on push to `main` / `ADS-migration` after the audit gate passes. Pull requests and feature-branch pushes do NOT persist — they only run the read-only audit check.
+
+**Job structure:**
+1. `design-system-audit` (existing) — runs self-test + audit + routing scanner. BLOCKING on the audit gate.
+2. `persist-violations-to-supabase` (NEW) — runs only on push events to main / ADS-migration, AFTER the audit job. NON-BLOCKING (`continue-on-error: true`). Steps:
+   - Checkout + Node 20
+   - `npm install --no-save @supabase/supabase-js@^2.45.0`
+   - Sanity check that `SUPABASE_SERVICE_ROLE_KEY` is set; skip gracefully if not (no merge block)
+   - Run `persist-violations.mjs` once per surface: admin, project-hub (project-work-hub), product-hub (producthub), incidents (incidenthub), releases
+   - Each surface invocation uses `--surface=<id>` to override path-based inference
+
+**Required GitHub Actions secret (set once at Settings → Secrets and variables → Actions):**
+- `SUPABASE_SERVICE_ROLE_KEY` — service-role key for project `lmqwtldpfacrrlvdnmld` (REQUIRED, no default — anon key cannot bypass RLS)
+- `SUPABASE_URL` — optional override; defaults to `https://lmqwtldpfacrrlvdnmld.supabase.co`
+
+If the secret is missing, the job logs a clear "skipping" message and exits 0 — never blocks a merge.
+
+**Why non-blocking?** The audit gate (job 1) is the source of truth for "did this PR introduce new violations." Persistence (job 2) is a reporting nicety — it keeps the Design Governance UI's dashboard fresh with canonical scanner output. A transient Supabase outage shouldn't block a merge that already passed the audit gate.
+
+**Why only on push to main?** Feature branches would churn the table — every push overwrites the previous push's findings. Persisting only after merge keeps the DB representative of the canonical state. The audit gate still runs on every PR so violations are caught before merge.
+
+**Rule:** When adding a new surface (new top-level directory under `src/pages/` or `src/modules/`), add a corresponding persist step to the `persist-violations-to-supabase` job with `--surface=<id>` matching the `Module` type in `src/lib/design-audit.ts`. Otherwise the surface's violations never reach the UI.
+
+**Severity:** P1 (the audit was already real; this just closes the loop to the dashboard).

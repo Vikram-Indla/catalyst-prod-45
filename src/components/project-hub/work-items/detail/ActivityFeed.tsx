@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useWorkItemActivity, type ActivityEntry, type Reaction } from '@/hooks/useWorkItemActivity';
 import { Loader2, Trash2, SmilePlus } from '@/lib/atlaskit-icons';
+import { UserAvatar } from '@/components/shared/UserAvatar';
+import { CurrentUserAvatar } from '@/components/project-hub/shell/CurrentUserAvatar';
 
 type Tab = 'all' | 'comments' | 'history';
 
@@ -58,7 +60,7 @@ export function ActivityFeed({ workItemId }: Props) {
 
       {/* Comment Input */}
       <div className="flex gap-3 mb-5">
-        <UserAvatar />
+        <CurrentUserAvatar />
         <div className="flex-1">
           <textarea
             value={commentText}
@@ -111,7 +113,7 @@ export function ActivityFeed({ workItemId }: Props) {
         <div className="flex flex-col">
           {filtered.map(entry => (
             <div key={entry.id} className="flex gap-3 mb-5 group">
-              <ActivityAvatar name={entry.actor_name} />
+              <UserAvatar name={entry.actor_name} size="medium" />
               <div className="flex-1 min-w-0">
                 {entry.kind === 'comment' ? (
                   <CommentEntry
@@ -245,27 +247,3 @@ function formatFieldName(field?: string): string {
   return field.replace(/_/g, ' ').replace(/\bid\b/g, '').trim() || field;
 }
 
-function ActivityAvatar({ name }: { name: string }) {
-  const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  const colors = ['var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', 'var(--cp-teal-60, #0D9488)', 'var(--cp-purple-60, #7C3AED)', 'var(--ds-text-warning, var(--cp-warning, #D97706))', 'var(--ds-text-danger, var(--cp-danger, #DC2626))', 'var(--ds-text-success, var(--cp-success, #16A34A))'];
-  return (
-    <div
-      className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0"
-      style={{ backgroundColor: colors[Math.abs(hash) % colors.length] }}
-    >
-      {initials}
-    </div>
-  );
-}
-
-function UserAvatar() {
-  return (
-    <div
-      className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0 bg-[var(--cp-blue)]"
-    >
-      ME
-    </div>
-  );
-}

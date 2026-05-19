@@ -58,21 +58,23 @@ export function LinkedWorkItemsSection({
   // primary issue query is still loading. Matches legacy behaviour —
   // the legacy section simply showed an empty state when key was ''.
   if (!issueKey) {
-    return <LinkedIssuesSection issueId={issueId} issueKey="" />;
+    return <div style={{ marginBottom: 24 }}><LinkedIssuesSection issueId={issueId} issueKey="" /></div>;
   }
 
   return (
-    <AtlaskitBoundary
-      diagnosticTag={`linked-work-items:${issueKey}`}
-      fallback={<LinkedIssuesSection issueId={issueId} issueKey={issueKey} />}
-    >
-      <LinkedWorkItems
-        issueId={issueId}
-        issueKey={issueKey}
-        projectKey={projectKey}
-        loadOptionsOverride={loadOptionsOverride}
-      />
-    </AtlaskitBoundary>
+    <div style={{ marginBottom: 24 }}>
+      <AtlaskitBoundary
+        diagnosticTag={`linked-work-items:${issueKey}`}
+        fallback={<LinkedIssuesSection issueId={issueId} issueKey={issueKey} />}
+      >
+        <LinkedWorkItems
+          issueId={issueId}
+          issueKey={issueKey}
+          projectKey={projectKey}
+          loadOptionsOverride={loadOptionsOverride}
+        />
+      </AtlaskitBoundary>
+    </div>
   );
 }
 

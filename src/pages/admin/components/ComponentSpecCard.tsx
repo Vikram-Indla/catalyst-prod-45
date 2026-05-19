@@ -23,9 +23,42 @@ import { token } from '@atlaskit/tokens';
 import type { ComponentRegistryEntry } from '@/registry/components.registry';
 import { getAllConsumersByName, getUsageByName } from '@/registry/usage-map.generated';
 import ComponentLivePreview from './ComponentLivePreview';
+import { EditorSpecPanel } from './EditorSpecPanel';
 
 const CONSUMER_PREVIEW_LIMIT = 10;
 const REPO_ROOT = '/Users/vikramindla/Documents/GitHub/catalyst-prod-45';
+
+// ─── Hub utilities (mirrored from ComponentsAdminPage for consumer badges) ────
+
+const SPEC_HUB_COLORS: Record<string, string> = {
+  Projects:  '#0C66E4',
+  Products:  '#6E5DC6',
+  Home:      '#1F845A',
+  Incidents: '#AE2A19',
+  Admin:     '#626F86',
+  Shared:    '#758195',
+  Other:     '#9FADBC',
+  Deferred:  '#C7D1DB',
+};
+
+function getHubForConsumer(filePath: string): string {
+  const p = filePath.toLowerCase().replace(/\\/g, '/');
+  if (
+    p.includes('/project-hub') || p.includes('/backlog') || p.includes('/allwork') ||
+    p.includes('kanbanboard') || p.includes('jiratable') || p.includes('backlogpage') ||
+    p.includes('pragmaticboard') || p.includes('uwvtable')
+  ) return 'Projects';
+  if (p.includes('/product') || p.includes('producthub') || p.includes('/products/')) return 'Products';
+  if (
+    p.includes('/home') || p.includes('/dashboard') || p.includes('homepage') ||
+    p.includes('for-you') || p.includes('foryou') || p.includes('r360panel')
+  ) return 'Home';
+  if (p.includes('/incident') || p.includes('incidenthub')) return 'Incidents';
+  if (p.includes('/admin')) return 'Admin';
+  if (p.includes('/releases') || p.includes('/test') || p.includes('/wiki')) return 'Deferred';
+  if (p.includes('/shared/') || p.includes('shared/')) return 'Shared';
+  return 'Other';
+}
 
 function StatusBadge({ status }: { status: ComponentRegistryEntry['status'] }) {
   if (status === 'canonical') return <Lozenge appearance="success">Canonical</Lozenge>;
@@ -181,11 +214,26 @@ function ConsumerList({ name }: { name: string }) {
           gap: token('space.050', '4px'),
         }}
       >
-        {visible.map(path => (
-          <li key={path}>
-            <VscodeLink path={path} />
-          </li>
-        ))}
+        {visible.map(path => {
+          const hub = getHubForConsumer(path);
+          const hubColor = SPEC_HUB_COLORS[hub] ?? '#9FADBC';
+          return (
+            <li key={path} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span
+                title={hub}
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: '50%',
+                  background: hubColor,
+                  flexShrink: 0,
+                  display: 'inline-block',
+                }}
+              />
+              <VscodeLink path={path} />
+            </li>
+          );
+        })}
       </ul>
       {consumers.length > CONSUMER_PREVIEW_LIMIT && (
         <div style={{ marginTop: token('space.150', '12px') }}>
@@ -298,7 +346,18 @@ export default function ComponentSpecCard({ entry }: ComponentSpecCardProps) {
 
       <ComponentLivePreview entry={entry} />
 
+      {/* Consumers first — "where is this used?" is more immediately useful
+          than the deep engineering spec. Engineers need to find consumers
+          before they need props tables. */}
       <ConsumerList name={entry.name} />
+
+      {entry.editor_spec && (
+        <EditorSpecPanel
+          spec={entry.editor_spec}
+          componentName={entry.name}
+          filePath={entry.file_path}
+        />
+      )}
 
       {entry.tags && entry.tags.length > 0 && (
         <div style={{ display: 'flex', gap: token('space.075', '6px'), flexWrap: 'wrap' }}>

@@ -19,7 +19,6 @@
    Panel container
    ══════════════════════════════════════════════ */
 .sp-panel {
-  margin-top: 24px;
   padding: 0;
   font-family: var(--cp-font-body);
   color: var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)));
