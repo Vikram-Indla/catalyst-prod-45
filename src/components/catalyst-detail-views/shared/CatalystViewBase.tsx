@@ -587,7 +587,7 @@ export function CatalystViewBase({
               cv-drawer-body (overflowY:auto) is now the scroll container.
               Panel/modal modes keep overflow-y:auto for independent column scroll. */}
           <div className="cv-drawer-left" data-sdm-scope style={{
-            flex: 1, padding: '16px 16px 32px 0',
+            flex: 1, padding: '16px 16px 32px 24px',
             borderRight: '1px solid var(--ds-border-subtle, #EBECF0)', minWidth: 0, minHeight: 0,
             // fullPageMode: cap field rows at ~1200px (Jira parity). Without this, fields like
             // Priority and Severity stretch to fill the full viewport width.
