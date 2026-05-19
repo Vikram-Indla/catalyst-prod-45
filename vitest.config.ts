@@ -12,6 +12,8 @@ const atlaskitStubs = {
   "@atlaskit/adf-utils/types": path.resolve(__dirname, "./src/test/__stubs__/atlaskit-adf-utils-types.ts"),
   "react-intl-next": path.resolve(__dirname, "./src/test/__stubs__/react-intl-next.ts"),
   "@atlaskit/platform-feature-flags": path.resolve(__dirname, "./src/test/__stubs__/atlaskit-platform-feature-flags.ts"),
+  // DynamicTable injects compiled CSS that fails in jsdom. Stub renders a plain <table>.
+  "@atlaskit/dynamic-table": path.resolve(__dirname, "./src/test/__stubs__/atlaskit-dynamic-table.ts"),
 };
 
 export default defineConfig({

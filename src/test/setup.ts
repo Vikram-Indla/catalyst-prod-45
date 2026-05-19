@@ -1,6 +1,30 @@
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
+// WorkItemTypeIcon uses useQuery (react-query) — stub globally to avoid QueryClientProvider requirement.
+vi.mock("@/components/icons/WorkItemTypeIcon", () => ({
+  WorkItemTypeIcon: ({ type, size = 16 }: { type: string; size?: number }) => {
+    const React = require("react");
+    return React.createElement("img", {
+      src: `/icons/${(type || "task").toLowerCase()}.svg`,
+      alt: type,
+      width: size,
+      height: size,
+      "aria-label": type,
+      "data-testid": `work-type-icon--${type}`,
+    });
+  },
+  default: ({ type, size = 16 }: { type: string; size?: number }) => {
+    const React = require("react");
+    return React.createElement("img", {
+      src: `/icons/${(type || "task").toLowerCase()}.svg`,
+      alt: type,
+      width: size,
+      height: size,
+    });
+  },
+}));
+
 // Stub Atlaskit platform feature flags to prevent "Client must be initialized" errors.
 // The CJS resolver checks for a global booleanResolver before calling FeatureGates.checkGate.
 // Setting it to always return false short-circuits the uninitialized client throw.

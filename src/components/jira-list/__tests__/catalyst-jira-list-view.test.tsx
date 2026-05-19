@@ -70,12 +70,12 @@ describe('CatalystJiraDynamicTable', () => {
       />
     );
     // DynamicTable renders pagination when rows > rowsPerPage
-    const page2Button = screen.queryByRole('button', { name: /2/ });
+    // Use aria-label="page 2" from our stub to avoid ambiguity with row key buttons (BAU-2000+)
+    const page2Button = screen.queryByRole('button', { name: 'page 2' });
     if (page2Button) {
       fireEvent.click(page2Button);
       expect(onSetPage).toHaveBeenCalledWith(2);
     } else {
-      // The wrapper calls onSetPage on internal page change
       expect(onSetPage).toBeDefined();
     }
   });
