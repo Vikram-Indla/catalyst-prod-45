@@ -32,8 +32,10 @@ const WorkListPageLazy = lazy(() => import("../modules/project-work-hub/pages/Ba
 const KBAdminSetup = ENABLE_AI ? lazy(() => import("../pages/KBAdminSetup")) : () => <FeatureComingSoon title="KB Admin" />;
 const KBDataAuditPage = ENABLE_AI ? lazy(() => import("../pages/KBDataAudit")) : () => <FeatureComingSoon title="KB Data Audit" />;
 const RAGAuditPage = ENABLE_AI ? lazy(() => import("../pages/RAGAuditPage")) : () => <FeatureComingSoon title="RAG Audit" />;
-const JiraActivitySyncPage = lazy(() => import("../pages/admin/JiraActivitySyncPage"));
-const JiraSyncControlPage = lazy(() => import("../pages/admin/JiraSyncControlPage"));
+// JiraActivitySyncPage + JiraSyncControlPage DEPRECATED 2026-05-19 —
+// merged into /admin/workhub/sync-logs. The route entries above are now
+// pure redirects, so the page imports are no longer needed. Files remain
+// in src/pages/admin/ until a follow-up cleanup commit removes them.
 
 const Resource360PageNew = lazy(() => import("../components/resource360/Resource360PageNew"));
 const Resource360MemberDetail = lazy(() => import("../pages/Resource360MemberDetail"));
@@ -292,7 +294,8 @@ const Programs = lazy(() => import("../pages/admin/Programs"));
 const Departments = lazy(() => import("../pages/admin/Departments"));
 const CapacityDepartmentsPage = lazy(() => import("../pages/admin/CapacityDepartments"));
 const ResourceAssignmentsPage = lazy(() => import("../pages/admin/ResourceAssignments"));
-const JiraUserSyncPage = lazy(() => import("../pages/admin/JiraUserSync"));
+// JiraUserSyncPage DEPRECATED 2026-05-19 — superseded by the canonical
+// /admin/workhub/user-mapping page. Route entry above is a redirect.
 const BusinessOwnersAdmin = lazy(() => import("../pages/admin/BusinessOwners"));
 const Portfolios = lazy(() => import("../pages/admin/Portfolios"));
 const ModulesPackages = lazy(() => import("../pages/admin/ModulesPackages"));
@@ -864,7 +867,9 @@ export default function FullAppRoutes() {
           <Route path="departments" element={<S><Departments /></S>} />
           <Route path="capacity-departments" element={<S><CapacityDepartmentsPage /></S>} />
           <Route path="resource-assignments" element={<S><ResourceAssignmentsPage /></S>} />
-          <Route path="jira-user-sync" element={<S><JiraUserSyncPage /></S>} />
+          {/* DEPRECATED 2026-05-19 — superseded by /admin/workhub/user-mapping.
+              Old URL kept temporarily as a redirect. Remove after 30 days. */}
+          <Route path="jira-user-sync" element={<Navigate to="/admin/workhub/user-mapping" replace />} />
           <Route path="business-owners" element={<S><BusinessOwnersAdmin /></S>} />
           <Route path="business/process-steps" element={<S><ProcessSteps /></S>} />
           <Route path="business/epic-statuses" element={<S><EpicStatuses /></S>} />
@@ -885,9 +890,11 @@ export default function FullAppRoutes() {
           <Route path="workhub/status-mapping" element={<S><WorkHubStatusMappingPage /></S>} />
           <Route path="workhub/user-mapping" element={<S><WorkHubUserMappingPage /></S>} />
           <Route path="workhub/data-scope" element={<S><WorkHubDataScopePage /></S>} />
-          <Route path="workhub/jira-sync-control" element={<S><JiraSyncControlPage /></S>} />
+          {/* DEPRECATED 2026-05-19 — these two were duplicate sync surfaces;
+              all sync functionality lives on /admin/workhub/sync-logs now. */}
+          <Route path="workhub/jira-sync-control" element={<Navigate to="/admin/workhub/sync-logs" replace />} />
+          <Route path="workhub/activity-sync" element={<Navigate to="/admin/workhub/sync-logs" replace />} />
           <Route path="workhub/sync-logs" element={<S><WorkHubSyncLogs /></S>} />
-          <Route path="workhub/activity-sync" element={<S><JiraActivitySyncPage /></S>} />
           <Route path="workhub/*" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="notification-triggers" element={<S><NotificationTriggers /></S>} />
           <Route path="settings/notifications" element={<S><UserNotificationSettingsPage /></S>} />
