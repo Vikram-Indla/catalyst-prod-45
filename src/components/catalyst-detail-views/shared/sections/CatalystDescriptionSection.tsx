@@ -631,7 +631,7 @@ export function CatalystDescriptionSection({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["cv-issue-detail", issue?.id],
+        queryKey: ["cv-issue-detail", issue?.issue_key],
       });
       setEditing(false);
     },
@@ -672,10 +672,10 @@ export function CatalystDescriptionSection({
       }
       stopCatyImprove();
       queryClient.invalidateQueries({
-        queryKey: ["cv-issue-detail", issue.id],
+        queryKey: ["cv-issue-detail", issue.issue_key],
       });
     },
-    [issue?.issue_key, issue?.id, queryClient, stopCatyImprove],
+    [issue?.issue_key, queryClient, stopCatyImprove],
   );
 
   const handleCatyCancel = useCallback(() => {
