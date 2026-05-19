@@ -240,7 +240,7 @@ const DESC_BUILD_ID = "atlaskit-canonical-v218";
 
 /* ── Scoped styles for ADF content inside CatalystView ── */
 /* Bump this version when the style block changes — forces re-injection on HMR. */
-const STYLE_ID = "cv-desc-styles-v7";
+const STYLE_ID = "cv-desc-styles-v10";
 if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
   const s = document.createElement("style");
   s.id = STYLE_ID;
@@ -406,6 +406,46 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       font-weight: 500 !important;
     }
 
+    .assistive {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+
+    [data-testid="editor-floating-toolbar"],
+    [data-testid="floating-toolbar-items"],
+    [data-testid="editor-floating-toolbar"] [role="group"],
+    [data-testid="editor-floating-toolbar"] [role="radiogroup"] {
+      overflow: visible !important;
+    }
+    [data-testid="editor-floating-toolbar"] button {
+      position: relative !important;
+    }
+    [data-testid="editor-floating-toolbar"] button[aria-label]:hover::after {
+      content: attr(aria-label);
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgb(23, 43, 77);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 16px;
+      white-space: nowrap;
+      z-index: 99999;
+      pointer-events: none;
+      box-shadow: 0 4px 8px -2px rgba(9,30,66,0.25);
+    }
+
     /* Perf — pencil-icon hover affordance via pure CSS instead of a
        React useState(hovered) flip. Avoids a parent re-render on every
        mouse-enter / mouse-leave of the section header, which was
@@ -428,6 +468,71 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
     }
   `;
   document.head.appendChild(s);
+}
+
+function openImagePreview(src: string): void {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = [
+    'position:fixed',
+    'inset:0',
+    'background:rgba(9,30,66,0.85)',
+    'display:flex',
+    'align-items:center',
+    'justify-content:center',
+    'z-index:2147483600',
+    'cursor:zoom-out',
+  ].join(';');
+
+  const img = document.createElement('img');
+  img.src = src;
+  img.style.cssText = [
+    'max-width:90vw',
+    'max-height:90vh',
+    'object-fit:contain',
+    'border-radius:3px',
+    'cursor:default',
+    'box-shadow:0 8px 16px -4px rgba(9,30,66,0.4)',
+  ].join(';');
+  img.addEventListener('click', (e) => e.stopPropagation());
+
+  const close = document.createElement('button');
+  close.setAttribute('aria-label', 'Close preview');
+  close.innerHTML = '&times;';
+  close.style.cssText = [
+    'position:absolute',
+    'top:16px',
+    'right:16px',
+    'width:36px',
+    'height:36px',
+    'border-radius:50%',
+    'border:none',
+    'background:rgba(255,255,255,0.15)',
+    'color:#fff',
+    'font-size:24px',
+    'cursor:pointer',
+    'display:flex',
+    'align-items:center',
+    'justify-content:center',
+  ].join(';');
+
+  const teardown = () => {
+    overlay.remove();
+    document.removeEventListener('keydown', onKey);
+  };
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') teardown();
+  };
+
+  overlay.addEventListener('click', teardown);
+  close.addEventListener('click', (e) => {
+    e.stopPropagation();
+    teardown();
+  });
+
+  overlay.appendChild(img);
+  overlay.appendChild(close);
+  document.body.appendChild(overlay);
+  document.addEventListener('keydown', onKey);
 }
 
 interface CatalystDescriptionSectionProps {
@@ -466,6 +571,34 @@ export function CatalystDescriptionSection({
     }
     const id = setTimeout(prefetchEpicEditor, 2000);
     return () => clearTimeout(id);
+  }, []);
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as Element | null;
+      if (!target) return;
+      const previewBtn = target.closest?.('[data-testid="file-preview-toolbar-button"]');
+      if (!previewBtn) return;
+
+      const selectedWrapper =
+        document.querySelector<HTMLElement>(
+          '[data-media-vc-wrapper="true"].ProseMirror-selectednode',
+        ) ||
+        document.querySelector<HTMLElement>(
+          '.ProseMirror-selectednode [data-media-vc-wrapper="true"]',
+        ) ||
+        document.querySelector<HTMLElement>('[data-media-vc-wrapper="true"]');
+      const imgEl = selectedWrapper?.querySelector<HTMLImageElement>('img');
+      const src = imgEl?.src;
+      if (!src) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+      openImagePreview(src);
+    };
+
+    document.addEventListener('click', onClick, true);
+    return () => document.removeEventListener('click', onClick, true);
   }, []);
 
   /* jira-compare 2026-05-03 (Council P3.2): per-issue console.info removed.
