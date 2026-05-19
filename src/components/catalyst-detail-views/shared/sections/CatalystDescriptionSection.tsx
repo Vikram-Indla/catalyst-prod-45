@@ -240,7 +240,7 @@ const DESC_BUILD_ID = "atlaskit-canonical-v218";
 
 /* ── Scoped styles for ADF content inside CatalystView ── */
 /* Bump this version when the style block changes — forces re-injection on HMR. */
-const STYLE_ID = "cv-desc-styles-v15";
+const STYLE_ID = "cv-desc-styles-v17";
 if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
   const s = document.createElement("style");
   s.id = STYLE_ID;
@@ -423,6 +423,8 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       outline: none !important;
       border: none !important;
       background: transparent !important;
+      width: 100% !important;
+      max-width: 100% !important;
     }
     [data-media-vc-wrapper] > *:not(img[data-catalyst-injected="true"]) {
       position: absolute !important;
@@ -460,6 +462,12 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       max-width: 100% !important;
       margin-left: auto !important;
       margin-right: auto !important;
+    }
+
+    .atlaskit-renderer-wrapper,
+    .adf-light-renderer {
+      padding: 4px 16px !important;
+      box-sizing: border-box !important;
     }
 
     [data-testid="editor-floating-toolbar"],
@@ -790,7 +798,7 @@ export function CatalystDescriptionSection({
           data-testid="catalyst-description-section.label"
           style={{
             margin: 0,
-            padding: 0,
+            padding: "0 16px",
             flex: 1,
             /* jira-compare 2026-05-12 re-probe: Description h2 is 14px/500/rgb(80,82,88).
                TreeWalker text-node probe confirmed h2 is the direct parent of the "Description"
@@ -809,8 +817,6 @@ export function CatalystDescriptionSection({
           <button
             className="cv-desc-edit-btn"
             onClick={() => startTransition(() => setEditing(true))}
-            onMouseEnter={prefetchEpicEditor}
-            onFocus={prefetchEpicEditor}
             title="Edit description"
             style={{
               background: "none",

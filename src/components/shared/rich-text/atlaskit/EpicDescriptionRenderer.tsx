@@ -50,7 +50,7 @@ export default function EpicDescriptionRenderer({ content, issueKey }: EpicDescr
     <MediaProvidersShell issueKey={issueKey}>
       <AtlaskitRenderer
         document={doc}
-        appearance="full-page"
+        appearance="comment"
         nodeComponents={mediaNodeComponents}
       />
     </MediaProvidersShell>

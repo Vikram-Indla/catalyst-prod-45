@@ -139,10 +139,16 @@ export interface EpicDescriptionEditorProps {
   onAttachmentUploaded?: (meta: AttachmentUploadMeta) => void;
 }
 
+const DEFAULT_MEDIA_PIXEL_WIDTH = 500;
+
 function buildExternalMediaSingle(url: string, filename: string, width?: number, height?: number): ADFEntity {
   return {
     type: 'mediaSingle',
-    attrs: { layout: 'center' },
+    attrs: {
+      layout: 'center',
+      width: DEFAULT_MEDIA_PIXEL_WIDTH,
+      widthType: 'pixel',
+    },
     content: [
       {
         type: 'media',

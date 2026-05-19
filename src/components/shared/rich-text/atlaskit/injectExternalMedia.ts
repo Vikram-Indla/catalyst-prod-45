@@ -25,7 +25,7 @@ interface MinimalProsemirrorView {
 interface ExternalMediaEntry {
   url: string;
   alt: string;
-  width?: number;
+  maxWidthCss?: string;
 }
 
 export interface InjectionHandles {
@@ -42,6 +42,9 @@ function collectExternalMedia(node: AdfNode | undefined | null): ExternalMediaEn
   function walk(n: AdfNode): void {
     if (!n || typeof n !== 'object') return;
     if (n.type === 'mediaSingle') {
+      const mediaSingleWidth = n.attrs?.width;
+      const widthType = n.attrs?.widthType;
+      const layout = n.attrs?.layout;
       const media = n.content?.[0];
       if (
         media &&
@@ -50,10 +53,20 @@ function collectExternalMedia(node: AdfNode | undefined | null): ExternalMediaEn
         typeof media.attrs?.url === 'string' &&
         (media.attrs.url as string).length > 0
       ) {
+        let maxWidthCss: string | undefined;
+        if (layout === 'wide' || layout === 'full-width') {
+          maxWidthCss = '100%';
+        } else if (typeof mediaSingleWidth === 'number' && mediaSingleWidth > 0) {
+          if (widthType === 'percentage' && mediaSingleWidth >= 20) {
+            maxWidthCss = `${mediaSingleWidth}%`;
+          } else if (widthType !== 'percentage' && mediaSingleWidth >= 200) {
+            maxWidthCss = `${mediaSingleWidth}px`;
+          }
+        }
         out.push({
           url: media.attrs.url as string,
           alt: (media.attrs.alt as string | undefined) ?? '',
-          width: typeof media.attrs.width === 'number' ? (media.attrs.width as number) : undefined,
+          maxWidthCss,
         });
       }
       return;
@@ -75,20 +88,12 @@ function buildImg(entry: ExternalMediaEntry): HTMLImageElement {
   img.setAttribute('contenteditable', 'false');
   img.draggable = false;
   img.style.display = 'block';
-  img.style.width = 'auto';
+  img.style.width = entry.maxWidthCss ?? '500px';
   img.style.height = 'auto';
-  img.style.maxWidth = entry.width && entry.width > 0 ? `${entry.width}px` : '100%';
+  img.style.maxWidth = '100%';
   img.style.borderRadius = '3px';
   img.style.userSelect = 'none';
   img.style.cursor = 'pointer';
-
-  if (!entry.width || entry.width <= 0) {
-    img.addEventListener('load', () => {
-      if (img.naturalWidth > 0) {
-        img.style.maxWidth = `${img.naturalWidth}px`;
-      }
-    });
-  }
   return img;
 }
 
