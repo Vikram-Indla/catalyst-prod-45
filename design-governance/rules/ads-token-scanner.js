@@ -71,6 +71,34 @@ class ADSTokenScanner {
       'CatalystMDTRef',
       'CatalystAssessment'
     ];
+
+    // ── 2026-05-19 — additional rules ───────────────────────────────
+    // Raw rgb()/rgba()/hsl()/hsla() outside var() fallbacks. ADS canon is
+    // var(--ds-*) for every color; raw color functions slip past the hex
+    // regex above and need their own check.
+    this.rgbHslPattern = /\b(?:rgb|rgba|hsl|hsla)\(\s*\d/;
+    // Banned toast libraries. Catalyst standardizes on @atlaskit/flag.
+    this.bannedToastImports = [
+      /from\s+['"]sonner['"]/,
+      /from\s+['"]react-hot-toast['"]/,
+      /from\s+['"]react-toastify['"]/,
+    ];
+    // Banned column-header string literals — catches hand-rolled
+    // <th>Story Points</th> that slips past the component-name check.
+    this.bannedColumnHeaders = [
+      'Story Points',
+      'MDT Ref',
+      'Service Now',
+      'ServiceNow#',
+      'Assessment Feature',
+      'Space URL',
+      'Templates',
+    ];
+    // Atlaskit version drift — legacy @atlaskit/button import (not /new).
+    this.atlaskitLegacyImport = /from\s+['"]@atlaskit\/button['"](?!\/new)/;
+    // External .css imports outside the ADS allowlist.
+    this.cssImportPattern = /import\s+['"][^'"]+\.css['"]/;
+    this.allowedCssImports = ['ads-reset', 'atlaskit', '@atlaskit', 'tokens.css'];
   }
 
   scanFile(filePath) {
@@ -81,13 +109,39 @@ class ADSTokenScanner {
     const content = fs.readFileSync(filePath, 'utf-8');
     const lines = content.split('\n');
 
+    // Ignore-marker support — escape hatch for intentional design-system
+    // exemplars (components-preview gallery, on-purpose hex demos, etc.).
+    //
+    //   // ads-scanner:ignore-next-line
+    //   <div style={{ color: '#FF0000' }}>this hex is shown ON PURPOSE</div>
+    //
+    //   // ads-scanner:ignore-file        ← put at the very top of a file
+    //   ...whole file exempted...
+    //
+    // Use sparingly. Every ignore marker is a TODO to either delete the
+    // demo code or replace it with a proper ADS-token example.
+    if (content.includes('ads-scanner:ignore-file')) {
+      return;
+    }
+
     lines.forEach((line, index) => {
+      // Skip lines flagged by the preceding `// ads-scanner:ignore-next-line`
+      // marker. The marker must be the immediately preceding line.
+      if (index > 0 && lines[index - 1].includes('ads-scanner:ignore-next-line')) {
+        return;
+      }
+
       // Check for raw hex colors — but ONLY hex that is NOT inside a CSS
       // var() fallback chain. `var(--ds-foo, #BAR)` is the ADS-canonical
       // pattern (token first, hex fallback for browsers without CSS
       // custom-property support or SSR). Strip those before scanning.
       const stripped = line
         .replace(/var\([^)]*\)/g, '') // remove every var(...) expression
+        // Also strip @atlaskit/tokens token(...) calls — same ADS-canonical
+        // pattern. `token('color.text', '#172B4D')` means "use ADS token,
+        // fallback to hex if the runtime can't resolve it" — flagging the
+        // fallback hex is a false positive identical to var() fallback.
+        .replace(/\btoken\([^)]*\)/g, '')
         .replace(/\/\/.*$/, ''); // strip line comments
       if (this.rawHexPattern.test(stripped)) {
         // Exclude allowed patterns
@@ -98,6 +152,77 @@ class ADSTokenScanner {
             type: 'RAW_HEX',
             content: line.trim(),
             fix: 'Use ADS token: var(--ds-text), var(--ds-background-*), etc.'
+          });
+        }
+      }
+
+      // Inline rgb()/rgba()/hsl()/hsla() not wrapped in var(). Same strip
+      // logic as RAW_HEX — var() fallbacks are allowed.
+      if (
+        this.rgbHslPattern.test(stripped) &&
+        !line.trim().startsWith('//') &&
+        !line.includes('whitelist')
+      ) {
+        this.violations.push({
+          file: filePath,
+          line: index + 1,
+          type: 'RAW_RGB_HSL',
+          content: line.trim(),
+          fix: 'Use ADS token. Wrap raw rgb()/hsl() inside a var() fallback chain.'
+        });
+      }
+
+      // Banned toast libraries. Catalyst standard is @atlaskit/flag.
+      for (const rule of this.bannedToastImports) {
+        if (rule.test(line)) {
+          this.violations.push({
+            file: filePath,
+            line: index + 1,
+            type: 'BANNED_TOAST',
+            content: line.trim(),
+            fix: 'Replace toast library with @atlaskit/flag.'
+          });
+          break;
+        }
+      }
+
+      // Banned column header strings.
+      for (const header of this.bannedColumnHeaders) {
+        const escaped = header.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const re = new RegExp(`<(?:th|TableHead|Th)[^>]*>\\s*${escaped}\\s*<`, 'i');
+        if (re.test(line)) {
+          this.violations.push({
+            file: filePath,
+            line: index + 1,
+            type: 'BANNED_COLUMN_HEADER',
+            content: line.trim(),
+            tokenFound: header,
+            fix: `Remove "${header}" column entirely. Banned platform-wide per CLAUDE.md.`
+          });
+        }
+      }
+
+      // Atlaskit legacy import (not /new).
+      if (this.atlaskitLegacyImport.test(line)) {
+        this.violations.push({
+          file: filePath,
+          line: index + 1,
+          type: 'ATLASKIT_LEGACY',
+          content: line.trim(),
+          fix: 'Migrate to @atlaskit/button/new API.'
+        });
+      }
+
+      // Non-ADS .css file imports.
+      if (this.cssImportPattern.test(line)) {
+        const allowed = this.allowedCssImports.some(a => line.includes(a));
+        if (!allowed) {
+          this.violations.push({
+            file: filePath,
+            line: index + 1,
+            type: 'CSS_FILE_IMPORT',
+            content: line.trim(),
+            fix: 'Replace .css import with CSS-in-JS using ADS tokens.'
           });
         }
       }

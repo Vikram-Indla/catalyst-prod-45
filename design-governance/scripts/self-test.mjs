@@ -55,6 +55,11 @@ const FIXTURES = [
     code: `<div style={{ color: 'var(--ds-text, var(--cp-text-primary, #172B4D))' }}>`,
     expect: [],
   },
+  {
+    name: 'hex-in-token-fallback (must NOT flag — @atlaskit/tokens canonical)',
+    code: `<div style={{ color: token('color.text', '#172B4D') }}>`,
+    expect: [],
+  },
 
   // ── Tailwind utilities (must flag) ──
   {
@@ -151,6 +156,82 @@ const FIXTURES = [
     name: 'storypoints-banned-field',
     code: `<StoryPoints value={5} />`,
     expect: [{ scanner: 'tokens', type: 'BANNED_FIELD' }],
+  },
+
+  // ── 2026-05-19 — new rules ──────────────────────────────────────
+  // Raw rgb()/rgba()/hsl() literals
+  {
+    name: 'bare-rgb',
+    code: `<div style={{ color: 'rgb(255, 0, 0)' }}>x</div>`,
+    expect: [{ scanner: 'tokens', type: 'RAW_RGB_HSL' }],
+  },
+  {
+    name: 'bare-rgba',
+    code: `<div style={{ background: 'rgba(15, 76, 199, 0.3)' }}>x</div>`,
+    expect: [{ scanner: 'tokens', type: 'RAW_RGB_HSL' }],
+  },
+  {
+    name: 'rgb-in-var-fallback (must NOT flag)',
+    code: `<div style={{ color: 'var(--ds-text, rgb(41, 42, 46))' }}>x</div>`,
+    expect: [],
+  },
+  // Banned toast libraries
+  {
+    name: 'sonner-import',
+    code: `import { toast } from 'sonner';`,
+    expect: [{ scanner: 'tokens', type: 'BANNED_TOAST' }],
+  },
+  {
+    name: 'react-hot-toast-import',
+    code: `import toast from 'react-hot-toast';`,
+    expect: [{ scanner: 'tokens', type: 'BANNED_TOAST' }],
+  },
+  // Banned column header strings
+  {
+    name: 'banned-column-story-points-th',
+    code: `<th>Story Points</th>`,
+    expect: [{ scanner: 'tokens', type: 'BANNED_COLUMN_HEADER' }],
+  },
+  {
+    name: 'banned-column-mdt-ref-th',
+    code: `<th>MDT Ref</th>`,
+    expect: [{ scanner: 'tokens', type: 'BANNED_COLUMN_HEADER' }],
+  },
+  // Atlaskit legacy import (NOT /new)
+  {
+    name: 'atlaskit-button-legacy',
+    code: `import Button from '@atlaskit/button';`,
+    expect: [{ scanner: 'tokens', type: 'ATLASKIT_LEGACY' }],
+  },
+  {
+    name: 'atlaskit-button-new (must NOT flag)',
+    code: `import Button from '@atlaskit/button/new';`,
+    expect: [],
+  },
+  // .css imports outside allowlist
+  {
+    name: 'non-ads-css-import',
+    code: `import './styles/dashboard.css';`,
+    expect: [{ scanner: 'tokens', type: 'CSS_FILE_IMPORT' }],
+  },
+  {
+    name: 'atlaskit-css-import (must NOT flag)',
+    code: `import '@atlaskit/css-reset/dist/bundle.css';`,
+    expect: [],
+  },
+
+  // ── 2026-05-19 — ignore-marker support ────────────────────────
+  // // ads-scanner:ignore-next-line is an escape hatch for intentional
+  // design-system demos (e.g. components-preview gallery).
+  {
+    name: 'ignore-next-line marker exempts the following line',
+    code: `// ads-scanner:ignore-next-line\n<div style={{ color: '#FF0000' }}>demo</div>`,
+    expect: [],
+  },
+  {
+    name: 'ignore-next-line only exempts the immediately following line',
+    code: `// ads-scanner:ignore-next-line\nconst safe = 'value';\n<div style={{ color: '#FF0000' }}>x</div>`,
+    expect: [{ scanner: 'tokens', type: 'RAW_HEX' }],
   },
 ];
 

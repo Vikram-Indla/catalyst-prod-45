@@ -26,7 +26,16 @@ class TypographyEnforcer {
     const content = fs.readFileSync(filePath, 'utf-8');
     const lines = content.split('\n');
 
+    // Same ignore-marker scheme as ads-token-scanner. See its scanFile
+    // for the full description.
+    if (content.includes('ads-scanner:ignore-file')) {
+      return;
+    }
+
     lines.forEach((line, index) => {
+      if (index > 0 && lines[index - 1].includes('ads-scanner:ignore-next-line')) {
+        return;
+      }
       // Check for h1/h2/h3 tags
       ['h1', 'h2', 'h3'].forEach(tag => {
         if (line.includes(`<${tag}`) && line.includes('style=')) {

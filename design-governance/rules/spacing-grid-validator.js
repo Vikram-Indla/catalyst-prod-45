@@ -22,7 +22,15 @@ class SpacingGridValidator {
     const content = fs.readFileSync(filePath, 'utf-8');
     const lines = content.split('\n');
 
+    // Ignore-marker support — see ads-token-scanner for the contract.
+    if (content.includes('ads-scanner:ignore-file')) {
+      return;
+    }
+
     lines.forEach((line, index) => {
+      if (index > 0 && lines[index - 1].includes('ads-scanner:ignore-next-line')) {
+        return;
+      }
       this.spacingProperties.forEach(prop => {
         // Match inline style values like padding: 5px, margin: 10px, etc.
         const regex = new RegExp(`${prop}[^:]*:\\s*([0-9]+)px`, 'g');
