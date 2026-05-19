@@ -164,8 +164,9 @@ export function CatalystViewBase({
   // jira-compare 2026-05-10: re-probed BAU-5736. Modal split: left ~70% / right ~30%.
   // jira-compare 2026-05-11 DC4: panel mode body = 560px; 285px sidebar left only 269px
   // for content — too narrow. 220px gives 334px left panel at 560px body — acceptable.
-  // 313px matches Jira's right rail width (probed 2026-05-15). Panel mode stays at 220.
-  const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 220 : 313);
+  // 313px was excessive for sparse content (Fix versions, Assignee, Reporter, Due date).
+  // Reduced to 265px (2026-05-19 H8 minimalism fix) to match actual content width.
+  const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 220 : 265);
   const isDraggingRef = useRef(false);
 
   /* G4: Track recently visited issues in localStorage (catalyst-recent-issues).
