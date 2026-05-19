@@ -398,6 +398,19 @@ function EpicDescriptionSection({ issue }: { issue: PhIssue }) {
     dark_light_supported: true,
     tags: ['watchers', 'popover'],
   },
+  {
+    id: 'epic-description-editor',
+    name: 'EpicDescriptionEditor',
+    category: 'organism',
+    origin: 'shared',
+    status: 'canonical',
+    version: '1.0.0',
+    file_path: 'src/components/shared/rich-text/EpicDescriptionEditor.tsx',
+    jsdoc_excerpt:
+      'ADF-backed rich-text description editor for Epic work items. Supports marks (strong, em, strike, underline, code, link), blocks (heading, bulletList, orderedList, codeBlock, blockquote, rule, taskList), media, and mentions. Parent owns ADF JSON state. Renders in view/edit modes with AI improvement affordances.',
+    dark_light_supported: true,
+    tags: ['editor', 'description', 'adf', 'rich-text', 'epic'],
+  },
 ];
 
 // ──────────────────────────────────────────────────────────────────────────────
