@@ -240,7 +240,7 @@ const DESC_BUILD_ID = "atlaskit-canonical-v218";
 
 /* ── Scoped styles for ADF content inside CatalystView ── */
 /* Bump this version when the style block changes — forces re-injection on HMR. */
-const STYLE_ID = "cv-desc-styles-v10";
+const STYLE_ID = "cv-desc-styles-v15";
 if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
   const s = document.createElement("style");
   s.id = STYLE_ID;
@@ -418,11 +418,58 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       border: 0 !important;
     }
 
+    [data-media-vc-wrapper] {
+      position: relative !important;
+      outline: none !important;
+      border: none !important;
+      background: transparent !important;
+    }
+    [data-media-vc-wrapper] > *:not(img[data-catalyst-injected="true"]) {
+      position: absolute !important;
+      inset: 0 !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      z-index: -1 !important;
+    }
+    [data-media-vc-wrapper] [data-testid="external-image-badge"],
+    [data-media-vc-wrapper] [data-testid*="loading"],
+    [data-media-vc-wrapper] [class*="CardLoading"] {
+      display: none !important;
+    }
+    [data-media-vc-wrapper] img:not([data-catalyst-injected="true"]) {
+      display: none !important;
+    }
+
+    [data-media-vc-wrapper][layout="center"] img[data-catalyst-injected="true"] {
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+    [data-media-vc-wrapper][layout="align-start"] img[data-catalyst-injected="true"],
+    [data-media-vc-wrapper][layout="wrap-left"] img[data-catalyst-injected="true"] {
+      margin-left: 0 !important;
+      margin-right: auto !important;
+    }
+    [data-media-vc-wrapper][layout="align-end"] img[data-catalyst-injected="true"],
+    [data-media-vc-wrapper][layout="wrap-right"] img[data-catalyst-injected="true"] {
+      margin-left: auto !important;
+      margin-right: 0 !important;
+    }
+    [data-media-vc-wrapper][layout="wide"] img[data-catalyst-injected="true"],
+    [data-media-vc-wrapper][layout="full-width"] img[data-catalyst-injected="true"] {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
     [data-testid="editor-floating-toolbar"],
     [data-testid="floating-toolbar-items"],
     [data-testid="editor-floating-toolbar"] [role="group"],
     [data-testid="editor-floating-toolbar"] [role="radiogroup"] {
       overflow: visible !important;
+    }
+    [data-testid="editor-floating-toolbar"] {
+      transform: translateY(-32px) !important;
     }
     [data-testid="editor-floating-toolbar"] button {
       position: relative !important;
