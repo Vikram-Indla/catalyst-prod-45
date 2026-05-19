@@ -126,10 +126,10 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
       </div>
       )}
 
-      {/* Sort header */}
+      {/* Sort header — 8px horizontal to align with card scroll area */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '8px 12px', borderBottom: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', background: 'transparent',
+        padding: '8px 8px', borderBottom: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', background: 'transparent',
       }}>
         <button
           onClick={() => setSortDir(d => (d === 'asc' ? 'desc' : 'asc'))}
