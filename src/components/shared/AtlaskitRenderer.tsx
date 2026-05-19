@@ -17,6 +17,23 @@ import React, { Suspense, lazy, useMemo } from 'react';
 import type { ADFEntity } from '@atlaskit/adf-utils/types';
 
 const LazyReactRenderer = lazy(async () => {
+  // Patch Selection.jsonID before @atlaskit/renderer loads its prosemirror-tables.
+  // Both Tiptap and the renderer call CellSelection.jsonID('cell', ...) at init;
+  // Vite's on-demand bundling can inline a second copy of prosemirror-tables into
+  // the renderer chunk despite the dedupe config, causing the second call to throw.
+  // Dynamic import avoids a startup dep-scan that would block main.tsx loading.
+  try {
+    const pmState = await import('prosemirror-state');
+    const origJsonID = (pmState.Selection as any).jsonID.bind(pmState.Selection);
+    (pmState.Selection as any).jsonID = function (id: string, type: unknown) {
+      try { return origJsonID(id, type); }
+      catch (e) {
+        if (e instanceof RangeError && String((e as Error).message).includes('Duplicate')) return type;
+        throw e;
+      }
+    };
+  } catch (_) { /* no-op if prosemirror-state not available */ }
+
   const mod = await import('@atlaskit/renderer');
   return { default: mod.ReactRenderer as unknown as React.ComponentType<any> };
 });

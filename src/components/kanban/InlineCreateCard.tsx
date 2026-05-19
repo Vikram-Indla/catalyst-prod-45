@@ -29,7 +29,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@atlaskit/dropdown-menu';
+} from '@/components/ui/dropdown-menu';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { toast } from 'sonner';
 import { useCreatemeta } from '@/hooks/useCreatemeta';
