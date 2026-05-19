@@ -98,10 +98,10 @@ export default function CapacityDepartmentsPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 rounded w-48" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }} />
-          <div className="h-32 rounded" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }} />
+      <div style={{ padding: 24 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }} className="animate-pulse">
+          <div style={{ height: 32, borderRadius: 3, width: 192, style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }} />
+          <div style={{ height: 128, borderRadius: 3, style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }} />
         </div>
       </div>
     );
@@ -109,12 +109,12 @@ export default function CapacityDepartmentsPage() {
 
   return (
     <AdminGuard>
-    <div className="p-6 space-y-6">
+    <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 24 }}>
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <h1 className="text-2xl font-semibold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Resource Departments</h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+          <h1 style={{ fontSize: 20, fontWeight: 653, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Resource Departments</h1>
+          <p style={{ fontSize: 14, marginTop: 4, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
             Configure departments for resource management. Changes sync in real-time.
           </p>
         </div>
@@ -128,14 +128,14 @@ export default function CapacityDepartmentsPage() {
       </div>
 
       {/* Departments List */}
-      <div className="rounded-xl overflow-hidden" style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)' }}>
+      <div style={{ borderRadius: 8, overflow: "hidden" }} style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)' }}>
           <table className="w-full">
             <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
               <tr>
-                <th className="w-10 px-4 py-3"></th>
-                <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase w-24" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>DID</th>
-                <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Name</th>
-                <th className="text-center px-4 py-3 text-[11px] font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Actions</th>
+                <th style={{ width: 40, padding: "8px 16px" }}></th>
+                <th style={{ textAlign: "left", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)", width: 96, borderBottom: "1.67px solid rgba(11, 18, 14, 0.14)" }}>DID</th>
+                <th style={{ textAlign: "left", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)", borderBottom: "1.67px solid rgba(11, 18, 14, 0.14)" }}>Name</th>
+                <th style={{ textAlign: "center", padding: "8px 16px", fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)", borderBottom: "1.67px solid rgba(11, 18, 14, 0.14)" }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -144,12 +144,12 @@ export default function CapacityDepartmentsPage() {
                   onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)')}
                   onMouseLeave={e => (e.currentTarget.style.background = '')}
                 >
-                  <td className="px-4 py-3" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                  <td style={{ padding: "12px 16px" }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                     <span style={{ display: 'inline-flex', cursor: 'grab' }}><DragHandlerIcon label="" size="small" /></span>
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-mono font-medium" style={{ color: 'var(--ds-text-brand, #0C66E4)' }}>{dept.department_id}</span>
+                  <td style={{ padding: "12px 16px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 14, fontFamily: "ui-monospace, monospace", fontWeight: 500, color: 'var(--ds-text-brand, #0C66E4)' }}>{dept.department_id}</span>
                       <Tooltip content="Copy DID">
                         <button
                           onClick={() => copyToClipboard(dept.department_id)}
@@ -163,11 +163,11 @@ export default function CapacityDepartmentsPage() {
                       </Tooltip>
                     </div>
                   </td>
-                  <td className="px-4 py-3">
-                    <span className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{dept.name}</span>
+                  <td style={{ padding: "12px 16px" }}>
+                    <span style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{dept.name}</span>
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-center gap-1">
+                  <td style={{ padding: "12px 16px" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
                       <button
                         onClick={() => openEdit(dept)}
                         className="w-8 h-8 rounded flex items-center justify-center transition-colors"
@@ -192,7 +192,7 @@ export default function CapacityDepartmentsPage() {
               ))}
               {departments.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-4 py-8 text-center" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                  <td colSpan={4} style={{ padding: "32px 16px", textAlign: "center" }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                     No departments configured. Click "Add Department" to create one.
                   </td>
                 </tr>
@@ -207,8 +207,8 @@ export default function CapacityDepartmentsPage() {
           <DialogHeader>
             <DialogTitle>Add Department</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
+          <div style={{ display: "flex", flexDirection: "column", gap: 16, paddingTop: 16, paddingBottom: 16 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Name *</label>
               <Textfield
                 value={formData.name}
@@ -236,8 +236,8 @@ export default function CapacityDepartmentsPage() {
           <DialogHeader>
             <DialogTitle>Edit Department</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
+          <div style={{ display: "flex", flexDirection: "column", gap: 16, paddingTop: 16, paddingBottom: 16 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Name *</label>
               <Textfield
                 value={formData.name}
@@ -263,7 +263,7 @@ export default function CapacityDepartmentsPage() {
       <AlertDialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
+            <AlertDialogTitle style={{ display: "flex", alignItems: "center", gap: 8 }}>
               {linkedResources.length > 0 ? (
                 <>
                   <span style={{ display: 'inline-flex', color: 'var(--ds-icon-warning, #F79009)' }}><WarningIcon label="" size="medium" /></span>

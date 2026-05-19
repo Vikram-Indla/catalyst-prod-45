@@ -68,11 +68,11 @@ export default function ThemeGroups() {
 
   return (
     <AdminGuard>
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
+      <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 24 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Strategic Themes</h1>
-            <p className="mt-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+            <h1 style={{ fontSize: 24, fontWeight: 653, color: "var(--ds-text, #292A2E)", margin: 0, lineHeight: "28px" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Strategic Themes</h1>
+            <p style={{ marginTop: 8 }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
               Manage strategic theme configurations and linked items
             </p>
           </div>
@@ -85,37 +85,37 @@ export default function ThemeGroups() {
           </Button>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}>
           <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
-            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Total Themes</p>
+            <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 8 }}>
+              <p style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Total Themes</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{themes.length}</div>
+            <div style={{ fontSize: 20, fontWeight: 653, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{themes.length}</div>
           </div>
           <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
-            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Active Themes</p>
+            <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 8 }}>
+              <p style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Active Themes</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{activeCount}</div>
+            <div style={{ fontSize: 20, fontWeight: 653, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{activeCount}</div>
           </div>
           <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
-            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Linked Items</p>
+            <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 8 }}>
+              <p style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Linked Items</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{totalLinkedItems}</div>
+            <div style={{ fontSize: 20, fontWeight: 653, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{totalLinkedItems}</div>
           </div>
         </div>
 
         <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <div style={{ marginBottom: '12px' }}>
-            <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Theme Configuration</h2>
+            <h2 style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Theme Configuration</h2>
             <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
               Configure themes for strategic organization. Toggle status or manage linked items.
             </p>
           </div>
           <div>
-            <div className="flex items-center gap-4 mb-4">
-              <div className="relative flex-1">
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ position: "relative", flex: 1 }}>
                 <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><SearchIcon label="" size="small" /></span>
                 <Textfield
                   placeholder="Search themes..."
@@ -126,7 +126,7 @@ export default function ThemeGroups() {
             </div>
 
             {isLoading ? (
-              <div className="flex items-center justify-center py-12">
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 0" }}>
                 <Spinner size="medium" />
               </div>
             ) : error ? (
@@ -140,12 +140,12 @@ export default function ThemeGroups() {
                 <table className="w-full">
                   <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
                     <tr>
-                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Theme Name</th>
-                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Description</th>
-                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Linked Items</th>
-                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Status</th>
+                      <th style={{ textAlign: "left", padding: 12, fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Theme Name</th>
+                      <th style={{ textAlign: "left", padding: 12, fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Description</th>
+                      <th style={{ textAlign: "left", padding: 12, fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Linked Items</th>
+                      <th style={{ textAlign: "left", padding: 12, fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Status</th>
                       <th className="text-center p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Active</th>
-                      <th className="text-right p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Actions</th>
+                      <th style={{ textAlign: "right", padding: 12, fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -160,8 +160,8 @@ export default function ThemeGroups() {
                           onMouseEnter={() => setHoveredRow(theme.id)}
                           onMouseLeave={() => setHoveredRow(null)}
                         >
-                          <td className="p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
-                            <div className="flex items-center gap-2">
+                          <td style={{ padding: 12, fontSize: 14, fontWeight: 500 }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                               {theme.color_tag && (
                                 <span
                                   className="w-3 h-3 rounded-full flex-shrink-0"
@@ -171,11 +171,11 @@ export default function ThemeGroups() {
                               {theme.name}
                             </div>
                           </td>
-                          <td className="p-3 text-sm max-w-md truncate" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                          <td style={{ padding: 12, fontSize: 14, maxWidth: 448, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                             {theme.description || '—'}
                           </td>
-                          <td className="p-3 text-sm">
-                            <div className="flex items-center gap-2">
+                          <td style={{ padding: 12, fontSize: 14 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                               {theme.epic_count > 0 && (
                                 <Lozenge appearance="default">
                                   {theme.epic_count} epic{theme.epic_count !== 1 ? 's' : ''}
@@ -191,14 +191,14 @@ export default function ThemeGroups() {
                               )}
                             </div>
                           </td>
-                          <td className="p-3 text-sm">
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs" style={statusDisplay.style}>
+                          <td style={{ padding: 12, fontSize: 14 }}>
+                            <span style={{ display: "inline-flex", alignItems: "center", padding: "4px 8px", borderRadius: 16, fontSize: 12 }} style={statusDisplay.style}>
                               {statusDisplay.label}
                             </span>
                           </td>
-                          <td className="p-3 text-sm text-center">
+                          <td style={{ padding: 12, fontSize: 14, textAlign: "center" }}>
                             <Tooltip content={<p>{theme.status === 'active' ? 'Set to inactive' : 'Set to active'}</p>}>
-                              <div className="inline-flex">
+                              <div style={{ display: "inline-flex" }}>
                                 <Toggle
                                   isChecked={theme.status === 'active'}
                                   onChange={() => handleToggleStatus(theme)}
@@ -207,8 +207,8 @@ export default function ThemeGroups() {
                               </div>
                             </Tooltip>
                           </td>
-                          <td className="p-3 text-sm text-right">
-                            <div className="flex justify-end gap-1">
+                          <td style={{ padding: 12, fontSize: 14, textAlign: "right" }}>
+                            <div style={{ display: "flex", justifyContent: "flex-end", gap: 4 }}>
                               <Button
                                 appearance="subtle"
                                 onClick={() => setEditTheme(theme)}

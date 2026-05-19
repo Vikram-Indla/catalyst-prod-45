@@ -1,20 +1,7 @@
 import * as React from "react";
-import { format, addMonths, subMonths, setMonth, setYear, getYear, getMonth } from "date-fns";
-import { ChevronUp, ChevronDown, CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { format } from "date-fns";
+import DatePicker from "@atlaskit/datetime-picker";
+import { token } from "@atlaskit/tokens";
 
 interface CatalystDatePickerProps {
   value?: Date | string | null;
@@ -49,48 +36,18 @@ function CatalystDatePicker({
   showClearButton = true,
   showTodayButton = true,
 }: CatalystDatePickerProps) {
-  const [open, setOpen] = React.useState(false);
-  const [viewDate, setViewDate] = React.useState<Date>(() => {
-    if (value) {
-      return value instanceof Date ? value : new Date(value);
-    }
-    return new Date();
-  });
-
   // Parse value to Date
   const selectedDate = React.useMemo(() => {
-    if (!value) return null;
+    if (!value) return undefined;
     if (value instanceof Date) return value;
     const parsed = new Date(value);
-    return isNaN(parsed.getTime()) ? null : parsed;
+    return isNaN(parsed.getTime()) ? undefined : parsed;
   }, [value]);
 
-  // Update viewDate when value changes
-  React.useEffect(() => {
-    if (selectedDate) {
-      setViewDate(selectedDate);
+  const handleChange = (date: any) => {
+    if (date) {
+      onChange(date as Date);
     }
-  }, [selectedDate]);
-
-  const handlePreviousMonth = () => {
-    setViewDate(prev => subMonths(prev, 1));
-  };
-
-  const handleNextMonth = () => {
-    setViewDate(prev => addMonths(prev, 1));
-  };
-
-  const handleMonthChange = (monthIndex: string) => {
-    setViewDate(prev => setMonth(prev, parseInt(monthIndex)));
-  };
-
-  const handleYearChange = (year: string) => {
-    setViewDate(prev => setYear(prev, parseInt(year)));
-  };
-
-  const handleDateSelect = (date: Date) => {
-    onChange(date);
-    setOpen(false);
   };
 
   const handleClear = () => {
@@ -100,207 +57,159 @@ function CatalystDatePicker({
   const handleToday = () => {
     const today = new Date();
     onChange(today);
-    setViewDate(today);
-    setOpen(false);
   };
 
-  // Generate calendar grid
-  const generateCalendarDays = () => {
-    const year = getYear(viewDate);
-    const month = getMonth(viewDate);
-    
-    const firstDayOfMonth = new Date(year, month, 1);
-    const lastDayOfMonth = new Date(year, month + 1, 0);
-    const daysInMonth = lastDayOfMonth.getDate();
-    const startingDayOfWeek = firstDayOfMonth.getDay();
-    
-    const days: { date: Date; isCurrentMonth: boolean; isToday: boolean; isSelected: boolean; isDisabled: boolean }[] = [];
-    
-    // Previous month days
-    const prevMonth = new Date(year, month, 0);
-    const prevMonthDays = prevMonth.getDate();
-    for (let i = startingDayOfWeek - 1; i >= 0; i--) {
-      const date = new Date(year, month - 1, prevMonthDays - i);
-      days.push({
-        date,
-        isCurrentMonth: false,
-        isToday: false,
-        isSelected: selectedDate ? date.toDateString() === selectedDate.toDateString() : false,
-        isDisabled: isDateDisabled(date),
-      });
+  // Apply ADS token-based styling
+  const datePickerStyles = `
+    .catalyst-date-picker {
+      --ds-text: var(--ds-text, #292A2E);
+      --ds-text-subtlest: var(--ds-text-subtlest, #626F86);
+      --ds-text-disabled: var(--ds-text-disabled, #8993A5);
+      --ds-border: var(--ds-border, rgba(11,18,14,0.14));
+      --ds-border-focused: var(--ds-border-focused, #388BFF);
+      --ds-background-selected-bold: var(--ds-background-selected-bold, #0052CC);
+      --ds-icon-subtle: var(--ds-icon-subtle, #6B778C);
+      --ds-elevation-shadow-overlay: 0 4px 8px -2px rgba(9,30,66,0.13), 0 0 1px rgba(9,30,66,0.13);
     }
-    
-    // Current month days
-    const today = new Date();
-    for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(year, month, day);
-      days.push({
-        date,
-        isCurrentMonth: true,
-        isToday: date.toDateString() === today.toDateString(),
-        isSelected: selectedDate ? date.toDateString() === selectedDate.toDateString() : false,
-        isDisabled: isDateDisabled(date),
-      });
-    }
-    
-    // Next month days (fill to complete 6 rows = 42 days for fixed height)
-    const remainingDays = 42 - days.length;
-    for (let day = 1; day <= remainingDays; day++) {
-      const date = new Date(year, month + 1, day);
-      days.push({
-        date,
-        isCurrentMonth: false,
-        isToday: false,
-        isSelected: selectedDate ? date.toDateString() === selectedDate.toDateString() : false,
-        isDisabled: isDateDisabled(date),
-      });
-    }
-    
-    return days;
-  };
 
-  const isDateDisabled = (date: Date): boolean => {
-    if (minDate && date < minDate) return true;
-    if (maxDate && date > maxDate) return true;
-    return false;
-  };
+    .catalyst-date-picker input {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--ds-text);
+      border-color: transparent;
+      min-height: 44px;
+      padding: 8px 12px;
+    }
 
-  const days = generateCalendarDays();
-  
-  // Generate year options (current year ± 10 years)
-  const currentYear = new Date().getFullYear();
-  const yearOptions = Array.from({ length: 21 }, (_, i) => currentYear - 10 + i);
+    .catalyst-date-picker input::placeholder {
+      color: var(--ds-text-subtlest);
+      font-weight: 400;
+    }
+
+    .catalyst-date-picker input:focus {
+      outline: 2px solid var(--ds-border-focused);
+      border-color: var(--ds-border-focused);
+      box-shadow: 0 0 0 2px rgba(56,139,255,0.08);
+    }
+
+    .catalyst-date-picker [role="button"] {
+      box-shadow: var(--ds-elevation-shadow-overlay);
+      width: 290px;
+    }
+
+    .catalyst-date-picker [role="gridcell"] button {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--ds-text);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      transition: background 150ms;
+    }
+
+    .catalyst-date-picker [role="gridcell"] button:hover:not(:disabled) {
+      background: rgba(9,30,66,0.06);
+    }
+
+    .catalyst-date-picker [role="gridcell"] button:focus {
+      outline: 2px solid var(--ds-border-focused);
+      outline-offset: -2px;
+    }
+
+    .catalyst-date-picker [role="gridcell"] button[aria-selected="true"] {
+      background: var(--ds-background-selected-bold);
+      color: white;
+      font-weight: 500;
+    }
+
+    .catalyst-date-picker [role="gridcell"] button[aria-disabled="true"] {
+      color: var(--ds-text-disabled);
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+
+    .catalyst-date-picker label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ds-text-subtlest);
+      text-transform: none;
+    }
+
+    /* Responsive mobile: full-width calendar */
+    @media (max-width: 479px) {
+      .catalyst-date-picker [role="button"] {
+        width: 100%;
+        max-width: 100vw;
+      }
+    }
+
+    /* Responsive desktop: compact layout */
+    @media (min-width: 768px) {
+      .catalyst-date-picker [role="button"] {
+        width: 290px;
+        position: absolute;
+      }
+    }
+  `;
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          disabled={disabled}
-          className={cn(
-            "w-full justify-start text-left font-normal h-9",
-            !selectedDate && "text-muted-foreground",
-            triggerClassName
+    <div className={`catalyst-date-picker ${className || ''}`}>
+      <style>{datePickerStyles}</style>
+      <DatePicker
+        value={selectedDate}
+        onChange={handleChange}
+        isDisabled={disabled}
+        minDate={minDate}
+        maxDate={maxDate}
+        locale="en-US"
+        placeholder={placeholder}
+      />
+      {(showClearButton || showTodayButton) && (
+        <div style={{ display: 'flex', gap: '8px', marginTop: '8px', paddingTop: '8px', borderTop: `1px solid var(--ds-border)` }}>
+          {showClearButton && (
+            <button
+              onClick={handleClear}
+              style={{
+                fontSize: '12px',
+                fontWeight: '500',
+                color: 'var(--ds-border-focused)',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '4px 8px',
+              }}
+            >
+              Clear
+            </button>
           )}
-        >
-          <CalendarIcon className="mr-2 h-4 w-4 text-gray-400 dark:text-gray-500" />
-          {selectedDate ? format(selectedDate, dateFormat) : placeholder}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className={cn("w-auto p-0 z-[1200] pointer-events-auto", className)} align="start">
-        <div className="p-3 bg-popover rounded-md border shadow-lg">
-          {/* Header with month/year selector and navigation */}
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-1">
-              <Select value={String(getMonth(viewDate))} onValueChange={handleMonthChange}>
-                <SelectTrigger className="h-8 w-auto gap-1 border-0 bg-transparent hover:bg-accent px-2 text-sm font-medium">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-[500]">
-                  {MONTHS.map((month, index) => (
-                    <SelectItem key={month} value={String(index)}>
-                      {month}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={String(getYear(viewDate))} onValueChange={handleYearChange}>
-                <SelectTrigger className="h-8 w-auto gap-1 border-0 bg-transparent hover:bg-accent px-2 text-sm font-medium">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-[500] max-h-[200px]">
-                  {yearOptions.map((year) => (
-                    <SelectItem key={year} value={String(year)}>
-                      {year}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center gap-0.5">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={handlePreviousMonth}
-              >
-                <ChevronUp className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={handleNextMonth}
-              >
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Days of week header */}
-          <div className="grid grid-cols-7 mb-1">
-            {DAYS_OF_WEEK.map((day, index) => (
-              <div
-                key={index}
-                className="h-9 w-9 flex items-center justify-center text-xs font-medium text-muted-foreground"
-              >
-                {day}
-              </div>
-            ))}
-          </div>
-
-          {/* Calendar grid */}
-          <div className="grid grid-cols-7">
-            {days.map((day, index) => (
-              <button
-                key={index}
-                type="button"
-                disabled={day.isDisabled}
-                onClick={() => handleDateSelect(day.date)}
-                className={cn(
-                  "h-9 w-9 flex items-center justify-center text-sm rounded-md transition-colors",
-                  "hover:bg-accent/10 focus:outline-none focus:ring-2 focus:ring-ring/30",
-                  !day.isCurrentMonth && "text-muted-foreground opacity-50",
-                  day.isToday && !day.isSelected && "border border-primary text-primary font-medium",
-                  day.isSelected && "bg-primary text-primary-foreground hover:bg-primary/90 font-medium",
-                  day.isDisabled && "opacity-30 cursor-not-allowed hover:bg-transparent"
-                )}
-              >
-                {day.date.getDate()}
-              </button>
-            ))}
-          </div>
-
-          {/* Footer with Clear and Today buttons */}
-          {(showClearButton || showTodayButton) && (
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
-              {showClearButton ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleClear}
-                  className="text-primary hover:text-primary hover:bg-primary/10 h-8 px-3"
-                >
-                  Clear
-                </Button>
-              ) : (
-                <div />
-              )}
-              {showTodayButton && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleToday}
-                  className="text-primary hover:text-primary hover:bg-primary/10 h-8 px-3"
-                >
-                  Today
-                </Button>
-              )}
-            </div>
+          {showTodayButton && (
+            <button
+              onClick={handleToday}
+              style={{
+                fontSize: '12px',
+                fontWeight: '500',
+                color: 'var(--ds-border-focused)',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '4px 8px',
+                marginLeft: 'auto',
+              }}
+            >
+              Today
+            </button>
           )}
         </div>
-      </PopoverContent>
-    </Popover>
+      )}
+    </div>
   );
 }
 

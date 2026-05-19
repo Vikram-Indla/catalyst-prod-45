@@ -153,7 +153,7 @@ function SortableRow({
       onMouseEnter={e => { if (!isDragging) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; }}
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isDragging ? 'var(--ds-background-neutral, #F7F8F9)' : ''; }}
     >
-      <td style={{ padding: "12px 16px", cursor: "grab" }} className="active:cursor-grabbing" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }} {...attributes} {...listeners}>
+      <td style={{ padding: '12px 16px', cursor: 'grab', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }} className="active:cursor-grabbing" {...attributes} {...listeners}>
         <span style={{ display: 'inline-flex', cursor: 'grab' }}><DragHandlerIcon label="" size="small" /></span>
       </td>
       <td style={{ padding: "12px 16px" }}>
@@ -1187,7 +1187,7 @@ export default function ResourceAssignmentsPage() {
                 onClick={handleConfirmDelete}
                 disabled={isDeleting}
                 style={{
-                  padding: '6px 14px', borderRadius: '4px', fontSize: '14px', fontWeight: 500,
+                  padding: '8px 16px', borderRadius: '4px', fontSize: '14px', fontWeight: 500,
                   background: 'var(--ds-background-danger-bold, #CA3521)', color: '#FFFFFF',
                   border: 'none', cursor: isDeleting ? 'not-allowed' : 'pointer',
                   opacity: isDeleting ? 0.7 : 1,

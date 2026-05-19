@@ -48,7 +48,6 @@ import ComponentSpecCard from './ComponentSpecCard';
 import ADSViolationsPanel from './ADSViolationsPanel';
 import CascadeImpactPanel from './CascadeImpactPanel';
 import PublishTab from './PublishTab';
-import EpicDescriptionEditorPreview from './previews/EpicDescriptionEditorPreview';
 import HistoryTab from './HistoryTab';
 
 // ─── Publish context — lets HubBreakdownPanel switch to Publish tab + pre-fill ─
@@ -1469,9 +1468,7 @@ function InventoryPane() {
           <>
             <ActionBar entry={selectedEntry} />
             <HubBreakdownPanel entry={selectedEntry} />
-            {selectedEntry.registryEntry?.name === 'EpicDescriptionEditor' ? (
-              <EpicDescriptionEditorPreview />
-            ) : selectedEntry.registryEntry ? (
+            {selectedEntry.registryEntry ? (
               <ComponentSpecCard entry={selectedEntry.registryEntry} />
             ) : (
               <ObservedEntryDetail entry={selectedEntry} />

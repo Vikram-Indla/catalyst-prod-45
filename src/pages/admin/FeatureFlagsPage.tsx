@@ -74,26 +74,26 @@ const ICON_MAP: Record<string, React.ElementType> = {
 const resolveIcon = (name: string): React.ElementType => ICON_MAP[name] || ArchiveBoxIcon;
 
 const ICON_COLOR_MAP: Record<string, { bg: string; text: string }> = {
-  blue:    { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  blue:    { bg: 'var(--ds-text-information, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
   teal:    { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  red:     { bg: '#FFEBE6', text: '#BF2600' },
-  neutral: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: '#42526E' },
+  red:     { bg: 'var(--ds-background-danger-subtler, #FFEBE6)', text: 'var(--ds-text-danger, #BF2600)' },
+  neutral: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
 };
 
 // V12 StatusLozenge: LIVE=Green, DRAFT=Grey, BETA=Blue
 const STATUS_LOZENGE: Record<string, { bg: string; text: string }> = {
   live:  { bg: 'var(--cp-lozenge-green-bg, #1B7F37)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
-  draft: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: '#42526E' },
-  beta:  { bg: '#0C66E4', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
+  draft: { bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text-subtle, #42526E)' },
+  beta:  { bg: 'var(--ds-text-information, #0C66E4)', text: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' },
 };
 
 // D03: Category badges with distinct colors per MARAM V3.1.1
 const CATEGORY_BADGE: Record<ModuleCategory, { bg: string; text: string; border: string }> = {
-  Strategy:   { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: '#BFDBFE' },
-  Product:    { bg: '#F4F4F5', text: '#3F3F46', border: '#D4D4D8' },
-  Delivery:   { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: '#BFDBFE' },
-  Quality:    { bg: '#F0FDFA', text: 'var(--cp-teal-60, #0D9488)', border: '#99F6E4' },
-  Operations: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', border: '#FECACA' },
+  Strategy:   { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: 'var(--ds-border-information, #BFDBFE)' },
+  Product:    { bg: 'var(--ds-background-neutral, #F4F4F5)', text: 'var(--ds-text, #3F3F46)', border: 'var(--ds-border-neutral, #D4D4D8)' },
+  Delivery:   { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', border: 'var(--ds-border-information, #BFDBFE)' },
+  Quality:    { bg: 'var(--ds-background-success-subtler, #F0FDFA)', text: 'var(--cp-teal-60, #0D9488)', border: 'var(--ds-border-success, #99F6E4)' },
+  Operations: { bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', border: 'var(--ds-border-danger, #FECACA)' },
 };
 
 const ENVIRONMENT = 'production' as const;
@@ -141,7 +141,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
         height: 52,
         borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`,
         transition: 'background-color 120ms ease',
-        ...(isSelected ? { backgroundColor: 'rgba(37,99,235,0.08)' } : {}),
+        ...(isSelected ? { backgroundColor: 'var(--ds-background-selected-hovered, rgba(37,99,235,0.08))' } : {}),
       }}
       onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--cp-interact-hover, rgba(15,23,42,0.04))'; }}
       onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; }}
@@ -189,7 +189,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
           className="inline-flex items-center"
           style={{
             height: 20,
-            padding: '0 6px',
+            padding: '0 8px',
             background: catStyle.bg,
             color: catStyle.text,
             border: `1px solid ${catStyle.border}`,
@@ -197,7 +197,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
             fontSize: 11,
             fontWeight: 600,
             letterSpacing: '0.03em',
-            textTransform: 'uppercase',
+            /* sentence-case per CLAUDE.md */
             borderRadius: 4,
           }}
           aria-label={`Category: ${flag.category}`}
@@ -212,14 +212,14 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
           className="inline-flex items-center"
           style={{
             height: 20,
-            padding: '0 6px',
+            padding: '0 8px',
             background: statusStyle.bg,
             color: statusStyle.text,
             fontFamily: 'var(--cp-font-body)',
             fontSize: 11,
             fontWeight: 700,
             letterSpacing: '0.03em',
-            textTransform: 'uppercase',
+            /* sentence-case per CLAUDE.md */
             borderRadius: 4,
           }}
           aria-label={`Status: ${flag.status}`}
@@ -308,7 +308,7 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
         fontSize: 11,
         fontWeight: 600,
         letterSpacing: '0.06em',
-        textTransform: 'uppercase',
+        /* sentence-case per CLAUDE.md */
         color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
       }}>
         {category}
@@ -321,7 +321,7 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
           color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
           background: 'var(--cp-border, #E5E5E5)',
           borderRadius: 9999,
-          padding: '1px 6px',
+          padding: '0 8px',
         }}
       >
         {count}
@@ -647,7 +647,7 @@ export default function FeatureFlagsPage() {
                 fontFamily: 'var(--cp-font-body)',
                 fontSize: 12,
                 fontWeight: filterMode === mode ? 650 : 500,
-                background: filterMode === mode ? 'rgba(37,99,235,0.08)' : 'transparent',
+                background: filterMode === mode ? 'var(--ds-background-selected-hovered, rgba(37,99,235,0.08))' : 'transparent',
                 color: filterMode === mode ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : '#71717A',
                 cursor: 'pointer',
                 transition: 'all 120ms ease',
@@ -724,7 +724,7 @@ export default function FeatureFlagsPage() {
             fontSize: 11,
             fontWeight: 600,
             letterSpacing: '0.06em',
-            textTransform: 'uppercase',
+            /* sentence-case per CLAUDE.md */
             color: 'var(--cp-text-tertiary, #71717A)',
           }}
         >
