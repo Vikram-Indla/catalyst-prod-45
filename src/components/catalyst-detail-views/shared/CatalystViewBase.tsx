@@ -19,7 +19,8 @@ import CrossIcon from '@atlaskit/icon/core/close';
 import ShareIcon from '@atlaskit/icon/core/share';
 import MoreIcon from '@atlaskit/icon/core/menu';
 import LinkIcon from '@atlaskit/icon/core/link';
-import { toast } from 'sonner';
+import AkFlag, { FlagGroup } from '@atlaskit/flag';
+import SuccessIcon from '@atlaskit/icon/glyph/check-circle';
 import Modal from '@atlaskit/modal-dialog';
 import Button, { IconButton } from '@atlaskit/button/new';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
@@ -164,8 +165,12 @@ export function CatalystViewBase({
   // jira-compare 2026-05-10: re-probed BAU-5736. Modal split: left ~70% / right ~30%.
   // jira-compare 2026-05-11 DC4: panel mode body = 560px; 285px sidebar left only 269px
   // for content — too narrow. 220px gives 334px left panel at 560px body — acceptable.
-  // 313px matches Jira's right rail width (probed 2026-05-15). Panel mode stays at 220.
-  const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 220 : 313);
+  // 313px matches Jira's right rail width (probed 2026-05-15). Panel mode uses 260px
+  // (raised from 220 → 260 on 2026-05-19: "Improve Production Incident" button is 236px
+  // and was visually clipping at 220px; 260 gives it breathing room without crowding the
+  // left content area at typical 1140px AllWork panel widths).
+  const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 260 : 313);
+  const [showCopyFlag, setShowCopyFlag] = useState(false);
   const isDraggingRef = useRef(false);
 
   /* G4: Track recently visited issues in localStorage (catalyst-recent-issues).
@@ -352,7 +357,8 @@ export function CatalystViewBase({
       ? `${window.location.origin}/browse/${itemKey}`
       : null;
     navigator.clipboard.writeText(ticketUrl ?? window.location.href);
-    toast.success('Link copied to clipboard');
+    setShowCopyFlag(true);
+    setTimeout(() => setShowCopyFlag(false), 3000);
   }, [onShare, itemKey, projectKey]);
 
   /* ── Card contents ─────────────────────────────────────────────────────
@@ -530,6 +536,25 @@ export function CatalystViewBase({
               </DropdownMenu>
             )}
 
+            {/* Open in full page — panel mode only. Navigates to /browse/:issueKey
+                so the user can view the issue in the full CatalystShell layout
+                with a back button (IssueFullPage). Not shown in fullPageMode or
+                modal mode (Close button already visible there). */}
+            {panelMode && !fullPageMode && itemKey && (
+              <Tooltip content="Open in full page">
+                <IconButton
+                  appearance="subtle"
+                  icon={() => (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                    </svg>
+                  )}
+                  label="Open in full page"
+                  onClick={() => navigate(`/browse/${itemKey}`)}
+                />
+              </Tooltip>
+            )}
+
             {/* Panel toggle — hidden in full-page mode AND panel mode
                 (outer BacklogPage toolbar has Expand/Fullscreen IconButtons).
                 Phase B (2026-04-18): IconButton + Tooltip. SVG kept inline
@@ -683,17 +708,31 @@ export function CatalystViewBase({
      details" label if `itemKey` hasn't loaded yet. */
   const ariaLabel = itemKey ? `${itemKey} — work item details` : 'Work item details';
   return (
-    <div style={OVERLAY} onClick={panelMode || fullPageMode ? undefined : onClose}>
-      <div
-        data-cv-scope
-        role={fullPageMode ? undefined : 'dialog'}
-        aria-modal={fullPageMode ? undefined : panelMode ? 'false' : 'true'}
-        aria-label={fullPageMode ? undefined : ariaLabel}
-        style={MODAL}
-        onClick={e => e.stopPropagation()}
-      >
-        {cardContents}
+    <>
+      <div style={OVERLAY} onClick={panelMode || fullPageMode ? undefined : onClose}>
+        <div
+          data-cv-scope
+          role={fullPageMode ? undefined : 'dialog'}
+          aria-modal={fullPageMode ? undefined : panelMode ? 'false' : 'true'}
+          aria-label={fullPageMode ? undefined : ariaLabel}
+          style={MODAL}
+          onClick={e => e.stopPropagation()}
+        >
+          {cardContents}
+        </div>
       </div>
-    </div>
+      {showCopyFlag && (
+        <div style={{ position: 'fixed', bottom: 24, left: 24, zIndex: 9999 }}>
+          <FlagGroup onDismissed={() => setShowCopyFlag(false)}>
+            <AkFlag
+              id="cv-copy-link"
+              appearance="success"
+              icon={<SuccessIcon label="" primaryColor="var(--ds-icon-success, #22A06B)" />}
+              title="Link copied to clipboard"
+            />
+          </FlagGroup>
+        </div>
+      )}
+    </>
   );
 }

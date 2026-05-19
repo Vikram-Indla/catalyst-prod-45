@@ -184,7 +184,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
                 background: selected ? 'var(--cp-interact-selected, #E9F2FE)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 borderRadius: 4,
                 padding: 16,
-                margin: '0',
+                margin: '0 0 4px 0',
                 cursor: 'pointer',
                 boxShadow: selected
                   ? 'var(--ds-shadow-overlay, rgba(24,104,219,0.4) 0px 0px 0px 1px, rgba(30,31,33,0.18) 0px 1px 1px 0px)'

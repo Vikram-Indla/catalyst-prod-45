@@ -132,7 +132,6 @@ function normalizeIssueTypeBucket(raw: string | undefined | null):
   if (t === 'story' || t === 'improvement') return 'story';
   return null;
 }
-import { toast } from 'sonner';
 import {
   STATUS_OPTION_GROUPS,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
@@ -692,7 +691,7 @@ export function CatalystSidebarDetails({
                     .update({ due_date: date })
                     .eq('issue_key', issue.issue_key);
                   if (error) {
-                    toast.error('Failed to save due date');
+                    console.error('[CatalystSidebarDetails] due date save failed:', error.message);
                     throw error;
                   }
                   invalidateIssue();
@@ -720,7 +719,7 @@ export function CatalystSidebarDetails({
                       .update({ due_date: date })
                       .eq('issue_key', issue.issue_key);
                     if (error) {
-                      toast.error('Failed to save due date');
+                      console.error('[CatalystSidebarDetails] due date save failed:', error.message);
                       throw error;
                     }
                     invalidateIssue();

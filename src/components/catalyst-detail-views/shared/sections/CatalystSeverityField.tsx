@@ -21,7 +21,6 @@ import { useMutation } from '@tanstack/react-query';
 import Select from '@atlaskit/select';
 import Lozenge from '@atlaskit/lozenge';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 import type { PhIssue } from '../types';
 
 interface Props {
@@ -62,20 +61,9 @@ export function CatalystSeverityField({ issue, onUpdate }: Props) {
       const { error } = await query;
       if (error) throw error;
     },
-    onSuccess: () => {
-      toast.success('Severity updated');
-      onUpdate?.();
-    },
+    onSuccess: () => onUpdate?.(),
     onError: (e: any) => {
-      const msg = e?.message ?? '';
-      if (msg.includes('severity') || msg.includes('column')) {
-        toast.info(
-          'Severity column not yet in database. Run the migration ' +
-          'supabase/migrations/20260428180000_jira_compare_severity_assessment_feature.sql.',
-        );
-      } else {
-        toast.error(`Failed to save Severity: ${msg}`);
-      }
+      console.error('[CatalystSeverityField] save failed:', e?.message);
     },
   });
 
@@ -83,7 +71,7 @@ export function CatalystSeverityField({ issue, onUpdate }: Props) {
   const selected = current ? options.find(o => o.value === current) ?? null : null;
 
   return (
-    <div style={{ flex: 1, minWidth: 0 }}>
+    <div style={{ maxWidth: 180 }}>
       <Select<{ label: string; value: SeverityValue }>
         inputId={`severity-${issue?.issue_key ?? issue?.id ?? 'none'}`}
         appearance="subtle"
@@ -91,6 +79,8 @@ export function CatalystSeverityField({ issue, onUpdate }: Props) {
         isSearchable={false}
         isClearable
         classNamePrefix="cv-severity-select"
+        menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
+        menuPosition="fixed"
         placeholder="None"
         options={options}
         value={selected}

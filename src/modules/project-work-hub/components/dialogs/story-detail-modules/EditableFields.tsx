@@ -410,13 +410,15 @@ export function EditablePriority({ issueId, issueKey, currentPriority, onUpdate 
   const selected = options.find(o => o.value === currentPriority) ?? options[2]; // Medium fallback
 
   return (
-    <div style={{ flex: 1, minWidth: 0 }}>
+    <div style={{ maxWidth: 180 }}>
       <Select<{ label: string; value: string }>
         inputId={`priority-${issueKey ?? issueId}`}
         appearance="subtle"
         spacing="compact"
         isSearchable={false}
         classNamePrefix="cv-priority-select"
+        menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
+        menuPosition="fixed"
         options={options}
         value={selected}
         onChange={(v) => v && v.value !== currentPriority && updateMutation.mutate(v.value)}
