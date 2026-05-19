@@ -4,6 +4,32 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## 🗂️ CANONICAL TABLE COMPONENT — JIRATABLЕ (Non-Negotiable)
+
+**`src/components/shared/JiraTable/` is the ONLY approved table component for any surface that lists work items, issues, epics, features, incidents, requests, or any Jira-derived entity.**
+
+### Rule
+- ✅ Use `JiraTable` — import from `src/components/shared/JiraTable/`
+- ✅ Use its cell factory functions: `makeKeyCell`, `makeStatusCell`, `makeStatusEditCell`, `makeAssigneeCell`, `makeParentCell`, `makeCommentsCell`, `makePriorityCell`, `makeDateCell`, `makeLabelsCell`, `makeFixVersionsCell`, `makeRowMenuCell`, `makeCaretCell`, `makeDragHandleCell`
+- ✅ Use its editor factories for inline editing: `makeSummaryInlineEditCell`, `makeAssigneeEditCell`, `makeStatusEditCellAkPopup`, `makePriorityEditCell`, `makeParentEditCell`, `makeDateEditCell`, `makeLabelsEditCell`
+- ❌ NO new `<table>` HTML from scratch for work item lists
+- ❌ NO `@atlaskit/dynamic-table` directly for work item surfaces
+- ❌ NO shadcn `<Table>` for work item surfaces
+- ❌ NO CSS Grid / Flex custom table layouts for work item surfaces
+
+### Before building any list/table surface
+**First question every time:** "Does `JiraTable` already support this?"
+- Column schema is fully customizable — any column combination is possible
+- Grouping, sorting, pagination, inline editing, bulk select, column reorder/resize, row virtualization, keyboard nav are all built in
+- If a feature is genuinely missing from JiraTable, extend JiraTable — do NOT build a parallel table
+
+### Why
+A session in 2026-05-19 built `CatalystJiraListView` (~1,300 LOC wrapping `@atlaskit/dynamic-table`) from scratch, ran a full jira-compare + design-critique cycle on it, then discovered `JiraTable` already existed with 20+ columns, inline editing, grouping, virtualization, keyboard nav, and column reorder — all features the new component lacked. The entire session was wasted. The new component was deleted in the same session.
+
+**Severity:** P0 — building a competing table is a session-wasting defect, not a style preference.
+
+---
+
 ## 🎯 DESIGN SYSTEM GUARDRAIL — ENFORCED AT CI GATE (Non-Negotiable)
 
 **All code generation in Catalyst MUST respect the Atlassian Design System v4 as the exclusive design system.** This guardrail is enforced at three points:
