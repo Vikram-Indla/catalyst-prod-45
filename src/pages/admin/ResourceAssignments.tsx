@@ -153,7 +153,7 @@ function SortableRow({
       onMouseEnter={e => { if (!isDragging) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; }}
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isDragging ? 'var(--ds-background-neutral, #F7F8F9)' : ''; }}
     >
-      <td style={{ padding: "12px 16px", cursor: "grab" }} className="active:cursor-grabbing" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }} {...attributes} {...listeners}>
+      <td style={{ padding: '12px 16px', cursor: 'grab', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))' }} className="active:cursor-grabbing" {...attributes} {...listeners}>
         <span style={{ display: 'inline-flex', cursor: 'grab' }}><DragHandlerIcon label="" size="small" /></span>
       </td>
       <td style={{ padding: "12px 16px" }}>

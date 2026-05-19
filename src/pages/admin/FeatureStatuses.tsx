@@ -134,11 +134,11 @@ export default function FeatureStatuses() {
 
   return (
     <AdminGuard>
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
+      <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 24 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Feature Status</h1>
-            <p className="mt-2" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+            <h1 style={{ fontSize: 24, fontWeight: 653, color: "var(--ds-text, #292A2E)", margin: 0, lineHeight: "28px" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Feature Status</h1>
+            <p style={{ marginTop: 8 }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
               Manage status options for Features across Catalyst
             </p>
           </div>
@@ -147,26 +147,26 @@ export default function FeatureStatuses() {
           </Button>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}>
           <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
-            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Total Statuses</p>
+            <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 8 }}>
+              <p style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Total Statuses</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{statuses.length}</div>
+            <div style={{ fontSize: 20, fontWeight: 653, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{statuses.length}</div>
           </div>
           <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
-            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Active Statuses</p>
+            <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 8 }}>
+              <p style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Active Statuses</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
+            <div style={{ fontSize: 20, fontWeight: 653, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
               {statuses.filter(s => s.is_active).length}
             </div>
           </div>
           <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
-            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Inactive Statuses</p>
+            <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 8 }}>
+              <p style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Inactive Statuses</p>
             </div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
+            <div style={{ fontSize: 20, fontWeight: 653, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
               {statuses.filter(s => !s.is_active).length}
             </div>
           </div>
@@ -174,14 +174,14 @@ export default function FeatureStatuses() {
 
         <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
           <div style={{ marginBottom: '12px' }}>
-            <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Feature Status Configuration</h2>
-            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+            <h2 style={{ fontSize: 16, fontWeight: 653, color: "var(--ds-text, #292A2E)", margin: 0 }}>Feature Status Configuration</h2>
+            <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
               Configure statuses that appear in Feature dropdowns and boards. Select colors and click "Save Settings" to apply changes across the entire application.
             </p>
           </div>
           <div>
-            <div className="flex items-center gap-4 mb-4">
-              <div className="relative flex-1">
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+              <div style={{ position: "relative", flex: 1 }}>
                 <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><SearchIcon label="" size="small" /></span>
                 <Textfield
                   placeholder="Search feature statuses..."
@@ -202,25 +202,25 @@ export default function FeatureStatuses() {
               <table className="w-full">
                 <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
                   <tr>
-                    <th className="text-left p-3 text-sm font-medium w-10"></th>
-                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Color</th>
-                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Label</th>
-                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Value (Key)</th>
-                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Order</th>
-                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Active</th>
-                    <th className="text-right p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Actions</th>
+                    <th style={{ textAlign: "left", padding: 12, fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)", width: 40 }}></th>
+                    <th style={{ textAlign: "left", padding: 12, fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Color</th>
+                    <th style={{ textAlign: "left", padding: 12, fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Label</th>
+                    <th style={{ textAlign: "left", padding: 12, fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Value (Key)</th>
+                    <th style={{ textAlign: "left", padding: 12, fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Order</th>
+                    <th style={{ textAlign: "left", padding: 12, fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Active</th>
+                    <th style={{ textAlign: "right", padding: 12, fontSize: 12, fontWeight: 653, color: "var(--ds-text-subtle, #505258)" }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {isLoading ? (
                     <tr>
-                      <td colSpan={7} className="p-3 text-center" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                      <td colSpan={7} style={{ padding: 12, textAlign: "center" }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                         Loading...
                       </td>
                     </tr>
                   ) : filteredStatuses.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="p-3 text-center" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                      <td colSpan={7} style={{ padding: 12, textAlign: "center" }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                         No feature statuses found
                       </td>
                     </tr>
@@ -232,37 +232,37 @@ export default function FeatureStatuses() {
                         onMouseEnter={() => setHoveredRow(status.id)}
                         onMouseLeave={() => setHoveredRow(null)}
                       >
-                        <td className="p-3">
+                        <td style={{ padding: 12 }}>
                           <span style={{ cursor: 'grab', display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><DragHandlerIcon label="" size="small" /></span>
                         </td>
-                        <td className="p-3">
-                          <div className="flex items-center gap-2">
+                        <td style={{ padding: 12 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                             <BrandColorPicker
                               value={getDisplayColor(status)}
                               onChange={(color) => handleColorChange(status.id, color)}
                             />
                             <span
-                              className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded text-white"
+                              style={{ display: "inline-flex", alignItems: "center", padding: "0 8px", fontSize: 12, fontWeight: 500, borderRadius: 3, color: "var(--ds-text-inverse, #FFFFFF)" }}
                               style={{ backgroundColor: getBrandColorHex(getDisplayColor(status)) }}
                             >
                               {status.label}
                             </span>
                             {pendingColors[status.id] && pendingColors[status.id] !== status.color && (
-                              <span className="text-xs text-amber-600 font-medium">• Unsaved</span>
+                              <span style={{ fontSize: 12, color: "var(--ds-text-warning, #946F00)", fontWeight: 500 }}>• Unsaved</span>
                             )}
                           </div>
                         </td>
-                        <td className="p-3 text-sm font-medium" style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{status.label}</td>
-                        <td className="p-3 text-sm font-mono" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>{status.value}</td>
-                        <td className="p-3 text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>{status.sort_order}</td>
-                        <td className="p-3 text-sm">
+                        <td style={{ padding: 12, fontSize: 14, fontWeight: 500 }} style={{ color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>{status.label}</td>
+                        <td style={{ padding: 12, fontSize: 14, fontFamily: "ui-monospace, monospace" }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>{status.value}</td>
+                        <td style={{ padding: 12, fontSize: 14 }} style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>{status.sort_order}</td>
+                        <td style={{ padding: 12, fontSize: 14 }}>
                           <Toggle
                             isChecked={status.is_active}
                             onChange={() => handleToggleActive(status)}
                           />
                         </td>
-                        <td className="p-3 text-sm text-right">
-                          <div className="flex items-center justify-end gap-1">
+                        <td style={{ padding: 12, fontSize: 14, textAlign: "right" }}>
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 4 }}>
                             <Button appearance="subtle" onClick={() => openEditDialog(status)}>
                               <EditIcon label="" size="small" />
                             </Button>
@@ -291,8 +291,8 @@ export default function FeatureStatuses() {
                 {editingStatus ? 'Edit Feature Status' : 'Add Feature Status'}
               </DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
+            <div style={{ display: "flex", flexDirection: "column", gap: 16, paddingTop: 16, paddingBottom: 16 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <label htmlFor="label" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Display Label</label>
                 <Textfield
                   id="label"
@@ -302,7 +302,7 @@ export default function FeatureStatuses() {
                 />
               </div>
               {!editingStatus && (
-                <div className="space-y-2">
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   <label htmlFor="value" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Value (Key)</label>
                   <Textfield
                     id="value"
@@ -310,7 +310,7 @@ export default function FeatureStatuses() {
                     onChange={(e) => setFormData(prev => ({ ...prev, value: (e.target as HTMLInputElement).value }))}
                     placeholder="e.g., in_progress (auto-generated if empty)"
                   />
-                  <p className="text-xs" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
+                  <p style={{ fontSize: 12, color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>
                     Used internally as the database value. Auto-generated from label if left empty.
                   </p>
                 </div>

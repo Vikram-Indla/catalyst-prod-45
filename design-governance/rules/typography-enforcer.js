@@ -9,12 +9,24 @@ import path from 'path';
 class TypographyEnforcer {
   constructor() {
     this.violations = [];
+    // Per CLAUDE.md (2026-05-19), admin H1 is Jira-parity 24/653 — not the
+    // legacy 28/600. Each rule accepts an array of (fontSize, fontWeight)
+    // pairs so both the Jira-parity tokens AND older sweep tokens pass.
     this.rules = {
-      h1: { fontSize: '28px', fontWeight: '600' },
-      h2: { fontSize: '20px', fontWeight: '600' },
-      h3: { fontSize: '16px', fontWeight: '600' },
-      body: { fontSize: '14px', fontWeight: '400' },
-      small: { fontSize: '12px', fontWeight: '400' }
+      h1: [
+        { fontSize: '24px', fontWeight: '653' }, // Jira admin parity
+        { fontSize: '24px', fontWeight: '600' }, // acceptable alternate
+        { fontSize: '28px', fontWeight: '600' }, // legacy ADS scale
+      ],
+      h2: [
+        { fontSize: '20px', fontWeight: '653' },
+        { fontSize: '20px', fontWeight: '600' },
+        { fontSize: '16px', fontWeight: '653' }, // Jira section header (inside content panels)
+        { fontSize: '16px', fontWeight: '600' },
+      ],
+      h3: [{ fontSize: '16px', fontWeight: '600' }, { fontSize: '16px', fontWeight: '653' }, { fontSize: '14px', fontWeight: '600' }],
+      body: [{ fontSize: '14px', fontWeight: '400' }],
+      small: [{ fontSize: '12px', fontWeight: '400' }],
     };
   }
 
@@ -56,17 +68,33 @@ class TypographyEnforcer {
           const styleMatch = line.match(/style=\{?\s*{([^}]+)}\s*\}?/);
           if (styleMatch) {
             const styles = styleMatch[1];
-            const rule = this.rules[tag];
-            
-            if (!styles.includes(rule.fontSize) || !styles.includes(rule.fontWeight)) {
+            const rules = this.rules[tag];
+            // Match against ANY of the accepted rule pairs. Each rule pair
+            // is satisfied if BOTH its fontSize AND fontWeight appear in
+            // the inline style (in any order, with optional quotes).
+            const matchesAny = rules.some(r => {
+              // Accept fontSize: 24, fontSize: '24px', fontSize: "24px"
+              const sizeNum = r.fontSize.replace('px', '');
+              const sizeRe = new RegExp(
+                `fontSize\\s*:\\s*['"]?${sizeNum}(?:px)?['"]?`,
+              );
+              const weightRe = new RegExp(
+                `fontWeight\\s*:\\s*['"]?${r.fontWeight}['"]?`,
+              );
+              return sizeRe.test(styles) && weightRe.test(styles);
+            });
+            if (!matchesAny) {
+              const acceptedList = rules
+                .map(r => `${r.fontSize}/${r.fontWeight}`)
+                .join(' or ');
               this.violations.push({
                 file: filePath,
                 line: index + 1,
                 type: 'TYPOGRAPHY_MISMATCH',
                 tag: tag,
                 content: line.trim().substring(0, 80),
-                expected: `${rule.fontSize} / ${rule.fontWeight}`,
-                fix: `Apply ADS token: fontSize: '${rule.fontSize}', fontWeight: '${rule.fontWeight}'`
+                expected: acceptedList,
+                fix: `Apply ADS token: ${acceptedList}`,
               });
             }
           }

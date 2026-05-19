@@ -147,7 +147,7 @@ function InviteUserModal({ onClose }: { onClose: () => void }) {
       style={{
         position: 'fixed', inset: 0, zIndex: 10000,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'rgba(9, 30, 66, 0.54)',
+        background: 'var(--ds-blanket, rgba(9, 30, 66, 0.54))',
       }}
       onClick={onClose}
     >
@@ -162,7 +162,7 @@ function InviteUserModal({ onClose }: { onClose: () => void }) {
           maxHeight: 'calc(100vh - 80px)', overflow: 'hidden',
         }}
       >
-        <div style={{ padding: '20px 24px 16px', borderBottom: `1px solid ${token('color.border', '#EBECF0')}` }}>
+        <div style={{ padding: '24px 24px 16px', borderBottom: `1px solid ${token('color.border', '#EBECF0')}` }}>
           <h2 id="invite-user-modal-title" style={{ margin: 0, fontSize: 20, fontWeight: 500, color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))') }}>
             Invite User
           </h2>
@@ -420,7 +420,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
       <div
         aria-hidden="true"
         onClick={onClose}
-        style={{ position: 'fixed', inset: 0, zIndex: 9990, background: 'rgba(9, 30, 66, 0.32)' }}
+        style={{ position: 'fixed', inset: 0, zIndex: 9990, background: 'var(--ds-blanket, rgba(9, 30, 66, 0.32))' }}
       />
       {/* Slide-over panel */}
       <div
@@ -431,13 +431,13 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
           position: 'fixed', right: 0, top: 0, height: '100vh',
           width: 500, maxWidth: '100vw', zIndex: 9991,
           background: 'var(--ds-surface, #fff)',
-          boxShadow: '-4px 0 24px rgba(9,30,66,0.18)',
+          boxShadow: 'var(--ds-shadow-overlay, -4px 0 24px rgba(9,30,66,0.18))',
           display: 'flex', flexDirection: 'column',
         }}
       >
         {/* Header */}
         <div style={{
-          padding: '16px 20px', borderBottom: '1px solid var(--ds-border, #EBECF0)',
+          padding: '16px 24px', borderBottom: '1px solid var(--ds-border, #EBECF0)',
           display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0,
         }}>
           <CatalystAvatar
@@ -458,18 +458,18 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
           <button
             onClick={onClose}
             aria-label="Close panel"
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, borderRadius: 4, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', display: 'flex', alignItems: 'center' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, borderRadius: 4, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', display: 'flex', alignItems: 'center' }}
           >
             <CloseIcon label="Close" size="small" />
           </button>
         </div>
 
         {/* Scrollable body */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
 
           {/* Role */}
           <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 8 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', /* sentence-case per CLAUDE.md */ letterSpacing: '0.04em', marginBottom: 8 }}>
               Role
             </div>
             {isSuperAdmin ? (
@@ -491,7 +491,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
 
           {/* Module access */}
           <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', /* sentence-case per CLAUDE.md */ letterSpacing: '0.04em', marginBottom: 8 }}>
               Module Access
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 24px' }}>
@@ -521,7 +521,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
 
           {/* Account Info */}
           <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', /* sentence-case per CLAUDE.md */ letterSpacing: '0.04em', marginBottom: 8 }}>
               Account Info
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', rowGap: 8, columnGap: 16, fontSize: 13, alignItems: 'center' }}>
@@ -541,7 +541,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                       borderRadius: 3, cursor: busyAny ? 'not-allowed' : 'pointer',
                       fontSize: 11, fontWeight: 500,
                       color: isActive ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))',
-                      padding: '2px 8px', opacity: busyAny ? 0.5 : 1,
+                      padding: '4px 8px', opacity: busyAny ? 0.5 : 1,
                     }}
                   >
                     {suspending ? '…' : isActive ? 'Suspend' : 'Reactivate'}
@@ -564,12 +564,12 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
           {/* Security — only for non-self, non-super_admin */}
           {canModify && (
             <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))', /* sentence-case per CLAUDE.md */ letterSpacing: '0.04em', marginBottom: 8 }}>
                 Security
               </div>
 
               {/* Send password reset email */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Password reset email</div>
                   <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))' }}>Send a reset link to {user.email}</div>
@@ -585,7 +585,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
               </div>
 
               {/* Change password inline form */}
-              <div style={{ borderTop: '1px solid var(--ds-border-subtle, var(--cp-bg-sunken, #F4F5F7))', paddingTop: 10 }}>
+              <div style={{ borderTop: '1px solid var(--ds-border-subtle, var(--cp-bg-sunken, #F4F5F7))', paddingTop: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: pwOpen ? 12 : 0 }}>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Set new password</div>
@@ -640,7 +640,7 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
                         isInvalid={confirmPw.length > 0 && newPw !== confirmPw}
                       />
                       {confirmPw.length > 0 && newPw !== confirmPw && (
-                        <div style={{ fontSize: 11, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 3 }}>
+                        <div style={{ fontSize: 11, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 4 }}>
                           Passwords do not match
                         </div>
                       )}
@@ -664,18 +664,18 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '12px 20px', borderTop: '1px solid var(--ds-border, #EBECF0)', flexShrink: 0 }}>
+        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--ds-border, #EBECF0)', flexShrink: 0 }}>
           {/* Inline delete confirm */}
           {deletePhase === 'confirm' && (
             <div style={{
               background: 'var(--ds-background-danger, #FFEDEB)',
               border: '1px solid var(--ds-border-danger, #FF8F73)',
-              borderRadius: 4, padding: '10px 14px', marginBottom: 12,
+              borderRadius: 4, padding: '8px 16px', marginBottom: 16,
             }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-danger, #AE2A19)', marginBottom: 4 }}>
                 Delete {user.full_name || user.email}?
               </div>
-              <div style={{ fontSize: 12, color: 'var(--ds-text-danger, #AE2A19)', marginBottom: 10 }}>
+              <div style={{ fontSize: 12, color: 'var(--ds-text-danger, #AE2A19)', marginBottom: 8 }}>
                 This permanently removes their account. This cannot be undone.
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
@@ -752,18 +752,18 @@ function PeopleTableSkeleton() {
         <tbody>
           {Array.from({ length: 8 }).map((_, rowIdx) => (
             <tr key={rowIdx} style={{ borderBottom: '1px solid var(--ds-border-subtle, #F4F5F7)' }}>
-              <td style={{ padding: '10px 12px' }}>
+              <td style={{ padding: '12px 16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ ...SHIMMER, width: 24, height: 24, borderRadius: '50%' }} />
                   <div style={{ ...SHIMMER, width: 120, height: 12 }} />
                 </div>
               </td>
-              <td style={{ padding: '10px 12px' }}><div style={{ ...SHIMMER, width: 160, height: 12 }} /></td>
-              <td style={{ padding: '10px 12px' }}><div style={{ ...SHIMMER, width: 80, height: 18, borderRadius: 3 }} /></td>
-              <td style={{ padding: '10px 12px', textAlign: 'center' }}><div style={{ ...SHIMMER, width: 36, height: 18, borderRadius: 9, margin: '0 auto' }} /></td>
-              <td style={{ padding: '10px 12px' }}><div style={{ ...SHIMMER, width: 60, height: 18, borderRadius: 3 }} /></td>
-              <td style={{ padding: '10px 12px' }}><div style={{ ...SHIMMER, width: 72, height: 12 }} /></td>
-              <td style={{ padding: '10px 4px' }}><div style={{ ...SHIMMER, width: 16, height: 16, borderRadius: 3, margin: '0 auto' }} /></td>
+              <td style={{ padding: '12px 16px' }}><div style={{ ...SHIMMER, width: 160, height: 12 }} /></td>
+              <td style={{ padding: '12px 16px' }}><div style={{ ...SHIMMER, width: 80, height: 18, borderRadius: 3 }} /></td>
+              <td style={{ padding: '12px 16px', textAlign: 'center' }}><div style={{ ...SHIMMER, width: 36, height: 18, borderRadius: 9, margin: '0 auto' }} /></td>
+              <td style={{ padding: '12px 16px' }}><div style={{ ...SHIMMER, width: 60, height: 18, borderRadius: 3 }} /></td>
+              <td style={{ padding: '12px 16px' }}><div style={{ ...SHIMMER, width: 72, height: 12 }} /></td>
+              <td style={{ padding: '8px 4px' }}><div style={{ ...SHIMMER, width: 16, height: 16, borderRadius: 3, margin: '0 auto' }} /></td>
             </tr>
           ))}
         </tbody>
@@ -893,7 +893,7 @@ function PeopleTab() {
                   onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, var(--cp-bg-sunken, #F4F5F7))')}
                   onMouseLeave={e => (e.currentTarget.style.background = '')}
                 >
-                  <td style={{ padding: '10px 12px', fontWeight: 500 }}>
+                  <td style={{ padding: '12px 16px', fontWeight: 500 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <CatalystAvatar
                         name={u.full_name || u.email || '?'}
@@ -903,33 +903,33 @@ function PeopleTab() {
                       {u.full_name || '—'}
                     </div>
                   </td>
-                  <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtle)' }}>{u.email || '—'}</td>
-                  <td style={{ padding: '10px 12px' }}>
+                  <td style={{ padding: '12px 16px', color: 'var(--ds-text-subtle)' }}>{u.email || '—'}</td>
+                  <td style={{ padding: '12px 16px' }}>
                     {u.role ? (
                       <Lozenge appearance={ROLE_APPEARANCE[u.role] || 'default'}>
                         {u.role.replace(/_/g, ' ')}
                       </Lozenge>
                     ) : '—'}
                   </td>
-                  <td style={{ padding: '10px 12px', textAlign: 'center' }}>
+                  <td style={{ padding: '12px 16px', textAlign: 'center' }}>
                     <span style={{
                       display: 'inline-block',
                       background: modCount > 0 ? 'var(--ds-background-neutral, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))' : 'var(--ds-background-neutral-subtle, var(--cp-bg-sunken, #F4F5F7))',
                       color: modCount > 0 ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' : 'var(--ds-text-disabled, #A5ADBA)',
-                      borderRadius: 10, padding: '1px 8px', fontSize: 12, fontWeight: 500,
+                      borderRadius: 10, padding: '0 8px', fontSize: 12, fontWeight: 500,
                     }}>
                       {modCount}/{MODULE_ITEMS.length}
                     </span>
                   </td>
-                  <td style={{ padding: '10px 12px' }}>
+                  <td style={{ padding: '12px 16px' }}>
                     {isActiveRow
                       ? <Lozenge appearance="success">Active</Lozenge>
                       : <Lozenge appearance="removed">Suspended</Lozenge>}
                   </td>
-                  <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtle)', fontSize: 12 }}>
+                  <td style={{ padding: '12px 16px', color: 'var(--ds-text-subtle)', fontSize: 12 }}>
                     {u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}
                   </td>
-                  <td style={{ padding: '10px 4px' }} onClick={e => { e.stopPropagation(); setEditUser(u); }}>
+                  <td style={{ padding: '8px 4px' }} onClick={e => { e.stopPropagation(); setEditUser(u); }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-text-subtle, var(--cp-text-secondary, #6B778C))' }}>
                       <EditIcon label="Edit user" size="small" />
                     </div>
@@ -1040,10 +1040,10 @@ function InvitationsTab() {
               const loading = actionLoading[inv.id];
               return (
                 <tr key={inv.id} style={{ borderBottom: '1px solid var(--ds-border-subtle, var(--cp-bg-sunken, #F4F5F7))' }}>
-                  <td style={{ padding: '10px 12px', fontWeight: 500 }}>{inv.email}</td>
-                  <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtle)', fontSize: 12 }}>{new Date(inv.created_at).toLocaleDateString()}</td>
-                  <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtle)', fontSize: 12 }}>{new Date(inv.expires_at).toLocaleDateString()}</td>
-                  <td style={{ padding: '10px 12px' }}>
+                  <td style={{ padding: '12px 16px', fontWeight: 500 }}>{inv.email}</td>
+                  <td style={{ padding: '12px 16px', color: 'var(--ds-text-subtle)', fontSize: 12 }}>{new Date(inv.created_at).toLocaleDateString()}</td>
+                  <td style={{ padding: '12px 16px', color: 'var(--ds-text-subtle)', fontSize: 12 }}>{new Date(inv.expires_at).toLocaleDateString()}</td>
+                  <td style={{ padding: '12px 16px' }}>
                     {inv.accepted_at ? (
                       <Lozenge appearance="success">Accepted</Lozenge>
                     ) : expired ? (
@@ -1052,7 +1052,7 @@ function InvitationsTab() {
                       <Lozenge appearance="inprogress">Pending</Lozenge>
                     )}
                   </td>
-                  <td style={{ padding: '10px 12px' }}>
+                  <td style={{ padding: '12px 16px' }}>
                     {inv.accepted_at ? (
                       <span style={{ fontSize: 12, color: 'var(--ds-text-disabled, #A5ADBA)' }}>—</span>
                     ) : (
@@ -1063,7 +1063,7 @@ function InvitationsTab() {
                             disabled={!!loading}
                             style={{
                               background: 'none', border: '1px solid var(--ds-border, #EBECF0)',
-                              borderRadius: 3, padding: '3px 8px', fontSize: 12, fontWeight: 500,
+                              borderRadius: 3, padding: '4px 8px', fontSize: 12, fontWeight: 500,
                               color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
                               cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.5 : 1,
                             }}
@@ -1077,7 +1077,7 @@ function InvitationsTab() {
                             disabled={!!loading}
                             style={{
                               background: 'none', border: '1px solid var(--ds-border-danger, #FF8F73)',
-                              borderRadius: 3, padding: '3px 8px', fontSize: 12, fontWeight: 500,
+                              borderRadius: 3, padding: '4px 8px', fontSize: 12, fontWeight: 500,
                               color: 'var(--ds-text-danger, #AE2A19)',
                               cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.5 : 1,
                             }}
@@ -1132,14 +1132,14 @@ function EmailLogTab() {
             <tr><td colSpan={4} style={{ padding: 32, textAlign: 'center', color: 'var(--ds-text-subtle)' }}>No emails sent yet</td></tr>
           ) : logs.map(log => (
             <tr key={log.id} style={{ borderBottom: '1px solid var(--ds-border-subtle, var(--cp-bg-sunken, #F4F5F7))' }}>
-              <td style={{ padding: '10px 12px' }}>{log.to_email}</td>
-              <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtle)' }}>{log.subject}</td>
-              <td style={{ padding: '10px 12px' }}>
+              <td style={{ padding: '12px 16px' }}>{log.to_email}</td>
+              <td style={{ padding: '12px 16px', color: 'var(--ds-text-subtle)' }}>{log.subject}</td>
+              <td style={{ padding: '12px 16px' }}>
                 <Lozenge appearance={log.status === 'sent' ? 'success' : log.status === 'failed' ? 'removed' : 'default'}>
                   {log.status}
                 </Lozenge>
               </td>
-              <td style={{ padding: '10px 12px', color: 'var(--ds-text-subtle)', fontSize: 12 }}>
+              <td style={{ padding: '12px 16px', color: 'var(--ds-text-subtle)', fontSize: 12 }}>
                 {new Date(log.created_at).toLocaleString()}
               </td>
             </tr>
