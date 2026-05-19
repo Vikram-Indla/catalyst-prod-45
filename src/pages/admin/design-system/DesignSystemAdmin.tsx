@@ -1,12 +1,18 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Select from '@atlaskit/select';
-import Button from '@atlaskit/button';
+import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import SearchIcon from '@atlaskit/icon/core/search';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import CrossIcon from '@atlaskit/icon/core/cross';
+import CopyIcon from '@atlaskit/icon/core/copy';
+import LinkExternalIcon from '@atlaskit/icon/core/link-external';
 import {
   getModuleViolations,
   getAuditHistory,
   runAudit,
+  markViolationResolved,
+  reopenViolation,
   type Module,
   type Violation,
   type AuditTrail,
@@ -100,6 +106,74 @@ export default function DesignSystemAdmin() {
   const [isAuditing, setIsAuditing] = useState(false);
   const [auditMessage, setAuditMessage] = useState<AuditMessage | null>(null);
   const [filterQuery, setFilterQuery] = useState('');
+  const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
+  const [showResolved, setShowResolved] = useState(false);
+
+  const toggleExpanded = (id: number) => {
+    setExpandedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setAuditMessage({ type: 'info', text: 'Copied to clipboard.' });
+      setTimeout(() => setAuditMessage(null), 1500);
+    } catch {
+      setAuditMessage({
+        type: 'error',
+        text: 'Could not access clipboard. Please copy manually.',
+      });
+    }
+  };
+
+  const copyLocation = (v: Violation) => {
+    const loc = v.file_path
+      ? `${v.file_path}${v.line_number ? ':' + v.line_number : ''}`
+      : v.surface_id;
+    copyToClipboard(loc);
+  };
+
+  const handleResolve = async (id: number) => {
+    try {
+      await markViolationResolved(id, 'resolved');
+      // Optimistically remove from the open list.
+      setViolations(prev => prev.filter(v => v.id !== id));
+      setAuditMessage({
+        type: 'success',
+        text: 'Violation marked fixed. Re-run the audit to verify.',
+      });
+    } catch (err) {
+      setAuditMessage({
+        type: 'error',
+        text: `Could not mark resolved: ${
+          err instanceof Error ? err.message : 'Unknown error'
+        }`,
+      });
+    }
+  };
+
+  const handleReopen = async (id: number) => {
+    try {
+      await reopenViolation(id);
+      // Refetch so the row reappears in the open list.
+      if (selectedModule) {
+        const data = await getModuleViolations(selectedModule);
+        setViolations(data || []);
+      }
+    } catch (err) {
+      setAuditMessage({
+        type: 'error',
+        text: `Could not reopen: ${
+          err instanceof Error ? err.message : 'Unknown error'
+        }`,
+      });
+    }
+  };
 
   // Fetch violations and audit history when module changes.
   useEffect(() => {
@@ -453,17 +527,17 @@ export default function DesignSystemAdmin() {
             <thead>
               <tr>
                 {[
-                  { key: 'rule', label: 'Rule', width: '28%' },
+                  { key: 'rule', label: 'Rule', width: '24%' },
                   { key: 'sev', label: 'Severity', width: '90px' },
                   { key: 'desc', label: 'Description', width: 'auto' },
-                  { key: 'surface', label: 'Surface', width: '130px' },
-                  { key: 'date', label: 'Created', width: '140px' },
+                  { key: 'location', label: 'Location', width: '220px' },
+                  { key: 'actions', label: 'Actions', width: '140px' },
                 ].map(col => (
                   <th
                     key={col.key}
                     scope="col"
                     style={{
-                      textAlign: 'left',
+                      textAlign: col.key === 'actions' ? 'right' : 'left',
                       fontSize: 12,
                       fontWeight: 653,
                       color: 'rgb(80, 82, 88)',
@@ -481,62 +555,291 @@ export default function DesignSystemAdmin() {
               </tr>
             </thead>
             <tbody>
-              {visibleViolations.map(v => (
-                <tr key={v.id}>
-                  <td
-                    style={{
-                      padding: '12px 12px 12px 0',
-                      fontSize: 13,
-                      fontFamily:
-                        'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
-                      color: 'rgb(41, 42, 46)',
-                      borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
-                    }}
-                  >
-                    {v.rule_name}
-                  </td>
-                  <td
-                    style={{
-                      padding: '12px 12px 12px 0',
-                      borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
-                    }}
-                  >
-                    <span style={getSeverityBadgeStyle(v.severity)}>
-                      {v.severity}
-                    </span>
-                  </td>
-                  <td
-                    style={{
-                      padding: '12px 12px 12px 0',
-                      fontSize: 14,
-                      color: 'rgb(41, 42, 46)',
-                      borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
-                    }}
-                  >
-                    {v.description}
-                  </td>
-                  <td
-                    style={{
-                      padding: '12px 12px 12px 0',
-                      fontSize: 14,
-                      color: 'rgb(80, 82, 88)',
-                      borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
-                    }}
-                  >
-                    {v.surface_id}
-                  </td>
-                  <td
-                    style={{
-                      padding: '12px 12px 12px 0',
-                      fontSize: 13,
-                      color: 'rgb(80, 82, 88)',
-                      borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
-                    }}
-                  >
-                    {new Date(v.created_at).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))}
+              {visibleViolations.map(v => {
+                const isExpanded = expandedIds.has(v.id);
+                const hasDetails = Boolean(
+                  v.file_path || v.code_snippet || v.suggested_fix,
+                );
+                return (
+                  <React.Fragment key={v.id}>
+                    <tr
+                      style={{ cursor: hasDetails ? 'pointer' : 'default' }}
+                      onClick={() => hasDetails && toggleExpanded(v.id)}
+                    >
+                      <td
+                        style={{
+                          padding: '12px 12px 12px 0',
+                          fontSize: 13,
+                          fontFamily:
+                            'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
+                          color: 'rgb(41, 42, 46)',
+                          borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
+                        }}
+                      >
+                        {hasDetails && (
+                          <span
+                            aria-hidden
+                            style={{
+                              display: 'inline-block',
+                              width: 12,
+                              marginRight: 4,
+                              color: 'rgb(107,110,118)',
+                              transform: isExpanded
+                                ? 'rotate(90deg)'
+                                : 'rotate(0deg)',
+                              transition: 'transform 120ms ease',
+                            }}
+                          >
+                            ▸
+                          </span>
+                        )}
+                        {v.rule_name}
+                      </td>
+                      <td
+                        style={{
+                          padding: '12px 12px 12px 0',
+                          borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
+                        }}
+                      >
+                        <span style={getSeverityBadgeStyle(v.severity)}>
+                          {v.severity}
+                        </span>
+                      </td>
+                      <td
+                        style={{
+                          padding: '12px 12px 12px 0',
+                          fontSize: 14,
+                          color: 'rgb(41, 42, 46)',
+                          borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
+                        }}
+                      >
+                        {v.description}
+                      </td>
+                      <td
+                        style={{
+                          padding: '12px 12px 12px 0',
+                          fontSize: 13,
+                          fontFamily:
+                            'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
+                          color: 'rgb(80, 82, 88)',
+                          borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
+                          maxWidth: 220,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                        title={
+                          v.file_path
+                            ? `${v.file_path}${
+                                v.line_number ? ':' + v.line_number : ''
+                              }`
+                            : v.surface_id
+                        }
+                      >
+                        {v.file_path ? (
+                          <>
+                            {v.file_path.split('/').pop()}
+                            {v.line_number ? `:${v.line_number}` : ''}
+                          </>
+                        ) : (
+                          <span style={{ color: 'rgb(107,110,118)' }}>
+                            {v.surface_id}
+                          </span>
+                        )}
+                      </td>
+                      <td
+                        style={{
+                          padding: '8px 0 8px 0',
+                          textAlign: 'right',
+                          borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
+                        }}
+                        onClick={e => e.stopPropagation()}
+                      >
+                        <div
+                          style={{
+                            display: 'inline-flex',
+                            gap: 4,
+                            alignItems: 'center',
+                          }}
+                        >
+                          {(v.file_path || v.code_snippet) && (
+                            <IconButton
+                              icon={CopyIcon}
+                              label="Copy file:line"
+                              appearance="subtle"
+                              onClick={() => copyLocation(v)}
+                              spacing="compact"
+                            />
+                          )}
+                          {v.status === 'resolved' ||
+                          v.status === 'wont_fix' ? (
+                            <Button
+                              appearance="subtle"
+                              onClick={() => handleReopen(v.id)}
+                              spacing="compact"
+                            >
+                              Reopen
+                            </Button>
+                          ) : (
+                            <Button
+                              appearance="default"
+                              iconBefore={CheckMarkIcon}
+                              onClick={() => handleResolve(v.id)}
+                              spacing="compact"
+                            >
+                              Mark fixed
+                            </Button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                    {isExpanded && hasDetails && (
+                      <tr>
+                        <td
+                          colSpan={5}
+                          style={{
+                            padding: '0 12px 16px 16px',
+                            background: 'rgba(9, 30, 66, 0.03)',
+                            borderBottom: '1px solid rgba(11, 18, 14, 0.08)',
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: 'grid',
+                              gridTemplateColumns: '120px 1fr',
+                              gap: 8,
+                              fontSize: 13,
+                              paddingTop: 12,
+                            }}
+                          >
+                            {v.file_path && (
+                              <>
+                                <div
+                                  style={{
+                                    color: 'rgb(80,82,88)',
+                                    fontWeight: 500,
+                                  }}
+                                >
+                                  Location
+                                </div>
+                                <div
+                                  style={{
+                                    fontFamily:
+                                      'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
+                                    color: 'rgb(41,42,46)',
+                                  }}
+                                >
+                                  {v.file_path}
+                                  {v.line_number ? `:${v.line_number}` : ''}
+                                  <button
+                                    onClick={() => copyLocation(v)}
+                                    style={{
+                                      marginLeft: 8,
+                                      background: 'transparent',
+                                      border: '1px solid rgba(11,18,14,0.14)',
+                                      borderRadius: 3,
+                                      padding: '0 6px',
+                                      fontSize: 11,
+                                      cursor: 'pointer',
+                                      color: 'rgb(24,104,219)',
+                                    }}
+                                  >
+                                    Copy
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                            {v.code_snippet && (
+                              <>
+                                <div
+                                  style={{
+                                    color: 'rgb(80,82,88)',
+                                    fontWeight: 500,
+                                  }}
+                                >
+                                  Offending code
+                                </div>
+                                <pre
+                                  style={{
+                                    margin: 0,
+                                    padding: 8,
+                                    background: '#FFFFFF',
+                                    border: '1px solid rgba(11,18,14,0.14)',
+                                    borderRadius: 3,
+                                    fontFamily:
+                                      'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
+                                    fontSize: 12,
+                                    overflowX: 'auto',
+                                    color: 'rgb(41,42,46)',
+                                  }}
+                                >
+                                  {v.code_snippet}
+                                </pre>
+                              </>
+                            )}
+                            {v.suggested_fix && (
+                              <>
+                                <div
+                                  style={{
+                                    color: 'rgb(80,82,88)',
+                                    fontWeight: 500,
+                                  }}
+                                >
+                                  Suggested fix
+                                </div>
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'flex-start',
+                                    gap: 8,
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      flex: 1,
+                                      color: 'rgb(41,42,46)',
+                                    }}
+                                  >
+                                    {v.suggested_fix}
+                                  </div>
+                                  <button
+                                    onClick={() =>
+                                      copyToClipboard(v.suggested_fix!)
+                                    }
+                                    style={{
+                                      background: 'transparent',
+                                      border: '1px solid rgba(11,18,14,0.14)',
+                                      borderRadius: 3,
+                                      padding: '2px 8px',
+                                      fontSize: 11,
+                                      cursor: 'pointer',
+                                      color: 'rgb(24,104,219)',
+                                      flexShrink: 0,
+                                    }}
+                                  >
+                                    Copy fix
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                            <div
+                              style={{
+                                color: 'rgb(80,82,88)',
+                                fontWeight: 500,
+                              }}
+                            >
+                              Created
+                            </div>
+                            <div style={{ color: 'rgb(80,82,88)' }}>
+                              {new Date(v.created_at).toLocaleString()}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
             </tbody>
           </table>
         </div>
