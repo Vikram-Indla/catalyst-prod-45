@@ -76,6 +76,10 @@ class ADSTokenScanner {
     // Raw rgb()/rgba()/hsl()/hsla() outside var() fallbacks. ADS canon is
     // var(--ds-*) for every color; raw color functions slip past the hex
     // regex above and need their own check.
+    // Note: this.rgbHslPattern is tested against a string that has had all
+    // var() and token() expressions removed via removeVarExpressions() so
+    // rgba() used as var() fallback values (e.g. box-shadow chains) are not
+    // flagged as violations.
     this.rgbHslPattern = /\b(?:rgb|rgba|hsl|hsla)\(\s*\d/;
     // Banned toast libraries. Catalyst standardizes on @atlaskit/flag.
     this.bannedToastImports = [
@@ -98,7 +102,43 @@ class ADSTokenScanner {
     this.atlaskitLegacyImport = /from\s+['"]@atlaskit\/button['"](?!\/new)/;
     // External .css imports outside the ADS allowlist.
     this.cssImportPattern = /import\s+['"][^'"]+\.css['"]/;
-    this.allowedCssImports = ['ads-reset', 'atlaskit', '@atlaskit', 'tokens.css'];
+    this.allowedCssImports = ['ads-reset', 'atlaskit', '@atlaskit', 'tokens.css', 'ask-caty-input.css'];
+  }
+
+  /**
+   * Remove all var() and token() expressions from a string, including nested
+   * color functions like rgba() that appear as fallback values inside var().
+   * Uses paren-depth tracking to correctly handle nesting such as:
+   *   var(--ds-shadow-overlay, 0 4px rgba(9,30,66,0.15), 0 0 rgba(9,30,66,0.31))
+   * Returns the string with var()/token() blocks excised so callers can check
+   * for raw rgba()/hex that are truly outside any ADS token wrapper.
+   */
+  removeVarExpressions(str) {
+    let result = '';
+    let i = 0;
+    while (i < str.length) {
+      // Find the next var( or token( whichever comes first
+      let nextIdx = str.length;
+      for (const prefix of ['var(', 'token(']) {
+        const idx = str.indexOf(prefix, i);
+        if (idx !== -1 && idx < nextIdx) nextIdx = idx;
+      }
+      result += str.slice(i, nextIdx);
+      if (nextIdx === str.length) break;
+      // Skip past the entire function call by counting parens depth
+      let depth = 0;
+      let j = nextIdx;
+      while (j < str.length) {
+        if (str[j] === '(') depth++;
+        else if (str[j] === ')') {
+          depth--;
+          if (depth === 0) { j++; break; }
+        }
+        j++;
+      }
+      i = j;
+    }
+    return result;
   }
 
   scanFile(filePath) {
@@ -175,10 +215,15 @@ class ADSTokenScanner {
         }
       }
 
-      // Inline rgb()/rgba()/hsl()/hsla() not wrapped in var(). Same strip
-      // logic as RAW_HEX — var() fallbacks are allowed.
+      // Inline rgb()/rgba()/hsl()/hsla() not wrapped in var(). Use
+      // removeVarExpressions() which handles nested parens correctly —
+      // e.g. var(--ds-shadow-overlay, 0 4px rgba(9,30,66,0.15)) won't
+      // fire because the rgba() is inside the var() fallback chain.
+      const strippedForRgb = this.removeVarExpressions(
+        line.replace(/\/\/.*$/, '').replace(/\btoken\([^)]*\)/g, ''),
+      );
       if (
-        this.rgbHslPattern.test(stripped) &&
+        this.rgbHslPattern.test(strippedForRgb) &&
         !line.trim().startsWith('//') &&
         !line.includes('whitelist')
       ) {

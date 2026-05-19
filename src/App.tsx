@@ -143,7 +143,7 @@ function App() {
         <NavigationProvider>
           <ProcessStepsProvider>
           <CatalystToastProvider position="top-right" maxToasts={5}>
-              <BrowserRouter>
+              <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
               <Routes>
                 <Route path="/auth" element={<S><CatalystLoginPageLazy /></S>} />
                 <Route path="/auth/slack/callback" element={<S><SlackOAuthCallback /></S>} />

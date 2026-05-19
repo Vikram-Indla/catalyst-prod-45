@@ -10,12 +10,15 @@ import { WorkItemStatusLozenge } from '@/components/workflow';
 import type { WorkItem } from '@/types/workItem.types';
 
 /* ── Priority SVG icons (Jira-native) ── */
+const P_DANGER = 'var(--ds-icon-danger, #FF5630)';
+const P_WARNING = 'var(--ds-icon-warning, #FFAB00)';
+const P_INFO = 'var(--ds-icon-information, #2684FF)';
 const PRIORITY_SVG: Record<string, React.ReactNode> = {
-  highest: <svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 8l5-5 5 5" fill="none" stroke="#FF5630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 12l5-5 5 5" fill="none" stroke="#FF5630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  high: <svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 10l5-5 5 5" fill="none" stroke="#FF5630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  medium: <svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 6h10" fill="none" stroke="#FFAB00" strokeWidth="2" strokeLinecap="round"/><path d="M3 10h10" fill="none" stroke="#FFAB00" strokeWidth="2" strokeLinecap="round"/></svg>,
-  low: <svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 6l5 5 5-5" fill="none" stroke="#2684FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  lowest: <svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 4l5 5 5-5" fill="none" stroke="#2684FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 8l5 5 5-5" fill="none" stroke="#2684FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  highest: <svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 8l5-5 5 5" fill="none" stroke={P_DANGER} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 12l5-5 5 5" fill="none" stroke={P_DANGER} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  high: <svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 10l5-5 5 5" fill="none" stroke={P_DANGER} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  medium: <svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 6h10" fill="none" stroke={P_WARNING} strokeWidth="2" strokeLinecap="round"/><path d="M3 10h10" fill="none" stroke={P_WARNING} strokeWidth="2" strokeLinecap="round"/></svg>,
+  low: <svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 6l5 5 5-5" fill="none" stroke={P_INFO} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  lowest: <svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 4l5 5 5-5" fill="none" stroke={P_INFO} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 8l5 5 5-5" fill="none" stroke={P_INFO} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
 };
 
 function capitalize(s: string): string {
@@ -26,7 +29,14 @@ function getInitials(name: string): string {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 }
 
-const AVATAR_COLORS = ['#6554C0', '#2684FF', '#36B37E', '#FF5630', '#FFAB00', '#00B8D9'];
+const AVATAR_COLORS = [
+  'var(--ds-background-accent-purple-subtle, #6554C0)',
+  'var(--ds-background-accent-blue-subtle, #2684FF)',
+  'var(--ds-background-accent-green-subtle, #36B37E)',
+  'var(--ds-background-accent-red-subtle, #FF5630)',
+  'var(--ds-background-accent-yellow-subtle, #FFAB00)',
+  'var(--ds-background-accent-teal-subtle, #00B8D9)',
+];
 function hashColor(name: string): string {
   let h = 0;
   for (let i = 0; i < name.length; i++) h = ((h << 5) - h + name.charCodeAt(i)) | 0;
@@ -162,7 +172,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
             style={{
               width: '100%',
               height: 32,
-              padding: '0 10px 0 30px',
+              padding: '0 8px 0 32px',
               border: `1px solid ${T.borderColor}`,
               borderRadius: 4,
               fontSize: 13,
@@ -180,7 +190,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
           onChange={e => handleStatusChange(e.target.value)}
           style={{
             height: 32,
-            padding: '0 28px 0 10px',
+            padding: '0 32px 0 8px',
             border: `1px solid ${T.borderColor}`,
             borderRadius: 4,
             fontSize: 13,
@@ -209,7 +219,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
               borderRadius: 3,
               fontSize: 11, fontWeight: 600,
               color: sortBy === 'updated' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.textSecondary,
-              background: sortBy === 'updated' ? 'rgba(37,99,235,0.06)' : T.white,
+              background: sortBy === 'updated' ? 'var(--ds-background-selected, rgba(37,99,235,0.06))' : T.white,
               cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
           >
@@ -223,7 +233,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
               borderRadius: 3,
               fontSize: 11, fontWeight: 600,
               color: sortBy === 'created' ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : T.textSecondary,
-              background: sortBy === 'created' ? 'rgba(37,99,235,0.06)' : T.white,
+              background: sortBy === 'created' ? 'var(--ds-background-selected, rgba(37,99,235,0.06))' : T.white,
               cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
           >
@@ -240,12 +250,12 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
         <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
           <thead>
             <tr style={{ background: T.headerBg, borderBottom: `2px solid ${T.borderColor}` }}>
-              <th style={{ ...thStyle, width: 100 }}>KEY</th>
-              <th style={{ ...thStyle, width: '40%' }}>SUMMARY</th>
-              <th style={{ ...thStyle, width: 56, textAlign: 'center' }}>T</th>
-              <th style={{ ...thStyle, width: 140 }}>STATUS</th>
-              <th style={{ ...thStyle, width: 40, textAlign: 'center' }}>P</th>
-              <th style={{ ...thStyle, width: 180 }}>ASSIGNEE</th>
+              <th style={{ ...thStyle, width: 100 }}>Key</th>
+              <th style={{ ...thStyle, width: '40%' }}>Summary</th>
+              <th style={{ ...thStyle, width: 56, textAlign: 'center' }}>Type</th>
+              <th style={{ ...thStyle, width: 140 }}>Status</th>
+              <th style={{ ...thStyle, width: 40, textAlign: 'center' }}>Priority</th>
+              <th style={{ ...thStyle, width: 180 }}>Assignee</th>
             </tr>
           </thead>
           <tbody>
@@ -346,7 +356,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
       {totalPages > 1 && (
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '6px 16px',
+          padding: '8px 16px',
           borderTop: `0.75px solid ${T.borderColor}`,
           background: T.white,
           flexShrink: 0,
@@ -392,19 +402,17 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
 
 /* ── Styles ── */
 const thStyle: React.CSSProperties = {
-  padding: '10px 12px',
+  padding: '8px 12px',
   fontSize: 11,
-  fontWeight: 700,
-  textTransform: 'uppercase',
-  letterSpacing: '0.04em',
-  color: 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))',
+  fontWeight: 653,
+  color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #44546F))',
   fontFamily: 'var(--cp-font-body)',
   whiteSpace: 'nowrap',
   textAlign: 'left',
   position: 'sticky',
   top: 0,
   zIndex: 1,
-  background: '#F7F8F9',
+  background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
 };
 
 const tdStyle: React.CSSProperties = {
@@ -431,7 +439,7 @@ function PaginationBtn({ children, disabled, active, onClick }: {
         borderRadius: 3,
         fontSize: 12, fontWeight: active ? 600 : 400,
         color: disabled ? 'var(--cp-text-muted, #C1C7CD)' : active ? 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))' : 'var(--cp-text-secondary, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))',
-        background: active ? 'rgba(37,99,235,0.06)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
+        background: active ? 'var(--ds-background-selected, rgba(37,99,235,0.06))' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
         cursor: disabled ? 'default' : 'pointer',
         fontFamily: 'var(--cp-font-body)',
         opacity: disabled ? 0.5 : 1,

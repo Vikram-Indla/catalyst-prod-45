@@ -85,6 +85,36 @@ function devDepsWatcher(): Plugin {
  * These exports are only used internally by the editor plugins themselves,
  * not by our application source code.
  */
+/**
+ * EDITOR-TABLES CELL-SELECTION DEDUP
+ *
+ * @atlaskit/editor-tables/cell-selection calls Selection.jsonID('cell', CellSelection)
+ * at module init time — the same JSON ID that Tiptap's prosemirror-tables already
+ * registers at app boot. The second registration throws:
+ *   RangeError: Duplicate use of selection JSON ID cell
+ *
+ * Fix: transform the cell-selection module at serve/build time to comment out the
+ * duplicate registration. Both editors still share the same CellSelection class via
+ * the prosemirror-state module; only the redundant re-registration is removed.
+ */
+function editorTablesCellSelectionDedup(): Plugin {
+  return {
+    name: 'editor-tables-cell-selection-dedup',
+    enforce: 'pre',
+    transform(code, id) {
+      if (id.includes('@atlaskit/editor-tables') && id.includes('cell-selection')) {
+        // Remove the duplicate Selection.jsonID('cell', ...) registration line.
+        // The prosemirror-tables package (loaded by Tiptap at boot) already
+        // registers this ID; a second call from editor-tables throws RangeError.
+        return code.replace(
+          /^Selection\.jsonID\s*\(\s*['"]cell['"]\s*,\s*CellSelection\s*\)\s*;?\s*$/m,
+          '// Selection.jsonID("cell", CellSelection) — suppressed: already registered by prosemirror-tables (Tiptap)',
+        );
+      }
+    },
+  };
+}
+
 function adfSchemaStagePatcher(): Plugin {
   const adfSchemaPath = path.resolve(__dirname, 'node_modules/@atlaskit/adf-schema/dist/esm/index.js');
 
@@ -243,6 +273,7 @@ export default defineConfig(({ mode, command }) => {
 
   },
   plugins: [
+    editorTablesCellSelectionDedup(),
     adfSchemaStagePatcher(),
     atlaskitSubpathResolver(),
     isBuild ? skipHeavyModules() : null,
@@ -348,6 +379,7 @@ export default defineConfig(({ mode, command }) => {
       'prosemirror-view',
       'prosemirror-transform',
       'prosemirror-tables',
+      '@atlaskit/editor-tables',
       'prosemirror-keymap',
       'prosemirror-commands',
       'prosemirror-history',
@@ -462,6 +494,34 @@ export default defineConfig(({ mode, command }) => {
       'prosemirror-gapcursor',
       'prosemirror-utils',
     ],
+    // Mirror the Vite adfSchemaStagePatcher for esbuild's pre-bundling pass.
+    // esbuild runs before Vite plugins, so the Rollup load-hook patcher can't
+    // intercept @atlaskit/adf-schema during dep optimization. Without this,
+    // editor-plugin-list + editor-plugin-tasks-and-decisions fail to resolve
+    // listItemWithFlexibleFirstChildStage0 / taskListWithFlexibleFirstChildStage0.
+    esbuildOptions: {
+      plugins: [
+        {
+          name: 'adf-schema-stage0-patcher-esbuild',
+          setup(build: any) {
+            build.onLoad(
+              { filter: /adf-schema[/\\]dist[/\\]esm[/\\]index\.js$/ },
+              (args: any) => {
+                if (!fs.existsSync(args.path)) return null;
+                const original = fs.readFileSync(args.path, 'utf-8');
+                return {
+                  contents:
+                    original +
+                    '\nexport const listItemWithFlexibleFirstChildStage0 = undefined;\n' +
+                    'export const taskListWithFlexibleFirstChildStage0 = undefined;\n',
+                  loader: 'js',
+                };
+              },
+            );
+          },
+        },
+      ],
+    },
   },
   build: {
     sourcemap: false,

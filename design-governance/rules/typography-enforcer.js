@@ -93,15 +93,21 @@ class TypographyEnforcer {
         });
       }
 
-      // Check for font-size hardcoding
-      if (line.includes('fontSize:') && line.includes('px') && !line.includes('var(')) {
-        this.violations.push({
-          file: filePath,
-          line: index + 1,
-          type: 'HARDCODED_FONTSIZE',
-          content: line.trim(),
-          fix: 'Use ADS typography token or named size from ads-config.json'
-        });
+      // Check for font-size hardcoding. Only flag when the fontSize VALUE
+      // itself uses a px literal — e.g. `fontSize: '14px'`. Do NOT fire on
+      // lines where px appears only in unrelated properties on the same line
+      // (e.g. lineHeight: '20px' on the same line as fontSize: 14).
+      if (line.includes('fontSize:') && !line.includes('var(')) {
+        const fsSizeMatch = line.match(/fontSize:\s*['"](\d+px)['"]/);
+        if (fsSizeMatch) {
+          this.violations.push({
+            file: filePath,
+            line: index + 1,
+            type: 'HARDCODED_FONTSIZE',
+            content: line.trim(),
+            fix: 'Use ADS typography token or named size from ads-config.json'
+          });
+        }
       }
 
       // Check for hardcoded fontWeight. Allowed: the standard 100-step CSS

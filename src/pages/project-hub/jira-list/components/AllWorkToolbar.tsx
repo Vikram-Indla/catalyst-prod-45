@@ -66,7 +66,9 @@ import { statusToLozenge } from "@/modules/project-work-hub/utils/statusToLozeng
    built by `scripts/download-avatars.mjs`. Returns null when no local file
    matches; Atlaskit Avatar then falls back to initials. */
 import { resolveAvatarUrl } from "@/lib/avatars";
-import { toast } from "sonner";
+import Flag, { FlagGroup } from "@atlaskit/flag";
+import CheckCircleIcon from "@atlaskit/icon/glyph/check-circle";
+import ErrorIcon from "@atlaskit/icon/glyph/error";
 import { EditorMoreIcon } from "@/components/layout/ProjectHeaderChipIcons";
 /* jira-compare 2026-05-03 (LLM Council sweep, anti-pattern #3): lucide
    imports were a CLAUDE.md "ADS-only inside hub scope" violation. The
@@ -576,7 +578,7 @@ function FilterTriggerAndPopup({
                 "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
               borderRadius: 4,
               boxShadow:
-                "0 4px 8px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31)",
+                "var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31))",
             }}
           >
             {renderContent()}
@@ -614,7 +616,7 @@ function renderFacetRow(
         display: "flex",
         alignItems: "center",
         gap: 8,
-        padding: "6px 8px",
+        padding: "8px 8px",
         borderRadius: 3,
         cursor: "pointer",
         fontSize: 13,
@@ -850,7 +852,7 @@ function FilterChip({
                 "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
               borderRadius: 4,
               boxShadow:
-                "0 4px 8px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31)",
+                "var(--ds-shadow-overlay, 0 4px 8px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31))",
               fontFamily: "var(--cp-font-body)",
             }}
           >
@@ -882,7 +884,7 @@ function FilterChip({
                 autoFocus
                 style={{
                   width: "100%",
-                  padding: "6px 8px",
+                  padding: "8px 8px",
                   fontSize: 13,
                   border:
                     "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
@@ -916,7 +918,7 @@ function FilterChip({
             </div>
             <div
               style={{
-                padding: "6px 12px",
+                padding: "8px 12px",
                 borderTop:
                   "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
                 fontSize: 11,
@@ -961,6 +963,7 @@ interface SaveFilterModalProps {
   currentState: FilterState;
   projectKey: string;
   onSaved?: () => void;
+  onShowFlag: (title: string, appearance: "success" | "error") => void;
 }
 
 function SaveFilterModal({
@@ -969,6 +972,7 @@ function SaveFilterModal({
   currentState,
   projectKey,
   onSaved,
+  onShowFlag,
 }: SaveFilterModalProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -994,7 +998,7 @@ function SaveFilterModal({
         supabase as any
       ).auth.getUser();
       if (authErr || !authData?.user?.id) {
-        toast.error("Not signed in — cannot save filter");
+        onShowFlag("Not signed in — cannot save filter", "error");
         setSaving(false);
         return;
       }
@@ -1010,20 +1014,21 @@ function SaveFilterModal({
         });
       if (error) {
         if (error.code === "23505") {
-          toast.error(
+          onShowFlag(
             `A filter named "${trimmed}" already exists in ${projectKey}`,
+            "error",
           );
         } else {
-          toast.error(`Save failed: ${error.message}`);
+          onShowFlag(`Save failed: ${error.message}`, "error");
         }
         setSaving(false);
         return;
       }
-      toast.success(`Saved filter "${trimmed}"`);
+      onShowFlag(`Saved filter "${trimmed}"`, "success");
       onSaved?.();
       onClose();
     } catch (e: any) {
-      toast.error(`Save failed: ${e?.message || String(e)}`);
+      onShowFlag(`Save failed: ${(e as Error)?.message || String(e)}`, "error");
       setSaving(false);
     }
   };
@@ -1127,6 +1132,7 @@ interface SavedFiltersDropdownProps {
   projectKey: string;
   onApply: (state: FilterState) => void;
   refreshKey: number;
+  onShowFlag: (title: string, appearance: "success" | "error") => void;
 }
 
 interface SavedFilterRow {
@@ -1142,6 +1148,7 @@ function SavedFiltersDropdown({
   projectKey,
   onApply,
   refreshKey,
+  onShowFlag,
 }: SavedFiltersDropdownProps) {
   const { data: rows = [], refetch } = useQuery<SavedFilterRow[]>({
     queryKey: ["allwork-saved-filters", projectKey, refreshKey],
@@ -1166,10 +1173,10 @@ function SavedFiltersDropdown({
       .delete()
       .eq("id", id);
     if (error) {
-      toast.error(`Delete failed: ${error.message}`);
+      onShowFlag(`Delete failed: ${error.message}`, "error");
       return;
     }
-    toast.success(`Deleted "${name}"`);
+    onShowFlag(`Deleted "${name}"`, "success");
     refetch();
   };
 
@@ -1194,7 +1201,7 @@ function SavedFiltersDropdown({
             key={row.id}
             onClick={() => {
               onApply(row.state);
-              toast.success(`Applied "${row.name}"`);
+              onShowFlag(`Applied "${row.name}"`, "success");
             }}
             elemAfter={
               <Button
@@ -1218,7 +1225,7 @@ function SavedFiltersDropdown({
           >
             {row.name}
             {row.is_shared && (
-              <span style={{ marginLeft: 6, fontSize: 10, color: SUBTLE }}>
+              <span style={{ marginLeft: 8, fontSize: 10, color: SUBTLE }}>
                 · shared
               </span>
             )}
@@ -1245,6 +1252,20 @@ export function AllWorkToolbar({
   onAssigneesChange,
 }: Props) {
   /* ── ALL HOOKS FIRST — React Rules of Hooks: no hook after a conditional return ── */
+
+  /* Flag queue — replaces sonner toast; renders via @atlaskit/flag FlagGroup. */
+  const [flags, setFlags] = React.useState<
+    Array<{ id: string; title: string; appearance: "success" | "error" }>
+  >([]);
+  const showFlag = React.useCallback(
+    (title: string, appearance: "success" | "error") => {
+      const id = `flag-${Date.now()}`;
+      setFlags((f) => [...f, { id, title, appearance }]);
+      // Auto-dismiss after 4 s
+      setTimeout(() => setFlags((f) => f.filter((x) => x.id !== id)), 4000);
+    },
+    [],
+  );
 
   /* Ask Caty inline bar — mirrors Jira's "Ask AI" full-width query bar.
      When open, the entire toolbar row is replaced by the AI input. */
@@ -1535,8 +1556,8 @@ export function AllWorkToolbar({
                     style={{
                       display: "inline-flex",
                       alignItems: "center",
-                      gap: 6,
-                      padding: "4px 10px",
+                      gap: 8,
+                      padding: "4px 8px",
                       border: "none",
                       borderRadius: 4,
                       background:
@@ -1545,7 +1566,7 @@ export function AllWorkToolbar({
                           : "var(--ds-background-neutral, #F4F5F7)",
                       color:
                         askCatyQuery.trim() && !askCatyLoading
-                          ? "#FFFFFF"
+                          ? "var(--ds-text-inverse, #FFFFFF)"
                           : "var(--ds-text-disabled, #8590A2)",
                       fontSize: 13,
                       fontWeight: 500,
@@ -1744,7 +1765,7 @@ export function AllWorkToolbar({
                       border: "none",
                       background: "transparent",
                       cursor: "pointer",
-                      padding: 2,
+                      padding: 4,
                       display: "inline-flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -1767,7 +1788,7 @@ export function AllWorkToolbar({
                       border: "none",
                       background: "transparent",
                       cursor: "pointer",
-                      padding: 2,
+                      padding: 4,
                       display: "inline-flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -1935,7 +1956,7 @@ export function AllWorkToolbar({
                   borderRight:
                     "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
                   overflowY: "auto",
-                  padding: "6px 0",
+                  padding: "8px 0",
                 }}
               >
                 {MORE_FILTERS_FACETS.map((f) => {
@@ -1951,7 +1972,7 @@ export function AllWorkToolbar({
                       style={{
                         width: "100%",
                         textAlign: "left",
-                        padding: "6px 12px",
+                        padding: "8px 12px",
                         border: "none",
                         background: isActive
                           ? "var(--ds-background-selected, #E9F2FE)"
@@ -1986,7 +2007,7 @@ export function AllWorkToolbar({
                             fontSize: 11,
                             color: "var(--ds-text-subtle, #505258)",
                             background: "var(--ds-background-neutral, #DCDFE4)",
-                            padding: "0 6px",
+                            padding: "0 8px",
                             borderRadius: 8,
                             lineHeight: "16px",
                           }}
@@ -2083,6 +2104,7 @@ export function AllWorkToolbar({
         projectKey={projectKey}
         refreshKey={savedFiltersRefreshKey}
         onApply={(s) => onSelectedFiltersChange?.(s)}
+        onShowFlag={showFlag}
       />
 
       {/* Save filter modal — mounted always; visibility controlled by isOpen. */}
@@ -2092,6 +2114,7 @@ export function AllWorkToolbar({
         currentState={selectedFilters}
         projectKey={projectKey}
         onSaved={() => setSavedFiltersRefreshKey((k) => k + 1)}
+        onShowFlag={showFlag}
       />
 
       <span style={{ flex: 1 }} />
@@ -2141,7 +2164,7 @@ export function AllWorkToolbar({
             Import work items from CSV
           </DropdownItem>
           <DropdownItem
-            onClick={() => toast("Bulk change functionality coming soon")}
+            onClick={() => showFlag("Bulk change functionality coming soon", "success")}
             testId="catalyst-allwork-toolbar.more-actions.bulk-change"
           >
             Bulk change work items
@@ -2156,6 +2179,29 @@ export function AllWorkToolbar({
           </DropdownItem>
         </DropdownItemGroup>
       </DropdownMenu>
+
+      {/* ADS flag queue — replaces sonner toast. Fixed bottom-right overlay. */}
+      {flags.length > 0 && (
+        <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 10000 }}>
+          <FlagGroup onDismissed={(id) => setFlags((f) => f.filter((x) => x.id !== id))}>
+            {flags.map((f) => (
+              <Flag
+                key={f.id}
+                id={f.id}
+                title={f.title}
+                appearance={f.appearance}
+                icon={
+                  f.appearance === "success" ? (
+                    <CheckCircleIcon label="" primaryColor="var(--ds-icon-success, #22A06B)" />
+                  ) : (
+                    <ErrorIcon label="" primaryColor="var(--ds-icon-danger, #AE2A19)" />
+                  )
+                }
+              />
+            ))}
+          </FlagGroup>
+        </div>
+      )}
     </div>
   );
 }

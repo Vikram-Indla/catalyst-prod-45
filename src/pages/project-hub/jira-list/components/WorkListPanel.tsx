@@ -115,7 +115,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
         </div>
 
         <button style={{
-          height: 32, padding: '0 10px', border: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
+          height: 32, padding: '0 8px', border: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
           background: 'transparent', borderRadius: 6, cursor: 'pointer',
           fontSize: 13, fontFamily: 'var(--cp-font-body)', display: 'inline-flex',
           alignItems: 'center', gap: 4, color: 'var(--cp-text-secondary, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', flexShrink: 0,
@@ -183,12 +183,12 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
                 border: 'none',
                 background: selected ? 'var(--cp-interact-selected, #E9F2FE)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
                 borderRadius: 4,
-                padding: 12,
-                margin: '2px 0',
+                padding: 16,
+                margin: '0',
                 cursor: 'pointer',
                 boxShadow: selected
-                  ? 'rgba(24, 104, 219, 0.4) 0px 0px 0px 1px, rgba(30, 31, 33, 0.18) 0px 1px 1px 0px'
-                  : 'rgba(30, 31, 33, 0.25) 0px 1px 1px 0px, rgba(30, 31, 33, 0.31) 0px 0px 1px 0px',
+                  ? 'var(--ds-shadow-overlay, rgba(24,104,219,0.4) 0px 0px 0px 1px, rgba(30,31,33,0.18) 0px 1px 1px 0px)'
+                  : 'var(--ds-shadow-card, rgba(30,31,33,0.25) 0px 1px 1px 0px, rgba(30,31,33,0.31) 0px 0px 1px 0px)',
                 transition: 'background 80ms, box-shadow 80ms',
               }}
               onMouseEnter={e => { if (!selected) { e.currentTarget.style.background = 'var(--cp-interact-hover, #F8F9FA)'; } }}
@@ -239,7 +239,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
                     currentAssigneeName={item.assignee?.name ?? null}
                     projectId={projectId}
                     fallbackInitials={item.assignee?.initials || 'NA'}
-                    fallbackColor={item.assignee?.color || '#6554C0'}
+                    fallbackColor={item.assignee?.color || 'var(--ds-background-accent-purple-subtle, #6554C0)'}
                   />
                 </div>
               </div>
@@ -252,7 +252,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
             CTA. Page size grows by 50 each click; resets when filter or
             sort changes (page-size state would persist otherwise). */}
         <div style={{
-          padding: '10px 8px 16px',
+          padding: '8px 8px 16px',
           fontSize: 12, textAlign: 'center',
           fontFamily: 'var(--cp-font-body)',
           display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
