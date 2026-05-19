@@ -300,24 +300,26 @@ function CatalystMediaSingle({
   layout?: string;
   [key: string]: unknown;
 }) {
-  // Derive CSS max-width from ADF mediaSingle attrs.
-  // widthType:"pixel" → hard pixel cap; widthType:"percentage" → % of container.
-  // Absent widthType → unconstrained (100%).
-  let maxWidth: string = '100%';
-  if (widthType === 'pixel' && typeof width === 'number' && width > 0) {
+  let maxWidth: string = '500px';
+  if (widthType === 'pixel' && typeof width === 'number' && width >= 200) {
     maxWidth = `${width}px`;
-  } else if (widthType === 'percentage' && typeof width === 'number' && width > 0) {
+  } else if (widthType === 'percentage' && typeof width === 'number' && width >= 20) {
     maxWidth = `${width}%`;
   }
-
-  // layout controls horizontal alignment of the block within the content area.
-  // "align-start" / default → left; "center" → centred; "align-end" → right.
-  // "wide" / "full-width" → treat as 100% (breakout not supported in drawer).
-  const isCenter = layout === 'center';
-  const isEnd = layout === 'align-end';
-  const marginLeft = isCenter ? 'auto' : '0';
-  const marginRight = (isCenter || isEnd) ? 'auto' : '0';
   if (layout === 'wide' || layout === 'full-width') maxWidth = '100%';
+
+  let marginLeft = '0';
+  let marginRight = '0';
+  if (layout === 'center') {
+    marginLeft = 'auto';
+    marginRight = 'auto';
+  } else if (layout === 'align-end' || layout === 'wrap-right') {
+    marginLeft = 'auto';
+    marginRight = '0';
+  } else if (layout === 'align-start' || layout === 'wrap-left' || !layout) {
+    marginLeft = '0';
+    marginRight = 'auto';
+  }
 
   return (
     <div style={{ maxWidth, marginLeft, marginRight, width: '100%' }}>
