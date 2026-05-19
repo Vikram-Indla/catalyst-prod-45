@@ -29,6 +29,7 @@ import { JiraTable } from '@/components/shared/JiraTable/JiraTable';
 import { CatalystKeyDetails } from '@/components/catalyst-detail-views/shared/sections/CatalystKeyDetails';
 import { CatalystSidebarDetails } from '@/components/catalyst-detail-views/shared/sections/CatalystSidebarDetails';
 import { CanonicalDescriptionField } from '@/components/shared/CanonicalDescriptionField';
+import { EpicDescriptionEditorPreview } from './EpicDescriptionEditorPreview';
 import type { Column } from '@/components/shared/JiraTable/types';
 import type { PhIssue } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/types';
 
@@ -458,6 +459,12 @@ export const previewFixtures: Record<string, PreviewFixture> = {
     }
     return <CanonicalDescriptionFieldPreview />;
   },
+
+  'adf-description-field': () => (
+    <MockAppProvider>
+      <EpicDescriptionEditorPreview />
+    </MockAppProvider>
+  ),
 
 };
 

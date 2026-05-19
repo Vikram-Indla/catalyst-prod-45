@@ -153,15 +153,15 @@ function SortableRow({
       onMouseEnter={e => { if (!isDragging) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; }}
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isDragging ? 'var(--ds-background-neutral, #F7F8F9)' : ''; }}
     >
-      <td className="px-4 py-3 cursor-grab active:cursor-grabbing" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }} {...attributes} {...listeners}>
+      <td style={{ padding: "12px 16px", cursor: "grab" }} className="active:cursor-grabbing" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }} {...attributes} {...listeners}>
         <span style={{ display: 'inline-flex', cursor: 'grab' }}><DragHandlerIcon label="" size="small" /></span>
       </td>
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         <span className="text-xs font-medium px-2 py-1 rounded" style={{ color: 'var(--ds-text-brand, #0C66E4)', background: 'var(--ds-background-selected, #E9F2FF)' }}>
           {assignment.assignment_id || '—'}
         </span>
       </td>
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--ds-background-selected, #E9F2FF)' }}>
             <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><BriefcaseIcon label="" size="small" /></span>
@@ -175,7 +175,7 @@ function SortableRow({
         </div>
       </td>
       {/* Resource Count - Clickable */}
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         {resourceCount > 0 ? (
           <button
             onClick={() => onResourceCountClick(assignment, budgetData?.linkedResources || [])}
@@ -191,7 +191,7 @@ function SortableRow({
           <span className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>0</span>
         )}
       </td>
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         <AdsSelect
           menuPortalTarget={document.body}
           value={{ label: statusConfig.label, value: status }}
@@ -206,7 +206,7 @@ function SortableRow({
         />
       </td>
       {/* Budget - Read-only for Insourced (auto-calculated), Editable for Outsourced/Cosourced */}
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         {normalizeAssignmentType(assignment.assignment_type) === 'Insourced' ? (
           <Tooltip content={<p>Sum of {resourceCount} linked resources' CTC (auto-calculated)</p>}>
             <div className="flex items-center gap-1 px-2 py-1 -mx-2 rounded min-w-[80px] cursor-help" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
@@ -228,7 +228,7 @@ function SortableRow({
           />
         )}
       </td>
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         <Popover>
           <PopoverTrigger asChild>
             <button
@@ -254,7 +254,7 @@ function SortableRow({
           </PopoverContent>
         </Popover>
       </td>
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         <Popover>
           <PopoverTrigger asChild>
             <button
@@ -280,7 +280,7 @@ function SortableRow({
           </PopoverContent>
         </Popover>
       </td>
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         {(assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
           <AdsSelect
             menuPortalTarget={document.body}
@@ -300,7 +300,7 @@ function SortableRow({
           <span className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>—</span>
         )}
       </td>
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         {(() => {
           const typeOpts = [
             { label: 'Not specified', value: '__none__' },
@@ -320,7 +320,7 @@ function SortableRow({
           );
         })()}
       </td>
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         {normalizeAssignmentType(assignment.assignment_type) === 'Insourced' || assignment.assignment_type === 'BAU' ? (
           // Insourced: Always show "On Track" as read-only
           <Lozenge appearance={PAYMENT_STATUS_CONFIG['on_track'].appearance}>
@@ -349,13 +349,13 @@ function SortableRow({
           <span className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>—</span>
         )}
       </td>
-      <td className="px-4 py-3 text-center">
+      <td style={{ padding: "12px 16px", textAlign: "center" }}>
         <Toggle
           isChecked={assignment.is_active}
           onChange={() => onToggleActive(assignment)}
         />
       </td>
-      <td className="px-4 py-3">
+      <td style={{ padding: "12px 16px" }}>
         <div className="flex items-center justify-center gap-1">
           <button
             onClick={() => onEdit(assignment)}

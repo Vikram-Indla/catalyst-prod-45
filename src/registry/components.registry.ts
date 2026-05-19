@@ -211,6 +211,19 @@ function MyDetailView() {
     },
   },
   {
+    id: 'adf-description-field',
+    name: 'AdfDescriptionField',
+    category: 'molecule',
+    origin: 'shared',
+    status: 'canonical',
+    version: '1.0.0',
+    file_path: 'src/components/shared/rich-text/atlaskit/AdfDescriptionField.tsx',
+    jsdoc_excerpt:
+      'Atlaskit Editor Core (ProseMirror) based ADF rich-text description editor. Canonical rich-text surface for Epic detail views. Supports inline image paste/drag-drop with Supabase upload pipeline, upload progress banners, race-condition guards (save blocked during upload), and idle/pointer-down prefetch of ~2 MB editor chunk.',
+    dark_light_supported: true,
+    tags: ['form', 'editor', 'description', 'adf', 'rich-text'],
+  },
+  {
     id: 'rich-text-editor',
     name: 'AdfDescriptionField (Atlaskit Editor)',
     category: 'organism',
