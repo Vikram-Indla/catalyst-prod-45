@@ -39,8 +39,8 @@ interface Props {
 
 const CATEGORY_CONFIG: Record<string, { label: string; dot: string; bg: string; text: string }> = {
   todo:        { label: 'To Do',       dot: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', bg: 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', text: 'var(--ds-text, #253858)' },
-  in_progress: { label: 'In Progress', dot: '#DEEBFF', bg: '#DEEBFF', text: '#0747A6' },
-  done:        { label: 'Done',        dot: '#E3FCEF', bg: '#E3FCEF', text: '#006644' },
+  in_progress: { label: 'In Progress', dot: 'var(--ds-background-information, #DEEBFF)', bg: 'var(--ds-background-information, #DEEBFF)', text: 'var(--ds-text-information, #0747A6)' },
+  done:        { label: 'Done',        dot: 'var(--ds-background-success, #E3FCEF)', bg: 'var(--ds-background-success, #E3FCEF)', text: 'var(--ds-text-success, #006644)' },
 };
 
 function slugify(name: string) {

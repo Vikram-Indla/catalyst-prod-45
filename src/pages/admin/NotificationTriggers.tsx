@@ -171,7 +171,7 @@ export default function NotificationTriggers() {
             Configure which CRUD events trigger notifications, who receives them, and through which channels.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {selectedSchemeId && (
             <Button
               appearance="subtle"
@@ -292,7 +292,7 @@ export default function NotificationTriggers() {
             border: '1px solid var(--ds-border, #DCDFE4)',
           }}
         >
-          <span className="text-sm font-medium" style={{ color: 'var(--ds-text-brand, #0C66E4)' }}>
+          <span style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--ds-text-brand, #0C66E4)' }}>
             {selection.selectedCount} trigger{selection.selectedCount > 1 ? 's' : ''} selected
           </span>
           <hr style={{ border: 'none', borderLeft: '1px solid var(--ds-border-layout, #EBECF0)', height: '20px', margin: '0' }} />
@@ -329,7 +329,7 @@ export default function NotificationTriggers() {
           <p className="text-sm" style={{ color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}>No triggers match your filters.</p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {groups.map((group) => (
             <div
               key={group.key}
@@ -344,7 +344,7 @@ export default function NotificationTriggers() {
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral, #F7F8F9)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
-                <div className="flex items-center gap-3">
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   {expandedGroups.has(group.key) ? (
                     <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))' }}><ChevronDownIcon label="" size="small" /></span>
                   ) : (
@@ -439,7 +439,7 @@ function StatsCard({
   return (
     <div style={{ background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px', textAlign: 'center' }}>
       <p
-        className="text-xl font-semibold"
+        style={{ fontSize: 20, fontWeight: 600, color: "var(--ds-text, #292A2E)" }}
         style={{ color: colorMap[variant], fontFamily: 'var(--cp-font-mono)' }}
       >
         {value}

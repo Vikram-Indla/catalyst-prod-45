@@ -198,10 +198,10 @@ function AnyNode() {
       background: 'var(--ds-background-warning,#FFF7D6)',
       border: '1.5px dashed var(--ds-border-warning,var(--cp-amber, #F59E0B))',
       borderRadius: 20,
-      fontSize: 11, fontWeight: 700, color: 'var(--ds-text-warning,#CF8800)',
+      fontSize: 12, fontWeight: 700, color: 'var(--ds-text-warning,#CF8800)',
       display: 'flex', alignItems: 'center', gap: 4,
     }}>
-      <span style={{ fontSize: 13 }}>∀</span> ANY
+      <span style={{ fontSize: 14 }}>∀</span> ANY
       <Handle
         type="source"
         position={Position.Right}
@@ -557,10 +557,10 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
         borderRadius: 8, padding: '8px 12px',
         boxShadow: '0 1px 4px rgba(9,30,66,0.08)',
       }}>
-        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginRight: 4 }}>
+        <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginRight: 4 }}>
           {scheme.name}
         </span>
-        <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))', marginRight: 8 }}>
+        <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))', marginRight: 8 }}>
           {statuses.length} statuses · {transitions.length} transitions
         </span>
 
@@ -627,7 +627,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
           boxShadow: '0 4px 16px rgba(9,30,66,0.12)',
           padding: 16, width: 280,
         }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 10 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 10 }}>
             Add Status
           </div>
 
@@ -763,7 +763,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
           style={{
             boxShadow: '0 1px 4px rgba(9,30,66,0.08)',
             border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
-            borderRadius: 6,
+            borderRadius: 8,
             bottom: 16,
           }}
         />
@@ -781,7 +781,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
           style={{
             background: 'var(--ds-surface-sunken,#F0F2F5)',
             border: '1px solid var(--ds-border,var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
-            borderRadius: 6,
+            borderRadius: 8,
             height: 100,
           }}
         />
@@ -795,7 +795,7 @@ function WorkflowDiagramInner({ scheme, statuses, transitions, onInvalidate }: P
         borderRadius: 8,
         padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 6,
         boxShadow: '0 1px 4px rgba(9,30,66,0.06)',
-        fontSize: 11, color: 'var(--ds-text-subtle,#42526E)',
+        fontSize: 12, color: 'var(--ds-text-subtle,#42526E)',
       }}>
         <div style={{
           fontWeight: 700, fontSize: 10, letterSpacing: '0.06em',

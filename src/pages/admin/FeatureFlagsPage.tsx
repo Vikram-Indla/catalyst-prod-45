@@ -197,7 +197,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
             fontSize: 11,
             fontWeight: 600,
             letterSpacing: '0.03em',
-            /* sentence-case per CLAUDE.md */,
+            /* sentence-case per CLAUDE.md */
             borderRadius: 4,
           }}
           aria-label={`Category: ${flag.category}`}
@@ -219,7 +219,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
             fontSize: 11,
             fontWeight: 700,
             letterSpacing: '0.03em',
-            /* sentence-case per CLAUDE.md */,
+            /* sentence-case per CLAUDE.md */
             borderRadius: 4,
           }}
           aria-label={`Status: ${flag.status}`}
@@ -308,7 +308,7 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
         fontSize: 11,
         fontWeight: 600,
         letterSpacing: '0.06em',
-        /* sentence-case per CLAUDE.md */,
+        /* sentence-case per CLAUDE.md */
         color: 'var(--cp-text-tertiary, var(--cp-ink-3, var(--cp-text-secondary, #64748B)))',
       }}>
         {category}
@@ -724,7 +724,7 @@ export default function FeatureFlagsPage() {
             fontSize: 11,
             fontWeight: 600,
             letterSpacing: '0.06em',
-            /* sentence-case per CLAUDE.md */,
+            /* sentence-case per CLAUDE.md */
             color: 'var(--cp-text-tertiary, #71717A)',
           }}
         >

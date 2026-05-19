@@ -1187,7 +1187,7 @@ export default function ResourceAssignmentsPage() {
                 onClick={handleConfirmDelete}
                 disabled={isDeleting}
                 style={{
-                  padding: '6px 14px', borderRadius: '4px', fontSize: '14px', fontWeight: 500,
+                  padding: '8px 16px', borderRadius: '4px', fontSize: '14px', fontWeight: 500,
                   background: 'var(--ds-background-danger-bold, #CA3521)', color: '#FFFFFF',
                   border: 'none', cursor: isDeleting ? 'not-allowed' : 'pointer',
                   opacity: isDeleting ? 0.7 : 1,
