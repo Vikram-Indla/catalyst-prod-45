@@ -36,6 +36,8 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { normalizeAdfForAtlaskit, parseStoredDescriptionToAdf } from './adfNormalizer';
 import { uploadDescriptionImage } from './supabaseImageUpload';
+import { watchAndInjectExternalMedia } from './injectExternalMedia';
+import { NodeSelection } from '@atlaskit/editor-prosemirror/state';
 
 // 2026-05-03 — CONVERTED TO STATIC IMPORT
 // TipTap was removed 2026-04-20 (USER DIRECTIVE). The lazy-load was to prevent
@@ -137,10 +139,16 @@ export interface EpicDescriptionEditorProps {
   onAttachmentUploaded?: (meta: AttachmentUploadMeta) => void;
 }
 
+const DEFAULT_MEDIA_PIXEL_WIDTH = 500;
+
 function buildExternalMediaSingle(url: string, filename: string, width?: number, height?: number): ADFEntity {
   return {
     type: 'mediaSingle',
-    attrs: { layout: 'center' },
+    attrs: {
+      layout: 'center',
+      width: DEFAULT_MEDIA_PIXEL_WIDTH,
+      widthType: 'pixel',
+    },
     content: [
       {
         type: 'media',
@@ -182,6 +190,28 @@ function EpicDescriptionEditorImpl({
       console.error('[EpicDescriptionEditor] mention provider init failed:', err);
     });
   }, []);
+
+  const adfDocRef = useRef<unknown>(initialAdf);
+  useEffect(() => {
+    adfDocRef.current = initialAdf;
+  }, [initialAdf]);
+
+  useEffect(() => {
+    const root = wrapperRef.current;
+    if (!root) return;
+    return watchAndInjectExternalMedia(
+      root,
+      () => adfDocRef.current,
+      {
+        getView: () => {
+          const actions = actionsRef.current as any;
+          return actions?._privateGetEditorView?.();
+        },
+        NodeSelection,
+      },
+    );
+  }, []);
+
   const dragCounter = useRef(0);
 
   const handleEditorReady = useCallback((actions: EditorActions) => {
@@ -217,6 +247,9 @@ function EpicDescriptionEditorImpl({
         }
         const node = buildExternalMediaSingle(uploaded.url, uploaded.filename, uploaded.width, uploaded.height);
         actionsRef.current?.replaceSelection(node as any);
+        actionsRef.current?.getValue().then((doc) => {
+          adfDocRef.current = doc;
+        }).catch(() => { /* noop */ });
       })
       .catch(() => toast.error(`Couldn't upload ${file.name}`))
       .finally(() => setUploading(false));
