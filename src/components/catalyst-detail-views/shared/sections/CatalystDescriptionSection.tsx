@@ -642,7 +642,6 @@ export function CatalystDescriptionSection({
                 "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
               display: "flex",
               alignItems: "center",
-              opacity: hovered ? 1 : 0,
               transition:
                 "opacity 150ms cubic-bezier(0.15,1,0.3,1), color 150ms cubic-bezier(0.15,1,0.3,1), background 150ms cubic-bezier(0.15,1,0.3,1)",
             }}
