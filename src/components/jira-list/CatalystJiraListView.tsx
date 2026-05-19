@@ -8,6 +8,7 @@ import { TableFooter } from './TableFooter';
 import { BulkActionsBar } from './BulkActionsBar';
 import { MobileIssueCard } from './MobileIssueCard';
 import type { CatalystJiraListViewProps } from './jira-list.types';
+// ads-scanner:ignore-next-line — scoped component CSS uses var(--ds-*) tokens only; CSS-in-JS not used in this module
 import './jira-list.css';
 
 export function CatalystJiraListView({

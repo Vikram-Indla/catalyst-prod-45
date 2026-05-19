@@ -27,6 +27,7 @@ const AdminAvatarsPage = lazy(() => import("../pages/admin/avatars/AdminAvatarsP
 const ComponentsAdminPage = lazy(() => import("../pages/admin/components/ComponentsAdminPage"));
 const RoutingTaxonomyPageLazy = lazy(() => import("../pages/admin/RoutingTaxonomyPage"));
 const WorkListPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogPage.atlaskit"));
+const DemoJiraListPageLazy = lazy(() => import("../pages/DemoJiraListPage"));
 
 // ─── Lazy page imports ───────────────────────────────────────────
 const KBAdminSetup = ENABLE_AI ? lazy(() => import("../pages/KBAdminSetup")) : () => <FeatureComingSoon title="KB Admin" />;
@@ -478,6 +479,9 @@ export default function FullAppRoutes() {
         </Route>
 
         <Route path="/browse/:key" element={<S><BrowsePage /></S>} />
+
+        {/* ═══ Demo routes — jira-compare probing ═══ */}
+        <Route path="/demo/jira-list" element={<S><DemoJiraListPageLazy /></S>} />
 
         {/* ═══ Work Items / BacklogPage ═══ */}
         <Route path="/workitems" element={<S><Suspense fallback={<div className="p-8">Loading...</div>}><WorkListPageLazy /></Suspense></S>} />

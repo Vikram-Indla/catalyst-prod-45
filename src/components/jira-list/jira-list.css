@@ -34,13 +34,15 @@
 .catalyst-jira-list-table thead th {
   font-size: 12px;
   font-weight: 653;
-  color: var(--ds-text-subtlest, #626f86);
+  /* Jira probe 2026-05-19: rgb(80,82,88) = var(--ds-text-subtle) */
+  color: var(--ds-text-subtle, #505258);
   background: var(--ds-surface-sunken, #f7f8f9);
-  padding: 8px;
+  padding: 0 8px;
   white-space: nowrap;
   border-style: solid;
-  border-color: var(--ds-border, #dfe1e6);
-  border-width: 0 0 2px;
+  /* Jira probe 2026-05-19: border is ~0.56px hairline */
+  border-color: rgba(11, 18, 14, 0.14);
+  border-width: 0 0 1px;
   text-transform: none;
   letter-spacing: 0;
 }
@@ -49,7 +51,7 @@
 .catalyst-jira-list-table thead th [data-testid*="head"] button {
   font-size: 12px;
   font-weight: 653;
-  color: var(--ds-text-subtlest, #626f86);
+  color: var(--ds-text-subtle, #505258);
   text-transform: none;
 }
 
@@ -58,11 +60,18 @@
   font-size: 14px;
   font-weight: 400;
   color: var(--ds-text, #172b4d);
-  padding: 8px;
+  /* Jira probe 2026-05-19: row height 40px; padding 0 8px with 40px min-height */
+  padding: 0 8px;
+  height: 40px;
   border-style: solid;
   border-color: var(--ds-border-subtle, #ebecf0);
   border-width: 0 0 1px;
   vertical-align: middle;
+}
+
+/* Jira rows are all white — no alternating stripe */
+.catalyst-jira-list-table tbody tr td {
+  background: var(--ds-surface, #ffffff);
 }
 
 .catalyst-jira-list-table tbody tr:hover td {
@@ -88,6 +97,33 @@
   color: var(--ds-link-pressed, #0055cc);
 }
 
+/* ── Checkbox column (Jira: 40px, label hidden) ──────────────────────── */
+/*
+ * @atlaskit/Checkbox renders label text making the column wide (132px header, tall rows).
+ * Jira probe 2026-05-19: checkbox col is 40px with no visible text.
+ * Visually hide label text but keep aria-label for screen readers.
+ */
+.catalyst-jira-list-table thead th:first-child,
+.catalyst-jira-list-table tbody td:first-child {
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+  padding: 0 8px;
+  overflow: hidden;
+}
+
+/* Hide visible label text in both header and data row checkboxes */
+.catalyst-jira-list-table thead th:first-child label > span:last-child,
+.catalyst-jira-list-table tbody td:first-child label > span:last-child {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
 /* ── Work cell ───────────────────────────────────────────────────────── */
 .catalyst-work-cell {
   display: flex;
@@ -107,7 +143,8 @@
 
 .catalyst-work-cell__key {
   font-size: 14px;
-  font-weight: 500;
+  /* Jira probe 2026-05-19: key link is 400 weight */
+  font-weight: 400;
   color: var(--ds-link, #0c66e4);
   white-space: nowrap;
   flex-shrink: 0;
@@ -173,6 +210,20 @@
 /* Atlaskit Lozenge typography override to match Jira status pill spec (CLAUDE.md 2026-05-08) */
 .catalyst-jira-list-table [class*="lozenge"],
 .catalyst-jira-list-table [data-ds--lozenge] {
+  font-size: 11px;
+  font-weight: 653;
+  text-transform: uppercase;
+  letter-spacing: 0.165px;
+}
+
+/* ── Status lozenge typography (Jira parity)  ────────────────────────── */
+/*
+ * @atlaskit/Lozenge inherits font-size/weight from `tbody td` (14px/400).
+ * Jira probe 2026-05-19: inner span is 11px / 653 / uppercase / 0.165px.
+ * Re-assert Jira values by targeting the lozenge's two-level span structure
+ * inside our status trigger button.
+ */
+.catalyst-status-trigger span {
   font-size: 11px;
   font-weight: 653;
   text-transform: uppercase;
