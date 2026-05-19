@@ -192,7 +192,7 @@ export default function GovernanceSettings() {
           {/* Toggle Control */}
           <div className="flex items-center justify-between pt-4 border-t" style={{ borderColor: 'var(--cp-border-default)' }}>
             <div>
-              <p style={{ fontSize: 14, fontWeight: 500, color: "var(--ds-text, #292A2E)" }} style={{ color: 'var(--cp-text-primary)' }}>
+              <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary)' }}>
                 Enable Strict Enforcement
               </p>
               <p className="text-xs mt-0.5" style={{ color: 'var(--cp-text-muted)' }}>
@@ -282,7 +282,7 @@ export default function GovernanceSettings() {
 
         {/* Help Text */}
         <div className="mt-8 p-4 rounded-lg" style={{ backgroundColor: 'var(--ds-background-information, #DFFCF0)' }}>
-          <p style={{ fontSize: 12 }} style={{ color: 'var(--cp-text-primary)' }}>
+          <p style={{ fontSize: 12, color: 'var(--cp-text-primary)' }}>
             <strong>💡 Use Cases:</strong>
           </p>
           <ul className="text-xs mt-2 space-y-1" style={{ color: 'var(--cp-text-muted)' }}>
