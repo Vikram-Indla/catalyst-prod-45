@@ -1079,3 +1079,33 @@ When adding a new admin-facing table, the SELECT policy can be permissive (`TO a
 **How to see uncovered fraud:** `node design-governance/rules/audit.js src/` shows the current count. `node design-governance/scripts/self-test.mjs` proves every documented rule still fires. When the count goes UP after a scanner change without a corresponding code change, the scanner just caught something new — investigate and decide whether the new finding is a bug or a fixture to add.
 
 **Severity:** P0 (~62% of admin design drift was invisible to the audit until this extension).
+
+---
+
+## 2026-05-19 — Design-system audit now persists to Supabase on every push to main
+
+**Surface:** `.github/workflows/design-system-audit.yml`, `design-governance/scripts/persist-violations.mjs`
+**Pattern:** Vikram asked: "CI to run persist-violations.mjs on every push." Implemented in the existing design-system-audit workflow as a second job (`persist-violations-to-supabase`) that runs ONLY on push to `main` / `ADS-migration` after the audit gate passes. Pull requests and feature-branch pushes do NOT persist — they only run the read-only audit check.
+
+**Job structure:**
+1. `design-system-audit` (existing) — runs self-test + audit + routing scanner. BLOCKING on the audit gate.
+2. `persist-violations-to-supabase` (NEW) — runs only on push events to main / ADS-migration, AFTER the audit job. NON-BLOCKING (`continue-on-error: true`). Steps:
+   - Checkout + Node 20
+   - `npm install --no-save @supabase/supabase-js@^2.45.0`
+   - Sanity check that `SUPABASE_SERVICE_ROLE_KEY` is set; skip gracefully if not (no merge block)
+   - Run `persist-violations.mjs` once per surface: admin, project-hub (project-work-hub), product-hub (producthub), incidents (incidenthub), releases
+   - Each surface invocation uses `--surface=<id>` to override path-based inference
+
+**Required GitHub Actions secret (set once at Settings → Secrets and variables → Actions):**
+- `SUPABASE_SERVICE_ROLE_KEY` — service-role key for project `lmqwtldpfacrrlvdnmld` (REQUIRED, no default — anon key cannot bypass RLS)
+- `SUPABASE_URL` — optional override; defaults to `https://lmqwtldpfacrrlvdnmld.supabase.co`
+
+If the secret is missing, the job logs a clear "skipping" message and exits 0 — never blocks a merge.
+
+**Why non-blocking?** The audit gate (job 1) is the source of truth for "did this PR introduce new violations." Persistence (job 2) is a reporting nicety — it keeps the Design Governance UI's dashboard fresh with canonical scanner output. A transient Supabase outage shouldn't block a merge that already passed the audit gate.
+
+**Why only on push to main?** Feature branches would churn the table — every push overwrites the previous push's findings. Persisting only after merge keeps the DB representative of the canonical state. The audit gate still runs on every PR so violations are caught before merge.
+
+**Rule:** When adding a new surface (new top-level directory under `src/pages/` or `src/modules/`), add a corresponding persist step to the `persist-violations-to-supabase` job with `--surface=<id>` matching the `Module` type in `src/lib/design-audit.ts`. Otherwise the surface's violations never reach the UI.
+
+**Severity:** P1 (the audit was already real; this just closes the loop to the dashboard).
