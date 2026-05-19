@@ -233,10 +233,16 @@ export default defineConfig(({ mode, command }) => {
       // RangeError "Duplicate use of step JSON ID" on first page load.
       // Root packages: prosemirror-collab, editor-plugin-analytics,
       // editor-plugin-type-ahead, editor-core, editor-common, and 10 others.
-      // @atlaskit/adf-schema is NOT hoisted to the top level by npm ci (only
-      // nested copies in the lock file). Pin to the renderer's nested copy —
-      // same version (52.6.6) and guaranteed to exist on CI via the lock file.
-      "@atlaskit/adf-schema": path.resolve(__dirname, "./node_modules/@atlaskit/renderer/node_modules/@atlaskit/adf-schema"),
+      // @atlaskit/adf-schema layout varies by npm version: older npm leaves it
+      // nested under @atlaskit/renderer; newer npm hoists it to the top level
+      // (it is also a direct dep + override at version 52.6.6, so both copies
+      // are the same). Pick whichever physically exists so the dedupe alias
+      // still resolves to a single canonical path either way.
+      "@atlaskit/adf-schema": (() => {
+        const nested = path.resolve(__dirname, "./node_modules/@atlaskit/renderer/node_modules/@atlaskit/adf-schema");
+        const hoisted = path.resolve(__dirname, "./node_modules/@atlaskit/adf-schema");
+        return fs.existsSync(nested) ? nested : hoisted;
+      })(),
       // Browser polyfill for Node's `events` — @atlaskit/editor-plugin-block-controls
       // imports { EventEmitter } from 'events'; Vite treats 'events' as a Node built-in
       // by default, so we force it to the npm `events` package.
@@ -250,11 +256,16 @@ export default defineConfig(({ mode, command }) => {
       // exist since we depend on @atlaskit/renderer. The hoisted top-level copy
       // is not reliable across install environments (only present when hoisted).
       "react-intl-next": path.resolve(__dirname, "./node_modules/@atlaskit/renderer/node_modules/react-intl-next/index.js"),
-      // @atlaskit/editor-plugins is not reliably hoisted to the top-level
-      // node_modules across install environments (npm ci follows the lock file
-      // which only records it nested under editor-core). Pin it to the nested
-      // copy that is guaranteed to exist.
-      "@atlaskit/editor-plugins": path.resolve(__dirname, "./node_modules/@atlaskit/editor-core/node_modules/@atlaskit/editor-plugins"),
+      // @atlaskit/editor-plugins layout varies by npm version: older npm leaves
+      // it nested under editor-core, newer npm hoists it to the top level (it
+      // is also a direct dep + override at version 13.0.120). Pick whichever
+      // physically exists so the dedupe alias resolves to a single canonical
+      // path on either layout.
+      "@atlaskit/editor-plugins": (() => {
+        const nested = path.resolve(__dirname, "./node_modules/@atlaskit/editor-core/node_modules/@atlaskit/editor-plugins");
+        const hoisted = path.resolve(__dirname, "./node_modules/@atlaskit/editor-plugins");
+        return fs.existsSync(nested) ? nested : hoisted;
+      })(),
       // ─────────────────────────────────────────────────────────────────────
       // CRITICAL: Force a SINGLE ProseMirror instance shared by Atlaskit + Tiptap.
       //

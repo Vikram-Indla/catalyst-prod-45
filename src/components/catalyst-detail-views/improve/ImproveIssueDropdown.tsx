@@ -23,7 +23,8 @@
  *   portal-empty bug on this surface, CLAUDE.md L1).
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import SparklesIcon from '@atlaskit/icon/core/atlassian-intelligence';
 // ChevronDownIcon removed 2026-05-05 — Jira Improve button has no chevron (jira-compare parity)
 import WandIcon from '@atlaskit/icon/core/magic-wand';
@@ -36,6 +37,7 @@ import { SummarizeCommentsDialog } from './SummarizeCommentsDialog';
 import { SuggestChildIssuesDialog } from './SuggestChildIssuesDialog';
 import { LinkSimilarItemsDialog } from './LinkSimilarItemsDialog';
 import { canSuggestChildren, improveTriggerLabel } from './improve-config';
+import { useCatyImprove } from './catyImproveStore';
 
 type Mode = 'closed' | 'description' | 'summarize' | 'children' | 'similar';
 
@@ -74,6 +76,52 @@ export function ImproveIssueDropdown({
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<Mode>('closed');
   const ref = useRef<HTMLDivElement>(null);
+  const startCatyImprove = useCatyImprove((s) => s.start);
+
+  /**
+   * "Improve description" entry point — replaces the legacy dialog with
+   * the Caty streaming overlay. Fetches image attachments first so the
+   * AI can "see" them as multimodal context (best-effort: if the fetch
+   * fails or returns no images, we proceed with a text-only prompt).
+   */
+  const handleStartImproveDescription = useCallback(async () => {
+    setOpen(false);
+    if (!issue?.issue_key) return;
+
+    let attachmentUrls: string[] = [];
+    if (issue.id) {
+      try {
+        const { data } = await (supabase as any)
+          .from('ph_attachments')
+          .select('storage_path, mime_type')
+          .eq('work_item_id', issue.id);
+        const rows: Array<{ storage_path: string; mime_type: string | null }> =
+          Array.isArray(data) ? data : [];
+        attachmentUrls = rows
+          .filter((r) => typeof r.mime_type === 'string' && r.mime_type.startsWith('image/'))
+          .map((r) => {
+            const { data: pub } = supabase.storage
+              .from('description-images')
+              .getPublicUrl(r.storage_path);
+            return pub?.publicUrl ?? '';
+          })
+          .filter((u) => u.length > 0);
+      } catch {
+        // Non-fatal — proceed text-only
+        attachmentUrls = [];
+      }
+    }
+
+    startCatyImprove({
+      issueKey: issue.issue_key,
+      issueType: issue.issue_type ?? null,
+      issueSummary: issue.summary ?? null,
+      currentDescription: issue.description_text ?? null,
+      currentAcceptanceCriteria: issue.acceptance_criteria ?? null,
+      attachmentUrls,
+      improveSubType: 'improve_clarify',
+    });
+  }, [issue, startCatyImprove]);
 
   // Click-outside to dismiss the popover.
   useEffect(() => {
@@ -207,7 +255,7 @@ export function ImproveIssueDropdown({
               type="button"
               role="menuitem"
               data-testid="catalyst-improve-issue-dropdown.improve-description"
-              onClick={() => openMode('description')}
+              onClick={handleStartImproveDescription}
               style={itemStyle}
               onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}

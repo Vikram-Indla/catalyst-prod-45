@@ -106,6 +106,12 @@ import type {
 } from '@/components/shared/JiraTable';
 
 import { useStoryBacklog, useEpicBacklog, useRequestsByKeys, useRequestLinksByEpicKeys } from '../hooks/useBacklogData';
+import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
+import { useCatySearch } from '@/components/caty/catySearchStore';
+import { applyCatyFilterBacklog } from '@/components/caty/applyCatyFilterBacklog';
+// Same Atlaskit "ai-chat" glyph used by the AllWork toolbar Ask Caty button —
+// keeps the two surfaces visually identical (icon + "Ask Caty" wording).
+import AskCatyAiIcon from '@atlaskit/icon/core/ai-chat';
 import { useProject } from '@/hooks/useProjects';
 // Apr 28, 2026 (carryover #9): Star/Unstar persisted via the canonical
 // starred_items table chokepoint. Replaces the prior local useState toggle
@@ -488,27 +494,10 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   useAtlaskitThemeSync();
   const navigate = useNavigate();
 
-  // 2026-05-12 — Ask CATY entry point. Mirrors Jira's "✦ Ask AI" button
-  // position (left of Search in the list toolbar). On click: creates a
-  // CATY conversation scoped to this project, then navigates to /caty
-  // with the conversation id passed via URLSearchParams.
-  // 2026-05-17: useAuth + useCreateCatyConversation already declared at
-  // the top of the component body (lines ~458-459) for the CATY hook
-  // setup; reuse those bindings here instead of re-declaring.
-  const createCatyConversation = createConversation;
-  const handleAskCaty = useCallback(async () => {
-    if (!user?.id || !projectId) return;
-    try {
-      const conversation = await createCatyConversation.mutateAsync({
-        userId: user.id,
-        projectId,
-        type: 'chat',
-      });
-      navigate(`/caty?conversationId=${conversation.id}&source=backlog&projectKey=${projectKey}`);
-    } catch (err) {
-      console.error('Failed to start CATY conversation', err);
-    }
-  }, [user?.id, projectId, projectKey, createCatyConversation, navigate]);
+  // 2026-05-18 — Ask CATY no longer navigates to the /caty chat page.
+  // The toolbar button opens AskCatyInlineBar inline (see askCatyOpen
+  // state below). Filter results are applied to filteredVisibleRows so
+  // the AI-narrowed list renders directly in this table.
 
   // ────────────────────────────────────────────────────────────────────
   // Apr 27 2026 (LOVABLE-01 landed in-session): project members for the
@@ -736,6 +725,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // row whose status is in DONE_LIKE_STATUSES (Catalyst variants of
   // Jira's "Done" column). When false (default), all rows render.
   const [hideDoneItems, setHideDoneItems] = useState<boolean>(false);
+  // 2026-05-18 — Ask Caty inline bar toggle. When true, the entire
+  // backlog toolbar row is replaced by AskCatyInlineBar (same UX as
+  // AllWorkToolbar). Caty's filter result is applied to filteredVisibleRows
+  // below so results render inline in the table — no chat-page redirect.
+  const [askCatyOpen, setAskCatyOpen] = useState<boolean>(false);
   // 2026-05-12 Jira parity: "Show hierarchy" toggle in toolbar ⋯ menu.
   // When ON: parent rows show > chevron and children render indented inline.
   // When OFF: flat row rendering (current behaviour). Defaults ON to match Jira.
@@ -1315,10 +1309,42 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // done/closed state are filtered out before sorting. Status names
   // come from Catalyst's STATUS_OPTIONS — anything matching /done|closed/i
   // is treated as done. ──
+  // Caty AI filter — when Caty has results scoped to this project, narrow
+  // the rows further. Layered AFTER existing filters so it composes (the
+  // user can still search/hideDone while a Caty filter is active). The
+  // secondary "Search work" input inside the bar narrows the AI-filtered
+  // list by substring (title + key) — same pattern as ProjectAllWorkView.
+  const catyStatus = useCatySearch((s) => s.status);
+  const catyStoreProjectKey = useCatySearch((s) => s.projectKey);
+  const catyFilter = useCatySearch((s) => s.filter);
+  const catySecondaryQuery = useCatySearch((s) => s.secondaryQuery);
+  const catyActiveForThisProject =
+    catyStatus === 'ready' && catyStoreProjectKey === projectKey;
+
   const filteredVisibleRows: BacklogItem[] = useMemo(() => {
-    if (!hideDoneItems) return visibleRows;
-    return visibleRows.filter((r) => !/^(done|closed)$/i.test((r.status || '').trim()));
-  }, [visibleRows, hideDoneItems]);
+    let rows = visibleRows;
+    if (hideDoneItems) {
+      rows = rows.filter((r) => !/^(done|closed)$/i.test((r.status || '').trim()));
+    }
+    if (catyActiveForThisProject && catyFilter) {
+      rows = applyCatyFilterBacklog(rows, catyFilter);
+      const q = catySecondaryQuery.trim().toLowerCase();
+      if (q.length > 0) {
+        rows = rows.filter((r) => {
+          const title = (r.title ?? '').toLowerCase();
+          const key = (r.key ?? '').toLowerCase();
+          return title.includes(q) || key.includes(q);
+        });
+      }
+    }
+    return rows;
+  }, [
+    visibleRows,
+    hideDoneItems,
+    catyActiveForThisProject,
+    catyFilter,
+    catySecondaryQuery,
+  ]);
 
   // ── Sorting ──
   const sortedRows: BacklogItem[] = useMemo(() => {
@@ -2597,6 +2623,18 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
           the eye a clear "controls finished" rest before the table.
           Earlier 10px-bottom padding ran the toolbar baseline almost
           flush with the column header row (≈6px gap visually). */}
+      {/* 2026-05-18 — Ask Caty inline bar (Jira-parity placement).
+          Opens when the toolbar's Ask CATY button is clicked. Filter
+          results land in useCatySearch and are applied to filteredVisibleRows
+          above. The bar visually replaces the toolbar row; the toolbar
+          is hidden via display:none when the bar is open, preserving
+          all its component state (search input, type filter, etc.). */}
+      {askCatyOpen && (
+        <AskCatyInlineBar
+          projectKey={projectKey}
+          onClose={() => setAskCatyOpen(false)}
+        />
+      )}
       <div style={{
         // Apr 27 2026 (jira-compare regression iter 3 — left/right padding
         // re-probed). Probe deltas: toolbar items (Search starts x=72,
@@ -2616,7 +2654,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
         // sibling wrapper directly after this div.
         padding: '32px 24px 32px',
         marginBottom: 4,
-        display: 'flex',
+        display: askCatyOpen ? 'none' : 'flex',
         gap: 12,
         alignItems: 'center',
         borderBottom: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
@@ -2634,27 +2672,20 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             digital-transformation.atlassian.net BAU list view). Catalyst
             previously rendered Ask CATY in the global top nav — wrong
             location. Moved here per jira-compare 2026-05-12 finding. */}
-        <Tooltip content="Ask CATY about this backlog" position="bottom">
+        <Tooltip content="Ask Caty about this backlog" position="bottom">
           <Button
             appearance="subtle"
-            isLoading={createCatyConversation.isPending}
-            onClick={handleAskCaty}
+            spacing="compact"
+            onClick={() => setAskCatyOpen(true)}
             iconBefore={
-              <span style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 16,
-                height: 16,
-                color: token('color.icon.accent.purple', '#8270DB'),
-                fontSize: 14,
-                lineHeight: 1,
-              }}>
-                ✦
-              </span>
+              <AskCatyAiIcon
+                label=""
+                color="var(--ds-text-subtlest, #6B778C)"
+              />
             }
+            testId="catalyst-backlog-toolbar.ask-caty"
           >
-            Ask CATY
+            Ask Caty
           </Button>
         </Tooltip>
         {/* Apr 28, 2026 (jira-compare cycle 2 T5): wrapper width fixed

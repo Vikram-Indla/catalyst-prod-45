@@ -14,32 +14,152 @@
  * silently dropping users onto a different editor whose output shape
  * we do not accept.
  */
-import React, { Suspense, useState, useCallback, startTransition, lazy, useMemo, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import type { AttachmentUploadMeta } from '@/components/shared/rich-text/atlaskit/AdfDescriptionField';
+import React, {
+  Suspense,
+  useState,
+  useCallback,
+  startTransition,
+  lazy,
+  useMemo,
+  useEffect,
+} from "react";
+import { useAuth } from "@/hooks/useAuth";
+import type { AttachmentUploadMeta } from "@/components/shared/rich-text/atlaskit/AdfDescriptionField";
 /* jira-compare 2026-05-03 (Council P3.2): lucide ChevronRight + Pencil
    removed — CLAUDE.md "ADS-only inside hub scope" violation. Swapped to
    Atlaskit equivalents. Heading wrapper also dropped in favour of an
    inline H2 styled to Jira's measured "Description" label values
    (testid issue.views.issue-base.common.description.label probed
    2026-05-03: H2 / 14px / weight 500 / rgb(80,82,88) / lh ~19). */
-import EditIcon from '@atlaskit/icon/core/edit';
-import Spinner from '@atlaskit/spinner';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { adfToPlainText, isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
-import { prefetchEpicEditor } from '@/lib/atlaskitPrefetch';
-import { AdfLightRenderer, hasComplexAdfNodes } from '@/components/shared/rich-text/atlaskit/adfLightRenderer';
+// eslint-disable-next-line no-restricted-imports
+import EditIcon from "@atlaskit/icon/core/edit";
+// eslint-disable-next-line no-restricted-imports
+import Spinner from "@atlaskit/spinner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  adfToPlainText,
+  isAdfEmpty,
+} from "@/components/shared/rich-text/atlaskit/adfHelpers";
+import { prefetchEpicEditor } from "@/lib/atlaskitPrefetch";
+import {
+  AdfLightRenderer,
+  hasComplexAdfNodes,
+} from "@/components/shared/rich-text/atlaskit/adfLightRenderer";
 /* Lazy import — editor-core is ~2MB. Keep it out of the initial bundle.
    prefetchEpicEditor() on hover pre-downloads the chunk so by the time
    the user clicks, the browser has it cached and mount is near-instant.
    startTransition around setEditing(true) lets React time-slice the
    ProseMirror init without blocking the main thread. */
 const AdfDescriptionField = lazy(
-  () => import('@/components/shared/rich-text/atlaskit/AdfDescriptionField'),
+  () => import("@/components/shared/rich-text/atlaskit/AdfDescriptionField"),
 );
-import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
-import type { PhIssue } from '../types';
+import EpicDescriptionRenderer from "@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer";
+import { useCatyImprove } from "@/components/catalyst-detail-views/improve/catyImproveStore";
+import { CatyStreamingOverlay } from "@/components/catalyst-detail-views/improve/CatyStreamingOverlay";
+import type { PhIssue } from "../types";
+
+/**
+ * Minimal markdown → ADF converter for Caty's "Improve description"
+ * stream output. Handles the four block types Caty actually emits:
+ * `## Heading`, `- bullet`, `1. ordered`, plain paragraphs. Inline
+ * marks (bold/italic/code) are NOT handled — the user can edit the
+ * doc afterward to apply emphasis. Good enough for v1; a richer
+ * pipeline (e.g. via remark/rehype + ADF) is a later upgrade.
+ */
+function catyMarkdownToAdf(md: string): {
+  type: "doc";
+  version: number;
+  content: unknown[];
+} {
+  if (!md.trim()) {
+    return { type: "doc", version: 1, content: [{ type: "paragraph" }] };
+  }
+  const lines = md.split("\n");
+  const blocks: unknown[] = [];
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i] ?? "";
+    const hMatch = line.match(/^(#{1,6})\s+(.+)$/);
+    if (hMatch) {
+      blocks.push({
+        type: "heading",
+        attrs: { level: hMatch[1].length },
+        content: [{ type: "text", text: hMatch[2] }],
+      });
+      i++;
+      continue;
+    }
+    if (/^[-*]\s+/.test(line)) {
+      const items: unknown[] = [];
+      while (i < lines.length && /^[-*]\s+/.test(lines[i] ?? "")) {
+        items.push({
+          type: "listItem",
+          content: [
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: (lines[i] ?? "").replace(/^[-*]\s+/, ""),
+                },
+              ],
+            },
+          ],
+        });
+        i++;
+      }
+      blocks.push({ type: "bulletList", content: items });
+      continue;
+    }
+    if (/^\d+\.\s+/.test(line)) {
+      const items: unknown[] = [];
+      while (i < lines.length && /^\d+\.\s+/.test(lines[i] ?? "")) {
+        items.push({
+          type: "listItem",
+          content: [
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: (lines[i] ?? "").replace(/^\d+\.\s+/, ""),
+                },
+              ],
+            },
+          ],
+        });
+        i++;
+      }
+      blocks.push({ type: "orderedList", content: items });
+      continue;
+    }
+    if (!line.trim()) {
+      i++;
+      continue;
+    }
+    const paraLines: string[] = [];
+    while (
+      i < lines.length &&
+      (lines[i] ?? "").trim() &&
+      !/^(#{1,6}\s|[-*]\s|\d+\.\s)/.test(lines[i] ?? "")
+    ) {
+      paraLines.push(lines[i] ?? "");
+      i++;
+    }
+    if (paraLines.length > 0) {
+      blocks.push({
+        type: "paragraph",
+        content: [{ type: "text", text: paraLines.join(" ") }],
+      });
+    }
+  }
+  return {
+    type: "doc",
+    version: 1,
+    content: blocks.length > 0 ? blocks : [{ type: "paragraph" }],
+  };
+}
 
 /* Atlaskit description — canonical across ALL issue types.
    2026-05-03 (Council verdict): Converted lazy imports to static imports
@@ -70,10 +190,16 @@ function AtlaskitFallback({ minHeight = 80 }: { minHeight?: number }) {
      text with @atlaskit/spinner — matches Jira NIN's editor-chunk
      hydration pattern (subtle spinner, no visible English string). */
   return (
-    <div style={{
-      minHeight, paddingLeft: 20, display: 'flex', alignItems: 'center',
-      gap: 8, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
-    }}>
+    <div
+      style={{
+        minHeight,
+        paddingLeft: 20,
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        color: "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+      }}
+    >
       <Spinner size="small" label="Loading editor" />
     </div>
   );
@@ -87,19 +213,19 @@ function AtlaskitFallback({ minHeight = 80 }: { minHeight?: number }) {
    first frame of richer content is a brief text-only flash (accepted
    trade for eliminating the bespoke ADF→HTML translator). Same DOM as
    the chunk-failure fallback path. */
-function AtlaskitRendererPlaceholder({
-  plain,
-}: {
-  plain: string;
-}) {
+function AtlaskitRendererPlaceholder({ plain }: { plain: string }) {
   return (
     <div
       className="cv-desc-body"
       // Jira-measured: body 14/400, line-height 1.5, #292A2E, Atlassian Sans
       style={{
-        fontSize: 14, fontWeight: 400, color: 'var(--ds-text, #292A2E)', lineHeight: '24px',
-        fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
-        whiteSpace: 'pre-wrap',
+        fontSize: 14,
+        fontWeight: 400,
+        color: "var(--ds-text, #292A2E)",
+        lineHeight: "24px",
+        fontFamily:
+          '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
+        whiteSpace: "pre-wrap",
       }}
     >
       {plain}
@@ -110,13 +236,13 @@ function AtlaskitRendererPlaceholder({
 /* Build-ID marker so we can distinguish which deployed commit is running
    by looking at the console without checking chunk hashes. Update when
    the description surface changes materially. */
-const DESC_BUILD_ID = 'atlaskit-canonical-v218';
+const DESC_BUILD_ID = "atlaskit-canonical-v218";
 
 /* ── Scoped styles for ADF content inside CatalystView ── */
 /* Bump this version when the style block changes — forces re-injection on HMR. */
-const STYLE_ID = 'cv-desc-styles-v7';
-if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
-  const s = document.createElement('style');
+const STYLE_ID = "cv-desc-styles-v7";
+if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
+  const s = document.createElement("style");
   s.id = STYLE_ID;
   s.textContent = `
     /* Scoped ADF content styles — target BOTH the Atlaskit renderer path
@@ -279,6 +405,27 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
     [data-testid="comment-cancel-button"] {
       font-weight: 500 !important;
     }
+
+    /* Perf — pencil-icon hover affordance via pure CSS instead of a
+       React useState(hovered) flip. Avoids a parent re-render on every
+       mouse-enter / mouse-leave of the section header, which was
+       reconciling through the entire editor subtree (cheap per render
+       but multiplied by every mouse twitch). */
+    .cv-desc-header .cv-desc-edit-btn {
+      opacity: 0;
+      transition:
+        opacity 150ms cubic-bezier(0.15, 1, 0.3, 1),
+        color 150ms cubic-bezier(0.15, 1, 0.3, 1),
+        background 150ms cubic-bezier(0.15, 1, 0.3, 1);
+    }
+    .cv-desc-header:hover .cv-desc-edit-btn,
+    .cv-desc-header:focus-within .cv-desc-edit-btn {
+      opacity: 1;
+    }
+    .cv-desc-edit-btn:hover {
+      color: #292A2E !important;
+      background: var(--ds-surface-sunken, #F4F5F7) !important;
+    }
   `;
   document.head.appendChild(s);
 }
@@ -289,15 +436,31 @@ interface CatalystDescriptionSectionProps {
   label?: string;
 }
 
-export function CatalystDescriptionSection({ issue, label = 'Description' }: CatalystDescriptionSectionProps) {
+export function CatalystDescriptionSection({
+  issue,
+  label = "Description",
+}: CatalystDescriptionSectionProps) {
   const [editing, setEditing] = useState(false);
-  const [hovered, setHovered] = useState(false);
+  // Hover affordance moved to pure CSS (`.cv-desc-header:hover .cv-desc-edit-btn`).
+  // Keeping a `useState(hovered)` here forced the whole section to
+  // reconcile on every mouse twitch over the header band.
   const queryClient = useQueryClient();
+
+  // Caty-improve store — when the dropdown fires, the payload becomes
+  // truthy. We only render the overlay if the payload's issueKey
+  // matches THIS section's issue (multiple detail views could be open
+  // in tabs; each owns its own description).
+  const catyPayload = useCatyImprove((s) => s.payload);
+  const stopCatyImprove = useCatyImprove((s) => s.stop);
+  const catyActiveForThisIssue =
+    catyPayload != null &&
+    issue?.issue_key != null &&
+    catyPayload.issueKey === issue.issue_key;
 
   // Idle-time prefetch: kick off editor chunk download after paint so that
   // by the time the user clicks to edit, the ~2MB chunk is already cached.
   useEffect(() => {
-    if (typeof requestIdleCallback !== 'undefined') {
+    if (typeof requestIdleCallback !== "undefined") {
       const id = requestIdleCallback(() => prefetchEpicEditor());
       return () => cancelIdleCallback(id);
     }
@@ -329,20 +492,62 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
     mutationFn: async (adfJson: string) => {
       const parsed = adfJson ? JSON.parse(adfJson) : null;
       await supabase
-        .from('ph_issues')
+        .from("ph_issues")
         .update({ description_adf: parsed })
-        .eq('issue_key', issue!.issue_key);
+        .eq("issue_key", issue!.issue_key);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', issue?.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["cv-issue-detail", issue?.id],
+      });
       setEditing(false);
     },
   });
 
-  const handleSave = useCallback((adfJson: string) => {
-    if (!issue) return;
-    saveDescriptionMutation.mutate(adfJson);
-  }, [issue, saveDescriptionMutation]);
+  const handleSave = useCallback(
+    (adfJson: string) => {
+      if (!issue) return;
+      saveDescriptionMutation.mutate(adfJson);
+    },
+    [issue, saveDescriptionMutation],
+  );
+
+  /**
+   * Caty accept handler — converts the streamed markdown to ADF for
+   * the description column and writes acceptance criteria as plain
+   * text. Both writes go in one transaction-like call so the UI
+   * doesn't flicker mid-save.
+   */
+  const handleCatyApply = useCallback(
+    async (
+      _fullMarkdown: string,
+      parts: { description: string; acceptanceCriteria: string },
+    ) => {
+      if (!issue?.issue_key) return;
+      const adfDoc = catyMarkdownToAdf(parts.description);
+      const update: Record<string, unknown> = { description_adf: adfDoc };
+      if (parts.acceptanceCriteria) {
+        update.acceptance_criteria = parts.acceptanceCriteria;
+      }
+      const { error } = await supabase
+        .from("ph_issues")
+        .update(update as never)
+        .eq("issue_key", issue.issue_key);
+      if (error) {
+        console.error("[CatalystDescriptionSection] Caty apply failed", error);
+        return;
+      }
+      stopCatyImprove();
+      queryClient.invalidateQueries({
+        queryKey: ["cv-issue-detail", issue.id],
+      });
+    },
+    [issue?.issue_key, issue?.id, queryClient, stopCatyImprove],
+  );
+
+  const handleCatyCancel = useCallback(() => {
+    stopCatyImprove();
+  }, [stopCatyImprove]);
 
   const { user } = useAuth();
 
@@ -359,11 +564,10 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
    * so the user knows. This is the same dual-action pattern the canonical
    * AttachmentsSection uses for storage+DB writes.
    */
-  const handleInlineAttachmentUploaded = useCallback(async (meta: AttachmentUploadMeta) => {
-    if (!issue?.id || !user?.id) return;
-    const { error } = await (supabase as any)
-      .from('ph_attachments')
-      .insert({
+  const handleInlineAttachmentUploaded = useCallback(
+    async (meta: AttachmentUploadMeta) => {
+      if (!issue?.id || !user?.id) return;
+      const { error } = await supabase.from("ph_attachments").insert({
         work_item_id: issue.id,
         file_name: meta.fileName,
         file_size: meta.fileSize,
@@ -371,13 +575,17 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
         storage_path: meta.storagePath,
         uploaded_by: user.id,
       });
-    if (error) {
-       
-      console.error('[CatalystDescriptionSection] ph_attachments insert failed', error);
-      return;
-    }
-    queryClient.invalidateQueries({ queryKey: ['ph-attachments', issue.id] });
-  }, [issue?.id, user?.id, queryClient]);
+      if (error) {
+        console.error(
+          "[CatalystDescriptionSection] ph_attachments insert failed",
+          error,
+        );
+        return;
+      }
+      queryClient.invalidateQueries({ queryKey: ["ph-attachments", issue.id] });
+    },
+    [issue?.id, user?.id, queryClient],
+  );
 
   const handleCancel = useCallback(() => {
     setEditing(false);
@@ -389,53 +597,95 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
           Jira never collapses the description section; chevron removed for parity).
           Pencil edit button appears on hover. */}
       <div
-        style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8, userSelect: 'none' }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+        className="cv-desc-header"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 4,
+          marginBottom: 8,
+          userSelect: "none",
+        }}
       >
         <h2
           data-testid="catalyst-description-section.label"
           style={{
-            margin: 0, padding: 0, flex: 1,
+            margin: 0,
+            padding: 0,
+            flex: 1,
             /* jira-compare 2026-05-12 re-probe: Description h2 is 14px/500/rgb(80,82,88).
                TreeWalker text-node probe confirmed h2 is the direct parent of the "Description"
                text node at 14px/500. Differs from Key details/Subtasks/LWI/Activity (all 16px/653). */
-            fontSize: 14, fontWeight: 500, lineHeight: '20px',
-            color: 'var(--ds-text-subtle, #505258)',
-            fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+            fontSize: 14,
+            fontWeight: 500,
+            lineHeight: "20px",
+            color: "var(--ds-text-subtle, #505258)",
+            fontFamily:
+              '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
           }}
         >
           {label}
         </h2>
         {!editing && issue && (
           <button
+            className="cv-desc-edit-btn"
             onClick={() => startTransition(() => setEditing(true))}
+            onMouseEnter={prefetchEpicEditor}
+            onFocus={prefetchEpicEditor}
             title="Edit description"
             style={{
-              background: 'none', border: 'none', cursor: 'pointer',
-              padding: '4px 6px', borderRadius: 4, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))',
-              display: 'flex', alignItems: 'center',
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: "4px 6px",
+              borderRadius: 4,
+              color:
+                "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))",
+              display: "flex",
+              alignItems: "center",
               opacity: hovered ? 1 : 0,
-              transition: 'opacity 150ms cubic-bezier(0.15,1,0.3,1), color 150ms cubic-bezier(0.15,1,0.3,1), background 150ms cubic-bezier(0.15,1,0.3,1)',
+              transition:
+                "opacity 150ms cubic-bezier(0.15,1,0.3,1), color 150ms cubic-bezier(0.15,1,0.3,1), background 150ms cubic-bezier(0.15,1,0.3,1)",
             }}
-            onMouseEnter={e => {
-              e.currentTarget.style.color = 'var(--ds-text, #292A2E)';
-              e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))';
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "var(--ds-text, #292A2E)";
+              e.currentTarget.style.background =
+                "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
               prefetchEpicEditor();
             }}
-            onFocus={() => { prefetchEpicEditor(); }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))'; e.currentTarget.style.background = 'none'; }}
+            onFocus={() => {
+              prefetchEpicEditor();
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color =
+                "var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))";
+              e.currentTarget.style.background = "none";
+            }}
           >
             <EditIcon label="Edit description" />
           </button>
         )}
       </div>
 
-      {editing && issue ? (
+      {catyActiveForThisIssue && catyPayload ? (
+        <CatyStreamingOverlay
+          key={catyPayload.issueKey}
+          issueKey={catyPayload.issueKey}
+          issueType={catyPayload.issueType}
+          issueSummary={catyPayload.issueSummary}
+          currentDescription={catyPayload.currentDescription}
+          currentAcceptanceCriteria={catyPayload.currentAcceptanceCriteria}
+          attachmentUrls={catyPayload.attachmentUrls}
+          improveSubType={catyPayload.improveSubType}
+          onApply={handleCatyApply}
+          onCancel={handleCatyCancel}
+        />
+      ) : editing && issue ? (
         <div>
           <Suspense fallback={<AtlaskitFallback minHeight={240} />}>
             <AdfDescriptionField
-              initialContent={issue.description_adf ?? issue.description_text ?? null}
+              initialContent={
+                issue.description_adf ?? issue.description_text ?? null
+              }
               onSave={handleSave}
               onCancel={handleCancel}
               workItemId={issue.id}
@@ -447,23 +697,32 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
         </div>
       ) : isEmpty ? (
         <div
-          onClick={() => { if (issue) startTransition(() => setEditing(true)); }}
+          onClick={() => {
+            if (issue) startTransition(() => setEditing(true));
+          }}
           style={{
             fontSize: 14,
-            color: 'var(--ds-text-subtlest, #97A0AF)',
-            fontStyle: 'normal',
-            minHeight: 40, cursor: issue ? 'pointer' : 'default',
-            borderRadius: 4, padding: '8px 0',
-            transition: 'background 150ms cubic-bezier(0.15,1,0.3,1)',
+            color: "var(--ds-text-subtlest, #97A0AF)",
+            fontStyle: "normal",
+            minHeight: 40,
+            cursor: issue ? "pointer" : "default",
+            borderRadius: 4,
+            padding: "8px 0",
+            transition: "background 150ms cubic-bezier(0.15,1,0.3,1)",
           }}
-          onMouseEnter={e => {
+          onMouseEnter={(e) => {
             if (issue) {
-              e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))';
+              e.currentTarget.style.background =
+                "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
               prefetchEpicEditor();
             }
           }}
-          onPointerDown={() => { if (issue) prefetchEpicEditor(); }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+          onPointerDown={() => {
+            if (issue) prefetchEpicEditor();
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
+          }}
         >
           Add a description...
         </div>
@@ -472,25 +731,42 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
           role="button"
           tabIndex={0}
           style={{
-            minHeight: 40, cursor: 'text', borderRadius: 4,
-            position: 'relative',
-            transition: 'background 150ms cubic-bezier(0.15,1,0.3,1)',
+            minHeight: 40,
+            cursor: "text",
+            borderRadius: 4,
+            position: "relative",
+            transition: "background 150ms cubic-bezier(0.15,1,0.3,1)",
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; prefetchEpicEditor(); }}
-          onPointerDown={() => { if (issue) prefetchEpicEditor(); }}
-          onClick={() => { if (issue) startTransition(() => setEditing(true)); }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background =
+              "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
+            prefetchEpicEditor();
+          }}
+          onPointerDown={() => {
+            if (issue) prefetchEpicEditor();
+          }}
+          onClick={() => {
+            if (issue) startTransition(() => setEditing(true));
+          }}
           onKeyDown={(e) => {
-            if ((e.key === 'Enter' || e.key === ' ') && issue) {
+            if ((e.key === "Enter" || e.key === " ") && issue) {
               e.preventDefault();
               startTransition(() => setEditing(true));
             }
           }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
+          }}
           title="Click to edit"
         >
           {isComplex ? (
-            <Suspense fallback={<AtlaskitRendererPlaceholder plain={plainText} />}>
-              <EpicDescriptionRenderer content={descSource} issueKey={issue?.issue_key} />
+            <Suspense
+              fallback={<AtlaskitRendererPlaceholder plain={plainText} />}
+            >
+              <EpicDescriptionRenderer
+                content={descSource}
+                issueKey={issue?.issue_key}
+              />
             </Suspense>
           ) : (
             <AdfLightRenderer adf={descSource} />

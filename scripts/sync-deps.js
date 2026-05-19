@@ -76,8 +76,19 @@ function markSynced(fp) {
   }
 }
 
+// Node 20+ refuses to spawn .bat/.cmd files (CVE-2024-27980) unless we
+// opt into `shell: true`. On Windows npm and bun ship as `npm.cmd` /
+// `bun.cmd` shims, so EVERY child_process call below has to set this
+// flag on Windows or it'll fail instantly with EINVAL — which surfaced
+// as the cryptic "[sync-deps] npm install… FAILED after 0.0s" line.
+const WIN = process.platform === 'win32';
+const winShell = WIN ? { shell: true } : {};
+
 function hasCmd(cmd) {
-  const r = spawnSync(process.platform === 'win32' ? 'where' : 'which', [cmd], { stdio: 'ignore' });
+  const r = spawnSync(WIN ? 'where' : 'which', [cmd], {
+    stdio: 'ignore',
+    ...winShell,
+  });
   return r.status === 0;
 }
 
@@ -153,13 +164,23 @@ function cleanStaleStagingDirs() {
 function runQuiet(cmd, args, label) {
   const start = Date.now();
   process.stderr.write(`[sync-deps] ${label}… `);
-  const r = spawnSync(cmd, args, { cwd: root, encoding: 'utf8' });
+  const r = spawnSync(cmd, args, {
+    cwd: root,
+    encoding: 'utf8',
+    ...winShell,
+  });
   const secs = ((Date.now() - start) / 1000).toFixed(1);
   if (r.status === 0) {
     process.stderr.write(`done in ${secs}s\n`);
     return true;
   }
   process.stderr.write(`FAILED after ${secs}s\n`);
+  // Surface the spawn error itself (ENOENT, EINVAL from the .cmd-spawn
+  // restriction, etc.) — without this the tail of stderr is empty and
+  // the user has nothing to act on.
+  if (r.error) {
+    process.stderr.write(`[sync-deps] spawn error: ${r.error.message}\n`);
+  }
   const tail = (r.stderr || r.stdout || '').split('\n').filter(Boolean).slice(-25);
   if (tail.length) {
     process.stderr.write('[sync-deps] last output:\n');
