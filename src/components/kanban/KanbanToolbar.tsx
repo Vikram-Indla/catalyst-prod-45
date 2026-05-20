@@ -33,7 +33,7 @@ export function AvatarStackFilter({ allAssignees, selected, onChange, avatarsByN
             title={a.name}
             className="focus-visible:ring-2 focus-visible:ring-offset-1"
             style={{
-              position: 'relative', marginLeft: i === 0 ? 0 : -6, zIndex: top.length - i,
+              position: 'relative', marginLeft: i === 0 ? 0 : -8, zIndex: top.length - i,
               width: 30, height: 30, borderRadius: '50%',
               border: isSel ? `2px solid ${tk.selectedAccent}` : `2px solid ${tk.surfaceBg}`,
               background: tk.surfaceBg, cursor: 'pointer', padding: 0,
@@ -49,8 +49,8 @@ export function AvatarStackFilter({ allAssignees, selected, onChange, avatarsByN
       })}
       {overflow > 0 && (
         <span style={{
-          marginLeft: 4, fontSize: 11, fontWeight: 600, color: tk.textMuted,
-          background: tk.badgeBg, borderRadius: 10, padding: '2px 8px',
+          marginLeft: 8, fontSize: 11, fontWeight: 600, color: tk.textMuted,
+          background: tk.badgeBg, borderRadius: 10, padding: '4px 8px',
           lineHeight: '18px', whiteSpace: 'nowrap',
         }}>+{overflow}</span>
       )}
@@ -107,7 +107,7 @@ export function EpicFilterDropdown({ epics, selected, onChange, tk }: {
               {q && (
                 <button onClick={() => setQ('')} style={{
                   position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
-                  background: 'none', border: 'none', cursor: 'pointer', padding: 2,
+                  background: 'none', border: 'none', cursor: 'pointer', padding: '8px',
                   color: tk.textMuted, display: 'flex',
                 }}>
                   <X size={14} />
@@ -227,7 +227,7 @@ export function QuickFilterDropdown({ selected, onChange, tk }: {
       <button onClick={() => setOpen(p => !p)}
         className="focus-visible:ring-2 focus-visible:ring-offset-1"
         style={{
-          display: 'inline-flex', alignItems: 'center', gap: 5, height: 34, padding: '0 12px',
+          display: 'inline-flex', alignItems: 'center', gap: 8, height: 34, padding: '0 12px',
           borderRadius: 6, border: active ? `2px solid ${tk.selectedAccent}` : `1px solid ${tk.border}`,
           background: active ? tk.dropHighlight : tk.surfaceBg, color: active ? tk.selectedAccent : tk.textSecondary,
           fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
@@ -303,7 +303,7 @@ export function GroupByBtn({ value, onChange, tk }: {
       <button onClick={() => setOpen(p => !p)}
         className="focus-visible:ring-2 focus-visible:ring-offset-1"
         style={{
-          display: 'inline-flex', alignItems: 'center', gap: 5, height: 34, padding: '0 14px',
+          display: 'inline-flex', alignItems: 'center', gap: 8, height: 34, padding: '0 14px',
           borderRadius: 6, border: active ? `2px solid ${tk.selectedAccent}` : `1px solid ${tk.border}`,
           background: active ? tk.dropHighlight : tk.surfaceBg, color: active ? tk.selectedAccent : tk.textSecondary,
           fontSize: 13.5, fontWeight: active ? 600 : 500, cursor: 'pointer',
@@ -313,7 +313,7 @@ export function GroupByBtn({ value, onChange, tk }: {
       </button>
       {open && (
         <DropdownPanel width={220} align="right" tk={tk}>
-          <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: tk.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Group by</div>
+          <div style={{ padding: '8px 12px', fontSize: 11, fontWeight: 700, color: tk.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Group by</div>
           {GRP_OPTS.map(o => {
             const sel = value === o.key;
             return (
@@ -367,7 +367,7 @@ function FilterTrigger({ label, count, active, onClick, tk }: {
     <button onClick={onClick}
       className="focus-visible:ring-2 focus-visible:ring-offset-1"
       style={{
-        display: 'inline-flex', alignItems: 'center', gap: 5, height: 34, padding: '0 12px',
+        display: 'inline-flex', alignItems: 'center', gap: 8, height: 34, padding: '0 12px',
         borderRadius: 6, border: active ? `2px solid ${tk.selectedAccent}` : `1px solid ${tk.border}`,
         background: active ? tk.dropHighlight : tk.surfaceBg, color: active ? tk.selectedAccent : tk.textSecondary,
         fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
