@@ -4,7 +4,7 @@
  * Right side: collapsible Details sidebar (Assignee, Priority, Reporter, Labels, Fix versions, MDT Ref)
  * Implements recommendations #11-16, #17, #19-26, #28-30
  */
-import { useState, useMemo, useRef, useEffect, useCallback, Suspense, lazy } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { ChevronDown, ChevronRight, ChevronLeft, Link2, ArrowRightLeft, MoreHorizontal, Pencil, Plus, MessageSquare, History as HistoryIcon, FileText, Send, Eye, Share2, Bold, Italic, List, Code2, Link as LinkIcon, Smile, Paperclip, Undo2, Redo2, ArrowUpDown, ArrowRight, CheckSquare, Globe, Palette, Search, X, Flag, Zap, SquarePen } from '@/lib/atlaskit-icons';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -36,19 +36,10 @@ import { FlagPopover, isFlagged as checkFlagged, CloneWizard, MoveWizard, Archiv
 // 2026-04-20 — TipTap CatalystRichTextEditor import removed. Atlaskit
 // <EpicDescriptionEditor> is the sole composer (USER DIRECTIVE).
 // AtlaskitBoundary removed along with it — no editor fallback path.
-import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
-import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
-import Spinner from '@atlaskit/spinner';
 /* §19 chokepoint — ALL user-avatar lookups on this surface resolve
    through `resolveAvatarUrl`. Never read `profiles.avatar_url`
    (Gravatar CDN, banned) and never display an external URL. */
 import { resolveAvatarUrl } from '@/lib/avatars';
-/* Canonical Atlaskit editor — lazy-loaded, direct file import (NOT the
-   barrel) so Rollup keeps the ~2MB @atlaskit/editor-core chunk isolated
-   from the renderer graph. Matches CatalystDescriptionSection. */
-const AdfDescriptionField = lazy(
-  () => import('@/components/shared/rich-text/atlaskit/AdfDescriptionField'),
-);
 import '@/modules/project-work-hub/components/dialogs/story-detail-extensions.css';
 import { ActivityPanelPilot } from './activity/ActivityPanelPilot';
 /* Catalyst Defect anatomy — unifies the All Work view with the
@@ -58,6 +49,7 @@ import { ActivityPanelPilot } from './activity/ActivityPanelPilot';
    issue_type is Bug or Defect. */
 import { CatalystDefectFields } from '@/components/catalyst-detail-views/defect/CatalystDefectFields';
 import type { PhIssue } from '@/components/catalyst-detail-views/shared/types';
+import { CatalystDescriptionSection } from '@/components/catalyst-detail-views/shared/sections/CatalystDescriptionSection';
 
 
 interface Props {
@@ -82,7 +74,13 @@ interface Props {
   projectId?: string;
 }
 
-const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1'];
+const AVATAR_COLORS = [
+  'var(--ds-background-accent-blue-bold, #4C6EF5)',
+  'var(--ds-background-accent-orange-bold, #FA8C16)',
+  'var(--ds-background-accent-green-bold, #52C41A)',
+  'var(--ds-background-accent-magenta-bold, #EB2F96)',
+  'var(--ds-background-accent-purple-bold, #722ED1)',
+];
 function avatarBg(name: string) { return AVATAR_COLORS[name.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_COLORS.length]; }
 function initials(name: string) { return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(); }
 function fmtRel(d: string | null) { if (!d) return ''; try { return formatDistanceToNow(new Date(d), { addSuffix: true }); } catch { return ''; } }
@@ -113,13 +111,13 @@ function StatusPill({ status, statusCategory, issueId, onStatusChange }: { statu
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const cat = (statusCategory ?? '').toLowerCase();
-  let bg = 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))';
-  const color = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))';
-  if (cat.includes('done') || cat === 'complete') { bg = '#1B845D'; }
-  else if (cat.includes('progress') || cat === 'indeterminate') { bg = '#0C66E4'; }
-  else if (status.toLowerCase().includes('beta')) { bg = '#1B845D'; }
-  else if (status.toLowerCase().includes('done') || status.toLowerCase().includes('complete')) { bg = '#1B845D'; }
-  else if (status.toLowerCase().includes('progress') || status.toLowerCase().includes('implementation') || status.toLowerCase().includes('review') || status.toLowerCase().includes('requirement')) { bg = '#0C66E4'; }
+  let bg = 'var(--ds-text-subtle, #44546F)';
+  const color = 'var(--ds-text-inverse, #fff)';
+  if (cat.includes('done') || cat === 'complete') { bg = 'var(--ds-background-success-bold, #1F845A)'; }
+  else if (cat.includes('progress') || cat === 'indeterminate') { bg = 'var(--ds-background-information-bold, #0C66E4)'; }
+  else if (status.toLowerCase().includes('beta')) { bg = 'var(--ds-background-success-bold, #1F845A)'; }
+  else if (status.toLowerCase().includes('done') || status.toLowerCase().includes('complete')) { bg = 'var(--ds-background-success-bold, #1F845A)'; }
+  else if (status.toLowerCase().includes('progress') || status.toLowerCase().includes('implementation') || status.toLowerCase().includes('review') || status.toLowerCase().includes('requirement')) { bg = 'var(--ds-background-information-bold, #0C66E4)'; }
 
   useEffect(() => {
     if (!open) return;
@@ -133,7 +131,11 @@ function StatusPill({ status, statusCategory, issueId, onStatusChange }: { statu
     onStatusChange?.(newStatus);
   };
 
-  const groupLabelColor: Record<string, string> = { 'TO DO': '#42526E', 'IN PROGRESS': '#0C66E4', 'DONE': '#1B845D' };
+  const groupLabelColor: Record<string, string> = {
+    'TO DO': 'var(--ds-text-subtle, #42526E)',
+    'IN PROGRESS': 'var(--ds-background-information-bold, #0C66E4)',
+    'DONE': 'var(--ds-background-success-bold, #1F845A)',
+  };
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
@@ -145,12 +147,12 @@ function StatusPill({ status, statusCategory, issueId, onStatusChange }: { statu
         <div style={{
           position: 'absolute', top: '100%', left: 0, marginTop: 4,
           background: 'var(--ds-surface, #fff)', borderRadius: 6, width: 220,
-          boxShadow: '0 8px 24px rgba(9,30,66,.25)', zIndex: 80, padding: '4px 0',
-          border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', maxHeight: 320, overflowY: 'auto',
+          boxShadow: 'var(--ds-shadow-overlay, 0 8px 24px rgba(9,30,66,.25))', zIndex: 80, padding: '4px 0',
+          border: '1px solid var(--ds-border, #DFE1E6)', maxHeight: 320, overflowY: 'auto',
         }}>
           {STATUS_OPTION_GROUPS.map(group => (
             <div key={group.groupLabel}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: groupLabelColor[group.groupLabel] ?? '#42526E', padding: '8px 12px 4px', textTransform: 'uppercase' as const, letterSpacing: '0.03em' }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: groupLabelColor[group.groupLabel] ?? 'var(--ds-text-subtle, #42526E)', padding: '8px 12px 4px', letterSpacing: '0.03em' }}>
                 {group.groupLabel}
               </div>
               {group.statuses.map(s => (
@@ -159,12 +161,12 @@ function StatusPill({ status, statusCategory, issueId, onStatusChange }: { statu
                   onClick={() => handleSelect(s)}
                   style={{
                     display: 'block', width: '100%', textAlign: 'left',
-                    padding: '6px 12px', fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
-                    background: s === status ? '#E9F2FF' : 'transparent',
+                    padding: '8px 12px', fontSize: 13, color: 'var(--ds-text, #172B4D)',
+                    background: s === status ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
                     border: 'none', cursor: 'pointer', fontWeight: s === status ? 600 : 400,
                   }}
-                  onMouseOver={e => (e.currentTarget.style.background = s === status ? '#E9F2FF' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
-                  onMouseOut={e => (e.currentTarget.style.background = s === status ? '#E9F2FF' : 'transparent')}
+                  onMouseOver={e => (e.currentTarget.style.background = s === status ? 'var(--ds-background-selected, #E9F2FF)' : 'var(--ds-surface-sunken, #F4F5F7)')}
+                  onMouseOut={e => (e.currentTarget.style.background = s === status ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent')}
                 >
                   {s}
                 </button>
@@ -187,7 +189,6 @@ export function IssueContentView({
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [descEditMode, setDescEditMode] = useState(false);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [showConvertWizard, setShowConvertWizard] = useState(false);
   const [showFlagPopover, setShowFlagPopover] = useState(false);
@@ -407,8 +408,8 @@ export function IssueContentView({
   }
 
   if (loading) {
-    return <div className="awBody" style={{ padding: 20 }}>
-      {[1,2,3].map(i => <div key={i} style={{ width: `${80-i*15}%`, height: 14, borderRadius: 3, background: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', marginBottom: 10 }} />)}
+    return <div className="awBody" style={{ padding: 16 }}>
+      {[1,2,3].map(i => <div key={i} style={{ width: `${80-i*15}%`, height: 16, borderRadius: 3, background: 'var(--ds-border, var(--cp-border, var(--cp-bg-sunken, #E2E8F0)))', marginBottom: 8 }} />)}
     </div>;
   }
 
@@ -485,7 +486,7 @@ export function IssueContentView({
           <div className="awActions" ref={addMenuRef} style={{ position: 'relative' }}>
             <button
               className="awPill"
-              style={{ padding: '0 6px' }}
+              style={{ padding: '0 8px' }}
               onClick={() => setShowAddMenu(o => !o)}
             >
               <Plus style={{ width: 14, height: 14 }} />
@@ -503,14 +504,14 @@ export function IssueContentView({
               const primary = filtered.filter(i => i.section === 'primary');
               const secondary = filtered.filter(i => i.section === 'secondary');
               return (
-                <div style={{ position: 'absolute', left: 0, top: 34, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4, boxShadow: '0px 8px 12px rgba(30,31,33,0.15), 0px 0px 1px rgba(30,31,33,0.31)', width: 266, zIndex: 400, padding: 0 }}>
+                <div style={{ position: 'absolute', left: 0, top: 32, background: 'var(--ds-surface, #fff)', borderRadius: 4, boxShadow: 'var(--ds-shadow-overlay, 0px 8px 12px rgba(9,30,66,.15))', width: 266, zIndex: 400, padding: 0 }}>
                   <div style={{ margin: '4px 8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', background: 'var(--ds-surface, #fff)', border: '2px solid #85B8FF', borderRadius: 3, padding: '1px 0' }}>
-                      <Search size={14} color="#626F86" style={{ marginLeft: 8, flexShrink: 0 }} />
+                    <div style={{ display: 'flex', alignItems: 'center', background: 'var(--ds-surface, #fff)', border: '2px solid var(--ds-border-focused, #85B8FF)', borderRadius: 3, padding: 0 }}>
+                      <Search size={14} color="var(--ds-text-subtle, #626F86)" style={{ marginLeft: 8, flexShrink: 0 }} />
                       <input type="text" placeholder="Find menu item" value={addMenuSearch} onChange={e => setAddMenuSearch(e.target.value)} autoFocus
                         style={{ background: 'transparent', border: 'none', outline: 'none', boxShadow: 'none', padding: '4px 4px 4px 8px', fontSize: 14, color: atlText, width: '100%', height: 28, fontFamily: 'inherit' }} />
                       {addMenuSearch && (
-                        <button onClick={() => setAddMenuSearch('')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: atlText, display: 'flex', alignItems: 'center', padding: 0, marginRight: 6 }}>
+                        <button onClick={() => setAddMenuSearch('')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: atlText, display: 'flex', alignItems: 'center', padding: 0, marginRight: 8 }}>
                           <X size={14} />
                         </button>
                       )}
@@ -602,7 +603,7 @@ export function IssueContentView({
                         onUpdate={() => { queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); queryClient.invalidateQueries({ queryKey: ['allwork-items'] }); }}
                       />
                     ) : (
-                      <span style={{ fontSize: 14, color: '#7A869A' }}>None</span>
+                      <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, #7A869A)' }}>None</span>
                     )}
                   </div>
                 </div>
@@ -635,110 +636,18 @@ export function IssueContentView({
             </div>
           )}
 
-          {/* ── Description (Story Detail Modal parity — ADF rich text with edit mode) ── */}
-          <div className="awSection">
-            <div className="awSectionHead" onClick={() => toggle('desc')}>
-              <span className="awSectionLabel">
-                {collapsed.desc ? <ChevronRight style={{ width: 16, height: 16 }} /> : <ChevronDown style={{ width: 16, height: 16 }} />}
-                Description
-              </span>
-            </div>
-            {!collapsed.desc && (
-              <div className="awSectionBody">
-                {descEditMode ? (
-                  /* ── Edit mode — Atlaskit editor only (USER DIRECTIVE
-                     2026-04-20). No TipTap fallback. If the
-                     @atlaskit/editor-core chunk fails to load the
-                     Suspense fallback stays visible and the error is
-                     surfaced in the console for a fix, rather than
-                     silently downgrading to an editor whose ADF
-                     emission shape this app no longer accepts. */
-                  <div style={{ position: 'relative', borderRadius: 3, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
-                    <Suspense
-                      fallback={
-                        <div
-                          style={{
-                            minHeight: 150,
-                            padding: '8px 0',
-                            color: 'var(--ds-text-subtlest, #626F86)',
-                            fontSize: 13,
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 8,
-                          }}
-                          role="status"
-                          aria-live="polite"
-                        >
-                          <Spinner size="small" />
-                          <span>Loading editor…</span>
-                        </div>
-                      }
-                    >
-                      <AdfDescriptionField
-                        initialContent={(item as any)?.description_adf ?? item?.description_text ?? null}
-                        workItemId={item?.id ?? ''}
-                        onSave={(adfJson) => {
-                          if (!item?.id) { setDescEditMode(false); return; }
-                          const parsed = adfJson ? JSON.parse(adfJson) : null;
-                          supabase.from('ph_issues').update({ description_adf: parsed }).eq('id', item.id).then(() => {
-                            queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v3'] });
-                            queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
-                            queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
-                            toast.success('Description saved');
-                          });
-                          setDescEditMode(false);
-                        }}
-                        onCancel={() => setDescEditMode(false)}
-                        placeholder="Add a description..."
-                        onAttachmentUploaded={async (meta) => {
-                          // Body↔rail binding — see CatalystDescriptionSection
-                          // for the rationale. Both surfaces read from
-                          // `ph_attachments` so an inline image dropped here
-                          // appears in the rail's list immediately.
-                          if (!item?.id || !user?.id) return;
-                          const { error } = await (supabase as any)
-                            .from('ph_attachments')
-                            .insert({
-                              work_item_id: item.id,
-                              file_name: meta.fileName,
-                              file_size: meta.fileSize,
-                              mime_type: meta.mimeType,
-                              storage_path: meta.storagePath,
-                              uploaded_by: user.id,
-                            });
-                          if (error) {
-                             
-                            console.error('[IssueContentView] ph_attachments insert failed', error);
-                            return;
-                          }
-                          queryClient.invalidateQueries({ queryKey: ['ph-attachments', item.id] });
-                        }}
-                      />
-                    </Suspense>
-                  </div>
-                ) : (
-                  <div
-                    onClick={() => setDescEditMode(true)}
-                    style={{
-                      borderRadius: 3, padding: '8px 6px', minHeight: 32,
-                      cursor: 'text', outline: 'none',
-                      transition: 'background-color 0.2s ease-in-out',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--ds-background-input-hovered, #F8F8F8)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-                  >
-                    {(() => {
-                      const descSource = (item as any)?.description_adf ?? item?.description_text ?? null;
-                      if (isAdfEmpty(descSource)) {
-                        return <span style={{ fontSize: 14, color: 'var(--ds-border-input, #8C8F97)', padding: '4px 0' }}>Add a description...</span>;
-                      }
-                      return <EpicDescriptionRenderer content={descSource} issueKey={item?.issue_key} />;
-                    })()}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          {/* ── Description — canonical CatalystDescriptionSection (Jira parity: no collapse) ── */}
+          {item && (
+            <CatalystDescriptionSection
+              issue={{
+                id: item.id,
+                issue_key: item.issue_key,
+                description_adf: item.description_adf,
+                description_text: item.description_text,
+                project_key: item.project_key ?? '',
+              } as PhIssue}
+            />
+          )}
 
           {/* ── Attachments (universal — all types) ── */}
           <AttachmentsSection
@@ -845,12 +754,12 @@ export function IssueContentView({
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 width: 32, height: 32, border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 4,
-                background: checkFlagged(item) ? '#FFEBE6' : 'var(--ds-surface, #fff)', cursor: 'pointer',
+                background: checkFlagged(item) ? 'var(--ds-background-danger, #FFEBE6)' : 'var(--ds-surface, #fff)', cursor: 'pointer',
                 padding: 0,
               }}
               title={checkFlagged(item) ? 'Remove flag' : 'Add flag'}
             >
-              <Flag size={18} color="#DE350B" fill={checkFlagged(item) ? '#DE350B' : 'none'} />
+              <Flag size={18} color="var(--ds-text-danger, #DE350B)" fill={checkFlagged(item) ? 'var(--ds-text-danger, #DE350B)' : 'none'} />
             </button>
             {showFlagPopover && item?.id && (
               <FlagPopover
@@ -875,7 +784,7 @@ export function IssueContentView({
           </button>
           <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
             {/* Watcher count */}
-            <button className="awPill" style={{ padding: '0 6px', height: 22, gap: 3 }}>
+            <button className="awPill" style={{ padding: '0 8px', height: 24, gap: 4 }}>
               <Eye style={{ width: 14, height: 14 }} />
               <span style={{ fontSize: 11, fontWeight: 600 }}>1</span>
             </button>
@@ -883,15 +792,15 @@ export function IssueContentView({
             <button className="awPill" style={{ padding: '0 4px', height: 22 }} onClick={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}><Share2 style={{ width: 14, height: 14 }} /></button>
             {/* More menu — Jira parity dropdown */}
             <div ref={moreMenuRef} style={{ position: 'relative' }}>
-              <button className="awPill" style={{ padding: '0 4px', height: 22, background: moreMenuOpen ? '#E9F2FF' : undefined }} onClick={() => setMoreMenuOpen(o => !o)}>
+              <button className="awPill" style={{ padding: '0 4px', height: 22, background: moreMenuOpen ? 'var(--ds-background-selected, #E9F2FF)' : undefined }} onClick={() => setMoreMenuOpen(o => !o)}>
                 <MoreHorizontal style={{ width: 14, height: 14 }} />
               </button>
               {moreMenuOpen && (
                 <div style={{
                   position: 'absolute', top: '100%', right: 0, marginTop: 4,
                   background: 'var(--ds-surface, #fff)', borderRadius: 6, width: 220,
-                  boxShadow: '0 8px 24px rgba(9,30,66,.25)', zIndex: 80,
-                  border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', padding: '4px 0',
+                  boxShadow: 'var(--ds-shadow-overlay, 0 8px 24px rgba(9,30,66,.25))', zIndex: 80,
+                  border: '1px solid var(--ds-border, #DFE1E6)', padding: '4px 0',
                 }}>
                   {/* Add/Remove flag in menu */}
                   <button onClick={() => { setShowFlagPopover(true); setMoreMenuOpen(false); }}
@@ -899,7 +808,7 @@ export function IssueContentView({
                     onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >{checkFlagged(item) ? 'Remove flag' : 'Add flag'}</button>
-                  <div style={{ height: 1, background: '#EBECF0', margin: '4px 0' }} />
+                  <div style={{ height: 1, background: 'var(--ds-border, #EBECF0)', margin: '4px 0' }} />
                   {/* Convert to Subtask */}
                   {item?.issue_type && item.issue_type !== 'Sub-task' && (
                     <button onClick={() => { setShowConvertWizard(true); setMoreMenuOpen(false); }}
@@ -926,11 +835,11 @@ export function IssueContentView({
                     onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Archive</button>
-                  <div style={{ height: 1, background: '#EBECF0', margin: '4px 0' }} />
+                  <div style={{ height: 1, background: 'var(--ds-border, #EBECF0)', margin: '4px 0' }} />
                   {/* Delete */}
                   <button onClick={() => { setShowDeleteDialog(true); setMoreMenuOpen(false); }}
-                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#DE350B', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                    onMouseOver={e => (e.currentTarget.style.background = '#FFEBE6')}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text-danger, #DE350B)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-background-danger, #FFEBE6)')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Delete</button>
                 </div>
@@ -940,18 +849,18 @@ export function IssueContentView({
         </div>
 
         {/* Details section — identical to Story Detail Modal sidebar */}
-        <div style={{ marginBottom: 20, padding: '0 16px' }}>
+        <div style={{ marginBottom: 16, padding: '0 16px' }}>
           <div onClick={() => toggle('details')} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', marginBottom: 12, userSelect: 'none' }}>
             {collapsed.details
-              ? <ChevronRight size={14} color="#42526E" />
-              : <ChevronDown size={14} color="#42526E" />
+              ? <ChevronRight size={14} color="var(--ds-text-subtle, #42526E)" />
+              : <ChevronDown size={14} color="var(--ds-text-subtle, #42526E)" />
             }
             <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>Details</span>
           </div>
           {!collapsed.details && (
             <div>
               {/* Fix versions — Jira-parity editable dropdown */}
-              <div style={{ marginBottom: 14, position: 'relative' }} ref={fixVersionDropdownRef}>
+              <div style={{ marginBottom: 16, position: 'relative' }} ref={fixVersionDropdownRef}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 4 }}>Fix versions</div>
                 <div
                   onClick={() => setShowFixVersionDropdown(!showFixVersionDropdown)}
@@ -959,7 +868,7 @@ export function IssueContentView({
                     display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center',
                     padding: '4px 8px', borderRadius: 4, cursor: 'pointer',
                     minHeight: 32, transition: 'background 0.12s',
-                    border: showFixVersionDropdown ? '2px solid #4C9AFF' : '2px solid transparent',
+                    border: showFixVersionDropdown ? '2px solid var(--ds-border-focused, #4C9AFF)' : '2px solid transparent',
                     background: showFixVersionDropdown ? 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' : 'transparent',
                   }}
                   onMouseEnter={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
@@ -967,9 +876,9 @@ export function IssueContentView({
                 >
                   {fixVersionNames.length > 0 ? (
                     fixVersionNames.map((v, i) => (
-                      <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, padding: '2px 8px', borderRadius: 3, background: '#DEEBFF', color: '#0747A6' }}>
+                      <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, padding: '4px 8px', borderRadius: 3, background: 'var(--ds-background-information, #DEEBFF)', color: 'var(--ds-text-information, #0747A6)' }}>
                         {v}
-                        <button onClick={e => { e.stopPropagation(); handleToggleFixVersion(v); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', color: '#0747A6' }}>
+                        <button onClick={e => { e.stopPropagation(); handleToggleFixVersion(v); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', color: 'var(--ds-text-information, #0747A6)' }}>
                           <X size={10} />
                         </button>
                       </span>
@@ -979,11 +888,11 @@ export function IssueContentView({
                   )}
                 </div>
                 {showFixVersionDropdown && (
-                  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', zIndex: 100, maxHeight: 320, overflow: 'hidden' }}>
-                    <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
+                  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--ds-surface, #fff)', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, boxShadow: 'var(--ds-shadow-overlay, 0 4px 12px rgba(9,30,66,.15))', zIndex: 100, maxHeight: 320, overflow: 'hidden' }}>
+                    <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-border, #F4F5F7)' }}>
                       <input autoFocus value={fixVersionSearch} onChange={e => setFixVersionSearch(e.target.value)} placeholder="Search versions..."
-                        style={{ width: '100%', border: '1px solid var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))', borderRadius: 4, padding: '6px 10px', fontSize: 13, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', outline: 'none', fontFamily: 'inherit' }}
-                        onFocus={e => { e.currentTarget.style.borderColor = '#4C9AFF'; }}
+                        style={{ width: '100%', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, padding: '8px 12px', fontSize: 13, color: 'var(--ds-text, #172B4D)', outline: 'none', fontFamily: 'inherit' }}
+                        onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-border-focused, #4C9AFF)'; }}
                         onBlur={e => { e.currentTarget.style.borderColor = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'; }}
                       />
                     </div>
@@ -994,16 +903,16 @@ export function IssueContentView({
                         if (filtered.length === 0) return null;
                         return (
                           <>
-                            <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Unreleased</div>
+                            <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)' }}>Unreleased</div>
                             {filtered.map(v => {
                               const isSel = fixVersionNames.includes(v.name);
                               return (
-                                <div key={v.name} onClick={() => handleToggleFixVersion(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? '#DEEBFF' : 'transparent', transition: 'background 0.1s' }}
-                                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
-                                  onMouseLeave={e => { e.currentTarget.style.background = isSel ? '#DEEBFF' : 'transparent'; }}
+                                <div key={v.name} onClick={() => handleToggleFixVersion(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent', transition: 'background 0.1s' }}
+                                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                                  onMouseLeave={e => { e.currentTarget.style.background = isSel ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent'; }}
                                 >
                                   <span>{v.name}</span>
-                                  {isSel && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0747A6" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
+                                  {isSel && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-information, #0747A6)" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
                                 </div>
                               );
                             })}
@@ -1015,16 +924,16 @@ export function IssueContentView({
                         if (filtered.length === 0) return null;
                         return (
                           <>
-                            <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.03em', borderTop: '1px solid #F4F5F7' }}>Released</div>
+                            <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', borderTop: '1px solid var(--ds-border, #F4F5F7)' }}>Released</div>
                             {filtered.map(v => {
                               const isSel = fixVersionNames.includes(v.name);
                               return (
-                                <div key={v.name} onClick={() => handleToggleFixVersion(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? '#DEEBFF' : 'transparent', transition: 'background 0.1s' }}
-                                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))'; }}
-                                  onMouseLeave={e => { e.currentTarget.style.background = isSel ? '#DEEBFF' : 'transparent'; }}
+                                <div key={v.name} onClick={() => handleToggleFixVersion(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent', transition: 'background 0.1s' }}
+                                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                                  onMouseLeave={e => { e.currentTarget.style.background = isSel ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent'; }}
                                 >
                                   <span>{v.name}</span>
-                                  {isSel && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0747A6" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
+                                  {isSel && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-information, #0747A6)" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
                                 </div>
                               );
                             })}
@@ -1037,7 +946,7 @@ export function IssueContentView({
               </div>
 
               {/* Assignee — Jira parity: avatar + name, click-to-edit dropdown */}
-              <div style={{ marginBottom: 14 }}>
+              <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 4 }}>Assignee</div>
                 {item?.id ? (
                   <EditableAssignee
@@ -1049,23 +958,23 @@ export function IssueContentView({
                     onUpdate={() => { queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); queryClient.invalidateQueries({ queryKey: ['allwork-items'] }); }}
                   />
                 ) : (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px' }}>
-                    <span style={{ fontSize: 14, color: '#97A0AF' }}>Unassigned</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px' }}>
+                    <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, #97A0AF)' }}>Unassigned</span>
                   </div>
                 )}
               </div>
 
 
               {/* Reporter — Jira parity: 28px avatar + 14px name */}
-              <div style={{ marginBottom: 14 }}>
+              <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', marginBottom: 4 }}>Reporter</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px', borderRadius: 4 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px', borderRadius: 4 }}>
                   {item?.reporter_name ? (
                     <>
                       <Avatar name={item.reporter_name} url={resolveAvatarUrl(item.reporter_name)} size={28} />
                       <span style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 400 }}>{item.reporter_name}</span>
                     </>
-                  ) : <span style={{ color: '#42526E', fontSize: 14 }}>—</span>}
+                  ) : <span style={{ color: 'var(--ds-text-subtle, #42526E)', fontSize: 14 }}>—</span>}
                 </div>
               </div>
 

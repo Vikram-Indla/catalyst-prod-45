@@ -19,6 +19,8 @@
  */
 import React, { lazy, Suspense, useState, useCallback, useRef, useEffect, useMemo } from 'react';
 // (token import removed — switched to var(--cp-*) for proper dark-mode flip)
+import Button from '@atlaskit/button';
+import Select from '@atlaskit/select';
 import { WorkListPanel } from './components/WorkListPanel';
 import { useProjectAllWorkItems } from '@/hooks/useProjectListItems';
 import { useItemSelection } from '@/hooks/useItemSelection';
@@ -57,7 +59,16 @@ interface Props {
 const SPLIT_BREAKPOINT_PX = 1120;
 
 export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
-  const { data: items = [] } = useProjectAllWorkItems(projectKey);
+  // PERF: useProjectAllWorkItems now returns paginated results with keyset cursor
+  const {
+    items = [],
+    rowsPerPage,
+    setRowsPerPage,
+    hasNextPage,
+    hasPrevPage,
+    fetchNextPage,
+    fetchPrevPage,
+  } = useProjectAllWorkItems(projectKey);
 
   /* jira-compare catalog items 3-9 (2026-05-02): toolbar state.
      2026-05-03 (P2.1): toolbarFilters reshaped from string[] (facet
@@ -207,6 +218,20 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
     selectItem(id);
   }, [selectItem]);
 
+  /* Memoize navigationItems so CatalystDetailRouter doesn't re-render on
+     every toolbar state change (new array reference would break React.memo). */
+  const navigationItems = useMemo(
+    () => filteredItems.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey })),
+    [filteredItems],
+  );
+
+  /* Stable handler — recreating on every render forces CatalystDetailRouter
+     to reconcile even when neither items nor the dispatch logic changed. */
+  const handleOpenItem = useCallback(
+    makeOpenItemHandler(items, selectItem, setOverlayItemId),
+    [items, selectItem],
+  );
+
   return (
     // Outer column — height 100% of the route slot, no scroll here. Both
     // the header and the split region live inside; the SPLIT REGION is
@@ -284,6 +309,67 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                  by the toolbar input. */
               externalQuery={toolbarQuery}
             />
+
+            {/* Pagination footer — keyset pagination controls. */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '8px 8px',
+              borderTop: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
+              background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F6F7F8))',
+              gap: '8px',
+              fontSize: '12px',
+              color: 'var(--cp-text-secondary, var(--cp-text-tertiary, #6B778C))',
+            }}>
+              {/* Pagination buttons */}
+              <div style={{ display: 'flex', gap: '4px' }}>
+                <Button
+                  appearance="subtle"
+                  size="small"
+                  isDisabled={!hasPrevPage}
+                  onClick={fetchPrevPage}
+                  aria-label="Previous page"
+                >
+                  Previous
+                </Button>
+                <Button
+                  appearance="subtle"
+                  size="small"
+                  isDisabled={!hasNextPage}
+                  onClick={fetchNextPage}
+                  aria-label="Next page"
+                >
+                  Next
+                </Button>
+              </div>
+
+              {/* Rows per page dropdown */}
+              <Select
+                options={[
+                  { label: '25', value: 25 },
+                  { label: '50', value: 50 },
+                  { label: '100', value: 100 },
+                ]}
+                value={{ label: String(rowsPerPage), value: rowsPerPage }}
+                onChange={(option) => {
+                  if (option && 'value' in option) {
+                    setRowsPerPage(option.value);
+                  }
+                }}
+                isSearchable={false}
+                isClearable={false}
+                isMulti={false}
+                styles={{
+                  control: (base: any) => ({
+                    ...base,
+                    minHeight: '28px',
+                    fontSize: '12px',
+                  }),
+                }}
+                aria-label="Rows per page"
+              />
+            </div>
           </div>
 
           {/* Middle + Right detail surface — hidden in narrow mode. */}
@@ -323,9 +409,9 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                     // Epic) is NOT in the AllWork items list. Dispatch via
                     // makeOpenItemHandler so out-of-list targets fall
                     // through to the overlay router.
-                    onOpenItem={makeOpenItemHandler(items, selectItem, setOverlayItemId)}
+                    onOpenItem={handleOpenItem}
                     panelMode={true}
-                    navigationItems={filteredItems.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey }))}
+                    navigationItems={navigationItems}
                     onNavigate={handleNavigate}
                   />
                 </Suspense>
@@ -361,9 +447,9 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             itemId={overlayItemId}
             projectId={projectId ?? ''}
             projectKey={projectKey}
-            onOpenItem={(id) => setOverlayItemId(id)}
-            navigationItems={filteredItems.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey }))}
-            onNavigate={(id) => setOverlayItemId(id)}
+            onOpenItem={handleOpenItem}
+            navigationItems={navigationItems}
+            onNavigate={handleNavigate}
           />
         </Suspense>
       )}

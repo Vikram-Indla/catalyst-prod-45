@@ -289,8 +289,6 @@ const AdminLayout = lazy(() => import('../pages/admin/AdminLayout').then(m => ({
 const StoriesPage = lazy(() => import('../pages/stories/StoriesPage').then(m => ({ default: m.StoriesPage })));
 const UsersManagement = lazy(() => import("../pages/admin/UsersManagement"));
 const RolesPermissions = lazy(() => import("../pages/admin/RolesPermissions"));
-const ThemeGroups = lazy(() => import("../pages/admin/ThemeGroups"));
-const Programs = lazy(() => import("../pages/admin/Programs"));
 const Departments = lazy(() => import("../pages/admin/Departments"));
 const CapacityDepartmentsPage = lazy(() => import("../pages/admin/CapacityDepartments"));
 const ResourceAssignmentsPage = lazy(() => import("../pages/admin/ResourceAssignments"));
@@ -861,8 +859,6 @@ export default function FullAppRoutes() {
           <Route path="access" element={<S><AdminAccessPage /></S>} />
           <Route path="users" element={<S><UsersManagement /></S>} />
           <Route path="roles-permissions" element={<S><RolesPermissions /></S>} />
-          <Route path="theme-groups" element={<S><ThemeGroups /></S>} />
-          <Route path="programs" element={<S><Programs /></S>} />
           <Route path="portfolios" element={<S><Portfolios /></S>} />
           <Route path="departments" element={<S><Departments /></S>} />
           <Route path="capacity-departments" element={<S><CapacityDepartmentsPage /></S>} />

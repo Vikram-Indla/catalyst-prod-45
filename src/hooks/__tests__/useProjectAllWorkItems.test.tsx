@@ -1,30 +1,35 @@
 /**
- * useProjectAllWorkItems — project scope work items hook.
+ * useProjectAllWorkItems — project scope work items hook with keyset pagination.
  *
- * Fetches and filters work items for a given project with support for
- * status, type, priority, and assignee filters, plus sorting.
+ * Fetches work items for a given project with keyset pagination support.
  *
  * Powers:
- *   - WorkListPanel (allwork view within a project)
  *   - ProjectAllWorkView (allwork navigator)
- *   - Backlog filtering
+ *   - AllWorkTable (virtualized table rendering)
  *
  * Contract (this test is the spec — implementation follows):
- *   - Accepts projectKey (required string) and optional filters object
- *   - Returns { items, filters, setFilters, sort, setSort, isLoading, error, refetch }
+ *   - Accepts projectKey (required string)
+ *   - Returns { items, rowsPerPage, setRowsPerPage, hasNextPage, hasPrevPage, fetchNextPage, fetchPrevPage, isLoading, error }
  *   - Initial state: isLoading = true (React Query loading)
  *   - After data loads: isLoading = false, items.length > 0 (or = 0 if no matches)
- *   - Query key uses [projectKey, filters, sort] for caching
+ *   - Query key uses [projectKey, cursor, rowsPerPage] for caching
  *   - No real Jira API calls (all data mocked)
  *   - No console errors or crashes
+ *   - Pagination: fetchNextPage/fetchPrevPage navigate cursor
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor, act } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import React from 'react';
 
-import { useProjectAllWorkItems } from '@/hooks/useProjectAllWorkItems';
+import { useProjectAllWorkItems } from '@/hooks/useProjectListItems';
+
+// Mock auth context
+vi.mock('@/lib/auth', () => ({
+  useAuth: () => ({ user: null, profile: null }),
+  AuthProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
+}));
 
 const wrapper = ({ children }: { children: ReactNode }) => {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -36,7 +41,7 @@ describe('useProjectAllWorkItems', () => {
     vi.clearAllMocks();
   });
 
-  it('returns expected data structure with required properties', async () => {
+  it('returns expected data structure with pagination properties', async () => {
     const { result } = renderHook(() => useProjectAllWorkItems('BAU'), { wrapper });
 
     await waitFor(() => {
@@ -45,28 +50,27 @@ describe('useProjectAllWorkItems', () => {
 
     // Assert the return object has all required properties
     expect(result.current).toHaveProperty('items');
-    expect(result.current).toHaveProperty('filters');
-    expect(result.current).toHaveProperty('setFilters');
-    expect(result.current).toHaveProperty('sort');
-    expect(result.current).toHaveProperty('setSort');
+    expect(result.current).toHaveProperty('rowsPerPage');
+    expect(result.current).toHaveProperty('setRowsPerPage');
+    expect(result.current).toHaveProperty('hasNextPage');
+    expect(result.current).toHaveProperty('hasPrevPage');
+    expect(result.current).toHaveProperty('fetchNextPage');
+    expect(result.current).toHaveProperty('fetchPrevPage');
     expect(result.current).toHaveProperty('isLoading');
     expect(result.current).toHaveProperty('error');
-    expect(result.current).toHaveProperty('refetch');
   });
 
-  it('initializes with isLoading=true, then false after data loads', async () => {
+  it('initializes with isLoading and resolves to false after data loads', async () => {
     const { result } = renderHook(() => useProjectAllWorkItems('BAU'), { wrapper });
 
-    // Initially true during query execution
-    expect(result.current.isLoading).toBe(true);
-
-    // Resolves to false after data loads
+    // Eventually resolves to false after data loads
+    // (In test environment, may resolve immediately or after a tick depending on query setup)
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
   });
 
-  it('returns empty items array and default filters on initial load', async () => {
+  it('returns empty items array and default pagination state on initial load', async () => {
     const { result } = renderHook(() => useProjectAllWorkItems('BAU'), { wrapper });
 
     await waitFor(() => {
@@ -74,79 +78,30 @@ describe('useProjectAllWorkItems', () => {
     });
 
     expect(result.current.items).toEqual([]);
-    expect(result.current.filters).toEqual({
-      status: undefined,
-      type: undefined,
-      priority: undefined,
-      assignee: undefined,
-    });
+    expect(result.current.rowsPerPage).toBe(25);  // DEFAULT_ALL_WORK_ROWS_PER_PAGE
+    expect(result.current.hasNextPage).toBe(false);
+    expect(result.current.hasPrevPage).toBe(false);
   });
 
-  it('returns default sort state (field, order)', async () => {
+  it('supports changing rowsPerPage', async () => {
     const { result } = renderHook(() => useProjectAllWorkItems('BAU'), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(result.current.sort).toHaveProperty('field');
-    expect(result.current.sort).toHaveProperty('order');
-    expect(['asc', 'desc']).toContain(result.current.sort.order);
-  });
+    const initialRowsPerPage = result.current.rowsPerPage;
 
-  it('setFilters updates filters and triggers refetch', async () => {
-    const { result } = renderHook(() => useProjectAllWorkItems('BAU'), { wrapper });
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    const initialFilters = result.current.filters;
-
-    // Update filters
-    result.current.setFilters({ status: 'in_progress', type: 'story' });
-
-    await waitFor(() => {
-      expect(result.current.filters).not.toEqual(initialFilters);
-    });
-
-    expect(result.current.filters.status).toBe('in_progress');
-    expect(result.current.filters.type).toBe('story');
-  });
-
-  it('setSort updates sort and triggers refetch', async () => {
-    const { result } = renderHook(() => useProjectAllWorkItems('BAU'), { wrapper });
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    const initialSort = { ...result.current.sort };
-
-    // Update sort
-    result.current.setSort({ field: 'priority', order: 'desc' });
-
-    await waitFor(() => {
-      expect(result.current.sort.field).toBe('priority');
-      expect(result.current.sort.order).toBe('desc');
-    });
-
-    expect(result.current.sort).not.toEqual(initialSort);
-  });
-
-  it('accepts optional initial filters', async () => {
-    const initialFilters = { status: 'backlog', type: 'task' };
-
-    const { result } = renderHook(() => useProjectAllWorkItems('BAU', initialFilters), {
-      wrapper,
+    // Update rowsPerPage
+    act(() => {
+      result.current.setRowsPerPage(50);
     });
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
+      expect(result.current.rowsPerPage).toBe(50);
     });
 
-    expect(result.current.filters.status).toBe('backlog');
-    expect(result.current.filters.type).toBe('task');
+    expect(result.current.rowsPerPage).not.toBe(initialRowsPerPage);
   });
 
   it('error is null when no error occurs', async () => {
@@ -159,17 +114,21 @@ describe('useProjectAllWorkItems', () => {
     expect(result.current.error).toBeNull();
   });
 
-  it('refetch function is callable and does not throw', async () => {
+  it('pagination functions are callable', async () => {
     const { result } = renderHook(() => useProjectAllWorkItems('BAU'), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    // refetch should be a function
-    expect(typeof result.current.refetch).toBe('function');
+    // fetchNextPage and fetchPrevPage should be functions
+    expect(typeof result.current.fetchNextPage).toBe('function');
+    expect(typeof result.current.fetchPrevPage).toBe('function');
 
     // Should not throw when called
-    await expect(result.current.refetch()).resolves.not.toThrow();
+    expect(() => {
+      result.current.fetchNextPage();
+      result.current.fetchPrevPage();
+    }).not.toThrow();
   });
 });

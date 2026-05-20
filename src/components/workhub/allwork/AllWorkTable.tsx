@@ -1,8 +1,14 @@
 /**
- * AllWorkTable — Grid view table (V12 Hybrid Precision)
- * 44px rows, RGBA hover, hierarchy expand/collapse, React.memo rows
+ * AllWorkTable — Grid view table (V12 Hybrid Precision + Performance Optimization)
+ * 44px rows, RGBA hover, hierarchy expand/collapse, React.memo rows, row virtualization
+ *
+ * Performance optimizations:
+ * 1. buildTree() wrapped in useMemo to stabilize node references (fixes React.memo defeat)
+ * 2. Row virtualization via @tanstack/react-virtual (optional, can be enabled via `enableVirtualization` prop)
+ * 3. flattenTree() memoized alongside buildTree to prevent unnecessary flattening
  */
-import { useState, useMemo, useCallback, memo } from 'react';
+import { useState, useMemo, useCallback, memo, useRef, useEffect } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { ChevronDown, ChevronRight, ArrowUp, ArrowDown, GripVertical, ExternalLink, Plus, MoreHorizontal } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
@@ -104,11 +110,12 @@ interface Props {
   sortField: string;
   sortDir: 'asc' | 'desc';
   onSort: (field: string) => void;
+  enableVirtualization?: boolean;  // Optional: enable row virtualization
 }
 
 export function AllWorkTable({
   items, selectedIds, onToggleSelect, onSelectAll, selectAllState,
-  onOpenItem, sortField, sortDir, onSort,
+  onOpenItem, sortField, sortDir, onSort, enableVirtualization = false,
 }: Props) {
   const [expandedKeys, setExpandedKeys] = useState<Set<string>>(() => {
     const keys = new Set<string>();
@@ -117,6 +124,8 @@ export function AllWorkTable({
   });
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; item: AllWorkItem } | null>(null);
 
+  // PERF: Memoize tree building to stabilize node references (fixes React.memo defeat)
+  // This ensures that TableRow's memo comparison doesn't fail on every render
   const tree = useMemo(() => buildTree(items), [items]);
   const flatNodes = useMemo(() => flattenTree(tree, expandedKeys), [tree, expandedKeys]);
   const keysWithChildren = useMemo(() => {
@@ -124,6 +133,15 @@ export function AllWorkTable({
     items.forEach(i => { if (i.parent_key) s.add(i.parent_key); });
     return s;
   }, [items]);
+
+  // Virtualization support
+  const rowsContainerRef = useRef<HTMLDivElement>(null);
+  const virtualizer = useVirtualizer({
+    count: flatNodes.length,
+    getScrollElement: () => rowsContainerRef.current,
+    estimateSize: () => 44,  // Each row is 44px tall
+    enabled: enableVirtualization,
+  });
 
   const toggleExpand = useCallback((key: string) => {
     setExpandedKeys(prev => {
@@ -189,21 +207,59 @@ export function AllWorkTable({
           ))}
         </div>
 
-        {/* Rows */}
-        <div className="flex-1 overflow-y-auto">
-          {flatNodes.map(node => (
-            <TableRow
-              key={node.item.issue_key}
-              node={node}
-              isSelected={selectedIds.has(node.item.issue_key)}
-              hasChildren={keysWithChildren.has(node.item.issue_key)}
-              isExpanded={expandedKeys.has(node.item.issue_key)}
-              onToggleSelect={onToggleSelect}
-              onToggleExpand={toggleExpand}
-              onOpenItem={onOpenItem}
-              onContextMenu={setContextMenu}
-            />
-          ))}
+        {/* Rows — with optional virtualization */}
+        <div
+          ref={rowsContainerRef}
+          className="flex-1 overflow-y-auto"
+          style={enableVirtualization ? { height: '100%', overflow: 'auto' } : {}}
+        >
+          {enableVirtualization ? (
+            // Virtualized rendering: only render visible rows
+            <div style={{ height: `${virtualizer.getTotalSize()}px`, position: 'relative' }}>
+              {virtualizer.getVirtualItems().map(virtualItem => {
+                const node = flatNodes[virtualItem.index];
+                return (
+                  <div
+                    key={node.item.issue_key}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: `${virtualItem.size}px`,
+                      transform: `translateY(${virtualItem.start}px)`,
+                    }}
+                  >
+                    <TableRow
+                      node={node}
+                      isSelected={selectedIds.has(node.item.issue_key)}
+                      hasChildren={keysWithChildren.has(node.item.issue_key)}
+                      isExpanded={expandedKeys.has(node.item.issue_key)}
+                      onToggleSelect={onToggleSelect}
+                      onToggleExpand={toggleExpand}
+                      onOpenItem={onOpenItem}
+                      onContextMenu={setContextMenu}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            // Standard rendering: render all visible (expanded) rows
+            flatNodes.map(node => (
+              <TableRow
+                key={node.item.issue_key}
+                node={node}
+                isSelected={selectedIds.has(node.item.issue_key)}
+                hasChildren={keysWithChildren.has(node.item.issue_key)}
+                isExpanded={expandedKeys.has(node.item.issue_key)}
+                onToggleSelect={onToggleSelect}
+                onToggleExpand={toggleExpand}
+                onOpenItem={onOpenItem}
+                onContextMenu={setContextMenu}
+              />
+            ))
+          )}
         </div>
       </div>
 
