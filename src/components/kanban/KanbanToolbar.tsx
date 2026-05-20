@@ -49,7 +49,7 @@ export function AvatarStackFilter({ allAssignees, selected, onChange, avatarsByN
       })}
       {overflow > 0 && (
         <span style={{
-          marginLeft: 8, fontSize: 11, fontWeight: 600, color: tk.textMuted,
+          marginLeft: 4, fontSize: 11, fontWeight: 600, color: tk.textMuted,
           background: tk.badgeBg, borderRadius: 10, padding: '4px 8px',
           lineHeight: '18px', whiteSpace: 'nowrap',
         }}>+{overflow}</span>
@@ -95,7 +95,7 @@ export function EpicFilterDropdown({ epics, selected, onChange, tk }: {
               <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: tk.textMuted }} />
               <input type="text" value={q} onChange={e => setQ(e.target.value)} placeholder="Search epics..." autoFocus
                 style={{
-                  width: '100%', height: 36, paddingLeft: 32, paddingRight: q ? 32 : 10,
+                  width: '100%', height: 36, paddingLeft: 32, paddingRight: q ? 32 : 8,
                   border: `1.5px solid ${tk.inputBorder}`, borderRadius: 6,
                   fontSize: 13.5, color: tk.textPrimary, background: tk.inputBg, outline: 'none',
                   fontFamily: 'var(--cp-font-body)',
@@ -107,7 +107,7 @@ export function EpicFilterDropdown({ epics, selected, onChange, tk }: {
               {q && (
                 <button onClick={() => setQ('')} style={{
                   position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
-                  background: 'none', border: 'none', cursor: 'pointer', padding: '8px',
+                  background: 'none', border: 'none', cursor: 'pointer', padding: 4,
                   color: tk.textMuted, display: 'flex',
                 }}>
                   <X size={14} />
@@ -394,8 +394,8 @@ function CheckRow({ checked, onClick, children, tk }: {
     <button
       onClick={onClick}
       style={{
-        display: 'flex', alignItems: 'center', gap: 10, width: '100%',
-        padding: '9px 14px', border: 'none', borderRadius: 4,
+        display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+        padding: '8px 12px', border: 'none', borderRadius: 4,
         background: checked ? tk.dropHighlight : 'transparent',
         cursor: 'pointer', textAlign: 'left',
         transition: 'background 80ms ease',

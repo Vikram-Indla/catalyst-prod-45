@@ -142,7 +142,6 @@ interface DarkTokens {
   activeText: string;
   activeBg: string;
   hoverBg: string;
-  hoverText: string;
   iconOpacityInactive: number;
   badgeBg: string;
   badgeText: string;
@@ -176,7 +175,6 @@ export function SidebarBase({
     activeText: 'var(--cp-text-link, var(--cp-primary-60, #0052CC))',
     activeBg: isDark ? 'var(--ds-background-selected, #1C2B41)' : '#E9F2FF',
     hoverBg: isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
-    hoverText: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
     iconOpacityInactive: isDark ? 0.85 : 0.75,
     badgeBg: isDark ? 'var(--ds-background-neutral-subtle, #22272B)' : '#EBECF0',
     badgeText: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))',
@@ -230,7 +228,7 @@ export function SidebarBase({
         className
       )}
         style={{
-          width: expanded ? '240px' : '56px',
+          width: expanded ? '220px' : '56px',
           background: sidebarBg,
           borderRight: `1px solid ${sidebarBorder}`,
           boxShadow: 'none',
@@ -326,7 +324,7 @@ export function SidebarBase({
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 overflow-y-auto" style={{ padding: '4px 6px' }}>
+        <nav className="flex-1 overflow-y-auto" style={{ padding: '4px 8px' }}>
           {/* Hubs Section removed (Apr 2026): app launcher lives exclusively
               in the top-nav HubSwitcher popup. Sidebar no longer duplicates it. */}
 
@@ -371,8 +369,8 @@ export function SidebarBase({
                   {expanded && section.title && (
                     <div
                       style={{
-                        padding: '12px 12px 0 12px',
-                        marginBottom: '8px',
+                        padding: '8px 12px 0 12px',
+                        marginBottom: '4px',
                         lineHeight: 1,
                       }}
                     >
@@ -411,11 +409,11 @@ export function SidebarBase({
 
         {/* Footer Item (e.g., Settings) — t2 in dark mode per D8-R3 Fix 7 */}
         {config.footerItem && (
-          <div 
-            className="border-t pt-2 mt-2"
-            style={{ 
-              borderColor: dividerColor, 
-              padding: '6px 8px' 
+          <div
+            style={{
+              borderTop: `1px solid ${dividerColor}`,
+              marginTop: 8,
+              padding: '8px',
             }}
           >
             {renderMenuItem(
@@ -450,7 +448,7 @@ function renderMenuItem(
       aria-current={active ? 'page' : undefined}
       className="group w-full flex items-center border-none cursor-pointer transition-all relative"
       style={{
-        height: '44px',
+        height: '32px',
         padding: expanded ? '0 12px' : '0',
         gap: '8px',
         marginBottom: '0',
@@ -469,12 +467,10 @@ function renderMenuItem(
         prefetchRoute(item.path);
         if (!active) {
           e.currentTarget.style.background = tk.hoverBg;
-          e.currentTarget.style.color = tk.hoverText;
         }
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.background = active ? tk.activeBg : 'transparent';
-        e.currentTarget.style.color = active ? tk.activeText : tk.itemText;
       }}
     >
       {/* Left Accent Bar — DARK ONLY. Removed in dark mode (2026-04-29) to

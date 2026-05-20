@@ -156,16 +156,17 @@
   --cp-card: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
   --cp-border: var(--cp-border, var(--cp-bg-sunken, #E2E8F0));
   --cp-border-lt: var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9));
-  --cp-success: var(--cp-success, #16A34A);
+  --cp-success: #16A34A;
   --cp-success-light: #E3FCEF;
   --cp-success-text: #006644;
-  --cp-warning: var(--cp-warning, #D97706);
+  --cp-warning: #D97706;
   --cp-warning-light: #FEF3C7;
   --cp-warning-text: #92400E;
-  --cp-danger: var(--cp-danger, #DC2626);
+  --cp-danger: #DC2626;
   --cp-danger-light: #FEE2E2;
   --cp-danger-text: #991B1B;
-  --cp-amber: var(--cp-amber, #F59E0B);
+  --cp-danger-50: #EF4444;
+  --cp-amber: #F59E0B;
   --sl-todo-bg: var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6));
   --sl-todo-text: #253858;
   --sl-inprog-bg: #DEEBFF;
@@ -193,10 +194,10 @@
      already declared bg.surface light = var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)). The grey-card aesthetic
      was never the design — it was a value drift. */
   --cp-bg-surface: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
-  --cp-bg-sunken: var(--cp-bg-sunken, var(--cp-bg-sunken, #F1F5F9));
-  --cp-bg-elevated: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
-  --cp-text-primary: var(--cp-text-primary, var(--cp-text-inverse, #172B4D));
-  --cp-text-secondary: var(--cp-text-secondary, var(--cp-text-secondary, #44546F));
+  --cp-bg-sunken: #F1F5F9;
+  --cp-bg-elevated: #ffffff;
+  --cp-text-primary: #172B4D;
+  --cp-text-secondary: #44546F;
   --cp-text-tertiary: #626F86;
   --cp-text-muted: #626F86;
   --cp-text-link: var(--cp-primary-60, #0052CC);
@@ -210,20 +211,20 @@
      measured value rgb(233,242,254). Was Tailwind blue-600/8 which
      rendered the rail card selection ~3 shades too saturated vs Jira. */
   --cp-interact-selected: #E9F2FE;
-  --cp-primary-60: var(--cp-primary-60, #0052CC);
+  --cp-primary-60: #0052CC;
   --cp-primary-70: #0747A6;
   --cp-primary-5: #E9F2FF;
-  --cp-purple-60: var(--cp-purple-60, #7C3AED);
+  --cp-purple-60: #7C3AED;
   --cp-purple-5: #F5F3FF;
   --cp-success-60: var(--cp-success, #16A34A);
   --cp-warning-60: var(--cp-warning, #D97706);
   --cp-danger-60: var(--cp-danger, #DC2626);
-  --cp-teal-60: var(--cp-teal-60, #0D9488);
-  --cp-lozenge-grey-bg: var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6));
+  --cp-teal-60: #0D9488;
+  --cp-lozenge-grey-bg: #DFE1E6;
   --cp-lozenge-grey-text: #42526E;
   --cp-lozenge-blue-bg: #0C66E4;
   --cp-lozenge-blue-text: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
-  --cp-lozenge-green-bg: var(--cp-lozenge-green-bg, #1B7F37);
+  --cp-lozenge-green-bg: #1B7F37;
   --cp-lozenge-green-text: var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff));
 
   /* ═══ ProjectHub Work Views — Ringfenced tokens ═══ */
@@ -3272,6 +3273,14 @@ input[type="range"]::-moz-range-thumb {
   --cp-bg-sunken: #161A1D;
   --cp-bg-surface: #22272B;
   --cp-blue: #3B82F6;
+  --cp-primary-60: #60A5FA;
+  --cp-purple-60: #A78BFA;
+  --cp-teal-60: #5EEAD4;
+  --cp-success: #4ADE80;
+  --cp-warning: #FBBF24;
+  --cp-danger: #F87171;
+  --cp-danger-50: #F87171;
+  --cp-amber: #FCD34D;
   --cp-blue-link: #7DB8FC;
   --cp-blue-text: #7DB8FC;
   --cp-blue-wash: rgba(59,130,246,0.10);

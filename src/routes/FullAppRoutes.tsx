@@ -66,6 +66,7 @@ const NativeFeatureBacklogPageLazy = lazy(() => import("../pages/project-hub/Nat
 const NativeStoryBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeStoryBacklogPage"));
 const UnifiedBacklogPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogPage.atlaskit"));
 const BacklogDetailPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogDetailPage"));
+const AllWorkDetailPageLazy = lazy(() => import("../modules/project-work-hub/pages/AllWorkDetailPage"));
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
 const IssueDetailPageLazy = lazy(() => import("../pages/project-hub/IssueDetailPage"));
 const HierarchyPageLazy = lazy(() => import("../pages/project-hub/HierarchyPage"));
@@ -956,6 +957,7 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/hierarchy/allwork" element={<HierarchyAllWorkRedirect />} />
         <Route path="/project-hub/:key/hierarchy" element={<Navigate to="../allwork" replace />} />
         <Route path="/project-hub/:key/list" element={<S><ProjectJiraLayoutLazy /></S>} />
+        <Route path="/project-hub/:key/allwork/:issueKey" element={<S><AllWorkDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/allwork" element={<S><ProjectJiraLayoutLazy /></S>} />
         <Route path="/project-hub/:key/timeline" element={<PHPlaceholder title="Timeline" phase="Phase 3" />} />
         <Route path="/project-hub/:key/releases" element={<PHPlaceholder title="Releases" phase="Phase 3" />} />

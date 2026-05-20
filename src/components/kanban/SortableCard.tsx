@@ -195,7 +195,7 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
             style={{
               display: 'flex',
               width: '100%',
-              padding: '6px 16px',
+              padding: '8px 16px',
               fontSize: 13,
               color: (item as { danger?: boolean }).danger ? '#AE2A19' : tk.textPrimary,
               background: 'none',
