@@ -1064,8 +1064,6 @@ export function PragmaticBoard({
           display: 'flex',
           flexDirection: 'column',
           gap: 12,
-          height: '100%',
-          overflow: 'auto',
         }}
       >
         {lanes.map((lane) => {
@@ -1139,11 +1137,6 @@ export function PragmaticBoard({
            viewports narrower than the natural column count * 267. */
         width: '100%',
         minWidth: columns.length * 267 + (columns.length - 1) * 8,
-        /* CRITICAL: height: 100% allows flex children (PragmaticColumn)
-           to measure available space. Without this, useVirtualizer cannot
-           determine the scroll container's viewport height and renders
-           all items instead of virtualizing. */
-        height: '100%',
       }}
     >
       {columns.map((col) => (

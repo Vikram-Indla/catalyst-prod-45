@@ -245,7 +245,7 @@ export function KanbanBoardShell<THubRow = unknown>({
 
       <QuickFilterChips active={quickFilter} onChange={setQuickFilter} tk={tk} />
 
-      <div className="flex-1 min-h-0" style={{ overflow: 'auto', padding: '0 16px 16px 16px' }}>
+      <div className="flex-1 min-h-0" style={{ overflow: 'auto', padding: '0 16px 16px 16px', height: '100%' }}>
         <PragmaticBoard
           columns={adapter.columns}
           colMap={filteredColMap}
