@@ -35,7 +35,7 @@ if (typeof document !== 'undefined' && !document.getElementById('cv-priority-sel
 /** Atlassian-spec dropdown container styles */
 const ATLASSIAN_DROPDOWN: React.CSSProperties = {
   background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 4, border: 'none',
-  boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
+  boxShadow: 'var(--ds-shadow-overlay, 0 8px 12px rgba(9,30,66,.15))',
   padding: '4px 0', zIndex: 9999,
 };
 
@@ -439,7 +439,20 @@ export function EditablePriority({ issueId, issueKey, currentPriority, onUpdate 
 
 /* ── EditableLabels — Jira-parity: type + Enter to create, reuse existing ── */
 
-const LABEL_COLORS = ['#4C9AFF', '#00B8D9', '#36B37E', '#FFAB00', '#FF5630', '#6554C0', '#FF7452', '#57D9A3', '#FFC400', '#998DD9', '#79E2F2', '#FF8F73'];
+const LABEL_COLORS = [
+  'var(--ds-background-accent-blue-bold, #4C9AFF)',
+  'var(--ds-background-accent-teal-bold, #00B8D9)',
+  'var(--ds-background-accent-green-bold, #36B37E)',
+  'var(--ds-background-accent-yellow-bold, #FFAB00)',
+  'var(--ds-background-accent-red-bold, #FF5630)',
+  'var(--ds-background-accent-purple-bold, #6554C0)',
+  'var(--ds-background-accent-orange-bold, #FF7452)',
+  'var(--ds-background-accent-green-bolder, #57D9A3)',
+  'var(--ds-background-accent-yellow-bolder, #FFC400)',
+  'var(--ds-background-accent-purple-bolder, #998DD9)',
+  'var(--ds-background-accent-teal-bolder, #79E2F2)',
+  'var(--ds-background-accent-red-bolder, #FF8F73)',
+];
 function getLabelColor(name: string) {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
@@ -565,12 +578,12 @@ export function EditableStoryPoints({ issueId, currentPoints, onUpdate }: {
     <div ref={ref} style={{ flex: 1, position: 'relative' }}>
       <div onClick={() => setOpen(o => !o)} style={{
         display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer',
-        padding: '4px 6px', borderRadius: 4, transition: 'background .12s',
+        padding: '4px 8px', borderRadius: 4, transition: 'background .12s',
       }}
         onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
-        <span style={{ fontSize: 14, color: currentPoints != null ? 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' : '#97A0AF', fontWeight: 400 }}>
+        <span style={{ fontSize: 14, color: currentPoints != null ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #97A0AF)', fontWeight: 400 }}>
           {currentPoints != null ? currentPoints : 'None'}
         </span>
       </div>
@@ -702,14 +715,14 @@ export function EditableFixVersions({ issueId, currentFixVersions, projectKey, o
             background: 'transparent',
             border: 'none',
             borderRadius: 0,
-            margin: '1px 4px 1px 0',
+            margin: '0 4px 0 0',
           }),
           multiValueLabel: (base) => ({
             ...base,
             fontSize: 14,
             fontWeight: 400,
             color: 'var(--ds-text, #292A2E)',
-            padding: '0 2px 0 0',
+            padding: 0,
           }),
           multiValueRemove: (base) => ({
             ...base,
@@ -856,7 +869,7 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
             </div>
 
             {/* Show done checkbox */}
-            <div style={{ padding: '6px 12px', borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))' }}>
+            <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--ds-surface-sunken, #F4F5F7)' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))' }}>
                 <input type="checkbox" checked={showDone} onChange={e => setShowDone(e.target.checked)}
                   style={{ width: 16, height: 16, accentColor: 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))', cursor: 'pointer' }} />
@@ -871,7 +884,7 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
                 return (
                   <div key={result.id} onClick={() => handleSelect(result.issue_key)}
                     style={{
-                      padding: '10px 12px', cursor: 'pointer',
+                      padding: '8px 12px', cursor: 'pointer',
                       borderBottom: '1px solid var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))',
                       background: isActive ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
                       transition: 'background 0.1s',
@@ -880,12 +893,12 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
                     onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = isActive ? 'var(--ds-background-information, #DEEBFF)' : 'transparent'; }}
                   >
                     {/* Line 1: icon + key */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                       <EpicIconInline />
                       <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--cp-text-secondary, #6B778C))', fontSize: 12 }}>{result.issue_key}</span>
                     </div>
                     {/* Line 2: summary */}
-                    <div style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', paddingLeft: 22, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', paddingLeft: 24, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {result.summary}
                     </div>
                   </div>
