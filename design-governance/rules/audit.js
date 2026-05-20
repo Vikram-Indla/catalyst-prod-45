@@ -31,6 +31,46 @@ class DesignSystemAudit {
     }
   }
 
+  /**
+   * Scan a directory or file with exclusion patterns.
+   * If a directory, recursively walks and excludes specified patterns.
+   * If a file, scans it directly.
+   * @param {Object} validator - The validator instance (ADSTokenScanner, TypographyEnforcer, SpacingGridValidator)
+   * @param {string} sourcePath - Path to scan (file or directory)
+   * @param {string[]} excludePatterns - Array of path patterns to exclude (e.g., ['modules-dormant'])
+   */
+  scanWithExclusions(validator, sourcePath, excludePatterns = []) {
+    const stat = fs.statSync(sourcePath);
+
+    // Single file: scan it directly
+    if (!stat.isDirectory()) {
+      validator.scanFile(sourcePath);
+      return;
+    }
+
+    // Directory: recursive walk with exclusion filtering
+    const walk = (dir) => {
+      fs.readdirSync(dir).forEach(file => {
+        const filePath = path.join(dir, file);
+        const fileStat = fs.statSync(filePath);
+
+        // Check if this path matches any exclusion pattern
+        const isExcluded = excludePatterns.some(pattern => filePath.includes(pattern));
+        if (isExcluded) {
+          return;
+        }
+
+        if (fileStat.isDirectory()) {
+          walk(filePath);
+        } else if (file.endsWith('.ts') || file.endsWith('.tsx')) {
+          validator.scanFile(filePath);
+        }
+      });
+    };
+
+    walk(sourcePath);
+  }
+
   run() {
     console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
     console.log('🔍 Design System Audit Starting...\n');
@@ -48,31 +88,19 @@ class DesignSystemAudit {
     // Run ADS Token Scanner
     console.log('1️⃣  Running ADS Token Scanner...');
     const tokenScanner = new ADSTokenScanner();
-    if (isDirectory) {
-      tokenScanner.scanDirectory(this.sourcePath);
-    } else {
-      tokenScanner.scanFile(this.sourcePath);
-    }
+    this.scanWithExclusions(tokenScanner, this.sourcePath, ['modules-dormant']);
     this.results.tokens = tokenScanner.report();
 
     // Run Typography Enforcer
     console.log('\n2️⃣  Running Typography Enforcer...');
     const typography = new TypographyEnforcer();
-    if (isDirectory) {
-      typography.scanDirectory(this.sourcePath);
-    } else {
-      typography.scanFile(this.sourcePath);
-    }
+    this.scanWithExclusions(typography, this.sourcePath, ['modules-dormant']);
     this.results.typography = typography.report();
 
     // Run Spacing Grid Validator
     console.log('\n3️⃣  Running Spacing Grid Validator...');
     const spacing = new SpacingGridValidator();
-    if (isDirectory) {
-      spacing.scanDirectory(this.sourcePath);
-    } else {
-      spacing.scanFile(this.sourcePath);
-    }
+    this.scanWithExclusions(spacing, this.sourcePath, ['modules-dormant']);
     this.results.spacing = spacing.report();
 
     // Summary

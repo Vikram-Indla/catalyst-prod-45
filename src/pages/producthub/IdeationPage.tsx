@@ -14,16 +14,16 @@ import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import {
   Idea, IdeationView, IdeaStatus, StatusFilter, VIEW_TITLES,
   STATUS_CONFIG, TYPE_CONFIG, PRIORITY_CONFIG, FILTER_PILLS, QUARTER_BADGE, getImpactColor,
-} from './ideation/ideation-data';
+} from '../../modules-dormant/ideation/ideation-data';
 import { useIdeas } from '@/hooks/useIdeation';
-import IdeationBoardView from './ideation/IdeationBoardView';
-import IdeationMatrixView from './ideation/IdeationMatrixView';
-import IdeationAnalyticsView from './ideation/IdeationAnalyticsView';
-import IdeationDrivesView from './ideation/IdeationDrivesView';
-import IdeationDetailPanel from './ideation/IdeationDetailPanel';
-import IdeationCreateWizard from './ideation/IdeationCreateWizard';
-import IdeationTriagePanel from './ideation/IdeationTriagePanel';
-import IdeationIntelligenceHub from './ideation/IdeationIntelligenceHub';
+import IdeationBoardView from '../../modules-dormant/ideation/IdeationBoardView';
+import IdeationMatrixView from '../../modules-dormant/ideation/IdeationMatrixView';
+import IdeationAnalyticsView from '../../modules-dormant/ideation/IdeationAnalyticsView';
+import IdeationDrivesView from '../../modules-dormant/ideation/IdeationDrivesView';
+import IdeationDetailPanel from '../../modules-dormant/ideation/IdeationDetailPanel';
+import IdeationCreateWizard from '../../modules-dormant/ideation/IdeationCreateWizard';
+import IdeationTriagePanel from '../../modules-dormant/ideation/IdeationTriagePanel';
+import IdeationIntelligenceHub from '../../modules-dormant/ideation/IdeationIntelligenceHub';
 import { CreateRequestDrawer, type ConversionSource } from '@/components/producthub/shared/CreateRequestDrawer';
 
 export default function IdeationPage() {

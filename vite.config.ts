@@ -270,7 +270,12 @@ export default defineConfig(({ mode, command }) => {
     port: 8080,
     strictPort: true,
     allowedHosts: ['localhost', 'amber-crushable-comrade.ngrok-free.dev'],
-
+    // 2026-05-19 — Exclude dormant modules from file watchers to prevent
+    // unnecessary rebuilds when dormant code changes. These modules are
+    // intentionally offline and should not trigger HMR.
+    watch: {
+      ignored: ['**/node_modules/**', '**/src/modules-dormant/**'],
+    },
   },
   plugins: [
     editorTablesCellSelectionDedup(),

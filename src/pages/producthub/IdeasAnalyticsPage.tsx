@@ -4,7 +4,7 @@
  */
 import React, { useMemo } from 'react';
 import { useIdeaStats, useIdeasHub } from '@/hooks/useIdeasHub';
-import { QUARTER_BADGE } from './ideation/ideation-data';
+import { QUARTER_BADGE } from '../../modules-dormant/ideation/ideation-data';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 

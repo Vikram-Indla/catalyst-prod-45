@@ -121,6 +121,12 @@ export default function KanbanBoardPage() {
   const [showArchived, setShowArchived] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
+  /* ═══ PHASE 2: PAGINATION STATE ═══ */
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [nextPageToken, setNextPageToken] = useState<string | null>(null);
+  const [hasMoreIssues, setHasMoreIssues] = useState(true);
+  const boardScrollContainerRef = useRef<HTMLDivElement>(null);
+
   const d = DENSITY_CONFIG[density];
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
@@ -767,6 +773,93 @@ export default function KanbanBoardPage() {
     toastSuccess('Work item linked');
     qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
   }, [key, qc, toastSuccess]);
+
+  /* ═══ PAGINATION: LOAD NEXT BATCH ═══ */
+
+  const loadNextBatch = useCallback(async () => {
+    if (isLoadingMore || !hasMoreIssues || !nextPageToken || !key) return;
+
+    setIsLoadingMore(true);
+    try {
+      const BATCH_SIZE = 100;
+
+      // Fetch next batch from Supabase using offset
+      let q = supabase.from('ph_issues')
+        .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at, jira_created_at, archived_at')
+        .eq('project_key', key.toUpperCase())
+        .is('deleted_at', null);
+      q = showArchived ? q.not('archived_at', 'is', null) : q.is('archived_at', null);
+
+      // Parse offset from nextPageToken (format: "offset:100", "offset:200", etc.)
+      const offset = parseInt(nextPageToken.split(':')[1] || '0', 10);
+
+      const { data: newData, error } = await q
+        .order('jira_updated_at', { ascending: false })
+        .range(offset, offset + BATCH_SIZE - 1);
+
+      if (error) {
+        toastError('Failed to load more issues');
+        setIsLoadingMore(false);
+        return;
+      }
+
+      if (!newData || newData.length === 0) {
+        // No more items
+        setHasMoreIssues(false);
+        setIsLoadingMore(false);
+        return;
+      }
+
+      // Map new data to BoardIssue
+      const newIssues: BoardIssue[] = newData.map((r: any): BoardIssue => {
+        let fv: string | null = null;
+        if (r.fix_versions && Array.isArray(r.fix_versions) && r.fix_versions.length > 0) {
+          const f = r.fix_versions[0];
+          fv = typeof f === 'string' ? f : f?.name ?? null;
+        }
+        return {
+          id: r.id,
+          issueKey: r.issue_key,
+          summary: r.summary ?? '',
+          issueType: r.issue_type ?? 'Task',
+          priority: r.priority ?? 'Medium',
+          status: r.status ?? 'Backlog',
+          statusCategory: r.status_category ?? 'todo',
+          assigneeName: r.assignee_display_name,
+          labels: Array.isArray(r.labels) ? (r.labels as string[]) : [],
+          sprintName: r.sprint_name,
+          storyPoints: r.story_points ? Number(r.story_points) : null,
+          parentKey: r.parent_key,
+          parentSummary: r.parent_summary,
+          fixVersion: fv,
+          isFlagged: !!r.is_flagged,
+          updatedAt: r.jira_updated_at,
+          createdAt: r.jira_created_at ?? null,
+        };
+      });
+
+      // Append to rawIssues via query cache mutation
+      const seen = new Set(rawIssues.map(i => i.issueKey).filter(Boolean));
+      const deduped = newIssues.filter(issue => !seen.has(issue.issueKey));
+
+      qc.setQueryData(['kanban-issues', key, showArchived], (prev: BoardIssue[]) => {
+        return [...prev, ...deduped];
+      });
+
+      // Update pagination state
+      const newOffset = offset + BATCH_SIZE;
+      if (newData.length < BATCH_SIZE) {
+        setHasMoreIssues(false);
+      } else {
+        setNextPageToken(`offset:${newOffset}`);
+      }
+
+      setIsLoadingMore(false);
+    } catch (err) {
+      toastError('Failed to load more issues');
+      setIsLoadingMore(false);
+    }
+  }, [isLoadingMore, hasMoreIssues, nextPageToken, key, showArchived, rawIssues, qc, toastError]);
 
   /* ═══ ARCHIVE ═══ */
 

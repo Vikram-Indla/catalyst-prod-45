@@ -106,8 +106,8 @@ const RH21AllChangesPage = lazy(() => import("../pages/releasehub/AllChangesPage
 const RH21SignOffQueuePage = lazy(() => import("../pages/releasehub/SignOffQueuePage"));
 const RH21FreezeWindowsPage = lazy(() => import("../pages/releasehub/FreezeWindowsPage"));
 
-const StrategicThemesPage = lazy(() => import("../pages/strategyhub/StrategicThemesPage"));
-const GoalsKeyResultsPage = lazy(() => import("../pages/strategyhub/GoalsKeyResultsPage"));
+const StrategicThemesPage = lazy(() => import("../modules-dormant/strategyhub/StrategicThemesPage"));
+const GoalsKeyResultsPage = lazy(() => import("../modules-dormant/strategyhub/GoalsKeyResultsPage"));
 const RequestListingPage = lazy(() => import("../pages/producthub/RequestListingPage"));
 const RoadmapPage = lazy(() => import("../pages/producthub/RoadmapPage"));
 const ProductKanbanPage = lazy(() => import("../pages/producthub/KanbanPage"));
@@ -141,19 +141,19 @@ const IncidentHubReportsPage = lazy(() => import("../pages/incidenthub/IncidentR
 const IncidentHubCommitteeQueuePage = lazy(() => import("../pages/incidenthub/CommitteeQueuePage"));
 const IncidentHubDetailPage = lazy(() => import("../pages/incidenthub/IncidentDetailPage"));
 
-const WikiHomePage = ENABLE_WIKI ? lazy(() => import("../pages/wiki/WikiHomePage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiSearchPage = ENABLE_WIKI ? lazy(() => import("../pages/wiki/WikiSearchPage")) : () => <FeatureComingSoon title="Wiki Search" />;
-const WikiCategoryPage = ENABLE_WIKI ? lazy(() => import("../pages/wiki/WikiCategoryPage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiArticlePage = ENABLE_WIKI ? lazy(() => import("../pages/wiki/WikiArticlePage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiWhatsNewPage = ENABLE_WIKI ? lazy(() => import("../pages/wiki/WikiWhatsNewPage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiLearningPathsPage = ENABLE_WIKI ? lazy(() => import("../pages/wiki/WikiLearningPathsPage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiLearningPathDetailPage = ENABLE_WIKI ? lazy(() => import("../pages/wiki/WikiLearningPathDetailPage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiSubscriptionsPage = ENABLE_WIKI ? lazy(() => import("../pages/wiki/WikiSubscriptionsPage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiAllArticlesPage = ENABLE_WIKI ? lazy(() => import("../pages/wiki/WikiAllArticlesPage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiVerificationPage = ENABLE_WIKI ? lazy(() => import("../pages/wiki/WikiVerificationPage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiAnalyticsPage = ENABLE_WIKI ? lazy(() => import("../pages/wiki/WikiAnalyticsPage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiTemplatesPage = ENABLE_WIKI ? lazy(() => import("../pages/wiki/WikiTemplatesPage")) : () => <FeatureComingSoon title="Wiki" />;
-const WikiKnowledgeGraphPage = (ENABLE_AI && ENABLE_WIKI) ? lazy(() => import("../pages/wiki/WikiKnowledgeGraphPage")) : () => <FeatureComingSoon title="Knowledge Graph" />;
+const WikiHomePage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiHomePage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiSearchPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiSearchPage")) : () => <FeatureComingSoon title="Wiki Search" />;
+const WikiCategoryPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiCategoryPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiArticlePage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiArticlePage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiWhatsNewPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiWhatsNewPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiLearningPathsPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiLearningPathsPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiLearningPathDetailPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiLearningPathDetailPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiSubscriptionsPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiSubscriptionsPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiAllArticlesPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiAllArticlesPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiVerificationPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiVerificationPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiAnalyticsPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiAnalyticsPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiTemplatesPage = ENABLE_WIKI ? lazy(() => import("../modules-dormant/wiki/WikiTemplatesPage")) : () => <FeatureComingSoon title="Wiki" />;
+const WikiKnowledgeGraphPage = (ENABLE_AI && ENABLE_WIKI) ? lazy(() => import("../modules-dormant/wiki/WikiKnowledgeGraphPage")) : () => <FeatureComingSoon title="Knowledge Graph" />;
 
 const CatyFabPlaceholderLazy = ENABLE_AI ? lazy(() => import("../components/caty/CatyFabPlaceholder").then(m => ({ default: m.CatyFabPlaceholder }))) : () => null;
 const QAAssistantFabLazy = ENABLE_AI ? lazy(() => import("../components/testhub-ai").then(m => ({ default: m.QAAssistantFab }))) : () => null;
@@ -170,8 +170,8 @@ const BrowsePage = lazy(() => import("../pages/BrowsePage"));
 const DependencyMapsPage = lazy(() => import("../pages/reports/DependencyMapsPage"));
 const SearchPage = lazy(() => import("../pages/SearchPage"));
 const PlaceholderPage = lazy(() => import("../pages/jira-align/PlaceholderPage"));
-const StrategyRoom = lazy(() => import("../pages/strategy/StrategyRoom"));
-const StrategyComingSoon = lazy(() => import("../pages/strategy/StrategyComingSoon"));
+const StrategyRoom = lazy(() => import("../modules-dormant/strategy/StrategyRoom"));
+const StrategyComingSoon = lazy(() => import("../modules-dormant/strategy/StrategyComingSoon"));
 const CapacityPlannerPage = lazy(() => import("../pages/enterprise/CapacityPlannerPage"));
 const BudgetGovernancePage = lazy(() => import("../pages/enterprise/BudgetGovernancePage"));
 const BudgetPlannerPage = lazy(() => import("../pages/enterprise/BudgetPlannerPage"));
@@ -205,56 +205,56 @@ const PlannerPage = lazy(() => import("../modules/planner").then(m => ({ default
 const KanbanPage = lazy(() => import("../modules/planner").then(m => ({ default: m.KanbanPage })));
 const MyTasksPage = lazy(() => import("../modules/planner").then(m => ({ default: m.MyTasksPage })));
 
-const TestHubPage = lazy(() => import("../pages/testhub/TestHubPage"));
-const TestHubVerifyPage = lazy(() => import("../pages/testhub/TestHubVerifyPage"));
-const TestRepositoryPage = lazy(() => import("../pages/testhub/TestRepositoryPage"));
-const TestHubDashboardPage = lazy(() => import("../pages/testhub/TestHubDashboardPage"));
-const SharedStepsPage = lazy(() => import("../pages/testhub/SharedStepsPage"));
-const SharedStepDetailPage = lazy(() => import("../pages/testhub/SharedStepDetailPage"));
-const TestSetsPage = lazy(() => import("../pages/testhub/TestSetsPage"));
-const TestSetDetailPage = lazy(() => import("../pages/testhub/TestSetDetailPage"));
-const TestCyclesPage = lazy(() => import("../pages/testhub/TestCyclesPage"));
-const TestCycleDetailPage = lazy(() => import("../pages/testhub/TestCycleDetailPage"));
-const CycleReportPage = lazy(() => import("../pages/testhub/CycleReportPage"));
-const ExecutionHubPage = lazy(() => import("../pages/testhub/ExecutionHubPage"));
-const TestHubExecutionPage = lazy(() => import("../pages/testhub/TestHubExecutionPage"));
-const TestRunsPage = lazy(() => import("../pages/testhub/TestRunsPage"));
-const TestPlansListPage = lazy(() => import("../pages/testhub/TestPlansListPage"));
-const PlanDetailPage = lazy(() => import("../pages/testhub/PlanDetailPage"));
-const TestHubDefectsPage = lazy(() => import("../pages/testhub/DefectsPage"));
-const DefectDetailPage = lazy(() => import("../pages/testhub/DefectDetailPage"));
-const TestHubRequirementsPage = lazy(() => import("../pages/testhub/RequirementsListPage"));
-const RequirementDetailPage = lazy(() => import("../pages/testhub/RequirementDetailPage"));
-const CoverageMatrixPage = lazy(() => import("../pages/testhub/CoverageMatrixPage"));
-const EnvironmentsListPage = lazy(() => import("../pages/testhub/EnvironmentsListPage"));
-const EnvironmentDetailPage = lazy(() => import("../pages/testhub/EnvironmentDetailPage"));
-const TraceabilityPage = lazy(() => import("../pages/testhub/TraceabilityPage"));
-const TestHubReportsPage = lazy(() => import("../pages/testhub/ReportsListPage"));
-const ReportDetailPage = lazy(() => import("../pages/testhub/ReportDetailPage"));
-const TagsListPage = lazy(() => import("../pages/testhub/TagsListPage"));
-const TestHubSettingsPage = lazy(() => import("../pages/testhub/SettingsPage"));
-const ActivityFeedPage = lazy(() => import("../pages/testhub/ActivityFeedPage"));
-const ImportExportPage = lazy(() => import("../pages/testhub/ImportExportPage"));
-const ReleasesListPage = lazy(() => import("../pages/testhub/ReleasesListPage"));
-const ReleaseDetailPage = lazy(() => import("../pages/testhub/ReleaseDetailPage"));
-const CommandCenterPage = lazy(() => import("../pages/testhub/CommandCenterPage"));
-const CatyAIPage = ENABLE_AI ? lazy(() => import("../pages/testhub/CatyAIPage")) : () => <FeatureComingSoon title="Caty AI" />;
-const TestHubDocsPage = lazy(() => import("../pages/testhub/TestHubDocsPage"));
+const TestHubPage = lazy(() => import("../modules-dormant/testhub/TestHubPage"));
+const TestHubVerifyPage = lazy(() => import("../modules-dormant/testhub/TestHubVerifyPage"));
+const TestRepositoryPage = lazy(() => import("../modules-dormant/testhub/TestRepositoryPage"));
+const TestHubDashboardPage = lazy(() => import("../modules-dormant/testhub/TestHubDashboardPage"));
+const SharedStepsPage = lazy(() => import("../modules-dormant/testhub/SharedStepsPage"));
+const SharedStepDetailPage = lazy(() => import("../modules-dormant/testhub/SharedStepDetailPage"));
+const TestSetsPage = lazy(() => import("../modules-dormant/testhub/TestSetsPage"));
+const TestSetDetailPage = lazy(() => import("../modules-dormant/testhub/TestSetDetailPage"));
+const TestCyclesPage = lazy(() => import("../modules-dormant/testhub/TestCyclesPage"));
+const TestCycleDetailPage = lazy(() => import("../modules-dormant/testhub/TestCycleDetailPage"));
+const CycleReportPage = lazy(() => import("../modules-dormant/testhub/CycleReportPage"));
+const ExecutionHubPage = lazy(() => import("../modules-dormant/testhub/ExecutionHubPage"));
+const TestHubExecutionPage = lazy(() => import("../modules-dormant/testhub/TestHubExecutionPage"));
+const TestRunsPage = lazy(() => import("../modules-dormant/testhub/TestRunsPage"));
+const TestPlansListPage = lazy(() => import("../modules-dormant/testhub/TestPlansListPage"));
+const PlanDetailPage = lazy(() => import("../modules-dormant/testhub/PlanDetailPage"));
+const TestHubDefectsPage = lazy(() => import("../modules-dormant/testhub/DefectsPage"));
+const DefectDetailPage = lazy(() => import("../modules-dormant/testhub/DefectDetailPage"));
+const TestHubRequirementsPage = lazy(() => import("../modules-dormant/testhub/RequirementsListPage"));
+const RequirementDetailPage = lazy(() => import("../modules-dormant/testhub/RequirementDetailPage"));
+const CoverageMatrixPage = lazy(() => import("../modules-dormant/testhub/CoverageMatrixPage"));
+const EnvironmentsListPage = lazy(() => import("../modules-dormant/testhub/EnvironmentsListPage"));
+const EnvironmentDetailPage = lazy(() => import("../modules-dormant/testhub/EnvironmentDetailPage"));
+const TraceabilityPage = lazy(() => import("../modules-dormant/testhub/TraceabilityPage"));
+const TestHubReportsPage = lazy(() => import("../modules-dormant/testhub/ReportsListPage"));
+const ReportDetailPage = lazy(() => import("../modules-dormant/testhub/ReportDetailPage"));
+const TagsListPage = lazy(() => import("../modules-dormant/testhub/TagsListPage"));
+const TestHubSettingsPage = lazy(() => import("../modules-dormant/testhub/SettingsPage"));
+const ActivityFeedPage = lazy(() => import("../modules-dormant/testhub/ActivityFeedPage"));
+const ImportExportPage = lazy(() => import("../modules-dormant/testhub/ImportExportPage"));
+const ReleasesListPage = lazy(() => import("../modules-dormant/testhub/ReleasesListPage"));
+const ReleaseDetailPage = lazy(() => import("../modules-dormant/testhub/ReleaseDetailPage"));
+const CommandCenterPage = lazy(() => import("../modules-dormant/testhub/CommandCenterPage"));
+const CatyAIPage = ENABLE_AI ? lazy(() => import("../modules-dormant/testhub/CatyAIPage")) : () => <FeatureComingSoon title="Caty AI" />;
+const TestHubDocsPage = lazy(() => import("../modules-dormant/testhub/TestHubDocsPage"));
 const QualityGatesPage = lazy(() => import("../pages/releases/QualityGatesPage"));
-const MyTestScopePage = lazy(() => import("../pages/testhub/MyTestScopePage"));
+const MyTestScopePage = lazy(() => import("../modules-dormant/testhub/MyTestScopePage"));
 
 const T10LandingPage = lazy(() => import("../modules/task10/pages/T10LandingPage").then(m => ({ default: m.T10LandingPage })));
 const T10WeekPage = lazy(() => import("../modules/task10/pages/T10WeekPage").then(m => ({ default: m.T10WeekPage })));
 const T10WeekPageV3 = lazy(() => import("../modules/task10/pages/T10WeekPageV3").then(m => ({ default: m.T10WeekPageV3 })));
 const T10CompletedPage = lazy(() => import("../modules/task10/pages/T10CompletedPage").then(m => ({ default: m.T10CompletedPage })));
 
-const PlanLibraryPage = lazy(() => import("../pages/planhub").then(m => ({ default: m.PlanLibraryPage })));
-const PlanEditorPage = lazy(() => import("../pages/planhub").then(m => ({ default: m.PlanEditorPage })));
-const ScenarioComparePage = lazy(() => import("../pages/planhub").then(m => ({ default: m.ScenarioComparePage })));
-const MasterPlanPage = lazy(() => import("../pages/planhub").then(m => ({ default: m.MasterPlanPage })));
-const PlanHubResourcesPage = lazy(() => import("../pages/planhub").then(m => ({ default: m.ResourcesPage })));
-const PlanHubAIPage = ENABLE_AI ? lazy(() => import("../pages/planhub").then(m => ({ default: m.AIAssistantPage }))) : () => <FeatureComingSoon title="PlanHub AI" />;
-const PlanHubReportsPage = lazy(() => import("../pages/planhub").then(m => ({ default: m.ReportCenterPage })));
+const PlanLibraryPage = lazy(() => import("../modules-dormant/planhub").then(m => ({ default: m.PlanLibraryPage })));
+const PlanEditorPage = lazy(() => import("../modules-dormant/planhub").then(m => ({ default: m.PlanEditorPage })));
+const ScenarioComparePage = lazy(() => import("../modules-dormant/planhub").then(m => ({ default: m.ScenarioComparePage })));
+const MasterPlanPage = lazy(() => import("../modules-dormant/planhub").then(m => ({ default: m.MasterPlanPage })));
+const PlanHubResourcesPage = lazy(() => import("../modules-dormant/planhub").then(m => ({ default: m.ResourcesPage })));
+const PlanHubAIPage = ENABLE_AI ? lazy(() => import("../modules-dormant/planhub").then(m => ({ default: m.AIAssistantPage }))) : () => <FeatureComingSoon title="PlanHub AI" />;
+const PlanHubReportsPage = lazy(() => import("../modules-dormant/planhub").then(m => ({ default: m.ReportCenterPage })));
 
 const Defects = lazy(() => import("../pages/Defects"));
 const Tasks = lazy(() => import("../pages/Tasks"));
@@ -318,6 +318,7 @@ const ThemeStatuses = lazy(() => import("../pages/admin/ThemeStatuses"));
 const WorkflowAdminPage = lazy(() => import("../pages/admin/workflows/WorkflowAdminPage"));
 const DesignSystemAdmin = lazy(() => import("../pages/admin/design-system/DesignSystemAdmin"));
 const CatalystFeaturesBoard = lazy(() => import("../pages/admin/CatalystFeaturesBoard"));
+const AdminStorybookPage = lazy(() => import("../pages/admin/AdminStorybookPage").then(m => ({ default: m.AdminStorybookPage })));
 // Incident admin routes deleted 2026-05-09 (Vikram decision: delete all 7)
 const NotificationTriggers = lazy(() => import("../pages/admin/NotificationTriggers"));
 
@@ -902,6 +903,7 @@ export default function FullAppRoutes() {
           <Route path="catalyst-features" element={<S><CatalystFeaturesBoard /></S>} />
           <Route path="design-system" element={<S><DesignSystemAdmin /></S>} />
           <Route path="governance" element={<S><GovernanceSettings /></S>} />
+          <Route path="storybook" element={<S><AdminStorybookPage /></S>} />
           {/* Design system pocket — preflight 2026-05-17 consolidation. */}
           <Route path="components" element={<S><ComponentsAdminPage /></S>} />
           {/* RESET ICONS — runtime asset override management. Admin-only. */}
