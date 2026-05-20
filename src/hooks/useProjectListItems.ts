@@ -141,13 +141,14 @@ function mapPhIssue(row: any): WorkItem {
     storyPoints: row.story_points ?? null,
     sprintName: row.sprint_name ?? null,
     resolution: row.resolution ?? null,
+    severity: row.severity ?? (row.raw_json?.fields?.customfield_10125?.value ?? null),
     labels: row.labels ?? [],
     is_flagged: issueFlagged,
     flag_reason: issueFlagReason,
   };
 }
 
-const PH_ISSUES_SELECT = 'id, issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, parent_key, parent_summary, fix_versions, labels, priority, story_points, sprint_name, resolution, jira_created_at, jira_updated_at, description_text, comments, reporter_account_id, reporter_display_name, is_flagged, flag_reason, raw_json';
+const PH_ISSUES_SELECT = 'id, issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, parent_key, parent_summary, fix_versions, labels, priority, story_points, sprint_name, resolution, severity, jira_created_at, jira_updated_at, description_text, comments, reporter_account_id, reporter_display_name, is_flagged, flag_reason, raw_json';
 
 /* ── Paginated ph_issues fetch ────────────────────────────────────────
    PostgREST applies a server-side max-rows cap (typically 1000) that
