@@ -58,6 +58,7 @@ For every signal, which lanes fire and which agent owns each lane.
 | 22 | MCP server / tool def | — | — | — | codebase-onboarding-engineer: existing MCP patterns |
 | 23 | git / PR / branch | — | — | — | codebase-onboarding-engineer: branch state + PR listing |
 | 24 | (no match) | jira-workflow-steward: project-level probe | frontend-developer: surface URL probe | — | codebase-onboarding-engineer: best-effort grep |
+| 25 | `ADS compliance` / `design system scan` / `ads audit` / Step 4.5 auto-trigger | — | frontend-developer: `getComputedStyle` sweep for hardcoded hex + Tailwind + non-atlaskit + off-grid spacing + uppercase labels | — | codebase-onboarding-engineer: run `node design-governance/cli/index.js audit src/[path]` + grep for banned patterns |
 
 **Probe budget rules:**
 - Each lane has a 90-second wall-clock budget. If exceeded → mark `partial`, continue.
@@ -106,6 +107,7 @@ The council deliberates for 5-10 minutes and outputs a binding wrapper compositi
 | Test flake | preflight (direct, no wrappers nested) | No (single path) |
 | Refactor consolidation | preflight (full) → jira-compare (regression sweep) | **Yes** (cross-cutting, high-stake) |
 | Banned signal (caught in step 2) | NONE — halt | No (pre-phase 2) |
+| ADS compliance scan (Step 4.5 — hex/Tailwind/non-atlaskit/spacing/uppercase) | design-intelligence → design-critique | No (single path — value-added, not blocking) |
 | Ambiguous gap (e.g., could be design-only OR preflight + jira-compare) | Council deliberates, picks one or composition | **Yes** (mandatory for ambiguous) |
 
 ### Implementer agents (by gap type)
@@ -131,6 +133,10 @@ For each wrapper composition, who runs the actual code change.
 | Spacing / padding drift | design-ui-designer | engineering-frontend-developer | evidence-collector |
 | Lozenge / status pill colors | engineering-frontend-developer | design-brand-guardian | evidence-collector |
 | Coloured dots for type indicator (2026-05-09 ban) | engineering-frontend-developer | — | reality-checker, code-reviewer |
+| Tailwind utility class replacing ADS token (Step 4.5 find) | engineering-frontend-developer | design-ui-designer | evidence-collector |
+| Non-atlaskit component (hand-rolled select/modal/menu — Step 4.5 find) | engineering-frontend-developer | engineering-minimal-change-engineer | reality-checker, code-reviewer |
+| Off-grid spacing (Step 4.5 find — e.g. padding: 12px) | design-ui-designer | engineering-frontend-developer | evidence-collector |
+| Uppercase label violation (Step 4.5 find) | design-ui-designer | — | evidence-collector |
 
 #### Missing Jira-side feature in Catalyst
 
