@@ -44,7 +44,7 @@ if (typeof document !== 'undefined') {
     '@keyframes cv-slide-down { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }',
     '@keyframes cv-confirm-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }',
     '.cv-drawer-body { container-type: inline-size; }',
-    '.cv-drawer-left { min-width: 280px; }',
+    '.cv-drawer-left { min-width: 288px; }',
     /* jira-compare 2026-05-11 DC4: 680px threshold fired at 560px panel-mode body
        (allwork right pane), hiding the sidebar. Jira shows two columns at 461px.
        Lowered to 440px so panel mode (~560px) keeps the sidebar visible. */
@@ -290,7 +290,7 @@ export function CatalystViewBase({
   } : {
     position: 'fixed', inset: 0, zIndex: 1000,
     display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-    background: 'rgba(9, 30, 66, 0.54)',
+    background: 'var(--ds-blanket, rgba(9,30,66,.54))',
     padding: '40px 16px', overflowY: 'auto',
     animation: 'cv-overlay-in 200ms ease-out',
   };
@@ -313,12 +313,12 @@ export function CatalystViewBase({
     width: 1100, maxWidth: '95vw', minHeight: 600, maxHeight: 'calc(100vh - 80px)',
     background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', borderRadius: 8,
     display: 'flex', flexDirection: 'column',
-    boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)', overflow: 'hidden',
+    boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(9,30,66,.25))', overflow: 'hidden',
     animation: 'cv-card-in 250ms ease-out',
   };
 
   const hoverBtn: React.CSSProperties = {
-    background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px',
+    background: 'none', border: 'none', cursor: 'pointer', padding: '8px',
     borderRadius: 4, color: 'var(--ds-text-subtle, #42526E)', fontSize: 13, fontWeight: 500, display: 'flex', alignItems: 'center',
     gap: 6, transition: 'background 0.15s', fontFamily: 'var(--cp-font-body)',
   };
