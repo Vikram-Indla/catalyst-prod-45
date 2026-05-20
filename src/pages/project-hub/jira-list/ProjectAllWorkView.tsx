@@ -61,7 +61,7 @@ const SPLIT_BREAKPOINT_PX = 1120;
 export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   // PERF: useProjectAllWorkItems now returns paginated results with keyset cursor
   const {
-    data: items = [],
+    items = [],
     rowsPerPage,
     setRowsPerPage,
     hasNextPage,
