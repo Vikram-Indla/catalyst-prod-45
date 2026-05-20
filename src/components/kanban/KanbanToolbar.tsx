@@ -90,7 +90,7 @@ export function EpicFilterDropdown({ epics, selected, onChange, tk }: {
       <FilterTrigger label="Epic" count={active ? selected.length : 0} active={active} onClick={() => setOpen(p => !p)} tk={tk} />
       {open && (
         <DropdownPanel width={360} tk={tk}>
-          <div style={{ padding: 10, borderBottom: `1px solid ${tk.border}` }}>
+          <div style={{ padding: 8, borderBottom: `1px solid ${tk.border}` }}>
             <div style={{ position: 'relative' }}>
               <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: tk.textMuted }} />
               <input type="text" value={q} onChange={e => setQ(e.target.value)} placeholder="Search epics..." autoFocus

@@ -50,7 +50,7 @@ function Toggle({ checked, onChange, tk }: { checked: boolean; onChange: (v: boo
 /* ── Row ── */
 function ToggleRow({ label, checked, onChange, tk }: { label: string; checked: boolean; onChange: (v: boolean) => void; tk: KanbanThemeTokens }) {
   return (
-    <div className="flex items-center justify-between" style={{ padding: '6px 0' }}>
+    <div className="flex items-center justify-between" style={{ padding: '8px 0' }}>
       <span style={{ fontSize: 14, color: tk.textSecondary, fontFamily: 'var(--cp-font-body)' }}>{label}</span>
       <Toggle checked={checked} onChange={onChange} tk={tk} />
     </div>
