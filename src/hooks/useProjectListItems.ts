@@ -254,8 +254,13 @@ export function useProjectAllWorkItems(projectKey: string | undefined): AllWorkP
         .order('issue_key', { ascending: false });
 
       // Keyset pagination: if we have a cursor, filter to rows AFTER the cursor
+      // Composite-key boundary: fetch rows where (jira_updated_at < cursor.timestamp)
+      // OR (jira_updated_at = cursor.timestamp AND issue_key < cursor.key)
+      // This handles timestamp collisions (bulk-synced data) correctly
       if (cursor) {
-        qb = qb.lt('jira_updated_at', cursor.timestamp);
+        qb = qb.or(
+          `jira_updated_at.lt.${cursor.timestamp},and(jira_updated_at.eq.${cursor.timestamp},issue_key.lt.${cursor.key})`
+        );
       }
 
       // Fetch one extra row to determine if there's a next page
