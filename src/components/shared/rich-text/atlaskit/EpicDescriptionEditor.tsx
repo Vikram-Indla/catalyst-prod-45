@@ -38,6 +38,10 @@ import { normalizeAdfForAtlaskit, parseStoredDescriptionToAdf } from './adfNorma
 import { uploadDescriptionImage } from './supabaseImageUpload';
 import { watchAndInjectExternalMedia } from './injectExternalMedia';
 import { NodeSelection } from '@atlaskit/editor-prosemirror/state';
+import {
+  createCatalystMentionProvider,
+  type CatalystMentionResource,
+} from './catalystMentionProvider';
 
 // 2026-05-03 — CONVERTED TO STATIC IMPORT
 // TipTap was removed 2026-04-20 (USER DIRECTIVE). The lazy-load was to prevent
@@ -75,41 +79,7 @@ export interface AttachmentUploadMeta {
   height?: number;
 }
 
-/**
- * Mention provider factory for Atlaskit Editor mention plugin.
- * Fetches team members from Catalyst's profiles table and returns
- * Jira-compatible mention objects: id (UUID), name (full_name), avatar.
- */
-async function createMentionProvider() {
-  return {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    filter: async (query: string) => {
-      // Fetch all approved team members once per editor session
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url, email')
-        .eq('approval_status', 'APPROVED')
-        .order('full_name');
-
-      if (error) {
-        console.error('[MentionProvider] profiles fetch error:', error.message);
-        return { mentions: [] };
-      }
-
-      const mentions = (data ?? []).map((member: any) => ({
-        id: member.id,
-        name: member.full_name || member.email || 'Unknown',
-        avatar: member.avatar_url || undefined,
-      }));
-
-      return { mentions };
-    },
-    // Record that the mention was inserted (optional analytics/logging)
-    recordMentionSelection: () => {
-      // No-op for now; can wire to analytics if needed
-    },
-  };
-}
+/* Mention provider lives in ./catalystMentionProvider.ts. */
 
 export interface EpicDescriptionEditorProps {
   /** Raw stored description (ADF object, ADF JSON string, or null). */
@@ -182,14 +152,15 @@ function EpicDescriptionEditorImpl({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
-  const [mentionProvider, setMentionProvider] = useState<any>(null);
-
-  // Initialize mention provider on mount
-  useEffect(() => {
-    createMentionProvider().then(setMentionProvider).catch(err => {
-      console.error('[EpicDescriptionEditor] mention provider init failed:', err);
-    });
-  }, []);
+  const mentionProviderRef = useRef<CatalystMentionResource | null>(null);
+  if (!mentionProviderRef.current) {
+    mentionProviderRef.current = createCatalystMentionProvider();
+  }
+  const mentionProvider = mentionProviderRef.current;
+  const mentionProviderPromise = useMemo(
+    () => Promise.resolve(mentionProvider),
+    [mentionProvider],
+  );
 
   const adfDocRef = useRef<unknown>(initialAdf);
   useEffect(() => {
@@ -455,7 +426,9 @@ function EpicDescriptionEditorImpl({
             onCancel={appearanceProp !== 'chromeless' ? onCancel : undefined}
             onEditorReady={handleEditorReady}
             onChange={onChange ? handleEditorChange : undefined}
-            mention={mentionProvider ? { provider: mentionProvider } : undefined}
+            popupsMountPoint={typeof document !== 'undefined' ? document.body : undefined}
+            mentionProvider={mentionProviderPromise}
+            mention={{ insertDisplayName: true }}
             allowTextColor
             allowTextAlignment
             allowIndentation

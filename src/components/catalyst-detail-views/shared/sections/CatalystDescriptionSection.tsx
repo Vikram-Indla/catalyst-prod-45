@@ -240,7 +240,7 @@ const DESC_BUILD_ID = "atlaskit-canonical-v218";
 
 /* ── Scoped styles for ADF content inside CatalystView ── */
 /* Bump this version when the style block changes — forces re-injection on HMR. */
-const STYLE_ID = "cv-desc-styles-v17";
+const STYLE_ID = "cv-desc-styles-v21";
 if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
   const s = document.createElement("style");
   s.id = STYLE_ID;
@@ -520,6 +520,34 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
     .cv-desc-edit-btn:hover {
       color: #292A2E !important;
       background: var(--ds-surface-sunken, #F4F5F7) !important;
+    }
+
+    /* 2026-05-21 — @-mention chip styling.
+       Jira's mention chips are blue/informational. Atlaskit's default
+       node-spec writes inline grey neutral tokens (--ds-background-neutral
+       + --ds-text-subtle) directly to span[data-mention-id]'s style attr;
+       inline style beats class-based CSS, so we use !important to lift
+       the chip into the ADS information palette. Tokens used:
+         background: --ds-background-information (light blue surface)
+         color:      --ds-text-information       (Jira link blue)
+       Both round-trip light/dark themes via ADS, so this is theme-safe. */
+    span[data-mention-id] {
+      background: var(--ds-background-information, #DEEBFF) !important;
+      color: var(--ds-text-information, #1868DB) !important;
+      border-radius: 3px !important;
+      padding: 0 4px !important;
+      font-weight: 500 !important;
+    }
+    span[data-mention-id]:hover {
+      background: var(--ds-background-information-hovered, #CCE0FF) !important;
+    }
+
+    .fabric-editor-typeahead,
+    [class*="fabric-editor-typeahead"],
+    [data-editor-popup-render-target],
+    [data-editor-popup-render-target] > *,
+    [data-editor-popup] {
+      z-index: 2147483600 !important;
     }
   `;
   document.head.appendChild(s);
