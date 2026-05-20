@@ -127,7 +127,7 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
               "shadow-[0_2px_8px_rgba(37,99,235,0.18)]",
               "hover:-translate-y-px hover:shadow-[0_4px_16px_rgba(37,99,235,0.25)]",
               "active:translate-y-0 active:shadow-[0_1px_4px_rgba(37,99,235,0.15)]",
-              "transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)]",
+              "transition-all duration-150 ease-smooth",
               "focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[hsl(var(--brand-primary))]"
             )}
             style={{

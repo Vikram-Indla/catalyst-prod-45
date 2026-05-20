@@ -1,6 +1,6 @@
 import * as React from "react";
 import { format } from "date-fns";
-import DatePicker from "@atlaskit/datetime-picker";
+import { DatePicker } from "@atlaskit/datetime-picker";
 import { token } from "@atlaskit/tokens";
 
 interface CatalystDatePickerProps {

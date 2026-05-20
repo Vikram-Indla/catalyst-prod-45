@@ -36,7 +36,7 @@ function FilterChip({ label, isActive, onClick, icon }: FilterChipProps) {
     <button
       onClick={onClick}
       className={cn(
-        'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-[50ms]',
+        'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-50',
         isActive
           ? 'bg-brand-primary text-white'
           : 'bg-surface-2 text-text-2 hover:bg-surface-3'

@@ -816,7 +816,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         {/* ═══ CANVAS ═══ */}
         <div
           ref={canvasRef}
-          className="overflow-auto select-none transition-all duration-[400ms] ease-out"
+          className="overflow-auto select-none transition-all duration-400 ease-out"
           style={{
             background: 'var(--bg-1, #F8FAFC)',
             cursor: isPanning ? 'grabbing' : 'grab',

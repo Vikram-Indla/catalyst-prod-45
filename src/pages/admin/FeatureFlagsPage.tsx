@@ -253,7 +253,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
       </div>
 
       {/* D10: Hover-reveal row actions */}
-      <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-[120ms]">
+      <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-120">
         <button
           className="w-7 h-7 flex items-center justify-center rounded hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] focus-visible:ring-offset-2"
           aria-label="Configure module"
@@ -745,7 +745,7 @@ export default function FeatureFlagsPage() {
           <div
             style={{ padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
             onClick={() => handleSort('updated_at')}
-            className="select-none hover:text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] transition-colors duration-[120ms]"
+            className="select-none hover:text-[var(--ds-text,var(--cp-ink-1, var(--cp-ink-1, #0F172A)))] transition-colors duration-120"
             role="columnheader"
             tabIndex={0}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSort('updated_at'); } }}

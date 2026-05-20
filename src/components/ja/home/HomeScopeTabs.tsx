@@ -51,7 +51,7 @@ export function HomeScopeTabs({ value, onChange, counts, className }: HomeScopeT
             className={cn(
               // Base styles: padding, rounded, font, transition
               "inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium",
-              "transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]",
+              "transition-all duration-200 ease-smooth",
               // Focus ring
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring-hex)]",
               isActive

@@ -641,6 +641,20 @@ export default {
         "ease-out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
         "spring": "cubic-bezier(0.5, 1.6, 0.4, 0.7)",
         "bounce": "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+        "ease-smooth": "cubic-bezier(0.4, 0, 0.2, 1)",
+      },
+
+      /* Custom transition durations (in milliseconds) */
+      transitionDuration: {
+        "50": "50ms",
+        "80": "80ms",
+        "120": "120ms",
+        "150": "150ms",
+        "200": "200ms",
+        "250": "250ms",
+        "300": "300ms",
+        "400": "400ms",
+        "500": "500ms",
       },
       
       /* Spacing - 4px base grid */

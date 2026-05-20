@@ -93,7 +93,7 @@ export function CatalystAIPanel({
       <aside
         className={cn(
           "fixed top-0 right-0 w-[360px] h-screen bg-card border-l border-border z-[100]",
-          "flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
+          "flex flex-col transition-transform duration-300 ease-smooth",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >

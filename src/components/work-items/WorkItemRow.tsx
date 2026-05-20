@@ -53,7 +53,7 @@ export function WorkItemRow({
   return (
     <div
       className={cn(
-        'group relative flex items-center h-14 px-4 border-b border-border-subtle transition-colors duration-[50ms]',
+        'group relative flex items-center h-14 px-4 border-b border-border-subtle transition-colors duration-50',
         'hover:bg-surface-2 cursor-pointer',
         isSelected && 'bg-brand-primary-light/30',
         isFocused && 'ring-2 ring-inset ring-brand-primary',
@@ -151,7 +151,7 @@ export function WorkItemRow({
       )}
 
       {/* Quick Actions (visible on hover) */}
-      <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-[50ms]">
+      <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-50">
         <Button
           variant="ghost"
           size="sm"

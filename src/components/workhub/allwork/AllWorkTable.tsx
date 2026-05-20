@@ -271,7 +271,7 @@ const TableRow = memo(function TableRow({
 
       {/* Key */}
       <div className="flex items-center gap-1.5 px-2 min-w-0" style={{ paddingLeft: `${8 + node.depth * 28}px` }}>
-        <GripVertical className="w-3 h-3 opacity-0 group-hover:opacity-40 shrink-0 transition-opacity duration-[80ms]" style={{ color: 'var(--fg-3)' }} />
+        <GripVertical className="w-3 h-3 opacity-0 group-hover:opacity-40 shrink-0 transition-opacity duration-80" style={{ color: 'var(--fg-3)' }} />
         {hasChildren ? (
           <button
             onClick={(e) => { e.stopPropagation(); onToggleExpand(item.issue_key); }}
@@ -301,7 +301,7 @@ const TableRow = memo(function TableRow({
         <span className="text-[14px] truncate" style={{ color: 'var(--fg-1)', fontWeight: 400, fontFamily: 'var(--cp-font-body)' }}>
           {item.summary}
         </span>
-        <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 shrink-0 ml-auto transition-opacity duration-[80ms]">
+        <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 shrink-0 ml-auto transition-opacity duration-80">
           <button className="p-0.5 rounded hover:bg-[rgba(128,128,128,0.12)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]" title="Open in new tab" aria-label="Open in new tab" onClick={e => e.stopPropagation()}>
             <ExternalLink className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
           </button>
@@ -366,7 +366,7 @@ const TableRow = memo(function TableRow({
           <span className="text-[12px] italic" style={{ color: 'var(--fg-3)' }}>Unassigned</span>
         )}
         <button
-          className="ml-auto opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[rgba(128,128,128,0.12)] shrink-0 transition-opacity duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
+          className="ml-auto opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[rgba(128,128,128,0.12)] shrink-0 transition-opacity duration-80 focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))]"
           aria-label={`More actions for ${item.issue_key}`}
           onClick={(e) => { e.stopPropagation(); onContextMenu({ x: e.clientX, y: e.clientY, item }); }}
         >
