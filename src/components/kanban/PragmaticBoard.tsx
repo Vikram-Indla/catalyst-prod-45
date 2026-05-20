@@ -44,7 +44,8 @@ import { WorkItemCard } from './WorkItemCard';
 import { InlineCreateCard } from './InlineCreateCard';
 import type { BoardIssue } from './kanban-types';
 import { CARD_COLOR_BY_PRIORITY, CARD_COLOR_BY_TYPE } from './kanban-types';
-import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
+import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef, KanbanDensity } from './kanban-tokens';
+import { DENSITY_CONFIG } from './kanban-tokens';
 import type { AssigneeOption } from './AssigneePickerPopover';
 import type { VisibleFields, CardColorMode } from '@/hooks/useKanbanViewSettings';
 
@@ -244,7 +245,7 @@ const PragmaticCard = memo(function PragmaticCard({
           avatarsByName={avatarsByName}
         />
       </div>
-      {closestEdge && <DropIndicator edge={closestEdge} gap="4px" />}
+      {closestEdge && <DropIndicator edge={closestEdge} gap={d.cardGap} />}
       {ctxMenu && (
         <div
           data-testid={`kanban-card-context-menu-${issue.id}`}
@@ -433,7 +434,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
               color: issueIds.length > column.wipLimit ? '#AE2A19' : tk.textMuted,
               fontFamily: 'var(--cp-font-body)',
               lineHeight: '16px',
-              padding: '0 6px',
+              padding: '0 8px',
               borderRadius: 3,
               background: issueIds.length > column.wipLimit ? '#FFEBE6' : 'transparent',
               border: `1px solid ${issueIds.length > column.wipLimit ? '#AE2A19' : tk.borderSubtle}`,
@@ -488,7 +489,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
               background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
               borderRadius: 4,
               boxShadow: 'rgba(9,30,66,0.31) 0 0 1px, rgba(9,30,66,0.25) 0 4px 8px -2px',
-              padding: '6px 0',
+              padding: '8px 0',
               fontFamily: 'var(--cp-font-body)',
             }}
           >
@@ -499,13 +500,13 @@ const PragmaticColumn = memo(function PragmaticColumn({
               borderBottom: `1px solid ${tk.border}`, marginBottom: 4,
             }}>{column.name}</div>
             {/* Column stats — non-interactive info rows */}
-            <div style={{ padding: '2px 16px', fontSize: 12, color: tk.textPrimary, display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ padding: '8px 16px', fontSize: 12, color: tk.textPrimary, display: 'flex', justifyContent: 'space-between' }}>
               <span>Cards</span>
               <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600 }}>{issueIds.length}</span>
             </div>
             {column.wipLimit != null && (
               <div style={{
-                padding: '2px 16px 6px', fontSize: 12, display: 'flex', justifyContent: 'space-between',
+                padding: '8px 16px', fontSize: 12, display: 'flex', justifyContent: 'space-between',
                 color: issueIds.length > column.wipLimit ? '#AE2A19' : tk.textPrimary,
               }}>
                 <span>WIP limit</span>
@@ -627,8 +628,28 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
 ) {
   const parentRef = ref || useRef<HTMLDivElement>(null);
 
-  // Estimated card height: roughly 80-120px depending on density + cardGap
-  const estimatedCardHeight = 100 + (parseInt(d.cardGap?.toString() || '8', 10) || 8);
+  // Calculate estimated card height per density config.
+  // Accounts for: cardPad (top+bottom) + titleSize + lineHeight + metaSize + footerHeight + cardGap
+  // Jira evidence (Lane A MDT board 597, 2026-05-20): card heights vary by visual density, not uniform.
+  const calculateCardHeight = (cfg: DensityConfig): number => {
+    // Parse top padding from "6px 8px" or "12px" format
+    const padParts = cfg.cardPad.split(' ');
+    const padTop = parseInt(padParts[0], 10);
+    const padBottom = padParts.length > 1 ? parseInt(padParts[1], 10) : padTop;
+    // Title row: titleSize + lineHeight (titleSize + 6px)
+    const titleRow = cfg.titleSize + (cfg.titleSize + 6);
+    // Meta row: metaSize
+    const metaRow = cfg.metaSize;
+    // Footer row: footerHeight
+    const footerRow = cfg.footerHeight;
+    // Gap below card
+    const gap = parseInt(cfg.cardGap?.toString() || '8', 10) || 8;
+    // Total: all vertical components + gap
+    const total = padTop + titleRow + metaRow + footerRow + padBottom + gap;
+    return Math.max(total, cfg.cardMinHeight || 26); // Ensure minimum viable height
+  };
+
+  const estimatedCardHeight = calculateCardHeight(d);
 
   const virtualizer = useVirtualizer({
     count: issueIds.length,
@@ -644,7 +665,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
         ref={parentRef}
         className="flex flex-col overflow-y-auto"
         style={{
-          padding: '6px 10px 10px 10px',
+          padding: '8px',
           gap: d.cardGap,
           flex: 1,
           minHeight: 120,

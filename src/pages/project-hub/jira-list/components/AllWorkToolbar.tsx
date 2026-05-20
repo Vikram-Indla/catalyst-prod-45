@@ -92,6 +92,8 @@ import type { WorkItem } from "@/types/workItem.types";
 import "./ask-caty-input.css";
 import { useCatySearch } from "@/components/caty/catySearchStore";
 import { useAuth } from "@/lib/auth";
+import { JiraBasicFilter } from "@/components/shared/JiraBasicFilter";
+import type { FilterCategory as JiraFilterCategory } from "@/components/shared/JiraBasicFilter";
 
 /** Kept for back-compat with any remaining callsite imports — layout is
  *  always split; the toggle was removed (2026-05-04 jira-compare cycle 2). */
@@ -119,7 +121,8 @@ export type FilterFacet =
   | "reporter"
   | "resolution"
   | "sprint"
-  | "storyPoints";
+  | "storyPoints"
+  | "severity";
 
 export type FilterState = Record<FilterFacet, string[]>;
 
@@ -135,6 +138,7 @@ export const EMPTY_FILTERS: FilterState = {
   resolution: [],
   sprint: [],
   storyPoints: [],
+  severity: [],
 };
 
 const FACET_ORDER: FilterFacet[] = [
@@ -149,6 +153,7 @@ const FACET_ORDER: FilterFacet[] = [
   "resolution",
   "sprint",
   "storyPoints",
+  "severity",
 ];
 
 /**
@@ -204,6 +209,7 @@ const MORE_FILTERS_FACETS: FilterFacet[] = [
   "resolution",
   "sprint",
   "storyPoints",
+  "severity",
 ];
 
 const FACET_LABELS: Record<FilterFacet, string> = {
@@ -218,6 +224,7 @@ const FACET_LABELS: Record<FilterFacet, string> = {
   resolution: "Resolution",
   sprint: "Sprint",
   storyPoints: "Story points",
+  severity: "Severity",
 };
 
 interface Props {
@@ -368,6 +375,11 @@ function distinctOptions(items: WorkItem[], facet: FilterFacet): FacetOption[] {
         }
         break;
       }
+      case "severity": {
+        const sv = toLabel(i.severity);
+        if (sv && !map.has(sv)) map.set(sv, { value: sv, label: sv });
+        break;
+      }
     }
   }
   return Array.from(map.values()).sort((a, b) =>
@@ -400,6 +412,8 @@ export function itemPassesFilters(item: WorkItem, f: FilterState): boolean {
   if (f.priority.length > 0 && !f.priority.includes(toLabel(item.priority)))
     return false;
   if (f.reporter.length > 0 && !f.reporter.includes(toLabel(item.reporterId)))
+    return false;
+  if (f.severity.length > 0 && !f.severity.includes(toLabel(item.severity)))
     return false;
   return true;
 }
@@ -1934,136 +1948,38 @@ export function AllWorkToolbar({
         isOpen={openChipKey === "more"}
         onOpenChange={(open) => setOpenChipKey(open ? "more" : null)}
         FilterIcon={FilterIcon}
-        renderContent={() => (
-          <div
-            data-testid="catalyst-allwork-toolbar.more-filters-popup"
-            style={{
-              width: 520,
-              height: 420,
-              display: "flex",
-              flexDirection: "column",
-              fontFamily: "var(--cp-font-body)",
-            }}
-          >
-            <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
-              {/* Left rail — 5 hidden-facet tabs */}
-              <div
-                role="tablist"
-                aria-orientation="vertical"
-                style={{
-                  width: 140,
-                  flexShrink: 0,
-                  borderRight:
-                    "1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))",
-                  overflowY: "auto",
-                  padding: "8px 0",
+        renderContent={() => {
+          const jiraCategories: JiraFilterCategory[] = MORE_FILTERS_FACETS.map(
+            (f) => ({
+              id: f,
+              label: FACET_LABELS[f],
+              options: facetOptions[f].map((o) => ({
+                id: o.value,
+                label: o.label,
+              })),
+            }),
+          );
+          const jiraSelected: Record<string, string[]> = {};
+          for (const f of MORE_FILTERS_FACETS) jiraSelected[f] = selectedFilters[f];
+          return (
+            <div data-testid="catalyst-allwork-toolbar.more-filters-popup">
+              <JiraBasicFilter
+                categories={jiraCategories}
+                selected={jiraSelected}
+                onSelectionChange={(categoryId, optionIds) =>
+                  updateFacet(categoryId as FilterFacet, optionIds)
+                }
+                onClearAll={() => {
+                  if (!onSelectedFiltersChange) return;
+                  const next = { ...selectedFilters };
+                  for (const f of MORE_FILTERS_FACETS) next[f] = [];
+                  onSelectedFiltersChange(next);
                 }}
-              >
-                {MORE_FILTERS_FACETS.map((f) => {
-                  const isActive = activeFacet === f;
-                  const count = selectedFilters[f].length;
-                  return (
-                    <button
-                      key={f}
-                      role="tab"
-                      aria-selected={isActive}
-                      onClick={() => setActiveFacet(f)}
-                      data-testid={`catalyst-allwork-toolbar.more-filters.facet.${f}`}
-                      style={{
-                        width: "100%",
-                        textAlign: "left",
-                        padding: "8px 12px",
-                        border: "none",
-                        background: isActive
-                          ? "var(--ds-background-selected, #E9F2FE)"
-                          : "transparent",
-                        color: isActive
-                          ? "var(--ds-text-selected, #0C66E4)"
-                          : "var(--ds-text, #292A2E)",
-                        fontSize: 13,
-                        lineHeight: "20px",
-                        cursor: "pointer",
-                        fontFamily: "inherit",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        gap: 8,
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isActive)
-                          (e.currentTarget as HTMLElement).style.background =
-                            "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isActive)
-                          (e.currentTarget as HTMLElement).style.background =
-                            "transparent";
-                      }}
-                    >
-                      <span>{FACET_LABELS[f]}</span>
-                      {count > 0 && (
-                        <span
-                          style={{
-                            fontSize: 11,
-                            color: "var(--ds-text-subtle, #505258)",
-                            background: "var(--ds-background-neutral, #DCDFE4)",
-                            padding: "0 8px",
-                            borderRadius: 8,
-                            lineHeight: "16px",
-                          }}
-                        >
-                          {count}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Right pane — value picker for the active facet (uses renderFacetRow helper) */}
-              <div
-                role="tabpanel"
-                style={{ flex: 1, padding: 12, overflowY: "auto", minWidth: 0 }}
-              >
-                {activeFacet === null ||
-                !MORE_FILTERS_FACETS.includes(activeFacet) ? (
-                  <div
-                    style={{
-                      color: "var(--ds-text-subtle, #505258)",
-                      fontSize: 13,
-                      lineHeight: "20px",
-                    }}
-                  >
-                    Select a field to start creating a filter.
-                  </div>
-                ) : facetOptions[activeFacet].length === 0 ? (
-                  <div
-                    style={{
-                      color: "var(--ds-text-subtle, #505258)",
-                      fontSize: 13,
-                      lineHeight: "20px",
-                    }}
-                  >
-                    No values available for this field.
-                  </div>
-                ) : (
-                  <div
-                    style={{ display: "flex", flexDirection: "column", gap: 4 }}
-                  >
-                    {facetOptions[activeFacet].map((opt) =>
-                      renderFacetRow(
-                        activeFacet,
-                        opt,
-                        selectedFilters[activeFacet].includes(opt.value),
-                        () => toggleValue(activeFacet, opt.value),
-                      ),
-                    )}
-                  </div>
-                )}
-              </div>
+                onClose={() => setOpenChipKey(null)}
+              />
             </div>
-          </div>
-        )}
+          );
+        }}
       />
 
       {/* Clear filters — visible when any chip has a selection.

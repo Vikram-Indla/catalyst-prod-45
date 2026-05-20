@@ -299,9 +299,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
               items={filteredItems}
               selectedKey={activeItem?.id ?? null}
               onSelect={id => {
-                selectItem(id);
-                // Narrow mode → no middle panel visible; open overlay modal.
-                if (isNarrow) setOverlayItemId(id);
+                setOverlayItemId(id);
               }}
               onKeyClick={id => setOverlayItemId(id)}
               projectId={projectId}
