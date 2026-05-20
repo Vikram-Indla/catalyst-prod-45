@@ -35,7 +35,7 @@ import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
 import { buildIdeasBoardAdapter } from '@/components/kanban/adapters/ideasBoardAdapter';
 import { useIdeasHub, type IdeaRow } from '@/hooks/useIdeasHub';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
-import IdeaDrawer from './ideation/IdeaDrawer';
+import IdeaDrawer from '../../modules-dormant/ideation/IdeaDrawer';
 import {
   CreateRequestDrawer,
   type ConversionSource,

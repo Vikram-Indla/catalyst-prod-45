@@ -59,11 +59,11 @@ const ROUTE_PREFETCH_MAP: Record<string, () => Promise<unknown>> = {
   '/admin/resources': () => import('../../pages/ResourceListingPage'),
   '/producthub/kanban': () => import('../../pages/producthub/KanbanPage'),
   '/releasehub': () => import('../../pages/releasehub/AllReleasesPage'),
-  '/testhub': () => import('../../pages/testhub/TestHubPage'),
+  '/testhub': () => import('../../modules-dormant/testhub/TestHubPage'),
   '/planhub': () => import('../../components/planhub/PlanHubShell'),
   '/taskhub': () => import('../../modules/planner/PlannerPage'),
   '/incidenthub': () => import('../../pages/incidenthub/IncidentListPage'),
-  '/strategyhub': () => import('../../pages/strategyhub/StrategicThemesPage'),
+  '/strategyhub': () => import('../../modules-dormant/strategyhub/StrategicThemesPage'),
 };
 
 const prefetchedRoutes = new Set<string>();

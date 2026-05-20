@@ -32,7 +32,7 @@ import CopyIcon from '@atlaskit/icon/glyph/copy';
 import ArrowRightIcon from '@atlaskit/icon/glyph/arrow-right';
 import { toast } from 'sonner';
 import { useIdeaByKey, useUpdateIdea, useProfiles, type IdeaRow } from '@/hooks/useIdeasHub';
-import { QUARTER_BADGE } from '@/pages/producthub/ideation/ideation-data';
+import { QUARTER_BADGE } from '@/modules-dormant/ideation/ideation-data';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 const THEMES = [

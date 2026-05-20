@@ -13,12 +13,12 @@ import { useIdeasHub, useIdeaStats, useUpdateIdea, useCreateIdea, type IdeaRow }
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import IdeaDrawer from './ideation/IdeaDrawer';
-import IdeationTriagePanel from './ideation/IdeationTriagePanel';
-import IdeationIntelligenceHub from './ideation/IdeationIntelligenceHub';
+import IdeaDrawer from '../../modules-dormant/ideation/IdeaDrawer';
+import IdeationTriagePanel from '../../modules-dormant/ideation/IdeationTriagePanel';
+import IdeationIntelligenceHub from '../../modules-dormant/ideation/IdeationIntelligenceHub';
 import { CreateRequestDrawer, type ConversionSource } from '@/components/producthub/shared/CreateRequestDrawer';
-import { QUARTER_BADGE, STATUS_LOZENGE_COLORS } from './ideation/ideation-data';
-import type { Idea } from './ideation/ideation-data';
+import { QUARTER_BADGE, STATUS_LOZENGE_COLORS } from '../../modules-dormant/ideation/ideation-data';
+import type { Idea } from '../../modules-dormant/ideation/ideation-data';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 

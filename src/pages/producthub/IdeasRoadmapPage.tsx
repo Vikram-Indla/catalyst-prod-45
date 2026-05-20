@@ -4,8 +4,8 @@
  */
 import React, { useState, useMemo } from 'react';
 import { useIdeasHub, type IdeaRow } from '@/hooks/useIdeasHub';
-import IdeaDrawer from './ideation/IdeaDrawer';
-import { QUARTER_BADGE, STATUS_LOZENGE_COLORS } from './ideation/ideation-data';
+import IdeaDrawer from '../../modules-dormant/ideation/IdeaDrawer';
+import { QUARTER_BADGE, STATUS_LOZENGE_COLORS } from '../../modules-dormant/ideation/ideation-data';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 

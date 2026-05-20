@@ -34,6 +34,7 @@
     "src"
   ],
   "exclude": [
-    "src/_graveyard"
+    "src/_graveyard",
+    "src/modules-dormant"
   ]
 }

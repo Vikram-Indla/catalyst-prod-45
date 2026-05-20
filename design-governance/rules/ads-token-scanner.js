@@ -52,6 +52,12 @@ class ADSTokenScanner {
       /\brounded(?:-(?:none|sm|md|lg|xl|2xl|3xl|full))?\b/,
       /\bshadow(?:-(?:sm|md|lg|xl|2xl|inner|none))?\b/,
     ];
+    // ── 2026-05-19 — Whitelisted external packages ───────────────────
+    // These scopes are trusted and should never be flagged as banned components.
+    // @atlaskit/* is the canonical design system. @Catalyst/* are Catalyst's
+    // internal packages and are trusted equally.
+    this.allowedExternalScopes = ['@atlaskit', '@Catalyst'];
+
     this.bannedComponents = [
       'react-select',
       'react-modal',
@@ -348,17 +354,24 @@ class ADSTokenScanner {
       }
 
       // Check for banned component imports
-      this.bannedComponents.forEach(banned => {
-        if (line.includes(`from '${banned}'`) || line.includes(`from "${banned}"`)) {
-          this.violations.push({
-            file: filePath,
-            line: index + 1,
-            type: 'BANNED_COMPONENT',
-            content: line.trim(),
-            fix: `Replace ${banned} with @atlaskit/* equivalent`
-          });
-        }
-      });
+      // But whitelist allowed external scopes (@atlaskit, @Catalyst)
+      const isAllowedScope = this.allowedExternalScopes.some(scope =>
+        line.includes(`from '${scope}/`) || line.includes(`from "${scope}/`)
+      );
+
+      if (!isAllowedScope) {
+        this.bannedComponents.forEach(banned => {
+          if (line.includes(`from '${banned}'`) || line.includes(`from "${banned}"`)) {
+            this.violations.push({
+              file: filePath,
+              line: index + 1,
+              type: 'BANNED_COMPONENT',
+              content: line.trim(),
+              fix: `Replace ${banned} with @atlaskit/* equivalent`
+            });
+          }
+        });
+      }
 
       // Check for banned field components
       this.bannedFields.forEach(banned => {

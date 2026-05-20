@@ -31,8 +31,9 @@
  * component only surfaces the intent; it never mutates DB state itself.
  */
 
-import { memo, useEffect, useRef, useState, type ReactNode } from 'react';
+import { memo, forwardRef, useEffect, useRef, useState, useCallback, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { draggable, dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { attachClosestEdge, extractClosestEdge, type Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-scroll/element';
@@ -108,6 +109,11 @@ interface PragmaticCardProps extends CardActions {
   cardColorMode?: CardColorMode;
 }
 
+/**
+ * PragmaticCard — single draggable card in the kanban board.
+ * Memoized to prevent re-renders on parent state changes.
+ * Virtualization compatible: preserves drag indices mapping to rawIssues array.
+ */
 const PragmaticCard = memo(function PragmaticCard({
   issue, colId, avatarUrl, onClick, d, tk, isSelected, isFocused, avatarsByName, cardColorMode, ...actions
 }: PragmaticCardProps) {
@@ -555,12 +561,90 @@ const PragmaticColumn = memo(function PragmaticColumn({
         )}
       </div>
 
-      {/* Body (drop target) */}
-      <div
+      {/* Body (drop target + virtualized card list) */}
+      <VirtualizedColumnBody
         ref={bodyRef}
+        issueIds={issueIds}
+        issuesById={issuesById}
+        column={column}
+        isLoading={isLoading}
+        isOver={isOver}
+        selectedId={selectedId}
+        focusedId={focusedId}
+        avatarsByName={avatarsByName}
+        d={d}
+        tk={tk}
+        cardColorMode={cardColorMode}
+        onCardClick={onCardClick}
+        actions={actions}
+        inlineCreateColId={inlineCreateColId}
+        setInlineCreateColId={setInlineCreateColId}
+      />
+    </div>
+  );
+});
+
+/**
+ * VirtualizedColumnBody — high-performance card rendering with @tanstack/react-virtual
+ * Renders visible cards + overscan buffer (3 items) to reduce DOM from 1000s to ~50 nodes.
+ * Preserves drag-and-drop index mapping by rendering virtual items in order of issueIds array.
+ */
+const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
+  {
+    issueIds,
+    issuesById,
+    column,
+    isLoading,
+    isOver,
+    selectedId,
+    focusedId,
+    avatarsByName,
+    d,
+    tk,
+    cardColorMode,
+    onCardClick,
+    actions,
+    inlineCreateColId,
+    setInlineCreateColId,
+  }: {
+    issueIds: string[];
+    issuesById: Map<string, BoardIssue>;
+    column: KanbanColumnDef;
+    isLoading?: boolean;
+    isOver?: boolean;
+    selectedId?: string;
+    focusedId?: string;
+    avatarsByName: Map<string, string>;
+    d: DensityConfig;
+    tk: KanbanThemeTokens;
+    cardColorMode?: CardColorMode;
+    onCardClick: (id: string) => void;
+    actions: CardActions;
+    inlineCreateColId: string | null;
+    setInlineCreateColId: (id: string | null) => void;
+  },
+  ref: React.ForwardedRef<HTMLDivElement>,
+) {
+  const parentRef = ref || useRef<HTMLDivElement>(null);
+
+  // Estimated card height: roughly 80-120px depending on density + cardGap
+  const estimatedCardHeight = 100 + (parseInt(d.cardGap?.toString() || '8', 10) || 8);
+
+  const virtualizer = useVirtualizer({
+    count: issueIds.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => estimatedCardHeight,
+    overscan: 3,  // Render 3 extra items above/below viewport for smoother scrolling
+  });
+
+  // Skip virtualization for small lists (< 15 cards) to avoid overhead
+  if (issueIds.length < 15) {
+    return (
+      <div
+        ref={parentRef}
         className="flex flex-col overflow-y-auto"
         style={{
-          padding: '6px 10px 10px 10px',  /* Jira: 6px top gap between header and first card */
+          padding: '6px 10px 10px 10px',
           gap: d.cardGap,
           flex: 1,
           minHeight: 120,
@@ -570,8 +654,6 @@ const PragmaticColumn = memo(function PragmaticColumn({
         }}
       >
         {issueIds.length === 0 && isLoading && (
-          // Skeleton cards — shown while initial data loads so board structure
-          // is visible immediately (Jira parity: column chrome at T=0, cards hydrate)
           <div className="flex flex-col" style={{ gap: 4 }}>
             {[72, 56, 88].map((h, i) => (
               <div key={i} className="animate-pulse" style={{
@@ -614,13 +696,6 @@ const PragmaticColumn = memo(function PragmaticColumn({
             />
           );
         })}
-        {/*
-          Per-column create — Jira-parity "+ Create issue" affordance,
-          rendered at the bottom of every column. Conditional render:
-          - If inlineCreateColId === column.id: show InlineCreateCard form
-          - Else: show "+ Create issue" button (subtle, full column width)
-          Hidden if no handler is wired by the host.
-        */}
         {(actions.onCreateInColumn || actions.onCreateCard) && (
           inlineCreateColId === column.id ? (
             <div style={{ marginTop: issueIds.length === 0 ? 0 : 4 }}>
@@ -671,7 +746,134 @@ const PragmaticColumn = memo(function PragmaticColumn({
           )
         )}
       </div>
+    );
+  }
+
+  // Virtualized rendering for large lists (>= 15 cards)
+  const virtualItems = virtualizer.getVirtualItems();
+
+  return (
+    <div
+      ref={parentRef}
+      className="flex flex-col overflow-y-auto"
+      style={{
+        padding: '6px 10px 10px 10px',
+        flex: 1,
+        minHeight: 120,
+        background: isOver ? tk.dropHighlight : 'transparent',
+        transition: 'background 150ms ease',
+        borderRadius: '0 0 6px 6px',
+      }}
+    >
+      <div
+        style={{
+          position: 'relative',
+          height: `${virtualizer.getTotalSize()}px`,
+          width: '100%',
+        }}
+      >
+        {virtualItems.map((virtualItem) => {
+          const id = issueIds[virtualItem.index];
+          const issue = issuesById.get(id);
+          if (!issue) return null;
+
+          return (
+            <div
+              key={id}
+              data-index={virtualItem.index}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: `${virtualItem.size}px`,
+                transform: `translateY(${virtualItem.start}px)`,
+              }}
+            >
+              <div style={{ padding: `0 0 ${d.cardGap} 0` }}>
+                <PragmaticCard
+                  issue={issue}
+                  colId={column.id}
+                  avatarUrl={issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null}
+                  onClick={() => onCardClick(id)}
+                  d={d}
+                  tk={tk}
+                  isSelected={selectedId === id}
+                  isFocused={focusedId === id}
+                  avatarsByName={avatarsByName}
+                  cardColorMode={cardColorMode}
+                  {...actions}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Per-column create button — rendered outside virtualization */}
+      {(actions.onCreateInColumn || actions.onCreateCard) && (
+        inlineCreateColId === column.id ? (
+          <div style={{ marginTop: issueIds.length === 0 ? 0 : 4 }}>
+            <InlineCreateCard
+              projectKey={actions.projectKey || ''}
+              columnId={column.id}
+              onCreateCard={(issue) => {
+                actions.onCreateCard?.(issue);
+                setInlineCreateColId(null);
+              }}
+              onCancel={() => setInlineCreateColId(null)}
+            />
+          </div>
+        ) : (
+          <button
+            type="button"
+            data-testid={`kanban-column-create-${column.id}`}
+            onClick={() => setInlineCreateColId(column.id)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              gap: 6,
+              padding: '6px 8px',
+              border: 'none',
+              background: 'transparent',
+              color: tk.textMuted,
+              fontSize: 12,
+              fontWeight: 500,
+              fontFamily: 'var(--cp-font-body)',
+              borderRadius: 4,
+              cursor: 'pointer',
+              transition: 'background 120ms ease, color 120ms ease',
+              marginTop: 4,
+              position: 'absolute',
+              bottom: 0,
+              left: '10px',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = tk.surfaceHover ?? 'rgba(0,0,0,0.04)';
+              (e.currentTarget as HTMLButtonElement).style.color = tk.textPrimary;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+              (e.currentTarget as HTMLButtonElement).style.color = tk.textMuted;
+            }}
+          >
+            <AddIcon label="" size="small" primaryColor="currentColor" />
+            <span>{actions.createInColumnLabel ?? 'Create issue'}</span>
+          </button>
+        )
+      )}
     </div>
+  );
+}), (prevProps, nextProps) => {
+  // Memoization comparison: only re-render if these props change
+  return (
+    prevProps.issueIds === nextProps.issueIds &&
+    prevProps.selectedId === nextProps.selectedId &&
+    prevProps.focusedId === nextProps.focusedId &&
+    prevProps.isOver === nextProps.isOver &&
+    prevProps.isLoading === nextProps.isLoading &&
+    prevProps.inlineCreateColId === nextProps.inlineCreateColId
   );
 });
 

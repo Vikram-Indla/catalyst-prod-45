@@ -3,7 +3,7 @@
  * All database operations for the Ideation module.
  */
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import type { Idea, IdeaStatus, IdeaType, ImpactFactors } from '@/pages/producthub/ideation/ideation-data';
+import type { Idea, IdeaStatus, IdeaType, ImpactFactors } from '@/modules-dormant/ideation/ideation-data';
 
 // ── Status & Type mappers (DB title-case → UI snake_case) ────────
 const STATUS_MAP: Record<string, IdeaStatus> = {
