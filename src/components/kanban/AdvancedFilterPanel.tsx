@@ -320,7 +320,7 @@ function MultiSelectFilterSection({
           {selected.length > 0 && (
             <span style={{
               fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #fff)',
-              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 10, padding: '1px 7px',
+              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 10, padding: '4px 8px',
               lineHeight: '16px',
             }}>{selected.length}</span>
           )}
@@ -423,7 +423,7 @@ function DateRangeFilterSection({
           {hasValue && (
             <span style={{
               fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #fff)',
-              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 10, padding: '1px 7px',
+              background: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))', borderRadius: 10, padding: '4px 8px',
               lineHeight: '16px',
             }}>1</span>
           )}

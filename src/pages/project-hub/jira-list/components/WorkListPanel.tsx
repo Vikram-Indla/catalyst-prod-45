@@ -24,6 +24,8 @@ interface Props {
   items: WorkItem[];
   selectedKey: string | null;
   onSelect: (id: string) => void;
+  /** Called when the issue key badge is clicked — opens detail modal for that item. */
+  onKeyClick?: (id: string) => void;
   /** Project UUID — required for the assignee picker (project_members lookup). */
   projectId?: string;
   /** jira-compare 2026-05-02: AllWorkToolbar now owns the Search input.
@@ -32,7 +34,7 @@ interface Props {
   externalQuery?: string;
 }
 
-export function WorkListPanel({ items, selectedKey, onSelect, projectId, externalQuery }: Props) {
+export function WorkListPanel({ items, selectedKey, onSelect, onKeyClick, projectId, externalQuery }: Props) {
   const [innerQuery, setInnerQuery] = useState('');
   const query = externalQuery !== undefined ? externalQuery : innerQuery;
   const setQuery = setInnerQuery;
@@ -217,7 +219,19 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
                   fontFamily: 'var(--cp-font-body)', fontWeight: 400,
                 }}>
                   <WorkItemTypeIcon type={(item as any).rawType || item.type} size={14} />
-                  {item.jiraKey}
+                  {onKeyClick ? (
+                    <button
+                      onClick={e => { e.stopPropagation(); onKeyClick(item.id); }}
+                      style={{
+                        background: 'none', border: 'none', padding: 0, margin: 0,
+                        font: 'inherit', fontSize: 12, color: 'inherit',
+                        cursor: 'pointer', textDecoration: 'underline',
+                        textUnderlineOffset: 2,
+                      }}
+                    >
+                      {item.jiraKey}
+                    </button>
+                  ) : item.jiraKey}
                 </span>
                 {/* Status pill REMOVED from rail card per Jira parity (verified
                     triple-probe 2026-05-03):

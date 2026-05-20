@@ -34,7 +34,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
         fontWeight: isActive ? 600 : 450,
         color: isActive
           ? 'var(--cp-primary-60, #0052CC)'
-          : 'var(--cp-text-secondary, #42526E)',
+          : isDark ? 'var(--ds-text-subtle, #B0B3B8)' : 'var(--cp-text-secondary, #42526E)',
         borderRadius: collapsed ? 6 : '0 6px 6px 0',
         borderLeft: isActive && !collapsed ? '3px solid var(--cp-primary-60, #0052CC)' : '3px solid transparent',
         borderRight: 'none',

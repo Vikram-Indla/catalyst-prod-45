@@ -304,7 +304,7 @@ export function WorkItemCard({
           <span style={{
             fontSize: 11, fontWeight: 400, color: tk.epicLozengeText,
             background: tk.epicLozengeBg,
-            borderRadius: 3, padding: '1px 6px',
+            borderRadius: 3, padding: '4px 8px',
             lineHeight: '16px', fontFamily: 'var(--cp-font-body)',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             maxWidth: '100%',

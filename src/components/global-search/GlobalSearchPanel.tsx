@@ -227,8 +227,10 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         id: it.id,
         item: it,
         activate: () => {
-          if (it.project_key) {
-            navigate(`/project-hub/${it.project_key}/allwork?issue=${encodeURIComponent(it.item_key)}`);
+          if (it.item_key && it.project_key) {
+            navigate(`/project-hub/${it.project_key}/allwork/${encodeURIComponent(it.item_key)}`);
+          } else if (it.item_key) {
+            navigate(`/browse/${encodeURIComponent(it.item_key)}`);
           } else {
             navigate('/');
           }

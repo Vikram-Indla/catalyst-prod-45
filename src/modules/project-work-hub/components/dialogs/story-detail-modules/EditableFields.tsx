@@ -657,11 +657,11 @@ export function EditableFixVersions({ issueId, currentFixVersions, projectKey, o
       if (!projectKey) return [];
       const { data, error } = await supabase
         .from('ph_versions' as any)
-        .select('name, released, archived, release_date')
+        .select('jira_id, name, released, archived, release_date')
         .eq('project_key', projectKey)
         .order('name', { ascending: true });
       if (error) throw error;
-      return (data ?? []) as unknown as { name: string; released: boolean; archived: boolean; release_date: string | null }[];
+      return (data ?? []) as unknown as { jira_id: string; name: string; released: boolean; archived: boolean; release_date: string | null }[];
     },
     enabled: !!projectKey,
     staleTime: 60_000,
@@ -682,7 +682,16 @@ export function EditableFixVersions({ issueId, currentFixVersions, projectKey, o
 
   const updateMutation = useMutation({
     mutationFn: async (names: string[]) => {
-      const jsonValue = names.map(n => ({ name: n }));
+      // Preserve full Jira shape: look up each name in ph_versions, fall back to
+      // existing JSONB entry so we never lose id/releaseDate written by Jira sync.
+      const jsonValue = names.map(n => {
+        const ver = versions.find(v => v.name === n);
+        if (ver) return { id: ver.jira_id, name: ver.name, releaseDate: ver.release_date, released: ver.released, archived: ver.archived };
+        const existing = Array.isArray(currentFixVersions)
+          ? (currentFixVersions as any[]).find(cv => cv?.name === n)
+          : null;
+        return existing ?? { name: n };
+      });
       const { error } = await supabase.from('ph_issues').update({ fix_versions: jsonValue } as any).eq('id', issueId);
       if (error) throw error;
     },
@@ -707,15 +716,17 @@ export function EditableFixVersions({ issueId, currentFixVersions, projectKey, o
         }}
         noOptionsMessage={() => 'No versions found for this project'}
         styles={{
-          // jira-compare 2026-05-16: Jira renders Fix versions as plain 14px/400
-          // text links with transparent background — not ADS multi-value chips.
-          // Override the default chip styling to match.
+          // jira-compare 2026-05-20: Live DOM probe of digital-transformation.atlassian.net
+          // confirms Fix versions chip = transparent bg + 0.556px solid rgb(183,185,190) border
+          // + borderRadius 4px + padding 0px 4px + 14px/400 text.
+          // Uses @atlaskit/tag "appearance=default" pattern — not a lozenge fill.
           multiValue: (base) => ({
             ...base,
             background: 'transparent',
-            border: 'none',
-            borderRadius: 0,
+            border: '0.556px solid var(--ds-border-neutral, rgb(183,185,190))',
+            borderRadius: 4,
             margin: '0 4px 0 0',
+            padding: '0 4px',
           }),
           multiValueLabel: (base) => ({
             ...base,

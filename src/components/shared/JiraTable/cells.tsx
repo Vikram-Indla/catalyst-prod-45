@@ -890,9 +890,9 @@ export function makeFixVersionsCell(getFixVersions: (row: any) => string[] | nul
     if (versions.length === 0) {
       return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
     }
-    // jira-compare 2026-05-12 (Item 9): Jira renders each fix-version value
-    // as a rectangular pill — border 1px, border-radius 3px, padding 2px 6px,
-    // no background. Confirmed from context pack screenshot probe.
+    // jira-compare 2026-05-20: Live DOM probe confirms fix-version pill =
+    // transparent bg + 0.556px solid rgb(183,185,190) border + 4px radius +
+    // 0px 4px padding + 14px/400 text. Matches @atlaskit/tag appearance="default".
     return (
       <span style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 4 }}>
         {versions.map((v) => (
@@ -900,16 +900,17 @@ export function makeFixVersionsCell(getFixVersions: (row: any) => string[] | nul
             key={v}
             style={{
               display: 'inline-block',
-              border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
-              borderRadius: 3,
-              padding: '2px 6px',
-              fontSize: 12,
+              border: '0.556px solid var(--ds-border-neutral, rgb(183,185,190))',
+              borderRadius: 4,
+              padding: '0px 4px',
+              fontSize: 14,
               fontWeight: 400,
-              color: token('color.text', 'var(--cp-text-primary, var(--cp-text-inverse, #172B4D))'),
+              color: token('color.text', '#292A2E'),
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               maxWidth: 160,
+              lineHeight: '20px',
             }}
             title={v}
           >

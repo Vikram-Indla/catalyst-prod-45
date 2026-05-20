@@ -67,6 +67,7 @@ export interface WorkItem {
   storyPoints?: number | null;
   sprintName?: string | null;
   resolution?: string | null;
+  severity?: string | null;
   labels?: string[];
   is_flagged?: boolean;
   flag_reason?: string | null;

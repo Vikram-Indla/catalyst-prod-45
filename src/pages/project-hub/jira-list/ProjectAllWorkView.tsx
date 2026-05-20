@@ -299,10 +299,9 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
               items={filteredItems}
               selectedKey={activeItem?.id ?? null}
               onSelect={id => {
-                selectItem(id);
-                // Narrow mode → no middle panel visible; open overlay modal.
-                if (isNarrow) setOverlayItemId(id);
+                setOverlayItemId(id);
               }}
+              onKeyClick={id => setOverlayItemId(id)}
               projectId={projectId}
               /* jira-compare 2026-05-02: AllWorkToolbar owns search — pass
                  toolbarQuery so the inner search hides and the rail filters

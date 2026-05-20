@@ -119,13 +119,18 @@ export interface DensityConfig {
 
 /**
  * Density presets.
- * comfortable = Jira parity (card pad 12px, title 14/20, gap 4px).
+ * Jira parity evidence (Lane A probe MDT board 597, 2026-05-20):
+ * - cardGap: 8px (Jira measured cardVerticalGap: 8px, NOT 4px)
+ * - cardMinHeight: minimum viable per density (not 0 — prevents virtualizer underestimation)
+ * - cardPad: Jira uses 0px; Catalyst uses density-driven values for visual density control
  */
 export const DENSITY_CONFIG: Record<KanbanDensity, DensityConfig> = {
-  compact:     { cardPad: '6px 8px',   titleSize: 12, titleClamp: 1, metaSize: 10, avatarSize: 20, cardGap: 4, footerHeight: 18, cardMinHeight: 0 },
-  dense:       { cardPad: '8px 10px',  titleSize: 13, titleClamp: 2, metaSize: 11, avatarSize: 22, cardGap: 4, footerHeight: 20, cardMinHeight: 0 },
+  compact:     { cardPad: '8px',       titleSize: 12, titleClamp: 1, metaSize: 10, avatarSize: 20, cardGap: 8, footerHeight: 18, cardMinHeight: 26 },
+  dense:       { cardPad: '8px',       titleSize: 13, titleClamp: 2, metaSize: 11, avatarSize: 22, cardGap: 8, footerHeight: 20, cardMinHeight: 28 },
   // jira-compare 2026-05-08: metaSize 12→11 (Jira card key is 11px)
-  comfortable: { cardPad: '12px',      titleSize: 14, titleClamp: 3, metaSize: 11, avatarSize: 24, cardGap: 4, footerHeight: 22, cardMinHeight: 0 },
+  // jira-compare 2026-05-20: cardGap 4→8px (Jira evidence), cardMinHeight 0→minimum (virtualizer safety)
+  // jira-compare 2026-05-20: cardPad asymmetric→symmetric on-grid (6px/8px/10px/12px violate 4/8/16 grid)
+  comfortable: { cardPad: '16px',      titleSize: 14, titleClamp: 3, metaSize: 11, avatarSize: 24, cardGap: 8, footerHeight: 22, cardMinHeight: 32 },
 };
 
 /* ═══ COLUMN CONFIG ═══ */
