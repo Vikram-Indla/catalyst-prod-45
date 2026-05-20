@@ -44,7 +44,8 @@ import { WorkItemCard } from './WorkItemCard';
 import { InlineCreateCard } from './InlineCreateCard';
 import type { BoardIssue } from './kanban-types';
 import { CARD_COLOR_BY_PRIORITY, CARD_COLOR_BY_TYPE } from './kanban-types';
-import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
+import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef, KanbanDensity } from './kanban-tokens';
+import { DENSITY_CONFIG } from './kanban-tokens';
 import type { AssigneeOption } from './AssigneePickerPopover';
 import type { VisibleFields, CardColorMode } from '@/hooks/useKanbanViewSettings';
 
@@ -627,8 +628,28 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
 ) {
   const parentRef = ref || useRef<HTMLDivElement>(null);
 
-  // Estimated card height: roughly 80-120px depending on density + cardGap
-  const estimatedCardHeight = 100 + (parseInt(d.cardGap?.toString() || '8', 10) || 8);
+  // Calculate estimated card height per density config.
+  // Accounts for: cardPad (top+bottom) + titleSize + lineHeight + metaSize + footerHeight + cardGap
+  // Jira evidence (Lane A MDT board 597, 2026-05-20): card heights vary by visual density, not uniform.
+  const calculateCardHeight = (cfg: DensityConfig): number => {
+    // Parse top padding from "6px 8px" or "12px" format
+    const padParts = cfg.cardPad.split(' ');
+    const padTop = parseInt(padParts[0], 10);
+    const padBottom = padParts.length > 1 ? parseInt(padParts[1], 10) : padTop;
+    // Title row: titleSize + lineHeight (titleSize + 6px)
+    const titleRow = cfg.titleSize + (cfg.titleSize + 6);
+    // Meta row: metaSize
+    const metaRow = cfg.metaSize;
+    // Footer row: footerHeight
+    const footerRow = cfg.footerHeight;
+    // Gap below card
+    const gap = parseInt(cfg.cardGap?.toString() || '8', 10) || 8;
+    // Total: all vertical components + gap
+    const total = padTop + titleRow + metaRow + footerRow + padBottom + gap;
+    return Math.max(total, cfg.cardMinHeight || 26); // Ensure minimum viable height
+  };
+
+  const estimatedCardHeight = calculateCardHeight(d);
 
   const virtualizer = useVirtualizer({
     count: issueIds.length,
