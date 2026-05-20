@@ -207,6 +207,20 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
     selectItem(id);
   }, [selectItem]);
 
+  /* Memoize navigationItems so CatalystDetailRouter doesn't re-render on
+     every toolbar state change (new array reference would break React.memo). */
+  const navigationItems = useMemo(
+    () => filteredItems.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey })),
+    [filteredItems],
+  );
+
+  /* Stable handler — recreating on every render forces CatalystDetailRouter
+     to reconcile even when neither items nor the dispatch logic changed. */
+  const handleOpenItem = useCallback(
+    makeOpenItemHandler(items, selectItem, setOverlayItemId),
+    [items, selectItem],
+  );
+
   return (
     // Outer column — height 100% of the route slot, no scroll here. Both
     // the header and the split region live inside; the SPLIT REGION is
@@ -323,9 +337,9 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                     // Epic) is NOT in the AllWork items list. Dispatch via
                     // makeOpenItemHandler so out-of-list targets fall
                     // through to the overlay router.
-                    onOpenItem={makeOpenItemHandler(items, selectItem, setOverlayItemId)}
+                    onOpenItem={handleOpenItem}
                     panelMode={true}
-                    navigationItems={filteredItems.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey }))}
+                    navigationItems={navigationItems}
                     onNavigate={handleNavigate}
                   />
                 </Suspense>
@@ -361,9 +375,9 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             itemId={overlayItemId}
             projectId={projectId ?? ''}
             projectKey={projectKey}
-            onOpenItem={(id) => setOverlayItemId(id)}
-            navigationItems={filteredItems.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey }))}
-            onNavigate={(id) => setOverlayItemId(id)}
+            onOpenItem={handleOpenItem}
+            navigationItems={navigationItems}
+            onNavigate={handleNavigate}
           />
         </Suspense>
       )}

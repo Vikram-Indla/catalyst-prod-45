@@ -10,6 +10,7 @@ export interface AllWorkItem {
   issue_type: string;
   summary: string;
   description_text: string | null;
+  description_adf: object | null;
   status: string;
   status_category: string | null;
   status_color: string | null;
@@ -52,6 +53,7 @@ export function normalizeWorkItem(raw: any): AllWorkItem {
     issue_type: raw.work_type_name ?? raw.issue_type ?? '',
     summary: raw.summary ?? '',
     description_text: raw.description ?? raw.description_text ?? null,
+    description_adf: raw.description_adf ?? null,
     status: raw.status_name ?? raw.status ?? '',
     status_category: raw.status_category ?? null,
     status_color: raw.status_color ?? null,

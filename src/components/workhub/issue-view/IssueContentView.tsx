@@ -4,7 +4,7 @@
  * Right side: collapsible Details sidebar (Assignee, Priority, Reporter, Labels, Fix versions, MDT Ref)
  * Implements recommendations #11-16, #17, #19-26, #28-30
  */
-import { useState, useMemo, useRef, useEffect, useCallback, Suspense, lazy } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { ChevronDown, ChevronRight, ChevronLeft, Link2, ArrowRightLeft, MoreHorizontal, Pencil, Plus, MessageSquare, History as HistoryIcon, FileText, Send, Eye, Share2, Bold, Italic, List, Code2, Link as LinkIcon, Smile, Paperclip, Undo2, Redo2, ArrowUpDown, ArrowRight, CheckSquare, Globe, Palette, Search, X, Flag, Zap, SquarePen } from '@/lib/atlaskit-icons';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -36,19 +36,10 @@ import { FlagPopover, isFlagged as checkFlagged, CloneWizard, MoveWizard, Archiv
 // 2026-04-20 — TipTap CatalystRichTextEditor import removed. Atlaskit
 // <EpicDescriptionEditor> is the sole composer (USER DIRECTIVE).
 // AtlaskitBoundary removed along with it — no editor fallback path.
-import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
-import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
-import Spinner from '@atlaskit/spinner';
 /* §19 chokepoint — ALL user-avatar lookups on this surface resolve
    through `resolveAvatarUrl`. Never read `profiles.avatar_url`
    (Gravatar CDN, banned) and never display an external URL. */
 import { resolveAvatarUrl } from '@/lib/avatars';
-/* Canonical Atlaskit editor — lazy-loaded, direct file import (NOT the
-   barrel) so Rollup keeps the ~2MB @atlaskit/editor-core chunk isolated
-   from the renderer graph. Matches CatalystDescriptionSection. */
-const AdfDescriptionField = lazy(
-  () => import('@/components/shared/rich-text/atlaskit/AdfDescriptionField'),
-);
 import '@/modules/project-work-hub/components/dialogs/story-detail-extensions.css';
 import { ActivityPanelPilot } from './activity/ActivityPanelPilot';
 /* Catalyst Defect anatomy — unifies the All Work view with the
@@ -58,6 +49,7 @@ import { ActivityPanelPilot } from './activity/ActivityPanelPilot';
    issue_type is Bug or Defect. */
 import { CatalystDefectFields } from '@/components/catalyst-detail-views/defect/CatalystDefectFields';
 import type { PhIssue } from '@/components/catalyst-detail-views/shared/types';
+import { CatalystDescriptionSection } from '@/components/catalyst-detail-views/shared/sections/CatalystDescriptionSection';
 
 
 interface Props {
@@ -187,7 +179,6 @@ export function IssueContentView({
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [descEditMode, setDescEditMode] = useState(false);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [showConvertWizard, setShowConvertWizard] = useState(false);
   const [showFlagPopover, setShowFlagPopover] = useState(false);
@@ -635,110 +626,18 @@ export function IssueContentView({
             </div>
           )}
 
-          {/* ── Description (Story Detail Modal parity — ADF rich text with edit mode) ── */}
-          <div className="awSection">
-            <div className="awSectionHead" onClick={() => toggle('desc')}>
-              <span className="awSectionLabel">
-                {collapsed.desc ? <ChevronRight style={{ width: 16, height: 16 }} /> : <ChevronDown style={{ width: 16, height: 16 }} />}
-                Description
-              </span>
-            </div>
-            {!collapsed.desc && (
-              <div className="awSectionBody">
-                {descEditMode ? (
-                  /* ── Edit mode — Atlaskit editor only (USER DIRECTIVE
-                     2026-04-20). No TipTap fallback. If the
-                     @atlaskit/editor-core chunk fails to load the
-                     Suspense fallback stays visible and the error is
-                     surfaced in the console for a fix, rather than
-                     silently downgrading to an editor whose ADF
-                     emission shape this app no longer accepts. */
-                  <div style={{ position: 'relative', borderRadius: 3, backgroundColor: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))' }}>
-                    <Suspense
-                      fallback={
-                        <div
-                          style={{
-                            minHeight: 150,
-                            padding: '8px 0',
-                            color: 'var(--ds-text-subtlest, #626F86)',
-                            fontSize: 13,
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 8,
-                          }}
-                          role="status"
-                          aria-live="polite"
-                        >
-                          <Spinner size="small" />
-                          <span>Loading editor…</span>
-                        </div>
-                      }
-                    >
-                      <AdfDescriptionField
-                        initialContent={(item as any)?.description_adf ?? item?.description_text ?? null}
-                        workItemId={item?.id ?? ''}
-                        onSave={(adfJson) => {
-                          if (!item?.id) { setDescEditMode(false); return; }
-                          const parsed = adfJson ? JSON.parse(adfJson) : null;
-                          supabase.from('ph_issues').update({ description_adf: parsed }).eq('id', item.id).then(() => {
-                            queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v3'] });
-                            queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
-                            queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
-                            toast.success('Description saved');
-                          });
-                          setDescEditMode(false);
-                        }}
-                        onCancel={() => setDescEditMode(false)}
-                        placeholder="Add a description..."
-                        onAttachmentUploaded={async (meta) => {
-                          // Body↔rail binding — see CatalystDescriptionSection
-                          // for the rationale. Both surfaces read from
-                          // `ph_attachments` so an inline image dropped here
-                          // appears in the rail's list immediately.
-                          if (!item?.id || !user?.id) return;
-                          const { error } = await (supabase as any)
-                            .from('ph_attachments')
-                            .insert({
-                              work_item_id: item.id,
-                              file_name: meta.fileName,
-                              file_size: meta.fileSize,
-                              mime_type: meta.mimeType,
-                              storage_path: meta.storagePath,
-                              uploaded_by: user.id,
-                            });
-                          if (error) {
-                             
-                            console.error('[IssueContentView] ph_attachments insert failed', error);
-                            return;
-                          }
-                          queryClient.invalidateQueries({ queryKey: ['ph-attachments', item.id] });
-                        }}
-                      />
-                    </Suspense>
-                  </div>
-                ) : (
-                  <div
-                    onClick={() => setDescEditMode(true)}
-                    style={{
-                      borderRadius: 3, padding: '8px 6px', minHeight: 32,
-                      cursor: 'text', outline: 'none',
-                      transition: 'background-color 0.2s ease-in-out',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--ds-background-input-hovered, #F8F8F8)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-                  >
-                    {(() => {
-                      const descSource = (item as any)?.description_adf ?? item?.description_text ?? null;
-                      if (isAdfEmpty(descSource)) {
-                        return <span style={{ fontSize: 14, color: 'var(--ds-border-input, #8C8F97)', padding: '4px 0' }}>Add a description...</span>;
-                      }
-                      return <EpicDescriptionRenderer content={descSource} issueKey={item?.issue_key} />;
-                    })()}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          {/* ── Description — canonical CatalystDescriptionSection (Jira parity: no collapse) ── */}
+          {item && (
+            <CatalystDescriptionSection
+              issue={{
+                id: item.id,
+                issue_key: item.issue_key,
+                description_adf: item.description_adf,
+                description_text: item.description_text,
+                project_key: item.project_key ?? '',
+              } as PhIssue}
+            />
+          )}
 
           {/* ── Attachments (universal — all types) ── */}
           <AttachmentsSection

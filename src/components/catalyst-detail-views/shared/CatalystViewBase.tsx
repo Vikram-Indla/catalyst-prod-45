@@ -481,14 +481,20 @@ export function CatalystViewBase({
                 nav chevrons and Share. ph_issue_watchers backs it. */}
             {itemKey && <WatchersChip issueKey={itemKey} />}
 
-            {/* B10: Link issue button — Jira parity: chain-link icon between
-                Watchers and Share. Stub handler for now. */}
-            <Tooltip content="Link issue">
+            {/* B10: Link issue button — copies canonical ticket permalink to clipboard. */}
+            <Tooltip content="Copy link">
               <IconButton
                 appearance="subtle"
                 icon={() => <LinkIcon size="small" />}
-                label="Link issue"
-                onClick={() => console.log('Link issue', itemKey)}
+                label="Copy link"
+                onClick={() => {
+                  const url = (itemKey && projectKey)
+                    ? `${window.location.origin}/browse/${itemKey}`
+                    : window.location.href;
+                  navigator.clipboard.writeText(url);
+                  setShowCopyFlag(true);
+                  setTimeout(() => setShowCopyFlag(false), 3000);
+                }}
               />
             </Tooltip>
 

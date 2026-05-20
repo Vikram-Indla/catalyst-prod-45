@@ -681,6 +681,7 @@ export function EditableFixVersions({ issueId, currentFixVersions, projectKey, o
       <Select<FixVersionOption, true>
         inputId={`fix-versions-${issueId}`}
         isMulti
+        isClearable={false}
         appearance="subtle"
         spacing="compact"
         classNamePrefix="cv-fixversions-select"
