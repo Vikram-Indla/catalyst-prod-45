@@ -27,6 +27,10 @@ const COMPLEX_TYPES = new Set([
   'extension', 'inlineExtension', 'bodiedExtension',
   'status', 'date',
   'decisionList', 'decisionItem',
+  // 2026-05-21 — `mention` is an inline node Atlaskit's renderer
+  // styles as a chip. The light renderer has no case for it, so without
+  // marking the parent doc "complex" the mention would silently drop.
+  'mention',
 ]);
 
 export function hasComplexAdfNodes(adf: unknown): boolean {

@@ -240,7 +240,7 @@ const DESC_BUILD_ID = "atlaskit-canonical-v218";
 
 /* ── Scoped styles for ADF content inside CatalystView ── */
 /* Bump this version when the style block changes — forces re-injection on HMR. */
-const STYLE_ID = "cv-desc-styles-v17";
+const STYLE_ID = "cv-desc-styles-v21";
 if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
   const s = document.createElement("style");
   s.id = STYLE_ID;
@@ -477,7 +477,7 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       overflow: visible !important;
     }
     [data-testid="editor-floating-toolbar"] {
-      transform: translateY(-32px) !important;
+      transform: translateY(-76px) !important;
     }
     [data-testid="editor-floating-toolbar"] button {
       position: relative !important;
@@ -521,65 +521,93 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
       color: #292A2E !important;
       background: var(--ds-surface-sunken, #F4F5F7) !important;
     }
+
+    /* 2026-05-21 — @-mention chip styling.
+       Jira's mention chips are blue/informational. Atlaskit's default
+       node-spec writes inline grey neutral tokens (--ds-background-neutral
+       + --ds-text-subtle) directly to span[data-mention-id]'s style attr;
+       inline style beats class-based CSS, so we use !important to lift
+       the chip into the ADS information palette. Tokens used:
+         background: --ds-background-information (light blue surface)
+         color:      --ds-text-information       (Jira link blue)
+       Both round-trip light/dark themes via ADS, so this is theme-safe. */
+    span[data-mention-id] {
+      background: var(--ds-background-information, #DEEBFF) !important;
+      color: var(--ds-text-information, #1868DB) !important;
+      border-radius: 3px !important;
+      padding: 0 4px !important;
+      font-weight: 500 !important;
+    }
+    span[data-mention-id]:hover {
+      background: var(--ds-background-information-hovered, #CCE0FF) !important;
+    }
+
+    .fabric-editor-typeahead,
+    [class*="fabric-editor-typeahead"],
+    [data-editor-popup-render-target],
+    [data-editor-popup-render-target] > *,
+    [data-editor-popup] {
+      z-index: 2147483600 !important;
+    }
   `;
   document.head.appendChild(s);
 }
 
 function openImagePreview(src: string): void {
-  const overlay = document.createElement('div');
+  const overlay = document.createElement("div");
   overlay.style.cssText = [
-    'position:fixed',
-    'inset:0',
-    'background:rgba(9,30,66,0.85)',
-    'display:flex',
-    'align-items:center',
-    'justify-content:center',
-    'z-index:2147483600',
-    'cursor:zoom-out',
-  ].join(';');
+    "position:fixed",
+    "inset:0",
+    "background:rgba(9,30,66,0.85)",
+    "display:flex",
+    "align-items:center",
+    "justify-content:center",
+    "z-index:2147483600",
+    "cursor:zoom-out",
+  ].join(";");
 
-  const img = document.createElement('img');
+  const img = document.createElement("img");
   img.src = src;
   img.style.cssText = [
-    'max-width:90vw',
-    'max-height:90vh',
-    'object-fit:contain',
-    'border-radius:3px',
-    'cursor:default',
-    'box-shadow:0 8px 16px -4px rgba(9,30,66,0.4)',
-  ].join(';');
-  img.addEventListener('click', (e) => e.stopPropagation());
+    "max-width:90vw",
+    "max-height:90vh",
+    "object-fit:contain",
+    "border-radius:3px",
+    "cursor:default",
+    "box-shadow:0 8px 16px -4px rgba(9,30,66,0.4)",
+  ].join(";");
+  img.addEventListener("click", (e) => e.stopPropagation());
 
-  const close = document.createElement('button');
-  close.setAttribute('aria-label', 'Close preview');
-  close.innerHTML = '&times;';
+  const close = document.createElement("button");
+  close.setAttribute("aria-label", "Close preview");
+  close.innerHTML = "&times;";
   close.style.cssText = [
-    'position:absolute',
-    'top:16px',
-    'right:16px',
-    'width:36px',
-    'height:36px',
-    'border-radius:50%',
-    'border:none',
-    'background:rgba(255,255,255,0.15)',
-    'color:#fff',
-    'font-size:24px',
-    'cursor:pointer',
-    'display:flex',
-    'align-items:center',
-    'justify-content:center',
-  ].join(';');
+    "position:absolute",
+    "top:16px",
+    "right:16px",
+    "width:36px",
+    "height:36px",
+    "border-radius:50%",
+    "border:none",
+    "background:rgba(255,255,255,0.15)",
+    "color:#fff",
+    "font-size:24px",
+    "cursor:pointer",
+    "display:flex",
+    "align-items:center",
+    "justify-content:center",
+  ].join(";");
 
   const teardown = () => {
     overlay.remove();
-    document.removeEventListener('keydown', onKey);
+    document.removeEventListener("keydown", onKey);
   };
   const onKey = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') teardown();
+    if (e.key === "Escape") teardown();
   };
 
-  overlay.addEventListener('click', teardown);
-  close.addEventListener('click', (e) => {
+  overlay.addEventListener("click", teardown);
+  close.addEventListener("click", (e) => {
     e.stopPropagation();
     teardown();
   });
@@ -587,7 +615,7 @@ function openImagePreview(src: string): void {
   overlay.appendChild(img);
   overlay.appendChild(close);
   document.body.appendChild(overlay);
-  document.addEventListener('keydown', onKey);
+  document.addEventListener("keydown", onKey);
 }
 
 interface CatalystDescriptionSectionProps {
@@ -632,7 +660,9 @@ export function CatalystDescriptionSection({
     const onClick = (e: MouseEvent) => {
       const target = e.target as Element | null;
       if (!target) return;
-      const previewBtn = target.closest?.('[data-testid="file-preview-toolbar-button"]');
+      const previewBtn = target.closest?.(
+        '[data-testid="file-preview-toolbar-button"]',
+      );
       if (!previewBtn) return;
 
       const selectedWrapper =
@@ -643,7 +673,7 @@ export function CatalystDescriptionSection({
           '.ProseMirror-selectednode [data-media-vc-wrapper="true"]',
         ) ||
         document.querySelector<HTMLElement>('[data-media-vc-wrapper="true"]');
-      const imgEl = selectedWrapper?.querySelector<HTMLImageElement>('img');
+      const imgEl = selectedWrapper?.querySelector<HTMLImageElement>("img");
       const src = imgEl?.src;
       if (!src) return;
 
@@ -652,8 +682,8 @@ export function CatalystDescriptionSection({
       openImagePreview(src);
     };
 
-    document.addEventListener('click', onClick, true);
-    return () => document.removeEventListener('click', onClick, true);
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
   }, []);
 
   /* jira-compare 2026-05-03 (Council P3.2): per-issue console.info removed.
