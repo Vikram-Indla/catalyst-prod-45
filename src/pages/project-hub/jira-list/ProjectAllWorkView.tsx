@@ -19,6 +19,8 @@
  */
 import React, { lazy, Suspense, useState, useCallback, useRef, useEffect, useMemo } from 'react';
 // (token import removed — switched to var(--cp-*) for proper dark-mode flip)
+import Button from '@atlaskit/button';
+import Select from '@atlaskit/select';
 import { WorkListPanel } from './components/WorkListPanel';
 import { useProjectAllWorkItems } from '@/hooks/useProjectListItems';
 import { useItemSelection } from '@/hooks/useItemSelection';
@@ -57,7 +59,16 @@ interface Props {
 const SPLIT_BREAKPOINT_PX = 1120;
 
 export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
-  const { data: items = [] } = useProjectAllWorkItems(projectKey);
+  // PERF: useProjectAllWorkItems now returns paginated results with keyset cursor
+  const {
+    data: items = [],
+    rowsPerPage,
+    setRowsPerPage,
+    hasNextPage,
+    hasPrevPage,
+    fetchNextPage,
+    fetchPrevPage,
+  } = useProjectAllWorkItems(projectKey);
 
   /* jira-compare catalog items 3-9 (2026-05-02): toolbar state.
      2026-05-03 (P2.1): toolbarFilters reshaped from string[] (facet
@@ -298,6 +309,67 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                  by the toolbar input. */
               externalQuery={toolbarQuery}
             />
+
+            {/* Pagination footer — keyset pagination controls. */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '8px 8px',
+              borderTop: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
+              background: 'var(--cp-bg-sunken, var(--cp-bg-sunken, #F6F7F8))',
+              gap: '8px',
+              fontSize: '12px',
+              color: 'var(--cp-text-secondary, var(--cp-text-tertiary, #6B778C))',
+            }}>
+              {/* Pagination buttons */}
+              <div style={{ display: 'flex', gap: '4px' }}>
+                <Button
+                  appearance="subtle"
+                  size="small"
+                  isDisabled={!hasPrevPage}
+                  onClick={fetchPrevPage}
+                  aria-label="Previous page"
+                >
+                  Previous
+                </Button>
+                <Button
+                  appearance="subtle"
+                  size="small"
+                  isDisabled={!hasNextPage}
+                  onClick={fetchNextPage}
+                  aria-label="Next page"
+                >
+                  Next
+                </Button>
+              </div>
+
+              {/* Rows per page dropdown */}
+              <Select
+                options={[
+                  { label: '25', value: 25 },
+                  { label: '50', value: 50 },
+                  { label: '100', value: 100 },
+                ]}
+                value={{ label: String(rowsPerPage), value: rowsPerPage }}
+                onChange={(option) => {
+                  if (option && 'value' in option) {
+                    setRowsPerPage(option.value);
+                  }
+                }}
+                isSearchable={false}
+                isClearable={false}
+                isMulti={false}
+                styles={{
+                  control: (base: any) => ({
+                    ...base,
+                    minHeight: '28px',
+                    fontSize: '12px',
+                  }),
+                }}
+                aria-label="Rows per page"
+              />
+            </div>
           </div>
 
           {/* Middle + Right detail surface — hidden in narrow mode. */}
