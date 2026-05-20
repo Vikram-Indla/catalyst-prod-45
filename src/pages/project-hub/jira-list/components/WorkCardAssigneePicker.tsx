@@ -128,9 +128,9 @@ export function WorkCardAssigneePicker({
         }}>{fallbackInitials}</div>
       ) : (
         <div style={{
-          width: 28, height: 28, borderRadius: '50%', border: '1px dashed var(--ds-border-disabled, #C1C7D0)',
+          width: 28, height: 28, borderRadius: '50%', border: '1px dashed var(--ds-border, #DFE1E6)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 14, color: 'var(--ds-border-disabled, #C1C7D0)',
+          fontSize: 14, color: 'var(--ds-text-subtlest, #626F86)',
         }}>?</div>
       )}
     </button>

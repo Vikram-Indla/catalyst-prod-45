@@ -145,7 +145,6 @@ export function TicketBreadcrumbs({
     ),
     href: itemKey ? `/browse/${itemKey}` : undefined,
     ariaLabel: itemKey ?? 'Current issue',
-    isCurrent: true,
   });
 
   return (

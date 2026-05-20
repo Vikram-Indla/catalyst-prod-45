@@ -95,7 +95,7 @@ import { useCatalystAvatarProfile } from '../hooks/useCatalystAvatarProfile';
 import { EditableAssignee, EditableReporter, EditableLabels, EditableFixVersions, EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { CatalystParentLinker } from './CatalystParentLinker';
 import type { CatalystItemType } from '../types';
-import { EpicDueDateField } from '@/components/project/EpicDueDateField';
+import { CatalystDueDateField } from '@/components/shared/CatalystDueDateField';
 /* MDT Ref removed 2026-05-05 per Vikram directive — "remove MDT ref for good". */
 import {
   CatalystIRDemoDateDisplay,
@@ -681,10 +681,8 @@ export function CatalystSidebarDetails({
               || issue.issue_type === 'Production Incident'
               || issue.issue_type === 'Change Request') && (
             <FieldRow label="Due date">
-              <EpicDueDateField
-                issueId={issue.id}
-                dueDate={(issue as any).due_date ?? null}
-                isEpic={false}
+              <CatalystDueDateField
+                value={(issue as any).due_date ?? null}
                 onSave={async (date) => {
                   const { error } = await (supabase as any)
                     .from('ph_issues')
@@ -709,10 +707,8 @@ export function CatalystSidebarDetails({
           {issue?.issue_type === 'Epic' && (
             <>
               <FieldRow label="Due date">
-                <EpicDueDateField
-                  issueId={issue.id}
-                  dueDate={(issue as any).due_date ?? null}
-                  isEpic
+                <CatalystDueDateField
+                  value={(issue as any).due_date ?? null}
                   onSave={async (date) => {
                     const { error } = await (supabase as any)
                       .from('ph_issues')
