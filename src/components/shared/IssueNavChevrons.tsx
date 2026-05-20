@@ -71,7 +71,8 @@ function ChevronButton({
       data-cv-nav-next={direction === 'next' ? '' : undefined}
       style={{
         ...BTN_BASE,
-        color: disabled ? 'var(--ds-border-disabled, #C1C7D0)' : '#42526E',
+        color: '#42526E',
+        opacity: disabled ? 0.35 : 1,
         cursor: disabled ? 'not-allowed' : 'pointer',
       }}
       onMouseEnter={e => {

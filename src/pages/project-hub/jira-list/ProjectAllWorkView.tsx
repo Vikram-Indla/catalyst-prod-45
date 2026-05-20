@@ -303,6 +303,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                 // Narrow mode → no middle panel visible; open overlay modal.
                 if (isNarrow) setOverlayItemId(id);
               }}
+              onKeyClick={id => setOverlayItemId(id)}
               projectId={projectId}
               /* jira-compare 2026-05-02: AllWorkToolbar owns search — pass
                  toolbarQuery so the inner search hides and the rail filters
