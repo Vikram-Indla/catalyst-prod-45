@@ -31,7 +31,7 @@
  * component only surfaces the intent; it never mutates DB state itself.
  */
 
-import { memo, useEffect, useRef, useState, useCallback, type ReactNode } from 'react';
+import { memo, forwardRef, useEffect, useRef, useState, useCallback, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { draggable, dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
@@ -589,7 +589,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
  * Renders visible cards + overscan buffer (3 items) to reduce DOM from 1000s to ~50 nodes.
  * Preserves drag-and-drop index mapping by rendering virtual items in order of issueIds array.
  */
-const VirtualizedColumnBody = memo(function VirtualizedColumnBody(
+const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
   {
     issueIds,
     issuesById,
@@ -625,7 +625,7 @@ const VirtualizedColumnBody = memo(function VirtualizedColumnBody(
   },
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
-  const parentRef = (ref as React.RefObject<HTMLDivElement>) || useRef<HTMLDivElement>(null);
+  const parentRef = ref || useRef<HTMLDivElement>(null);
 
   // Estimated card height: roughly 80-120px depending on density + cardGap
   const estimatedCardHeight = 100 + (parseInt(d.cardGap?.toString() || '8', 10) || 8);
@@ -865,7 +865,7 @@ const VirtualizedColumnBody = memo(function VirtualizedColumnBody(
       )}
     </div>
   );
-}, (prevProps, nextProps) => {
+}), (prevProps, nextProps) => {
   // Memoization comparison: only re-render if these props change
   return (
     prevProps.issueIds === nextProps.issueIds &&
@@ -1064,6 +1064,8 @@ export function PragmaticBoard({
           display: 'flex',
           flexDirection: 'column',
           gap: 12,
+          height: '100%',
+          overflow: 'auto',
         }}
       >
         {lanes.map((lane) => {
@@ -1137,6 +1139,11 @@ export function PragmaticBoard({
            viewports narrower than the natural column count * 267. */
         width: '100%',
         minWidth: columns.length * 267 + (columns.length - 1) * 8,
+        /* CRITICAL: height: 100% allows flex children (PragmaticColumn)
+           to measure available space. Without this, useVirtualizer cannot
+           determine the scroll container's viewport height and renders
+           all items instead of virtualizing. */
+        height: '100%',
       }}
     >
       {columns.map((col) => (
