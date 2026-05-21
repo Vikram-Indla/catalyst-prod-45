@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { MessageSquare } from '@/lib/atlaskit-icons';
+import { MessageSquare, Edit, Trash2, Quote } from '@/lib/atlaskit-icons';
 import type { CdsComment, CdsSortOrder, CdsUser, CdsQuickReply } from '../types';
 import { Comment } from './Comment';
 import { CommentAction } from './CommentAction';
@@ -140,15 +140,27 @@ function CommentThread({
                   actions={
                     !comment.isSystem ? (
                       <>
-                        {/* E3: Quote reply */}
-                        <CommentAction onClick={handleQuote}>Quote</CommentAction>
+                        <CommentAction
+                          onClick={handleQuote}
+                          icon={<Quote />}
+                          aria-label="Quote reply"
+                          title="Quote reply"
+                        />
                         {canEdit && (
-                          <CommentAction onClick={() => startEdit(comment)}>Edit</CommentAction>
+                          <CommentAction
+                            onClick={() => startEdit(comment)}
+                            icon={<Edit />}
+                            aria-label="Edit comment"
+                            title="Edit comment"
+                          />
                         )}
                         {canDelete && (
-                          <CommentAction onClick={() => onDeleteComment!(comment.id)}>
-                            Delete
-                          </CommentAction>
+                          <CommentAction
+                            onClick={() => onDeleteComment!(comment.id)}
+                            icon={<Trash2 />}
+                            aria-label="Delete comment"
+                            title="Delete comment"
+                          />
                         )}
                       </>
                     ) : undefined

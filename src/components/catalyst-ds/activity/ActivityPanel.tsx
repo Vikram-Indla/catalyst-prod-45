@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { ChevronDown } from '@/lib/atlaskit-icons';
+import { ChevronDown, Edit, Trash2 } from '@/lib/atlaskit-icons';
 import type {
   CdsComment,
   CdsActivityItem,
@@ -286,14 +286,18 @@ function ActivityPanel({
                                   setEditingId(c.id);
                                   setEditValue(c.content);
                                 }}
-                              >
-                                Edit
-                              </CommentAction>
+                                icon={<Edit />}
+                                aria-label="Edit comment"
+                                title="Edit comment"
+                              />
                             )}
                             {canDelete && (
-                              <CommentAction onClick={() => onDeleteComment!(c.id)}>
-                                Delete
-                              </CommentAction>
+                              <CommentAction
+                                onClick={() => onDeleteComment!(c.id)}
+                                icon={<Trash2 />}
+                                aria-label="Delete comment"
+                                title="Delete comment"
+                              />
                             )}
                           </>
                         ) : undefined
