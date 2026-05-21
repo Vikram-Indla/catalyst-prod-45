@@ -171,12 +171,25 @@ export default function FilterDetailPage() {
               Version history
             </Button>
             <Button
-              appearance="primary"
+              appearance="subtle"
               iconBefore={() => <Edit size="small" />}
               onClick={() => setEditOpen(true)}
             >
               Edit filter
             </Button>
+            {filter.jql_query && (
+              <Button
+                appearance="primary"
+                onClick={() => {
+                  const allWorkHref = projectKey
+                    ? `/project-hub/${projectKey}/allwork?filterId=${filter.id}`
+                    : backHref;
+                  navigate(allWorkHref);
+                }}
+              >
+                Apply filter
+              </Button>
+            )}
           </div>
         </div>
 
@@ -340,7 +353,6 @@ function MetaField({ label, children }: { label: string; children: React.ReactNo
         fontSize: 11,
         fontWeight: token('font.weight.semibold'),
         color: token('color.text.subtlest'),
-        textTransform: 'uppercase',
         letterSpacing: '0.06em',
       }}>
         {label}
