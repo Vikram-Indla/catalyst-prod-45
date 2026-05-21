@@ -3,7 +3,7 @@
  * Route: /testhub/defects
  */
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
 import { Bug, Plus, Download, List, LayoutGrid, Settings2 } from '@/lib/atlaskit-icons';
@@ -16,6 +16,8 @@ import { useDefects, useDeleteDefect } from '@/hooks/test-management/useDefects'
 import { DefectFilters } from '@/components/defects/g25/DefectFilters';
 import { DefectTable } from '@/components/defects/g25/DefectTable';
 import { CreateDefectModalG25 } from '@/components/defects/g25/CreateDefectModal';
+import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
+import AkButton from '@atlaskit/button/new';
 import { DefectFilters as TMDefectFilters } from '@/types/test-management';
 import { Defect } from '@/types/defects';
 import { useQuery } from '@tanstack/react-query';
@@ -37,19 +39,56 @@ const ALL_COLUMNS: { key: ColumnKey; label: string; locked?: boolean }[] = [
 export default function DefectsPage() {
   const { isDark } = useTheme();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
+  // Filter URL params — matches Jira flow wired by FiltersListPage
+  const urlFilterId = searchParams.get('filterId');
+  const urlMode     = searchParams.get('mode');
+  const isCreateMode = urlMode === 'create-filter';
+
   const [filters, setFilters] = useState<Record<string, any>>(() => {
     const searchParam = searchParams.get('search');
     return searchParam ? { search: searchParam } : {};
   });
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showCreate, setShowCreate] = useState(false);
+  const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [viewMode, setViewMode] = useState<'list' | 'board'>('list');
   const [visibleColumns, setVisibleColumns] = useState<Set<ColumnKey>>(
     new Set(['SEVERITY', 'PRIORITY', 'STATUS', 'ASSIGNEE', 'AGE'])
   );
   const pageSize = 50;
+
+  // Load the saved filter when filterId is in the URL
+  const { data: activeFilter } = useQuery({
+    queryKey: ['filter-detail-testhub', urlFilterId],
+    queryFn: async () => {
+      if (!urlFilterId) return null;
+      const { data, error } = await supabase
+        .from('ph_saved_filters')
+        .select('id, name, filter_config')
+        .eq('id', urlFilterId)
+        .single();
+      if (error) return null;
+      return data as { id: string; name: string; filter_config: Record<string, any> } | null;
+    },
+    enabled: !!urlFilterId,
+    staleTime: 30_000,
+  });
+
+  // When a saved filter is loaded, try to apply its filter_config to the defect filters
+  useEffect(() => {
+    if (!activeFilter?.filter_config) return;
+    const cfg = activeFilter.filter_config;
+    const next: Record<string, any> = {};
+    if (cfg.search)     next.search     = cfg.search;
+    if (cfg.status)     next.status     = cfg.status;
+    if (cfg.severity)   next.severity   = cfg.severity;
+    if (cfg.assignedTo) next.assignedTo = cfg.assignedTo;
+    if (Object.keys(next).length > 0) setFilters(next);
+  }, [activeFilter?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Build tm_* typed filters from the UI filter state
   const tmFilters: TMDefectFilters = {
@@ -172,6 +211,12 @@ export default function DefectsPage() {
     <div className={cn("flex flex-col h-full", isDark && "bg-[var(--ds-surface,#0A0A0A)]")}>
       {/* Row 1 — Page header */}
       <TestHubPageHeader title="Defects" subtitle="Track and manage bugs discovered during testing">
+        {/* Filter context actions */}
+        {isCreateMode && (
+          <AkButton appearance="primary" onClick={() => setSaveModalOpen(true)}>
+            Save filter
+          </AkButton>
+        )}
         {/* View toggle */}
         <div className="flex gap-0.5 border border-slate-200 rounded-md p-0.5 bg-white">
           <button
@@ -204,6 +249,42 @@ export default function DefectsPage() {
       </TestHubPageHeader>
 
       <div className={cn("p-6 space-y-4 flex-1 overflow-auto", isDark && "bg-[var(--ds-surface,#0A0A0A)]")}>
+
+        {/* Filter context banner — shown when viewing or creating a saved filter */}
+        {(activeFilter || isCreateMode) && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '8px 12px',
+            background: 'var(--ds-background-information, #E9F2FE)',
+            borderRadius: 4,
+            fontSize: 13,
+            color: 'var(--ds-text-information, #0055CC)',
+          }}>
+            <span style={{ fontWeight: 500 }}>
+              {activeFilter ? `Filter: ${activeFilter.name}` : 'Creating filter — set filters then Save'}
+            </span>
+            {activeFilter && (
+              <button
+                onClick={() => navigate('/testhub/defects')}
+                style={{
+                  marginLeft: 8,
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--ds-link, #0C66E4)',
+                  fontSize: 13,
+                  padding: '0 4px',
+                  textDecoration: 'underline',
+                }}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        )}
+
         {/* Filters + results count + column configurator */}
         <div className="flex items-center justify-between gap-4">
           <DefectFilters filters={filters as any} onChange={setFilters as any} users={users || []} projects={projects || []} />
@@ -295,6 +376,16 @@ export default function DefectsPage() {
 
         <CreateDefectModalG25 open={showCreate} onClose={() => setShowCreate(false)} />
       </div>
+
+      {/* Save filter modal — lifted outside the scroll container to avoid Atlaskit portal bug */}
+      {saveModalOpen && (
+        <FilterSaveModal
+          hubScope="test"
+          initialJql=""
+          onClose={() => setSaveModalOpen(false)}
+          onSaved={() => setSaveModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
