@@ -687,7 +687,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
         )}
         {issueIds.length === 0 && !isLoading && (
           <div className="flex flex-col items-center justify-center" style={{
-            minHeight: 100, color: tk.textDisabled, fontSize: 12, gap: 6,
+            minHeight: 100, color: tk.textDisabled, fontSize: 12, gap: 8,
             fontFamily: 'var(--cp-font-body)',
           }}>
             {isOver ? (
@@ -739,7 +739,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-                gap: 6,
+                gap: 8,
                 padding: '6px 8px',
                 border: 'none',
                 background: 'transparent',
@@ -778,7 +778,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
       ref={parentRef}
       className="flex flex-col overflow-y-auto"
       style={{
-        padding: '6px 10px 10px 10px',
+        padding: '8px',
         flex: 1,
         minHeight: 120,
         background: isOver ? tk.dropHighlight : 'transparent',
@@ -854,7 +854,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'flex-start',
-              gap: 6,
+              gap: 8,
               padding: '6px 8px',
               border: 'none',
               background: 'transparent',

@@ -65,7 +65,7 @@ export function StatusChangePanel({ currentStatus, tk, onChangeStatus, onClose }
               <div style={{
                 padding: '6px 12px 2px', fontSize: 10, fontWeight: 700,
                 textTransform: 'uppercase', color: tk.textDisabled,
-                letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: 6,
+                letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: 8,
               }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: categoryDot, flexShrink: 0 }} />
                 {col.name}

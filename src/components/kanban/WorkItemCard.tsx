@@ -179,7 +179,7 @@ export function WorkItemCard({
   const fixVersionLabel = (vf?.fixVersions !== false) ? (issue.fixVersion || issue.sprintName || null) : null;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
       {/* ─── TITLE ROW ─── */}
       <div className="flex items-start" style={{ position: 'relative' }}>
         <div className="flex-1 min-w-0">
@@ -315,7 +315,7 @@ export function WorkItemCard({
       {/* spacer — only used when card has explicit minHeight */}
 
       {/* ─── FOOTER: Type Icon + Key (left) + Priority + Avatar (right) ─── */}
-      <div className="flex items-center" style={{ gap: 6, minHeight: d.footerHeight, marginTop: 6 }}>
+      <div className="flex items-center" style={{ gap: 8, minHeight: d.footerHeight, marginTop: 8 }}>
         {vf?.workType !== false && (
           resolveIcon
             ? (resolveIcon(issue) ?? <JiraIssueTypeIcon type={issue.issueType} size={16} />)

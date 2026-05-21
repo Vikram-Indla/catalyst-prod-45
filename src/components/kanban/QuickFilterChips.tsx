@@ -59,7 +59,7 @@ export function QuickFilterChips({ active, onChange, tk }: QuickFilterChipsProps
       aria-label="Quick filters"
       style={{
         display: 'flex',
-        gap: 6,
+        gap: 8,
         padding: '0 16px 8px 16px',
         flexWrap: 'wrap',
         alignItems: 'center',

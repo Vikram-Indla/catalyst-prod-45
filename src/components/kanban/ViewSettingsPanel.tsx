@@ -164,7 +164,7 @@ export function ViewSettingsPanel({ settings, onUpdate, onExpandAll, onCollapseA
           <div
             role="radiogroup"
             aria-label="Card density"
-            style={{ display: 'flex', gap: 6, padding: '6px 0 4px' }}
+            style={{ display: 'flex', gap: 8, padding: '6px 0 4px' }}
           >
             {(['compact', 'dense', 'comfortable'] as const).map((d) => {
               const selected = density === d;
@@ -221,7 +221,7 @@ export function ViewSettingsPanel({ settings, onUpdate, onExpandAll, onCollapseA
 
       {/* Card colors section — Jira parity: Board config → Card colors */}
       <SectionHeader title="Card colors" tk={tk} />
-      <div role="radiogroup" aria-label="Card color rule" style={{ display: 'flex', gap: 6, padding: '6px 0 4px' }}>
+      <div role="radiogroup" aria-label="Card color rule" style={{ display: 'flex', gap: 8, padding: '6px 0 4px' }}>
         {([
           { value: 'none',      label: 'None' },
           { value: 'priority',  label: 'Priority' },

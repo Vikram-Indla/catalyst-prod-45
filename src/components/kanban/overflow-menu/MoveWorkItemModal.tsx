@@ -245,7 +245,7 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
               </div>
               {statusMismatch && (
                 <div style={{
-                  display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px',
+                  display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px',
                   background: '#FFF3CD', borderRadius: 4, marginBottom: 8,
                   fontSize: 12, color: '#856404',
                 }}>
@@ -306,7 +306,7 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
               fontSize: 13, color: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))', fontWeight: 600,
               fontFamily: 'var(--cp-font-body)',
               opacity: saving ? 0.7 : 1,
-              display: 'flex', alignItems: 'center', gap: 6,
+              display: 'flex', alignItems: 'center', gap: 8,
             }}
           >
             <ArrowRight size={14} />
