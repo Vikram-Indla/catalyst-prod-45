@@ -34,6 +34,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { toast } from 'sonner';
 import { useCreatemeta } from '@/hooks/useCreatemeta';
 import { useSearchAssignees } from '@/hooks/useSearchAssignees';
+import { SPACING_TOKENS } from './kanban-tokens';
 
 export interface CreatedIssue {
   issueId: string;
@@ -243,7 +244,7 @@ function InlineCreateCardComponent({
       style={{
         display: 'flex',
         flexDirection: 'column',
-        gap: 8,
+        gap: SPACING_TOKENS.gap8,
         padding: '8px',
         background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
         borderRadius: 4,
@@ -427,7 +428,7 @@ function InlineCreateCardComponent({
       </div>
 
       {/* Actions */}
-      <div style={{ display: 'flex', gap: 8 }}>
+      <div style={{ display: 'flex', gap: SPACING_TOKENS.gap8 }}>
         <Button
           appearance="primary"
           isDisabled={!summary.trim() || isSubmitting}

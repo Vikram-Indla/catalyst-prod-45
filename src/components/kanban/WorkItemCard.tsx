@@ -18,6 +18,7 @@ import { AssigneePickerPopover, type AssigneeOption } from './AssigneePickerPopo
 import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
+import { SPACING_TOKENS } from './kanban-tokens';
 import { WorkItemOverflowMenu } from './overflow-menu/WorkItemOverflowMenu';
 import type { VisibleFields } from '@/hooks/useKanbanViewSettings';
 
@@ -209,7 +210,7 @@ export function WorkItemCard({
                 rows={2}
               />
               {/* Save / Cancel buttons */}
-              <div className="flex items-center justify-end" style={{ gap: 4, marginTop: 4 }}>
+              <div className="flex items-center justify-end" style={{ gap: SPACING_TOKENS.gap4, marginTop: 4 }}>
                 <button
                   onClick={saveEditing}
                   style={{
@@ -315,7 +316,7 @@ export function WorkItemCard({
       {/* spacer — only used when card has explicit minHeight */}
 
       {/* ─── FOOTER: Type Icon + Key (left) + Priority + Avatar (right) ─── */}
-      <div className="flex items-center" style={{ gap: 8, minHeight: d.footerHeight, marginTop: 8 }}>
+      <div className="flex items-center" style={{ gap: SPACING_TOKENS.gap8, minHeight: d.footerHeight, marginTop: 8 }}>
         {vf?.workType !== false && (
           resolveIcon
             ? (resolveIcon(issue) ?? <JiraIssueTypeIcon type={issue.issueType} size={16} />)

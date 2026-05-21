@@ -45,7 +45,7 @@ import { InlineCreateCard } from './InlineCreateCard';
 import type { BoardIssue } from './kanban-types';
 import { CARD_COLOR_BY_PRIORITY, CARD_COLOR_BY_TYPE } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef, KanbanDensity } from './kanban-tokens';
-import { DENSITY_CONFIG } from './kanban-tokens';
+import { DENSITY_CONFIG, SPACING_TOKENS } from './kanban-tokens';
 import type { AssigneeOption } from './AssigneePickerPopover';
 import type { VisibleFields, CardColorMode } from '@/hooks/useKanbanViewSettings';
 
@@ -675,7 +675,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
         }}
       >
         {issueIds.length === 0 && isLoading && (
-          <div className="flex flex-col" style={{ gap: 4 }}>
+          <div className="flex flex-col" style={{ gap: SPACING_TOKENS.gap4 }}>
             {[72, 56, 88].map((h, i) => (
               <div key={i} className="animate-pulse" style={{
                 height: h, borderRadius: 4,
@@ -687,7 +687,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
         )}
         {issueIds.length === 0 && !isLoading && (
           <div className="flex flex-col items-center justify-center" style={{
-            minHeight: 100, color: tk.textDisabled, fontSize: 12, gap: 8,
+            minHeight: 100, color: tk.textDisabled, fontSize: 12, gap: SPACING_TOKENS.gap8,
             fontFamily: 'var(--cp-font-body)',
           }}>
             {isOver ? (
@@ -739,7 +739,7 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-                gap: 8,
+                gap: SPACING_TOKENS.gap8,
                 padding: '6px 8px',
                 border: 'none',
                 background: 'transparent',
@@ -1084,7 +1084,7 @@ export function PragmaticBoard({
           minWidth: columns.length * 267 + (columns.length - 1) * 8,
           display: 'flex',
           flexDirection: 'column',
-          gap: 12,
+          gap: SPACING_TOKENS.gap12,
         }}
       >
         {lanes.map((lane) => {
@@ -1099,7 +1099,7 @@ export function PragmaticBoard({
                 aria-label={`Swimlane: ${lane.label}, ${total} card${total === 1 ? '' : 's'}`}
                 style={{
                   position: 'sticky', top: 0, zIndex: 4,
-                  display: 'flex', alignItems: 'center', gap: 8,
+                  display: 'flex', alignItems: 'center', gap: SPACING_TOKENS.gap8,
                   padding: '6px 8px',
                   background: tk.surfaceAlt,
                   borderBottom: `1px solid ${tk.border}`,
@@ -1117,7 +1117,7 @@ export function PragmaticBoard({
               <div
                 className="flex"
                 style={{
-                  gap: 8,
+                  gap: SPACING_TOKENS.gap8,
                   width: '100%',
                   minWidth: columns.length * 267 + (columns.length - 1) * 8,
                   marginTop: 6,
@@ -1152,7 +1152,7 @@ export function PragmaticBoard({
       ref={scrollRef}
       className="flex"
       style={{
-        gap: 8,
+        gap: SPACING_TOKENS.gap8,
         /* Fill the viewport width so flex:1 on columns can distribute
            extra space. minWidth still guarantees horizontal scroll on
            viewports narrower than the natural column count * 267. */
