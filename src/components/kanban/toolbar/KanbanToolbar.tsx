@@ -72,7 +72,7 @@ function BoardMenuItem({
       className="flex items-center gap-3 w-full"
       style={{
         padding: '10px 16px', background: 'transparent', border: 'none',
-        cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 450,
+        cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 500,
         textAlign: 'left', fontFamily: 'var(--cp-font-body)',
         transition: 'background 80ms ease',
       }}
@@ -364,8 +364,8 @@ export function KanbanToolbar<TGroupBy extends string = string>({
             }}
             onClick={e => e.stopPropagation()}
           >
-            <div style={{ padding: '6px 16px 4px', fontSize: 11, fontWeight: 700, color: tk.textMuted, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Board Options
+            <div style={{ padding: '6px 16px 4px', fontSize: 11, fontWeight: 600, color: tk.textMuted, letterSpacing: '0.04em' }}>
+              Board options
             </div>
             <BoardMenuItem
               icon={<SettingsIcon label="" size="small" primaryColor={tk.textSecondary} />}

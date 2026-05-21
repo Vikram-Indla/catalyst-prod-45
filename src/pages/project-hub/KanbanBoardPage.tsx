@@ -1380,7 +1380,7 @@ export default function KanbanBoardPage() {
                   onDelete={handleDelete}
                   onMoved={handleMoved}
                   onLinked={handleLinked}
-                  visibleFields={visibleFields}
+                  visibleFields={groupBy === 'epic' ? { ...visibleFields, epic: false } : visibleFields}
                   cardColorMode={cardColorMode}
                   columns={KANBAN_COLUMNS}
                   statusToColId={STATUS_TO_COL_ID}

@@ -3,7 +3,7 @@
  * Jira-parity: epic key, icon, summary, child count, status lozenge.
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -20,8 +20,8 @@ import type { VisibleFields, CardColorMode } from '@/hooks/useKanbanViewSettings
 function StatusLozenge({ status, category, tk }: { status: string; category: string; tk: KanbanThemeTokens }) {
   const cat = category?.toLowerCase() ?? 'todo';
   let bg: string, fg: string;
-  if (cat === 'done') { bg = '#E3FCEF'; fg = '#006644'; }
-  else if (cat === 'indeterminate' || cat === 'in_progress' || cat === 'in progress') { bg = '#DEEBFF'; fg = '#0747A6'; }
+  if (cat === 'done') { bg = 'var(--ds-background-success, #E3FCEF)'; fg = 'var(--ds-text-success, #006644)'; }
+  else if (cat === 'indeterminate' || cat === 'in_progress' || cat === 'in progress') { bg = 'var(--ds-background-information, #DEEBFF)'; fg = 'var(--ds-text-information, #0747A6)'; }
   else { bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'; fg = 'var(--ds-text, #253858)'; }
 
   return (
@@ -68,6 +68,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   statusToColId?: Map<string, string>;
 }) {
   const [open, setOpen] = useState(defaultOpen);
+  useEffect(() => { setOpen(defaultOpen); }, [defaultOpen]);
 
   const KANBAN_COLUMNS = columns ?? DEFAULT_KANBAN_COLUMNS;
   const STATUS_TO_COL_ID = statusToColId ?? DEFAULT_STATUS_TO_COL_ID;
