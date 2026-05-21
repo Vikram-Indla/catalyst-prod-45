@@ -61,7 +61,7 @@ export function LinkedWorkItemsHeader({
           title="Add linked work item"
         >
           <AddIcon size="small" label="" primaryColor="var(--ds-icon, #42526E)" />
-          <span>Add a child issue</span>
+          <span>Add linked work item</span>
         </button>
       )}
     </div>

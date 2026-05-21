@@ -25,9 +25,10 @@ function viewFile(name: string) {
   return readFileSync(resolve(VIEWS, name), 'utf-8');
 }
 
+// 2026-05-21: SummarizeCommentsDialog removed — Summarize comments now
+// renders inline via CommentsSummaryCard (not a stacked modal).
 const DIALOG_FILES = [
   'ImproveDescriptionDialog.tsx',
-  'SummarizeCommentsDialog.tsx',
   'SuggestChildIssuesDialog.tsx',
   'LinkSimilarItemsDialog.tsx',
 ];

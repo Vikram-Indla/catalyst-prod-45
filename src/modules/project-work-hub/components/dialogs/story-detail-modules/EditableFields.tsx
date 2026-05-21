@@ -4,10 +4,13 @@
  * Rebuilt to exact Jira parity — no pencil icons, Jira-native priority SVGs, 28px avatars, 14px names
  */
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import Select, { CreatableSelect } from '@atlaskit/select';
 import CheckIcon from '@atlaskit/icon/glyph/check';
+import CrossCircleIcon from '@atlaskit/icon/glyph/cross-circle';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import type { ProjectMember, ParentIssue } from './types';
 import { PRIORITY_LIST } from './constants';
 import { getAvatarColor, getInitials } from './helpers';
@@ -394,45 +397,163 @@ export function EditableReporter({ issueId, projectId, currentReporterId, curren
  *     so the row reads as editable text (matches Jira's Details sidebar
  *     rendering).
  */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+function PriorityChip({ value }: { value: string }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+      <CanonicalPriorityIcon level={value} size={16} label="" />
+      <span style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)' }}>{value}</span>
+    </span>
+  );
+}
+
 export function EditablePriority({ issueId, issueKey, currentPriority, onUpdate }: { issueId: string; issueKey?: string; currentPriority: string; onUpdate: () => void }) {
+  const [showPicker, setShowPicker] = useState(false);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const portalRef = useRef<HTMLDivElement>(null);
+  const [pickerPos, setPickerPos] = useState<{ top: number; left: number; width: number } | null>(null);
+
   const updateMutation = useMutation({
-    mutationFn: async (priority: string) => {
+    mutationFn: async (priority: string | null) => {
       const query = issueKey
         ? supabase.from('ph_issues').update({ priority } as any).eq('issue_key', issueKey)
         : supabase.from('ph_issues').update({ priority } as any).eq('id', issueId);
       const { error } = await query;
       if (error) throw error;
     },
-    onSuccess: () => onUpdate(),
+    onSuccess: () => {
+      setShowPicker(false);
+      onUpdate();
+    },
   });
 
-  const options = PRIORITY_LIST.map(p => ({ label: p, value: p }));
-  const selected = options.find(o => o.value === currentPriority) ?? options[2]; // Medium fallback
+  useEffect(() => {
+    if (!showPicker) return;
+    const h = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (triggerRef.current?.contains(t)) return;
+      if (portalRef.current?.contains(t)) return;
+      setShowPicker(false);
+    };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [showPicker]);
+
+  useEffect(() => {
+    if (!showPicker) { setPickerPos(null); return; }
+    const recompute = () => {
+      const r = triggerRef.current?.getBoundingClientRect();
+      if (!r) return;
+      setPickerPos({ top: r.bottom + 4, left: r.left, width: Math.max(r.width, 180) });
+    };
+    recompute();
+    window.addEventListener('resize', recompute);
+    window.addEventListener('scroll', recompute, true);
+    return () => {
+      window.removeEventListener('resize', recompute);
+      window.removeEventListener('scroll', recompute, true);
+    };
+  }, [showPicker]);
+
+  const hasValue = !!currentPriority;
 
   return (
-    <div style={{ maxWidth: 180 }}>
-      <Select<{ label: string; value: string }>
-        inputId={`priority-${issueKey ?? issueId}`}
-        appearance="subtle"
-        spacing="compact"
-        isSearchable={false}
-        classNamePrefix="cv-priority-select"
-        menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
-        menuPosition="fixed"
-        options={options}
-        value={selected}
-        onChange={(v) => v && v.value !== currentPriority && updateMutation.mutate(v.value)}
-        formatOptionLabel={(opt) => (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ display: 'flex', flexShrink: 0 }}>
-              <CanonicalPriorityIcon level={opt.value} size={16} label="" />
-            </span>
-            <span style={{ fontSize: 14, color: 'var(--ds-text, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontWeight: 400 }}>
-              {opt.label}
-            </span>
+    <div ref={triggerRef}>
+      {showPicker ? (
+        <div
+          style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            border: '2px solid var(--ds-border-focused, #388BFF)',
+            borderRadius: 4, padding: '2px 6px',
+            background: 'var(--ds-background-input, #fff)',
+          }}
+        >
+          <span
+            style={{
+              flex: 1, display: 'inline-flex', alignItems: 'center', gap: 6,
+              fontSize: 14,
+              color: hasValue ? 'var(--ds-text, #292A2E)' : 'var(--ds-text-subtlest, #8993A4)',
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}
+          >
+            {hasValue && <CanonicalPriorityIcon level={currentPriority} size={16} label="" />}
+            <span>{currentPriority || 'Select priority'}</span>
           </span>
-        )}
-      />
+          {hasValue && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                updateMutation.mutate(null);
+              }}
+              aria-label="Clear priority"
+              style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                flexShrink: 0,
+              }}
+            >
+              <CrossCircleIcon label="Clear priority" size="small" primaryColor="var(--ds-text-subtle, #5E6C84)" />
+            </button>
+          )}
+          <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+            <ChevronDownIcon label="" size="large" primaryColor="var(--ds-text-subtle, #5E6C84)" />
+          </span>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setShowPicker(true)}
+          style={{
+            display: 'flex', alignItems: 'center', width: '100%',
+            background: 'none', border: '2px solid transparent', cursor: 'pointer',
+            padding: '2px 6px', borderRadius: 4,
+            fontFamily: 'inherit', textAlign: 'left',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+        >
+          {hasValue
+            ? <PriorityChip value={currentPriority} />
+            : <span style={{ fontSize: 14, color: 'var(--ds-text-subtle, #5E6C84)' }}>None</span>}
+        </button>
+      )}
+
+      {showPicker && pickerPos && createPortal(
+        <div
+          ref={portalRef}
+          style={{
+            position: 'fixed', top: pickerPos.top, left: pickerPos.left, width: pickerPos.width,
+            background: 'var(--ds-surface, #fff)',
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            borderRadius: 6,
+            boxShadow: '0 8px 16px rgba(9,30,66,0.15)',
+            zIndex: 1000, padding: '6px 0',
+          }}
+        >
+          {PRIORITY_LIST.map((p) => {
+            const isSelected = currentPriority === p;
+            return (
+              <div
+                key={p}
+                onClick={() => updateMutation.mutate(p)}
+                style={{
+                  display: 'flex', alignItems: 'center', padding: '6px 12px',
+                  cursor: 'pointer',
+                  background: isSelected ? 'var(--ds-background-information, #DEEBFF)' : 'transparent',
+                  borderLeft: isSelected ? '3px solid var(--ds-border-focused, #388BFF)' : '3px solid transparent',
+                  transition: 'background 80ms',
+                }}
+                onMouseEnter={(e) => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = isSelected ? 'var(--ds-background-information, #DEEBFF)' : 'transparent'; }}
+              >
+                <PriorityChip value={p} />
+              </div>
+            );
+          })}
+        </div>,
+        document.body,
+      )}
     </div>
   );
 }

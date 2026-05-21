@@ -1,0 +1,312 @@
+/*
+ * CommentsSummaryCard — animation + layout styles.
+ *
+ * The rotating-gradient border mirrors AiLinkSimilarPanel's pattern
+ * (`.als-loading-frame`) — same technique (oversized conic-gradient
+ * layer rotated via transform, clipped to a rounded rectangle), but
+ * scoped to this component so future tweaks don't fight the
+ * link-similar surface.
+ *
+ * Streaming states:
+ *   .csc-root.csc-streaming   — animated gradient ring active
+ *   .csc-root.csc-static      — neutral border, no animation (done / error)
+ */
+
+.csc-root {
+  position: relative;
+  border-radius: 8px;
+  padding: 1.5px;
+  overflow: hidden;
+  isolation: isolate;
+  background: transparent;
+  margin: 0 0 16px;
+}
+
+/* Animated gradient ring (streaming) */
+.csc-root.csc-streaming::before {
+  content: "";
+  position: absolute;
+  width: 250%;
+  aspect-ratio: 1 / 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(0deg);
+  z-index: -2;
+  background: conic-gradient(
+    from 0deg,
+    #2684ff 0deg,
+    #6554c0 90deg,
+    #ff5630 180deg,
+    #ffab00 270deg,
+    #2684ff 360deg
+  );
+  animation: csc-rotate 3s linear infinite;
+  pointer-events: none;
+}
+
+/* Neutral border (done / error) */
+.csc-root.csc-static {
+  border: 1px solid var(--ds-border, #dfe1e6);
+  padding: 0;
+}
+
+.csc-root.csc-streaming::after {
+  content: "";
+  position: absolute;
+  inset: 1.5px;
+  border-radius: 6.5px;
+  background: var(--ds-surface, #fff);
+  z-index: -1;
+  pointer-events: none;
+}
+
+@keyframes csc-rotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(-360deg); }
+}
+
+.csc-surface {
+  background: var(--ds-surface, #fff);
+  border-radius: 6.5px;
+  padding: 12px 16px;
+}
+
+/* ── Header ─────────────────────────────────────────────────────── */
+.csc-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+}
+
+.csc-header__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ds-text, #292a2e);
+}
+
+.csc-header__lock {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 4px;
+  font-size: 13px;
+  color: var(--ds-text-subtle, #6b6e76);
+}
+
+.csc-header__close {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--ds-text-subtle, #6b6e76);
+}
+
+.csc-header__close:hover {
+  background: var(--ds-background-neutral-subtle-hovered, #f4f5f7);
+}
+
+.csc-divider {
+  height: 1px;
+  background: var(--ds-border, #dfe1e6);
+  margin: 12px -16px;
+}
+
+/* ── Body ───────────────────────────────────────────────────────── */
+.csc-body {
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--ds-text, #292a2e);
+  word-break: break-word;
+}
+
+.csc-body p {
+  margin: 0 0 8px;
+}
+
+.csc-body p:last-child {
+  margin-bottom: 0;
+}
+
+.csc-body ul,
+.csc-body ol {
+  margin: 0 0 8px;
+  padding-left: 24px;
+}
+
+.csc-body li {
+  margin-bottom: 4px;
+}
+
+.csc-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  background: var(--ds-background-neutral, #f4f5f7);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.csc-generating {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ds-text-subtle, #6b6e76);
+  font-size: 14px;
+}
+
+.csc-bouncing-dots {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 14px;
+}
+
+.csc-bouncing-dots span {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  animation: csc-bounce 1.2s infinite ease-in-out;
+}
+
+.csc-bouncing-dots span:nth-child(1) { background: #2684ff; animation-delay: 0s; }
+.csc-bouncing-dots span:nth-child(2) { background: #6554c0; animation-delay: 0.15s; }
+.csc-bouncing-dots span:nth-child(3) { background: #ff5630; animation-delay: 0.3s; }
+
+@keyframes csc-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.7; }
+  40% { transform: translateY(-5px); opacity: 1; }
+}
+
+.csc-caret {
+  display: inline-block;
+  width: 1px;
+  height: 14px;
+  background: var(--ds-text-subtle, #6b778c);
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: csc-blink 1s steps(2) infinite;
+}
+
+@keyframes csc-blink {
+  to { opacity: 0; }
+}
+
+/* ── Footer ─────────────────────────────────────────────────────── */
+.csc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.csc-auto {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ds-text, #292a2e);
+  cursor: pointer;
+  user-select: none;
+}
+
+.csc-auto__switch {
+  position: relative;
+  width: 32px;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--ds-background-neutral-bold, #44546F);
+  transition: background 0.15s ease;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.csc-auto__switch__knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s ease;
+  z-index: 1;
+}
+
+.csc-auto__switch__icon {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  transform: translateY(-50%);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* Cross sits on the right when OFF (the knob is on the left). */
+.csc-auto__switch__icon--cross {
+  right: 3px;
+}
+
+/* Check sits on the left when ON (the knob is on the right). */
+.csc-auto__switch__icon--check {
+  left: 3px;
+}
+
+/* Only show the icon that's on the opposite side of the knob. */
+.csc-auto__switch:not(.is-on) .csc-auto__switch__icon--check { display: none; }
+.csc-auto__switch.is-on .csc-auto__switch__icon--cross { display: none; }
+
+.csc-auto__switch.is-on {
+  background: var(--ds-background-success-bold, #1F845A);
+}
+
+.csc-auto__switch.is-on .csc-auto__switch__knob {
+  transform: translateX(16px);
+}
+
+.csc-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.csc-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--ds-text-subtle, #6b6e76);
+}
+
+.csc-action:hover {
+  background: var(--ds-background-neutral-subtle-hovered, #f4f5f7);
+}
+
+.csc-action.is-selected {
+  color: var(--ds-text-information, #0c66e4);
+  background: var(--ds-background-information, #e9f2ff);
+}
+
+/* ── Error state ────────────────────────────────────────────────── */
+.csc-error {
+  padding: 12px;
+  border-radius: 4px;
+  background: var(--ds-background-danger, #ffebe6);
+  color: var(--ds-text-danger, #ae2a19);
+  font-size: 13px;
+}

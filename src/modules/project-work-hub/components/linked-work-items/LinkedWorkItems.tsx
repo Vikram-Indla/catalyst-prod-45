@@ -27,7 +27,7 @@
  *
  * Props match `LinkedIssuesSection` so rollouts downstream are trivial.
  */
-import React, { Suspense, lazy, useMemo, useState } from 'react';
+import React, { Suspense, lazy, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -72,6 +72,7 @@ export function LinkedWorkItems({
 
   const [expanded, setExpanded] = useState<boolean>(true);
   const [showToolbar, setShowToolbar] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
   const [createLinkType, setCreateLinkType] = useState<string>('relates to');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [openedItem, setOpenedItem] = useState<{
@@ -107,6 +108,23 @@ export function LinkedWorkItems({
   React.useEffect(() => {
     if (links.length > 0) setExpanded(true);
   }, [links.length]);
+
+  // Open the inline link toolbar in response to a window event dispatched
+  // by the right-rail Improve dropdown ("Link similar work items"). Mirrors
+  // the section header's "Add linked work item" button behaviour.
+  React.useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<{ issueKey?: string }>).detail;
+      if (!detail?.issueKey || detail.issueKey !== issueKey) return;
+      setExpanded(true);
+      setShowToolbar(true);
+      requestAnimationFrame(() => {
+        rootRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    };
+    window.addEventListener('catalyst:open-link-toolbar', handler);
+    return () => window.removeEventListener('catalyst:open-link-toolbar', handler);
+  }, [issueKey]);
 
   const groups = useMemo(() => {
     const byType = new Map<string, LinkedWorkItem[]>();
@@ -202,7 +220,7 @@ export function LinkedWorkItems({
   const bodyId = `lwi-body-${issueKey}`;
 
   return (
-    <div className="lwi-root" data-issue-key={issueKey}>
+    <div ref={rootRef} className="lwi-root" data-issue-key={issueKey}>
       <LinkedWorkItemsHeader
         count={links.length}
         expanded={expanded}

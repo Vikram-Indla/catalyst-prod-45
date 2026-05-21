@@ -4,7 +4,7 @@
  * mirrored into ph_comments/ph_activity_log by wh-jira-sync and wh-jira-bulk-sync,
  * so a single query per source covers both Catalyst-native and Jira rows.
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -12,6 +12,10 @@ import { toast } from 'sonner';
 import { ActivityPanel } from '@/components/catalyst-ds';
 import type { CdsComment, CdsActivityItem, CdsUser, CdsQuickReply, JiraUserMap } from '@/components/catalyst-ds';
 import { resolveAvatarUrl } from '@/lib/avatars';
+import { CommentsSummaryCard } from '@/components/catalyst-detail-views/improve/CommentsSummaryCard';
+import { useCommentsSummaryStream } from '@/components/catalyst-detail-views/improve/useCommentsSummaryStream';
+import { useCatySummarize } from '@/components/catalyst-detail-views/improve/catySummarizeStore';
+import { useAiSummaryFeedback } from '@/components/catalyst-detail-views/improve/useAiSummaryFeedback';
 
 interface CatalystActivitySectionProps {
   itemId: string;
@@ -90,21 +94,30 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
   //   When `itemId` already looks like a UUID (catalyst-native
   //   rows might pass it directly), the lookup short-circuits.
   const isLikelyUuid = (s: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
-  const { data: resolvedWorkItemId } = useQuery({
-    queryKey: ['cv-resolve-work-item-uuid', itemId],
+  // 2026-05-21: extended the lookup to also return `issue_key` so the
+  // CommentsSummaryCard / useCommentsSummaryStream can match against the
+  // store's `payload.issueKey` without adding a new prop to every caller.
+  const { data: resolvedRef } = useQuery({
+    queryKey: ['cv-resolve-work-item-ref', itemId],
     enabled: !!itemId && isOpen,
     staleTime: 10 * 60 * 1000,
-    queryFn: async (): Promise<string | null> => {
+    queryFn: async (): Promise<{ id: string; issue_key: string | null } | null> => {
       if (!itemId) return null;
-      if (isLikelyUuid(itemId)) return itemId;
+      const column = isLikelyUuid(itemId) ? 'id' : 'issue_key';
       const { data } = await supabase
         .from('ph_issues')
-        .select('id')
-        .eq('issue_key', itemId)
+        .select('id, issue_key')
+        .eq(column, itemId)
         .maybeSingle();
-      return (data as { id?: string } | null)?.id ?? null;
+      if (!data) return null;
+      return {
+        id: (data as { id: string }).id,
+        issue_key: ((data as { issue_key?: string | null }).issue_key ?? null),
+      };
     },
   });
+  const resolvedWorkItemId = resolvedRef?.id ?? null;
+  const resolvedIssueKey = resolvedRef?.issue_key ?? null;
 
   const { data: profiles = [] } = useQuery({
     queryKey: ['profiles-for-mentions-approved'],
@@ -249,6 +262,25 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
+      // Look up the body so we can clean up any uploaded images.
+      const { data: row } = await supabase
+        .from('ph_comments')
+        .select('body')
+        .eq('id', id)
+        .maybeSingle();
+      const body = (row as { body?: string } | null)?.body ?? '';
+      const paths: string[] = [];
+      const re = /!\[[^\]]*\]\(([^)]+)\)/g;
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(body)) !== null) {
+        const url = m[1];
+        const marker = '/storage/v1/object/public/attachments/';
+        const idx = url.indexOf(marker);
+        if (idx !== -1) paths.push(url.slice(idx + marker.length));
+      }
+      if (paths.length > 0) {
+        await supabase.storage.from('attachments').remove(paths);
+      }
       await supabase.from('ph_comments').delete().eq('id', id);
     },
     onSuccess: () => {
@@ -261,8 +293,65 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
   const handleEdit = useCallback((id: string, content: string) => editMutation.mutateAsync({ id, body: content }), [editMutation]);
   const handleDelete = useCallback((id: string) => deleteMutation.mutateAsync(id), [deleteMutation]);
 
+  // ── Comments summary (Improve dropdown → Summarize comments) ─────
+  useCommentsSummaryStream({ mountedForIssueKey: resolvedIssueKey });
+  const summaryPayload = useCatySummarize((s) => s.payload);
+  const summaryStatus = useCatySummarize((s) => s.status);
+  const summaryText = useCatySummarize((s) => s.streamingText);
+  const summaryError = useCatySummarize((s) => s.errorMessage);
+  const summaryAuto = useCatySummarize((s) => s.autoEnabled);
+  const setSummaryAuto = useCatySummarize((s) => s.setAuto);
+  const dismissSummary = useCatySummarize((s) => s.dismiss);
+  const showSummaryCard =
+    !!summaryPayload &&
+    !!resolvedIssueKey &&
+    summaryPayload.issueKey === resolvedIssueKey &&
+    summaryStatus !== 'idle';
+
+  // Feedback persistence (ai_summary_feedback). Only meaningful once
+  // we have a resolved issue_key; the hook guards on that internally.
+  const { vote: selectedVote, recordVote } = useAiSummaryFeedback({
+    issueKey: resolvedIssueKey,
+  });
+  const handleFeedback = useCallback(
+    (next: 'up' | 'down') => {
+      recordVote(next, summaryText);
+    },
+    [recordVote, summaryText],
+  );
+
+  // Scroll the section into view when the summary card first appears
+  // (i.e. the user just clicked "Summarize comments" in the right rail).
+  // requestAnimationFrame so the card has mounted before we scroll.
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const prevShowSummaryCard = useRef(false);
+  useEffect(() => {
+    if (showSummaryCard && !prevShowSummaryCard.current) {
+      requestAnimationFrame(() => {
+        sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+    prevShowSummaryCard.current = showSummaryCard;
+  }, [showSummaryCard]);
+
   return (
-    <div style={{ borderTop: '1px solid var(--ds-border-subtle, #EBECF0)', paddingTop: 20, marginTop: 8 }}>
+    <div
+      ref={sectionRef}
+      style={{ borderTop: '1px solid var(--ds-border-subtle, #EBECF0)', paddingTop: 20, marginTop: 8 }}
+    >
+      {showSummaryCard && (
+        <CommentsSummaryCard
+          status={summaryStatus}
+          text={summaryText}
+          errorMessage={summaryError}
+          issueKey={resolvedIssueKey!}
+          onDismiss={dismissSummary}
+          autoEnabled={summaryAuto}
+          onToggleAuto={setSummaryAuto}
+          onFeedback={handleFeedback}
+          selectedVote={selectedVote}
+        />
+      )}
       <ActivityPanel
         comments={mappedComments}
         historyItems={mappedHistory}
@@ -278,6 +367,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
         defaultTab="all"
         defaultSortOrder="newest"
         jiraUserMap={jiraUserMap}
+        workItemId={resolvedWorkItemId ?? undefined}
       />
     </div>
   );

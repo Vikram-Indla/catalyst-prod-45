@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { MessageSquare } from '@/lib/atlaskit-icons';
+import { MessageSquare, Edit, Trash2, Quote } from '@/lib/atlaskit-icons';
 import type { CdsComment, CdsSortOrder, CdsUser, CdsQuickReply } from '../types';
 import { Comment } from './Comment';
 import { CommentAction } from './CommentAction';
@@ -21,6 +21,7 @@ export interface CommentThreadProps {
   isLoading?: boolean;
   emptyMessage?: string;
   className?: string;
+  workItemId?: string;
 }
 
 function CommentThread({
@@ -37,6 +38,7 @@ function CommentThread({
   isLoading = false,
   emptyMessage = 'No comments yet. Start the conversation.',
   className,
+  workItemId,
 }: CommentThreadProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
@@ -81,6 +83,7 @@ function CommentThread({
         shortcutHint="Pro tip: press **M** to comment"
         defaultValue={quotePrefix}
         autoFocus={!!quotePrefix}
+        workItemId={workItemId}
       />
 
       <div className="mt-4">
@@ -99,39 +102,19 @@ function CommentThread({
               if (editingId === comment.id) {
                 return (
                   <div key={comment.id} className="py-3">
-                    <div className="rounded-md border border-[#4C9AFF] dark:border-[#4C9AFF] p-3">
-                      <textarea
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        className={cn(
-                          'w-full resize-none border-0 bg-transparent',
-                          'text-[13px] text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]',
-                          'focus:outline-none focus:ring-0',
-                          'min-h-[60px]'
-                        )}
-                        autoFocus
-                        onKeyDown={(e) => {
-                          if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') confirmEdit();
-                          if (e.key === 'Escape') cancelEdit();
-                        }}
-                      />
-                      <div className="flex items-center gap-2 mt-2">
-                        <button
-                          type="button"
-                          onClick={confirmEdit}
-                          className="text-[12px] font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] hover:underline"
-                        >
-                          Save
-                        </button>
-                        <button
-                          type="button"
-                          onClick={cancelEdit}
-                          className="text-[12px] font-medium text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
+                    <CommentEditor
+                      currentUser={currentUser}
+                      mentionableUsers={mentionableUsers}
+                      defaultValue={comment.content}
+                      autoFocus
+                      onSubmit={async (content) => {
+                        if (!onEditComment) return;
+                        await onEditComment(comment.id, content);
+                        setEditingId(null);
+                      }}
+                      onCancel={cancelEdit}
+                      workItemId={workItemId}
+                    />
                   </div>
                 );
               }
@@ -157,15 +140,27 @@ function CommentThread({
                   actions={
                     !comment.isSystem ? (
                       <>
-                        {/* E3: Quote reply */}
-                        <CommentAction onClick={handleQuote}>Quote</CommentAction>
+                        <CommentAction
+                          onClick={handleQuote}
+                          icon={<Quote />}
+                          aria-label="Quote reply"
+                          title="Quote reply"
+                        />
                         {canEdit && (
-                          <CommentAction onClick={() => startEdit(comment)}>Edit</CommentAction>
+                          <CommentAction
+                            onClick={() => startEdit(comment)}
+                            icon={<Edit />}
+                            aria-label="Edit comment"
+                            title="Edit comment"
+                          />
                         )}
                         {canDelete && (
-                          <CommentAction onClick={() => onDeleteComment!(comment.id)}>
-                            Delete
-                          </CommentAction>
+                          <CommentAction
+                            onClick={() => onDeleteComment!(comment.id)}
+                            icon={<Trash2 />}
+                            aria-label="Delete comment"
+                            title="Delete comment"
+                          />
                         )}
                       </>
                     ) : undefined

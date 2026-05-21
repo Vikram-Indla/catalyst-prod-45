@@ -31,19 +31,36 @@ function formatRelativeTime(dateStr: string): string {
 }
 
 function renderContent(content: string): React.ReactNode {
-  // E4: render @[name](id) and plain @word patterns as chips
-  const parts = content.split(/(@\[([^\]]+)\]\([^)]+\)|@\w+)/g);
+  // Token-based renderer — handles inline images `![alt](url)`,
+  // legacy ADF mentions `@[Name](id)`, multi-word `@Capitalized Name`
+  // mentions, and plain `@word` mentions.
+  const pattern = /!\[([^\]]*)\]\(([^)]+)\)|@\[([^\]]+)\]\([^)]+\)|@[A-Z][\w.]*(?:\s[A-Z][\w.]*)*|@\w+/g;
   const nodes: React.ReactNode[] = [];
-  let i = 0;
+  let lastIndex = 0;
+  let key = 0;
+  let m: RegExpExecArray | null;
 
-  while (i < parts.length) {
-    const part = parts[i];
-    if (part && part.startsWith('@[')) {
-      // ADF mention format: @[Name](accountid:xxx)
-      const name = parts[i + 1];
+  while ((m = pattern.exec(content)) !== null) {
+    if (m.index > lastIndex) {
+      nodes.push(<React.Fragment key={key++}>{content.slice(lastIndex, m.index)}</React.Fragment>);
+    }
+    const match = m[0];
+    if (match.startsWith('![')) {
+      const alt = m[1] ?? '';
+      const url = m[2] ?? '';
+      nodes.push(
+        <img
+          key={key++}
+          src={url}
+          alt={alt}
+          style={{ maxWidth: '100%', borderRadius: 4, display: 'block', margin: '4px 0' }}
+        />
+      );
+    } else if (match.startsWith('@[')) {
+      const name = m[3] ?? '';
       nodes.push(
         <span
-          key={i}
+          key={key++}
           style={{
             display: 'inline-block',
             background: 'var(--ds-background-information, #E9F2FF)',
@@ -57,12 +74,11 @@ function renderContent(content: string): React.ReactNode {
           @{name}
         </span>
       );
-      i += 3;
-    } else if (part && part.startsWith('@') && part.length > 1) {
+    } else {
       // Plain @word mention
       nodes.push(
         <span
-          key={i}
+          key={key++}
           style={{
             display: 'inline-block',
             background: 'var(--ds-background-information, #E9F2FF)',
@@ -73,14 +89,14 @@ function renderContent(content: string): React.ReactNode {
             fontWeight: 500,
           }}
         >
-          {part}
+          {match}
         </span>
       );
-      i += 1;
-    } else {
-      if (part) nodes.push(<React.Fragment key={i}>{part}</React.Fragment>);
-      i += 1;
     }
+    lastIndex = m.index + match.length;
+  }
+  if (lastIndex < content.length) {
+    nodes.push(<React.Fragment key={key++}>{content.slice(lastIndex)}</React.Fragment>);
   }
 
   return nodes;

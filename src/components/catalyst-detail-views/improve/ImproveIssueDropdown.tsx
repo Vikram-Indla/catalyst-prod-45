@@ -10,11 +10,13 @@
  *   four items mapped 1:1 to Jira's items minus the Confluence
  *   integration which Catalyst doesn't have:
  *
- *     - Improve description       → ImproveDescriptionDialog
- *     - Summarize comments        → SummarizeCommentsDialog
+ *     - Improve description       → Caty streaming overlay
+ *     - Summarize comments        → CommentsSummaryCard (inline, above
+ *                                   the comments section — 2026-05-21)
  *     - Suggest child work items  → SuggestChildIssuesDialog
  *                                   (hidden for Subtask — no grandchildren)
- *     - Link similar work items   → LinkSimilarItemsDialog
+ *     - Link similar work items   → opens the inline link toolbar in
+ *                                   LinkedWorkItems (2026-05-21)
  *
  *   Visual: small button + sparkles glyph + "Improve {type}" + chevron,
  *   anchored under the title in each `CatalystView*` `leftContent`
@@ -24,6 +26,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { supabase } from '@/integrations/supabase/client';
 import SparklesIcon from '@atlaskit/icon/core/atlassian-intelligence';
 // ChevronDownIcon removed 2026-05-05 — Jira Improve button has no chevron (jira-compare parity)
@@ -33,13 +36,13 @@ import ListBulletedIcon from '@atlaskit/icon/core/list-bulleted';
 import SearchIcon from '@atlaskit/icon/core/search';
 import { token } from '@atlaskit/tokens';
 import { ImproveDescriptionDialog } from './ImproveDescriptionDialog';
-import { SummarizeCommentsDialog } from './SummarizeCommentsDialog';
 import { SuggestChildIssuesDialog } from './SuggestChildIssuesDialog';
 import { LinkSimilarItemsDialog } from './LinkSimilarItemsDialog';
 import { canSuggestChildren, improveTriggerLabel } from './improve-config';
 import { useCatyImprove } from './catyImproveStore';
+import { useCatySummarize } from './catySummarizeStore';
 
-type Mode = 'closed' | 'description' | 'summarize' | 'children' | 'similar';
+type Mode = 'closed' | 'description' | 'children' | 'similar';
 
 interface ImproveIssueDropdownProps {
   issue: {
@@ -76,7 +79,28 @@ export function ImproveIssueDropdown({
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<Mode>('closed');
   const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const portalRef = useRef<HTMLDivElement>(null);
+  const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
   const startCatyImprove = useCatyImprove((s) => s.start);
+  const startSummarize = useCatySummarize((s) => s.start);
+
+  /**
+   * "Summarize comments" entry point — opens the inline
+   * `CommentsSummaryCard` above the comments section. The card itself
+   * does the empty-comments toast + dismiss when there's nothing to
+   * summarize, so we just hand off the issue context here.
+   */
+  const handleStartSummarize = useCallback(() => {
+    setOpen(false);
+    if (!issue?.issue_key || !issue?.id) return;
+    startSummarize({
+      issueKey: issue.issue_key,
+      workItemId: issue.id,
+      issueType: issue.issue_type ?? null,
+      issueSummary: issue.summary ?? null,
+    });
+  }, [issue, startSummarize]);
 
   /**
    * "Improve description" entry point — replaces the legacy dialog with
@@ -127,12 +151,38 @@ export function ImproveIssueDropdown({
   useEffect(() => {
     if (!open) return;
     const h = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
+      const t = e.target as Node;
+      if (ref.current?.contains(t)) return;
+      if (portalRef.current?.contains(t)) return;
+      setOpen(false);
     };
     document.addEventListener('mousedown', h);
     return () => document.removeEventListener('mousedown', h);
+  }, [open]);
+
+  // Compute viewport coords for the portaled menu — anchored center-under
+  // the trigger and clamped so it never overflows either side of the
+  // viewport. Recomputes on resize/scroll while open.
+  useEffect(() => {
+    if (!open) { setMenuPos(null); return; }
+    const MENU_WIDTH = 260;
+    const place = () => {
+      const r = triggerRef.current?.getBoundingClientRect();
+      if (!r) return;
+      let left = r.left + r.width / 2 - MENU_WIDTH * 0.65;
+      const minLeft = 8;
+      const maxLeft = window.innerWidth - MENU_WIDTH - 8;
+      if (left < minLeft) left = minLeft;
+      if (left > maxLeft) left = Math.max(minLeft, maxLeft);
+      setMenuPos({ top: r.bottom + 4, left });
+    };
+    place();
+    window.addEventListener('resize', place);
+    window.addEventListener('scroll', place, true);
+    return () => {
+      window.removeEventListener('resize', place);
+      window.removeEventListener('scroll', place, true);
+    };
   }, [open]);
 
   const issueType = issue?.issue_type ?? null;
@@ -194,6 +244,7 @@ export function ImproveIssueDropdown({
             No purple anywhere — appearance="subtle" with dark text +
             dark icon. The earlier "subtle discovery" was fabricated. */}
         <button
+          ref={triggerRef}
           type="button"
           onClick={() => setOpen((o) => !o)}
           aria-haspopup="menu"
@@ -221,20 +272,21 @@ export function ImproveIssueDropdown({
           {triggerLabel}
         </button>
 
-        {open && (
+        {open && menuPos && createPortal(
           <div
+            ref={portalRef}
             role="menu"
             data-testid="catalyst-improve-issue-dropdown--content"
             style={{
-              position: 'absolute',
-              top: 'calc(100% + 4px)',
-              left: 0,
-              minWidth: 260,
+              position: 'fixed',
+              top: menuPos.top,
+              left: menuPos.left,
+              width: 260,
               background: token('elevation.surface.overlay', '#FFFFFF'),
               border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
               borderRadius: 6,
               boxShadow: '0 8px 24px rgba(9, 30, 66, 0.16)',
-              zIndex: 50,
+              zIndex: 2000,
               padding: '6px 0',
             }}
           >
@@ -268,7 +320,7 @@ export function ImproveIssueDropdown({
               type="button"
               role="menuitem"
               data-testid="catalyst-improve-issue-dropdown.summarize-comments"
-              onClick={() => openMode('summarize')}
+              onClick={handleStartSummarize}
               style={itemStyle}
               onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
@@ -296,7 +348,16 @@ export function ImproveIssueDropdown({
               type="button"
               role="menuitem"
               data-testid="catalyst-improve-issue-dropdown.suggest-related-issues"
-              onClick={() => openMode('similar')}
+              onClick={() => {
+                setOpen(false);
+                if (issue?.issue_key) {
+                  window.dispatchEvent(
+                    new CustomEvent('catalyst:open-link-toolbar', {
+                      detail: { issueKey: issue.issue_key },
+                    }),
+                  );
+                }
+              }}
               style={itemStyle}
               onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
@@ -304,7 +365,8 @@ export function ImproveIssueDropdown({
               <SearchIcon size="small" primaryColor={token('color.icon.subtle', '#6B6E76')} />
               <span style={{ flex: 1 }}>Link similar work items</span>
             </button>
-          </div>
+          </div>,
+          document.body,
         )}
       </div>
 
@@ -319,17 +381,9 @@ export function ImproveIssueDropdown({
         onApplyAcceptanceCriteria={onApplyAcceptanceCriteria}
       />
 
-      {/* Apr 28 2026 (cycle 7 follow-up): pass `issue.id` (UUID)
-          first — `ph_comments.work_item_id` is a `uuid` column, so
-          passing `issue_key` ("BAU-5711") fails with Postgres error
-          22P02 "invalid input syntax for type uuid". */}
-      <SummarizeCommentsDialog
-        isOpen={mode === 'summarize'}
-        onClose={() => setMode('closed')}
-        issueType={issueType}
-        issueSummary={issue?.summary}
-        workItemId={issue?.id ?? issue?.issue_key ?? null}
-      />
+      {/* 2026-05-21: Summarize comments now opens the inline
+          `CommentsSummaryCard` (mounted inside CatalystActivitySection)
+          instead of a modal. Handler: `handleStartSummarize` above. */}
 
       <SuggestChildIssuesDialog
         isOpen={mode === 'children'}

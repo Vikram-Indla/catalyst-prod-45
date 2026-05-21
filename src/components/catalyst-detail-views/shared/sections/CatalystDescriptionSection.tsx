@@ -640,10 +640,51 @@ export function CatalystDescriptionSection({
   // in tabs; each owns its own description).
   const catyPayload = useCatyImprove((s) => s.payload);
   const stopCatyImprove = useCatyImprove((s) => s.stop);
+  const startCatyImprove = useCatyImprove((s) => s.start);
   const catyActiveForThisIssue =
     catyPayload != null &&
     issue?.issue_key != null &&
     catyPayload.issueKey === issue.issue_key;
+
+  const handleImproveFromToolbar = useCallback(async () => {
+    if (!issue?.issue_key) return;
+    let attachmentUrls: string[] = [];
+    if (issue.id) {
+      try {
+        const { data } = await supabase
+          .from("ph_attachments")
+          .select("storage_path, mime_type")
+          .eq("work_item_id", issue.id);
+        const rows: Array<{ storage_path: string; mime_type: string | null }> =
+          Array.isArray(data) ? data : [];
+        attachmentUrls = rows
+          .filter(
+            (r) =>
+              typeof r.mime_type === "string" &&
+              r.mime_type.startsWith("image/"),
+          )
+          .map((r) => {
+            const { data: pub } = supabase.storage
+              .from("description-images")
+              .getPublicUrl(r.storage_path);
+            return pub?.publicUrl ?? "";
+          })
+          .filter((u) => u.length > 0);
+      } catch {
+        attachmentUrls = [];
+      }
+    }
+    setEditing(false);
+    startCatyImprove({
+      issueKey: issue.issue_key,
+      issueType: issue.issue_type ?? null,
+      issueSummary: issue.summary ?? null,
+      currentDescription: issue.description_text ?? null,
+      currentAcceptanceCriteria: issue.acceptance_criteria ?? null,
+      attachmentUrls,
+      improveSubType: "improve_clarify",
+    });
+  }, [issue, startCatyImprove]);
 
   // Idle-time prefetch: kick off editor chunk download after paint so that
   // by the time the user clicks to edit, the ~2MB chunk is already cached.
@@ -907,6 +948,7 @@ export function CatalystDescriptionSection({
               placeholder="Add a description..."
               onAttachmentUploaded={handleInlineAttachmentUploaded}
               appearance="comment"
+              onImprove={handleImproveFromToolbar}
             />
           </Suspense>
         </div>
