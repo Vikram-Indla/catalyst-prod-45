@@ -384,11 +384,11 @@ function LeadOwnerPopover({ product }: { product: Product }) {
       >
         <Avatar src={currentOwner?.avatar_url || undefined} name={currentOwner?.display_name || '?'} size="small" />
         {currentOwner ? (
-          <span style={{ fontSize: 13, color: token('color.text'), fontFamily: 'var(--cp-font-body)' }}>
+          <span style={{ fontSize: 14, color: token('color.text'), fontFamily: 'var(--cp-font-body)' }}>
             {currentOwner.display_name}
           </span>
         ) : (
-          <span style={{ fontSize: 13, color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-body)' }}>
+          <span style={{ fontSize: 14, color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-body)' }}>
             Assign lead
           </span>
         )}
@@ -650,7 +650,7 @@ export default function AllProductsPage() {
             padding: '8px 14px',
             fontSize: 14,
             fontWeight: 500,
-            borderRadius: 4,
+            borderRadius: 3,
             border: 'none',
             background: token('color.background.brand.bold'),
             color: token('color.text.inverse'),
