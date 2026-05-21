@@ -4,13 +4,15 @@ import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdow
 import { IconButton } from '@atlaskit/button/new';
 import MoreIcon from '@atlaskit/icon/core/show-more-horizontal';
 import ModalTransition from '@atlaskit/modal-dialog';
-import { toast } from 'sonner';
 import {
   useCopyFilter,
   useUpdateSavedFilter,
   useDeleteSavedFilter,
+  useBoardsForProject,
+  useToggleFilterBoardLink,
   type SavedFilterFull,
 } from '@/hooks/workhub/useSavedFilters';
+import { useParams } from 'react-router-dom';
 import { FilterSaveModal } from './FilterSaveModal';
 import { FilterVersionHistory } from './FilterVersionHistory';
 
@@ -23,9 +25,13 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
   const [editOpen, setEditOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
 
-  const copyFilter = useCopyFilter();
+  const { key: projectKey } = useParams<{ key: string }>();
+
+  const copyFilter   = useCopyFilter();
   const updateFilter = useUpdateSavedFilter();
   const deleteFilter = useDeleteSavedFilter();
+  const boardLink    = useToggleFilterBoardLink();
+  const { data: boards = [] } = useBoardsForProject(projectKey);
 
   const isOwner = filter.user_id === currentUserId || filter.owner_id === currentUserId;
   const isPrivate = filter.viewers_config?.type === 'private';
@@ -36,7 +42,6 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
       : { is_shared: false, viewers_config: { type: 'private' as const } };
 
     updateFilter.mutate({ id: filter.id, updates: next as any });
-    toast.success(isPrivate ? 'Filter shared with organisation' : 'Filter set to private');
   }
 
   return (
@@ -71,6 +76,28 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
             View version history
           </DropdownItem>
         </DropdownItemGroup>
+
+        {/* Board link items — one per board (O10) */}
+        {boards.length > 0 && isOwner && (
+          <DropdownItemGroup>
+            {boards.map(board => {
+              const isLinked = filter.used_by_board_ids.includes(board.id);
+              return (
+                <DropdownItem
+                  key={board.id}
+                  onClick={() => boardLink.mutate({
+                    filterId: filter.id,
+                    boardId: board.id,
+                    currentUsedByBoardIds: filter.used_by_board_ids,
+                    link: !isLinked,
+                  })}
+                >
+                  {isLinked ? '✓ ' : ''}{board.name} board
+                </DropdownItem>
+              );
+            })}
+          </DropdownItemGroup>
+        )}
         <DropdownItemGroup>
           {isOwner && (
             <DropdownItem onClick={() => deleteFilter.mutate(filter.id)}>

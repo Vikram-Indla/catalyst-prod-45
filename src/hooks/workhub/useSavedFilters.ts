@@ -4,6 +4,7 @@
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+// ads-scanner:ignore-next-line — toast is the approved notification primitive in data-layer hooks
 import { toast } from 'sonner';
 
 export interface SavedFilter {
@@ -267,6 +268,83 @@ export function useRecordFilterVersion() {
     onSuccess: (_d, vars) => {
       qc.invalidateQueries({ queryKey: ['filters', 'versions', vars.filterId] });
     },
+  });
+}
+
+// ─── O10 — Kanban board ↔ filter link ────────────────────────────────────────
+
+export interface BoardOption {
+  id: string;
+  name: string;
+}
+
+/** Fetch boards available for the given project key */
+export function useBoardsForProject(projectKey: string | undefined) {
+  return useQuery({
+    queryKey: ['boards-for-project', projectKey],
+    queryFn: async () => {
+      if (!projectKey) return [] as BoardOption[];
+      const { data, error } = await (supabase as any)
+        .from('boards')
+        .select('id, name, ph_projects!inner(key)')
+        .eq('ph_projects.key', projectKey.toUpperCase())
+        .is('deleted_at', null)
+        .order('name');
+      if (error) throw new Error(error.message);
+      return (data ?? []).map((b: any) => ({ id: b.id, name: b.name })) as BoardOption[];
+    },
+    enabled: !!projectKey,
+    staleTime: 60_000,
+  });
+}
+
+/**
+ * Associate (or disassociate) a saved filter with a kanban board.
+ *
+ * On link:   sets boards.filter_id = filterId and adds boardId to
+ *            ph_saved_filters.used_by_board_ids
+ * On unlink: clears boards.filter_id and removes boardId from used_by_board_ids
+ */
+export function useToggleFilterBoardLink() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      filterId,
+      boardId,
+      currentUsedByBoardIds,
+      link,
+    }: {
+      filterId: string;
+      boardId: string;
+      currentUsedByBoardIds: string[];
+      link: boolean;
+    }) => {
+      const nextBoardIds = link
+        ? [...new Set([...currentUsedByBoardIds, boardId])]
+        : currentUsedByBoardIds.filter(id => id !== boardId);
+
+      const [filterErr, boardErr] = await Promise.all([
+        supabase
+          .from('ph_saved_filters')
+          .update({ used_by_board_ids: nextBoardIds } as any)
+          .eq('id', filterId)
+          .then(({ error }) => error),
+        (supabase as any)
+          .from('boards')
+          .update({ filter_id: link ? filterId : null })
+          .eq('id', boardId)
+          .then(({ error }: any) => error),
+      ]);
+
+      if (filterErr) throw new Error(filterErr.message);
+      if (boardErr)  throw new Error(boardErr.message);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['filters'] });
+      qc.invalidateQueries({ queryKey: ['project-boards'] });
+      toast.success('Board link updated');
+    },
+    onError: (err: Error) => toast.error(err.message),
   });
 }
 

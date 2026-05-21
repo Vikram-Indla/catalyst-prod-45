@@ -35,6 +35,12 @@ const EDITORS_OPTIONS = [
   { label: 'Specific people',        value: 'specific'   },
 ];
 
+/** O6: hub scope options shown when viewersType !== 'private' */
+const HUB_SCOPE_OPTIONS = [
+  { label: 'This hub only',       value: 'current' },
+  { label: 'Both hubs (cross-hub)', value: 'both'  },
+];
+
 function FieldLabel({ children, required }: { children: React.ReactNode; required?: boolean }) {
   return (
     <label style={{
@@ -65,6 +71,7 @@ export function FilterSaveModal({
   const [description, setDescription] = useState(filter?.description ?? '');
   const [viewersType, setViewersType] = useState<string>(filter?.viewers_config?.type ?? 'private');
   const [editorsType, setEditorsType] = useState<string>(filter?.editors_config?.type ?? 'owner_only');
+  const [crossHub, setCrossHub] = useState<boolean>(filter?.hub_scope === 'both');
   const [viewerUsers, setViewerUsers] = useState<ProfileOption[]>([]);
   const [editorUsers, setEditorUsers] = useState<ProfileOption[]>([]);
   const [profileOptions, setProfileOptions] = useState<ProfileOption[]>([]);
@@ -115,6 +122,7 @@ export function FilterSaveModal({
     if (!name.trim()) return;   // Textfield is required — browser validation fires first
 
     const { viewersConfig, editorsConfig, isShared } = buildConfigs();
+    const resolvedHubScope = crossHub && isShared ? 'both' : hubScope;
 
     if (isEditing && filter) {
       updateFilter.mutate(
@@ -124,6 +132,7 @@ export function FilterSaveModal({
             name: name.trim(),
             description: description.trim() || null,
             is_shared: isShared,
+            hub_scope: resolvedHubScope,
             viewers_config: viewersConfig,
             editors_config: editorsConfig,
           } as any,
@@ -135,9 +144,10 @@ export function FilterSaveModal({
         {
           name: name.trim(),
           filter_config: { jql_query: initialJql ?? null },
+          jql_query: initialJql ?? null,
           page: 'filters',
           is_shared: isShared,
-          hub_scope: hubScope,
+          hub_scope: resolvedHubScope,
           viewers_config: viewersConfig,
           editors_config: editorsConfig,
           description: description.trim() || null,
@@ -200,6 +210,18 @@ export function FilterSaveModal({
               </div>
             )}
           </div>
+
+          {/* O6: Cross-hub scope (only shown when filter is shared) */}
+          {viewersType !== 'private' && (
+            <div>
+              <FieldLabel>Hub visibility</FieldLabel>
+              <RadioGroup
+                options={HUB_SCOPE_OPTIONS}
+                value={crossHub ? 'both' : 'current'}
+                onChange={e => setCrossHub(e.currentTarget.value === 'both')}
+              />
+            </div>
+          )}
 
           {/* Editors */}
           <div>
