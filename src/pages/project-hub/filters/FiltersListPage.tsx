@@ -1,15 +1,16 @@
 import React, { useState, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import AkDynamicTable from '@atlaskit/dynamic-table';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import Tabs, { Tab, TabList } from '@atlaskit/tabs';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import AkAvatar from '@atlaskit/avatar';
-import { useFiltersForProject, useStarFilter, useDeleteSavedFilter, type SavedFilterFull } from '@/hooks/workhub/useSavedFilters';
+import { useFiltersForProject, useStarFilter, type SavedFilterFull } from '@/hooks/workhub/useSavedFilters';
 import { FilterHealthBadge } from '@/components/filters/FilterHealthBadge';
-import { Star, StarOff, MoreHorizontal, Plus, Search } from '@/lib/atlaskit-icons';
+import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
+import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
+import { Star, StarOff, Plus, Search } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import type { HubType } from './FiltersListPage';
 
@@ -77,11 +78,11 @@ function BoardsBadge({ count }: { count: number }) {
 
 export default function FiltersListPage({ hubType = 'project' }: FiltersListPageProps) {
   const { key: projectKey } = useParams<{ key: string }>();
-  const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<TabId>('my');
   const [search, setSearch] = useState('');
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   // Resolve current user id once on mount
   React.useEffect(() => {
@@ -95,10 +96,6 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
 
   const starFilter = useStarFilter();
   const deleteFilter = useDeleteSavedFilter();
-
-  const createHref = projectKey
-    ? `/project-hub/${projectKey}/filters/create`
-    : `/product-hub/filters/create`;
 
   const visibleFilters = useMemo(() => {
     let list = filters;
@@ -238,48 +235,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           {
             key: 'actions',
             content: (
-              <DropdownMenu
-                trigger={({ triggerRef, ...props }) => (
-                  <button
-                    ref={triggerRef}
-                    {...props}
-                    aria-label="Filter actions"
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: 4,
-                      color: token('color.icon.subtle'),
-                      display: 'flex',
-                      alignItems: 'center',
-                      borderRadius: 3,
-                    }}
-                  >
-                    <MoreHorizontal size="small" />
-                  </button>
-                )}
-              >
-                <DropdownItemGroup>
-                  <DropdownItem onClick={() => navigate(
-                    projectKey
-                      ? `/project-hub/${projectKey}/filters/${f.id}`
-                      : `/product-hub/filters/${f.id}`
-                  )}>
-                    Edit filter
-                  </DropdownItem>
-                  <DropdownItem onClick={() => {/* copy — Chunk 3 */}}>
-                    Copy filter
-                  </DropdownItem>
-                  <DropdownItem onClick={() => {/* owner — Chunk 3 */}}>
-                    Change owner
-                  </DropdownItem>
-                </DropdownItemGroup>
-                <DropdownItemGroup>
-                  <DropdownItem onClick={() => deleteFilter.mutate(f.id)}>
-                    <span style={{ color: token('color.text.danger') }}>Delete</span>
-                  </DropdownItem>
-                </DropdownItemGroup>
-              </DropdownMenu>
+              <FilterKebabMenu filter={f} currentUserId={currentUserId} />
             ),
           },
         ],
@@ -325,7 +281,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         <Button
           appearance="primary"
           iconBefore={<Plus size="small" label="" />}
-          onClick={() => navigate(createHref)}
+          onClick={() => setCreateModalOpen(true)}
         >
           Create filter
         </Button>
@@ -384,7 +340,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
                 {search ? 'No filters match your search' : 'No filters yet'}
               </span>
               {!search && (
-                <Button appearance="primary" onClick={() => navigate(createHref)}>
+                <Button appearance="primary" onClick={() => setCreateModalOpen(true)}>
                   Create your first filter
                 </Button>
               )}
@@ -394,6 +350,15 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           defaultSortOrder="ASC"
         />
       </div>
+
+      {/* Create filter modal */}
+      {createModalOpen && (
+        <FilterSaveModal
+          hubScope={hubType === 'product' ? 'product' : 'project'}
+          onClose={() => setCreateModalOpen(false)}
+          onSaved={() => setCreateModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
