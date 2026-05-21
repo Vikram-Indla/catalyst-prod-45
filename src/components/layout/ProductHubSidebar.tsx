@@ -108,7 +108,7 @@ function buildPerProductConfig(product: ProductRow): SidebarConfig {
 
 const GLOBAL_CONFIG: SidebarConfig = {
   badge: 'PH',
-  label: 'Product Hub',
+  label: 'Products',
   showFavorites: false,
   sections: [
     {

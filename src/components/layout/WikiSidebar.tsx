@@ -74,7 +74,7 @@ export function WikiSidebar({ expanded, onToggle, className }: WikiSidebarProps)
   const config: SidebarConfig = useMemo(() => ({
     badge: 'WK',
     // Block A rule 7 (2026-05-01): canonical spaced casing.
-    label: 'Wiki Hub',
+    label: 'Wiki',
     sections: [
       {
         title: 'Knowledge',

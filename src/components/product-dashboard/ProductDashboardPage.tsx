@@ -90,7 +90,7 @@ export function ProductDashboardPage() {
               color: token('color.text.subtle', 'var(--cp-text-secondary, var(--cp-text-secondary, #44546F))'),
             }}
           >
-            <span>Project Hub</span>
+            <span>Projects</span>
             <span style={{ color: token('color.text.subtlest', '#8993A4') }}>/</span>
             <span>Product</span>
             <span style={{ color: token('color.text.subtlest', '#8993A4') }}>/</span>

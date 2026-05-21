@@ -119,7 +119,7 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
         <SortableContext items={issueIds} strategy={verticalListSortingStrategy}>
           {issueIds.length === 0 && (
             <div className="flex flex-col items-center justify-center" style={{
-              minHeight: 100, color: tk.textDisabled, fontSize: 12, gap: 6,
+              minHeight: 100, color: tk.textDisabled, fontSize: 12, gap: 8,
               fontFamily: 'var(--cp-font-body)',
             }}>
               {isOver ? (

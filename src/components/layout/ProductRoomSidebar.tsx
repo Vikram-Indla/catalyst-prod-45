@@ -56,7 +56,7 @@ function extractProductCode(pathname: string): string | null {
 
 const GLOBAL_CONFIG: SidebarConfig = {
   badge: 'PH',
-  label: 'Product Hub',
+  label: 'Products',
   sections: [
     {
       title: '',

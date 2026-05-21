@@ -310,7 +310,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
                   <div style={{ fontSize: 11, fontWeight: 600, color: tk.textMuted, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     Timer duration (min)
                   </div>
-                  <div style={{ display: 'flex', gap: 6 }}>
+                  <div style={{ display: 'flex', gap: 8 }}>
                     {[1, 2, 3, 5].map(m => (
                       <button key={m}
                         onClick={() => { const s = m * 60; setTimerDuration(s); setSeconds(s); setShowSettings(false); }}

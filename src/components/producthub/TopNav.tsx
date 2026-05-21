@@ -6,14 +6,14 @@ import { KBPanel } from '@/components/kb/KBPanel';
 
 const HUB_TABS = [
   { label: 'Home', path: '/for-you' },
-  { label: 'StrategyHub', path: '/strategyhub' },
-  { label: 'ProductHub', path: '/producthub' },
-  { label: 'ProjectHub', path: '/projecthub' },
-  { label: 'ReleaseHub', path: '/releases' },
-  { label: 'TestHub', path: '/testhub' },
-  { label: 'IncidentHub', path: '/incident' },
-  { label: 'TaskHub', path: '/planner' },
-  { label: 'PlanHub', path: '/planhub' },
+  { label: 'Strategy', path: '/strategyhub' },
+  { label: 'Products', path: '/producthub' },
+  { label: 'Projects', path: '/projecthub' },
+  { label: 'Releases', path: '/releases' },
+  { label: 'Testing', path: '/testhub' },
+  { label: 'Incidents', path: '/incident' },
+  { label: 'Tasks', path: '/planner' },
+  { label: 'Planning', path: '/planhub' },
   { label: 'Wiki', path: '/wiki' },
 ];
 

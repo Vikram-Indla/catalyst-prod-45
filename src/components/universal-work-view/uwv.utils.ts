@@ -20,12 +20,12 @@ export const JIRA_ROW_HEIGHT = 36;
 /** Hub source → human label (used by legacy UWVRow / UWVExport). */
 export function hubLabel(hub?: string | null): string {
   switch ((hub ?? '').toLowerCase()) {
-    case 'projecthub': return 'Project Hub';
-    case 'producthub': return 'Product Hub';
-    case 'taskhub': return 'Task Hub';
-    case 'incidenthub': return 'Incident Hub';
-    case 'testhub': return 'Test Hub';
-    case 'releasehub': return 'Release Hub';
+    case 'projecthub': return 'Projects';
+    case 'producthub': return 'Products';
+    case 'taskhub': return 'Tasks';
+    case 'incidenthub': return 'Incidents';
+    case 'testhub': return 'Testing';
+    case 'releasehub': return 'Releases';
     default: return hub ?? '—';
   }
 }

@@ -93,7 +93,7 @@ export function MobileMenuDrawer({ open, onClose }: MobileMenuDrawerProps) {
 
         {/* Header */}
         <div className="flex items-center justify-between px-4 pb-3 border-b border-slate-100">
-          <h2 className="text-lg font-semibold text-slate-900">TaskHub</h2>
+          <h2 className="text-lg font-semibold text-slate-900">Tasks</h2>
           <button
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-slate-100 transition-colors"

@@ -37,7 +37,7 @@ interface IdeationSidebarProps {
 
 const IDEATION_CONFIG: SidebarConfig = {
   badge: 'IH',
-  label: 'Ideation Hub',
+  label: 'Ideation',
   sections: [
     {
       title: '',
@@ -54,7 +54,7 @@ const IDEATION_CONFIG: SidebarConfig = {
       title: 'Workflow',
       items: [
         { id: 'idea-triage',       title: 'Triage Queue',          path: '/ideation/triage',       icon: Inbox,    exact: true },
-        { id: 'idea-intelligence', title: 'Intelligence Hub',      path: '/ideation/intelligence', icon: Sparkles, exact: true, textBadge: 'AI' },
+        { id: 'idea-intelligence', title: 'Intelligence',           path: '/ideation/intelligence', icon: Sparkles, exact: true, textBadge: 'AI' },
       ],
     },
   ],

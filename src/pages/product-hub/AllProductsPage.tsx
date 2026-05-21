@@ -4,14 +4,14 @@
  * jira-compare cycle 1 (2026-05-02) — column shape, header order, and toolbar
  * mirror Jira's /jira/projects (tenant: digital-transformation) probed Lane A:
  *
- *   Headers:  [star] Name (icon+anchor) Key  Type  Lead (avatar+name)  Category  ⋯
+ *   Headers:  [star] Name (icon+anchor) Key  Type  Lead (avatar+name)  ⋯
  *   Toolbar:  search input above the table, "+ Create product" top-right
  *
  * Atlaskit primitives (Atlaskit-only inside scope):
  *   @atlaskit/dynamic-table   table
  *   @atlaskit/textfield       search
  *   @atlaskit/avatar          name icon + lead avatar
- *   @atlaskit/lozenge         type / category
+ *   @atlaskit/lozenge         type
  *   @atlaskit/dropdown-menu   row actions (⋯)
  *   @atlaskit/icon/glyph/star{,-filled}   favorite toggle
  *
@@ -159,8 +159,7 @@ function useAllProfiles() {
  *   col 3 — Key
  *   col 4 — Type
  *   col 5 — Lead
- *   col 6 — Category
- *   col 7 — ⋯ actions (no header text, locked)
+ *   col 6 — ⋯ actions (no header text, locked)
  *
  * Uses ResizableTableHeader + useTableColumns to match AllProjectsTable
  * drag-and-resize behaviour (design-critique 2026-05-16).
@@ -171,7 +170,6 @@ const PRODUCT_COLUMNS: TColDef[] = [
   { key: 'code',     label: 'Key',      defaultWidth: 90,  minWidth: 60 },
   { key: 'type',     label: 'Type',     defaultWidth: 160, minWidth: 100 },
   { key: 'lead',     label: 'Lead',     defaultWidth: 180, minWidth: 120 },
-  { key: 'category', label: 'Category', defaultWidth: 220, minWidth: 100 },
   { key: 'actions',  label: '',         defaultWidth: 40,  minWidth: 40,  locked: true },
 ];
 
@@ -586,30 +584,6 @@ export default function AllProductsPage() {
         return (
           <td key={colKey}>
             <LeadOwnerPopover product={p} />
-          </td>
-        );
-
-      case 'category':
-        return (
-          <td key={colKey}>
-            {p.description ? (
-              <span
-                style={{
-                  fontSize: 13,
-                  color: token('color.text.subtle'),
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  display: 'block',
-                  maxWidth: '100%',
-                }}
-                title={p.description}
-              >
-                {p.description}
-              </span>
-            ) : (
-              <span style={{ fontSize: 13, color: token('color.text.subtlest') }}>—</span>
-            )}
           </td>
         );
 

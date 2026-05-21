@@ -334,7 +334,7 @@ export const RequestDetailPanel: React.FC<RequestDetailPanelProps> = ({
               marginLeft: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}
           >
-            <span style={{ fontWeight: 500 }}>Product Hub</span>
+            <span style={{ fontWeight: 500 }}>Products</span>
             <span aria-hidden="true">/</span>
             <span style={{ fontWeight: 500 }}>Backlog</span>
             <span aria-hidden="true">/</span>

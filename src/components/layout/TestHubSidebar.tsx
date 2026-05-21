@@ -42,7 +42,7 @@ interface TestHubSidebarProps {
 
 const testHubSidebarConfig: SidebarConfig = {
   badge: 'TH',
-  label: 'Test Hub',
+  label: 'Testing',
   sections: [
     {
       title: 'Overview',
@@ -64,7 +64,7 @@ const testHubSidebarConfig: SidebarConfig = {
       items: [
         { id: 'cycles', title: 'Test Cycles', path: '/testhub/cycles', icon: RefreshCw, exact: false },
         { id: 'test-plans', title: 'Test Plans', path: '/testhub/test-plans', icon: ClipboardList, exact: false },
-        { id: 'execution', title: 'Execution Hub', path: '/testhub/execution', icon: Play, exact: false },
+        { id: 'execution', title: 'Execution', path: '/testhub/execution', icon: Play, exact: false },
         { id: 'runs', title: 'Test Runs', path: '/testhub/runs', icon: Beaker, exact: false },
         { id: 'environments', title: 'Environments', path: '/testhub/environments', icon: Server, exact: false },
       ],
