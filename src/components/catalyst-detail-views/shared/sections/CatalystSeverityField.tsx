@@ -146,10 +146,10 @@ export function CatalystSeverityField({ issue, onUpdate }: Props) {
           type="button"
           onClick={() => setShowPicker(true)}
           style={{
-            display: 'inline-flex', alignItems: 'center',
-            background: 'none', border: 'none', cursor: 'pointer',
-            padding: '2px 4px', borderRadius: 3,
-            fontFamily: 'inherit',
+            display: 'flex', alignItems: 'center', width: '100%',
+            background: 'none', border: '2px solid transparent', cursor: 'pointer',
+            padding: '2px 6px', borderRadius: 4,
+            fontFamily: 'inherit', textAlign: 'left',
           }}
           onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}

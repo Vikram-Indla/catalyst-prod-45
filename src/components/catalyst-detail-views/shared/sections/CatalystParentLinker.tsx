@@ -51,13 +51,13 @@ function SidebarAddTrigger({
       onClick={onClick}
       aria-expanded={isOpen}
       style={{
-        display: "inline-flex",
+        display: "flex",
         alignItems: "center",
-        gap: 0,
-        padding: "2px 4px",
+        width: "100%",
+        padding: "2px 6px",
         background: "none",
-        border: "none",
-        borderRadius: 3,
+        border: "2px solid transparent",
+        borderRadius: 4,
         cursor: "pointer",
         fontSize: 14,
         color: "var(--ds-text-subtle, #5E6C84)",
@@ -67,7 +67,7 @@ function SidebarAddTrigger({
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.background =
-          "var(--ds-surface-sunken, var(--cp-bg-sunken, #F4F5F7))";
+          "var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.background = "none";
