@@ -228,7 +228,7 @@ export function ImproveIssueDropdown({
             style={{
               position: 'absolute',
               top: 'calc(100% + 4px)',
-              left: 0,
+              right: 0,
               minWidth: 260,
               background: token('elevation.surface.overlay', '#FFFFFF'),
               border: `1px solid ${token('color.border', 'var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6))')}`,
