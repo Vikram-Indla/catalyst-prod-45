@@ -150,10 +150,11 @@ function TabButton({
         border: 'none',
         borderRadius: 6,
         cursor: 'pointer',
-        // 13.33px / line-height normal / weight 400 — matches Jira's
-        // "Atlassian Sans 13.33px 400" on the tab text, routed through
-        // Catalyst's Inter.
-        font: `400 13.33px/normal "Inter", system-ui, sans-serif`,
+        // 13.33px / line-height normal — matches Jira's "Atlassian Sans 13.33px"
+        // tab text, routed through Catalyst's Inter. Weight 600 on the active
+        // tab adds a visual distinction on top of the shadow lift so the
+        // selected tab reads clearly without relying on colour alone.
+        font: `${isActive ? 600 : 400} 13.33px/normal "Inter", system-ui, sans-serif`,
         color: token('color.text', '#292A2E'),
         whiteSpace: 'nowrap',
         outline: 'none',
