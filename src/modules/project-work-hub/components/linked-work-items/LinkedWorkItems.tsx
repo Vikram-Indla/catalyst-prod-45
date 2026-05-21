@@ -27,7 +27,7 @@
  *
  * Props match `LinkedIssuesSection` so rollouts downstream are trivial.
  */
-import React, { Suspense, lazy, useMemo, useState } from 'react';
+import React, { Suspense, lazy, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -72,6 +72,7 @@ export function LinkedWorkItems({
 
   const [expanded, setExpanded] = useState<boolean>(true);
   const [showToolbar, setShowToolbar] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
   const [createLinkType, setCreateLinkType] = useState<string>('relates to');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [openedItem, setOpenedItem] = useState<{
@@ -117,6 +118,9 @@ export function LinkedWorkItems({
       if (!detail?.issueKey || detail.issueKey !== issueKey) return;
       setExpanded(true);
       setShowToolbar(true);
+      requestAnimationFrame(() => {
+        rootRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
     };
     window.addEventListener('catalyst:open-link-toolbar', handler);
     return () => window.removeEventListener('catalyst:open-link-toolbar', handler);
@@ -216,7 +220,7 @@ export function LinkedWorkItems({
   const bodyId = `lwi-body-${issueKey}`;
 
   return (
-    <div className="lwi-root" data-issue-key={issueKey}>
+    <div ref={rootRef} className="lwi-root" data-issue-key={issueKey}>
       <LinkedWorkItemsHeader
         count={links.length}
         expanded={expanded}
