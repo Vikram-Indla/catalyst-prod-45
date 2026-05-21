@@ -103,7 +103,17 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
                 fontFamily: 'var(--cp-font-body)',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>{board.name}</div>
-              <div style={{ fontSize: 11, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>Kanban Board</div>
+              <div style={{ fontSize: 11, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{
+                  padding: '1px 6px', borderRadius: 3, fontSize: 10, fontWeight: 600,
+                  background: board.boardType === 'scrum'
+                    ? 'rgba(0,135,90,0.08)' : 'rgba(0,82,204,0.08)',
+                  color: board.boardType === 'scrum'
+                    ? 'var(--ds-text-success, #006644)' : 'var(--ds-link, #0052CC)',
+                }}>
+                  {board.boardType === 'scrum' ? 'Scrum' : 'Kanban'}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -174,6 +184,17 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               </span>
             )}
           </div>
+
+          {board.boardQuery && (
+            <div style={{
+              fontSize: 11, color: 'var(--fg-4)', fontFamily: 'ui-monospace, SFMono-Regular, monospace',
+              marginBottom: 8, padding: '4px 6px', borderRadius: 3,
+              background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(9,30,66,0.04)',
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }} title={board.boardQuery}>
+              {board.boardQuery.length > 60 ? board.boardQuery.slice(0, 57) + '…' : board.boardQuery}
+            </div>
+          )}
 
           <div style={{
             display: 'flex', alignItems: 'center', gap: 12,

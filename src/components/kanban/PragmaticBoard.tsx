@@ -622,8 +622,9 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
 
   // Calculate estimated card height per density config.
   // Accounts for: cardPad (top+bottom) + titleSize + lineHeight + metaSize + footerHeight + cardGap
+  // + epic chip row when visible + footer marginTop (WorkItemCard.tsx:319)
   // Jira evidence (Lane A MDT board 597, 2026-05-20): card heights vary by visual density, not uniform.
-  const calculateCardHeight = (cfg: DensityConfig): number => {
+  const calculateCardHeight = (cfg: DensityConfig, hasEpicChip: boolean): number => {
     // Parse top padding from "6px 8px" or "12px" format
     const padParts = cfg.cardPad.split(' ');
     const padTop = parseInt(padParts[0], 10);
@@ -632,16 +633,22 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
     const titleRow = cfg.titleSize + (cfg.titleSize + 6);
     // Meta row: metaSize
     const metaRow = cfg.metaSize;
-    // Footer row: footerHeight
-    const footerRow = cfg.footerHeight;
+    // Footer row: footerHeight + marginTop: 8 declared in WorkItemCard.tsx:319
+    const footerRow = cfg.footerHeight + 8;
+    // Epic chip row (WorkItemCard.tsx:301-313): lineHeight(16) + padding(4+4) + marginBottom(4) = 28px
+    // Visible when visibleFields.epic !== false — always true in group-by-none mode.
+    const epicRow = hasEpicChip ? 28 : 0;
     // Gap below card
     const gap = parseInt(cfg.cardGap?.toString() || '8', 10) || 8;
     // Total: all vertical components + gap
-    const total = padTop + titleRow + metaRow + footerRow + padBottom + gap;
+    const total = padTop + titleRow + metaRow + epicRow + footerRow + padBottom + gap;
     return Math.max(total, cfg.cardMinHeight || 26); // Ensure minimum viable height
   };
 
-  const estimatedCardHeight = calculateCardHeight(d);
+  // Epic chip shows when visibleFields.epic !== false (always true in group-by-none;
+  // swimlane mode suppresses it via { ...visibleFields, epic: false }).
+  const hasEpicChip = actions.visibleFields?.epic !== false;
+  const estimatedCardHeight = calculateCardHeight(d, hasEpicChip);
 
   const virtualizer = useVirtualizer({
     count: issueIds.length,
