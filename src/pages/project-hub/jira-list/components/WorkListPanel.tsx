@@ -289,12 +289,6 @@ export function WorkListPanel({
               marginBottom: 8,
               lineHeight: '20px',
               fontSize: 14,
-              fontFamily: 'var(--cp-font-body)',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
             }}
           >
             {item.summary || '(No title)'}
@@ -317,7 +311,6 @@ export function WorkListPanel({
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 6,
-                fontFamily: 'var(--cp-font-body)',
               }}
             >
               {/* IssueTypeIcon — 20px circle per spec */}
@@ -393,7 +386,6 @@ export function WorkListPanel({
         flexDirection: 'column',
         height: '100%',
         minHeight: 0,
-        fontFamily: 'var(--cp-font-body)',
         fontSize: 14,
       }}
     >
@@ -417,7 +409,7 @@ export function WorkListPanel({
               gap: 6,
               flex: 1,
               minWidth: 0,
-              border: '1px solid var(--cp-border-neutral, #DFE1E6)',
+              border: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
               borderRadius: 6,
               padding: '0 8px',
               height: 32,
@@ -435,7 +427,6 @@ export function WorkListPanel({
                 boxShadow: 'none',
                 width: '100%',
                 fontSize: 14,
-                fontFamily: 'var(--cp-font-body)',
                 background: 'transparent',
                 color: 'var(--ds-text, #172B4D)',
               }}
@@ -473,7 +464,6 @@ export function WorkListPanel({
                 fontWeight: 400,
                 fontSize: 13,
                 color: 'var(--ds-text-subtlest, #44546F)',
-                fontFamily: 'var(--cp-font-body)',
                 padding: '4px 8px',
                 borderRadius: 3,
               }}
@@ -553,7 +543,6 @@ export function WorkListPanel({
                   fontWeight: 700,
                   color: 'var(--ds-text-subtle, #626F86)',
                   background: 'var(--ds-background-neutral, #F7F8F9)',
-                  fontFamily: 'var(--cp-font-body)',
                 }}
               >
                 {group.label}
@@ -590,7 +579,6 @@ export function WorkListPanel({
               textAlign: 'center',
               color: 'var(--ds-text-subtle, #626F86)',
               fontSize: 14,
-              fontFamily: 'var(--cp-font-body)',
             }}
           >
             No work items
@@ -609,7 +597,6 @@ export function WorkListPanel({
           justifyContent: 'center',
           borderTop: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
           background: 'var(--ds-surface, #FFFFFF)',
-          fontFamily: 'var(--cp-font-body)',
           fontSize: 13,
           gap: 4,
         }}
