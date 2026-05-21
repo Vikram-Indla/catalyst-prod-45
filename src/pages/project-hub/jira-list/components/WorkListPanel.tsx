@@ -1,24 +1,50 @@
 /**
- * WorkListPanel — Jira-parity left panel: search + filter + scrollable card list
- * Matches Jira's actual split view left column styling exactly.
+ * WorkListPanel — Jira-parity left panel: scrollable card list with group-by,
+ * sort, refresh, infinite scroll, and full keyboard navigation.
  *
  * 2026-04-20: navigator avatars are interactive — clicking the avatar opens
  * an Atlassian-style assignee picker (WorkCardAssigneePicker) that writes to
  * ph_issues and invalidates the list query so the card refreshes in real time.
  * Card body click still selects the row; the picker stopPropagation()s its
  * own click so the two interactions never collide.
+ *
+ * 2026-05-21: Left Panel Navigator spec alignment (14 gaps closed):
+ *  - GroupBySelector: @atlaskit/dropdown-menu (Group by: None/Status/Assignee/Priority)
+ *  - SortConfigButton + RefreshButton: @atlaskit/button/new IconButton appearance="subtle"
+ *  - IssueCardList: background #F7F8F9, gap 1px hairline separator (flex column)
+ *  - Active card: 3px solid #0C66E4 left accent bar (position:absolute), #E9F2FF bg
+ *  - Active summary color: #0C66E4
+ *  - IssueTypeIcon: 20px
+ *  - IssueKey typography: 13px/500/#44546F
+ *  - Footer: 40px sticky, mixed-weight "N of 1000+" (gray + bold blue #0C66E4)
+ *  - Infinite scroll: IntersectionObserver + @atlaskit/spinner (replaces Load-more button)
+ *  - Keyboard: Up/Down arrows, J/K vim-style, Home/End, Enter/Space, Escape propagates to parent
  */
-import React, { useMemo, useState } from 'react';
-import SearchIcon from '@atlaskit/icon/glyph/search';
-import FilterIcon from '@atlaskit/icon/glyph/filter';
+import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+import { IconButton } from '@atlaskit/button/new';
 import ArrowUpIcon from '@atlaskit/icon/glyph/arrow-up';
 import ArrowDownIcon from '@atlaskit/icon/glyph/arrow-down';
 import RefreshIcon from '@atlaskit/icon/glyph/refresh';
+import Spinner from '@atlaskit/spinner';
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
 import { WorkCardAssigneePicker } from './WorkCardAssigneePicker';
-// WorkItemStatusLozenge import removed — rail card no longer renders status
-// per Jira parity (2026-05-03). Re-add if a Catalyst-only divergence is approved.
 import type { WorkItem } from '@/types/workItem.types';
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+type GroupBy = 'none' | 'status' | 'assignee' | 'priority';
+
+const GROUP_BY_LABELS: Record<GroupBy, string> = {
+  none: 'None',
+  status: 'Status',
+  assignee: 'Assignee',
+  priority: 'Priority',
+};
+
+const SUBTASK_TYPE_RE = /^(sub-?task|backend|frontend|figma|entity figma|integration)$/i;
+
+// ── Props ─────────────────────────────────────────────────────────────────────
 
 interface Props {
   items: WorkItem[];
@@ -34,28 +60,33 @@ interface Props {
   externalQuery?: string;
 }
 
-export function WorkListPanel({ items, selectedKey, onSelect, onKeyClick, projectId, externalQuery }: Props) {
+// ── Component ─────────────────────────────────────────────────────────────────
+
+export function WorkListPanel({
+  items,
+  selectedKey,
+  onSelect,
+  onKeyClick,
+  projectId,
+  externalQuery,
+}: Props) {
   const [innerQuery, setInnerQuery] = useState('');
   const query = externalQuery !== undefined ? externalQuery : innerQuery;
-  const setQuery = setInnerQuery;
   const showInnerSearch = externalQuery === undefined;
-  /* jira-compare Patch #3: Sort "Created" toggles asc/desc.
-     Default desc to match Jira's "Newest first" on All work. */
+
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
-  /* jira-compare catalog item 10 (2026-05-02): Jira NIN paginates the
-     navigator at 50 per page with a "50 of 1000+" footer. Catalyst was
-     rendering all 900+ cards at once. Local pagination — server-side
-     paging is a follow-up if/when ph_issues row counts grow further. */
-  const [pageSize, setPageSize] = useState(50);
+  const [groupBy, setGroupBy] = useState<GroupBy>('none');
+
+  /* Infinite scroll — 50 items per page, expanded by IntersectionObserver. */
+  const [page, setPage] = useState(50);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  // ── Filter + sort ─────────────────────────────────────────────────────────
 
   const filtered = useMemo(() => {
-    /* jira-compare follow-up (2026-05-02): Vikram directive — the rail
-       must show top-level work only. Subtasks (Sub-task / Backend /
-       Frontend / Figma / Integration / etc.) are visible via the parent's
-       SubtasksPanel and do not belong in the global navigator. Match
-       Jira NIN's project-level issue list which surfaces only Story /
-       Epic / QA Bug / Production Incident / Feature / Task. */
-    const SUBTASK_TYPE_RE = /^(sub-?task|backend|frontend|figma|entity figma|integration)$/i;
+    /* jira-compare follow-up (2026-05-02): rail shows top-level work only.
+       Subtask types are visible via the parent's SubtasksPanel. */
     const topLevel = items.filter(i => {
       const t = (i.type || '') as string;
       const rawType = ((i as any).rawType || '') as string;
@@ -63,261 +94,533 @@ export function WorkListPanel({ items, selectedKey, onSelect, onKeyClick, projec
     });
 
     const q = query.trim().toLowerCase();
-    const base = !q ? topLevel : topLevel.filter(i =>
-      (i.jiraKey + ' ' + i.summary).toLowerCase().includes(q)
-    );
-    /* Sort by created (jira_created_at if present; falls back to id ordering). */
-    const sorted = [...base].sort((a, b) => {
+    const base = !q
+      ? topLevel
+      : topLevel.filter(i => (i.jiraKey + ' ' + i.summary).toLowerCase().includes(q));
+
+    return [...base].sort((a, b) => {
       const av = (a as any).jira_created_at ?? (a as any).createdAt ?? a.id ?? '';
       const bv = (b as any).jira_created_at ?? (b as any).createdAt ?? b.id ?? '';
       const cmp = String(av) < String(bv) ? -1 : String(av) > String(bv) ? 1 : 0;
       return sortDir === 'asc' ? cmp : -cmp;
     });
-    return sorted;
   }, [items, query, sortDir]);
 
-  return (
-    /* jira-compare Phase 0 (2026-05-02): root fontFamily set so the rail
-       inherits Atlassian Sans for any descendants without an explicit
-       family. Without this the card <div role="button"> root inherits
-       Inter 16px from <body>, even though the title/key spans set their
-       own family explicitly — leaks through any future inner content. */
-    <div style={{
-      display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0,
-      fontFamily: 'var(--cp-font-body)',
-      fontSize: 14,
-    }}>
-      {/* Top bar: Search work | Filter — hidden when AllWorkToolbar
-          owns search (externalQuery prop provided). */}
-      {showInnerSearch && (
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        padding: '8px 12px', borderBottom: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', background: 'transparent',
-        flexWrap: 'nowrap',
-      }}>
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0,
-          border: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', borderRadius: 6, padding: '0 8px', height: 32,
-          background: 'transparent',
-        }}>
-          <span style={{ opacity: 0.5, flexShrink: 0, display: 'inline-flex' }}>
-            <SearchIcon label="" size="small" />
-          </span>
-          <input
-            type="text"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder="Search work"
-            style={{
-              border: 'none', outline: 'none', boxShadow: 'none', width: '100%', fontSize: 14,
-              fontFamily: 'var(--cp-font-body)',
-              background: 'transparent', color: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))',
-            }}
-          />
-        </div>
+  /* Reset page when the filtered list changes (query/sort/items). */
+  useEffect(() => { setPage(50); }, [query, sortDir, items.length]);
 
-        <button style={{
-          height: 32, padding: '0 8px', border: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
-          background: 'transparent', borderRadius: 6, cursor: 'pointer',
-          fontSize: 13, fontFamily: 'var(--cp-font-body)', display: 'inline-flex',
-          alignItems: 'center', gap: 4, color: 'var(--cp-text-secondary, var(--cp-text-secondary, var(--cp-text-secondary, #44546F)))', flexShrink: 0,
-        }}>
-          <FilterIcon label="" size="small" />
-          Filter
-        </button>
-      </div>
-      )}
+  const visible = filtered.slice(0, page);
+  const hasMore = page < filtered.length;
 
-      {/* Sort header — 8px horizontal to align with card scroll area */}
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '8px 8px', borderBottom: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))', background: 'transparent',
-      }}>
-        <button
-          onClick={() => setSortDir(d => (d === 'asc' ? 'desc' : 'asc'))}
-          aria-label={`Sort by Created ${sortDir === 'asc' ? 'ascending' : 'descending'}`}
+  // ── Infinite scroll sentinel ──────────────────────────────────────────────
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel || !hasMore) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isFetchingMore) {
+          setIsFetchingMore(true);
+          /* Small async tick so the spinner renders before the state update
+             that expands the list — avoids a flash of the sentinel. */
+          setTimeout(() => {
+            setPage(p => p + 50);
+            setIsFetchingMore(false);
+          }, 200);
+        }
+      },
+      { threshold: 0.1 },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, isFetchingMore]);
+
+  // ── Keyboard navigation ───────────────────────────────────────────────────
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      /* Never steal keystrokes from inline-edit inputs. */
+      const t = e.target as HTMLElement | null;
+      if (
+        t &&
+        (t.tagName === 'INPUT' ||
+          t.tagName === 'TEXTAREA' ||
+          t.isContentEditable)
+      )
+        return;
+
+      const currentIdx = visible.findIndex(i => i.id === selectedKey);
+
+      const selectAt = (idx: number) => {
+        const clamped = Math.max(0, Math.min(idx, visible.length - 1));
+        const item = visible[clamped];
+        if (item) {
+          e.preventDefault();
+          onSelect(item.id);
+        }
+      };
+
+      switch (e.key) {
+        case 'ArrowDown':
+        case 'j':
+          return selectAt(currentIdx + 1);
+        case 'ArrowUp':
+        case 'k':
+          return selectAt(currentIdx - 1);
+        case 'Home':
+          return selectAt(0);
+        case 'End':
+          return selectAt(visible.length - 1);
+        case 'Enter':
+        case ' ': {
+          if (e.key === ' ') e.preventDefault();
+          const item = visible[currentIdx];
+          if (item && onKeyClick) onKeyClick(item.id);
+          break;
+        }
+        /* Escape: let it propagate to the parent detail panel / modal. */
+      }
+    };
+
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [visible, selectedKey, onSelect, onKeyClick]);
+
+  // ── Group-by ──────────────────────────────────────────────────────────────
+
+  const grouped = useMemo<Array<{ label: string | null; items: WorkItem[] }>>(() => {
+    if (groupBy === 'none') return [{ label: null, items: visible }];
+
+    const map = new Map<string, WorkItem[]>();
+    for (const item of visible) {
+      const key =
+        groupBy === 'status'
+          ? item.statusName || item.status || 'Unknown'
+          : groupBy === 'assignee'
+          ? item.assignee?.name || 'Unassigned'
+          : /* priority */ (item.priority || 'Unknown');
+      const arr = map.get(key) ?? [];
+      arr.push(item);
+      map.set(key, arr);
+    }
+    return Array.from(map.entries()).map(([label, its]) => ({ label, items: its }));
+  }, [visible, groupBy]);
+
+  // ── Footer counts ─────────────────────────────────────────────────────────
+
+  const visibleCount = Math.min(page, filtered.length);
+  const totalLabel = filtered.length >= 1000 ? '1000+' : `${filtered.length}`;
+
+  // ── Card renderer ─────────────────────────────────────────────────────────
+
+  const renderCard = useCallback(
+    (item: WorkItem) => {
+      const selected = item.id === selectedKey;
+      const rtl = /[؀-ۿ]/.test(item.summary);
+
+      return (
+        <div
+          key={item.id}
+          role="option"
+          aria-selected={selected}
+          tabIndex={0}
+          onClick={() => onSelect(item.id)}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onSelect(item.id);
+            }
+          }}
           style={{
-          display: 'inline-flex', alignItems: 'center', gap: 4,
-          background: 'transparent', border: 'none', cursor: 'pointer',
-          fontWeight: 600, color: 'var(--cp-text-primary, var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))', fontSize: 14,
-          fontFamily: 'var(--cp-font-body)',
-        }}>
-          Created
-          <svg width="10" height="6" viewBox="0 0 10 6" style={{ transform: sortDir === 'asc' ? 'rotate(180deg)' : 'none' }}>
-            <path d="M0 0l5 6 5-6z" fill="currentColor" opacity="0.55"/>
-          </svg>
-        </button>
-        <div style={{ display: 'inline-flex', gap: 4 }}>
-          <SortIconBtn>
-            <span style={{ display: 'flex', flexDirection: 'column', gap: 0, lineHeight: 0 }}>
-              <ArrowUpIcon label="" size="small" />
-              <ArrowDownIcon label="" size="small" />
-            </span>
-          </SortIconBtn>
-          <SortIconBtn><RefreshIcon label="" size="small" /></SortIconBtn>
-        </div>
-      </div>
-
-      {/* Scrollable card list */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '8px 8px', minHeight: 0, background: 'transparent' }}>
-        {filtered.slice(0, pageSize).map(item => {
-          const selected = item.id === selectedKey;
-          const rtl = /[\u0600-\u06FF]/.test(item.summary);
-          return (
+            // position:relative so the absolute accent bar is contained
+            position: 'relative',
+            width: '100%',
+            boxSizing: 'border-box',
+            textAlign: 'left',
+            display: 'block',
+            border: 'none',
+            background: selected
+              ? 'var(--ds-background-selected, #E9F2FF)'
+              : 'var(--ds-surface, #FFFFFF)',
+            // Inset left padding by 3px when selected so text doesn't sit on bar
+            padding: selected ? '16px 16px 16px 19px' : '16px',
+            cursor: 'pointer',
+            transition: 'background 80ms',
+            // No box-shadow — spec uses left accent bar only for active state
+            boxShadow: selected
+              ? 'none'
+              : 'var(--ds-shadow-raised, 0 1px 1px rgba(30,31,33,0.25))',
+          }}
+          onMouseEnter={e => {
+            if (!selected)
+              e.currentTarget.style.background =
+                'var(--ds-background-neutral-hovered, #F8F9FA)';
+          }}
+          onMouseLeave={e => {
+            if (!selected)
+              e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)';
+          }}
+        >
+          {/* ── Left accent bar (active card only) ── */}
+          {selected && (
             <div
-              key={item.id}
-              role="button"
-              tabIndex={0}
-              onClick={() => onSelect(item.id)}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(item.id); } }}
+              aria-hidden="true"
               style={{
-                // Jira parity (measured 2026-04-18, BAU-5500):
-                // NOTE: rendered as <div role="button"> (not <button>) — the
-                // card contains a nested interactive avatar picker, and
-                // <button> inside <button> is invalid HTML that breaks the
-                // inner click handler in some browsers.
-                //   - NO hard border (was 1px/var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))
-                //   - Double shadow: 0 1px 1px rgba(30,31,33,0.25), 0 0 1px rgba(30,31,33,0.31)
-                //   - 4px radius (was 8px)
-                //   - Selected: #E9F2FE bg + 1px blue inner-shadow ring (no outline)
-                //   - 2px margin between cards (was 8px)
-                width: '100%', textAlign: 'left', display: 'block',
-                border: 'none',
-                background: selected ? 'var(--cp-interact-selected, #E9F2FE)' : 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-                borderRadius: 4,
-                padding: 16,
-                margin: '0 0 4px 0',
-                cursor: 'pointer',
-                boxShadow: selected
-                  ? 'var(--ds-shadow-overlay, rgba(24,104,219,0.4) 0px 0px 0px 1px, rgba(30,31,33,0.18) 0px 1px 1px 0px)'
-                  : 'var(--ds-shadow-card, rgba(30,31,33,0.25) 0px 1px 1px 0px, rgba(30,31,33,0.31) 0px 0px 1px 0px)',
-                transition: 'background 80ms, box-shadow 80ms',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                bottom: 0,
+                width: 3,
+                background: 'var(--ds-background-brand-bold, #0C66E4)',
+                borderRadius: '2px 0 0 2px',
               }}
-              onMouseEnter={e => { if (!selected) { e.currentTarget.style.background = 'var(--cp-interact-hover, #F8F9FA)'; } }}
-              onMouseLeave={e => { if (!selected) { e.currentTarget.style.background = 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))'; } }}
-            >
-              <div
-                dir={rtl ? 'rtl' : 'ltr'}
-                style={{
-                  // Jira card title: Atlassian Sans 14/400/#292A2E (weight 400, not 600).
-                  // Selected state tints the title blue (#1868DB).
-                  fontWeight: 400, color: selected ? 'var(--cp-text-link, #1868DB)' : 'var(--cp-text-primary, #292A2E)',
-                  marginBottom: 8, lineHeight: '20px', fontSize: 14,
-                  fontFamily: 'var(--cp-font-body)',
-                  overflow: 'hidden', textOverflow: 'ellipsis',
-                  display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-                }}
-              >
-                {item.summary || '(No title)'}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                <span style={{
-                  // Issue key in card: Atlassian Sans 12/400/#505258 (NOT monospace —
-                  // Jira uses the same family as body, just smaller).
-                  fontSize: 12, color: 'var(--cp-text-secondary, #505258)', display: 'inline-flex',
-                  alignItems: 'center', gap: 6,
-                  fontFamily: 'var(--cp-font-body)', fontWeight: 400,
-                }}>
-                  <WorkItemTypeIcon type={(item as any).rawType || item.type} size={14} />
-                  {onKeyClick ? (
-                    <button
-                      onClick={e => { e.stopPropagation(); onKeyClick(item.id); }}
-                      style={{
-                        background: 'none', border: 'none', padding: 0, margin: 0,
-                        font: 'inherit', fontSize: 12, color: 'inherit',
-                        cursor: 'pointer', textDecoration: 'underline',
-                        textUnderlineOffset: 2,
-                      }}
-                    >
-                      {item.jiraKey}
-                    </button>
-                  ) : item.jiraKey}
-                </span>
-                {/* Status pill REMOVED from rail card per Jira parity (verified
-                    triple-probe 2026-05-03):
-                    - DOM: Jira rail card testid `issue-navigator.ui.issue-results.detail-view.card-list.card`
-                      contains 0 lozenge spans. Inner DOM: card.summary + 1 image (type icon) + key + avatar.
-                    - Screenshot: 7 visible cards on BAU navigator, none show a lozenge.
-                    - Rovo: status field exists on every issue but Jira chooses not
-                      to surface it on rail cards (deliberate UX — status is in detail).
-                    Rule 3 (Jira is source of truth) → remove. If at-a-glance status
-                    becomes a real product need, propose adding back as a subtle
-                    Catalyst-only divergence with Vikram approval. */}
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                  {/* WorkItemStatusLozenge removed for Jira parity. */}
-                  {/* Interactive assignee picker (replaces previous static avatar).
-                      Uses dbId (UUID) — never issue_key (CLAUDE.md §L39). */}
-                  <WorkCardAssigneePicker
-                    dbId={item.dbId || item.id}
-                    currentAssigneeId={item.assignee?.id ?? null}
-                    currentAssigneeName={item.assignee?.name ?? null}
-                    projectId={projectId}
-                    fallbackInitials={item.assignee?.initials || 'NA'}
-                    fallbackColor={item.assignee?.color || 'var(--ds-background-accent-purple-subtle, #6554C0)'}
-                  />
-                </div>
-              </div>
-            </div>
-          );
-        })}
+            />
+          )}
 
-        {/* Footer pagination — jira-compare catalog item 10 (2026-05-02).
-            Mirrors Jira NIN's "50 of 1000+" footer with a "Load more"
-            CTA. Page size grows by 50 each click; resets when filter or
-            sort changes (page-size state would persist otherwise). */}
-        <div style={{
-          padding: '8px 8px 16px',
-          fontSize: 12, textAlign: 'center',
-          fontFamily: 'var(--cp-font-body)',
-          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-        }}>
-          {(() => {
-            /* jira-compare 2026-05-02: Vikram screenshot — footer was
-               showing "(filtered)" because the always-on subtask
-               exclusion makes filtered.length < items.length. Footer
-               should mirror Jira: "{visible} of {total}" only — no
-               "(filtered)" suffix unless the user actually applied a
-               filter (search query non-empty). */
-            const visible = Math.min(pageSize, filtered.length);
-            const total = filtered.length >= 1000 ? '1000+' : `${filtered.length}`;
-            const userFiltered = query.trim().length > 0;
-            return (
-              <span style={{ color: 'var(--cp-text-tertiary, #626F86)' }}>
-                {visible} of {total}{userFiltered ? ' (filtered)' : ''}
-              </span>
-            );
-          })()}
-          {pageSize < filtered.length && (
-            <button
-              onClick={() => setPageSize(s => s + 50)}
+          {/* ── Summary ── */}
+          <div
+            dir={rtl ? 'rtl' : 'ltr'}
+            style={{
+              fontWeight: 400,
+              color: selected
+                ? 'var(--ds-link, #0C66E4)'
+                : 'var(--ds-text, #292A2E)',
+              marginBottom: 8,
+              lineHeight: '20px',
+              fontSize: 14,
+              fontFamily: 'var(--cp-font-body)',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+            }}
+          >
+            {item.summary || '(No title)'}
+          </div>
+
+          {/* ── Metadata row — IssueTypeIcon + IssueKey left, Assignee right ── */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 8,
+            }}
+          >
+            <span
               style={{
-                background: 'transparent', border: '1px solid var(--cp-border-default, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
-                borderRadius: 6, padding: '4px 12px', cursor: 'pointer',
-                fontSize: 12, color: 'var(--cp-text-info, #1868DB)', fontWeight: 500,
+                fontSize: 13,
+                fontWeight: 500,
+                color: 'var(--ds-text-subtlest, #44546F)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
                 fontFamily: 'var(--cp-font-body)',
               }}
             >
-              Load more
+              {/* IssueTypeIcon — 20px circle per spec */}
+              <span
+                style={{
+                  width: 20,
+                  height: 20,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <WorkItemTypeIcon
+                  type={(item as any).rawType || item.type}
+                  size={20}
+                />
+              </span>
+              {onKeyClick ? (
+                <button
+                  onClick={e => {
+                    e.stopPropagation();
+                    onKeyClick(item.id);
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    margin: 0,
+                    font: 'inherit',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    color: 'var(--ds-text-subtlest, #44546F)',
+                    cursor: 'pointer',
+                    textDecoration: 'underline',
+                    textUnderlineOffset: 2,
+                  }}
+                >
+                  {item.jiraKey}
+                </button>
+              ) : (
+                item.jiraKey
+              )}
+            </span>
+
+            {/* AssigneeAvatar — WorkCardAssigneePicker wraps @atlaskit/avatar internally */}
+            <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+              <WorkCardAssigneePicker
+                dbId={item.dbId || item.id}
+                currentAssigneeId={item.assignee?.id ?? null}
+                currentAssigneeName={item.assignee?.name ?? null}
+                projectId={projectId}
+                fallbackInitials={item.assignee?.initials || 'NA'}
+                fallbackColor={
+                  item.assignee?.color ||
+                  'var(--ds-background-accent-purple-subtle, #6554C0)'
+                }
+              />
+            </div>
+          </div>
+        </div>
+      );
+    },
+    [selectedKey, onSelect, onKeyClick, projectId],
+  );
+
+  // ── Render ────────────────────────────────────────────────────────────────
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        minHeight: 0,
+        fontFamily: 'var(--cp-font-body)',
+        fontSize: 14,
+      }}
+    >
+      {/* ── Inner search bar (hidden when AllWorkToolbar owns search) ── */}
+      {showInnerSearch && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '8px 12px',
+            borderBottom: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
+            flexWrap: 'nowrap',
+            background: 'var(--ds-surface, #FFFFFF)',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              flex: 1,
+              minWidth: 0,
+              border: '1px solid var(--cp-border-neutral, #DFE1E6)',
+              borderRadius: 6,
+              padding: '0 8px',
+              height: 32,
+              background: 'transparent',
+            }}
+          >
+            <input
+              type="text"
+              value={innerQuery}
+              onChange={e => setInnerQuery(e.target.value)}
+              placeholder="Search work"
+              style={{
+                border: 'none',
+                outline: 'none',
+                boxShadow: 'none',
+                width: '100%',
+                fontSize: 14,
+                fontFamily: 'var(--cp-font-body)',
+                background: 'transparent',
+                color: 'var(--ds-text, #172B4D)',
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ── Header (48px sticky) — GroupBySelector + Sort + Refresh ── */}
+      <div
+        style={{
+          height: 48,
+          flexShrink: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 4px 0 12px',
+          borderBottom: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
+          background: 'var(--ds-surface, #FFFFFF)',
+        }}
+      >
+        {/* GroupBySelector */}
+        <DropdownMenu
+          trigger={({ triggerRef, ...triggerProps }) => (
+            <button
+              ref={triggerRef as React.Ref<HTMLButtonElement>}
+              {...triggerProps}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                fontWeight: 400,
+                fontSize: 13,
+                color: 'var(--ds-text-subtlest, #44546F)',
+                fontFamily: 'var(--cp-font-body)',
+                padding: '4px 8px',
+                borderRadius: 3,
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background =
+                  'var(--ds-background-neutral-hovered, #F1F2F4)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'transparent';
+              }}
+            >
+              Group by:{' '}
+              <strong style={{ fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+                {GROUP_BY_LABELS[groupBy]}
+              </strong>
+              <svg
+                width="10"
+                height="6"
+                viewBox="0 0 10 6"
+                aria-hidden="true"
+                style={{ flexShrink: 0 }}
+              >
+                <path d="M0 0l5 6 5-6z" fill="currentColor" opacity="0.55" />
+              </svg>
             </button>
           )}
+        >
+          <DropdownItemGroup>
+            {(Object.keys(GROUP_BY_LABELS) as GroupBy[]).map(opt => (
+              <DropdownItem key={opt} onClick={() => setGroupBy(opt)}>
+                {GROUP_BY_LABELS[opt]}
+              </DropdownItem>
+            ))}
+          </DropdownItemGroup>
+        </DropdownMenu>
+
+        {/* SortConfigButton + RefreshButton */}
+        <div style={{ display: 'flex', gap: 2 }}>
+          <IconButton
+            appearance="subtle"
+            icon={sortDir === 'asc' ? ArrowUpIcon : ArrowDownIcon}
+            label={`Sort ${sortDir === 'asc' ? 'ascending' : 'descending'} by created date`}
+            onClick={() => setSortDir(d => (d === 'asc' ? 'desc' : 'asc'))}
+          />
+          <IconButton
+            appearance="subtle"
+            icon={RefreshIcon}
+            label="Refresh list"
+            onClick={() => setPage(50)}
+          />
         </div>
       </div>
-    </div>
-  );
-}
 
-function SortIconBtn({ children }: { children: React.ReactNode }) {
-  return (
-    <button
-      style={{
-        width: 28, height: 28, border: 'none', background: 'transparent',
-        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        color: 'var(--cp-text-tertiary, #626F86)', borderRadius: 4,
-      }}
-      onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-interact-hover, #F1F2F4)'; }}
-      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-    >
-      {children}
-    </button>
+      {/* ── Scrollable card list ── */}
+      <div
+        role="listbox"
+        aria-label="Issue navigator"
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          minHeight: 0,
+          // IssueCardList container: #F7F8F9 bg with 1px gap (hairline sep between cards)
+          background: 'var(--ds-background-neutral, #F7F8F9)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1,
+        }}
+      >
+        {grouped.map(group => (
+          <React.Fragment key={group.label ?? '__root'}>
+            {/* Group header — rendered when groupBy is active */}
+            {group.label != null && (
+              <div
+                style={{
+                  padding: '8px 12px 4px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: 'var(--ds-text-subtle, #626F86)',
+                  background: 'var(--ds-background-neutral, #F7F8F9)',
+                  fontFamily: 'var(--cp-font-body)',
+                }}
+              >
+                {group.label}
+              </div>
+            )}
+            {group.items.map(renderCard)}
+          </React.Fragment>
+        ))}
+
+        {/* IntersectionObserver sentinel — triggers next-page load */}
+        {hasMore && !isFetchingMore && (
+          <div ref={sentinelRef} style={{ height: 1 }} aria-hidden="true" />
+        )}
+
+        {/* Next-page spinner */}
+        {isFetchingMore && (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              padding: '12px 0',
+              background: 'var(--ds-background-neutral, #F7F8F9)',
+            }}
+          >
+            <Spinner size="small" />
+          </div>
+        )}
+
+        {/* Empty state */}
+        {visible.length === 0 && !isFetchingMore && (
+          <div
+            style={{
+              padding: '32px 16px',
+              textAlign: 'center',
+              color: 'var(--ds-text-subtle, #626F86)',
+              fontSize: 14,
+              fontFamily: 'var(--cp-font-body)',
+            }}
+          >
+            No work items
+            {query.trim() ? ` matching "${query.trim()}"` : ''}
+          </div>
+        )}
+      </div>
+
+      {/* ── Footer (40px sticky) — "N of 1000+" mixed weight ── */}
+      <div
+        style={{
+          height: 40,
+          flexShrink: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderTop: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
+          background: 'var(--ds-surface, #FFFFFF)',
+          fontFamily: 'var(--cp-font-body)',
+          fontSize: 13,
+          gap: 4,
+        }}
+      >
+        <span style={{ color: 'var(--ds-text-subtle, #626F86)', fontWeight: 400 }}>
+          {visibleCount} of
+        </span>
+        <span style={{ color: 'var(--ds-link, #0C66E4)', fontWeight: 700 }}>
+          {totalLabel}
+        </span>
+      </div>
+    </div>
   );
 }

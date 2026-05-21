@@ -287,7 +287,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
               (slate-100 grey) to white. Vikram probe captured rail bg as
               rgb(241,245,249) which diverges from Jira's white rail. */}
           <div style={{
-            width: isNarrow ? '100%' : 260,
+            width: isNarrow ? '100%' : 360,
             flexShrink: 0,
             background: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
             borderRight: '1px solid var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))',
