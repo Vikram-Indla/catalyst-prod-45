@@ -18,11 +18,12 @@ interface FilterKebabMenuProps {
   currentUserId: string | null;
   onEdit: (filter: SavedFilterFull) => void;
   onViewHistory: (filter: SavedFilterFull) => void;
+  onTransferOwnership: (filter: SavedFilterFull) => void;
 }
 
 interface MenuPos { top: number; right: number }
 
-export function FilterKebabMenu({ filter, currentUserId, onEdit, onViewHistory }: FilterKebabMenuProps) {
+export function FilterKebabMenu({ filter, currentUserId, onEdit, onViewHistory, onTransferOwnership }: FilterKebabMenuProps) {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<MenuPos>({ top: 0, right: 0 });
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -83,10 +84,11 @@ export function FilterKebabMenu({ filter, currentUserId, onEdit, onViewHistory }
 
   const menuItems: { label: string; danger?: boolean; onClick: () => void }[] = [];
 
-  if (isOwner) menuItems.push({ label: 'Edit filter',    onClick: () => { onEdit(filter); setOpen(false); } });
-  menuItems.push({             label: 'Copy filter',     onClick: () => { copyFilter.mutate(filter); setOpen(false); } });
+  if (isOwner) menuItems.push({ label: 'Edit filter',         onClick: () => { onEdit(filter); setOpen(false); } });
+  menuItems.push({             label: 'Copy filter',          onClick: () => { copyFilter.mutate(filter); setOpen(false); } });
   if (isOwner) menuItems.push({ label: isPrivate ? 'Share with organisation' : 'Make private', onClick: handleToggleVisibility });
-  menuItems.push({             label: 'Version history', onClick: () => { onViewHistory(filter); setOpen(false); } });
+  menuItems.push({             label: 'Version history',      onClick: () => { onViewHistory(filter); setOpen(false); } });
+  if (isOwner) menuItems.push({ label: 'Transfer ownership',  onClick: () => { onTransferOwnership(filter); setOpen(false); } });
 
   // Board link items
   const boardItems = (boards.length > 0 && isOwner) ? boards.map(board => {

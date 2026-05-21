@@ -7,7 +7,7 @@ import TextArea from '@atlaskit/textarea';
 import { RadioGroup } from '@atlaskit/radio';
 import Select from '@atlaskit/select';
 import { supabase } from '@/integrations/supabase/client';
-import { useCreateSavedFilter, useUpdateSavedFilter, type SavedFilterFull, type HubScope } from '@/hooks/workhub/useSavedFilters';
+import { useCreateSavedFilter, useUpdateSavedFilter, useRecordFilterVersion, type SavedFilterFull, type HubScope } from '@/hooks/workhub/useSavedFilters';
 
 interface ProfileOption {
   label: string;
@@ -66,6 +66,7 @@ export function FilterSaveModal({
   const isEditing = !!filter;
   const createFilter = useCreateSavedFilter();
   const updateFilter = useUpdateSavedFilter();
+  const recordVersion = useRecordFilterVersion();
 
   const [name, setName] = useState(filter?.name ?? '');
   const [description, setDescription] = useState(filter?.description ?? '');
@@ -140,7 +141,13 @@ export function FilterSaveModal({
             editors_config: editorsConfig,
           } as any,
         },
-        { onSuccess: () => { onSaved?.(filter.id); onClose(); } }
+        {
+          onSuccess: () => {
+            recordVersion.mutate({ filterId: filter.id, jqlQuery: jql.trim() || null });
+            onSaved?.(filter.id);
+            onClose();
+          },
+        }
       );
     } else {
       createFilter.mutate(

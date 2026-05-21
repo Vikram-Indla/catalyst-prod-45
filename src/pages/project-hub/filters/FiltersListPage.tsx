@@ -1,16 +1,17 @@
 import React, { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import AkDynamicTable from '@atlaskit/dynamic-table';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import AkAvatar from '@atlaskit/avatar';
-import { useFiltersForProject, useStarFilter, useDeleteSavedFilter, type SavedFilterFull } from '@/hooks/workhub/useSavedFilters';
+import { useFiltersForProject, useStarFilter, useDeleteSavedFilter, useChangeFilterOwner, type SavedFilterFull } from '@/hooks/workhub/useSavedFilters';
 import { FilterHealthBadge } from '@/components/filters/FilterHealthBadge';
 import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { FilterVersionHistory } from '@/components/filters/FilterVersionHistory';
+import { TransferOwnershipModal } from '@/components/filters/TransferOwnershipModal';
 import { Star, StarOff, Plus, Search } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -78,13 +79,14 @@ function BoardsBadge({ count }: { count: number }) {
 
 export default function FiltersListPage({ hubType = 'project' }: FiltersListPageProps) {
   const { key: projectKey } = useParams<{ key: string }>();
+  const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<TabId>('my');
   const [search, setSearch] = useState('');
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editFilter, setEditFilter] = useState<SavedFilterFull | null>(null);
   const [historyFilter, setHistoryFilter] = useState<SavedFilterFull | null>(null);
+  const [transferFilter, setTransferFilter] = useState<SavedFilterFull | null>(null);
 
   // Resolve current user id once on mount
   React.useEffect(() => {
@@ -98,6 +100,39 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
 
   const starFilter = useStarFilter();
   const deleteFilter = useDeleteSavedFilter();
+
+  /**
+   * Navigate "Create filter" → AllWork page with filter-builder mode active.
+   * Matches Jira: Create filter takes you to the issue list with a filter
+   * panel open, not a standalone creation page.
+   */
+  function handleCreateFilter() {
+    if (hubType === 'product' && projectKey) {
+      navigate(`/product-hub/${projectKey}/allwork?mode=create-filter`);
+    } else if (projectKey) {
+      navigate(`/project-hub/${projectKey}/allwork?mode=create-filter`);
+    } else {
+      // No project key — fall back to the legacy create page
+      navigate(hubType === 'product' ? '/product-hub/filters/create' : '/filters/create');
+    }
+  }
+
+  /**
+   * Navigate "Click filter name" → AllWork page with that filter pre-applied.
+   * Matches Jira: clicking a saved filter shows its filtered work items.
+   */
+  function filterAllWorkHref(filterId: string): string {
+    if (hubType === 'product' && projectKey) {
+      return `/product-hub/${projectKey}/allwork?filterId=${filterId}`;
+    }
+    if (projectKey) {
+      return `/project-hub/${projectKey}/allwork?filterId=${filterId}`;
+    }
+    // No key context — fall back to filter detail page
+    return hubType === 'product'
+      ? `/product-hub/filters/${filterId}`
+      : `/filters/${filterId}`;
+  }
 
   const visibleFilters = useMemo(() => {
     let list = filters;
@@ -167,9 +202,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             content: (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <a
-                  href={projectKey
-                    ? `/project-hub/${projectKey}/filters/${f.id}`
-                    : `/product-hub/filters/${f.id}`}
+                  href={filterAllWorkHref(f.id)}
                   style={{
                     color: token('color.link'),
                     fontWeight: token('font.weight.medium'),
@@ -242,6 +275,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
                 currentUserId={currentUserId}
                 onEdit={setEditFilter}
                 onViewHistory={setHistoryFilter}
+                onTransferOwnership={setTransferFilter}
               />
             ),
           },
@@ -288,7 +322,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         <Button
           appearance="primary"
           iconBefore={() => <Plus size="small" label="" />}
-          onClick={() => setCreateModalOpen(true)}
+          onClick={handleCreateFilter}
         >
           Create filter
         </Button>
@@ -353,7 +387,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
                       : 'No filters yet'}
               </span>
               {!search && activeTab === 'my' && (
-                <Button appearance="primary" onClick={() => setCreateModalOpen(true)}>
+                <Button appearance="primary" onClick={handleCreateFilter}>
                   Create your first filter
                 </Button>
               )}
@@ -363,15 +397,6 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           defaultSortOrder="ASC"
         />
       </div>
-
-      {/* Create filter modal */}
-      {createModalOpen && (
-        <FilterSaveModal
-          hubScope={hubType === 'product' ? 'product' : 'project'}
-          onClose={() => setCreateModalOpen(false)}
-          onSaved={() => setCreateModalOpen(false)}
-        />
-      )}
 
       {/* Edit filter modal — rendered at page level to avoid Atlaskit empty-portal bug in table rows */}
       {editFilter && (
@@ -388,6 +413,14 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           filterId={historyFilter.id}
           filterName={historyFilter.name}
           onClose={() => setHistoryFilter(null)}
+        />
+      )}
+
+      {/* Transfer ownership modal */}
+      {transferFilter && (
+        <TransferOwnershipModal
+          filter={transferFilter}
+          onClose={() => setTransferFilter(null)}
         />
       )}
     </div>

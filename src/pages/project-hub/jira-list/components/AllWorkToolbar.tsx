@@ -247,6 +247,13 @@ interface Props {
   /** Avatar group selected user IDs (legacy — separate quick-filter strip). */
   selectedAssignees?: string[];
   onAssigneesChange?: (ids: string[]) => void;
+  /**
+   * When provided, a "Save filter" button appears in the toolbar.
+   * Called when the user clicks it — the parent opens FilterSaveModal.
+   */
+  onSaveFilter?: () => void;
+  /** Label for the save button — e.g. "Save filter" or "Save as filter". */
+  saveFilterLabel?: string;
 }
 
 /** Coerce any value (string / number / object / null) to a clean string
@@ -1264,6 +1271,8 @@ export function AllWorkToolbar({
   onFilterOpenChange,
   selectedAssignees = [],
   onAssigneesChange,
+  onSaveFilter,
+  saveFilterLabel = 'Save filter',
 }: Props) {
   /* ── ALL HOOKS FIRST — React Rules of Hooks: no hook after a conditional return ── */
 
@@ -2095,6 +2104,20 @@ export function AllWorkToolbar({
           </DropdownItem>
         </DropdownItemGroup>
       </DropdownMenu>
+
+      {/* Save filter button — shown when parent provides onSaveFilter (create-filter or
+          viewing-filter modes). Appears at the right end of the toolbar, before the meatball.
+          Matches Jira's "Save as" / "Update filter" button placement. */}
+      {onSaveFilter && (
+        <Button
+          appearance="primary"
+          spacing="compact"
+          onClick={onSaveFilter}
+          testId="catalyst-allwork-toolbar.save-filter"
+        >
+          {saveFilterLabel}
+        </Button>
+      )}
 
       {/* ADS flag queue — replaces sonner toast. Fixed bottom-right overlay. */}
       {flags.length > 0 && (

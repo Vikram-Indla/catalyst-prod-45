@@ -12,6 +12,8 @@ import { FilterUsageSparkline } from '@/components/filters/FilterUsageSparkline'
 import { type SavedFilterFull } from '@/hooks/workhub/useSavedFilters';
 import { ArrowLeft, Edit, Clock } from '@/lib/atlaskit-icons';
 
+interface BoardInfo { id: string; name: string; }
+
 export default function FilterDetailPage() {
   const { key: projectKey, filterId } = useParams<{ key: string; filterId: string }>();
   const navigate = useNavigate();
@@ -32,6 +34,22 @@ export default function FilterDetailPage() {
     },
     enabled: !!filterId,
     staleTime: 30_000,
+  });
+
+  // Fetch board names for any linked boards
+  const { data: linkedBoards = [] } = useQuery<BoardInfo[]>({
+    queryKey: ['filter-boards', filter?.used_by_board_ids],
+    queryFn: async () => {
+      if (!filter?.used_by_board_ids?.length) return [];
+      const { data, error } = await (supabase as any)
+        .from('boards')
+        .select('id, name')
+        .in('id', filter.used_by_board_ids);
+      if (error) throw new Error(error.message);
+      return data as BoardInfo[];
+    },
+    enabled: !!filter && filter.used_by_board_ids.length > 0,
+    staleTime: 60_000,
   });
 
   const backHref = projectKey
@@ -213,9 +231,33 @@ export default function FilterDetailPage() {
           </MetaField>
 
           <MetaField label="Boards">
-            <span style={{ fontSize: 13, color: token('color.text.subtle') }}>
-              {filter.used_by_board_ids.length === 0 ? '—' : filter.used_by_board_ids.length}
-            </span>
+            {filter.used_by_board_ids.length === 0 ? (
+              <span style={{ fontSize: 13, color: token('color.text.subtlest') }}>—</span>
+            ) : linkedBoards.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {linkedBoards.map(board => (
+                  <a
+                    key={board.id}
+                    href={projectKey ? `/project-hub/${projectKey}/board` : '#'}
+                    style={{
+                      fontSize: 13,
+                      color: token('color.link'),
+                      textDecoration: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                    }}
+                    onMouseOver={e => (e.currentTarget.style.textDecoration = 'underline')}
+                    onMouseOut={e => (e.currentTarget.style.textDecoration = 'none')}
+                  >
+                    {board.name}
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <span style={{ fontSize: 13, color: token('color.text.subtle') }}>
+                {filter.used_by_board_ids.length}
+              </span>
+            )}
           </MetaField>
 
           <MetaField label="Use count">
