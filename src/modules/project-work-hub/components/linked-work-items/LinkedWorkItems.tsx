@@ -108,6 +108,20 @@ export function LinkedWorkItems({
     if (links.length > 0) setExpanded(true);
   }, [links.length]);
 
+  // Open the inline link toolbar in response to a window event dispatched
+  // by the right-rail Improve dropdown ("Link similar work items"). Mirrors
+  // the section header's "Add linked work item" button behaviour.
+  React.useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<{ issueKey?: string }>).detail;
+      if (!detail?.issueKey || detail.issueKey !== issueKey) return;
+      setExpanded(true);
+      setShowToolbar(true);
+    };
+    window.addEventListener('catalyst:open-link-toolbar', handler);
+    return () => window.removeEventListener('catalyst:open-link-toolbar', handler);
+  }, [issueKey]);
+
   const groups = useMemo(() => {
     const byType = new Map<string, LinkedWorkItem[]>();
     for (const link of links) {

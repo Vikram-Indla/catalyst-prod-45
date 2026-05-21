@@ -296,7 +296,16 @@ export function ImproveIssueDropdown({
               type="button"
               role="menuitem"
               data-testid="catalyst-improve-issue-dropdown.suggest-related-issues"
-              onClick={() => openMode('similar')}
+              onClick={() => {
+                setOpen(false);
+                if (issue?.issue_key) {
+                  window.dispatchEvent(
+                    new CustomEvent('catalyst:open-link-toolbar', {
+                      detail: { issueKey: issue.issue_key },
+                    }),
+                  );
+                }
+              }}
               style={itemStyle}
               onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
