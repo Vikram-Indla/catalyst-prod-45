@@ -24,6 +24,7 @@ import {
   Network,
   ArrowLeft,
   Settings,
+  Filter,
 } from '@/lib/atlaskit-icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
@@ -97,6 +98,7 @@ function buildPerProductConfig(product: ProductRow): SidebarConfig {
           { id: 'backlog',   title: 'Product Backlog',   path: `${base}/backlog`,   icon: ClipboardList,   exact: true },
           { id: 'boards',    title: 'Product Board',     path: `${base}/boards`,    icon: Columns3,        exact: false },
           { id: 'allwork',   title: 'Product Work',      path: `${base}/allwork`,   icon: Network,         exact: true },
+          { id: 'filters',   title: 'Filters',           path: `${base}/filters`,   icon: Filter,          exact: false },
         ],
       },
     ],
@@ -119,6 +121,13 @@ const GLOBAL_CONFIG: SidebarConfig = {
           title: 'All Products',
           path: '/product-hub/products',
           icon: LayoutGrid,
+          exact: false,
+        },
+        {
+          id: 'filters',
+          title: 'Filters',
+          path: '/product-hub/filters',
+          icon: Filter,
           exact: false,
         },
       ],
