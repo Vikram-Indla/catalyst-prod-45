@@ -649,6 +649,35 @@ export default function KanbanBoardPage() {
   const groups = useMemo(() => groupBy === 'none' ? [] : groupIssues(filtered, groupBy), [filtered, groupBy]);
   const total = groupBy === 'none' ? Object.values(colMap).reduce((a, ids) => a + ids.length, 0) : filtered.length;
 
+  /* When the user switches groupBy to 'epic', collapse all swimlane rows so the
+     board opens in a compact overview. Other groupings start fully expanded.
+     prevGroupByRef guards against re-firing when groups changes (new issues loaded)
+     while groupBy stays the same. */
+  const prevGroupByRef = useRef<GroupByMode>(groupBy);
+  useEffect(() => {
+    if (prevGroupByRef.current === groupBy) return;
+    prevGroupByRef.current = groupBy;
+    if (groupBy === 'epic') {
+      setCollapsedSwimlanes(new Set(groups.map((g: any) => g.groupKey)));
+    } else {
+      setCollapsedSwimlanes(new Set());
+    }
+  }, [groupBy, groups]);
+
+  /* Computed expand/collapse availability for the View Settings panel */
+  const hasSwimlanes = groupBy !== 'none';
+  const canExpandAll = hasSwimlanes && collapsedSwimlanes.size > 0;
+  const canCollapseAll = hasSwimlanes && groups.length > 0 && collapsedSwimlanes.size < groups.length;
+
+  /* PragmaticBoard (group-by-none) uses compact card padding to prevent the
+     cluttered look caused by 16px comfortable padding on every card when all
+     issues pile into columns without swimlane grouping.
+     Swimlane mode keeps the user-selected density unchanged. */
+  const pragmaticD = useMemo(
+    () => ({ ...d, cardPad: d.cardPad === '16px' ? '8px' : d.cardPad }),
+    [d],
+  );
+
   /* ═══ CARD ACTIONS ═══ */
 
   const handleSaveSummary = useCallback(async (issueId: string, newSummary: string) => {
@@ -1308,6 +1337,9 @@ export default function KanbanBoardPage() {
             return next;
           });
         }}
+        hasSwimlanes={hasSwimlanes}
+        canExpandAll={canExpandAll}
+        canCollapseAll={canCollapseAll}
         enableDensity={ENABLE_KANBAN_V2}
         density={density}
         onDensityChange={onDensityChange}
@@ -1342,7 +1374,7 @@ export default function KanbanBoardPage() {
                     <div key={col.id} className="flex items-center gap-2" style={{
                       width: 267, minWidth: 267, maxWidth: 267, height: 48, flexShrink: 0,
                       padding: '0 12px',
-                      background: tk.surfaceAlt,
+                      background: tk.headerBg,
                       borderRadius: '6px 6px 0 0',
                     }}>
                       <span style={{ width: 8, height: 8, borderRadius: '50%', background: categoryDot, flexShrink: 0 }} />
@@ -1380,7 +1412,7 @@ export default function KanbanBoardPage() {
                   onDelete={handleDelete}
                   onMoved={handleMoved}
                   onLinked={handleLinked}
-                  visibleFields={visibleFields}
+                  visibleFields={groupBy === 'epic' ? { ...visibleFields, epic: false } : visibleFields}
                   cardColorMode={cardColorMode}
                   columns={KANBAN_COLUMNS}
                   statusToColId={STATUS_TO_COL_ID}

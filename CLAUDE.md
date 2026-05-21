@@ -4,6 +4,58 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## 🚫 HARDCODED COLORS BANNED — ADS TOKENS MANDATORY (Non-Negotiable, P0)
+
+**Every color value in every file MUST use an ADS design token. Hardcoded hex, raw rgb(), rgba(), and hsl() values are permanently banned from all UI surfaces.**
+
+### The Rule
+
+- ✅ `var(--ds-surface, #FFFFFF)` — token first, ADS-specified fallback only
+- ✅ `token('color.background.neutral', '#F1F2F4')` — Atlaskit `token()` helper
+- ✅ `var(--ds-text-subtle, #42526E)` — any `--ds-*` token with its canonical fallback
+- ❌ `background: '#E9F2FE'` — bare hex, banned
+- ❌ `color: 'rgb(41,42,46)'` — bare rgb(), banned (wrap in a token: `var(--ds-text, rgb(41,42,46))`)
+- ❌ `background: 'rgba(9,30,66,0.06)'` — bare rgba() as a standalone value, banned
+- ❌ `className="bg-slate-100 text-gray-500"` — Tailwind color utilities, banned
+
+### Canonical ADS Token Map for Common Surface Values
+
+| Use case | Correct token | Light fallback |
+|---|---|---|
+| Page / module background | `var(--ds-surface, #FFFFFF)` | `#FFFFFF` |
+| Elevated card / modal | `var(--ds-surface-overlay, #FFFFFF)` | `#FFFFFF` |
+| Sunken / recessed area | `var(--ds-surface-sunken, #F7F8F9)` | `#F7F8F9` |
+| Neutral fill | `var(--ds-background-neutral, #F1F2F4)` | `#F1F2F4` |
+| Subtle neutral fill | `var(--ds-background-neutral-subtle, #F7F8F9)` | `#F7F8F9` |
+| Row hover | `var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))` | see token |
+| **Selected / active row** | `var(--ds-background-selected, #E9F2FE)` | `#E9F2FE` ← ONLY for selection state, not page bg |
+| Primary text | `var(--ds-text, #172B4D)` | `#172B4D` |
+| Subtle text | `var(--ds-text-subtle, #42526E)` | `#42526E` |
+| Subtlest text | `var(--ds-text-subtlest, #6B778C)` | `#6B778C` |
+| Border default | `var(--ds-border, #DFE1E6)` | `#DFE1E6` |
+| Brand blue | `var(--ds-link, #0052CC)` | `#0052CC` |
+
+### Semantic Correctness is Mandatory
+
+Using the wrong token is a violation even if the visual fallback color looks similar:
+- `--ds-background-selected` → ONLY for selection state (highlighted rows, active nav items)
+- `--ds-surface` → ONLY for page/module backgrounds
+- These are NOT interchangeable even though both may resolve to blue-ish or white values in some themes
+
+### When You're Working on Any Feature
+
+1. **Search before writing**: look up the correct ADS token for the use case above.
+2. **Audit your own diff**: run `node design-governance/cli/index.js audit src/<your-file>` before committing.
+3. **Fix violations you encounter**: if you touch a file and see nearby hardcoded values, fix them in the same commit.
+
+### Why This Rule Exists
+
+On 2026-05-21, `BacklogPage.atlaskit.tsx` had `BG_DEFAULT = 'var(--ds-background-selected, #E9F2FE)'` as its page background — a selection-state token used as a page surface color. The blue tint `#E9F2FE` was added to match a Jira DOM probe but the semantically correct token for a page background is `var(--ds-surface, #FFFFFF)`. The wrong token had been shipping for weeks because there was no explicit ban on token misuse. Fixed in `BAU-backlog-background-fix-01`.
+
+**Severity:** P0 — wrong tokens produce incorrect visual states that ship silently. The design system audit CI gate enforces this rule on every PR.
+
+---
+
 ## 🗂️ CANONICAL TABLE COMPONENT — JIRATABLЕ (Non-Negotiable)
 
 **`src/components/shared/JiraTable/` is the ONLY approved table component for any surface that lists work items, issues, epics, features, incidents, requests, or any Jira-derived entity.**

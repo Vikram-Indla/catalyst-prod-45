@@ -3,8 +3,7 @@
  * Jira-parity: epic key, icon, summary, child count, status lozenge.
  */
 
-import { useState, useMemo } from 'react';
-import { ChevronDown, ChevronRight } from '@/lib/atlaskit-icons';
+import { useState, useMemo, useEffect } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -21,8 +20,8 @@ import type { VisibleFields, CardColorMode } from '@/hooks/useKanbanViewSettings
 function StatusLozenge({ status, category, tk }: { status: string; category: string; tk: KanbanThemeTokens }) {
   const cat = category?.toLowerCase() ?? 'todo';
   let bg: string, fg: string;
-  if (cat === 'done') { bg = '#E3FCEF'; fg = '#006644'; }
-  else if (cat === 'indeterminate' || cat === 'in_progress' || cat === 'in progress') { bg = '#DEEBFF'; fg = '#0747A6'; }
+  if (cat === 'done') { bg = 'var(--ds-background-success, #E3FCEF)'; fg = 'var(--ds-text-success, #006644)'; }
+  else if (cat === 'indeterminate' || cat === 'in_progress' || cat === 'in progress') { bg = 'var(--ds-background-information, #DEEBFF)'; fg = 'var(--ds-text-information, #0747A6)'; }
   else { bg = 'var(--ds-border, var(--cp-lozenge-grey-bg, var(--cp-border-neutral, #DFE1E6)))'; fg = 'var(--ds-text, #253858)'; }
 
   return (
@@ -30,7 +29,7 @@ function StatusLozenge({ status, category, tk }: { status: string; category: str
       display: 'inline-flex', alignItems: 'center',
       height: 20, padding: '0 6px', borderRadius: 3,
       background: bg, color: fg,
-      fontSize: 11, fontWeight: 700, letterSpacing: '0.03em',
+      fontSize: 11, fontWeight: 600, letterSpacing: '0.03em',
       textTransform: 'uppercase', whiteSpace: 'nowrap',
       fontFamily: 'var(--cp-font-body)',
     }}>
@@ -69,6 +68,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   statusToColId?: Map<string, string>;
 }) {
   const [open, setOpen] = useState(defaultOpen);
+  useEffect(() => { setOpen(defaultOpen); }, [defaultOpen]);
 
   const KANBAN_COLUMNS = columns ?? DEFAULT_KANBAN_COLUMNS;
   const STATUS_TO_COL_ID = statusToColId ?? DEFAULT_STATUS_TO_COL_ID;
@@ -105,14 +105,14 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   };
 
   return (
-    <div>
+    <div style={{ marginBottom: 16 }}>
       <button
         onClick={() => setOpen(o => !o)}
         className="flex items-center w-full text-left"
         style={{
           gap: SPACING_TOKENS.gap8,
           padding: '12px 16px',
-          background: tk.surfaceAlt,
+          background: 'transparent',
           border: 'none',
           borderBottom: `1px solid ${tk.border}`,
           cursor: 'pointer',
@@ -120,9 +120,12 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
           minHeight: 44,
         }}
         onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
-        onMouseLeave={e => { e.currentTarget.style.background = tk.surfaceAlt; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
       >
-        {open ? <ChevronDown size={16} color={tk.textMuted} /> : <ChevronRight size={16} color={tk.textMuted} />}
+        {open
+          ? <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={tk.textMuted} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="m6 9 6 6 6-6"/></svg>
+          : <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={tk.textMuted} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="m9 18 6-6-6-6"/></svg>
+        }
         {icon()}
         {mode === 'epic' && group.groupKey !== 'NO_EPIC' && (
           <span style={{ fontSize: 13, fontWeight: 600, color: tk.textSecondary, fontFamily: 'var(--cp-font-mono)' }}>{group.groupKey}</span>
@@ -210,8 +213,8 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
       flex: '1 1 0', minWidth: 180,
       borderLeft: isFirst ? 'none' : `1px solid ${tk.border}`,
     }}>
-      <div ref={setNodeRef} className="flex flex-col p-1" style={{
-        gap: d.cardGap, minHeight: 40,
+      <div ref={setNodeRef} className="flex flex-col" style={{
+        gap: d.cardGap, minHeight: 40, padding: 8,
         background: isOver ? tk.dropHighlight : tk.surfaceBg,
         transition: 'background 100ms',
       }}>

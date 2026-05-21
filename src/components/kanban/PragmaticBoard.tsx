@@ -515,48 +515,40 @@ const PragmaticColumn = memo(function PragmaticColumn({
                 </span>
               </div>
             )}
-            {/* Separator */}
-            <div style={{ height: 1, background: tk.border, margin: '4px 0' }} />
-            {/* Actionable items — Jira parity */}
-            {[
-              {
-                key: 'copy-cards',
-                label: `Copy column stats`,
-                act: () => {
-                  const text = `${column.name}: ${issueIds.length} card${issueIds.length !== 1 ? 's' : ''}${column.wipLimit != null ? ` (WIP: ${column.wipLimit})` : ''}`;
-                  navigator.clipboard.writeText(text).catch(() => {/* silent */});
-                  setMeatballAnchor(null);
-                },
-              },
-              ...((actions.onCreateInColumn || actions.onCreateCard) ? [{
-                key: 'create',
-                label: actions.createInColumnLabel ?? 'Create issue here',
-                act: () => { setInlineCreateColId(column.id); setMeatballAnchor(null); },
-              }] : []),
-            ].map((item) => (
-              <button
-                key={item.key}
-                role="menuitem"
-                type="button"
-                onClick={item.act}
-                style={{
-                  display: 'flex',
-                  width: '100%',
-                  padding: '7px 16px',
-                  fontSize: 13,
-                  color: tk.textPrimary,
-                  background: 'none',
-                  border: 'none',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  fontFamily: 'var(--cp-font-body)',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = tk.surfaceHover; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
-              >
-                {item.label}
-              </button>
-            ))}
+            {/* Separator + Actionable items — only when create action available */}
+            {(actions.onCreateInColumn || actions.onCreateCard) && (
+              <>
+                <div style={{ height: 1, background: tk.border, margin: '4px 0' }} />
+                {[{
+                  key: 'create',
+                  label: actions.createInColumnLabel ?? 'Create issue here',
+                  act: () => { setInlineCreateColId(column.id); setMeatballAnchor(null); },
+                }].map((item) => (
+                  <button
+                    key={item.key}
+                    role="menuitem"
+                    type="button"
+                    onClick={item.act}
+                    style={{
+                      display: 'flex',
+                      width: '100%',
+                      padding: '7px 16px',
+                      fontSize: 13,
+                      color: tk.textPrimary,
+                      background: 'none',
+                      border: 'none',
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                      fontFamily: 'var(--cp-font-body)',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = tk.surfaceHover; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </>
+            )}
           </div>,
           document.body,
         )}

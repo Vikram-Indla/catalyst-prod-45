@@ -260,7 +260,7 @@ export function WorkItemCard({
 
         {/* Flag + hover-reveal edit + three-dots (hidden during edit) */}
         {!isEditing && (
-          <div className="flex items-center gap-0.5 flex-shrink-0" style={{ marginLeft: 4, marginTop: 1 }}>
+          <div className="flex items-center flex-shrink-0" style={{ gap: 2, marginLeft: 4, marginTop: 1 }}>
             {issue.isFlagged && <FlagFilledIcon label="Flagged" size="small" primaryColor="#E5493A" />}
             <button
               className="kanban-card-edit-btn"
