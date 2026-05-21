@@ -24,12 +24,14 @@
  *     CatalystDescriptionSection mutation and stored back in `description_adf`.
  */
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { ADFEntity } from '@atlaskit/adf-utils/types';
 import { Editor } from '@atlaskit/editor-core';
 import { IntlProvider } from 'react-intl-next';
 import Button from '@atlaskit/button/new';
 import ImageIcon from '@atlaskit/icon/core/image';
 import EditIcon from '@atlaskit/icon/core/edit';
+import WandIcon from '@atlaskit/icon/core/magic-wand';
 import Spinner from '@atlaskit/spinner';
 import { token } from '@atlaskit/tokens';
 import { toast } from 'sonner';
@@ -107,6 +109,7 @@ export interface EpicDescriptionEditorProps {
    * attachments rail re-renders with the new file. See AttachmentUploadMeta.
    */
   onAttachmentUploaded?: (meta: AttachmentUploadMeta) => void;
+  onImprove?: () => void;
 }
 
 const DEFAULT_MEDIA_PIXEL_WIDTH = 500;
@@ -143,6 +146,7 @@ function EpicDescriptionEditorImpl({
   onChange,
   appearance: appearanceProp = 'comment',
   onAttachmentUploaded,
+  onImprove,
 }: EpicDescriptionEditorProps) {
   const initialAdf = useMemo(() => parseStoredDescriptionToAdf(initialContent), [initialContent]);
   const defaultValueString = useMemo(() => JSON.stringify(initialAdf), [initialAdf]);
@@ -166,6 +170,43 @@ function EpicDescriptionEditorImpl({
   useEffect(() => {
     adfDocRef.current = initialAdf;
   }, [initialAdf]);
+
+  const [improveSlot, setImproveSlot] = useState<HTMLElement | null>(null);
+  const [imageSlot, setImageSlot] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    const root = wrapperRef.current;
+    if (!root) return;
+    const make = () => {
+      const el = document.createElement('span');
+      el.style.cssText = 'display:inline-flex;align-items:center;white-space:nowrap;flex-shrink:0';
+      return el;
+    };
+    const attach = () => {
+      const buttons = root.querySelectorAll<HTMLButtonElement>(
+        '[data-testid="ak-editor-main-toolbar"] button',
+      );
+      if (buttons.length === 0) return false;
+      const first = buttons[0];
+      const last = buttons[buttons.length - 1];
+      if (onImprove && first.parentElement) {
+        const improve = make();
+        first.parentElement.insertBefore(improve, first);
+        setImproveSlot(improve);
+      }
+      if (last.parentElement) {
+        const image = make();
+        last.parentElement.insertBefore(image, last.nextSibling);
+        setImageSlot(image);
+      }
+      return true;
+    };
+    if (attach()) return;
+    const obs = new MutationObserver(() => {
+      if (attach()) obs.disconnect();
+    });
+    obs.observe(root, { childList: true, subtree: true });
+    return () => obs.disconnect();
+  }, [onImprove]);
 
   useEffect(() => {
     const root = wrapperRef.current;
@@ -399,6 +440,37 @@ function EpicDescriptionEditorImpl({
           contain: 'content',
         }}
       >
+        {onImprove && improveSlot && createPortal(
+          <Button
+            appearance="subtle"
+            spacing="compact"
+            onClick={onImprove}
+            iconBefore={(iconProps: React.ComponentProps<typeof WandIcon>) => (
+              <WandIcon {...iconProps} label="" />
+            )}
+          >
+            Improve description
+          </Button>,
+          improveSlot,
+        )}
+        {imageSlot && createPortal(
+          <Button
+            appearance="subtle"
+            spacing="compact"
+            isDisabled={uploading}
+            onClick={triggerImagePicker}
+            aria-label={uploading ? 'Uploading image' : 'Insert image'}
+            title={uploading ? 'Uploading image' : 'Insert image'}
+            iconBefore={
+              uploading
+                ? (() => <Spinner size="small" />)
+                : (iconProps: React.ComponentProps<typeof ImageIcon>) => (
+                    <ImageIcon {...iconProps} label="" />
+                  )
+            }
+          />,
+          imageSlot,
+        )}
         <Suspense
           fallback={
             <div
@@ -470,46 +542,6 @@ function EpicDescriptionEditorImpl({
                the editor on mount painted a persistent blue focus halo and
                stole focus from the Summary field which is the canonical
                first-focus target in Atlassian's Create dialog. */
-            primaryToolbarComponents={[
-              mentionProvider && (
-                <Button
-                  key="insert-mention"
-                  appearance="subtle"
-                  spacing="compact"
-                  onClick={() => {
-                    // Mention plugin is auto-triggered via @ key press in editor
-                    // This button provides an explicit click-to-mention alternative
-                    const editorElement = wrapperRef.current?.querySelector('[role="textbox"]');
-                    if (editorElement instanceof HTMLElement) {
-                      editorElement.focus();
-                      // Insert @ character at cursor to trigger mention autocomplete
-                      document.execCommand('insertText', false, '@');
-                    }
-                  }}
-                  iconBefore={(iconProps: React.ComponentProps<typeof EditIcon>) => (
-                    <EditIcon {...iconProps} label="" />
-                  )}
-                >
-                  Mention
-                </Button>
-              ),
-              <Button
-                key="insert-image"
-                appearance="subtle"
-                spacing="compact"
-                isDisabled={uploading}
-                onClick={triggerImagePicker}
-                iconBefore={
-                  uploading
-                    ? (() => <Spinner size="small" />)
-                    : (iconProps: React.ComponentProps<typeof ImageIcon>) => (
-                        <ImageIcon {...iconProps} label="" />
-                      )
-                }
-              >
-                {uploading ? 'Uploading' : 'Image'}
-              </Button>,
-            ]}
           />
         </Suspense>
         {/* Jira-parity: inline upload progress banner replaces Tip text while uploading */}
