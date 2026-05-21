@@ -47,6 +47,7 @@ function FieldRow({
   label,
   alignBlock = 'center',
   labelTopPad,
+  direction = 'column',
   children,
 }: {
   label: string;
@@ -54,12 +55,17 @@ function FieldRow({
   alignBlock?: 'start' | 'center';
   /** @deprecated no-op; kept for call-site compat */
   labelTopPad?: boolean;
+  /** Stack by default; pass 'row' for inline label + value (used by Due date). */
+  direction?: 'column' | 'row';
   children: React.ReactNode;
 }) {
+  const isRow = direction === 'row';
   return (
     <div style={{
-      display: 'flex', flexDirection: 'column',
-      gap: 4, padding: '8px 4px',
+      display: 'flex',
+      flexDirection: isRow ? 'row' : 'column',
+      alignItems: isRow ? 'center' : 'stretch',
+      gap: isRow ? 4 : 4, padding: '8px 4px',
       borderRadius: 4,
       transition: 'background-color 0.15s ease-out',
     }}
@@ -73,10 +79,16 @@ function FieldRow({
       <div style={{
         fontSize: 11, fontWeight: 600, lineHeight: '16px',
         color: 'var(--ds-text-subtle, #505258)',
+        flexShrink: isRow ? 0 : undefined,
+        minWidth: isRow ? 60 : undefined,
       }}>
         {label}
       </div>
-      <div style={{ fontSize: 14, lineHeight: '20px', color: 'var(--ds-text, #292A2E)', minWidth: 0 }}>
+      <div style={{
+        fontSize: 14, lineHeight: '20px', color: 'var(--ds-text, #292A2E)',
+        minWidth: 0,
+        flex: isRow ? 1 : undefined,
+      }}>
         {children}
       </div>
     </div>
@@ -680,7 +692,7 @@ export function CatalystSidebarDetails({
             && (normalizeIssueTypeBucket(issue.issue_type) === 'subtask'
               || issue.issue_type === 'Production Incident'
               || issue.issue_type === 'Change Request') && (
-            <FieldRow label="Due date">
+            <FieldRow label="Due date" direction="row">
               <CatalystDueDateField
                 value={(issue as any).due_date ?? null}
                 onSave={async (date) => {
@@ -706,7 +718,7 @@ export function CatalystSidebarDetails({
               "Dates" panel but Catalyst keeps the field inline. */}
           {issue?.issue_type === 'Epic' && (
             <>
-              <FieldRow label="Due date">
+              <FieldRow label="Due date" direction="row">
                 <CatalystDueDateField
                   value={(issue as any).due_date ?? null}
                   onSave={async (date) => {
