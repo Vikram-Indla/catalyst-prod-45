@@ -654,7 +654,10 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
     count: issueIds.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => estimatedCardHeight,
-    overscan: 3,  // Render 3 extra items above/below viewport for smoother scrolling
+    measureElement: typeof window !== 'undefined'
+      ? (el) => el.getBoundingClientRect().height
+      : undefined,
+    overscan: 3,
   });
 
   // Skip virtualization for small lists (< 15 cards) to avoid overhead
@@ -664,8 +667,13 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
         ref={parentRef}
         className="flex flex-col overflow-y-auto"
         style={{
-          padding: '8px',
+          // spec: gap between cards via CSS gap (React adds px for numbers)
           gap: d.cardGap,
+          // spec: 12px header→first-card, 8px last-card→bottom, 4px horizontal shadow-safe inset
+          paddingTop: 12,
+          paddingBottom: d.cardGap,
+          paddingLeft: 4,
+          paddingRight: 4,
           flex: 1,
           minHeight: 120,
           background: isOver ? tk.dropHighlight : 'transparent',
@@ -777,7 +785,12 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
       ref={parentRef}
       className="flex flex-col overflow-y-auto"
       style={{
-        padding: '8px',
+        // spec: 12px header→first-card, 8px last-card→bottom, 4px horizontal shadow-safe inset
+        // gap is handled per-slot via paddingBottom on the slot wrapper (absolute positioning)
+        paddingTop: 12,
+        paddingBottom: d.cardGap,
+        paddingLeft: 4,
+        paddingRight: 4,
         flex: 1,
         minHeight: 120,
         background: isOver ? tk.dropHighlight : 'transparent',
@@ -799,18 +812,18 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
 
           return (
             <div
-              key={id}
+              key={virtualItem.key}
               data-index={virtualItem.index}
+              ref={virtualizer.measureElement}
               style={{
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 width: '100%',
-                height: `${virtualItem.size}px`,
                 transform: `translateY(${virtualItem.start}px)`,
               }}
             >
-              <div style={{ padding: `0 0 ${d.cardGap} 0` }}>
+              <div style={{ paddingBottom: d.cardGap }}>
                 <PragmaticCard
                   issue={issue}
                   colId={column.id}
