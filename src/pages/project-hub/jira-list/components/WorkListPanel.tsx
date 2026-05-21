@@ -384,7 +384,7 @@ export function WorkListPanel({
       style={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
+        flex: 1,
         minHeight: 0,
         fontSize: 14,
       }}
@@ -530,6 +530,7 @@ export function WorkListPanel({
           display: 'flex',
           flexDirection: 'column',
           gap: 1,
+          padding: '8px',
         }}
       >
         {grouped.map(group => (
@@ -538,11 +539,17 @@ export function WorkListPanel({
             {group.label != null && (
               <div
                 style={{
-                  padding: '8px 12px 4px',
+                  padding: '4px 4px 4px',
                   fontSize: 11,
                   fontWeight: 700,
+                  letterSpacing: '0.04em',
                   color: 'var(--ds-text-subtle, #626F86)',
+                  // Slightly elevated surface so group header stands out
+                  // against the card-list #F7F8F9 background
                   background: 'var(--ds-background-neutral, #F7F8F9)',
+                  borderBottom: '1px solid var(--ds-border, rgba(9,30,66,0.08))',
+                  userSelect: 'none' as const,
+                  marginTop: 4,
                 }}
               >
                 {group.label}
