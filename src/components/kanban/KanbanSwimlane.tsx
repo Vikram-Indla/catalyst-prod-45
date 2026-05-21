@@ -4,7 +4,6 @@
  */
 
 import { useState, useMemo } from 'react';
-import { ChevronDown, ChevronRight } from '@/lib/atlaskit-icons';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -30,7 +29,7 @@ function StatusLozenge({ status, category, tk }: { status: string; category: str
       display: 'inline-flex', alignItems: 'center',
       height: 20, padding: '0 6px', borderRadius: 3,
       background: bg, color: fg,
-      fontSize: 11, fontWeight: 700, letterSpacing: '0.03em',
+      fontSize: 11, fontWeight: 600, letterSpacing: '0.03em',
       textTransform: 'uppercase', whiteSpace: 'nowrap',
       fontFamily: 'var(--cp-font-body)',
     }}>
@@ -105,7 +104,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   };
 
   return (
-    <div>
+    <div style={{ marginBottom: 16 }}>
       <button
         onClick={() => setOpen(o => !o)}
         className="flex items-center w-full text-left"
@@ -122,7 +121,10 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
         onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
         onMouseLeave={e => { e.currentTarget.style.background = tk.surfaceAlt; }}
       >
-        {open ? <ChevronDown size={16} color={tk.textMuted} /> : <ChevronRight size={16} color={tk.textMuted} />}
+        {open
+          ? <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={tk.textMuted} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="m6 9 6 6 6-6"/></svg>
+          : <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={tk.textMuted} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="m9 18 6-6-6-6"/></svg>
+        }
         {icon()}
         {mode === 'epic' && group.groupKey !== 'NO_EPIC' && (
           <span style={{ fontSize: 13, fontWeight: 600, color: tk.textSecondary, fontFamily: 'var(--cp-font-mono)' }}>{group.groupKey}</span>
