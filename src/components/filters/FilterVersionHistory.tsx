@@ -91,7 +91,7 @@ export function FilterVersionHistory({ filterId, filterName, onClose }: Props) {
 
   return (
     <ModalDialog onClose={onClose} width="medium">
-      <ModalHeader>
+      <ModalHeader hasCloseButton>
         <ModalTitle>Version history — {filterName}</ModalTitle>
       </ModalHeader>
 

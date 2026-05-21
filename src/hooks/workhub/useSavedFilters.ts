@@ -61,14 +61,21 @@ export function useSavedFilters(page?: string) {
 export function useCreateSavedFilter() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (params: { name: string; filter_config: Record<string, any>; page?: string; is_shared?: boolean }) => {
+    mutationFn: async (params: { name: string; filter_config: Record<string, any>; page?: string; is_shared?: boolean; [key: string]: any }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      // Extract known fields; spread the rest (jql_query, hub_scope, viewers_config, etc.)
+      const { name, filter_config, page, is_shared, ...rest } = params;
       const { data, error } = await supabase
         .from('ph_saved_filters')
         .insert({
-          name: params.name,
-          filter_config: params.filter_config,
-          page: params.page || 'workitems',
-          is_shared: params.is_shared || false,
+          name,
+          filter_config,
+          page: page || 'workitems',
+          is_shared: is_shared || false,
+          user_id: user.id,
+          owner_id: user.id,
+          ...rest,
         } as any)
         .select()
         .single();
@@ -77,6 +84,7 @@ export function useCreateSavedFilter() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['workhub', 'saved-filters'] });
+      qc.invalidateQueries({ queryKey: ['filters'] });
       toast.success('Filter saved');
     },
     onError: (err: Error) => toast.error(err.message),
@@ -95,6 +103,7 @@ export function useUpdateSavedFilter() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['workhub', 'saved-filters'] });
+      qc.invalidateQueries({ queryKey: ['filters'] });
       toast.success('Filter updated');
     },
     onError: (err: Error) => toast.error(err.message),
@@ -113,6 +122,7 @@ export function useDeleteSavedFilter() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['workhub', 'saved-filters'] });
+      qc.invalidateQueries({ queryKey: ['filters'] });
       toast.success('Filter deleted');
     },
     onError: (err: Error) => toast.error(err.message),

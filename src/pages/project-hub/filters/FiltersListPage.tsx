@@ -10,6 +10,7 @@ import { useFiltersForProject, useStarFilter, useDeleteSavedFilter, type SavedFi
 import { FilterHealthBadge } from '@/components/filters/FilterHealthBadge';
 import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
+import { FilterVersionHistory } from '@/components/filters/FilterVersionHistory';
 import { Star, StarOff, Plus, Search } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -82,6 +83,8 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   const [search, setSearch] = useState('');
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editFilter, setEditFilter] = useState<SavedFilterFull | null>(null);
+  const [historyFilter, setHistoryFilter] = useState<SavedFilterFull | null>(null);
 
   // Resolve current user id once on mount
   React.useEffect(() => {
@@ -234,7 +237,12 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           {
             key: 'actions',
             content: (
-              <FilterKebabMenu filter={f} currentUserId={currentUserId} />
+              <FilterKebabMenu
+                filter={f}
+                currentUserId={currentUserId}
+                onEdit={setEditFilter}
+                onViewHistory={setHistoryFilter}
+              />
             ),
           },
         ],
@@ -279,7 +287,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
         </div>
         <Button
           appearance="primary"
-          iconBefore={<Plus size="small" label="" />}
+          iconBefore={() => <Plus size="small" label="" />}
           onClick={() => setCreateModalOpen(true)}
         >
           Create filter
@@ -336,9 +344,15 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
               color: token('color.text.subtle'),
             }}>
               <span style={{ fontSize: 16, fontWeight: token('font.weight.medium') }}>
-                {search ? 'No filters match your search' : 'No filters yet'}
+                {search
+                  ? 'No filters match your search'
+                  : activeTab === 'starred'
+                    ? 'No starred filters yet'
+                    : activeTab === 'recent'
+                      ? 'No recently used filters'
+                      : 'No filters yet'}
               </span>
-              {!search && (
+              {!search && activeTab === 'my' && (
                 <Button appearance="primary" onClick={() => setCreateModalOpen(true)}>
                   Create your first filter
                 </Button>
@@ -356,6 +370,24 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
           hubScope={hubType === 'product' ? 'product' : 'project'}
           onClose={() => setCreateModalOpen(false)}
           onSaved={() => setCreateModalOpen(false)}
+        />
+      )}
+
+      {/* Edit filter modal — rendered at page level to avoid Atlaskit empty-portal bug in table rows */}
+      {editFilter && (
+        <FilterSaveModal
+          filter={editFilter}
+          onClose={() => setEditFilter(null)}
+          onSaved={() => setEditFilter(null)}
+        />
+      )}
+
+      {/* Version history modal — rendered at page level for same reason */}
+      {historyFilter && (
+        <FilterVersionHistory
+          filterId={historyFilter.id}
+          filterName={historyFilter.name}
+          onClose={() => setHistoryFilter(null)}
         />
       )}
     </div>
