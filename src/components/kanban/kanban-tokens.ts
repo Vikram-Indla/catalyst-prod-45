@@ -102,6 +102,18 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
   },
 };
 
+/* ═══ SPACING TOKENS (Centralized Grid System) ═══ */
+
+export const SPACING_TOKENS = {
+  gap4: 4,       // Standard inter-component gap
+  gap8: 8,       // Jira parity: canonical card-to-card vertical spacing
+  gap12: 12,     // Heading-to-content spacing
+  gap16: 16,     // Section-to-section spacing
+  gap24: 24,     // Major region spacing
+} as const;
+
+export type SpacingGapKey = keyof typeof SPACING_TOKENS;
+
 /* ═══ DENSITY SYSTEM ═══ */
 
 export type KanbanDensity = 'compact' | 'dense' | 'comfortable';
