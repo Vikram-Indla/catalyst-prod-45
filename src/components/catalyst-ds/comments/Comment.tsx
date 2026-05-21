@@ -32,8 +32,9 @@ function formatRelativeTime(dateStr: string): string {
 
 function renderContent(content: string): React.ReactNode {
   // Token-based renderer — handles inline images `![alt](url)`,
-  // ADF mentions `@[Name](id)`, and plain `@word` mentions.
-  const pattern = /!\[([^\]]*)\]\(([^)]+)\)|@\[([^\]]+)\]\([^)]+\)|@\w+/g;
+  // legacy ADF mentions `@[Name](id)`, multi-word `@Capitalized Name`
+  // mentions, and plain `@word` mentions.
+  const pattern = /!\[([^\]]*)\]\(([^)]+)\)|@\[([^\]]+)\]\([^)]+\)|@[A-Z][\w.]*(?:\s[A-Z][\w.]*)*|@\w+/g;
   const nodes: React.ReactNode[] = [];
   let lastIndex = 0;
   let key = 0;
