@@ -15,7 +15,7 @@ import { TransferOwnershipModal } from '@/components/filters/TransferOwnershipMo
 import { Star, StarOff, Plus, Search } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 
-export type HubType = 'project' | 'product';
+export type HubType = 'project' | 'product' | 'test';
 
 interface FiltersListPageProps {
   hubType?: HubType;
@@ -95,7 +95,9 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
     });
   }, []);
 
-  const hubScope = hubType === 'product' ? 'product' as const : 'project' as const;
+  const hubScope = hubType === 'product' ? 'product' as const
+    : hubType === 'test' ? 'test' as const
+    : 'project' as const;
   const { data: filters = [], isLoading } = useFiltersForProject(projectKey, hubScope);
 
   const starFilter = useStarFilter();
@@ -107,7 +109,9 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
    * panel open, not a standalone creation page.
    */
   function handleCreateFilter() {
-    if (hubType === 'product' && projectKey) {
+    if (hubType === 'test') {
+      navigate('/testhub/defects?mode=create-filter');
+    } else if (hubType === 'product' && projectKey) {
       navigate(`/product-hub/${projectKey}/allwork?mode=create-filter`);
     } else if (projectKey) {
       navigate(`/project-hub/${projectKey}/allwork?mode=create-filter`);
@@ -118,10 +122,13 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
   }
 
   /**
-   * Navigate "Click filter name" → AllWork page with that filter pre-applied.
+   * Navigate "Click filter name" → AllWork/defects page with that filter pre-applied.
    * Matches Jira: clicking a saved filter shows its filtered work items.
    */
   function filterAllWorkHref(filterId: string): string {
+    if (hubType === 'test') {
+      return `/testhub/defects?filterId=${filterId}`;
+    }
     if (hubType === 'product' && projectKey) {
       return `/product-hub/${projectKey}/allwork?filterId=${filterId}`;
     }
@@ -316,7 +323,7 @@ export default function FiltersListPage({ hubType = 'project' }: FiltersListPage
             fontSize: 14,
             color: token('color.text.subtle'),
           }}>
-            Saved filters for {hubType === 'product' ? 'product' : 'project'} views
+            Saved filters for {hubType === 'product' ? 'product' : hubType === 'test' ? 'test' : 'project'} views
           </p>
         </div>
         <Button

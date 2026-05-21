@@ -19,7 +19,7 @@ export interface SavedFilter {
 }
 
 export type FilterHealth = 'healthy' | 'stale' | 'broken';
-export type HubScope = 'project' | 'product' | 'both';
+export type HubScope = 'project' | 'product' | 'both' | 'test';
 
 export interface OwnerProfile {
   id: string;
