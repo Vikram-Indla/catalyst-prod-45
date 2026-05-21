@@ -335,10 +335,6 @@ export function KanbanToolbar<TGroupBy extends string = string>({
 
       <div className="flex-1" />
 
-      <span style={{ fontSize: 12, color: tk.textMuted, fontFamily: 'var(--cp-font-mono)' }}>
-        {totalIssues} issues
-      </span>
-
       {/* Board menu ••• */}
       <div ref={boardMenuRef} style={{ position: 'relative' }}>
         <button

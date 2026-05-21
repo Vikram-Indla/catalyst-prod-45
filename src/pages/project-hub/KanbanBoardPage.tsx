@@ -1342,7 +1342,7 @@ export default function KanbanBoardPage() {
                     <div key={col.id} className="flex items-center gap-2" style={{
                       width: 267, minWidth: 267, maxWidth: 267, height: 48, flexShrink: 0,
                       padding: '0 12px',
-                      background: tk.surfaceAlt,
+                      background: tk.headerBg,
                       borderRadius: '6px 6px 0 0',
                     }}>
                       <span style={{ width: 8, height: 8, borderRadius: '50%', background: categoryDot, flexShrink: 0 }} />

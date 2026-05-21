@@ -111,7 +111,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
         style={{
           gap: SPACING_TOKENS.gap8,
           padding: '12px 16px',
-          background: tk.surfaceAlt,
+          background: 'transparent',
           border: 'none',
           borderBottom: `1px solid ${tk.border}`,
           cursor: 'pointer',
@@ -119,7 +119,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
           minHeight: 44,
         }}
         onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
-        onMouseLeave={e => { e.currentTarget.style.background = tk.surfaceAlt; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
       >
         {open
           ? <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={tk.textMuted} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="m6 9 6 6 6-6"/></svg>
@@ -212,8 +212,8 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
       flex: '1 1 0', minWidth: 180,
       borderLeft: isFirst ? 'none' : `1px solid ${tk.border}`,
     }}>
-      <div ref={setNodeRef} className="flex flex-col p-1" style={{
-        gap: d.cardGap, minHeight: 40,
+      <div ref={setNodeRef} className="flex flex-col" style={{
+        gap: d.cardGap, minHeight: 40, padding: 8,
         background: isOver ? tk.dropHighlight : tk.surfaceBg,
         transition: 'background 100ms',
       }}>
