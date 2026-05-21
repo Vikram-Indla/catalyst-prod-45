@@ -26,7 +26,7 @@ interface EnterpriseSidebarProps {
 
 const enterpriseSidebarConfig: SidebarConfig = {
   badge: 'ST',
-  label: 'Strategy Hub',
+  label: 'Strategy',
   sections: [
     {
       // Design critique (2026-04-19): dropped "Strategy Hub" section label —

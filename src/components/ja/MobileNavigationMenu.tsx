@@ -18,15 +18,15 @@ import catalystWordmark3Dark from "@/assets/catalyst-wordmark-3-dark.svg";
 /* Hub items — canonical list matching CatalystHeader */
 const HUB_ITEMS = [
   { label: "Home", path: "/for-you", moduleKey: "home", featureFlagKey: null as string | null, requiresEnterpriseAccess: false, visibleToProductOwner: true },
-  { label: "StrategyHub", path: "/strategyhub", moduleKey: "enterprise", featureFlagKey: "strategy_hub", requiresEnterpriseAccess: true, visibleToProductOwner: true },
-  { label: "ProductHub", path: "/producthub", moduleKey: "product", featureFlagKey: "product_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
-  { label: "ProjectHub", path: "/project-hub", moduleKey: "workhub", featureFlagKey: "project_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
-  { label: "ReleaseHub", path: "/release-hub/command-center", moduleKey: "releases", featureFlagKey: "release_hub", requiresEnterpriseAccess: false, visibleToProductOwner: false },
-  { label: "TestHub", path: "/testhub/dashboard", moduleKey: "testhub", featureFlagKey: "test_hub", requiresEnterpriseAccess: false, visibleToProductOwner: false },
-  { label: "IncidentHub", path: "/incident-hub", moduleKey: "operations", featureFlagKey: "incident_hub", requiresEnterpriseAccess: false, visibleToProductOwner: false },
-  { label: "TaskHub", path: "/taskhub/boards", moduleKey: "planner", featureFlagKey: "task_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
-  { label: "PlanHub", path: "/planhub", moduleKey: "planhub", featureFlagKey: "plan_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
-  { label: "WikiHub", path: "/wiki", moduleKey: "wiki", featureFlagKey: "wiki_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
+  { label: "Strategy", path: "/strategyhub", moduleKey: "enterprise", featureFlagKey: "strategy_hub", requiresEnterpriseAccess: true, visibleToProductOwner: true },
+  { label: "Products", path: "/producthub", moduleKey: "product", featureFlagKey: "product_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
+  { label: "Projects", path: "/project-hub", moduleKey: "workhub", featureFlagKey: "project_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
+  { label: "Releases", path: "/release-hub/command-center", moduleKey: "releases", featureFlagKey: "release_hub", requiresEnterpriseAccess: false, visibleToProductOwner: false },
+  { label: "Testing", path: "/testhub/dashboard", moduleKey: "testhub", featureFlagKey: "test_hub", requiresEnterpriseAccess: false, visibleToProductOwner: false },
+  { label: "Incidents", path: "/incident-hub", moduleKey: "operations", featureFlagKey: "incident_hub", requiresEnterpriseAccess: false, visibleToProductOwner: false },
+  { label: "Tasks", path: "/taskhub/boards", moduleKey: "planner", featureFlagKey: "task_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
+  { label: "Planning", path: "/planhub", moduleKey: "planhub", featureFlagKey: "plan_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
+  { label: "Wiki", path: "/wiki", moduleKey: "wiki", featureFlagKey: "wiki_hub", requiresEnterpriseAccess: false, visibleToProductOwner: true },
 ];
 
 export function MobileNavigationMenu() {

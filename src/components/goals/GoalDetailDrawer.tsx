@@ -545,7 +545,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
             <Rocket size={36} color="var(--ds-text-disabled, #CBD5E1)" />
           </div>
           <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No initiatives linked</div>
-          <div style={{ fontSize: 12, color: 'var(--fg-4)', marginBottom: 16 }}>Link initiatives from Product Hub that contribute to this goal.</div>
+          <div style={{ fontSize: 12, color: 'var(--fg-4)', marginBottom: 16 }}>Link initiatives from Products that contribute to this goal.</div>
           <button
             onClick={() => setShowSearch(true)}
             style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', background: 'rgba(37,99,235,0.06)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 6, cursor: 'pointer' }}

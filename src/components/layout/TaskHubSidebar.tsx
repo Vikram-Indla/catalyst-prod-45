@@ -61,7 +61,7 @@ Priorities10Icon.displayName = 'Priorities10Icon';
 
 const taskHubSidebarConfig: SidebarConfig = {
   badge: 'TH',
-  label: 'Task Hub',
+  label: 'Tasks',
   // Design critique (2026-04-19): stripped redundant "Task" prefix from
   // items where the hub badge ("TH / Task Hub") already provides context.
   //   "Task Overview" → "Overview"

@@ -13,7 +13,7 @@ export function ReleaseRoomSidebar({ expanded, onToggle, className }: Operations
 
   const operationsSidebarConfig: SidebarConfig = {
     badge: 'IH',
-    label: 'Incident Hub',
+    label: 'Incidents',
     items: [
       // Incidents section
       { 

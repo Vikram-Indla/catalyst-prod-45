@@ -237,7 +237,7 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
   const moduleConfig: SidebarConfig = {
     badge: 'PH',
     // Block A rule 7 (2026-05-01): canonical spaced casing.
-    label: 'Project Hub',
+    label: 'Projects',
     showFavorites: false,
     sections,
   };
