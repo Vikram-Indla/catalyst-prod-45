@@ -205,6 +205,71 @@ export function useCopyFilter() {
   });
 }
 
+// ─── Version history (O9) ─────────────────────────────────────────────────────
+
+export interface FilterVersion {
+  id: string;
+  filter_id: string;
+  jql_query: string | null;
+  result_count: number | null;
+  changed_by: string | null;
+  changed_at: string;
+  changer?: { full_name: string | null; avatar_url: string | null } | null;
+}
+
+/**
+ * Fetch the version history for a single filter.
+ * ph_filter_versions is ordered by changed_at desc.
+ */
+export function useFilterVersions(filterId: string | undefined) {
+  return useQuery({
+    queryKey: ['filters', 'versions', filterId],
+    queryFn: async () => {
+      if (!filterId) return [] as FilterVersion[];
+      const { data, error } = await (supabase as any)
+        .from('ph_filter_versions')
+        .select('*, changer:profiles!ph_filter_versions_changed_by_fkey(full_name, avatar_url)')
+        .eq('filter_id', filterId)
+        .order('changed_at', { ascending: false })
+        .limit(30);
+      if (error) throw new Error(error.message);
+      return (data ?? []) as FilterVersion[];
+    },
+    enabled: !!filterId,
+    staleTime: 60_000,
+  });
+}
+
+/** Record a new version snapshot for the given filter */
+export function useRecordFilterVersion() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      filterId,
+      jqlQuery,
+      resultCount,
+    }: {
+      filterId: string;
+      jqlQuery: string | null;
+      resultCount?: number;
+    }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { error } = await (supabase as any)
+        .from('ph_filter_versions')
+        .insert({
+          filter_id: filterId,
+          jql_query: jqlQuery,
+          result_count: resultCount ?? null,
+          changed_by: user?.id ?? null,
+        });
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: (_d, vars) => {
+      qc.invalidateQueries({ queryKey: ['filters', 'versions', vars.filterId] });
+    },
+  });
+}
+
 /** Transfer ownership of a filter to another user */
 export function useChangeFilterOwner() {
   const qc = useQueryClient();

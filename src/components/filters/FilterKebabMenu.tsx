@@ -12,6 +12,7 @@ import {
   type SavedFilterFull,
 } from '@/hooks/workhub/useSavedFilters';
 import { FilterSaveModal } from './FilterSaveModal';
+import { FilterVersionHistory } from './FilterVersionHistory';
 
 interface FilterKebabMenuProps {
   filter: SavedFilterFull;
@@ -20,6 +21,7 @@ interface FilterKebabMenuProps {
 
 export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps) {
   const [editOpen, setEditOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const copyFilter = useCopyFilter();
   const updateFilter = useUpdateSavedFilter();
@@ -65,6 +67,9 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
               {isPrivate ? 'Share with organisation' : 'Make private'}
             </DropdownItem>
           )}
+          <DropdownItem onClick={() => setHistoryOpen(true)}>
+            View version history
+          </DropdownItem>
         </DropdownItemGroup>
         <DropdownItemGroup>
           {isOwner && (
@@ -80,6 +85,14 @@ export function FilterKebabMenu({ filter, currentUserId }: FilterKebabMenuProps)
           filter={filter}
           onClose={() => setEditOpen(false)}
           onSaved={() => setEditOpen(false)}
+        />
+      )}
+
+      {historyOpen && (
+        <FilterVersionHistory
+          filterId={filter.id}
+          filterName={filter.name}
+          onClose={() => setHistoryOpen(false)}
         />
       )}
     </>

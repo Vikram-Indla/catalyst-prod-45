@@ -20,8 +20,10 @@ import {
   type JiraFilterValue,
 } from '@/components/shared/JiraFilterAtlaskit';
 import { AskCatyInlineBar } from '@/components/caty/AskCatyInlineBar';
+import { FilterTemplateGallery } from '@/components/filters/FilterTemplateGallery';
 import { translate } from '@/lib/jql';
 import type { HubType } from './FiltersListPage';
+import type { HubTemplateScope } from '@/lib/filters/filterTemplates';
 
 interface CreateFilterPageProps {
   hubType?: HubType;
@@ -67,10 +69,11 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
   const [saveModalOpen, setSaveModalOpen] = useState(false);
 
   // Derive the effective JQL from whichever tab is active
+  // 0=Basic 1=JQL 2=Templates 3=Ask CATY
   const effectiveJql: string = (() => {
     if (activeTabIdx === 0) return basicToJql(basicValue);
     if (activeTabIdx === 1) return jqlValue;
-    return ''; // Ask CATY — JQL comes from the CATY store
+    return ''; // Templates / Ask CATY — JQL comes from selection or CATY store
   })();
 
   const filtersCount = effectiveJql.trim()
@@ -152,6 +155,7 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
           <TabList>
             <Tab>Basic</Tab>
             <Tab>JQL</Tab>
+            <Tab>Templates</Tab>
             <Tab>Ask CATY</Tab>
           </TabList>
 
@@ -205,6 +209,23 @@ export default function CreateFilterPage({ hubType = 'project' }: CreateFilterPa
                 value={jqlValue}
                 onChange={setJqlValue}
                 showFilterCount
+              />
+            </div>
+          </TabPanel>
+
+          {/* ── Templates ── */}
+          <TabPanel>
+            <div style={{ paddingTop: 16 }}>
+              <p style={{ margin: '0 0 16px', fontSize: 13, color: token('color.text.subtle') }}>
+                Choose a pre-built filter to start with. You can customise it in the JQL tab after selecting.
+              </p>
+              <FilterTemplateGallery
+                hubScope={(hubType === 'product' ? 'product' : 'project') as HubTemplateScope}
+                projectKey={projectKey}
+                onSelect={(jql) => {
+                  setJqlValue(jql);
+                  setActiveTabIdx(1); // switch to JQL tab so user can preview
+                }}
               />
             </div>
           </TabPanel>
