@@ -10,11 +10,13 @@
  *   four items mapped 1:1 to Jira's items minus the Confluence
  *   integration which Catalyst doesn't have:
  *
- *     - Improve description       → ImproveDescriptionDialog
- *     - Summarize comments        → SummarizeCommentsDialog
+ *     - Improve description       → Caty streaming overlay
+ *     - Summarize comments        → CommentsSummaryCard (inline, above
+ *                                   the comments section — 2026-05-21)
  *     - Suggest child work items  → SuggestChildIssuesDialog
  *                                   (hidden for Subtask — no grandchildren)
- *     - Link similar work items   → LinkSimilarItemsDialog
+ *     - Link similar work items   → opens the inline link toolbar in
+ *                                   LinkedWorkItems (2026-05-21)
  *
  *   Visual: small button + sparkles glyph + "Improve {type}" + chevron,
  *   anchored under the title in each `CatalystView*` `leftContent`
@@ -33,13 +35,13 @@ import ListBulletedIcon from '@atlaskit/icon/core/list-bulleted';
 import SearchIcon from '@atlaskit/icon/core/search';
 import { token } from '@atlaskit/tokens';
 import { ImproveDescriptionDialog } from './ImproveDescriptionDialog';
-import { SummarizeCommentsDialog } from './SummarizeCommentsDialog';
 import { SuggestChildIssuesDialog } from './SuggestChildIssuesDialog';
 import { LinkSimilarItemsDialog } from './LinkSimilarItemsDialog';
 import { canSuggestChildren, improveTriggerLabel } from './improve-config';
 import { useCatyImprove } from './catyImproveStore';
+import { useCatySummarize } from './catySummarizeStore';
 
-type Mode = 'closed' | 'description' | 'summarize' | 'children' | 'similar';
+type Mode = 'closed' | 'description' | 'children' | 'similar';
 
 interface ImproveIssueDropdownProps {
   issue: {
@@ -77,6 +79,24 @@ export function ImproveIssueDropdown({
   const [mode, setMode] = useState<Mode>('closed');
   const ref = useRef<HTMLDivElement>(null);
   const startCatyImprove = useCatyImprove((s) => s.start);
+  const startSummarize = useCatySummarize((s) => s.start);
+
+  /**
+   * "Summarize comments" entry point — opens the inline
+   * `CommentsSummaryCard` above the comments section. The card itself
+   * does the empty-comments toast + dismiss when there's nothing to
+   * summarize, so we just hand off the issue context here.
+   */
+  const handleStartSummarize = useCallback(() => {
+    setOpen(false);
+    if (!issue?.issue_key || !issue?.id) return;
+    startSummarize({
+      issueKey: issue.issue_key,
+      workItemId: issue.id,
+      issueType: issue.issue_type ?? null,
+      issueSummary: issue.summary ?? null,
+    });
+  }, [issue, startSummarize]);
 
   /**
    * "Improve description" entry point — replaces the legacy dialog with
@@ -268,7 +288,7 @@ export function ImproveIssueDropdown({
               type="button"
               role="menuitem"
               data-testid="catalyst-improve-issue-dropdown.summarize-comments"
-              onClick={() => openMode('summarize')}
+              onClick={handleStartSummarize}
               style={itemStyle}
               onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
@@ -328,17 +348,9 @@ export function ImproveIssueDropdown({
         onApplyAcceptanceCriteria={onApplyAcceptanceCriteria}
       />
 
-      {/* Apr 28 2026 (cycle 7 follow-up): pass `issue.id` (UUID)
-          first — `ph_comments.work_item_id` is a `uuid` column, so
-          passing `issue_key` ("BAU-5711") fails with Postgres error
-          22P02 "invalid input syntax for type uuid". */}
-      <SummarizeCommentsDialog
-        isOpen={mode === 'summarize'}
-        onClose={() => setMode('closed')}
-        issueType={issueType}
-        issueSummary={issue?.summary}
-        workItemId={issue?.id ?? issue?.issue_key ?? null}
-      />
+      {/* 2026-05-21: Summarize comments now opens the inline
+          `CommentsSummaryCard` (mounted inside CatalystActivitySection)
+          instead of a modal. Handler: `handleStartSummarize` above. */}
 
       <SuggestChildIssuesDialog
         isOpen={mode === 'children'}

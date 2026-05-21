@@ -7,7 +7,8 @@
 
 export { ImproveIssueDropdown } from './ImproveIssueDropdown';
 export { ImproveDescriptionDialog } from './ImproveDescriptionDialog';
-export { SummarizeCommentsDialog } from './SummarizeCommentsDialog';
+// 2026-05-21: SummarizeCommentsDialog deleted — replaced by the inline
+// CommentsSummaryCard mounted inside CatalystActivitySection.
 export { SuggestChildIssuesDialog } from './SuggestChildIssuesDialog';
 export { LinkSimilarItemsDialog } from './LinkSimilarItemsDialog';
 export { useImproveApplyHandlers } from './useImproveApplyHandlers';
