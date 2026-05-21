@@ -343,6 +343,22 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                 </Button>
               </div>
 
+              {/* design-critique 2026-05-21 — H6 P1: count chip — shows
+                  how many items are on the current page and whether more exist.
+                  Jira parity: "50 of 1000+" — hasNextPage drives the + suffix. */}
+              <span
+                data-testid="allwork-pagination-count"
+                style={{
+                  fontSize: 12,
+                  color: 'var(--ds-text-subtle, var(--cp-text-tertiary, #6B778C))',
+                  fontFamily: 'var(--cp-font-body)',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                }}
+              >
+                {filteredItems.length}{hasNextPage ? '+' : ''} items
+              </span>
+
               {/* Rows per page dropdown */}
               <Select
                 options={[
@@ -416,12 +432,48 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                 </Suspense>
               </div>
             ) : (
-              <div style={{
-                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'var(--cp-text-tertiary, var(--cp-text-secondary, #6B778C))', fontSize: 14,
-                fontFamily: 'var(--cp-font-body)',
-              }}>
-                Select an item to view details
+              /* design-critique 2026-05-21 — H10 P1: bare "Select an item" text
+                 upgraded to a proper Jira-parity empty state panel. */
+              <div
+                data-testid="allwork-empty-state"
+                style={{
+                  flex: 1, display: 'flex', flexDirection: 'column',
+                  alignItems: 'center', justifyContent: 'center',
+                  gap: 12, padding: '0 32px',
+                  fontFamily: 'var(--cp-font-body)',
+                }}
+              >
+                {/* Illustration — list-with-cursor SVG inline (no external asset dep) */}
+                <svg width="80" height="80" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                  <rect x="8" y="16" width="64" height="48" rx="6" fill="var(--ds-background-neutral, #F7F8F9)" stroke="var(--ds-border, #DFE1E6)" strokeWidth="1.5"/>
+                  <rect x="16" y="28" width="24" height="4" rx="2" fill="var(--ds-background-neutral-pressed, #C1C7D0)"/>
+                  <rect x="16" y="38" width="36" height="4" rx="2" fill="var(--ds-background-neutral-pressed, #C1C7D0)"/>
+                  <rect x="16" y="48" width="20" height="4" rx="2" fill="var(--ds-background-neutral-pressed, #C1C7D0)"/>
+                  <circle cx="56" cy="52" r="14" fill="var(--ds-background-information, #E9F2FF)" stroke="var(--ds-border-information, #CCE0FF)" strokeWidth="1.5"/>
+                  <path d="M56 46v6l4 2" stroke="var(--ds-icon-information, #1868DB)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{
+                    margin: '0 0 8px',
+                    fontSize: 16, fontWeight: 600,
+                    color: 'var(--ds-text, var(--cp-text-primary, #172B4D))',
+                    lineHeight: '20px',
+                  }}>
+                    Select a work item
+                  </p>
+                  <p
+                    data-testid="allwork-empty-state-subtitle"
+                    style={{
+                      margin: 0,
+                      fontSize: 14, fontWeight: 400,
+                      color: 'var(--ds-text-subtle, var(--cp-text-secondary, #44546F))',
+                      lineHeight: '20px', maxWidth: 280,
+                    }}
+                  >
+                    Choose an item from the list to view its details, comments, and related work.
+                  </p>
+                </div>
               </div>
             )
           )}
