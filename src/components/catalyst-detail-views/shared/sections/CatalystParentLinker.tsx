@@ -15,6 +15,7 @@ import { createPortal } from 'react-dom';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import SearchIcon from '@atlaskit/icon/core/search';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import CheckIcon from '@atlaskit/icon/glyph/check';
@@ -82,44 +83,65 @@ interface CandidateItem {
  * Renders parent as Atlaskit-style subtle lozenge with type-color background.
  * Jira renders parent links as a single clickable chip (key + summary).
  */
+const PILL_TEXT = 'var(--ds-text-inverse, #FFFFFF)';
 const PARENT_TOKENS: Record<string, { bg: string; text: string }> = {
-  Epic:               { bg: 'transparent', text: 'var(--ds-text-subtle, #505258)' },
-  Story:              { bg: 'transparent', text: 'var(--ds-text-subtle, #505258)' },
-  Feature:            { bg: 'transparent', text: 'var(--ds-text-subtle, #505258)' },
-  Defect:             { bg: 'transparent', text: 'var(--ds-text-subtle, #505258)' },
-  Bug:                { bg: 'transparent', text: 'var(--ds-text-subtle, #505258)' },
-  Task:               { bg: 'transparent', text: 'var(--ds-text-subtle, #505258)' },
-  'Production Incident': { bg: 'transparent', text: 'var(--ds-text-subtle, #505258)' },
-  'Business Request': { bg: 'transparent', text: 'var(--ds-text-subtle, #505258)' },
-  default:            { bg: 'transparent', text: 'var(--ds-text-subtle, #505258)' },
+  Epic:                  { bg: 'var(--ds-background-accent-purple-bolder, #6554C0)', text: PILL_TEXT },
+  Story:                 { bg: 'var(--ds-background-accent-green-bolder, #22A06B)', text: PILL_TEXT },
+  Feature:               { bg: 'var(--ds-background-accent-purple-bolder, #6554C0)', text: PILL_TEXT },
+  Task:                  { bg: 'var(--ds-background-accent-blue-bolder, #1D7AFC)', text: PILL_TEXT },
+  Subtask:               { bg: 'var(--ds-background-accent-blue-bolder, #1D7AFC)', text: PILL_TEXT },
+  Defect:                { bg: 'var(--ds-background-accent-red-bolder, #CA3521)', text: PILL_TEXT },
+  Bug:                   { bg: 'var(--ds-background-accent-red-bolder, #CA3521)', text: PILL_TEXT },
+  'QA Bug':              { bg: 'var(--ds-background-accent-red-bolder, #CA3521)', text: PILL_TEXT },
+  'Production Incident': { bg: 'var(--ds-background-accent-red-bolder, #CA3521)', text: PILL_TEXT },
+  'Change Request':      { bg: 'var(--ds-background-accent-orange-bolder, #B65C02)', text: PILL_TEXT },
+  'Business Request':    { bg: 'var(--ds-background-accent-gray-bolder, #44546F)', text: PILL_TEXT },
+  default:               { bg: 'var(--ds-background-accent-gray-bolder, #44546F)', text: PILL_TEXT },
 };
 /** Exported for unit tests only — do not use outside tests. */
 export const PARENT_TOKENS_FOR_TEST = PARENT_TOKENS;
 
 function ParentLozenge({
-  parentType, parentKey, parentSummary, onClick,
+  parentType, parentKey, parentSummary, onClick, onOpenParent,
 }: {
-  parentType: string; parentKey: string; parentSummary?: string; onClick?: () => void;
+  parentType: string; parentKey: string; parentSummary?: string;
+  onClick?: () => void;
+  onOpenParent?: () => void;
 }) {
   const tok = PARENT_TOKENS[parentType] ?? PARENT_TOKENS.default;
   return (
     <span
-      role="button"
-      onClick={onClick}
       data-cp-parent-lozenge
+      onClick={onClick}
       style={{
-        display: 'inline-flex', alignItems: 'center', gap: 4,
-        padding: '2px 0px', borderRadius: 0,
-        background: tok.bg, color: tok.text,
-        fontSize: 14, fontWeight: 400,
+        display: 'inline-flex', alignItems: 'center', gap: 6,
+        maxWidth: 360,
         cursor: onClick ? 'pointer' : 'default',
-        maxWidth: 360, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
       }}
       title={`${parentKey} ${parentSummary ?? ''}`}
     >
       <IssueIcon type={parentType} size={14} />
-      <span style={{ fontWeight: 400 }}>{parentKey}</span>
-      {parentSummary ? <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--ds-text-subtle, #505258)' }}>{parentSummary}</span> : null}
+      <span
+        role="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onOpenParent?.();
+        }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'underline'; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'none'; }}
+        style={{
+          display: 'inline-block',
+          padding: '2px 8px', borderRadius: 4,
+          background: tok.bg, color: tok.text,
+          fontSize: 14, fontWeight: 400,
+          cursor: 'pointer',
+          maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          textDecorationColor: 'currentColor',
+          textUnderlineOffset: '2px',
+        }}
+      >
+        {parentKey}{parentSummary ? ` ${parentSummary}` : ''}
+      </span>
     </span>
   );
 }
@@ -485,6 +507,10 @@ function SingleParentPicker({
           parentKey={currentParent.issue_key}
           parentSummary={currentParent.summary}
           onClick={() => setShowPicker(!showPicker)}
+          onOpenParent={() => {
+            if (onOpenItem) onOpenItem(currentParent.issue_key);
+            else useGlobalSearchStore.getState().openDetail({ id: currentParent.issue_key });
+          }}
         />
       ) : hasRawParent ? (
         /* Resolve returned null OR still loading — surface the raw key so
@@ -507,6 +533,11 @@ function SingleParentPicker({
           parentKey={rawParentKey!}
           parentSummary={(issue as any)?.parent_summary}
           onClick={() => setShowPicker(!showPicker)}
+          onOpenParent={() => {
+            if (!rawParentKey) return;
+            if (onOpenItem) onOpenItem(rawParentKey);
+            else useGlobalSearchStore.getState().openDetail({ id: rawParentKey });
+          }}
         />
       ) : (
         <SidebarAddTrigger label="Add parent" isOpen={showPicker} onClick={() => setShowPicker(!showPicker)} />
