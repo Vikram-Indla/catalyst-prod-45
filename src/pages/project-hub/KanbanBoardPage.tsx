@@ -649,6 +649,35 @@ export default function KanbanBoardPage() {
   const groups = useMemo(() => groupBy === 'none' ? [] : groupIssues(filtered, groupBy), [filtered, groupBy]);
   const total = groupBy === 'none' ? Object.values(colMap).reduce((a, ids) => a + ids.length, 0) : filtered.length;
 
+  /* When the user switches groupBy to 'epic', collapse all swimlane rows so the
+     board opens in a compact overview. Other groupings start fully expanded.
+     prevGroupByRef guards against re-firing when groups changes (new issues loaded)
+     while groupBy stays the same. */
+  const prevGroupByRef = useRef<GroupByMode>(groupBy);
+  useEffect(() => {
+    if (prevGroupByRef.current === groupBy) return;
+    prevGroupByRef.current = groupBy;
+    if (groupBy === 'epic') {
+      setCollapsedSwimlanes(new Set(groups.map((g: any) => g.groupKey)));
+    } else {
+      setCollapsedSwimlanes(new Set());
+    }
+  }, [groupBy, groups]);
+
+  /* Computed expand/collapse availability for the View Settings panel */
+  const hasSwimlanes = groupBy !== 'none';
+  const canExpandAll = hasSwimlanes && collapsedSwimlanes.size > 0;
+  const canCollapseAll = hasSwimlanes && groups.length > 0 && collapsedSwimlanes.size < groups.length;
+
+  /* PragmaticBoard (group-by-none) uses compact card padding to prevent the
+     cluttered look caused by 16px comfortable padding on every card when all
+     issues pile into columns without swimlane grouping.
+     Swimlane mode keeps the user-selected density unchanged. */
+  const pragmaticD = useMemo(
+    () => ({ ...d, cardPad: d.cardPad === '16px' ? '8px' : d.cardPad }),
+    [d],
+  );
+
   /* ═══ CARD ACTIONS ═══ */
 
   const handleSaveSummary = useCallback(async (issueId: string, newSummary: string) => {
@@ -1308,6 +1337,9 @@ export default function KanbanBoardPage() {
             return next;
           });
         }}
+        hasSwimlanes={hasSwimlanes}
+        canExpandAll={canExpandAll}
+        canCollapseAll={canCollapseAll}
         enableDensity={ENABLE_KANBAN_V2}
         density={density}
         onDensityChange={onDensityChange}

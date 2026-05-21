@@ -145,6 +145,12 @@ export interface KanbanToolbarProps<TGroupBy extends string = string> {
   onUpdateViewSettings: (patch: Partial<KanbanViewSettings>) => void;
   onExpandAll: () => void;
   onCollapseAll: () => void;
+  /** False when groupBy==='none' — hides Swimlanes section in ViewSettingsPanel */
+  hasSwimlanes?: boolean;
+  /** Expand all disabled when all swimlanes already open */
+  canExpandAll?: boolean;
+  /** Collapse all disabled when all swimlanes already closed */
+  canCollapseAll?: boolean;
 
   /* Density (Kanban V2 flag controls visibility) */
   enableDensity: boolean;
@@ -187,6 +193,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
   showAdvancedFilter, onShowAdvancedFilterChange,
   advancedFilters, onAdvancedFiltersChange, advFilterCount,
   viewSettings, onUpdateViewSettings, onExpandAll, onCollapseAll,
+  hasSwimlanes, canExpandAll, canCollapseAll,
   enableDensity, density, onDensityChange,
   mapStatusesPath,
   projectKey,
@@ -335,13 +342,47 @@ export function KanbanToolbar<TGroupBy extends string = string>({
 
       <div className="flex-1" />
 
-      {/* Board menu ••• */}
+      {/* View settings gear — direct access button (Jira parity: settings icon, no dropdown intermediary) */}
+      <div style={{ position: 'relative' }}>
+        <button
+          onClick={() => { onShowViewSettingsChange(v => !v); onShowBoardMenuChange(false); }}
+          className="focus-visible:ring-2 focus-visible:ring-offset-1"
+          style={{
+            width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            borderRadius: 3, border: 'none',
+            background: showViewSettings ? tk.surfaceHover : 'transparent',
+            cursor: 'pointer', transition: 'background 150ms ease', outline: 'none',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
+          onMouseLeave={e => { e.currentTarget.style.background = showViewSettings ? tk.surfaceHover : 'transparent'; }}
+          aria-label="View settings"
+          aria-pressed={showViewSettings}
+        >
+          <SettingsIcon label="View settings" size="small" primaryColor={showViewSettings ? tk.selectedAccent : tk.textSecondary} />
+        </button>
+        {showViewSettings && (
+          <ViewSettingsPanel
+            settings={viewSettings}
+            onUpdate={onUpdateViewSettings}
+            onExpandAll={onExpandAll}
+            onCollapseAll={onCollapseAll}
+            onClose={() => onShowViewSettingsChange(false)}
+            tk={tk}
+            density={enableDensity ? density : undefined}
+            onDensityChange={enableDensity ? onDensityChange : undefined}
+            hasSwimlanes={hasSwimlanes}
+            canExpandAll={canExpandAll}
+            canCollapseAll={canCollapseAll}
+          />
+        )}
+      </div>
+
+      {/* Board menu ••• — Map statuses, Advanced filter, Standup, Archive */}
       <div ref={boardMenuRef} style={{ position: 'relative' }}>
         <button
           onClick={() => { onShowBoardMenuChange(v => !v); onShowViewSettingsChange(false); }}
           className="focus-visible:ring-2 focus-visible:ring-offset-1"
           style={{
-            /* Jira parity: 32h, 3px radius, transparent */
             width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
             borderRadius: 3, border: 'none', background: 'transparent',
             cursor: 'pointer', transition: 'background 150ms ease', outline: 'none',
@@ -352,7 +393,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
         >
           <MoreIcon label="Board menu" size="small" primaryColor={tk.textSecondary} />
         </button>
-        {showBoardMenu && !showViewSettings && (
+        {showBoardMenu && (
           <div
             style={{
               position: 'absolute', top: '100%', right: 0, marginTop: 6,
@@ -367,11 +408,6 @@ export function KanbanToolbar<TGroupBy extends string = string>({
             <div style={{ padding: '6px 16px 4px', fontSize: 11, fontWeight: 600, color: tk.textMuted, letterSpacing: '0.04em' }}>
               Board options
             </div>
-            <BoardMenuItem
-              icon={<SettingsIcon label="" size="small" primaryColor={tk.textSecondary} />}
-              label="View settings"
-              onClick={() => { onShowBoardMenuChange(false); onShowViewSettingsChange(true); }}
-            />
             {mapStatusesPath && (
               <BoardMenuItem
                 icon={<LocationIcon label="" size="small" primaryColor={tk.textSecondary} />}
@@ -379,7 +415,6 @@ export function KanbanToolbar<TGroupBy extends string = string>({
                 onClick={() => { onShowBoardMenuChange(false); navigate(mapStatusesPath); }}
               />
             )}
-            <div style={{ height: 1, background: tk.borderSubtle, margin: '6px 12px' }} />
             <BoardMenuItem
               icon={<FilterIcon label="" size="small" primaryColor={tk.textSecondary} />}
               label="Advanced filter"
@@ -407,18 +442,6 @@ export function KanbanToolbar<TGroupBy extends string = string>({
               </>
             )}
           </div>
-        )}
-        {showViewSettings && (
-          <ViewSettingsPanel
-            settings={viewSettings}
-            onUpdate={onUpdateViewSettings}
-            onExpandAll={onExpandAll}
-            onCollapseAll={onCollapseAll}
-            onClose={() => onShowViewSettingsChange(false)}
-            tk={tk}
-            density={enableDensity ? density : undefined}
-            onDensityChange={enableDensity ? onDensityChange : undefined}
-          />
         )}
         {showAdvancedFilter && (
           <AdvancedFilterPanel

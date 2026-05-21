@@ -18,6 +18,12 @@ interface ViewSettingsPanelProps {
   /** V2 (ENABLE_KANBAN_V2): if both provided, shows the Density section. */
   density?: KanbanDensity;
   onDensityChange?: (d: KanbanDensity) => void;
+  /** False when groupBy==='none' — hides the Swimlanes section entirely */
+  hasSwimlanes?: boolean;
+  /** Expand all button disabled when every swimlane is already open */
+  canExpandAll?: boolean;
+  /** Collapse all button disabled when every swimlane is already closed */
+  canCollapseAll?: boolean;
 }
 
 /* ── Custom Toggle Switch ── */
@@ -76,7 +82,13 @@ function Divider({ tk }: { tk: KanbanThemeTokens }) {
   return <div style={{ height: 1, background: tk.borderSubtle, margin: '4px 0' }} />;
 }
 
-export function ViewSettingsPanel({ settings, onUpdate, onExpandAll, onCollapseAll, onClose, tk, density, onDensityChange }: ViewSettingsPanelProps) {
+export function ViewSettingsPanel({
+  settings, onUpdate, onExpandAll, onCollapseAll, onClose, tk,
+  density, onDensityChange,
+  hasSwimlanes = true,
+  canExpandAll = true,
+  canCollapseAll = true,
+}: ViewSettingsPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Close on outside click
@@ -251,32 +263,51 @@ export function ViewSettingsPanel({ settings, onUpdate, onExpandAll, onCollapseA
         })}
       </div>
 
-      <Divider tk={tk} />
-
-      {/* Swimlanes section */}
-      <SectionHeader title="Swimlanes" tk={tk} />
-      <div className="flex items-center gap-4" style={{ padding: '6px 0 4px' }}>
-        <button
-          onClick={onExpandAll}
-          style={{
-            fontSize: 13, color: tk.selectedAccent, background: 'none',
-            border: 'none', cursor: 'pointer', fontWeight: 500, padding: 0,
-            fontFamily: 'var(--cp-font-body)',
-          }}
-        >
-          Expand all
-        </button>
-        <button
-          onClick={onCollapseAll}
-          style={{
-            fontSize: 13, color: tk.selectedAccent, background: 'none',
-            border: 'none', cursor: 'pointer', fontWeight: 500, padding: 0,
-            fontFamily: 'var(--cp-font-body)',
-          }}
-        >
-          Collapse all
-        </button>
-      </div>
+      {/* Swimlanes section — hidden when groupBy==='none' (no swimlanes) */}
+      {hasSwimlanes && (
+        <>
+          <Divider tk={tk} />
+          <SectionHeader title="Swimlanes" tk={tk} />
+          <div className="flex items-center gap-4" style={{ padding: '6px 0 4px' }}>
+            <button
+              onClick={canExpandAll ? onExpandAll : undefined}
+              disabled={!canExpandAll}
+              style={{
+                fontSize: 13,
+                color: canExpandAll ? tk.selectedAccent : tk.textMuted,
+                background: 'none',
+                border: 'none',
+                cursor: canExpandAll ? 'pointer' : 'default',
+                fontWeight: 500,
+                padding: 0,
+                fontFamily: 'var(--cp-font-body)',
+                opacity: canExpandAll ? 1 : 0.45,
+                transition: 'opacity 120ms ease, color 120ms ease',
+              }}
+            >
+              Expand all
+            </button>
+            <button
+              onClick={canCollapseAll ? onCollapseAll : undefined}
+              disabled={!canCollapseAll}
+              style={{
+                fontSize: 13,
+                color: canCollapseAll ? tk.selectedAccent : tk.textMuted,
+                background: 'none',
+                border: 'none',
+                cursor: canCollapseAll ? 'pointer' : 'default',
+                fontWeight: 500,
+                padding: 0,
+                fontFamily: 'var(--cp-font-body)',
+                opacity: canCollapseAll ? 1 : 0.45,
+                transition: 'opacity 120ms ease, color 120ms ease',
+              }}
+            >
+              Collapse all
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
