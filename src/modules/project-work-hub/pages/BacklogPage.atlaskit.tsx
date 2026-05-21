@@ -398,11 +398,12 @@ const BANNED_COLUMN_IDS = new Set([
 // and from common Jira theme-picker gradient hues for the gradients.
 // Stored in `projects.settings.background` as { type, value } where
 // `value` is the CSS background string applied directly to the chrome
-// band. Default chrome background `#E9F2FE` is the Jira BAU list-view
-// chrome blue (probed 2026-04-27).
-const BG_DEFAULT = 'var(--ds-background-selected, #E9F2FE)';
+// band. Default is plain white (var(--ds-surface)) — parity with
+// AllWork. (was: var(--ds-background-selected, #E9F2FE) — wrong semantic
+// token; directed to white by Vikram 2026-05-21.)
+const BG_DEFAULT = 'var(--ds-surface, #FFFFFF)';
 const BG_SOLIDS: Array<{ name: string; value: string }> = [
-  { name: 'Sky',     value: 'var(--ds-background-selected, #E9F2FE)' }, // Jira BAU chrome (default)
+  { name: 'Sky',     value: 'var(--ds-surface, #FFFFFF)' }, // was blue (#E9F2FE); updated to white 2026-05-21
   { name: 'Mint',    value: '#DCFFF1' },
   { name: 'Lemon',   value: '#FFF7D6' },
   { name: 'Peach',   value: '#FFE2D5' },
@@ -2478,17 +2479,9 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       // the chrome band, not inside the table card). The `title` prop is
       // intentionally NOT passed; passing it would double-render the H1.
       flush
-      // Apr 27, 2026 — jira-compare iter 3: opt in to Jira's blue page
-      // chrome (#E9F2FE probed at https://digital-transformation.atlassian.net/jira/software/c/projects/BAU/list?groupBy=status)
-      // and the white-card-with-margin geometry. cardPadding {x:48,y:16}
-      // matches Jira's card-from-chrome offsets (probed card x=48 on a
-      // 1214px viewport). cardBorder mirrors Jira's BaseTable subtle
-      // stroke. SCOPED to this surface only — Dashboard / Releases /
-      // other Project Hub views still use the V3 flat-white shell.
-      // Apr 28, 2026: chrome bg now resolves from
-      // `projects.settings.background` (Set project background picker).
-      // Falls back to BG_DEFAULT (#E9F2FE) when unset → preserves the
-      // Jira-parity look for projects that haven't picked a background.
+      // 2026-05-21: chromeBg resolves from projects.settings.background
+      // (project background picker). Falls back to BG_DEFAULT which is
+      // now var(--ds-surface, #FFFFFF) — plain white matching AllWork.
       chromeBg={chromeBgValue}
       // Apr 27 2026 (jira-compare regression iter 4 — Vikram fullscreen
       // probe). Jira at vp 2133: baseTable.x=47, projectHeader.x=0,
