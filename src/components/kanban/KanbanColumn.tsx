@@ -9,6 +9,7 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { SortableCard } from './SortableCard';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
+import { SPACING_TOKENS } from './kanban-tokens';
 import type { AssigneeOption } from './AssigneePickerPopover';
 import type { VisibleFields } from '@/hooks/useKanbanViewSettings';
 
@@ -119,7 +120,7 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
         <SortableContext items={issueIds} strategy={verticalListSortingStrategy}>
           {issueIds.length === 0 && (
             <div className="flex flex-col items-center justify-center" style={{
-              minHeight: 100, color: tk.textDisabled, fontSize: 12, gap: 8,
+              minHeight: 100, color: tk.textDisabled, fontSize: 12, gap: SPACING_TOKENS.gap8,
               fontFamily: 'var(--cp-font-body)',
             }}>
               {isOver ? (

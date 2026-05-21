@@ -9,6 +9,7 @@ import { PriorityBars, normalisePriority } from '@/components/shared/PriorityInd
 import { KanbanAvatar } from './KanbanAvatar';
 import type { GroupByMode } from './kanban-types';
 import type { KanbanThemeTokens, KanbanDensity } from './kanban-tokens';
+import { SPACING_TOKENS } from './kanban-tokens';
 
 /* ═══ AVATAR STACK FILTER ═══ */
 
@@ -227,7 +228,7 @@ export function QuickFilterDropdown({ selected, onChange, tk }: {
       <button onClick={() => setOpen(p => !p)}
         className="focus-visible:ring-2 focus-visible:ring-offset-1"
         style={{
-          display: 'inline-flex', alignItems: 'center', gap: 8, height: 34, padding: '0 12px',
+          display: 'inline-flex', alignItems: 'center', gap: SPACING_TOKENS.gap8, height: 34, padding: '0 12px',
           borderRadius: 6, border: active ? `2px solid ${tk.selectedAccent}` : `1px solid ${tk.border}`,
           background: active ? tk.dropHighlight : tk.surfaceBg, color: active ? tk.selectedAccent : tk.textSecondary,
           fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
@@ -319,7 +320,7 @@ export function GroupByBtn({ value, onChange, tk }: {
             return (
               <button key={o.key} onClick={() => { onChange(o.key); setOpen(false); }}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+                  display: 'flex', alignItems: 'center', gap: SPACING_TOKENS.gap8, width: '100%',
                   padding: '8px 12px', border: 'none', borderRadius: 4,
                   background: sel ? tk.dropHighlight : 'transparent',
                   cursor: 'pointer', fontSize: 13.5,

@@ -14,6 +14,7 @@ import {
 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { KanbanThemeTokens } from '@/components/kanban/kanban-tokens';
+import { SPACING_TOKENS } from '@/components/kanban/kanban-tokens';
 
 /* ═══ Types ═══ */
 
@@ -209,7 +210,7 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
           {activeCount > 0 && (
             <button onClick={clearAll} style={{
               fontSize: 12, color: 'var(--ds-text-danger, var(--cp-danger, #DC2626))', background: 'none', border: 'none',
-              cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4,
+              cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: SPACING_TOKENS.gap4,
             }}>
               <Trash2 size={13} /> Clear all
             </button>
@@ -478,7 +479,7 @@ function DatePickerBtn({
     <Popover>
       <PopoverTrigger asChild>
         <button style={{
-          display: 'flex', alignItems: 'center', gap: 4,
+          display: 'flex', alignItems: 'center', gap: SPACING_TOKENS.gap4,
           height: 28, padding: '0 8px', borderRadius: 4,
           border: `1px solid ${tk.inputBorder}`, background: tk.inputBg,
           cursor: 'pointer', fontSize: 11, color: value ? tk.textPrimary : tk.textMuted,

@@ -11,7 +11,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { KanbanAvatar } from './KanbanAvatar';
 import { SortableCard } from './SortableCard';
-import { KANBAN_COLUMNS as DEFAULT_KANBAN_COLUMNS, STATUS_TO_COL_ID as DEFAULT_STATUS_TO_COL_ID } from './kanban-tokens';
+import { KANBAN_COLUMNS as DEFAULT_KANBAN_COLUMNS, STATUS_TO_COL_ID as DEFAULT_STATUS_TO_COL_ID, SPACING_TOKENS } from './kanban-tokens';
 import type { BoardIssue, GroupBucket, GroupByMode } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
 import type { AssigneeOption } from './AssigneePickerPopover';
@@ -110,7 +110,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
         onClick={() => setOpen(o => !o)}
         className="flex items-center w-full text-left"
         style={{
-          gap: 8,
+          gap: SPACING_TOKENS.gap8,
           padding: '12px 16px',
           background: tk.surfaceAlt,
           border: 'none',
