@@ -262,6 +262,25 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
+      // Look up the body so we can clean up any uploaded images.
+      const { data: row } = await supabase
+        .from('ph_comments')
+        .select('body')
+        .eq('id', id)
+        .maybeSingle();
+      const body = (row as { body?: string } | null)?.body ?? '';
+      const paths: string[] = [];
+      const re = /!\[[^\]]*\]\(([^)]+)\)/g;
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(body)) !== null) {
+        const url = m[1];
+        const marker = '/storage/v1/object/public/attachments/';
+        const idx = url.indexOf(marker);
+        if (idx !== -1) paths.push(url.slice(idx + marker.length));
+      }
+      if (paths.length > 0) {
+        await supabase.storage.from('attachments').remove(paths);
+      }
       await supabase.from('ph_comments').delete().eq('id', id);
     },
     onSuccess: () => {
@@ -348,6 +367,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
         defaultTab="all"
         defaultSortOrder="newest"
         jiraUserMap={jiraUserMap}
+        workItemId={resolvedWorkItemId ?? undefined}
       />
     </div>
   );

@@ -43,6 +43,9 @@ export interface ActivityPanelProps {
   /** Maps Jira accountId -> display name for resolving [~accountid:xxx] mentions. */
   jiraUserMap?: JiraUserMap;
 
+  /** Work item id — threaded into CommentEditor for image uploads. */
+  workItemId?: string;
+
   className?: string;
 }
 
@@ -64,6 +67,7 @@ function ActivityPanel({
   defaultTab = 'all',
   defaultSortOrder = 'oldest', // jira-compare S-50: Jira's default is Oldest first
   jiraUserMap,
+  workItemId,
   className,
 }: ActivityPanelProps) {
   const [activeTab, setActiveTab] = useState<ActivityTabKey>(defaultTab);
@@ -189,6 +193,7 @@ function ActivityPanel({
           quickReplies={quickReplies}
           isSubmitting={isSubmitting}
           isLoading={isLoadingComments}
+          workItemId={workItemId}
         />
       )}
 
@@ -226,6 +231,7 @@ function ActivityPanel({
             quickReplies={quickReplies}
             isSubmitting={isSubmitting}
             shortcutHint="Pro tip: press **M** to comment"
+            workItemId={workItemId}
           />
 
           <div className="mt-4 divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,var(--cp-ink-1, #2E2E2E))]">
@@ -247,44 +253,19 @@ function ActivityPanel({
                   if (editingId === c.id) {
                     return (
                       <div key={item.id} className="py-3">
-                        <div className="rounded-md border border-[#4C9AFF] dark:border-[#4C9AFF] p-3">
-                          <textarea
-                            value={editValue}
-                            onChange={(e) => setEditValue(e.target.value)}
-                            className="w-full resize-none border-0 bg-transparent text-[14px] text-[var(--ds-text,#292A2E)] dark:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))] focus:outline-none focus:ring-0 min-h-[60px]"
-                            autoFocus
-                            onKeyDown={(e) => {
-                              if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-                                if (onEditComment) {
-                                  onEditComment(c.id, editValue);
-                                  setEditingId(null);
-                                }
-                              }
-                              if (e.key === 'Escape') setEditingId(null);
-                            }}
-                          />
-                          <div className="flex items-center gap-2 mt-2">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (onEditComment) {
-                                  onEditComment(c.id, editValue);
-                                  setEditingId(null);
-                                }
-                              }}
-                              className="text-[12px] font-medium text-[var(--ds-text-brand,var(--cp-workstream-catalyst-primary, #2563EB))] hover:underline"
-                            >
-                              Save
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setEditingId(null)}
-                              className="text-[12px] font-medium text-[var(--ds-text-subtlest,var(--cp-text-secondary, #6B778C))] hover:text-[var(--ds-text,var(--cp-text-primary, var(--cp-text-inverse, #172B4D)))] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:text-[var(--ds-text,var(--cp-bg-neutral, #EDEDED))]"
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        </div>
+                        <CommentEditor
+                          currentUser={currentUser}
+                          mentionableUsers={mentionableUsers}
+                          defaultValue={c.content}
+                          autoFocus
+                          onSubmit={async (content) => {
+                            if (!onEditComment) return;
+                            await onEditComment(c.id, content);
+                            setEditingId(null);
+                          }}
+                          onCancel={() => setEditingId(null)}
+                          workItemId={workItemId}
+                        />
                       </div>
                     );
                   }

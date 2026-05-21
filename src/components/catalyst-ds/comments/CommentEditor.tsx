@@ -29,6 +29,7 @@ import {
   Loader2,
 } from '@/lib/atlaskit-icons';
 import type { CdsUser, CdsQuickReply } from '../types';
+import { uploadDescriptionImage } from '@/components/shared/rich-text/atlaskit/supabaseImageUpload';
 
 export interface CommentEditorProps {
   currentUser?: CdsUser;
@@ -42,6 +43,8 @@ export interface CommentEditorProps {
   shortcutHint?: string;
   autoFocus?: boolean;
   className?: string;
+  /** Work item id — required to scope uploaded comment images per issue. */
+  workItemId?: string;
 }
 
 interface ToolbarButtonProps {
@@ -56,6 +59,7 @@ function ToolbarButton({ icon, title, onClick, active }: ToolbarButtonProps) {
     <button
       type="button"
       title={title}
+      onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
       className={cn(
         'h-7 w-7 flex items-center justify-center rounded',
@@ -89,18 +93,46 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
       shortcutHint = 'Pro tip: press M to comment',
       autoFocus = false,
       className,
+      workItemId,
     },
     ref
   ) => {
-    const [value, setValue] = useState(defaultValue);
+    // Split incoming defaultValue into plain text + image attachments so
+    // edit-mode shows the image preview (not raw markdown).
+    const initialSplit = React.useMemo(() => {
+      const re = /!\[([^\]]*)\]\(([^)]+)\)/g;
+      const imgs: { url: string; filename: string }[] = [];
+      const text = defaultValue.replace(re, (_, alt, url) => {
+        imgs.push({ url, filename: alt || 'image' });
+        return '';
+      }).replace(/\n{3,}/g, '\n\n').trim();
+      return { text, imgs };
+    }, [defaultValue]);
+
+    const [value, setValue] = useState(initialSplit.text);
     const [mentionOpen, setMentionOpen] = useState(false);
     const [mentionSearch, setMentionSearch] = useState('');
     const [isFocused, setIsFocused] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [attachedImages, setAttachedImages] = useState<{ url: string; filename: string }[]>(initialSplit.imgs);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
       if (autoFocus) textareaRef.current?.focus();
     }, [autoFocus]);
+
+    // Re-sync the split when defaultValue changes (e.g. edit-mode mounts).
+    // Belt-and-braces — useState's initial value already covers fresh mounts;
+    // this catches any remount-without-key edge case.
+    const lastDefaultRef = useRef(defaultValue);
+    useEffect(() => {
+      if (defaultValue !== lastDefaultRef.current) {
+        lastDefaultRef.current = defaultValue;
+        setValue(initialSplit.text);
+        setAttachedImages(initialSplit.imgs);
+      }
+    }, [defaultValue, initialSplit]);
 
     useEffect(() => {
       const handleKeydown = (e: KeyboardEvent) => {
@@ -117,10 +149,15 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
 
     const handleSubmit = useCallback(async () => {
       const trimmed = value.trim();
-      if (!trimmed) return;
-      await onSubmit(trimmed);
+      const imageMarkdown = attachedImages
+        .map((img) => `![${img.filename}](${img.url})`)
+        .join('\n');
+      const combined = [trimmed, imageMarkdown].filter(Boolean).join('\n\n');
+      if (!combined) return;
+      await onSubmit(combined);
       setValue('');
-    }, [value, onSubmit]);
+      setAttachedImages([]);
+    }, [value, attachedImages, onSubmit]);
 
     const handleKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -155,6 +192,42 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
       []
     );
 
+    const insertAtCursor = useCallback((text: string) => {
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      setValue((prev) => prev.slice(0, start) + text + prev.slice(end));
+      requestAnimationFrame(() => {
+        textarea.focus();
+        const pos = start + text.length;
+        textarea.setSelectionRange(pos, pos);
+      });
+    }, []);
+
+    const handleImagePick = useCallback(() => {
+      // Keep the toolbar open while the file picker runs.
+      fileInputRef.current?.click();
+    }, []);
+
+    const handleImageSelected = useCallback(
+      async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        e.target.value = '';
+        if (!file || !workItemId) return;
+        setUploading(true);
+        try {
+          const uploaded = await uploadDescriptionImage(file, { workItemId });
+          if (uploaded?.url) {
+            setAttachedImages((prev) => [...prev, { url: uploaded.url, filename: uploaded.filename }]);
+          }
+        } finally {
+          setUploading(false);
+        }
+      },
+      [workItemId],
+    );
+
     const wrapText = useCallback((prefix: string, suffix: string) => {
       const textarea = textareaRef.current;
       if (!textarea) return;
@@ -169,7 +242,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
       });
     }, [value]);
 
-    const isExpanded = isFocused || value.length > 0;
+    const isExpanded = isFocused || value.length > 0 || attachedImages.length > 0;
 
     return (
       <div ref={ref} className={cn('space-y-2', className)}>
@@ -200,7 +273,11 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                   <ToolbarButton icon={<Underline />} title="Underline" onClick={() => wrapText('<u>', '</u>')} />
                   <ToolbarSep />
                   <ToolbarButton icon={<List />} title="Bullet list" onClick={() => wrapText('\n- ', '')} />
-                  <ToolbarButton icon={<Image />} title="Add image" onClick={() => wrapText('![', '](url)')} />
+                  <ToolbarButton
+                    icon={uploading ? <Loader2 className="animate-spin" /> : <Image />}
+                    title={uploading ? 'Uploading…' : 'Add image'}
+                    onClick={handleImagePick}
+                  />
                   <ToolbarButton icon={<Link2 />} title="Add link" onClick={() => wrapText('[', '](url)')} />
                   <ToolbarSep />
                   <ToolbarButton icon={<Undo2 />} title="Undo" onClick={() => document.execCommand('undo')} />
@@ -275,6 +352,13 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                 </div>
               )}
 
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={handleImageSelected}
+              />
               <textarea
                 ref={textareaRef}
                 value={value}
@@ -292,6 +376,29 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                   'transition-all duration-150'
                 )}
               />
+              {/* Attached-image previews — rendered from state, not the textarea text. */}
+              {attachedImages.length > 0 && (
+                <div className="flex flex-wrap gap-2 px-3 pb-2">
+                  {attachedImages.map((img, i) => (
+                    <div key={`${img.url}-${i}`} className="relative">
+                      <img
+                        src={img.url}
+                        alt=""
+                        className="h-20 max-w-[200px] rounded border border-[var(--ds-border,#DFE1E6)] object-cover"
+                      />
+                      <button
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => setAttachedImages((prev) => prev.filter((_, idx) => idx !== i))}
+                        aria-label="Remove image"
+                        className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-[var(--ds-background-neutral-bold,#44546F)] text-white flex items-center justify-center text-[12px] leading-none"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {isExpanded && (
@@ -300,7 +407,7 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                   <Button
                     size="sm"
                     onClick={handleSubmit}
-                    disabled={!value.trim() || isSubmitting}
+                    disabled={(!value.trim() && attachedImages.length === 0) || isSubmitting}
                     className="h-8 px-4 text-[13px] font-medium"
                   >
                     {isSubmitting ? (
