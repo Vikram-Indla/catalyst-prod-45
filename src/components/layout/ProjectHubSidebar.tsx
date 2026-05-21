@@ -22,6 +22,7 @@ import {
   ChevronRight,
   Clock,
   X,
+  Filter,
 } from '@/lib/atlaskit-icons';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -130,6 +131,7 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
             // unified scope signal without needing a section header to
             // carry it.
             { id: 'allwork', title: 'Project Work', path: `${base}/allwork`, icon: GitBranch, exact: false },
+            { id: 'filters', title: 'Project Filters', path: `${base}/filters`, icon: Filter, exact: false },
             // Story / Epic / Feature Backlog pages were removed — their scope
             // is fully covered by the unified Backlog view above. Routes now
             // redirect to /backlog; source files remain on disk as-is.

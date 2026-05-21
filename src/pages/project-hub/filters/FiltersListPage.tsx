@@ -6,15 +6,14 @@ import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import AkAvatar from '@atlaskit/avatar';
-import { useFiltersForProject, useStarFilter, type SavedFilterFull } from '@/hooks/workhub/useSavedFilters';
+import { useFiltersForProject, useStarFilter, useDeleteSavedFilter, type SavedFilterFull } from '@/hooks/workhub/useSavedFilters';
 import { FilterHealthBadge } from '@/components/filters/FilterHealthBadge';
 import { FilterKebabMenu } from '@/components/filters/FilterKebabMenu';
 import { FilterSaveModal } from '@/components/filters/FilterSaveModal';
 import { Star, StarOff, Plus, Search } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
-import type { HubType } from './FiltersListPage';
 
-export { type HubType };
+export type HubType = 'project' | 'product';
 
 interface FiltersListPageProps {
   hubType?: HubType;
