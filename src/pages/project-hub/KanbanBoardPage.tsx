@@ -1034,7 +1034,7 @@ export default function KanbanBoardPage() {
       {key && <ProjectHeaderChip projectKey={key} />}
       {/* ProjectTabBar removed 2026-05-02 per Vikram — sidebar owns nav. */}
       {/* ── Page header with board switcher ── */}
-      <div className="flex items-center gap-2" style={{ padding: '0 16px', minHeight: 48, flexShrink: 0, position: 'relative' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 16px', minHeight: 48, flexShrink: 0, position: 'relative' }}>
         <span style={{ fontSize: 20, fontWeight: 600, color: tk.textPrimary, fontFamily: 'var(--cp-font-heading)' }}>
           Board
         </span>
@@ -1044,7 +1044,7 @@ export default function KanbanBoardPage() {
             onClick={() => setShowBoardSwitcher(v => !v)}
             style={{
               display: 'flex', alignItems: 'center', gap: 4,
-              height: 28, padding: '0 10px',
+              height: 32, padding: '0 8px',
               background: showBoardSwitcher ? tk.surfaceHover : 'transparent',
               border: `1px solid ${showBoardSwitcher ? tk.border : 'transparent'}`,
               borderRadius: 4, cursor: 'pointer', fontSize: 13, fontWeight: 500,
@@ -1055,7 +1055,7 @@ export default function KanbanBoardPage() {
             onMouseLeave={e => { if (!showBoardSwitcher) e.currentTarget.style.background = 'transparent'; }}
           >
             {projectBoards.find(b => b.id === resolvedBoardId)?.name ?? 'Board'}
-            <span style={{ fontSize: 10, marginLeft: 2 }}>▾</span>
+            <span style={{ fontSize: 10, marginLeft: 4 }}>▾</span>
           </button>
           {showBoardSwitcher && (
             <div
@@ -1063,8 +1063,8 @@ export default function KanbanBoardPage() {
                 position: 'absolute', top: 'calc(100% + 4px)', left: 0,
                 width: 220, background: tk.surfaceBg,
                 border: `1px solid ${tk.border}`, borderRadius: 8,
-                boxShadow: '0 8px 24px rgba(0,0,0,0.16)', zIndex: 60,
-                padding: '6px 0',
+                boxShadow: 'var(--ds-shadow-overlay, 0 8px 24px rgba(0,0,0,0.16))', zIndex: 60,
+                padding: '8px 0',
               }}
               onMouseDown={e => e.stopPropagation()}
             >
@@ -1073,7 +1073,7 @@ export default function KanbanBoardPage() {
                   key={b.id}
                   onClick={() => { setActiveBoardId(b.id); setShowBoardSwitcher(false); }}
                   style={{
-                    width: '100%', textAlign: 'left', padding: '8px 14px',
+                    width: '100%', textAlign: 'left', padding: '8px 16px',
                     background: b.id === resolvedBoardId ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent',
                     border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500,
                     color: b.id === resolvedBoardId ? 'var(--ds-link, var(--cp-primary-60, #0052CC))' : tk.textPrimary,
@@ -1089,7 +1089,7 @@ export default function KanbanBoardPage() {
               <button
                 onClick={() => { setShowBoardSwitcher(false); setNewBoardName(''); setShowCreateBoard(true); }}
                 style={{
-                  width: '100%', textAlign: 'left', padding: '8px 14px',
+                  width: '100%', textAlign: 'left', padding: '8px 16px',
                   background: 'transparent', border: 'none', cursor: 'pointer',
                   fontSize: 13, fontWeight: 500,
                   color: 'var(--ds-link, var(--cp-primary-60, #0052CC))', fontFamily: 'var(--cp-font-body)',
@@ -1109,7 +1109,7 @@ export default function KanbanBoardPage() {
         <div
           style={{
             position: 'fixed', inset: 0, zIndex: 200,
-            background: 'rgba(9,30,66,0.54)',
+            background: 'var(--ds-blanket, rgba(9,30,66,0.54))',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
           onClick={() => setShowCreateBoard(false)}
@@ -1117,7 +1117,7 @@ export default function KanbanBoardPage() {
           <div
             style={{
               width: 400, background: tk.surfaceBg, borderRadius: 8,
-              padding: 24, boxShadow: '0 8px 32px rgba(0,0,0,0.24)',
+              padding: 24, boxShadow: 'var(--ds-shadow-overlay, 0 8px 32px rgba(0,0,0,0.24))',
               fontFamily: 'var(--cp-font-body)',
             }}
             onClick={e => e.stopPropagation()}
@@ -1176,15 +1176,15 @@ export default function KanbanBoardPage() {
               }}
               placeholder="e.g. Sprint board"
               style={{
-                width: '100%', height: 36, padding: '0 10px',
+                width: '100%', height: 32, padding: '0 8px',
                 border: `2px solid var(--ds-border-focused, #4C9AFF)`,
                 borderRadius: 4, fontSize: 14, color: tk.textPrimary,
                 background: tk.surfaceBg, outline: 'none', boxSizing: 'border-box',
                 fontFamily: 'var(--cp-font-body)',
               }}
             />
-            <div style={{ fontSize: 11, color: tk.textMuted, marginTop: 6 }}>Press Enter to create, Escape to cancel</div>
-            <div className="flex justify-end gap-2" style={{ marginTop: 20 }}>
+            <div style={{ fontSize: 11, color: tk.textMuted, marginTop: 8 }}>Press Enter to create, Escape to cancel</div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
               <button
                 onClick={() => setShowCreateBoard(false)}
                 style={{
@@ -1241,7 +1241,7 @@ export default function KanbanBoardPage() {
                   border: 'none',
                   background: newBoardName.trim() ? 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))' : tk.chipBg,
                   fontSize: 14, cursor: newBoardName.trim() ? 'pointer' : 'not-allowed',
-                  color: newBoardName.trim() ? '#FFFFFF' : tk.textMuted,
+                  color: newBoardName.trim() ? 'var(--ds-text-inverse, #FFFFFF)' : tk.textMuted,
                   fontFamily: 'var(--cp-font-body)',
                 }}
               >
@@ -1269,7 +1269,7 @@ export default function KanbanBoardPage() {
 
       {/* ── Toolbar — canonical <KanbanToolbar/> (Phase 1 extraction) ── */}
       {/* Offset matches standup panel width when open */}
-      <div style={{ marginLeft: showStandup ? 280 : 0, transition: 'margin-left 200ms ease' }}>
+      <div style={{ marginLeft: showStandup ? 'var(--standup-panel-width, 280px)' : 0, transition: 'margin-left 200ms ease' }}>
       <KanbanToolbar<GroupByMode>
         tk={tk}
         search={search}
@@ -1333,7 +1333,7 @@ export default function KanbanBoardPage() {
 
       {/* ── Board content (Jira parity: 8px inter-column gap, 16px outer padding) ── */}
       {/* When standup panel is open, offset content 280px to the right (Jira parity) */}
-      <div className="flex-1 min-h-0" style={{ overflow: 'auto', padding: '0 16px 16px 16px', marginLeft: showStandup ? 280 : 0, transition: 'margin-left 200ms ease' }}>
+      <div className="flex-1 min-h-0" style={{ overflow: 'auto', padding: '0 16px 16px 16px', marginLeft: showStandup ? 'var(--standup-panel-width, 280px)' : 0, transition: 'margin-left 200ms ease' }}>
         {groupBy !== 'none' ? (
           <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
             <div style={{ background: 'transparent', minWidth: KANBAN_COLUMNS.length * 267 + (KANBAN_COLUMNS.length - 1) * 8 }}>
@@ -1345,16 +1345,21 @@ export default function KanbanBoardPage() {
                     return issue ? STATUS_TO_COL_ID.get(issue.status.toLowerCase()) === col.id : false;
                   }).length, 0);
                   // jira-compare 2026-05-08: fix category dot colors + column header typography to match PragmaticBoard patch
-                  const categoryDot = col.category === 'done' ? '#94C748' : col.category === 'in_progress' ? '#669DF1' : '#5E6C84';
+                  const categoryDot = col.category === 'done'
+                    ? 'var(--ds-background-success-bold, #94C748)'
+                    : col.category === 'in_progress'
+                    ? 'var(--ds-background-information, #669DF1)'
+                    : 'var(--ds-text-subtlest, #5E6C84)';
                   return (
-                    <div key={col.id} className="flex items-center gap-2" style={{
+                    <div key={col.id} style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
                       width: 267, minWidth: 267, maxWidth: 267, height: 48, flexShrink: 0,
                       padding: '0 12px',
                       background: tk.headerBg,
                       borderRadius: '6px 6px 0 0',
                     }}>
                       <span style={{ width: 8, height: 8, borderRadius: '50%', background: categoryDot, flexShrink: 0 }} />
-                      <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: tk.textMuted, flex: 1, lineHeight: '16px', fontFamily: 'var(--cp-font-body)' }}>{col.name}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.04em', color: tk.textMuted, flex: 1, lineHeight: '16px', fontFamily: 'var(--cp-font-body)' }}>{col.name.toUpperCase()}</span>
                       <span style={{ fontSize: 11, fontWeight: 500, color: tk.textMuted, lineHeight: '16px', fontFamily: 'var(--cp-font-body)' }}>{count}</span>
                     </div>
                   );
@@ -1395,7 +1400,7 @@ export default function KanbanBoardPage() {
                 />
               ))}
               {groups.length === 0 && (
-                <div className="flex items-center justify-center py-12" style={{ color: tk.textDisabled, fontSize: 13 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 0', color: tk.textDisabled, fontSize: 13 }}>
                   No issues match filters
                 </div>
               )}
