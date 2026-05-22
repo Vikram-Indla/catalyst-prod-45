@@ -55,7 +55,7 @@ When complete:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🔍 jira-compare v1.0 · AUDIT COMPLETE
 {N} drift items · {M} P0 blockers · CRUD: {PASS/FAIL}
-ACAFC: {score}% · P0: {X} · P1: {Y} · P2: {Z} · {PASS/NEEDS FIXES}
+ADS GATE: {PASS/FAIL} · P0: {X} · P1: {Y} · P2: {Z}
 Red arrows on open violations. Screenshot follows.
 Cycle {N}/5
 
@@ -115,65 +115,88 @@ This prevents trying deprecated endpoints and ensures credential handling is cor
 
 ## ADS Extended Resource Check (runs in parallel with Lane A — MANDATORY)
 
-> Fetch all resources triggered by the surface's signals. Each consulted resource must produce a named finding even if the finding is "compliant". An unfetched triggered resource is a Hard Rule #9 violation.
->
-> **Full 15-resource qualification matrix:** `../catalyst-agent/ADS_CHECKPOINT.md`
+> **Canonical spec:** `../catalyst-agent/ADS_CHECKPOINT.md` — TIER 1/TIER 2/BANNED qualification table lives there. This section is the jira-compare invocation binding; the checkpoint file is the single source of truth.
 
-Use `WebFetch` for each triggered URL. Cite the URL in the diff table `Fix` column for every related row.
+Use `WebFetch` for each triggered URL. An unfetched TIER 1 resource is a Hard Rule #9 violation — the cycle does not count toward the 5-cycle cap until fetched.
 
-| Signal on the surface | Resource | Verdict |
+### TIER 1 — Always fetch (every audit, every surface)
+
+| Resource | URL | What to extract |
 |---|---|---|
-| Any surface (always) | https://atlassian.design/ | INCLUDE |
-| Any token/color/border decision | https://atlassian.design/components/tokens/all-tokens | INCLUDE |
-| New component / "is there an ADS version" | https://atlassian.design/get-started/develop | INCLUDE |
-| Unknown component needed | https://atlaskit.atlassian.com/get-started | INCLUDE |
-| Description, comment, ADF, rich text | https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/ | INCLUDE |
-| ADF validation / test data | https://developer.atlassian.com/cloud/jira/platform/apis/document/playground/ | INCLUDE |
-| Description in write/edit mode | https://www.npmjs.com/package/@atlaskit/editor-core | INCLUDE |
-| Description in read/display mode | https://www.npmjs.com/package/@atlaskit/renderer | INCLUDE |
-| ADF content manipulation | https://www.npmjs.com/package/@atlaskit/adf-utils | INCLUDE |
-| Drag, drop, rank, reorder, kanban, backlog sort | https://atlassian.design/components/pragmatic-drag-and-drop | **INCLUDE — HIGH PRIORITY** |
-| Same drag signals (API docs + adapters) | https://github.com/atlassian/pragmatic-drag-and-drop | **INCLUDE — HIGH PRIORITY** |
-| @atlaskit/dynamic-table seen in Catalyst probe | https://www.npmjs.com/package/@atlaskit/dynamic-table | **FLAG — reference only, BANNED as primary for work items** |
-| @atlassian/aui seen in Catalyst probe | — | **REJECT — legacy, banned in Catalyst** |
+| Atlassian Design System | https://atlassian.design/ | Canonical component for every UI slot under review |
+| ADS Design Tokens | https://atlassian.design/components/tokens/all-tokens | Exact token name · light value · dark value — cite in the Fix column for every color/spacing/border gap |
 
-**Resource audit block (emit before diff table):**
+### TIER 2 — Signal-gated (fetch only when the matching signal is detected)
+
+| Signal detected | Resource | URL |
+|---|---|---|
+| description / comment / rich text / "ADF" | ADF structure | https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/ |
+| ADF test data or structure validation | ADF playground | https://developer.atlassian.com/cloud/jira/platform/apis/document/playground/ |
+| description field in **edit/write** mode | @atlaskit/editor-core | https://www.npmjs.com/package/@atlaskit/editor-core |
+| description field in **read/display** mode | @atlaskit/renderer | https://www.npmjs.com/package/@atlaskit/renderer |
+| ADF traversal or programmatic manipulation | @atlaskit/adf-utils | https://www.npmjs.com/package/@atlaskit/adf-utils |
+| kanban / backlog rank / any drag-drop | Pragmatic DnD | https://atlassian.design/components/pragmatic-drag-and-drop |
+| DnD implementation detail needed | Pragmatic DnD GitHub | https://github.com/atlassian/pragmatic-drag-and-drop |
+| installing a new @atlaskit/* package | Atlaskit portal | https://atlaskit.atlassian.com/get-started |
+
+### BANNED — Never fetch, never use
+
+| Resource | Reason |
+|---|---|
+| `@atlaskit/dynamic-table` (direct) | **BANNED** for work-item surfaces — `JiraTable` is canonical. Flag any direct import as P0. |
+| `@atlassian/aui` | Legacy; not used in Catalyst. |
+
+**Resource audit block (emit before diff table) — use ADS_CHECKPOINT.md Phase 1B format:**
 
 ```
 ADS RESOURCE CHECK — {surface} — {date}
-Resource                                              | Triggered by  | Status       | Finding
-atlassian.design/                                    | always        | FETCHED      | <canonical component confirmed or gap>
-atlassian.design/components/tokens/all-tokens        | color/token   | FETCHED      | <token name · light · dark>
-developer.atlassian.com/.../document/structure/      | ADF           | FETCHED/N/A  | <ADF node type verified or not triggered>
-pragmatic-drag-and-drop (ADS + GitHub)               | drag signal   | FETCHED/N/A  | <drag adapter confirmed or not triggered>
-...                                                  | ...           | NOT FETCHED  | ← Hard Rule #9 violation — cycle incomplete
+
+Resource                                              | Tier   | Status      | Finding
+atlassian.design/                                    | 1      | FETCHED     | <canonical component confirmed or gap noted>
+atlassian.design/components/tokens/all-tokens        | 1      | FETCHED     | <token · light · dark for each gap>
+developer.atlassian.com/.../document/structure/      | 2-ADF  | FETCHED/N/A | <ADF node type verified or not triggered>
+developer.atlassian.com/.../document/playground/     | 2-ADF  | FETCHED/N/A | <sample generated or not triggered>
+npmjs.com/@atlaskit/editor-core                      | 2-edit | FETCHED/N/A | <version + EditorContext wired or not triggered>
+npmjs.com/@atlaskit/renderer                         | 2-read | FETCHED/N/A | <version + ReactRenderer props or not triggered>
+npmjs.com/@atlaskit/adf-utils                        | 2-ADF  | FETCHED/N/A | <traverse/map API or not triggered>
+atlassian.design/components/pragmatic-drag-and-drop  | 2-dnd  | FETCHED/N/A | <DnD pattern confirmed or not triggered>
+github.com/atlassian/pragmatic-drag-and-drop         | 2-dnd  | FETCHED/N/A | <implementation detail or not triggered>
+atlaskit.atlassian.com/get-started                   | 2-pkg  | FETCHED/N/A | <package install pattern or not triggered>
 ```
 
-Any row marked `NOT FETCHED` for a triggered signal → audit is incomplete → cycle does not count toward the 5-cycle cap until fetched.
+A TIER 1 row left `NOT FETCHED` → audit is incomplete → cycle does not count toward the 5-cycle cap until fetched.
 
 ---
 
-## ACAFC Gate (runs after Lane A diff table is built)
+## ADS Checkpoint Gate — Phase 2 → 4 (runs after Lane A diff table is built)
 
-> **Full ACAFC spec:** `../catalyst-agent/ADS_CHECKPOINT.md`
+> **Full spec:** `../catalyst-agent/ADS_CHECKPOINT.md` — Phases 1A/1B/1C (AUDIT), 2 (GATE), 3 (FIX), 4 (VERIFY)
 
 After building the Lane A diff table and before running the CRUD gate (Lane C):
 
-1. **Run ACAFC Phases 1 + 2 + 3** (static scan + runtime probe + compliance report)
-2. **Emit ACAFC COMPLIANCE REPORT block** — the cycle output is incomplete without it
-3. **P0 violations:** ask user before continuing — "ACAFC found {N} P0 violations. Fix now or proceed and file as P0 gaps? [fix/proceed]"
-4. **P1 violations:** log in Open Items section — offer to fix before next cycle
+1. **Phase 1A — CLI Scan** (run on every file touched during this cycle):
+   ```bash
+   node design-governance/rules/audit.js src/<file-or-dir>
+   ```
+2. **Phase 1B — Resource Fetch** — emit ADS RESOURCE CHECK block (TIER 1 + triggered TIER 2)
+3. **Phase 1C — DOM Sweep** — run computed-style sweep from ADS_CHECKPOINT.md Phase 1C on the surface
+4. **Phase 2 — GATE** — classify findings P0/P1/P2; emit ADS COMPLIANCE SCAN table:
+   - P0 present → `ADS GATE: FAIL` → ask user before continuing — "ADS Checkpoint found {N} P0 violations. Fix now or proceed and file as P0 gaps? [fix/proceed]"
+   - P0 = 0 → `ADS GATE: PASS`
+5. **Phase 3 — FIX** (user-gated — only after explicit user approval):
+   Route each violation via the routing matrix in ADS_CHECKPOINT.md; per-fix commit format: `fix(ads): <violation-type> in <ComponentName>`
+6. **Phase 4 — VERIFY** — re-run CLI + screenshot + DOM sweep; emit ADS VERIFY block
 
 ```
-ACAFC GATE — {surface} — cycle {N}
-Score: {N}% · P0: {X} · P1: {Y} · P2: {Z}
-Status: {PASS ≥85% | NEEDS FIXES — see P0/P1 list}
+ADS CHECKPOINT GATE — {surface} — cycle {N}
+P0: {X} · P1: {Y} · P2: {Z}
+ADS GATE: PASS (no P0) | FAIL ({X} P0 violations — fix required before cycle can PASS)
 
-Note: ACAFC fix dispatch does NOT auto-commit in jira-compare.
+Note: Phase 3 FIX dispatch does NOT auto-commit in jira-compare.
 All fixes are staged and presented to user via the Git Confirmation Gate.
 ```
 
-ACAFC score below 85% does NOT block the CRUD gate — it blocks the **cycle closing verdict**. A cycle cannot close with `PASS` while ACAFC score is below 85% and unfixed P0s remain.
+`ADS GATE: FAIL` blocks the **cycle closing verdict**. A cycle cannot close with `PASS` while any P0 violation remains unfixed or Vikram-approved deferred.
 
 ---
 
@@ -335,10 +358,10 @@ After all three lanes run, emit the complete parity report:
 ### Diff Table (Lane A)
 {table from Step 3 — Fix column must cite ADS URL}
 
-### ACAFC Compliance Report
-{ACAFC COMPLIANCE REPORT block from ADS_CHECKPOINT.md Phase 3}
-Score: {N}% · P0: {X} · P1: {Y} · P2: {Z}
-Status: {PASS ≥85% / FAIL — P0/P1 listed in Open Items}
+### ADS Checkpoint Report (Phases 1A–1C + Gate)
+{ADS RESOURCE CHECK block}
+{ADS COMPLIANCE SCAN table — P0/P1/P2 rows with Fix column citing ADS URL}
+ADS GATE: PASS (no P0) | FAIL ({X} P0 violations — listed in Open Items)
 
 ### Schema Gate (Lane B)
 Fields in scheme but missing from Catalyst: {list}
@@ -352,14 +375,14 @@ D: {PASS/FAIL — evidence}
 
 ### Open Items (to carry into next cycle or handover)
 - {item}: {reason blocked}
-- ACAFC P0: {violation} — {fix required before cycle can PASS}
+- ADS P0: {violation} — {fix required before ADS GATE: CLEAR and cycle can PASS}
 
 ### Resolved This Cycle
 - {item}: {fix applied + commit hash if known}
 
 ### Cycle Verdict
-{PASS: diff ≤ N items, CRUD ✅, ACAFC ≥85% and P0=0}
-{FAIL: list blocking items}
+{PASS: diff ≤ N items, CRUD ✅, ADS GATE: CLEAR (P0=0)}
+{FAIL: list blocking items — P0 violations / CRUD failures / TIER 1 resources not fetched}
 ```
 
 ---
@@ -386,23 +409,31 @@ Key anchors to apply before every audit:
 - `preflight/SKILL.md` Phase 1 Lane A — how this skill fits the pipeline
 - `references/JIRA_ARCHITECT.md` — 28-pattern checklist (cross-reference)
 
-### ADS Extended Resources (full 15-resource qualification matrix in `../catalyst-agent/ADS_CHECKPOINT.md`)
+### ADS Resources — TIER classification (canonical spec: `../catalyst-agent/ADS_CHECKPOINT.md`)
 
-| # | Resource | Verdict | Key use in jira-compare |
-|--:|---|---|---|
-| 1 | https://atlassian.design/ | INCLUDE | Canonical component check in diff table |
-| 2 | https://atlassian.design/components/tokens/all-tokens | INCLUDE | Token name + light/dark values — cite in every Fix column entry |
-| 3 | https://atlassian.design/get-started/develop | INCLUDE | Confirm @atlaskit package scope before flagging "missing component" |
-| 4 | https://atlaskit.atlassian.com/get-started | INCLUDE | Browse available packages before declaring "no ADS equivalent" |
-| 6 | https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/ | INCLUDE | Verify ADF structure for description/comment parity |
-| 7 | https://developer.atlassian.com/cloud/jira/platform/apis/document/playground/ | INCLUDE | Generate ADF test data for CRUD-C test |
-| 8 | https://www.npmjs.com/package/@atlaskit/editor-core | INCLUDE | Description edit-mode parity |
-| 9 | https://www.npmjs.com/package/@atlaskit/renderer | INCLUDE | Description read-mode parity |
-| 10 | https://www.npmjs.com/package/@atlaskit/adf-utils | INCLUDE | ADF content manipulation |
-| 12 | https://atlassian.design/components/pragmatic-drag-and-drop | **INCLUDE — HIGH PRIORITY** | Drag parity with Jira's backlog/board |
-| 13 | https://github.com/atlassian/pragmatic-drag-and-drop | **INCLUDE — HIGH PRIORITY** | API docs for drag adapter implementation |
-| 11 | https://www.npmjs.com/package/@atlaskit/dynamic-table | **FLAG** | Reference only — BANNED as primary for work items |
-| 15 | https://www.npmjs.com/package/@atlassian/aui | **REJECT** | Legacy, banned in Catalyst |
+**TIER 1 — Always fetch:**
+| Resource | URL |
+|---|---|
+| Atlassian Design System | https://atlassian.design/ |
+| ADS Design Tokens | https://atlassian.design/components/tokens/all-tokens |
+
+**TIER 2 — Signal-gated:**
+| Signal | Resource | URL |
+|---|---|---|
+| ADF / rich text | ADF structure | https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/ |
+| ADF test data | ADF playground | https://developer.atlassian.com/cloud/jira/platform/apis/document/playground/ |
+| Description edit mode | editor-core | https://www.npmjs.com/package/@atlaskit/editor-core |
+| Description read mode | renderer | https://www.npmjs.com/package/@atlaskit/renderer |
+| ADF manipulation | adf-utils | https://www.npmjs.com/package/@atlaskit/adf-utils |
+| drag / rank / DnD | Pragmatic DnD | https://atlassian.design/components/pragmatic-drag-and-drop |
+| DnD implementation | Pragmatic DnD GitHub | https://github.com/atlassian/pragmatic-drag-and-drop |
+| new @atlaskit/* install | Atlaskit portal | https://atlaskit.atlassian.com/get-started |
+
+**BANNED — Never fetch, never use:**
+| Resource | Reason |
+|---|---|
+| `@atlaskit/dynamic-table` (direct) | BANNED for work items — use `JiraTable` |
+| `@atlassian/aui` | Legacy, not in Catalyst |
 
 ---
 
