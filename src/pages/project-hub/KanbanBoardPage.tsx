@@ -147,16 +147,8 @@ export default function KanbanBoardPage() {
   const cardColorMode = viewSettings.cardColorMode;
   const enabledQuickFilters = viewSettings.enabledQuickFilters;
 
-  // Swimlane expand/collapse all handlers
+  // Swimlane expand handler — collapse handler is defined after `groups` (line ~655)
   const handleExpandAll = useCallback(() => setCollapsedSwimlanes(new Set()), []);
-  const handleCollapseAll = useCallback(() => {
-    setCollapsedSwimlanes(prev => {
-      const next = new Set(prev);
-      groups?.forEach((g: any) => next.add(g.groupKey));
-      return next;
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [groups]);
 
   /* Board switcher outside-click */
   useEffect(() => {
@@ -651,6 +643,16 @@ export default function KanbanBoardPage() {
   }, [filtered, dragId, groupBy, KANBAN_COLUMNS, STATUS_TO_COL_ID]);
 
   const groups = useMemo(() => groupBy === 'none' ? [] : groupIssues(filtered, groupBy), [filtered, groupBy]);
+
+  // Declared after `groups` to avoid temporal dead zone (groups dep)
+  const handleCollapseAll = useCallback(() => {
+    setCollapsedSwimlanes(prev => {
+      const next = new Set(prev);
+      groups.forEach((g) => next.add(g.groupKey));
+      return next;
+    });
+  }, [groups]);
+
   const total = groupBy === 'none' ? Object.values(colMap).reduce((a, ids) => a + ids.length, 0) : filtered.length;
 
   /* ═══ CARD ACTIONS ═══ */
