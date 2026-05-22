@@ -674,7 +674,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
   // available via the column picker (+) but hidden in the factory layout.
   // NOTE: Comments column is banned (2026-05-11), removed from defaults
   // 2026-05-17 jira-compare cycle 2: 'summary' merged into 'key' (Work column).
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'status', 'assignee', 'priority', 'parent', 'fix_versions'];
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'parent', 'status', 'fix_versions', 'assignee', 'created'];
 
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
@@ -1986,6 +1986,39 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       })(),
     },
     {
+      id: 'parent',
+      label: 'Parent',
+      // 2026-05-16: Jira DOM probe = 129px. width:11 ≈ 132px matches.
+      // Prior width:22 (264px) was double Jira's actual column width.
+      width: 11,
+      sortable: true,
+      defaultVisible: true,
+      cell: makeParentEditCell<BacklogItem>({
+        getParent: (r) => r.parent_id ? {
+          id: r.parent_id,
+          key: r.parent_key,
+          label: r.parent_label || '',
+          // Apr 27, 2026 (L68): size bumped 12→16 so the SVG renders at
+          // its native designed size (story-16.svg, bug-16.svg, etc.)
+          // — the 0.75× scale at size=12 caused sub-pixel rendering
+          // jitter that made adjacent rows' icons LOOK like different
+          // shapes even when they were the same source SVG. 16×16 is
+          // pixel-perfect at 1× zoom and aligns with the row-1 type
+          // icon's size (also 16).
+          icon: <JiraIssueTypeIcon type={r.parent_issue_type || 'Story'} size={16} />,
+        } : null,
+        options: parentOptions,
+        // Editable for any row — Jira-synced items still fail at mutation
+        // time with a toast, but the PICKER itself is reachable so users see
+        // the affordance. Matches Jira's pattern.
+        canEdit: () => true,
+        onChange: (row, next) => updateField.mutate({
+          id: row.id, source: row.source,
+          patch: { parent_id: next?.id ?? null, parent_key: next?.key ?? null },
+        }),
+      }),
+    },
+    {
       id: 'status',
       label: 'Status',
       // 2026-05-16: Jira DOM probe = 180px. width:15 = 180px.
@@ -2036,37 +2069,16 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       ),
     },
     {
-      id: 'parent',
-      label: 'Parent',
-      // 2026-05-16: Jira DOM probe = 129px. width:11 ≈ 132px matches.
-      // Prior width:22 (264px) was double Jira's actual column width.
-      width: 11,
-      sortable: true,
+      id: 'fix_versions',
+      label: 'Fix versions',
+      // 2026-05-16: Jira DOM probe = 220px. width:18 = 216px (≈220px).
+      // Prior width:10 (120px) clipped version names badly.
+      width: 18,
+      sortable: false,
       defaultVisible: true,
-      cell: makeParentEditCell<BacklogItem>({
-        getParent: (r) => r.parent_id ? {
-          id: r.parent_id,
-          key: r.parent_key,
-          label: r.parent_label || '',
-          // Apr 27, 2026 (L68): size bumped 12→16 so the SVG renders at
-          // its native designed size (story-16.svg, bug-16.svg, etc.)
-          // — the 0.75× scale at size=12 caused sub-pixel rendering
-          // jitter that made adjacent rows' icons LOOK like different
-          // shapes even when they were the same source SVG. 16×16 is
-          // pixel-perfect at 1× zoom and aligns with the row-1 type
-          // icon's size (also 16).
-          icon: <JiraIssueTypeIcon type={r.parent_issue_type || 'Story'} size={16} />,
-        } : null,
-        options: parentOptions,
-        // Editable for any row — Jira-synced items still fail at mutation
-        // time with a toast, but the PICKER itself is reachable so users see
-        // the affordance. Matches Jira's pattern.
-        canEdit: () => true,
-        onChange: (row, next) => updateField.mutate({
-          id: row.id, source: row.source,
-          patch: { parent_id: next?.id ?? null, parent_key: next?.key ?? null },
-        }),
-      }),
+      accessor: (r: BacklogItem) => (r.fix_versions || []).join(', '),
+      cell: makeFixVersionsCell((r: BacklogItem) => r.fix_versions),
+      include: (row: BacklogItem) => row.issue_type !== 'Feature',
     },
     {
       id: 'assignee',
@@ -2151,23 +2163,11 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
       }),
     },
     {
-      id: 'fix_versions',
-      label: 'Fix versions',
-      // 2026-05-16: Jira DOM probe = 220px. width:18 = 216px (≈220px).
-      // Prior width:10 (120px) clipped version names badly.
-      width: 18,
-      sortable: false,
-      defaultVisible: true,
-      accessor: (r: BacklogItem) => (r.fix_versions || []).join(', '),
-      cell: makeFixVersionsCell((r: BacklogItem) => r.fix_versions),
-      include: (row: BacklogItem) => row.issue_type !== 'Feature',
-    },
-    {
       id: 'created',
       label: 'Created',
       width: 8,
       sortable: true,
-      defaultVisible: false,
+      defaultVisible: true,
       accessor: (r: BacklogItem) => r.created_at || '',
       cell: makeDateCell((r: BacklogItem) => r.created_at),
     },
@@ -2961,6 +2961,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
             columns={filteredCols}
             data={groupedRows ? undefined : sortedRows}
             groups={groupedRows ?? undefined}
+            totalRowCount={items.length}
             collapsedGroups={collapsedGroups}
             onToggleGroup={toggleGroup}
             // 2026-05-17: Feature flags declare intent explicitly per canonical
@@ -2994,7 +2995,7 @@ export function BacklogPage({ projectId, projectKey, assigneeIds, displayName, b
               });
             }}
             stickyCreateFooter={{
-              placeholder: 'What needs to be done?',
+              placeholder: 'Create',
               onActivate: () => setFooterCreateActive(true),
               active: footerCreateActive ? (() => {
                 const submitFooter = async (
