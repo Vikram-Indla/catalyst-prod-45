@@ -1,4 +1,19 @@
 {
-  "branches": {},
-  "last_updated": "2026-05-18T00:00:00Z"
+  "branches": {
+    "01": {
+      "name": "BAU-filters-01",
+      "project": "BAU",
+      "menu": "filters",
+      "component": "filters",
+      "status": "planning",
+      "progress": 0,
+      "phase": "planning_complete",
+      "created": "2026-05-21T19:57:00Z",
+      "last_saved": "2026-05-21T19:57:00Z",
+      "local_commits": 0,
+      "uncommitted_files": 0,
+      "description": "Complete Filters module — Project Hub + Product Hub. 6 screens designed, ADS tokens probed, JQL architecture specced, 10 outliers defined."
+    }
+  },
+  "last_updated": "2026-05-21T19:57:00Z"
 }
