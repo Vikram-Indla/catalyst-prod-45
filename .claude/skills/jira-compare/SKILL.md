@@ -33,6 +33,7 @@ metadata:
 6. **5-cycle cap.** Maximum 5 probe-fix-reprobe cycles per surface per session. On cycle 5, list remaining open items in handover rather than looping again.
 7. **Jira REST API endpoints** — Always use the proven endpoints from existing code: `/rest/api/3/search/jql` (search), `/rest/api/3/issue/{key}` (details), `/rest/api/3/issue/{key}/changelog` (history). Never try deprecated alternatives.
 8. **gh CLI for git operations with user confirmation gates.** After audit completes with fixes applied, ask user: "The parity audit is complete and changes have been implemented. Should I create a PR / commit and push to main? [yes/no]". User must confirm before `git commit`, `git push`, or `gh pr create`. Never auto-commit or auto-push without explicit user approval.
+9. **ADS resource citation is mandatory.** Diff table `Fix` column entries must cite a specific ADS URL (token page, component page, or ADF structure doc). An uncited Fix is a P1 finding in the audit itself. Relevant resources are fetched in the ADS Extended Resource Check (see below) — before Lane A diff table is built.
 
 ---
 
@@ -111,6 +112,40 @@ This prevents trying deprecated endpoints and ensures credential handling is cor
 
 ---
 
+## ADS Extended Resource Check (runs in parallel with Lane A — MANDATORY)
+
+> Fetch all resources triggered by the surface's signals. Each consulted resource must produce a named finding even if the finding is "compliant". An unfetched triggered resource is a Hard Rule #9 violation.
+
+Use `WebFetch` for each triggered URL. Cite the URL in the diff table `Fix` column for every related row.
+
+| Signal on the surface | Resource to fetch | What to extract for the audit |
+|---|---|---|
+| Any surface (always) | https://atlassian.design/ | Confirm canonical ADS component for each UI slot under review |
+| Any token / color / border / background decision | https://atlassian.design/components/tokens/all-tokens | Exact token name, light-mode value, dark-mode value, semantic use-case |
+| Description field, comment field, rich text, "ADF" | https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/ | ADF node type(s) used; confirm Catalyst renders/emits the correct structure |
+| ADF validation or test-data generation needed | https://developer.atlassian.com/cloud/jira/platform/apis/document/playground/ | Produce a validated ADF sample for the content under test |
+| Description field in write/edit mode | https://www.npmjs.com/package/@atlaskit/editor-core | Package version, whether EditorContext is wired, peer-dep alignment |
+| Description field in read/display mode | https://www.npmjs.com/package/@atlaskit/renderer | Package version, ReactRenderer props used, ADF support matrix |
+| ADF content manipulation in scope | https://www.npmjs.com/package/@atlaskit/adf-utils | traverse/map API confirmation; correct utility for the operation |
+
+**Resource audit block (emit before diff table):**
+
+```
+ADS RESOURCE CHECK — {surface} — {date}
+Resource                                              | Triggered by  | Status    | Finding
+atlassian.design/                                    | always        | FETCHED   | <canonical component confirmed or gap>
+atlassian.design/components/tokens/all-tokens        | color/token   | FETCHED   | <token name · light · dark>
+developer.atlassian.com/.../document/structure/      | ADF           | FETCHED   | <ADF node type verified>
+developer.atlassian.com/.../document/playground/     | ADF validate  | N/A       | <not triggered — no ADF validation needed>
+npmjs.com/@atlaskit/editor-core                      | edit mode     | FETCHED   | <version + EditorContext wired>
+npmjs.com/@atlaskit/renderer                         | read mode     | FETCHED   | <version + ReactRenderer props>
+npmjs.com/@atlaskit/adf-utils                        | ADF manip.    | N/A       | <not triggered>
+```
+
+Any row marked `NOT FETCHED` for a triggered signal → audit is incomplete → cycle does not count toward the 5-cycle cap until fetched.
+
+---
+
 ## Lane A — Chrome MCP DOM Probe + Jira REST API Details
 
 ### Step 1 — Navigate to both surfaces + fetch detailed data
@@ -168,17 +203,21 @@ Use `tabs_create_mcp` to open a second tab if needed. Probe one at a time.
 
 ### Step 3 — Build diff table
 
-From the two probe results, construct:
+From the two probe results AND the ADS Extended Resource Check, construct:
 
 ```
 ### Parity Diff — {surface} vs Jira
 
-| Element | Jira (measured) | Catalyst (measured) | Δ | Severity | Fix |
-|---|---|---|---|---|---|
-| Status pill font | 11px / 653 / uppercase | 14px / 400 / none | size + weight + case | P0 | Match Jira measured values |
-| Section header | 14px / 600 / #172B4D | 16px / 653 / — | @atlaskit/heading bug | P0 | Inline h2 style |
-| Field label | 11px / 600 / #6B778C | 12px / 400 | P1 | Rail label spec |
-| Priority (Epic) | right rail | left key-details | misplaced | P1 | Move to right rail |
+| Element | Jira (measured) | Catalyst (measured) | Δ | Severity | Fix | ADS URL |
+|---|---|---|---|---|---|---|
+| Status pill font | 11px / 653 / uppercase | 14px / 400 / none | size + weight + case | P0 | Match Jira measured values | https://atlassian.design/foundations/typography |
+| Section header | 14px / 600 / #172B4D | 16px / 653 / — | @atlaskit/heading bug | P0 | Inline h2 style | https://atlassian.design/components/heading |
+| Field label | 11px / 600 / #6B778C | 12px / 400 | P1 | Rail label spec | https://atlassian.design/foundations/typography |
+| Priority (Epic) | right rail | left key-details | misplaced | P1 | Move to right rail | https://atlassian.design/foundations/layout |
+| Description (ADF) | ADF `doc` node | raw HTML / markdown | wrong renderer | P0 | Use @atlaskit/renderer with ADF doc | https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/ |
+```
+
+> **Enforcement:** Any row in the `Fix` column that cannot be backed by an ADS URL is flagged as "citation missing" — a P1 in the audit itself. The ADS URL column is MANDATORY, not optional.
 ```
 
 ### Step 4 — SVG arrows on Catalyst (identical protocol to design-intelligence)
@@ -302,6 +341,18 @@ Key anchors to apply before every audit:
 - `design-intelligence/SKILL.md` — SVG arrow injection protocol (shared)
 - `preflight/SKILL.md` Phase 1 Lane A — how this skill fits the pipeline
 - `references/JIRA_ARCHITECT.md` — 28-pattern checklist (cross-reference)
+
+### ADS Extended Resources (fetched per signal — see ADS Extended Resource Check section)
+
+| Resource | Use |
+|---|---|
+| https://atlassian.design/ | ADS source of truth — canonical components, tokens, guidelines |
+| https://atlassian.design/components/tokens/all-tokens | All design tokens with light/dark values — cite in Fix column for every color/spacing gap |
+| https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/ | ADF JSON document structure — cite when description/comment rendering is audited |
+| https://developer.atlassian.com/cloud/jira/platform/apis/document/playground/ | ADF playground — generate validated ADF samples for test data or structure verification |
+| https://www.npmjs.com/package/@atlaskit/editor-core | ADF rich-text editor — required for description edit-mode surfaces |
+| https://www.npmjs.com/package/@atlaskit/renderer | ADF read-only renderer — required for description display-mode surfaces |
+| https://www.npmjs.com/package/@atlaskit/adf-utils | ADF traversal/modification utilities — required when content is programmatically manipulated |
 
 ---
 
