@@ -143,8 +143,23 @@ const PragmaticCard = memo(function PragmaticCard({
     return draggable({
       element: el,
       getInitialData: () => ({ type: 'kanban-card', cardId: issue.id, colId }),
-      onDragStart: () => setIsDragging(true),
-      onDrop: () => setIsDragging(false),
+      onDragStart: () => {
+        setIsDragging(true);
+        // ADS Motion: lift = scale(1.02) + overlay elevation, 150ms cubic-bezier(0,0.4,0,1)
+        if (el) {
+          el.style.transition = 'transform 150ms cubic-bezier(0,0.4,0,1), box-shadow 150ms cubic-bezier(0,0.4,0,1)';
+          el.style.transform = 'scale(1.02)';
+          el.style.zIndex = '100';
+        }
+      },
+      onDrop: () => {
+        setIsDragging(false);
+        if (el) {
+          el.style.transition = '';
+          el.style.transform = '';
+          el.style.zIndex = '';
+        }
+      },
     });
   }, [issue.id, colId]);
 
@@ -191,8 +206,9 @@ const PragmaticCard = memo(function PragmaticCard({
     padding: d.cardPad,
     display: 'flex',
     flexDirection: 'column',
-    cursor: 'grab',
-    transition: 'background 150ms ease, box-shadow 150ms ease, border-left 120ms ease',
+    cursor: isDragging ? 'grabbing' : 'grab',
+    /* ADS Motion: interactive-element enter = 100ms cubic-bezier(0.4,1,0.6,1) */
+    transition: 'background 100ms cubic-bezier(0.4,1,0.6,1), box-shadow 100ms cubic-bezier(0.4,1,0.6,1), transform 100ms cubic-bezier(0.4,1,0.6,1), border-left 100ms cubic-bezier(0.4,1,0.6,1)',
     opacity: isDragging ? 0.35 : 1,
     boxShadow: isDragging ? tk.cardDragShadow : isFocused ? focusShadow : restShadow,
     position: 'relative',
@@ -223,9 +239,16 @@ const PragmaticCard = memo(function PragmaticCard({
         onMouseLeave={(e) => {
           e.currentTarget.style.background = tk.cardBg;
           e.currentTarget.style.boxShadow = isDragging ? tk.cardDragShadow : isFocused ? focusShadow : restShadow;
+          e.currentTarget.style.transform = '';
           e.currentTarget.querySelectorAll('.kanban-card-menu-btn, .kanban-card-edit-btn').forEach((el) => {
             (el as HTMLElement).style.opacity = '0';
           });
+        }}
+        onMouseDown={(e) => {
+          if (!isDragging) (e.currentTarget as HTMLDivElement).style.transform = 'scale(0.98)';
+        }}
+        onMouseUp={(e) => {
+          (e.currentTarget as HTMLDivElement).style.transform = '';
         }}
         tabIndex={-1}
         role="listitem"
@@ -493,21 +516,15 @@ const PragmaticColumn = memo(function PragmaticColumn({
               fontFamily: 'var(--cp-font-body)',
             }}
           >
-            {/* Column name header */}
-            <div style={{
-              padding: '4px 16px 8px', fontSize: 11, fontWeight: 700, color: tk.textMuted,
-              textTransform: 'uppercase', letterSpacing: 0.5,
-              borderBottom: `1px solid ${tk.border}`, marginBottom: 4,
-            }}>{column.name}</div>
-            {/* Column stats — non-interactive info rows */}
-            <div style={{ padding: '8px 16px', fontSize: 12, color: tk.textPrimary, display: 'flex', justifyContent: 'space-between' }}>
-              <span>Cards</span>
-              <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600 }}>{issueIds.length}</span>
-            </div>
+            {/* Actionable items only — column name + card count are already visible
+                in the column header; repeating them as non-interactive rows is not
+                Jira-parity. WIP limit retained as actionable configuration context. */}
             {column.wipLimit != null && (
               <div style={{
                 padding: '8px 16px', fontSize: 12, display: 'flex', justifyContent: 'space-between',
                 color: issueIds.length > column.wipLimit ? '#AE2A19' : tk.textPrimary,
+                borderBottom: `1px solid ${tk.border}`,
+                marginBottom: 4,
               }}>
                 <span>WIP limit</span>
                 <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600 }}>
@@ -515,7 +532,6 @@ const PragmaticColumn = memo(function PragmaticColumn({
                 </span>
               </div>
             )}
-            {/* Separator + Actionable items — only when create action available */}
             {(actions.onCreateInColumn || actions.onCreateCard) && (
               <>
                 <div style={{ height: 1, background: tk.border, margin: '4px 0' }} />
