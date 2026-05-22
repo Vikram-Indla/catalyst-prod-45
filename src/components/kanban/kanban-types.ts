@@ -28,7 +28,7 @@ export interface BoardIssue {
   sourceTag?: 'catalyst' | 'jira' | null;
 }
 
-export type GroupByMode = 'none' | 'assignee' | 'epic' | 'priority' | 'fixVersion' | 'queries';
+export type GroupByMode = 'none' | 'assignee' | 'epic' | 'feature' | 'priority' | 'fixVersion' | 'queries';
 
 /**
  * Issue types treated as subtasks in the BAU project.
@@ -41,6 +41,18 @@ export const BOARD_SUBTASK_TYPES = new Set([
   'Backend', 'Frontend', 'Integration', 'Figma', 'Entity Figma',
 ]);
 
+/**
+ * The three work-item types that appear on the Kanban board.
+ * All other types (Bug, Task, CR, PI, Business Gap, etc.) are excluded
+ * to keep the board focused on plannable units of work.
+ *
+ * In group-by-none (flat) mode only Stories are shown — Epics and Features
+ * act as swimlane metadata only. In all other group-by modes all three types
+ * are visible so swimlane headers can be populated with Epics / Features.
+ */
+export const KANBAN_BOARD_TYPES = new Set(['Epic', 'Story', 'Feature']);
+export const KANBAN_STORY_TYPES = new Set(['Story']);
+
 export interface GroupBucket {
   groupKey: string;
   groupLabel: string;
@@ -52,26 +64,26 @@ export type ColMap = Record<string, string[]>;
 /* ── Card color maps (Jira parity: Board config → Card colors) ── */
 
 export const CARD_COLOR_BY_PRIORITY: Record<string, string> = {
-  highest: '#E5493A',
-  critical: '#E5493A',
-  high:     '#E97F33',
-  medium:   '#FFAB00',
-  low:      '#2D8738',
-  lowest:   '#57A55A',
+  highest: 'var(--ds-text-danger, #E5493A)',
+  critical: 'var(--ds-text-danger, #E5493A)',
+  high:     'var(--ds-background-warning-bold, #E97F33)',
+  medium:   'var(--ds-background-warning, #FFAB00)',
+  low:      'var(--ds-background-success-bold, #2D8738)',
+  lowest:   'var(--ds-background-success, #57A55A)',
 };
 
 export const CARD_COLOR_BY_TYPE: Record<string, string> = {
-  epic:             '#9B51E0',
-  feature:          '#FF7452',
-  story:            '#36B37E',
-  improvement:      '#36B37E',
-  task:             '#4BADE8',
-  bug:              '#E5493A',
-  defect:           '#E5493A',
-  'qa bug':         '#E5493A',
-  'production incident': '#FF5630',
-  incident:         '#FF5630',
-  'business gap':   '#FFAB00',
-  'business request': '#FFAB00',
-  'change request': '#FFAB00',
+  epic:             'var(--ds-background-discovery-bold, #9B51E0)',
+  feature:          'var(--ds-background-warning-bold, #FF7452)',
+  story:            'var(--ds-background-success, #36B37E)',
+  improvement:      'var(--ds-background-success, #36B37E)',
+  task:             'var(--ds-background-information-bold, #4BADE8)',
+  bug:              'var(--ds-text-danger, #E5493A)',
+  defect:           'var(--ds-text-danger, #E5493A)',
+  'qa bug':         'var(--ds-text-danger, #E5493A)',
+  'production incident': 'var(--ds-background-danger-bold, #FF5630)',
+  incident:         'var(--ds-background-danger-bold, #FF5630)',
+  'business gap':   'var(--ds-background-warning, #FFAB00)',
+  'business request': 'var(--ds-background-warning, #FFAB00)',
+  'change request': 'var(--ds-background-warning, #FFAB00)',
 };

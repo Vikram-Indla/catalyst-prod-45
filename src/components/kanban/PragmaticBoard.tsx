@@ -992,9 +992,17 @@ const VirtualizedColumnBody = memo(forwardRef(function VirtualizedColumnBody(
     </div>
   );
 }), (prevProps, nextProps) => {
-  // Memoization comparison: only re-render if these props change
+  // Memoization: skip re-render when nothing actually changed.
+  // issueIds uses CONTENT equality (not reference ===) because KanbanBoardPage
+  // passes `colMap[col.id] ?? []` — the fallback `[]` and group-derived arrays
+  // produce new references on every parent re-render even when card order is
+  // identical. Reference equality would defeat React.memo entirely, causing all
+  // column bodies to re-render on every `setSelIssueId`, filter open, etc.
+  const idsEqual =
+    prevProps.issueIds.length === nextProps.issueIds.length &&
+    prevProps.issueIds.every((id, i) => id === nextProps.issueIds[i]);
   return (
-    prevProps.issueIds === nextProps.issueIds &&
+    idsEqual &&
     prevProps.selectedId === nextProps.selectedId &&
     prevProps.focusedId === nextProps.focusedId &&
     prevProps.isOver === nextProps.isOver &&

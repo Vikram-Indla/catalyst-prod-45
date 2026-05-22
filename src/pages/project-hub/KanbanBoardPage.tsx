@@ -44,7 +44,7 @@ import { arrayMove } from '@dnd-kit/sortable';
 import { KANBAN_TOKENS, DENSITY_CONFIG, KANBAN_COLUMNS as DEFAULT_KANBAN_COLUMNS, COL_PRIMARY_STATUS as DEFAULT_COL_PRIMARY_STATUS, STATUS_TO_COL_ID as DEFAULT_STATUS_TO_COL_ID, COLUMN_ID_SET as DEFAULT_COLUMN_ID_SET } from '@/components/kanban/kanban-tokens';
 import type { KanbanDensity, KanbanColumnDef } from '@/components/kanban/kanban-tokens';
 import type { BoardIssue, GroupByMode, ColMap } from '@/components/kanban/kanban-types';
-import { BOARD_SUBTASK_TYPES } from '@/components/kanban/kanban-types';
+import { BOARD_SUBTASK_TYPES, KANBAN_BOARD_TYPES, KANBAN_STORY_TYPES } from '@/components/kanban/kanban-types';
 import { groupIssues, findCol } from '@/components/kanban/kanban-utils';
 import { DroppableColumn } from '@/components/kanban/KanbanColumn';
 import { OverlayCard } from '@/components/kanban/SortableCard';
@@ -150,13 +150,13 @@ export default function KanbanBoardPage() {
   // Swimlane expand/collapse all handlers
   const handleExpandAll = useCallback(() => setCollapsedSwimlanes(new Set()), []);
   const handleCollapseAll = useCallback(() => {
-    // Will be populated with group keys when groups are available
     setCollapsedSwimlanes(prev => {
       const next = new Set(prev);
       groups?.forEach((g: any) => next.add(g.groupKey));
       return next;
     });
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groups]);
 
   /* Board switcher outside-click */
   useEffect(() => {
@@ -513,6 +513,7 @@ export default function KanbanBoardPage() {
     { key: 'queries' as GroupByMode, label: 'Queries' },
     { key: 'assignee' as GroupByMode, label: 'Assignee', icon: 'assignee' },
     { key: 'epic' as GroupByMode, label: 'Epic', icon: 'parent' },
+    { key: 'feature' as GroupByMode, label: 'Feature', icon: 'parent' },
     { key: 'priority' as GroupByMode, label: 'Priority', icon: 'priority' },
     { key: 'fixVersion' as GroupByMode, label: 'Fix Version' },
   ], []);
@@ -532,11 +533,14 @@ export default function KanbanBoardPage() {
   /* ═══ FILTERING ═══ */
 
   const filtered = useMemo(() => {
-    // Jira parity: board hides Epics (swimlane metadata) and subtasks by default.
-    // When advanced filter specifies issue types, honour exactly those types instead.
-    let issues = advancedFilters.issueTypes.length > 0
-      ? rawIssues
-      : rawIssues.filter(i => i.issueType !== 'Epic' && !BOARD_SUBTASK_TYPES.has(i.issueType));
+    // Board type restriction: only Epic, Story, Feature are shown.
+    // In group-by-none (flat) mode only Stories are cards — Epics and Features
+    // are swimlane metadata and should not appear as standalone cards.
+    // When the advanced filter specifies types explicitly, honour those exactly.
+    const allowedTypes: Set<string> = advancedFilters.issueTypes.length > 0
+      ? new Set(advancedFilters.issueTypes)
+      : groupBy === 'none' ? KANBAN_STORY_TYPES : KANBAN_BOARD_TYPES;
+    let issues = rawIssues.filter(i => allowedTypes.has(i.issueType));
     if (debSearch.trim()) {
       const q = debSearch.trim().toLowerCase();
       issues = issues.filter(i =>
@@ -626,7 +630,7 @@ export default function KanbanBoardPage() {
     }
 
     return issues;
-  }, [rawIssues, debSearch, selAssignees, selEpics, selTypes, selPriorities, quickFilters, currentUserName, advancedFilters, standupAssignee]);
+  }, [rawIssues, debSearch, selAssignees, selEpics, selTypes, selPriorities, quickFilters, currentUserName, advancedFilters, standupAssignee, groupBy]);
 
   /* ═══ COLUMN MAPPING ═══ */
 
@@ -987,6 +991,10 @@ export default function KanbanBoardPage() {
     debSearch.trim().length > 0,
     advFilterCount > 0,
   ].filter(Boolean).length;
+
+  // Stable card-click handler — prevents inline arrow re-creation on every render
+  // which would defeat React.memo on PragmaticCard / VirtualizedColumnBody.
+  const handleCardClick = useCallback((id: string) => setSelIssueId(id), []);
 
   const clearAllFilters = useCallback(() => {
     setSearch(''); setDebSearch('');
@@ -1361,7 +1369,7 @@ export default function KanbanBoardPage() {
                   mode={groupBy}
                   issuesById={issuesById}
                   avatarsByName={avatarsByName}
-                  onCardClick={id => setSelIssueId(id)}
+                  onCardClick={handleCardClick}
                   defaultOpen={!collapsedSwimlanes.has(g.groupKey)}
                   d={d}
                   tk={tk}

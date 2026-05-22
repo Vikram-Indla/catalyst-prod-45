@@ -20,6 +20,10 @@ export function groupIssues(issues: BoardIssue[], mode: GroupByMode): GroupBucke
         key = issue.parentKey || 'NO_EPIC';
         label = issue.parentKey ? (issue.parentSummary || issue.parentKey) : 'No Epic';
         break;
+      case 'feature':
+        key = issue.parentKey || 'NO_FEATURE';
+        label = issue.parentKey ? (issue.parentSummary || issue.parentKey) : 'No Feature';
+        break;
       case 'priority':
         key = issue.priority || 'NO_PRIORITY';
         label = issue.priority || 'No priority';
@@ -74,6 +78,12 @@ export function groupIssues(issues: BoardIssue[], mode: GroupByMode): GroupBucke
     entries.sort((a, b) => {
       if (a[0] === 'NO_EPIC') return 1;
       if (b[0] === 'NO_EPIC') return -1;
+      return b[1].ids.length - a[1].ids.length;
+    });
+  } else if (mode === 'feature') {
+    entries.sort((a, b) => {
+      if (a[0] === 'NO_FEATURE') return 1;
+      if (b[0] === 'NO_FEATURE') return -1;
       return b[1].ids.length - a[1].ids.length;
     });
   } else if (mode === 'fixVersion') {

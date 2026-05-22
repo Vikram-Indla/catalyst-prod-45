@@ -14,7 +14,7 @@
 import { z } from 'zod';
 
 /** GroupBy modes actually used by KanbanBoardPage (kanban-types). */
-export const groupBySchema = z.enum(['none', 'assignee', 'epic', 'priority', 'fixVersion']);
+export const groupBySchema = z.enum(['none', 'assignee', 'epic', 'feature', 'priority', 'fixVersion']);
 export type GroupByModeParsed = z.infer<typeof groupBySchema>;
 
 /** Priority names accepted by the board filter (matches the UI options). */
