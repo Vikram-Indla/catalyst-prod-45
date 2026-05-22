@@ -13,9 +13,11 @@ export function useCreateBoard() {
         p_project_id: input.projectId ?? null,
         p_is_personal: input.isPersonal ?? false,
         p_visibility: input.visibility ?? 'project',
+        p_board_type: input.boardType ?? 'kanban',
         p_swimlane_type: input.swimlaneType ?? 'none',
         p_color: input.color ?? '#2563EB',
         p_columns: input.columns ? JSON.stringify(input.columns) : null,
+        p_board_query: input.boardQuery ?? null,
         p_user_id: null,
       });
       if (error) throw error;
@@ -41,16 +43,20 @@ export function useUpdateBoard() {
       description?: string | null;
       color?: string;
       visibility?: BoardVisibility;
+      board_type?: 'kanban' | 'scrum';
       swimlane_type?: SwimlaneType;
       show_swimlanes?: boolean;
+      board_query?: string | null;
     }) => {
       const update: Record<string, any> = { updated_at: new Date().toISOString() };
       if (fields.name !== undefined) update.name = fields.name;
       if (fields.description !== undefined) update.description = fields.description;
       if (fields.color !== undefined) update.color = fields.color;
       if (fields.visibility !== undefined) update.visibility = fields.visibility;
+      if (fields.board_type !== undefined) update.board_type = fields.board_type;
       if (fields.swimlane_type !== undefined) update.swimlane_type = fields.swimlane_type;
       if (fields.show_swimlanes !== undefined) update.show_swimlanes = fields.show_swimlanes;
+      if (fields.board_query !== undefined) update.board_query = fields.board_query;
 
       const { error } = await typedQuery('boards')
         .update(update)
@@ -229,6 +235,41 @@ export function useUpdateCardRank() {
       }
     },
     onError: (err: Error) => toast.error(`Failed to update card position: ${err.message}`),
+  });
+}
+
+// Quick-filter mutations (Board Settings → Query tab)
+export function useAddQuickFilter() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ boardId, name, jql }: { boardId: string; name: string; jql: string }) => {
+      const { error } = await typedQuery('board_quick_filters' as any)
+        .insert({
+          board_id: boardId,
+          name,
+          filter_type: 'jql',
+          filter_value: { jql },
+          is_system: false,
+          sort_order: Date.now(),
+        });
+      if (error) throw error;
+      return { boardId };
+    },
+    onSuccess: (r) => { qc.invalidateQueries({ queryKey: ['board-quick-filters', r.boardId] }); },
+    onError: (err: Error) => toast.error(`Failed to add filter: ${err.message}`),
+  });
+}
+
+export function useDeleteQuickFilter() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ filterId, boardId }: { filterId: string; boardId: string }) => {
+      const { error } = await typedQuery('board_quick_filters' as any).delete().eq('id', filterId);
+      if (error) throw error;
+      return { boardId };
+    },
+    onSuccess: (r) => { qc.invalidateQueries({ queryKey: ['board-quick-filters', r.boardId] }); },
+    onError: (err: Error) => toast.error(`Failed to delete filter: ${err.message}`),
   });
 }
 

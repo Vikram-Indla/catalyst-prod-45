@@ -19,9 +19,10 @@ import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
 import { ProjectTabBar } from '@/components/layout/ProjectTabBar';
 import Button from '@atlaskit/button/new';
 import { KanbanToolbar } from '@/components/kanban/toolbar/KanbanToolbar';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import CreateBoardModal from '@/components/boards/CreateBoardModal';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { useProjectMemberRole } from '@/modules/project-work-hub/hooks/useProjectMemberRole';
 import { useTheme } from '@/hooks/useTheme';
@@ -100,8 +101,8 @@ export default function KanbanBoardPage() {
   const [activeBoardId, setActiveBoardId] = useState<string | null>(null);
   const [showBoardSwitcher, setShowBoardSwitcher] = useState(false);
   const [showCreateBoard, setShowCreateBoard] = useState(false);
-  const [newBoardName, setNewBoardName] = useState('');
   const boardSwitcherRef = React.useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
   // F3 (Archive) — Archived filter chip. When true, the kanban-issues query
   // inverts archived_at IS NULL → archived_at IS NOT NULL. Admin/owner only;
   // FE gate is cosmetic, RLS enforces server-side.
@@ -656,15 +657,6 @@ export default function KanbanBoardPage() {
   const canExpandAll = hasSwimlanes && collapsedSwimlanes.size > 0;
   const canCollapseAll = hasSwimlanes && groups.length > 0 && collapsedSwimlanes.size < groups.length;
 
-  /* PragmaticBoard (group-by-none) uses compact card padding to prevent the
-     cluttered look caused by 16px comfortable padding on every card when all
-     issues pile into columns without swimlane grouping.
-     Swimlane mode keeps the user-selected density unchanged. */
-  const pragmaticD = useMemo(
-    () => ({ ...d, cardPad: d.cardPad === '16px' ? '8px' : d.cardPad }),
-    [d],
-  );
-
   /* ═══ CARD ACTIONS ═══ */
 
   const handleSaveSummary = useCallback(async (issueId: string, newSummary: string) => {
@@ -1056,9 +1048,9 @@ export default function KanbanBoardPage() {
                   {b.name}
                 </button>
               ))}
-              {projectBoards.length > 0 && <div style={{ height: 1, background: tk.borderSubtle, margin: '4px 8px' }} />}
+              <div style={{ height: 1, background: tk.borderSubtle, margin: '4px 8px' }} />
               <button
-                onClick={() => { setShowBoardSwitcher(false); setNewBoardName(''); setShowCreateBoard(true); }}
+                onClick={() => { setShowBoardSwitcher(false); setShowCreateBoard(true); }}
                 style={{
                   width: '100%', textAlign: 'left', padding: '8px 14px',
                   background: 'transparent', border: 'none', cursor: 'pointer',
@@ -1070,157 +1062,36 @@ export default function KanbanBoardPage() {
               >
                 + Create board
               </button>
+              <button
+                onClick={() => { setShowBoardSwitcher(false); navigate(`/project-hub/${key}/boards`); }}
+                style={{
+                  width: '100%', textAlign: 'left', padding: '8px 14px',
+                  background: 'transparent', border: 'none', cursor: 'pointer',
+                  fontSize: 13, fontWeight: 400,
+                  color: tk.textSecondary, fontFamily: 'var(--cp-font-body)',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                ⚙ Manage all boards
+              </button>
             </div>
           )}
         </div>
       </div>
 
-      {/* Create board dialog */}
-      {showCreateBoard && (
-        <div
-          style={{
-            position: 'fixed', inset: 0, zIndex: 200,
-            background: 'rgba(9,30,66,0.54)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
+      {/* Create board — full modal (replaces the old bare-name inline dialog) */}
+      {showCreateBoard && projMeta?.id && (
+        <CreateBoardModal
+          projectId={projMeta.id}
+          basePath={`/project-hub/${key}/board`}
+          onClose={() => setShowCreateBoard(false)}
+          onCreated={(boardId) => {
+            refetchBoards();
+            setActiveBoardId(boardId);
+            qc.invalidateQueries({ queryKey: ['kanban-board-columns', boardId] });
           }}
-          onClick={() => setShowCreateBoard(false)}
-        >
-          <div
-            style={{
-              width: 400, background: tk.surfaceBg, borderRadius: 8,
-              padding: 24, boxShadow: '0 8px 32px rgba(0,0,0,0.24)',
-              fontFamily: 'var(--cp-font-body)',
-            }}
-            onClick={e => e.stopPropagation()}
-          >
-            <div style={{ fontSize: 18, fontWeight: 600, color: tk.textPrimary, marginBottom: 16, fontFamily: 'var(--cp-font-heading)' }}>
-              Create board
-            </div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: tk.textMuted, display: 'block', marginBottom: 4 }}>
-              BOARD NAME
-            </label>
-            <input
-              autoFocus
-              type="text"
-              value={newBoardName}
-              onChange={e => setNewBoardName(e.target.value)}
-              onKeyDown={async e => {
-                if (e.key === 'Enter' && newBoardName.trim()) {
-                  e.preventDefault();
-                  const trimmed = newBoardName.trim();
-                  setShowCreateBoard(false);
-                  const { data: userData } = await supabase.auth.getUser();
-                  const userId = userData.user?.id;
-                  if (!userId || !projMeta?.id) return;
-                  const { data: newBoard } = await supabase
-                    .from('boards')
-                    .insert({
-                      name: trimmed,
-                      project_id: projMeta.id,
-                      board_type: 'scrum',
-                      created_by: userId,
-                      filter_config: {},
-                      filter_project_ids: [],
-                      sort_order: (projectBoards.length + 1) * 10,
-                    } as any)
-                    .select('id')
-                    .single();
-                  if (newBoard?.id) {
-                    // Copy columns from the current board if one exists
-                    if (resolvedBoardId) {
-                      const { data: srcCols } = await supabase
-                        .from('board_columns')
-                        .select('name, position, status_ids, is_backlog, is_done')
-                        .eq('board_id', resolvedBoardId)
-                        .order('position');
-                      if (srcCols?.length) {
-                        await supabase.from('board_columns').insert(
-                          srcCols.map(c => ({ ...c, board_id: newBoard.id, id: undefined } as any))
-                        );
-                      }
-                    }
-                    await refetchBoards();
-                    setActiveBoardId(newBoard.id);
-                    qc.invalidateQueries({ queryKey: ['kanban-board-columns', newBoard.id] });
-                  }
-                }
-              }}
-              placeholder="e.g. Sprint board"
-              style={{
-                width: '100%', height: 36, padding: '0 10px',
-                border: `2px solid var(--ds-border-focused, #4C9AFF)`,
-                borderRadius: 4, fontSize: 14, color: tk.textPrimary,
-                background: tk.surfaceBg, outline: 'none', boxSizing: 'border-box',
-                fontFamily: 'var(--cp-font-body)',
-              }}
-            />
-            <div style={{ fontSize: 11, color: tk.textMuted, marginTop: 6 }}>Press Enter to create, Escape to cancel</div>
-            <div className="flex justify-end gap-2" style={{ marginTop: 20 }}>
-              <button
-                onClick={() => setShowCreateBoard(false)}
-                style={{
-                  height: 32, padding: '0 16px', borderRadius: 3,
-                  border: `1px solid ${tk.border}`, background: 'transparent',
-                  fontSize: 14, cursor: 'pointer', color: tk.textSecondary,
-                  fontFamily: 'var(--cp-font-body)',
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                disabled={!newBoardName.trim()}
-                onClick={async () => {
-                  const trimmed = newBoardName.trim();
-                  if (!trimmed) return;
-                  setShowCreateBoard(false);
-                  const { data: userData } = await supabase.auth.getUser();
-                  const userId = userData.user?.id;
-                  if (!userId || !projMeta?.id) return;
-                  const { data: newBoard } = await supabase
-                    .from('boards')
-                    .insert({
-                      name: trimmed,
-                      project_id: projMeta.id,
-                      board_type: 'scrum',
-                      created_by: userId,
-                      filter_config: {},
-                      filter_project_ids: [],
-                      sort_order: (projectBoards.length + 1) * 10,
-                    } as any)
-                    .select('id')
-                    .single();
-                  if (newBoard?.id) {
-                    if (resolvedBoardId) {
-                      const { data: srcCols } = await supabase
-                        .from('board_columns')
-                        .select('name, position, status_ids, is_backlog, is_done')
-                        .eq('board_id', resolvedBoardId)
-                        .order('position');
-                      if (srcCols?.length) {
-                        await supabase.from('board_columns').insert(
-                          srcCols.map(c => ({ ...c, board_id: newBoard.id, id: undefined } as any))
-                        );
-                      }
-                    }
-                    await refetchBoards();
-                    setActiveBoardId(newBoard.id);
-                    qc.invalidateQueries({ queryKey: ['kanban-board-columns', newBoard.id] });
-                  }
-                }}
-                style={{
-                  height: 32, padding: '0 16px', borderRadius: 3,
-                  border: 'none',
-                  background: newBoardName.trim() ? 'var(--ds-background-brand-bold, var(--cp-primary-60, #0052CC))' : tk.chipBg,
-                  fontSize: 14, cursor: newBoardName.trim() ? 'pointer' : 'not-allowed',
-                  color: newBoardName.trim() ? '#FFFFFF' : tk.textMuted,
-                  fontFamily: 'var(--cp-font-body)',
-                }}
-              >
-                Create
-              </button>
-            </div>
-          </div>
-        </div>
+        />
       )}
 
       {/* F3: "Show archived" moved into the board ••• menu — no standalone row above toolbar */}

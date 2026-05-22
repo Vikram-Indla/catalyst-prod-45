@@ -45,6 +45,7 @@ export function useBoards(projectId: string | undefined) {
         createdBy: b.created_by,
         createdAt: b.created_at,
         updatedAt: b.updated_at,
+        boardQuery: b.board_query ?? null,
         columnCount: b.board_columns?.length ?? 0,
         issueCount: b.board_issue_rank?.length ?? 0,
         createdByName: null,

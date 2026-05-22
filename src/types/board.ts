@@ -13,17 +13,29 @@ export interface Board {
   projectId: string | null;
   isPersonal: boolean;
   visibility: BoardVisibility;
-  boardType: 'kanban';
+  boardType: 'kanban' | 'scrum';
   swimlaneType: SwimlaneType;
   showSwimlanes: boolean;
   filterProjectIds: string[];
   filterConfig: Record<string, unknown>;
+  boardQuery: string | null;
   isStarred: boolean;
   sortOrder: number;
   lastViewedAt: string | null;
   createdBy: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface BoardQuickFilter {
+  id: string;
+  boardId: string;
+  name: string;
+  filterType: string;
+  filterValue: Record<string, unknown>;
+  isSystem: boolean;
+  sortOrder: number;
+  createdAt: string;
 }
 
 export interface BoardListItem extends Board {
@@ -76,7 +88,9 @@ export interface CreateBoardInput {
   projectId?: string;
   isPersonal?: boolean;
   visibility?: BoardVisibility;
+  boardType?: 'kanban' | 'scrum';
   swimlaneType?: SwimlaneType;
   color?: string;
+  boardQuery?: string;
   columns?: Array<{ name: string; isBacklog?: boolean; isDone?: boolean }>;
 }

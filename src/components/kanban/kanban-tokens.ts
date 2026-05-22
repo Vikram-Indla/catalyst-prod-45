@@ -53,11 +53,11 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     cardBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
     cardBorder: 'transparent', /* Jira cards are shadow-only, no border */
     cardHoverBg: 'var(--cp-bg-elevated, var(--cp-bg-elevated, var(--cp-bg-elevated, #ffffff)))',
-    /* jira-compare 2026-05-08 — Jira card shadow: very subtle elevation 1
-       (0 1px 2px rgba(9,30,66,0.25) rest, 0 2px 4px on hover). The prior
-       8px/12px value was 4× too heavy and made cards look like floating modals. */
-    cardShadowRest: 'rgba(9,30,66,0.25) 0 1px 2px 0, rgba(9,30,66,0.31) 0 0 1px 0',
-    cardHoverShadow: 'rgba(9,30,66,0.31) 0 2px 4px 0, rgba(9,30,66,0.31) 0 0 1px 0',
+    /* ADS elevation tokens — var(--ds-shadow-raised) resolves to the canonical
+       elevation-1 token; var(--ds-shadow-overlay) to elevation-2.
+       Measured Jira fallback values kept for browsers without ADS CSS vars. */
+    cardShadowRest: 'var(--ds-shadow-raised, rgba(9,30,66,0.25) 0 1px 2px 0, rgba(9,30,66,0.31) 0 0 1px 0)',
+    cardHoverShadow: 'var(--ds-shadow-overlay, rgba(9,30,66,0.31) 0 4px 8px -2px, rgba(9,30,66,0.31) 0 0 1px 0)',
     cardDragShadow: 'rgba(30,31,33,.45) 0 8px 16px 0, rgba(30,31,33,.31) 0 0 1px 0',
     dropHighlight: '#DFE3E8',  /* Jira drop tint */
     dropIndicator: 'var(--ds-text-brand, var(--cp-workstream-catalyst-primary, #2563EB))',  /* 2px accent line on insertion */
